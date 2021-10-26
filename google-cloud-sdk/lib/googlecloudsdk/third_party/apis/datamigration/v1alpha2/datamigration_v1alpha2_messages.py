@@ -1277,8 +1277,7 @@ class MigrationJob(_messages.Message):
       MAINTENANCE: The migration job is down for maintenance.
       DRAFT: The migration job is in draft mode and no resources are created.
       CREATING: The migration job is being created.
-      NOT_STARTED: The migration job is created, not started and is fully
-        editable.
+      NOT_STARTED: The migration job is created and not started.
       RUNNING: The migration job is running.
       FAILED: The migration job failed.
       COMPLETED: The migration job has been completed.

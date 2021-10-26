@@ -829,7 +829,8 @@ class Templates(object):
 
   @staticmethod
   def BuildAndStoreFlexTemplateImage(image_gcr_path, flex_template_base_image,
-                                     jar_paths, py_paths, env, sdk_language):
+                                     jar_paths, py_paths, env, sdk_language,
+                                     gcs_log_dir):
     """Builds the flex template docker container image and stores it in GCR.
 
     Args:
@@ -839,6 +840,7 @@ class Templates(object):
       py_paths: List of python paths to pipelines and dependencies.
       env: Dictionary of env variables to set in the container image.
       sdk_language: SDK language of the flex template.
+      gcs_log_dir: Path to Google Cloud Storage directory to store build logs.
 
     Returns:
       True if container is built and store successfully.
@@ -877,7 +879,7 @@ class Templates(object):
       messages = cloudbuild_util.GetMessagesModule()
       build_config = submit_util.CreateBuildConfig(
           image_gcr_path, False, messages, None,
-          'cloudbuild.yaml', True, False, temp_dir, None, None, None,
+          'cloudbuild.yaml', True, False, temp_dir, None, None, gcs_log_dir,
           None, None, None, None)
       log.status.Print('Pushing flex template container image to GCR...')
 

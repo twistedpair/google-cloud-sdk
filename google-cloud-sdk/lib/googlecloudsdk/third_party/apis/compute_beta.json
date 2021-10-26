@@ -4,7 +4,7 @@
   "id": "compute:beta",
   "name": "compute",
   "version": "beta",
-  "revision": "20211001",
+  "revision": "20211020",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -1354,7 +1354,7 @@
     },
     "Policy": {
       "id": "Policy",
-      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members` to a single `role`. Members can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA= version: 3 For a description of IAM and its features, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
+      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members`, or principals, to a single `role`. Principals can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA= version: 3 For a description of IAM and its features, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
       "type": "object",
       "properties": {
         "version": {
@@ -1363,7 +1363,7 @@
           "format": "int32"
         },
         "bindings": {
-          "description": "Associates a list of `members` to a `role`. Optionally, may specify a `condition` that determines how and when the `bindings` are applied. Each of the `bindings` must contain at least one member. The `bindings` in a `Policy` can refer to up to 1,500 members; up to 250 of these members can be Google groups. Each occurrence of a member counts towards these limits. For example, if the `bindings` grant 50 different roles to `user:alice@example.com`, and not to any other member, then you can add another 1,450 members to the `bindings` in the `Policy`.",
+          "description": "Associates a list of `members`, or principals, with a `role`. Optionally, may specify a `condition` that determines how and when the `bindings` are applied. Each of the `bindings` must contain at least one principal. The `bindings` in a `Policy` can refer to up to 1,500 principals; up to 250 of these principals can be Google groups. Each occurrence of a principal counts towards these limits. For example, if the `bindings` grant 50 different roles to `user:alice@example.com`, and not to any other principal, then you can add another 1,450 principals to the `bindings` in the `Policy`.",
           "type": "array",
           "items": {
             "$ref": "Binding"
@@ -1396,22 +1396,22 @@
     },
     "Binding": {
       "id": "Binding",
-      "description": "Associates `members` with a `role`.",
+      "description": "Associates `members`, or principals, with a `role`.",
       "type": "object",
       "properties": {
         "role": {
-          "description": "Role that is assigned to `members`. For example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
+          "description": "Role that is assigned to the list of `members`, or principals. For example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Cloud Platform resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "condition": {
-          "description": "The condition that is associated with this binding. If the condition evaluates to `true`, then this binding applies to the current request. If the condition evaluates to `false`, then this binding does not apply to the current request. However, a different role binding might grant the same role to one or more of the members in this binding. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+          "description": "The condition that is associated with this binding. If the condition evaluates to `true`, then this binding applies to the current request. If the condition evaluates to `false`, then this binding does not apply to the current request. However, a different role binding might grant the same role to one or more of the principals in this binding. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
           "$ref": "Expr"
         },
         "bindingId": {
@@ -3402,7 +3402,7 @@
       "type": "object",
       "properties": {
         "network": {
-          "description": "URL of the network resource for this instance. When creating an instance, if neither the network nor the subnetwork is specified, the default network global\/networks\/default is used; if the network is not specified but the subnetwork is specified, the network is inferred. If you specify this property, you can specify the network as a full or partial URL. For example, the following are all valid URLs: - https:\/\/www.googleapis.com\/compute\/v1\/projects\/project\/global\/networks\/ network - projects\/project\/global\/networks\/network - global\/networks\/default ",
+          "description": "URL of the VPC network resource for this instance. When creating an instance, if neither the network nor the subnetwork is specified, the default network global\/networks\/default is used. If the selected project doesn't have the default network, you must specify a network or subnet. If the network is not specified but the subnetwork is specified, the network is inferred. If you specify this property, you can specify the network as a full or partial URL. For example, the following are all valid URLs: - https:\/\/www.googleapis.com\/compute\/v1\/projects\/project\/global\/networks\/ network - projects\/project\/global\/networks\/network - global\/networks\/default ",
           "type": "string"
         },
         "subnetwork": {
@@ -3546,12 +3546,16 @@
           "description": "This signifies the networking tier used for configuring this access configuration and can only take the following values: PREMIUM, STANDARD. If an AccessConfig is specified without a valid external IP address, an ephemeral IP will be created with this networkTier. If an AccessConfig with a valid external IP address is specified, it must match that of the networkTier associated with the Address resource owning that IP.",
           "type": "string",
           "enumDescriptions": [
+            "Public internet quality with fixed bandwidth.",
             "High quality, Google-grade network tier, support for all networking products.",
-            "Public internet quality, only limited support for other networking products."
+            "Public internet quality, only limited support for other networking products.",
+            "(Output only) Temporary tier for FIXED_STANDARD when fixed standard tier is expired or not configured."
           ],
           "enum": [
+            "FIXED_STANDARD",
             "PREMIUM",
-            "STANDARD"
+            "STANDARD",
+            "STANDARD_OVERRIDES_FIXED_STANDARD"
           ]
         },
         "kind": {
@@ -5036,6 +5040,20 @@
           "additionalProperties": {
             "$ref": "LocationPolicyLocation"
           }
+        },
+        "targetShape": {
+          "description": "Strategy for distributing VMs across zones in a region.",
+          "type": "string",
+          "enumDescriptions": [
+            "GCE picks zones for creating VM instances to fulfill the requested number of VMs within present resource constraints and to maximize utilization of unused zonal reservations. Recommended for batch workloads that do not require high availability.",
+            "GCE always selects a single zone for all the VMs, optimizing for resource quotas, available reservations and general capacity. Recommended for batch workloads that cannot tollerate distribution over multiple zones. This the default shape in Bulk Insert and Capacity Advisor APIs.",
+            "GCE prioritizes acquisition of resources, scheduling VMs in zones where resources are available while distributing VMs as evenly as possible across allowed zones to minimize the impact of zonal failure. Recommended for highly available serving workloads."
+          ],
+          "enum": [
+            "ANY",
+            "ANY_SINGLE_ZONE",
+            "BALANCED"
+          ]
         }
       }
     },
@@ -5457,7 +5475,7 @@
           }
         },
         "projectMap": {
-          "description": "A map of project id and project config. Using map format to ease add-to\/remove-from the Project list in PATCH command. In future we will deprecate (And later remove) the array one.",
+          "description": "A map of project id and project config. This is only valid when share_type's value is SPECIFIC_PROJECTS.",
           "type": "object",
           "additionalProperties": {
             "$ref": "ShareSettingsProjectConfig"
@@ -6279,12 +6297,16 @@
           "description": "This signifies the networking tier used for configuring this address and can only take the following values: PREMIUM or STANDARD. Internal IP addresses are always Premium Tier; global external IP addresses are always Premium Tier; regional external IP addresses can be either Standard or Premium Tier. If this field is not specified, it is assumed to be PREMIUM.",
           "type": "string",
           "enumDescriptions": [
+            "Public internet quality with fixed bandwidth.",
             "High quality, Google-grade network tier, support for all networking products.",
-            "Public internet quality, only limited support for other networking products."
+            "Public internet quality, only limited support for other networking products.",
+            "(Output only) Temporary tier for FIXED_STANDARD when fixed standard tier is expired or not configured."
           ],
           "enum": [
+            "FIXED_STANDARD",
             "PREMIUM",
-            "STANDARD"
+            "STANDARD",
+            "STANDARD_OVERRIDES_FIXED_STANDARD"
           ]
         },
         "labels": {
@@ -10907,7 +10929,7 @@
           "type": "string",
           "enumDescriptions": [
             "Signifies that this will be used for external HTTP(S), SSL Proxy, TCP Proxy, or Network Load Balancing",
-            "Signifies that this will be used for External Managed HTTP(S), SSL Proxy, or TCP Proxy Load Balancing.",
+            "Signifies that this will be used for External Managed HTTP(S) Load Balancing.",
             "Signifies that this will be used for Internal TCP\/UDP Load Balancing.",
             "Signifies that this will be used for Internal HTTP(S) Load Balancing.",
             "Signifies that this will be used by Traffic Director.",
@@ -11022,6 +11044,13 @@
             "AUTOMATIC",
             "DISABLED"
           ]
+        },
+        "serviceBindings": {
+          "description": "URLs of networkservices.ServiceBinding resources. Can only be set if load balancing scheme is INTERNAL_SELF_MANAGED. If set, lists of backends and health checks must be both empty.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "kind": {
           "description": "[Output Only] Type of resource. Always compute#backendService for backend services.",
@@ -12122,11 +12151,13 @@
             "",
             "",
             "",
+            "",
             ""
           ],
           "enum": [
             "ACCELERATOR_OPTIMIZED",
             "COMPUTE_OPTIMIZED",
+            "COMPUTE_OPTIMIZED_C2D",
             "GENERAL_PURPOSE",
             "GENERAL_PURPOSE_E2",
             "GENERAL_PURPOSE_N2",
@@ -14152,12 +14183,16 @@
           "description": "This signifies the networking tier used for configuring this load balancer and can only take the following values: PREMIUM, STANDARD. For regional ForwardingRule, the valid values are PREMIUM and STANDARD. For GlobalForwardingRule, the valid value is PREMIUM. If this field is not specified, it is assumed to be PREMIUM. If IPAddress is specified, this value must be equal to the networkTier of the Address.",
           "type": "string",
           "enumDescriptions": [
+            "Public internet quality with fixed bandwidth.",
             "High quality, Google-grade network tier, support for all networking products.",
-            "Public internet quality, only limited support for other networking products."
+            "Public internet quality, only limited support for other networking products.",
+            "(Output only) Temporary tier for FIXED_STANDARD when fixed standard tier is expired or not configured."
           ],
           "enum": [
+            "FIXED_STANDARD",
             "PREMIUM",
-            "STANDARD"
+            "STANDARD",
+            "STANDARD_OVERRIDES_FIXED_STANDARD"
           ]
         },
         "labels": {
@@ -19642,11 +19677,11 @@
           "type": "boolean"
         },
         "exportCustomRoutes": {
-          "description": "Whether to export the custom routes to peer network.",
+          "description": "Whether to export the custom routes to peer network. The default value is false.",
           "type": "boolean"
         },
         "importCustomRoutes": {
-          "description": "Whether to import the custom routes from peer network.",
+          "description": "Whether to import the custom routes from peer network. The default value is false.",
           "type": "boolean"
         },
         "exchangeSubnetRoutes": {
@@ -22565,12 +22600,16 @@
           "description": "This signifies the default network tier used for configuring resources of the project and can only take the following values: PREMIUM, STANDARD. Initially the default network tier is PREMIUM.",
           "type": "string",
           "enumDescriptions": [
+            "Public internet quality with fixed bandwidth.",
             "High quality, Google-grade network tier, support for all networking products.",
-            "Public internet quality, only limited support for other networking products."
+            "Public internet quality, only limited support for other networking products.",
+            "(Output only) Temporary tier for FIXED_STANDARD when fixed standard tier is expired or not configured."
           ],
           "enum": [
+            "FIXED_STANDARD",
             "PREMIUM",
-            "STANDARD"
+            "STANDARD",
+            "STANDARD_OVERRIDES_FIXED_STANDARD"
           ]
         }
       }
@@ -22584,6 +22623,7 @@
           "description": "[Output Only] Name of the quota metric.",
           "type": "string",
           "enumDescriptions": [
+            "",
             "",
             "",
             "",
@@ -22707,6 +22747,7 @@
             "",
             "",
             "",
+            "",
             ""
           ],
           "enum": [
@@ -22737,6 +22778,7 @@
             "COMMITTED_NVIDIA_P4_GPUS",
             "COMMITTED_NVIDIA_T4_GPUS",
             "COMMITTED_NVIDIA_V100_GPUS",
+            "COMMITTED_T2A_CPUS",
             "COMMITTED_T2D_CPUS",
             "CPUS",
             "CPUS_ALL_REGIONS",
@@ -22822,6 +22864,7 @@
             "STATIC_ADDRESSES",
             "STATIC_BYOIP_ADDRESSES",
             "SUBNETWORKS",
+            "T2A_CPUS",
             "T2D_CPUS",
             "TARGET_HTTPS_PROXIES",
             "TARGET_HTTP_PROXIES",
@@ -23093,12 +23136,16 @@
           "description": "Default network tier to be set.",
           "type": "string",
           "enumDescriptions": [
+            "Public internet quality with fixed bandwidth.",
             "High quality, Google-grade network tier, support for all networking products.",
-            "Public internet quality, only limited support for other networking products."
+            "Public internet quality, only limited support for other networking products.",
+            "(Output only) Temporary tier for FIXED_STANDARD when fixed standard tier is expired or not configured."
           ],
           "enum": [
+            "FIXED_STANDARD",
             "PREMIUM",
-            "STANDARD"
+            "STANDARD",
+            "STANDARD_OVERRIDES_FIXED_STANDARD"
           ]
         }
       }
@@ -23263,16 +23310,16 @@
           "type": "string"
         },
         "status": {
-          "description": "The status of the public advertised prefix.",
+          "description": "The status of the public advertised prefix. Possible values include: - `INITIAL`: RPKI validation is complete. - `PTR_CONFIGURED`: User has configured the PTR. - `VALIDATED`: Reverse DNS lookup is successful. - `REVERSE_DNS_LOOKUP_FAILED`: Reverse DNS lookup failed. - `PREFIX_CONFIGURATION_IN_PROGRESS`: The prefix is being configured. - `PREFIX_CONFIGURATION_COMPLETE`: The prefix is fully configured. - `PREFIX_REMOVAL_IN_PROGRESS`: The prefix is being removed. ",
           "type": "string",
           "enumDescriptions": [
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            ""
+            "RPKI validation is complete.",
+            "The prefix is fully configured.",
+            "The prefix is being configured.",
+            "The prefix is being removed.",
+            "User has configured the PTR.",
+            "Reverse DNS lookup failed.",
+            "Reverse DNS lookup is successful."
           ],
           "enum": [
             "INITIAL",
@@ -23486,13 +23533,13 @@
           "type": "string"
         },
         "status": {
-          "description": "[Output Only] The status of the public delegated prefix.",
+          "description": "[Output Only] The status of the public delegated prefix, which can be one of following values: - `INITIALIZING` The public delegated prefix is being initialized and addresses cannot be created yet. - `READY_TO_ANNOUNCE` The public delegated prefix is a live migration prefix and is active. - `ANNOUNCED` The public delegated prefix is active. - `DELETING` The public delegated prefix is being deprovsioned. ",
           "type": "string",
           "enumDescriptions": [
-            "",
-            "",
-            "",
-            ""
+            "The public delegated prefix is active.",
+            "The public delegated prefix is being deprovsioned.",
+            "The public delegated prefix is being initialized and addresses cannot be created yet.",
+            "The public delegated prefix is a live migration prefix and is active."
           ],
           "enum": [
             "ANNOUNCED",
@@ -28102,7 +28149,7 @@
           "type": "boolean"
         },
         "enableFlowLogs": {
-          "description": "Whether to enable flow logging for this subnetwork. If this field is not explicitly set, it will not appear in get listings. If not set the default behavior is to disable flow logging. This field isn't supported with the purpose field set to INTERNAL_HTTPS_LOAD_BALANCER.",
+          "description": "Whether to enable flow logging for this subnetwork. If this field is not explicitly set, it will not appear in get listings. If not set the default behavior is determined by the org policy, if there is no org policy specified, then it will default to disabled. This field isn't supported with the purpose field set to INTERNAL_HTTPS_LOAD_BALANCER.",
           "type": "boolean"
         },
         "privateIpv6GoogleAccess": {
@@ -28227,7 +28274,7 @@
       "type": "object",
       "properties": {
         "enable": {
-          "description": "Whether to enable flow logging for this subnetwork. If this field is not explicitly set, it will not appear in get listings. If not set the default behavior is to disable flow logging.",
+          "description": "Whether to enable flow logging for this subnetwork. If this field is not explicitly set, it will not appear in get listings. If not set the default behavior is determined by the org policy, if there is no org policy specified, then it will default to disabled.",
           "type": "boolean"
         },
         "aggregationInterval": {
@@ -28251,7 +28298,7 @@
           ]
         },
         "flowSampling": {
-          "description": "Can only be specified if VPC flow logging for this subnetwork is enabled. The value of the field must be in [0, 1]. Set the sampling rate of VPC flow logs within the subnetwork where 1.0 means all collected logs are reported and 0.0 means no logs are reported. Default is 0.5, which means half of all collected logs are reported.",
+          "description": "Can only be specified if VPC flow logging for this subnetwork is enabled. The value of the field must be in [0, 1]. Set the sampling rate of VPC flow logs within the subnetwork where 1.0 means all collected logs are reported and 0.0 means no logs are reported. Default is 0.5 unless otherwise specified by the org policy, which means half of all collected logs are reported.",
           "type": "number",
           "format": "float"
         },
@@ -32582,6 +32629,23 @@
         "resource": {
           "description": "Content of the UrlMap to be validated.",
           "$ref": "UrlMap"
+        },
+        "loadBalancingSchemes": {
+          "description": "Specifies the load balancer type(s) this validation request is for. Use EXTERNAL_MANAGED for HTTP\/HTTPS External Global Load Balancer with Advanced Traffic Management. Use EXTERNAL for Classic HTTP\/HTTPS External Global Load Balancer. Other load balancer types are not supported. For more information, refer to Choosing a load balancer. If unspecified, the load balancing scheme will be inferred from the backend service resources this URL map references. If that can not be inferred (for example, this URL map only references backend buckets, or this Url map is for rewrites and redirects only and doesn't reference any backends), EXTERNAL will be used as the default type. If specified, the scheme(s) must not conflict with the load balancing scheme of the backend service resources this Url map references.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Signifies that this will be used for Classic L7 External Load Balancing.",
+              "Signifies that this will be used for Envoy-based L7 External Load Balancing.",
+              "If unspecified, the validation will try to infer the scheme from the backend service resources this Url map references. If the inferrence is not possible, EXTERNAL will be used as the default type."
+            ],
+            "enum": [
+              "EXTERNAL",
+              "EXTERNAL_MANAGED",
+              "LOAD_BALANCING_SCHEME_UNSPECIFIED"
+            ]
+          }
         }
       }
     },
@@ -38898,7 +38962,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "This method suspends a running instance, saving its state to persistent storage, and allows you to resume the instance at a later time. Suspended instances incur reduced per-minute, virtual machine usage charges while they are suspended. Any resources the virtual machine is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted."
+          "description": "This method suspends a running instance, saving its state to persistent storage, and allows you to resume the instance at a later time. Suspended instances incur reduced per-minute, virtual machine usage charges while they are suspended. Any resources the virtual machine is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted. For more information, see Suspending and resuming an instance."
         },
         "resume": {
           "id": "compute.instances.resume",

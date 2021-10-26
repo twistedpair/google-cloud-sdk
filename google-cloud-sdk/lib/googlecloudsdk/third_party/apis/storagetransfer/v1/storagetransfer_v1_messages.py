@@ -15,6 +15,45 @@ from apitools.base.py import extra_types
 package = 'storagetransfer'
 
 
+class AgentPool(_messages.Message):
+  r"""Represents an On-Premises Agent pool.
+
+  Enums:
+    StateValueValuesEnum: Output only. Specifies the state of the AgentPool.
+
+  Fields:
+    bandwidthLimit: Specifies the bandwidth limit details. If this field is
+      unspecified, the default value is set as 'No Limit'.
+    displayName: Specifies the client-specified AgentPool description.
+    name: Required. Specifies a unique string that identifies the agent pool.
+      Format: projects/{project_id}/agentPools/{agent_pool_id}
+    state: Output only. Specifies the state of the AgentPool.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Specifies the state of the AgentPool.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      CREATING: This is an initialization state. During this stage, the
+        resources such as Pub/Sub topics are allocated for the AgentPool.
+      CREATED: Determines that the AgentPool is created for use. At this
+        state, Agents can join the AgentPool and participate in the transfer
+        jobs in that pool.
+      DELETING: Determines that the AgentPool deletion has been initiated, and
+        all the resources are scheduled to be cleaned up and freed.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    CREATED = 2
+    DELETING = 3
+
+  bandwidthLimit = _messages.MessageField('BandwidthLimit', 1)
+  displayName = _messages.StringField(2)
+  name = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+
+
 class AwsAccessKey(_messages.Message):
   r"""AWS access key (see [AWS Security
   Credentials](https://docs.aws.amazon.com/general/latest/gr/aws-security-
@@ -110,6 +149,18 @@ class AzureCredentials(_messages.Message):
   """
 
   sasToken = _messages.StringField(1)
+
+
+class BandwidthLimit(_messages.Message):
+  r"""Specifies the BandwidthLimit to describe the non-negative bandwidth rate
+  in mbps for the agent pool.
+
+  Fields:
+    limitMbps: Specifies bandwidth rate in mbps distributed across all the
+      agents in the pool.
+  """
+
+  limitMbps = _messages.IntegerField(1)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -351,6 +402,18 @@ class HttpData(_messages.Message):
   """
 
   listUrl = _messages.StringField(1)
+
+
+class ListAgentPoolsResponse(_messages.Message):
+  r"""Response from ListAgentPools.
+
+  Fields:
+    agentPools: A list of agent pools.
+    nextPageToken: The list next page token.
+  """
+
+  agentPools = _messages.MessageField('AgentPool', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListOperationsResponse(_messages.Message):
@@ -838,6 +901,83 @@ class StoragetransferGoogleServiceAccountsGetRequest(_messages.Message):
   projectId = _messages.StringField(1, required=True)
 
 
+class StoragetransferProjectsAgentPoolsCreateRequest(_messages.Message):
+  r"""A StoragetransferProjectsAgentPoolsCreateRequest object.
+
+  Fields:
+    agentPool: A AgentPool resource to be passed as the request body.
+    agentPoolId: Required. The id of the agent pool to create. The
+      agent_pool_id must be non-empty, less than or equal to 128 characters,
+      and satisfy the following regex: "^[a-z]([a-z0-9-._~]*[a-z0-9])?$".
+      Also, agent pool names cannot start with the string "goog".
+    projectId: Required. The ID of the Google Cloud Platform Console project
+      that owns the agent pool.
+  """
+
+  agentPool = _messages.MessageField('AgentPool', 1)
+  agentPoolId = _messages.StringField(2)
+  projectId = _messages.StringField(3, required=True)
+
+
+class StoragetransferProjectsAgentPoolsDeleteRequest(_messages.Message):
+  r"""A StoragetransferProjectsAgentPoolsDeleteRequest object.
+
+  Fields:
+    name: Required. The agent pool name to delete.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class StoragetransferProjectsAgentPoolsGetRequest(_messages.Message):
+  r"""A StoragetransferProjectsAgentPoolsGetRequest object.
+
+  Fields:
+    name: Required. The agent pool to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class StoragetransferProjectsAgentPoolsListRequest(_messages.Message):
+  r"""A StoragetransferProjectsAgentPoolsListRequest object.
+
+  Fields:
+    filter: A list of optional query parameters specified as JSON text in the
+      form of: `{"agentPoolNames":["agentpool1","agentpool2",...]}` Since
+      `agentPoolNames` support multiple values, its values must be specified
+      with array notation. `agentPoolNames` is an optional field. The list
+      returns all agent pools for the project when the filter is not provided
+      or empty.
+    pageSize: The list page size. The max allowed value is 256.
+    pageToken: The list page token.
+    projectId: Required. The ID of the Google Cloud Platform Console project
+      that owns the job.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  projectId = _messages.StringField(4, required=True)
+
+
+class StoragetransferProjectsAgentPoolsPatchRequest(_messages.Message):
+  r"""A StoragetransferProjectsAgentPoolsPatchRequest object.
+
+  Fields:
+    agentPool: A AgentPool resource to be passed as the request body.
+    name: Required. Specifies a unique string that identifies the agent pool.
+      Format: projects/{project_id}/agentPools/{agent_pool_id}
+    updateMask: The field mask of the fields in `agentPool` that are to be
+      updated in this request. Fields in `agentPool` that can be updated are:
+      display_name, bandwidth_limit,
+  """
+
+  agentPool = _messages.MessageField('AgentPool', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class StoragetransferTransferJobsGetRequest(_messages.Message):
   r"""A StoragetransferTransferJobsGetRequest object.
 
@@ -1025,6 +1165,10 @@ class TransferCounters(_messages.Message):
     directoriesSuccessfullyListedFromSource: For transfers involving
       PosixFilesystem only. Number of successful listings for each directory
       found at the source.
+    intermediateObjectsCleanedUp: Number of successfully cleaned up
+      intermediate objects.
+    intermediateObjectsFailedCleanedUp: Number of intermediate objects failed
+      cleaned up.
     objectsCopiedToSink: Objects that are copied to the data sink.
     objectsDeletedFromSink: Objects that are deleted from the data sink.
     objectsDeletedFromSource: Objects that are deleted from the data source.
@@ -1052,14 +1196,16 @@ class TransferCounters(_messages.Message):
   directoriesFailedToListFromSource = _messages.IntegerField(9)
   directoriesFoundFromSource = _messages.IntegerField(10)
   directoriesSuccessfullyListedFromSource = _messages.IntegerField(11)
-  objectsCopiedToSink = _messages.IntegerField(12)
-  objectsDeletedFromSink = _messages.IntegerField(13)
-  objectsDeletedFromSource = _messages.IntegerField(14)
-  objectsFailedToDeleteFromSink = _messages.IntegerField(15)
-  objectsFoundFromSource = _messages.IntegerField(16)
-  objectsFoundOnlyFromSink = _messages.IntegerField(17)
-  objectsFromSourceFailed = _messages.IntegerField(18)
-  objectsFromSourceSkippedBySync = _messages.IntegerField(19)
+  intermediateObjectsCleanedUp = _messages.IntegerField(12)
+  intermediateObjectsFailedCleanedUp = _messages.IntegerField(13)
+  objectsCopiedToSink = _messages.IntegerField(14)
+  objectsDeletedFromSink = _messages.IntegerField(15)
+  objectsDeletedFromSource = _messages.IntegerField(16)
+  objectsFailedToDeleteFromSink = _messages.IntegerField(17)
+  objectsFoundFromSource = _messages.IntegerField(18)
+  objectsFoundOnlyFromSink = _messages.IntegerField(19)
+  objectsFromSourceFailed = _messages.IntegerField(20)
+  objectsFromSourceSkippedBySync = _messages.IntegerField(21)
 
 
 class TransferJob(_messages.Message):

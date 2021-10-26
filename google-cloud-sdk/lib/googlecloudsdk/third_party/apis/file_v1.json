@@ -448,7 +448,7 @@
     },
     "RestoreInstanceRequest": {
       "id": "RestoreInstanceRequest",
-      "description": "RestoreInstanceRequest restores an existing instances's file share from a backup.",
+      "description": "RestoreInstanceRequest restores an existing instance's file share from a backup.",
       "type": "object",
       "properties": {
         "fileShare": {

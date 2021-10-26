@@ -299,6 +299,10 @@
           "description": "The specification for Anthos Observability.",
           "$ref": "AnthosObservabilityFeatureSpec"
         },
+        "workloadcertificateFeatureSpec": {
+          "description": "The specification for Workload Certificate.",
+          "$ref": "WorkloadCertificateFeatureSpec"
+        },
         "featureState": {
           "description": "Output only. State of the Feature resource itself.",
           "readOnly": true,
@@ -841,6 +845,59 @@
       "properties": {
       }
     },
+    "WorkloadCertificateFeatureSpec": {
+      "id": "WorkloadCertificateFeatureSpec",
+      "description": "WorkloadCertificateFeatureSpec contains the input for the workload identity platform feature. This is required since Feature proto requires a spec.",
+      "type": "object",
+      "properties": {
+        "provisionGoogleCa": {
+          "description": "Immutable. Specifies CA configuration.",
+          "type": "string",
+          "enumDescriptions": [
+            "Disable default Google managed CA.",
+            "Disable default Google managed CA.",
+            "Use default Google managed CA."
+          ],
+          "enum": [
+            "GOOGLE_CA_PROVISIONING_UNSPECIFIED",
+            "DISABLED",
+            "ENABLED"
+          ]
+        },
+        "defaultConfig": {
+          "description": "Default membership spec. Users can override the default in the member_configs for each member.",
+          "$ref": "WorkloadCertificateMembershipSpec"
+        },
+        "memberConfigs": {
+          "description": "Per-member configuration of workload certificate.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "WorkloadCertificateMembershipSpec"
+          }
+        }
+      }
+    },
+    "WorkloadCertificateMembershipSpec": {
+      "id": "WorkloadCertificateMembershipSpec",
+      "description": "WorkloadCertificateMembershipSpec contains the membership-specific input for WorkloadCertificate feature.",
+      "type": "object",
+      "properties": {
+        "certificateManagement": {
+          "description": "Specifies workload certificate management.",
+          "type": "string",
+          "enumDescriptions": [
+            "Disable workload certificate feature.",
+            "Disable workload certificate feature.",
+            "Enable workload certificate feature."
+          ],
+          "enum": [
+            "CERTIFICATE_MANAGEMENT_UNSPECIFIED",
+            "DISABLED",
+            "ENABLED"
+          ]
+        }
+      }
+    },
     "FeatureState": {
       "id": "FeatureState",
       "description": "FeatureState describes the state of a Feature resource.",
@@ -963,6 +1020,10 @@
         "anthosobservabilityFeatureState": {
           "description": "State for the Anthos Observability Feature",
           "$ref": "AnthosObservabilityFeatureState"
+        },
+        "workloadcertificateFeatureState": {
+          "description": "State for the Workload Certificate Feature",
+          "$ref": "WorkloadCertificateFeatureState"
         },
         "updateTime": {
           "description": "The last update time of this status by the controllers",
@@ -1773,6 +1834,13 @@
     "AnthosObservabilityFeatureState": {
       "id": "AnthosObservabilityFeatureState",
       "description": "An empty state for Anthos Observability. This is required since FeatureStateDetails requires a state.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "WorkloadCertificateFeatureState": {
+      "id": "WorkloadCertificateFeatureState",
+      "description": "WorkloadCertificateFeatureState describes the state of the workload certificate feature. This is required since FeatureStateDetails requires a state.",
       "type": "object",
       "properties": {
       }

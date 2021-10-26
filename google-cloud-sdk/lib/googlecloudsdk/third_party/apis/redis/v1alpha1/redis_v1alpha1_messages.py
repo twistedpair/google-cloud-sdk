@@ -67,6 +67,42 @@ class ExportInstanceRequest(_messages.Message):
   outputConfig = _messages.MessageField('OutputConfig', 1)
 
 
+class FailoverInstanceRequest(_messages.Message):
+  r"""Request for Failover.
+
+  Enums:
+    DataProtectionModeValueValuesEnum: Optional. Available data protection
+      modes that the user can choose. If it's unspecified, data protection
+      mode will be LIMITED_DATA_LOSS by default.
+
+  Fields:
+    dataProtectionMode: Optional. Available data protection modes that the
+      user can choose. If it's unspecified, data protection mode will be
+      LIMITED_DATA_LOSS by default.
+  """
+
+  class DataProtectionModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Available data protection modes that the user can choose. If
+    it's unspecified, data protection mode will be LIMITED_DATA_LOSS by
+    default.
+
+    Values:
+      DATA_PROTECTION_MODE_UNSPECIFIED: Defaults to LIMITED_DATA_LOSS if a
+        data protection mode is not specified.
+      LIMITED_DATA_LOSS: Instance failover will be protected with data loss
+        control. More specifically, the failover will only be performed if the
+        current replication offset diff between primary and replica is under a
+        certain threshold.
+      FORCE_DATA_LOSS: Instance failover will be performed without data loss
+        control.
+    """
+    DATA_PROTECTION_MODE_UNSPECIFIED = 0
+    LIMITED_DATA_LOSS = 1
+    FORCE_DATA_LOSS = 2
+
+  dataProtectionMode = _messages.EnumField('DataProtectionModeValueValuesEnum', 1)
+
+
 class GcsDestination(_messages.Message):
   r"""The Cloud Storage location for the output content
 
@@ -138,8 +174,8 @@ class Instance(_messages.Message):
   r"""A Google Cloud Redis instance. next id = 41
 
   Enums:
-    ConnectModeValueValuesEnum: Optional. The connect mode of Redis instance.
-      If not provided, default one will be used. Current default:
+    ConnectModeValueValuesEnum: Optional. The network connect mode of the
+      Redis instance. If not provided, the connect mode defaults to
       DIRECT_PEERING.
     ReadReplicasModeValueValuesEnum: Optional. Read replica mode.
     StateValueValuesEnum: Output only. The current state of this instance.
@@ -157,59 +193,56 @@ class Instance(_messages.Message):
       node-max-bytes * stream-node-max-entries
 
   Fields:
-    alternativeLocationId: Optional. Only applicable to standard tier which
-      protects the instance against zonal failures by provisioning it across
-      two zones. If provided, it must be a different zone from the one
-      provided in [location_id].
+    alternativeLocationId: Optional. If specified, at least one node will be
+      provisioned in this zone in addition to the zone specified in
+      location_id. Only applicable to standard tier. If provided, it must be a
+      different zone from the one provided in [location_id]. Additional nodes
+      beyond the first 2 will be placed in zones selected by the service.
     authEnabled: Optional. Indicates whether OSS Redis AUTH is enabled for the
       instance. If set to "true" AUTH is enabled on the instance. Default
       value is "false" meaning AUTH is disabled.
     authorizedNetwork: Optional. The full name of the Google Compute Engine
-      [network](/compute/docs/networks-and-firewalls#networks) to which the
-      instance is connected. If left unspecified, the `default` network will
-      be used.
-    connectMode: Optional. The connect mode of Redis instance. If not
-      provided, default one will be used. Current default: DIRECT_PEERING.
+      [network](https://cloud.google.com/vpc/docs/vpc) to which the instance
+      is connected. If left unspecified, the `default` network will be used.
+    connectMode: Optional. The network connect mode of the Redis instance. If
+      not provided, the connect mode defaults to DIRECT_PEERING.
     createTime: Output only. The time the instance was created.
-    currentLocationId: Output only. The current zone where the Redis endpoint
-      is placed. In single zone deployments, this will always be the same as
-      [location_id] provided by the user at creation time. In cross-zone
-      instances (only applicable in standard tier), this can be either
-      [location_id] or [alternative_location_id] and can change on a failover
-      event.
-    customerManagedKey: The KMS key reference that the customer provides when
-      trying to create the instance.
-    displayName: An arbitrary and optional user provided name for the
+    currentLocationId: Output only. The current zone where the Redis primary
+      node is located. In basic tier, this will always be the same as
+      [location_id]. In standard tier, this can be the zone of any node in the
       instance.
-    host: Output only. Hostname or IP address of the exposed redis endpoint
+    customerManagedKey: Optional. The KMS key reference that the customer
+      provides when trying to create the instance.
+    displayName: An arbitrary and optional user-provided name for the
+      instance.
+    host: Output only. Hostname or IP address of the exposed Redis endpoint
       used by clients to connect to the service.
     labels: Resource labels to represent user provided metadata
     locationId: Optional. The zone where the instance will be provisioned. If
       not provided, the service will choose a zone from the specified region
-      for the instance. For standard tier, instances will be created across
-      two zones for protection against zonal failures. If
-      [alternative_location_id] is also provided, it must be different from
-      [location_id].
+      for the instance. For standard tier, additional nodes will be added
+      across multiple zones for protection against zonal failures. If
+      specified, at least one node will be provisioned in this zone.
     maintenancePolicy: Optional. The maintenance policy for the instance. If
-      not provided, the maintenance event will be performed based on
-      Memorystore internal rollout schedule.
-    maintenanceSchedule: Output only. Published maintenance schedule.
-    memorySizeGb: Required. Redis memory size in GB, up to 300GB.
+      not provided, maintenance events can be performed at any time.
+    maintenanceSchedule: Output only. Date and time of upcoming maintenance
+      events which have been scheduled.
+    memorySizeGb: Required. Redis memory size in GiB.
     name: Required. Unique name of the resource in this scope including
       project and location using the form:
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
       Note: Redis instances are managed and addressed at regional level so
-      location_id here refers to a GCP region; however, users get to choose
-      which specific zone (or collection of zones for cross zone instances) an
-      instance should be provisioned in. Refer to [location_id] and
-      [alternative_location_id] fields for more details.
+      location_id here refers to a GCP region; however, users may choose which
+      specific zone (or collection of zones for cross-zone instances) an
+      instance should be provisioned in. Refer to location_id and
+      alternative_location_id fields for more details.
     nodes: Output only. Info per node.
     persistenceConfig: Optional. Persistence configuration parameters
     persistenceIamIdentity: Output only. Cloud IAM identity used by import /
       export operations to transfer data to/from Cloud Storage. Format is
       "serviceAccount:". The value may change over time for a given instance
       so should be checked before each import/export operation.
-    port: Output only. The port number of the exposed redis endpoint.
+    port: Output only. The port number of the exposed Redis endpoint.
     readEndpoint: Output only. Hostname or IP address of the exposed readonly
       Redis endpoint. Standard tier only. Targets all healthy replica nodes in
       instance. Replication is asynchronous and replica nodes will exhibit
@@ -224,13 +257,12 @@ class Instance(_messages.Message):
       lfu-log-factor * maxmemory-gb Redis version 5.0 and newer: * stream-
       node-max-bytes * stream-node-max-entries
     redisVersion: Optional. The version of Redis software. If not provided,
-      latest supported version will be used. Updating the version will perform
-      an upgrade/downgrade to the new version. Currently, the supported values
-      are: * `REDIS_4_0` for Redis 4.0 compatibility * `REDIS_3_2` for Redis
-      3.2 compatibility (default) * `REDIS_5_0` for Redis 5.0 compatibility *
+      latest supported version will be used. Currently, the supported values
+      are: * `REDIS_3_2` for Redis 3.2 compatibility * `REDIS_4_0` for Redis
+      4.0 compatibility (default) * `REDIS_5_0` for Redis 5.0 compatibility *
       `REDIS_6_X` for Redis 6.x compatibility
     replicaCount: Optional. The number of replica nodes. Valid range for
-      standard tier is [1-5] and defaults to 1. Valid value for basic tier is
+      standard tier is [1-5] and defaults to 2. Valid value for basic tier is
       0 and defaults to 0.
     reservedIpRange: Optional. For DIRECT_PEERING mode, the CIDR range of
       internal addresses that are reserved for this instance. Range must be
@@ -238,7 +270,8 @@ class Instance(_messages.Message):
       network. For PRIVATE_SERVICE_ACCESS mode, the name of one allocated IP
       address ranges associated with this private service access connection.
       If not provided, the service will choose an unused /29 block, for
-      example, 10.0.0.0/29 or 192.168.0.0/29.
+      example, 10.0.0.0/29 or 192.168.0.0/29. For READ_REPLICAS_ENABLED the
+      default block size is /28.
     secondaryIpRange: Optional. Additional ip ranges for node placement,
       beyond those specified in reserved_ip_range. At most 1 secondary IP
       range is supported. The mask value must not exceed /28. Not supported
@@ -256,15 +289,17 @@ class Instance(_messages.Message):
   """
 
   class ConnectModeValueValuesEnum(_messages.Enum):
-    r"""Optional. The connect mode of Redis instance. If not provided, default
-    one will be used. Current default: DIRECT_PEERING.
+    r"""Optional. The network connect mode of the Redis instance. If not
+    provided, the connect mode defaults to DIRECT_PEERING.
 
     Values:
       CONNECT_MODE_UNSPECIFIED: Not set.
-      DIRECT_PEERING: Connect via directly peering with memorystore redis
+      DIRECT_PEERING: Connect via direct peering to the Memorystore for Redis
         hosted service.
-      PRIVATE_SERVICE_ACCESS: Connect with google via private service access
-        and share connection across google managed services.
+      PRIVATE_SERVICE_ACCESS: Connect your Memorystore for Redis instance
+        using Private Service Access. Private services access provides an IP
+        address range for multiple Google Cloud services, including
+        Memorystore.
     """
     CONNECT_MODE_UNSPECIFIED = 0
     DIRECT_PEERING = 1
@@ -274,8 +309,8 @@ class Instance(_messages.Message):
     r"""Optional. Read replica mode.
 
     Values:
-      READ_REPLICAS_MODE_UNSPECIFIED: If not set, redis backend would pick the
-        mode based on other fields in the request.
+      READ_REPLICAS_MODE_UNSPECIFIED: If not set, Memorystore Redis backend
+        will pick the mode based on other fields in the request.
       READ_REPLICAS_DISABLED: If disabled, read endpoint will not be provided
         and the instance cannot scale up or down the number of replicas.
       READ_REPLICAS_ENABLED: If enabled, read endpoint will be provided and
@@ -296,8 +331,7 @@ class Instance(_messages.Message):
         of updates may cause the instance to become unusable while the update
         is in progress.
       DELETING: Redis instance is being deleted.
-      REPAIRING: Redis instance is being repaired and may be unusable. Details
-        can be found in the `status_message` field.
+      REPAIRING: Redis instance is being repaired and may be unusable.
       PERFORMING_MAINTENANCE: Maintenance is being performed on this Redis
         instance.
       IMPORTING: Redis instance is importing data (availability may be
@@ -583,22 +617,22 @@ class LocationMetadata(_messages.Message):
   Messages:
     AvailableZonesValue: Output only. The set of available zones in the
       location. The map is keyed by the lowercase ID of each zone, as defined
-      by GCE. These keys can be specified in `location_id` or
+      by Compute Engine. These keys can be specified in `location_id` or
       `alternative_location_id` fields when creating a Redis instance.
 
   Fields:
     availableZones: Output only. The set of available zones in the location.
-      The map is keyed by the lowercase ID of each zone, as defined by GCE.
-      These keys can be specified in `location_id` or
+      The map is keyed by the lowercase ID of each zone, as defined by Compute
+      Engine. These keys can be specified in `location_id` or
       `alternative_location_id` fields when creating a Redis instance.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AvailableZonesValue(_messages.Message):
     r"""Output only. The set of available zones in the location. The map is
-    keyed by the lowercase ID of each zone, as defined by GCE. These keys can
-    be specified in `location_id` or `alternative_location_id` fields when
-    creating a Redis instance.
+    keyed by the lowercase ID of each zone, as defined by Compute Engine.
+    These keys can be specified in `location_id` or `alternative_location_id`
+    fields when creating a Redis instance.
 
     Messages:
       AdditionalProperty: An additional property for a AvailableZonesValue
@@ -625,14 +659,14 @@ class LocationMetadata(_messages.Message):
 
 
 class MaintenancePolicy(_messages.Message):
-  r"""Maintenance policy per instance.
+  r"""Maintenance policy for an instance.
 
   Fields:
     createTime: Output only. The time when the policy was created.
     description: Optional. Description of what this policy is for.
       Create/Update methods return INVALID_ARGUMENT if the length is greater
       than 512.
-    updateTime: Output only. The time when the policy was updated.
+    updateTime: Output only. The time when the policy was last updated.
     weeklyMaintenanceWindow: Optional. Maintenance window that is applied to
       resources covered by this policy. Minimum 1. For the current version,
       the maximum number of weekly_window is expected to be one.
@@ -645,7 +679,8 @@ class MaintenancePolicy(_messages.Message):
 
 
 class MaintenanceSchedule(_messages.Message):
-  r"""Upcoming maitenance schedule.
+  r"""Upcoming maintenance schedule. If no maintenance is scheduled, fields
+  are not populated.
 
   Fields:
     canReschedule: If the scheduled maintenance can be rescheduled, default is
@@ -703,9 +738,8 @@ class NodeInfo(_messages.Message):
   r"""Node specific properties.
 
   Fields:
-    id: Output only. Output Only. Node identifying string. e.g. 'node-0',
-      'node-1'
-    zone: Output only. Output Only. Location of the node.
+    id: Output only. Node identifying string. e.g. 'node-0', 'node-1'
+    zone: Output only. Location of the node.
   """
 
   id = _messages.StringField(1)
@@ -897,20 +931,16 @@ class PersistenceConfig(_messages.Message):
 
     Values:
       SNAPSHOT_PERIOD_UNSPECIFIED: Not set.
-      FIFTEEN_MINUTES: Snapshot every 15 minutes.
-      THIRTY_MINUTES: Snapshot every 30 minutes.
       ONE_HOUR: Snapshot every 1 hour.
       SIX_HOURS: Snapshot every 6 hours.
       TWELVE_HOURS: Snapshot every 12 hours.
       TWENTY_FOUR_HOURS: Snapshot every 24 horus.
     """
     SNAPSHOT_PERIOD_UNSPECIFIED = 0
-    FIFTEEN_MINUTES = 1
-    THIRTY_MINUTES = 2
-    ONE_HOUR = 3
-    SIX_HOURS = 4
-    TWELVE_HOURS = 5
-    TWENTY_FOUR_HOURS = 6
+    ONE_HOUR = 1
+    SIX_HOURS = 2
+    TWELVE_HOURS = 3
+    TWENTY_FOUR_HOURS = 4
 
   persistenceMode = _messages.EnumField('PersistenceModeValueValuesEnum', 1)
   rdbNextSnapshotTime = _messages.StringField(2)
@@ -975,6 +1005,21 @@ class RedisProjectsLocationsInstancesExportRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class RedisProjectsLocationsInstancesFailoverRequest(_messages.Message):
+  r"""A RedisProjectsLocationsInstancesFailoverRequest object.
+
+  Fields:
+    failoverInstanceRequest: A FailoverInstanceRequest resource to be passed
+      as the request body.
+    name: Required. Redis instance resource name using the form:
+      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
+      where `location_id` refers to a GCP region.
+  """
+
+  failoverInstanceRequest = _messages.MessageField('FailoverInstanceRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class RedisProjectsLocationsInstancesGetAuthStringRequest(_messages.Message):
   r"""A RedisProjectsLocationsInstancesGetAuthStringRequest object.
 
@@ -1021,10 +1066,10 @@ class RedisProjectsLocationsInstancesListRequest(_messages.Message):
     pageSize: The maximum number of items to return. If not specified, a
       default value of 1000 will be used by the service. Regardless of the
       page_size value, the response may include a partial list and a caller
-      should only rely on response's next_page_token to determine if there are
-      more instances left to be queried.
-    pageToken: The next_page_token value returned from a previous List
-      request, if any.
+      should only rely on response's `next_page_token` to determine if there
+      are more instances left to be queried.
+    pageToken: The `next_page_token` value returned from a previous
+      ListInstances request, if any.
     parent: Required. The resource name of the instance location using the
       form: `projects/{project_id}/locations/{location_id}` where
       `location_id` refers to a GCP region.
@@ -1044,14 +1089,14 @@ class RedisProjectsLocationsInstancesPatchRequest(_messages.Message):
       project and location using the form:
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
       Note: Redis instances are managed and addressed at regional level so
-      location_id here refers to a GCP region; however, users get to choose
-      which specific zone (or collection of zones for cross zone instances) an
-      instance should be provisioned in. Refer to [location_id] and
-      [alternative_location_id] fields for more details.
+      location_id here refers to a GCP region; however, users may choose which
+      specific zone (or collection of zones for cross-zone instances) an
+      instance should be provisioned in. Refer to location_id and
+      alternative_location_id fields for more details.
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field may
-      only include these fields from Instance: * `display_name` * `labels` *
-      `memory_size_gb` * `redis_config`
+      only include these fields from Instance: * `displayName` * `labels` *
+      `memorySizeGb` * `redisConfig` * `replica_count`
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -1428,23 +1473,22 @@ class UpgradeInstanceRequest(_messages.Message):
 
 
 class WeeklyMaintenanceWindow(_messages.Message):
-  r"""Time window specified for weekly operations.
+  r"""Time window in which disruptive maintenance updates occur. Non-
+  disruptive updates can occur inside or outside this window.
 
   Enums:
-    DayValueValuesEnum: Required. Allows to define schedule that runs
-      specified day of the week.
+    DayValueValuesEnum: Required. The day of week that maintenance updates
+      occur.
 
   Fields:
-    day: Required. Allows to define schedule that runs specified day of the
-      week.
+    day: Required. The day of week that maintenance updates occur.
     duration: Output only. Duration of the maintenance window. The current
       window is fixed at 1 hour.
-    startTime: Required. Start time of the window in UTC.
+    startTime: Required. Start time of the window in UTC time.
   """
 
   class DayValueValuesEnum(_messages.Enum):
-    r"""Required. Allows to define schedule that runs specified day of the
-    week.
+    r"""Required. The day of week that maintenance updates occur.
 
     Values:
       DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.

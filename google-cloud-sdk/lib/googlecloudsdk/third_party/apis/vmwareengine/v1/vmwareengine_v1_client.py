@@ -104,7 +104,7 @@ class VmwareengineV1(base_api.BaseApiClient):
         method_id='vmwareengine.projects.locations.networkPolicies.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['requestId'],
+        query_params=['etag', 'requestId'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='VmwareengineProjectsLocationsNetworkPoliciesDeleteRequest',
@@ -548,7 +548,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a `Cluster` resource. To avoid unintended data loss, migrate or gracefully shut down any workloads running on the cluster before deletion.
+      r"""Deletes a `Cluster` resource. To avoid unintended data loss, migrate or gracefully shut down any workloads running on the cluster before deletion. You cannot delete the management cluster of a private cloud using this method.
 
       Args:
         request: (VmwareengineProjectsLocationsPrivateCloudsClustersDeleteRequest) input message
@@ -566,7 +566,7 @@ class VmwareengineV1(base_api.BaseApiClient):
         method_id='vmwareengine.projects.locations.privateClouds.clusters.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['requestId'],
+        query_params=['etag', 'requestId'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='VmwareengineProjectsLocationsPrivateCloudsClustersDeleteRequest',
@@ -964,7 +964,7 @@ class VmwareengineV1(base_api.BaseApiClient):
         method_id='vmwareengine.projects.locations.privateClouds.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['delayHours', 'force', 'requestId'],
+        query_params=['delayHours', 'etag', 'force', 'requestId'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='VmwareengineProjectsLocationsPrivateCloudsDeleteRequest',

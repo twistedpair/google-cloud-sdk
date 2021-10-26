@@ -977,6 +977,10 @@ class GrpcRoute(_messages.Message):
       match of hostnames is supported.
     labels: Optional. Set of label tags associated with the GrpcRoute
       resource.
+    meshes: Optional. Meshes defines a list of meshes this GrpcRoute is
+      attached to, as one of the routing rules to route the requests served by
+      the mesh. Each mesh reference should match the pattern:
+      `projects/*/locations/global/meshes/`
     name: Required. Name of the GrpcRoute resource. It matches pattern
       `projects/*/locations/global/grpcRoutes/`
     routers: Optional. Routers define a list of routers this GrpcRoute should
@@ -1017,10 +1021,11 @@ class GrpcRoute(_messages.Message):
   description = _messages.StringField(2)
   hostnames = _messages.StringField(3, repeated=True)
   labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  routers = _messages.StringField(6, repeated=True)
-  rules = _messages.MessageField('GrpcRouteRouteRule', 7, repeated=True)
-  updateTime = _messages.StringField(8)
+  meshes = _messages.StringField(5, repeated=True)
+  name = _messages.StringField(6)
+  routers = _messages.StringField(7, repeated=True)
+  rules = _messages.MessageField('GrpcRouteRouteRule', 8, repeated=True)
+  updateTime = _messages.StringField(9)
 
 
 class GrpcRouteDestination(_messages.Message):
@@ -1580,6 +1585,11 @@ class HttpRoute(_messages.Message):
       request. Hostname is the fully qualified domain name of a network host,
       as defined by RFC 3986. Wildcard hosts are supported in prefix form or
       suffix form.
+    meshes: Optional. Meshes defines a list of meshes this HttpRoute is
+      attached to, as one of the routing rules to route the requests served by
+      the mesh. Each mesh reference should match the pattern:
+      `projects/*/locations/global/meshes/` The attached Mesh should be of a
+      type SIDECAR
     name: Required. Name of the HttpRoute resource. It matches pattern
       `projects/*/locations/global/httpRoutes/http_route_name>`.
     routers: Optional. Routers define a list of routers this HttpRoute should
@@ -1593,10 +1603,11 @@ class HttpRoute(_messages.Message):
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   hostnames = _messages.StringField(3, repeated=True)
-  name = _messages.StringField(4)
-  routers = _messages.StringField(5, repeated=True)
-  rules = _messages.MessageField('HttpRouteRouteRule', 6, repeated=True)
-  updateTime = _messages.StringField(7)
+  meshes = _messages.StringField(4, repeated=True)
+  name = _messages.StringField(5)
+  routers = _messages.StringField(6, repeated=True)
+  rules = _messages.MessageField('HttpRouteRouteRule', 7, repeated=True)
+  updateTime = _messages.StringField(8)
 
 
 class HttpRouteCorsPolicy(_messages.Message):
@@ -1821,8 +1832,8 @@ class HttpRouteQueryParameterMatch(_messages.Message):
     exactMatch: The value of the query parameter must exactly match the
       contents of exact_match. Only one of exact_match, regex_match, or
       present_match must be set.
-    presentMatch: Specifies that the QueryParameterMatcher matches is request
-      cotains query parameter, irrespective of whether the parameter has a
+    presentMatch: Specifies that the QueryParameterMatcher matches if request
+      contains query parameter, irrespective of whether the parameter has a
       value or not. Only one of exact_match, regex_match, or present_match
       must be set.
     queryParameter: The name of the query parameter to match.
@@ -1942,8 +1953,7 @@ class HttpRouteRouteAction(_messages.Message):
   Fields:
     corsPolicy: The specification for allowing client side cross-origin
       requests.
-    destinations: The destination to which traffic should be forwarded. Only
-      one of destinations, redirect, original_destination can be set.
+    destinations: The destination to which traffic should be forwarded.
     faultInjectionPolicy: The specification for fault injection introduced
       into traffic to test the resiliency of clients to backend service
       failure. As part of fault injection, when clients send requests to a
@@ -1952,12 +1962,7 @@ class HttpRouteRouteAction(_messages.Message):
       from clients can be aborted for a percentage of requests. timeout and
       retry_policy will be ignored by clients that are configured with a
       fault_injection_policy
-    originalDestination: If true, the matched traffic will use the destination
-      ip and port of the original connection (as it was not processed by
-      proxy) as the destination of the request. Only one of destinations,
-      redirect, original_destination can be set.
     redirect: If set, the request is directed as configured by this field.
-      Only one of destinations, redirect, original_destination can be set.
     requestHeaderModifier: The specification for modifying the headers of a
       matching request prior to delivery of the request to the destination.
     requestMirrorPolicy: Specifies the policy on how requests intended for the
@@ -1979,14 +1984,13 @@ class HttpRouteRouteAction(_messages.Message):
   corsPolicy = _messages.MessageField('HttpRouteCorsPolicy', 1)
   destinations = _messages.MessageField('HttpRouteDestination', 2, repeated=True)
   faultInjectionPolicy = _messages.MessageField('HttpRouteFaultInjectionPolicy', 3)
-  originalDestination = _messages.BooleanField(4)
-  redirect = _messages.MessageField('HttpRouteRedirect', 5)
-  requestHeaderModifier = _messages.MessageField('HttpRouteHeaderModifier', 6)
-  requestMirrorPolicy = _messages.MessageField('HttpRouteRequestMirrorPolicy', 7)
-  responseHeaderModifier = _messages.MessageField('HttpRouteHeaderModifier', 8)
-  retryPolicy = _messages.MessageField('HttpRouteRetryPolicy', 9)
-  timeout = _messages.StringField(10)
-  urlRewrite = _messages.MessageField('HttpRouteURLRewrite', 11)
+  redirect = _messages.MessageField('HttpRouteRedirect', 4)
+  requestHeaderModifier = _messages.MessageField('HttpRouteHeaderModifier', 5)
+  requestMirrorPolicy = _messages.MessageField('HttpRouteRequestMirrorPolicy', 6)
+  responseHeaderModifier = _messages.MessageField('HttpRouteHeaderModifier', 7)
+  retryPolicy = _messages.MessageField('HttpRouteRetryPolicy', 8)
+  timeout = _messages.StringField(9)
+  urlRewrite = _messages.MessageField('HttpRouteURLRewrite', 10)
 
 
 class HttpRouteRouteMatch(_messages.Message):
@@ -2201,6 +2205,21 @@ class ListLocationsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListMeshesResponse(_messages.Message):
+  r"""Response returned by the ListMeshes method.
+
+  Fields:
+    meshes: List of Mesh resources.
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+  """
+
+  meshes = _messages.MessageField('Mesh', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListObservabilityPoliciesResponse(_messages.Message):
   r"""Response returned by the ListObservabilityPolicies method.
 
@@ -2412,6 +2431,89 @@ class MatchRule(_messages.Message):
   pathTemplateMatch = _messages.StringField(4)
   prefixMatch = _messages.StringField(5)
   queryParameterMatches = _messages.MessageField('QueryParameterMatcher', 6, repeated=True)
+
+
+class Mesh(_messages.Message):
+  r"""Mesh represents a logical configuration grouping for workload to
+  workload communication within a service mesh. Routes that point to mesh
+  dictate how requests are routed within this logical mesh boundary.
+
+  Enums:
+    TypeValueValuesEnum: Required. Immutable. The type of the Mesh resource.
+
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the Mesh
+      resource.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A free-text description of the resource. Max length
+      1024 characters.
+    interceptionPort: Optional. If set to a valid TCP port (1-65535),
+      instructs the SIDECAR proxy to listen on the specified port of localhost
+      (127.0.0.1) address. The SIDECAR proxy will expect all traffic to be
+      redirected to this port regardless of its actual ip:port destination. If
+      unset, a port '15001' is used as the interception port. This field is
+      only valid if the type of Mesh is SIDECAR.
+    labels: Optional. Set of label tags associated with the Mesh resource.
+    name: Required. Name of the Mesh resource. It matches pattern
+      `projects/*/locations/global/meshes/`.
+    scope: Required. Immutable. Scope defines a logical configuration boundary
+      for mesh. The routes pointing to this particular mesh resource defines
+      the mesh configuration and the scope field name is used by mesh clients
+      to receive that configuration. There cannot be more than one Mesh
+      resource instance of the same type (SIDECAR or PROXYLESS_GRPC) with the
+      same scope. Max length 64 characters. Scope should start with a letter
+      and can only have letters, numbers, hyphens.
+    type: Required. Immutable. The type of the Mesh resource.
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. Immutable. The type of the Mesh resource.
+
+    Values:
+      TYPE_UNSPECIFIED: The type of Mesh is unspecified.
+      PROXYLESS_GRPC: The Mesh is used in Proxyless gRPC model. Routes being
+        referenced must be gRPC routes for this type.
+      SIDECAR: The Mesh is used in customer-managed sidecar proxy model.
+    """
+    TYPE_UNSPECIFIED = 0
+    PROXYLESS_GRPC = 1
+    SIDECAR = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the Mesh resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  interceptionPort = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  scope = _messages.StringField(6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class MetadataLabelMatcher(_messages.Message):
@@ -3103,6 +3205,58 @@ class NetworkservicesProjectsLocationsEndpointPoliciesTestIamPermissionsRequest(
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class NetworkservicesProjectsLocationsGatewaysGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGatewaysGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkservicesProjectsLocationsGatewaysSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGatewaysSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkservicesProjectsLocationsGatewaysTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGatewaysTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class NetworkservicesProjectsLocationsGetRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsGetRequest object.
 
@@ -3507,6 +3661,131 @@ class NetworkservicesProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMeshesCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMeshesCreateRequest object.
+
+  Fields:
+    mesh: A Mesh resource to be passed as the request body.
+    meshId: Required. Short name of the Mesh resource to be created.
+    parent: Required. The parent resource of the Mesh. Must be in the format
+      `projects/*/locations/global`.
+  """
+
+  mesh = _messages.MessageField('Mesh', 1)
+  meshId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsMeshesDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMeshesDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the Mesh to delete. Must be in the format
+      `projects/*/locations/global/meshes/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMeshesGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMeshesGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkservicesProjectsLocationsMeshesGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMeshesGetRequest object.
+
+  Fields:
+    name: Required. A name of the Mesh to get. Must be in the format
+      `projects/*/locations/global/meshes/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMeshesListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMeshesListRequest object.
+
+  Fields:
+    pageSize: Maximum number of Meshes to return per call.
+    pageToken: The value returned by the last `ListMeshesResponse` Indicates
+      that this is a continuation of a prior `ListMeshes` call, and that the
+      system should return the next page of data.
+    parent: Required. The project and location from which the Meshes should be
+      listed, specified in the format `projects/*/locations/global`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsMeshesPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMeshesPatchRequest object.
+
+  Fields:
+    mesh: A Mesh resource to be passed as the request body.
+    name: Required. Name of the Mesh resource. It matches pattern
+      `projects/*/locations/global/meshes/`.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the Mesh resource by the update. The fields specified in
+      the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields will be overwritten.
+  """
+
+  mesh = _messages.MessageField('Mesh', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsMeshesSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMeshesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkservicesProjectsLocationsMeshesTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMeshesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class NetworkservicesProjectsLocationsObservabilityPoliciesCreateRequest(_messages.Message):
@@ -4898,6 +5177,11 @@ class TcpRoute(_messages.Message):
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
+    meshes: Optional. Meshes defines a list of meshes this TcpRoute is
+      attached to, as one of the routing rules to route the requests served by
+      the mesh. Each mesh reference should match the pattern:
+      `projects/*/locations/global/meshes/` The attached Mesh should be of a
+      type SIDECAR
     name: Required. Name of the TcpRoute resource. It matches pattern
       `projects/*/locations/global/tcpRoutes/tcp_route_name>`.
     routers: Optional. Routers define a list of routers this TcpRoute should
@@ -4912,10 +5196,11 @@ class TcpRoute(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  name = _messages.StringField(3)
-  routers = _messages.StringField(4, repeated=True)
-  rules = _messages.MessageField('TcpRouteRouteRule', 5, repeated=True)
-  updateTime = _messages.StringField(6)
+  meshes = _messages.StringField(3, repeated=True)
+  name = _messages.StringField(4)
+  routers = _messages.StringField(5, repeated=True)
+  rules = _messages.MessageField('TcpRouteRouteRule', 6, repeated=True)
+  updateTime = _messages.StringField(7)
 
 
 class TcpRouteRouteAction(_messages.Message):

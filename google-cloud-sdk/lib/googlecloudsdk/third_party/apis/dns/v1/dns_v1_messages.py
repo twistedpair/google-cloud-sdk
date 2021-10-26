@@ -666,6 +666,208 @@ class DnsResourceRecordSetsPatchRequest(_messages.Message):
   type = _messages.StringField(7, required=True)
 
 
+class DnsResponsePoliciesCreateRequest(_messages.Message):
+  r"""A DnsResponsePoliciesCreateRequest object.
+
+  Fields:
+    clientOperationId: A string attribute.
+    project: A string attribute.
+    responsePolicy: A ResponsePolicy resource to be passed as the request
+      body.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  project = _messages.StringField(2, required=True)
+  responsePolicy = _messages.MessageField('ResponsePolicy', 3)
+
+
+class DnsResponsePoliciesDeleteRequest(_messages.Message):
+  r"""A DnsResponsePoliciesDeleteRequest object.
+
+  Fields:
+    clientOperationId: A string attribute.
+    project: A string attribute.
+    responsePolicy: A string attribute.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  project = _messages.StringField(2, required=True)
+  responsePolicy = _messages.StringField(3, required=True)
+
+
+class DnsResponsePoliciesDeleteResponse(_messages.Message):
+  r"""An empty DnsResponsePoliciesDelete response."""
+
+
+class DnsResponsePoliciesGetRequest(_messages.Message):
+  r"""A DnsResponsePoliciesGetRequest object.
+
+  Fields:
+    clientOperationId: A string attribute.
+    project: A string attribute.
+    responsePolicy: A string attribute.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  project = _messages.StringField(2, required=True)
+  responsePolicy = _messages.StringField(3, required=True)
+
+
+class DnsResponsePoliciesListRequest(_messages.Message):
+  r"""A DnsResponsePoliciesListRequest object.
+
+  Fields:
+    maxResults: A integer attribute.
+    pageToken: A string attribute.
+    project: A string attribute.
+  """
+
+  maxResults = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  project = _messages.StringField(3, required=True)
+
+
+class DnsResponsePoliciesPatchRequest(_messages.Message):
+  r"""A DnsResponsePoliciesPatchRequest object.
+
+  Fields:
+    clientOperationId: A string attribute.
+    project: A string attribute.
+    responsePolicy: A string attribute.
+    responsePolicyResource: A ResponsePolicy resource to be passed as the
+      request body.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  project = _messages.StringField(2, required=True)
+  responsePolicy = _messages.StringField(3, required=True)
+  responsePolicyResource = _messages.MessageField('ResponsePolicy', 4)
+
+
+class DnsResponsePoliciesUpdateRequest(_messages.Message):
+  r"""A DnsResponsePoliciesUpdateRequest object.
+
+  Fields:
+    clientOperationId: A string attribute.
+    project: A string attribute.
+    responsePolicy: A string attribute.
+    responsePolicyResource: A ResponsePolicy resource to be passed as the
+      request body.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  project = _messages.StringField(2, required=True)
+  responsePolicy = _messages.StringField(3, required=True)
+  responsePolicyResource = _messages.MessageField('ResponsePolicy', 4)
+
+
+class DnsResponsePolicyRulesCreateRequest(_messages.Message):
+  r"""A DnsResponsePolicyRulesCreateRequest object.
+
+  Fields:
+    clientOperationId: A string attribute.
+    project: A string attribute.
+    responsePolicy: A string attribute.
+    responsePolicyRule: A ResponsePolicyRule resource to be passed as the
+      request body.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  project = _messages.StringField(2, required=True)
+  responsePolicy = _messages.StringField(3, required=True)
+  responsePolicyRule = _messages.MessageField('ResponsePolicyRule', 4)
+
+
+class DnsResponsePolicyRulesDeleteRequest(_messages.Message):
+  r"""A DnsResponsePolicyRulesDeleteRequest object.
+
+  Fields:
+    clientOperationId: A string attribute.
+    project: A string attribute.
+    responsePolicy: A string attribute.
+    responsePolicyRule: A string attribute.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  project = _messages.StringField(2, required=True)
+  responsePolicy = _messages.StringField(3, required=True)
+  responsePolicyRule = _messages.StringField(4, required=True)
+
+
+class DnsResponsePolicyRulesDeleteResponse(_messages.Message):
+  r"""An empty DnsResponsePolicyRulesDelete response."""
+
+
+class DnsResponsePolicyRulesGetRequest(_messages.Message):
+  r"""A DnsResponsePolicyRulesGetRequest object.
+
+  Fields:
+    clientOperationId: A string attribute.
+    project: A string attribute.
+    responsePolicy: A string attribute.
+    responsePolicyRule: A string attribute.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  project = _messages.StringField(2, required=True)
+  responsePolicy = _messages.StringField(3, required=True)
+  responsePolicyRule = _messages.StringField(4, required=True)
+
+
+class DnsResponsePolicyRulesListRequest(_messages.Message):
+  r"""A DnsResponsePolicyRulesListRequest object.
+
+  Fields:
+    maxResults: A integer attribute.
+    pageToken: A string attribute.
+    project: A string attribute.
+    responsePolicy: A string attribute.
+  """
+
+  maxResults = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  project = _messages.StringField(3, required=True)
+  responsePolicy = _messages.StringField(4, required=True)
+
+
+class DnsResponsePolicyRulesPatchRequest(_messages.Message):
+  r"""A DnsResponsePolicyRulesPatchRequest object.
+
+  Fields:
+    clientOperationId: A string attribute.
+    project: A string attribute.
+    responsePolicy: A string attribute.
+    responsePolicyRule: A string attribute.
+    responsePolicyRuleResource: A ResponsePolicyRule resource to be passed as
+      the request body.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  project = _messages.StringField(2, required=True)
+  responsePolicy = _messages.StringField(3, required=True)
+  responsePolicyRule = _messages.StringField(4, required=True)
+  responsePolicyRuleResource = _messages.MessageField('ResponsePolicyRule', 5)
+
+
+class DnsResponsePolicyRulesUpdateRequest(_messages.Message):
+  r"""A DnsResponsePolicyRulesUpdateRequest object.
+
+  Fields:
+    clientOperationId: A string attribute.
+    project: A string attribute.
+    responsePolicy: A string attribute.
+    responsePolicyRule: A string attribute.
+    responsePolicyRuleResource: A ResponsePolicyRule resource to be passed as
+      the request body.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  project = _messages.StringField(2, required=True)
+  responsePolicy = _messages.StringField(3, required=True)
+  responsePolicyRule = _messages.StringField(4, required=True)
+  responsePolicyRuleResource = _messages.MessageField('ResponsePolicyRule', 5)
+
+
 class ManagedZone(_messages.Message):
   r"""A ManagedZone object.
 
@@ -1256,6 +1458,156 @@ class ResponseHeader(_messages.Message):
   """
 
   operationId = _messages.StringField(1)
+
+
+class ResponsePoliciesListResponse(_messages.Message):
+  r"""A ResponsePoliciesListResponse object.
+
+  Fields:
+    header: A ResponseHeader attribute.
+    nextPageToken: A string attribute.
+    responsePolicies: A ResponsePolicy attribute.
+  """
+
+  header = _messages.MessageField('ResponseHeader', 1)
+  nextPageToken = _messages.StringField(2)
+  responsePolicies = _messages.MessageField('ResponsePolicy', 3, repeated=True)
+
+
+class ResponsePoliciesPatchResponse(_messages.Message):
+  r"""A ResponsePoliciesPatchResponse object.
+
+  Fields:
+    header: A ResponseHeader attribute.
+    responsePolicy: A ResponsePolicy attribute.
+  """
+
+  header = _messages.MessageField('ResponseHeader', 1)
+  responsePolicy = _messages.MessageField('ResponsePolicy', 2)
+
+
+class ResponsePoliciesUpdateResponse(_messages.Message):
+  r"""A ResponsePoliciesUpdateResponse object.
+
+  Fields:
+    header: A ResponseHeader attribute.
+    responsePolicy: A ResponsePolicy attribute.
+  """
+
+  header = _messages.MessageField('ResponseHeader', 1)
+  responsePolicy = _messages.MessageField('ResponsePolicy', 2)
+
+
+class ResponsePolicy(_messages.Message):
+  r"""A ResponsePolicy object.
+
+  Fields:
+    description: A string attribute.
+    id: A string attribute.
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#responsePolicy".
+    networks: A ResponsePolicyNetwork attribute.
+    responsePolicyName: A string attribute.
+  """
+
+  description = _messages.StringField(1)
+  id = _messages.IntegerField(2)
+  kind = _messages.StringField(3, default='dns#responsePolicy')
+  networks = _messages.MessageField('ResponsePolicyNetwork', 4, repeated=True)
+  responsePolicyName = _messages.StringField(5)
+
+
+class ResponsePolicyNetwork(_messages.Message):
+  r"""A ResponsePolicyNetwork object.
+
+  Fields:
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#responsePolicyNetwork".
+    networkUrl: A string attribute.
+  """
+
+  kind = _messages.StringField(1, default='dns#responsePolicyNetwork')
+  networkUrl = _messages.StringField(2)
+
+
+class ResponsePolicyRule(_messages.Message):
+  r"""A ResponsePolicyRule object.
+
+  Enums:
+    BehaviorValueValuesEnum:
+
+  Fields:
+    behavior: A BehaviorValueValuesEnum attribute.
+    dnsName: A string attribute.
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#responsePolicyRule".
+    localData: A ResponsePolicyRuleLocalData attribute.
+    ruleName: A string attribute.
+  """
+
+  class BehaviorValueValuesEnum(_messages.Enum):
+    r"""BehaviorValueValuesEnum enum type.
+
+    Values:
+      behaviorUnspecified: <no description>
+      bypassResponsePolicy: <no description>
+    """
+    behaviorUnspecified = 0
+    bypassResponsePolicy = 1
+
+  behavior = _messages.EnumField('BehaviorValueValuesEnum', 1)
+  dnsName = _messages.StringField(2)
+  kind = _messages.StringField(3, default='dns#responsePolicyRule')
+  localData = _messages.MessageField('ResponsePolicyRuleLocalData', 4)
+  ruleName = _messages.StringField(5)
+
+
+class ResponsePolicyRuleLocalData(_messages.Message):
+  r"""A ResponsePolicyRuleLocalData object.
+
+  Fields:
+    localDatas: A ResourceRecordSet attribute.
+  """
+
+  localDatas = _messages.MessageField('ResourceRecordSet', 1, repeated=True)
+
+
+class ResponsePolicyRulesListResponse(_messages.Message):
+  r"""A ResponsePolicyRulesListResponse object.
+
+  Fields:
+    header: A ResponseHeader attribute.
+    nextPageToken: A string attribute.
+    responsePolicyRules: A ResponsePolicyRule attribute.
+  """
+
+  header = _messages.MessageField('ResponseHeader', 1)
+  nextPageToken = _messages.StringField(2)
+  responsePolicyRules = _messages.MessageField('ResponsePolicyRule', 3, repeated=True)
+
+
+class ResponsePolicyRulesPatchResponse(_messages.Message):
+  r"""A ResponsePolicyRulesPatchResponse object.
+
+  Fields:
+    header: A ResponseHeader attribute.
+    responsePolicyRule: A ResponsePolicyRule attribute.
+  """
+
+  header = _messages.MessageField('ResponseHeader', 1)
+  responsePolicyRule = _messages.MessageField('ResponsePolicyRule', 2)
+
+
+class ResponsePolicyRulesUpdateResponse(_messages.Message):
+  r"""A ResponsePolicyRulesUpdateResponse object.
+
+  Fields:
+    header: A ResponseHeader attribute.
+    responsePolicyRule: A ResponsePolicyRule attribute.
+  """
+
+  header = _messages.MessageField('ResponseHeader', 1)
+  responsePolicyRule = _messages.MessageField('ResponsePolicyRule', 2)
 
 
 class StandardQueryParameters(_messages.Message):

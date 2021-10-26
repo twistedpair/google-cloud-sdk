@@ -76,7 +76,8 @@ def AddImagesGroup(parser, hidden=False):
   images_group.add_argument(
       '--build-artifacts',
       hidden=hidden,
-      help='Reference to a Skaffold build artifacts output file')
+      help='Reference to a Skaffold build artifacts output file from skaffold build --file-output=BUILD_ARTIFACTS. If you aren\'t using Skaffold, use the --images flag below to specify the image-names-to-tagged-image references.'
+  )
 
 
 def AddSourceFlag(parser, hidden=False):

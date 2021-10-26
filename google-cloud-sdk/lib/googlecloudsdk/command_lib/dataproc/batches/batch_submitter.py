@@ -20,6 +20,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import sys
+
+from googlecloudsdk.api_lib.dataproc import util
 from googlecloudsdk.api_lib.dataproc.poller import batch_poller
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.dataproc.batches import (
@@ -46,9 +48,13 @@ def Submit(batch_workload_message, dataproc, args):
   """
   request = batches_create_request_factory.BatchesCreateRequestFactory(
       dataproc).GetRequest(args, batch_workload_message)
-  batch = dataproc.client.projects_locations_batches.Create(request)
+  batch_op = dataproc.client.projects_locations_batches.Create(request)
 
   log.status.Print('Batch [{}] submitted.'.format(request.batchId))
+  metadata = util.ParseOperationJsonMetadata(
+            batch_op.metadata, dataproc.messages.BatchOperationMetadata)
+  for warning in metadata.warnings:
+    log.warning(warning)
 
   if not args.async_:
     poller = batch_poller.BatchPoller(dataproc)
@@ -63,4 +69,4 @@ def Submit(batch_workload_message, dataproc, args):
         tracker_update_func=poller.TrackerUpdateFunction)
     log.status.Print('Batch [{}] finished.'.format(request.batchId))
 
-  return batch
+  return batch_op

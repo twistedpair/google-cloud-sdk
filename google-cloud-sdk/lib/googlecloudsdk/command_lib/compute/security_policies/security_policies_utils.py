@@ -151,12 +151,15 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
                   intervalSec=rate_limit_options['rateLimitThreshold']
                   ['intervalSec']),
               conformAction=rate_limit_options['conformAction'],
-              exceedAction=rate_limit_options['exceedAction'],
-              banThreshold=messages.SecurityPolicyRuleRateLimitOptionsThreshold(
-                  count=rate_limit_options['banThreshold']['count'],
-                  intervalSec=rate_limit_options['banThreshold']
-                  ['intervalSec']),
-              banDurationSec=rate_limit_options['banDurationSec']))
+              exceedAction=rate_limit_options['exceedAction']))
+      if 'banThreshold' in rate_limit_options:
+        security_policy_rule.rateLimitOptions.banThreshold = (
+            messages.SecurityPolicyRuleRateLimitOptionsThreshold(
+                count=rate_limit_options['banThreshold']['count'],
+                intervalSec=rate_limit_options['banThreshold']['intervalSec']))
+      if 'banDurationSec' in rate_limit_options:
+        security_policy_rule.rateLimitOptions.banDurationSec = (
+            rate_limit_options['banDurationSec'])
       if 'enforceOnKey' in rate_limit_options:
         security_policy_rule.rateLimitOptions.enforceOnKey = (
             messages.SecurityPolicyRuleRateLimitOptions

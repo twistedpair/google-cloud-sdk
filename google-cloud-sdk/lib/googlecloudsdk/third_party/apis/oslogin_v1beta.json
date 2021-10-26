@@ -119,6 +119,32 @@
     }
   },
   "schemas": {
+    "SshPublicKey": {
+      "id": "SshPublicKey",
+      "description": "The SSH public key information associated with a Google account.",
+      "type": "object",
+      "properties": {
+        "key": {
+          "description": "Public key text in SSH format, defined by RFC4253 section 6.6.",
+          "type": "string"
+        },
+        "expirationTimeUsec": {
+          "description": "An expiration time in microseconds since epoch.",
+          "type": "string",
+          "format": "int64"
+        },
+        "fingerprint": {
+          "description": "Output only. The SHA-256 fingerprint of the SSH public key.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "name": {
+          "description": "Output only. The canonical resource name.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
     "Empty": {
       "id": "Empty",
       "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
@@ -215,32 +241,6 @@
             "LINUX",
             "WINDOWS"
           ]
-        },
-        "name": {
-          "description": "Output only. The canonical resource name.",
-          "readOnly": true,
-          "type": "string"
-        }
-      }
-    },
-    "SshPublicKey": {
-      "id": "SshPublicKey",
-      "description": "The SSH public key information associated with a Google account.",
-      "type": "object",
-      "properties": {
-        "key": {
-          "description": "Public key text in SSH format, defined by RFC4253 section 6.6.",
-          "type": "string"
-        },
-        "expirationTimeUsec": {
-          "description": "An expiration time in microseconds since epoch.",
-          "type": "string",
-          "format": "int64"
-        },
-        "fingerprint": {
-          "description": "Output only. The SHA-256 fingerprint of the SSH public key.",
-          "readOnly": true,
-          "type": "string"
         },
         "name": {
           "description": "Output only. The canonical resource name.",
@@ -418,6 +418,39 @@
       }
       ,
       "resources": {
+        "sshPublicKey": {
+          "methods": {
+            "create": {
+              "id": "oslogin.users.sshPublicKey.create",
+              "path": "v1beta/{+parent}/sshPublicKey",
+              "flatPath": "v1beta/users/{usersId}/sshPublicKey",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The unique ID for the user in format `users\/{user}`.",
+                  "pattern": "^users\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "SshPublicKey"
+              },
+              "response": {
+                "$ref": "SshPublicKey"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/compute"
+              ],
+              "description": "Create an SSH public key"
+            }
+          }
+        },
         "projects": {
           "methods": {
             "delete": {

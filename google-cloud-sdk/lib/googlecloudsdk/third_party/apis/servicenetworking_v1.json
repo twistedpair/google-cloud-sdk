@@ -344,6 +344,10 @@
         "outsideAllocationPublicIpRange": {
           "description": "Optional. Enable outside allocation using public IP addresses. Any public IP range may be specified. If this field is provided, we will not use customer reserved ranges for this primary IP range.",
           "type": "string"
+        },
+        "purpose": {
+          "description": "Optional. Defines the purpose field of the subnet, e.g. 'PRIVATE_SERVICE_CONNECT'. For information about the purposes that can be set using this field, see [subnetwork](https:\/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/subnetworks) in the Compute API documentation.",
+          "type": "string"
         }
       }
     },

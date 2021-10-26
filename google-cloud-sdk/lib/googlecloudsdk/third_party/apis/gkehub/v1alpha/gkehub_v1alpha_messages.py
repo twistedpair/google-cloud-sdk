@@ -1196,6 +1196,8 @@ class Fleet(_messages.Message):
       Unicode names must be expressed in Punycode format (rfc3492). Examples:
       + prod-fleet + xn--wlq33vhyw9jb \uff08Punycode form for
       "\u751f\u4ea7\u73af\u5883")
+    managedNamespaces: Optional. If true, namespaces must be explicitly
+      declared in a `FleetNamespace` object in order to use Fleet Features.
     name: Output only. The full, unique resource name of this fleet in the
       format of `projects/{project}/locations/{location}/fleets/{fleet}`. Each
       GCP project can have at most one fleet resource, named "default".
@@ -1209,9 +1211,21 @@ class Fleet(_messages.Message):
   deleteTime = _messages.StringField(2)
   displayName = _messages.StringField(3)
   fleetName = _messages.StringField(4)
-  name = _messages.StringField(5)
-  uid = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  managedNamespaces = _messages.BooleanField(5)
+  name = _messages.StringField(6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
+class FleetNamespace(_messages.Message):
+  r"""FleetNamespace represents a namespace across the Fleet
+
+  Fields:
+    name: The name for the Fleet Namespace `projects/{project}/locations/{loca
+      tion}/fleetNamespaces/{fleet_namespace}`
+  """
+
+  name = _messages.StringField(1)
 
 
 class GenerateConnectManifestResponse(_messages.Message):
@@ -1412,6 +1426,58 @@ class GkehubProjectsLocationsFeaturesTestIamPermissionsRequest(_messages.Message
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class GkehubProjectsLocationsFleetNamespacesCreateRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFleetNamespacesCreateRequest object.
+
+  Fields:
+    fleetNamespace: A FleetNamespace resource to be passed as the request
+      body.
+    fleetNamespaceId: Required. Client chosen ID for the FleetNamespace.
+      `fleet_namespace_id` must be a valid RFC 1123 compliant DNS label: 1. At
+      most 63 characters in length 2. It must consist of lower case
+      alphanumeric characters or `-` 3. It must start and end with an
+      alphanumeric character Which can be expressed as the regex:
+      `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.
+    parent: Required. The parent (project and location) where the
+      FleetNamespace will be created. Specified in the format
+      `projects/*/locations/*`.
+  """
+
+  fleetNamespace = _messages.MessageField('FleetNamespace', 1)
+  fleetNamespaceId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsFleetNamespacesDeleteRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFleetNamespacesDeleteRequest object.
+
+  Fields:
+    name: Required. The FleetNamespace resource name in the format
+      `projects/*/locations/*/fleetNamespaces/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsFleetNamespacesListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFleetNamespacesListRequest object.
+
+  Fields:
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to `ListFeatures`
+      which specifies the position in the list from where to continue listing
+      the resources.
+    parent: Required. The parent (project and location) where the Features
+      will be listed. Specified in the format `projects/*/locations/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class GkehubProjectsLocationsFleetSearchFleetsRequest(_messages.Message):
@@ -2187,6 +2253,20 @@ class ListFeaturesResponse(_messages.Message):
   resources = _messages.MessageField('Feature', 2, repeated=True)
 
 
+class ListFleetNamespacesResponse(_messages.Message):
+  r"""List of fleet namespaces.
+
+  Fields:
+    fleetNamespaces: The list of fleet namespaces
+    nextPageToken: A token to request the next page of resources from the
+      `ListFleetNamespaces` method. The value of an empty string means that
+      there are no more resources to return.
+  """
+
+  fleetNamespaces = _messages.MessageField('FleetNamespace', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -2449,12 +2529,14 @@ class MembershipFeatureSpec(_messages.Message):
     configmanagement: Config Management-specific spec.
     helloworld: Hello World-specific spec.
     identityservice: Identity Service-specific spec.
+    mesh: Anthos Service Mesh-specific spec
   """
 
   apigee = _messages.MessageField('ApigeeMembershipSpec', 1)
   configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 2)
   helloworld = _messages.MessageField('HelloWorldMembershipSpec', 3)
   identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 4)
+  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 5)
 
 
 class MembershipFeatureState(_messages.Message):
@@ -2939,6 +3021,49 @@ class ServiceMeshAnalysisMessageBase(_messages.Message):
   type = _messages.MessageField('ServiceMeshType', 3)
 
 
+class ServiceMeshControlPlaneManagement(_messages.Message):
+  r"""Status of control plane management
+
+  Enums:
+    StateValueValuesEnum: State of control plane management
+
+  Fields:
+    details: Explanation of state
+    state: State of control plane management
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of control plane management
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified
+      DISABLED: DISABLED means that automatic control plane management is not
+        enabled.
+      FAILED_PRECONDITION: FAILED_PRECONDITION means that automatic control
+        plane management cannot proceed because of some characteristic of the
+        member cluster.
+      PROVISIONING: PROVISIONING means at least one control plane component
+        has not completed provisioning, and none has failed.
+      ACTIVE: ACTIVE means that all control plane components are ready for
+        use.
+      STALLED: STALLED means that some control plane component could not be
+        provisioned.
+      NEEDS_ATTENTION: NEEDS_ATTENTION means that all control plane components
+        are ready, but some user intervention is required. (For example that
+        the user should migrate workloads to a new control plane revision.)
+    """
+    STATE_UNSPECIFIED = 0
+    DISABLED = 1
+    FAILED_PRECONDITION = 2
+    PROVISIONING = 3
+    ACTIVE = 4
+    STALLED = 5
+    NEEDS_ATTENTION = 6
+
+  details = _messages.MessageField('ServiceMeshStatusDetails', 1, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
 class ServiceMeshFeatureState(_messages.Message):
   r"""**Service Mesh**: State for the whole Hub, as analyzed by the Service
   Mesh Hub Controller.
@@ -2950,15 +3075,59 @@ class ServiceMeshFeatureState(_messages.Message):
   analysisMessages = _messages.MessageField('ServiceMeshAnalysisMessage', 1, repeated=True)
 
 
+class ServiceMeshMembershipSpec(_messages.Message):
+  r"""**Service Mesh**: Spec for a single Membership for the servicemesh
+  feature
+
+  Enums:
+    ControlPlaneValueValuesEnum: Enables automatic control plane management.
+
+  Fields:
+    controlPlane: Enables automatic control plane management.
+  """
+
+  class ControlPlaneValueValuesEnum(_messages.Enum):
+    r"""Enables automatic control plane management.
+
+    Values:
+      CONTROL_PLANE_MANAGEMENT_UNSPECIFIED: Unspecified
+      AUTOMATIC: Google should provision a control plane revision and make it
+        available in the cluster. Google will enroll this revision in a
+        release channel and keep it up to date. The control plane revision may
+        be a managed service, or a managed install.
+      MANUAL: User will manually configure the control plane (e.g. via CLI, or
+        via the ControlPlaneRevision KRM API)
+    """
+    CONTROL_PLANE_MANAGEMENT_UNSPECIFIED = 0
+    AUTOMATIC = 1
+    MANUAL = 2
+
+  controlPlane = _messages.EnumField('ControlPlaneValueValuesEnum', 1)
+
+
 class ServiceMeshMembershipState(_messages.Message):
   r"""**Service Mesh**: State for a single Membership, as analyzed by the
   Service Mesh Hub Controller.
 
   Fields:
     analysisMessages: Output only. Results of running Service Mesh analyzers.
+    controlPlaneManagement: Output only. Status of control plane management
   """
 
   analysisMessages = _messages.MessageField('ServiceMeshAnalysisMessage', 1, repeated=True)
+  controlPlaneManagement = _messages.MessageField('ServiceMeshControlPlaneManagement', 2)
+
+
+class ServiceMeshStatusDetails(_messages.Message):
+  r"""Structured and human-readable details for a status.
+
+  Fields:
+    code: A machine-readable code that further describes a broad status.
+    details: Human-readable explanation of code.
+  """
+
+  code = _messages.StringField(1)
+  details = _messages.StringField(2)
 
 
 class ServiceMeshType(_messages.Message):

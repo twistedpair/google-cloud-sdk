@@ -603,13 +603,18 @@ class AccessConfig(_messages.Message):
     networkTier associated with the Address resource owning that IP.
 
     Values:
+      FIXED_STANDARD: Public internet quality with fixed bandwidth.
       PREMIUM: High quality, Google-grade network tier, support for all
         networking products.
       STANDARD: Public internet quality, only limited support for other
         networking products.
+      STANDARD_OVERRIDES_FIXED_STANDARD: (Output only) Temporary tier for
+        FIXED_STANDARD when fixed standard tier is expired or not configured.
     """
-    PREMIUM = 0
-    STANDARD = 1
+    FIXED_STANDARD = 0
+    PREMIUM = 1
+    STANDARD = 2
+    STANDARD_OVERRIDES_FIXED_STANDARD = 3
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of configuration. The default and only option is
@@ -773,13 +778,18 @@ class Address(_messages.Message):
     Premium Tier. If this field is not specified, it is assumed to be PREMIUM.
 
     Values:
+      FIXED_STANDARD: Public internet quality with fixed bandwidth.
       PREMIUM: High quality, Google-grade network tier, support for all
         networking products.
       STANDARD: Public internet quality, only limited support for other
         networking products.
+      STANDARD_OVERRIDES_FIXED_STANDARD: (Output only) Temporary tier for
+        FIXED_STANDARD when fixed standard tier is expired or not configured.
     """
-    PREMIUM = 0
-    STANDARD = 1
+    FIXED_STANDARD = 0
+    PREMIUM = 1
+    STANDARD = 2
+    STANDARD_OVERRIDES_FIXED_STANDARD = 3
 
   class PurposeValueValuesEnum(_messages.Enum):
     r"""The purpose of this resource, which can be one of the following
@@ -5335,6 +5345,7 @@ class Commitment(_messages.Message):
     Values:
       ACCELERATOR_OPTIMIZED: <no description>
       COMPUTE_OPTIMIZED: <no description>
+      COMPUTE_OPTIMIZED_C2D: <no description>
       GENERAL_PURPOSE: <no description>
       GENERAL_PURPOSE_E2: <no description>
       GENERAL_PURPOSE_N2: <no description>
@@ -5345,13 +5356,14 @@ class Commitment(_messages.Message):
     """
     ACCELERATOR_OPTIMIZED = 0
     COMPUTE_OPTIMIZED = 1
-    GENERAL_PURPOSE = 2
-    GENERAL_PURPOSE_E2 = 3
-    GENERAL_PURPOSE_N2 = 4
-    GENERAL_PURPOSE_N2D = 5
-    GENERAL_PURPOSE_T2D = 6
-    MEMORY_OPTIMIZED = 7
-    TYPE_UNSPECIFIED = 8
+    COMPUTE_OPTIMIZED_C2D = 2
+    GENERAL_PURPOSE = 3
+    GENERAL_PURPOSE_E2 = 4
+    GENERAL_PURPOSE_N2 = 5
+    GENERAL_PURPOSE_N2D = 6
+    GENERAL_PURPOSE_T2D = 7
+    MEMORY_OPTIMIZED = 8
+    TYPE_UNSPECIFIED = 9
 
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
   creationTimestamp = _messages.StringField(2)
@@ -27161,13 +27173,18 @@ class ForwardingRule(_messages.Message):
     value must be equal to the networkTier of the Address.
 
     Values:
+      FIXED_STANDARD: Public internet quality with fixed bandwidth.
       PREMIUM: High quality, Google-grade network tier, support for all
         networking products.
       STANDARD: Public internet quality, only limited support for other
         networking products.
+      STANDARD_OVERRIDES_FIXED_STANDARD: (Output only) Temporary tier for
+        FIXED_STANDARD when fixed standard tier is expired or not configured.
     """
-    PREMIUM = 0
-    STANDARD = 1
+    FIXED_STANDARD = 0
+    PREMIUM = 1
+    STANDARD = 2
+    STANDARD_OVERRIDES_FIXED_STANDARD = 3
 
   class PscConnectionStatusValueValuesEnum(_messages.Enum):
     r"""PscConnectionStatusValueValuesEnum enum type.
@@ -38807,11 +38824,13 @@ class NetworkPeering(_messages.Message):
       create and manage subnetwork routes between two networks when peering
       state is ACTIVE.
     exportCustomRoutes: Whether to export the custom routes to peer network.
+      The default value is false.
     exportSubnetRoutesWithPublicIp: Whether subnet routes with public IP range
       are exported. The default value is true, all subnet routes are exported.
       IPv4 special-use ranges are always exported to peers and are not
       controlled by this field.
     importCustomRoutes: Whether to import the custom routes from peer network.
+      The default value is false.
     importSubnetRoutesWithPublicIp: Whether subnet routes with public IP range
       are imported. The default value is false. IPv4 special-use ranges are
       always imported from peers and are not controlled by this field.
@@ -43188,13 +43207,18 @@ class Project(_messages.Message):
     Initially the default network tier is PREMIUM.
 
     Values:
+      FIXED_STANDARD: Public internet quality with fixed bandwidth.
       PREMIUM: High quality, Google-grade network tier, support for all
         networking products.
       STANDARD: Public internet quality, only limited support for other
         networking products.
+      STANDARD_OVERRIDES_FIXED_STANDARD: (Output only) Temporary tier for
+        FIXED_STANDARD when fixed standard tier is expired or not configured.
     """
-    PREMIUM = 0
-    STANDARD = 1
+    FIXED_STANDARD = 0
+    PREMIUM = 1
+    STANDARD = 2
+    STANDARD_OVERRIDES_FIXED_STANDARD = 3
 
   class XpnProjectStatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The role this project has in a shared VPC configuration.
@@ -43290,13 +43314,18 @@ class ProjectsSetDefaultNetworkTierRequest(_messages.Message):
     r"""Default network tier to be set.
 
     Values:
+      FIXED_STANDARD: Public internet quality with fixed bandwidth.
       PREMIUM: High quality, Google-grade network tier, support for all
         networking products.
       STANDARD: Public internet quality, only limited support for other
         networking products.
+      STANDARD_OVERRIDES_FIXED_STANDARD: (Output only) Temporary tier for
+        FIXED_STANDARD when fixed standard tier is expired or not configured.
     """
-    PREMIUM = 0
-    STANDARD = 1
+    FIXED_STANDARD = 0
+    PREMIUM = 1
+    STANDARD = 2
+    STANDARD_OVERRIDES_FIXED_STANDARD = 3
 
   networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 1)
 
@@ -48677,10 +48706,24 @@ class RouterNat(_messages.Message):
     drainNatIps: A list of URLs of the IP resources to be drained. These IPs
       must be valid static external IPs that have been assigned to the NAT.
       These IPs should be used for updating/patching a NAT only.
+    enableDynamicPortAllocation: Enable Dynamic Port Allocation. If not
+      specified, it is disabled by default. If set to true, - Dynamic Port
+      Allocation will be enabled on this NAT config. -
+      enableEndpointIndependentMapping cannot be set to true. - If minPorts is
+      set, minPortsPerVm must be set to a power of two greater than or equal
+      to 32. If minPortsPerVm is not set, a minimum of 32 ports will be
+      allocated to a VM from this NAT config.
     enableEndpointIndependentMapping: A boolean attribute.
     icmpIdleTimeoutSec: Timeout (in seconds) for ICMP connections. Defaults to
       30s if not set.
     logConfig: Configure logging on this NAT.
+    maxPortsPerVm: Maximum number of ports allocated to a VM from this NAT
+      config when Dynamic Port Allocation is enabled. If Dynamic Port
+      Allocation is not enabled, this field has no effect. If Dynamic Port
+      Allocation is enabled, and this field is set, it must be set to a power
+      of two greater than minPortsPerVm, or 64 if minPortsPerVm is not set. If
+      Dynamic Port Allocation is enabled and this field is not set, a maximum
+      of 65536 ports will be allocated to a VM from this NAT config.
     minPortsPerVm: Minimum number of ports allocated to a VM from this NAT
       config. If not set, a default number of ports is allocated to a VM. This
       is rounded up to the nearest power of 2. For example, if the value of
@@ -48762,20 +48805,22 @@ class RouterNat(_messages.Message):
     LIST_OF_SUBNETWORKS = 2
 
   drainNatIps = _messages.StringField(1, repeated=True)
-  enableEndpointIndependentMapping = _messages.BooleanField(2)
-  icmpIdleTimeoutSec = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  logConfig = _messages.MessageField('RouterNatLogConfig', 4)
-  minPortsPerVm = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  name = _messages.StringField(6)
-  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 7)
-  natIps = _messages.StringField(8, repeated=True)
-  rules = _messages.MessageField('RouterNatRule', 9, repeated=True)
-  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 10)
-  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 11, repeated=True)
-  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  tcpTimeWaitTimeoutSec = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  udpIdleTimeoutSec = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  enableDynamicPortAllocation = _messages.BooleanField(2)
+  enableEndpointIndependentMapping = _messages.BooleanField(3)
+  icmpIdleTimeoutSec = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  logConfig = _messages.MessageField('RouterNatLogConfig', 5)
+  maxPortsPerVm = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  minPortsPerVm = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  name = _messages.StringField(8)
+  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 9)
+  natIps = _messages.StringField(10, repeated=True)
+  rules = _messages.MessageField('RouterNatRule', 11, repeated=True)
+  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 12)
+  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 13, repeated=True)
+  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  tcpTimeWaitTimeoutSec = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  udpIdleTimeoutSec = _messages.IntegerField(17, variant=_messages.Variant.INT32)
 
 
 class RouterNatLogConfig(_messages.Message):
@@ -52357,7 +52402,8 @@ class Subnetwork(_messages.Message):
       resource creation time.
     enableFlowLogs: Whether to enable flow logging for this subnetwork. If
       this field is not explicitly set, it will not appear in get listings. If
-      not set the default behavior is to disable flow logging. This field
+      not set the default behavior is determined by the org policy, if there
+      is no org policy specified, then it will default to disabled. This field
       isn't supported with the purpose field set to
       INTERNAL_HTTPS_LOAD_BALANCER.
     externalIpv6Prefix: [Output Only] The range of external IPv6 addresses
@@ -52913,7 +52959,8 @@ class SubnetworkLogConfig(_messages.Message):
       of 5 seconds per connection.
     enable: Whether to enable flow logging for this subnetwork. If this field
       is not explicitly set, it will not appear in get listings. If not set
-      the default behavior is to disable flow logging.
+      the default behavior is determined by the org policy, if there is no org
+      policy specified, then it will default to disabled.
     filterExpr: Can only be specified if VPC flow logs for this subnetwork is
       enabled. Export filter used to define which VPC flow logs should be
       logged.
@@ -52921,7 +52968,8 @@ class SubnetworkLogConfig(_messages.Message):
       subnetwork is enabled. The value of the field must be in [0, 1]. Set the
       sampling rate of VPC flow logs within the subnetwork where 1.0 means all
       collected logs are reported and 0.0 means no logs are reported. Default
-      is 0.5, which means half of all collected logs are reported.
+      is 0.5 unless otherwise specified by the org policy, which means half of
+      all collected logs are reported.
     metadata: Can only be specified if VPC flow logs for this subnetwork is
       enabled. Configures whether all, none or a subset of metadata fields
       should be added to the reported VPC flow logs. Default is

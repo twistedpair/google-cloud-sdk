@@ -158,9 +158,7 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
         self._destination_resource.storage_url.object_name,
         create_path=True,
         mode=write_mode) as download_stream:
-      if download_stream.seekable():
-        # Can't seek on pipes.
-        download_stream.seek(start_byte)
+      download_stream.seek(start_byte)
       provider = self._source_resource.storage_url.scheme
       # TODO(b/162264437): Support all of download_object's parameters.
       if self._source_resource.size != 0:

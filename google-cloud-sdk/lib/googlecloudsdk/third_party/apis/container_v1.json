@@ -538,6 +538,10 @@
         "gvnic": {
           "description": "Enable or disable gvnic in the node pool.",
           "$ref": "VirtualNIC"
+        },
+        "spot": {
+          "description": "Spot flag for enabling Spot VM, which is a rebrand of the existing preemptible flag.",
+          "type": "boolean"
         }
       }
     },
@@ -1445,6 +1449,10 @@
       "description": "Represents an arbitrary window of time.",
       "type": "object",
       "properties": {
+        "maintenanceExclusionOptions": {
+          "description": "MaintenanceExclusionOptions provides maintenance exclusion related options.",
+          "$ref": "MaintenanceExclusionOptions"
+        },
         "startTime": {
           "description": "The time that the window first starts.",
           "type": "string",
@@ -1454,6 +1462,27 @@
           "description": "The time that the window ends. The end time should take place after the start time.",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "MaintenanceExclusionOptions": {
+      "id": "MaintenanceExclusionOptions",
+      "description": "Represents the Maintenance exclusion option.",
+      "type": "object",
+      "properties": {
+        "scope": {
+          "description": "Scope specifies the upgrade scope which upgrades are blocked by the exclusion.",
+          "type": "string",
+          "enumDescriptions": [
+            "NO_UPGRADES excludes all upgrades, including patch upgrades and minor upgrades across control planes and nodes. This is the default exclusion behavior.",
+            "NO_MINOR_UPGRADES excludes all minor upgrades for the cluster, only patches are allowed.",
+            "NO_MINOR_OR_NODE_UPGRADES excludes all minor upgrades for the cluster, and also exclude all node pool upgrades. Only control plane patches are allowed."
+          ],
+          "enum": [
+            "NO_UPGRADES",
+            "NO_MINOR_UPGRADES",
+            "NO_MINOR_OR_NODE_UPGRADES"
+          ]
         }
       }
     },

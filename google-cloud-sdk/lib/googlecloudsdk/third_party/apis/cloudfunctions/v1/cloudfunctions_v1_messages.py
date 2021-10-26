@@ -196,11 +196,12 @@ class CloudFunction(_messages.Message):
       project.
     description: User-provided description of a function.
     dockerRepository: User managed repository created in Artifact Registry
-      optionally with a customer managed encryption key. This is the
-      repository to which the function docker image will be pushed after it is
-      built by Cloud Build. If unspecified, GCF will create and use a
-      repository named 'gcf-artifacts' for every deployed region. It must
-      match the pattern
+      optionally with a customer managed encryption key. If specified,
+      deployments will use Artifact Registry. If unspecified and the
+      deployment is eligible to use Artifact Registry, GCF will create and use
+      a repository named 'gcf-artifacts' for every deployed region. This is
+      the repository to which the function docker image will be pushed after
+      it is built by Cloud Build. It must match the pattern
       `projects/{project}/locations/{location}/repositories/{repository}`.
       Cross-project repositories are not supported. Cross-location
       repositories are not supported. Repository format must be 'DOCKER'.
@@ -223,7 +224,20 @@ class CloudFunction(_messages.Message):
       ts/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto
       _key}`. If specified, you must also provide an artifact registry
       repository using the `docker_repository` field that was created with the
-      same KMS crypto key.
+      same KMS crypto key. The following service accounts need to be granted
+      Cloud KMS crypto key encrypter/decrypter roles on the key. 1. Google
+      Cloud Functions service account (service-{project_number}@gcf-admin-
+      robot.iam.gserviceaccount.com) - Required to protect the function's
+      image. 2. Google Storage service account (service-{project_number}@gs-
+      project-accounts.iam.gserviceaccount.com) - Required to protect the
+      function's source code. If this service account does not exist,
+      deploying a function without a KMS key or retrieving the service agent
+      name provisions it. For more information, see
+      https://cloud.google.com/storage/docs/projects#service-agents and
+      https://cloud.google.com/storage/docs/getting-service-agent#gsutil.
+      Google Cloud Functions delegates access to service agents to protect
+      function resources in internal projects that are not accessible by the
+      end user.
     labels: Labels associated with this Cloud Function.
     maxInstances: The limit on the maximum number of function instances that
       may coexist at a given time. In some cases, such as rapid traffic
@@ -930,10 +944,12 @@ class GoogleCloudFunctionsV2alphaStateMessage(_messages.Message):
       SEVERITY_UNSPECIFIED: Not specified. Invalid severity.
       ERROR: ERROR-level severity.
       WARNING: WARNING-level severity.
+      INFO: INFO-level severity.
     """
     SEVERITY_UNSPECIFIED = 0
     ERROR = 1
     WARNING = 2
+    INFO = 3
 
   message = _messages.StringField(1)
   severity = _messages.EnumField('SeverityValueValuesEnum', 2)
@@ -1077,10 +1093,12 @@ class GoogleCloudFunctionsV2betaStateMessage(_messages.Message):
       SEVERITY_UNSPECIFIED: Not specified. Invalid severity.
       ERROR: ERROR-level severity.
       WARNING: WARNING-level severity.
+      INFO: INFO-level severity.
     """
     SEVERITY_UNSPECIFIED = 0
     ERROR = 1
     WARNING = 2
+    INFO = 3
 
   message = _messages.StringField(1)
   severity = _messages.EnumField('SeverityValueValuesEnum', 2)

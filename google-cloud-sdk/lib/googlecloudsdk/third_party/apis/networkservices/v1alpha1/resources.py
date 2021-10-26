@@ -118,6 +118,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_MESHES = (
+      'projects.locations.meshes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/meshes/'
+              '{meshesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OBSERVABILITYPOLICIES = (
       'projects.locations.observabilityPolicies',
       '{+name}',

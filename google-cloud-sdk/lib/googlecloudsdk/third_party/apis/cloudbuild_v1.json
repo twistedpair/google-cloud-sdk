@@ -915,10 +915,10 @@
           "type": "string",
           "enumDescriptions": [
             "The service determines the logging mode. The default is `LEGACY`. Do not rely on the default logging behavior as it may change in the future.",
-            "Cloud Logging and Cloud Storage logging are enabled.",
-            "Only Cloud Storage logging is enabled.",
+            "Build logs are stored in Cloud Logging and Cloud Storage.",
+            "Build logs are stored in Cloud Storage.",
             "This option is the same as CLOUD_LOGGING_ONLY.",
-            "Only Cloud Logging is enabled. Note that logs for both the Cloud Console UI and Cloud SDK are based on Cloud Storage logs, so neither will provide logs if this option is chosen.",
+            "Build logs are stored in Cloud Logging. Selecting this option will not allow [logs streaming](https:\/\/cloud.google.com\/sdk\/gcloud\/reference\/builds\/log).",
             "Turn off all logging. No build logs will be captured."
           ],
           "enum": [
@@ -2298,7 +2298,7 @@
     },
     "HybridPoolConfig": {
       "id": "HybridPoolConfig",
-      "description": "Configuration for a Hybrid Worker Pool Next ID: 5",
+      "description": "Configuration for a Hybrid Worker Pool Next ID: 6",
       "type": "object",
       "properties": {
         "membership": {
@@ -2336,6 +2336,10 @@
             "CACHING_DISABLED",
             "VOLUME_CACHING"
           ]
+        },
+        "cachingStorageClass": {
+          "description": "Immutable. Used as the Kubernetes storageClassName for builder image caching. This provides the value for the storageClassName field for any PersistentVolumeClaims installed on the cluster. Corresponding field in the Kubernetes API: https:\/\/github.com\/kubernetes\/api\/blob\/2a5dae08c42b1e8fdc1379432d8898efece65363\/core\/v1\/types.go#L354. This field allows Hybrid users to control which storage class is used by persistent volume claims. If unspecified, PersistentVolumeClaims will be created without a storageClassName field during installation. The string must be formatted as a valid Kubernetes ObjectMeta name: https:\/\/github.com\/kubernetes\/apimachinery\/blob\/6c3d2b36a98a4f86d1fb8ee83f78433cd72aefb8\/pkg\/apis\/meta\/v1\/types.go#L124.",
+          "type": "string"
         }
       }
     },

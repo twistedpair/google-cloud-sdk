@@ -142,13 +142,9 @@ class DataprocParameters(_messages.Message):
   Fields:
     cluster: URI for cluster used to run Dataproc execution. Format:
       `projects/{PROJECT_ID}/regions/{REGION}/clusters/{CLUSTER_NAME}`
-    kernelSpec: Name of the kernel spec to use. This must be specified if the
-      'kernel spec name on the cluster does not match the name in the input
-      'notebook file.
   """
 
   cluster = _messages.StringField(1)
-  kernelSpec = _messages.StringField(2)
 
 
 class Disk(_messages.Message):
@@ -378,6 +374,9 @@ class ExecutionTemplate(_messages.Message):
       `gs://{bucket_name}/{folder}/{notebook_file_name}` Ex:
       `gs://notebook_user/scheduled_notebooks/sentiment_notebook.ipynb`
     jobType: The type of Job to be used on this execution.
+    kernelSpec: Name of the kernel spec to use. This must be specified if the
+      kernel spec name on the execution target does not match the name in the
+      input notebook file.
     labels: Labels for execution. If execution is scheduled, a field included
       will be 'nbs-scheduled'. Otherwise, it is an immediate execution, and an
       included field will be 'nbs-immediate'. Use fields to efficiently index
@@ -493,14 +492,15 @@ class ExecutionTemplate(_messages.Message):
   dataprocParameters = _messages.MessageField('DataprocParameters', 3)
   inputNotebookFile = _messages.StringField(4)
   jobType = _messages.EnumField('JobTypeValueValuesEnum', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  masterType = _messages.StringField(7)
-  outputNotebookFolder = _messages.StringField(8)
-  parameters = _messages.StringField(9)
-  paramsYamlFile = _messages.StringField(10)
-  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 11)
-  serviceAccount = _messages.StringField(12)
-  vertexAiParameters = _messages.MessageField('VertexAIParameters', 13)
+  kernelSpec = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  masterType = _messages.StringField(8)
+  outputNotebookFolder = _messages.StringField(9)
+  parameters = _messages.StringField(10)
+  paramsYamlFile = _messages.StringField(11)
+  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 12)
+  serviceAccount = _messages.StringField(13)
+  vertexAiParameters = _messages.MessageField('VertexAIParameters', 14)
 
 
 class Expr(_messages.Message):
@@ -803,6 +803,8 @@ class Instance(_messages.Message):
       UPGRADING: The instance is upgrading.
       INITIALIZING: The instance is being created.
       REGISTERING: The instance is getting registered.
+      SUSPENDING: The instance is suspending.
+      SUSPENDED: The instance is suspended.
     """
     STATE_UNSPECIFIED = 0
     STARTING = 1
@@ -814,6 +816,8 @@ class Instance(_messages.Message):
     UPGRADING = 7
     INITIALIZING = 8
     REGISTERING = 9
+    SUSPENDING = 10
+    SUSPENDED = 11
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1796,6 +1800,27 @@ class NotebooksProjectsLocationsRuntimesDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class NotebooksProjectsLocationsRuntimesGetIamPolicyRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsRuntimesGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class NotebooksProjectsLocationsRuntimesGetRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsRuntimesGetRequest object.
 
@@ -1851,6 +1876,21 @@ class NotebooksProjectsLocationsRuntimesResetRequest(_messages.Message):
   resetRuntimeRequest = _messages.MessageField('ResetRuntimeRequest', 2)
 
 
+class NotebooksProjectsLocationsRuntimesSetIamPolicyRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsRuntimesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
 class NotebooksProjectsLocationsRuntimesStartRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsRuntimesStartRequest object.
 
@@ -1891,6 +1931,21 @@ class NotebooksProjectsLocationsRuntimesSwitchRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   switchRuntimeRequest = _messages.MessageField('SwitchRuntimeRequest', 2)
+
+
+class NotebooksProjectsLocationsRuntimesTestIamPermissionsRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsRuntimesTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class NotebooksProjectsLocationsSchedulesCreateRequest(_messages.Message):
@@ -2664,6 +2719,7 @@ class SchedulerAcceleratorConfig(_messages.Message):
       NVIDIA_TESLA_V100: Nvidia Tesla V100 GPU.
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
+      NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
     """
@@ -2673,8 +2729,9 @@ class SchedulerAcceleratorConfig(_messages.Message):
     NVIDIA_TESLA_V100 = 3
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
-    TPU_V2 = 6
-    TPU_V3 = 7
+    NVIDIA_TESLA_A100 = 6
+    TPU_V2 = 7
+    TPU_V3 = 8
 
   coreCount = _messages.IntegerField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -3089,7 +3146,13 @@ class UpgradeInstanceRequest(_messages.Message):
 class VertexAIParameters(_messages.Message):
   r"""Parameters used in Vertex AI JobType executions.
 
+  Messages:
+    EnvValue: Environment variables. At most 100 environment variables can be
+      specified and unique. Example: GCP_BUCKET=gs://my-bucket/samples/
+
   Fields:
+    env: Environment variables. At most 100 environment variables can be
+      specified and unique. Example: GCP_BUCKET=gs://my-bucket/samples/
     network: The full name of the Compute Engine
       [network](/compute/docs/networks-and-firewalls#networks) to which the
       Job should be peered. For example,
@@ -3101,7 +3164,33 @@ class VertexAIParameters(_messages.Message):
       unspecified, the job is not peered with any network.
   """
 
-  network = _messages.StringField(1)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class EnvValue(_messages.Message):
+    r"""Environment variables. At most 100 environment variables can be
+    specified and unique. Example: GCP_BUCKET=gs://my-bucket/samples/
+
+    Messages:
+      AdditionalProperty: An additional property for a EnvValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type EnvValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EnvValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  env = _messages.MessageField('EnvValue', 1)
+  network = _messages.StringField(2)
 
 
 class VirtualMachine(_messages.Message):

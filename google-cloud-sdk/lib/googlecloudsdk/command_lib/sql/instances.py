@@ -319,15 +319,12 @@ class _BaseInstances(object):
             sql_messages,
             instance,
             backup_enabled=args.backup,
-            backup_specified=args.IsSpecified('backup'),
             backup_location=args.backup_location,
             backup_start_time=args.backup_start_time,
             enable_bin_log=args.enable_bin_log,
             enable_point_in_time_recovery=args.enable_point_in_time_recovery,
             retained_backups_count=args.retained_backups_count,
-            retained_transaction_log_days=args.retained_transaction_log_days,
-            is_new_primary=not args.IsSpecified('master_instance_name'),
-            is_new_replica=args.IsSpecified('master_instance_name')))
+            retained_transaction_log_days=args.retained_transaction_log_days))
     if backup_configuration:
       cls.AddBackupConfigToSettings(settings, backup_configuration)
 

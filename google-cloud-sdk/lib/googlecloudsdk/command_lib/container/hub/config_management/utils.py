@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.container.hub import client
 from googlecloudsdk.api_lib.container.hub import util
 
-LATEST_VERSION = '1.9.0'
 
 APPLY_SPEC_VERSION_1 = """
 applySpecVersion: 1

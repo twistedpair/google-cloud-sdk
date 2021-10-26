@@ -104,6 +104,7 @@ class CertificateInfo(_messages.Message):
 
   Fields:
     certificateFingerprint: The encoded certificate fingerprint.
+    certificateTemplate: The X.509 extension for CertificateTemplate.
     certificateThumbprint: The certificate thumbprint.
     certificateValidationState: Validation state of this certificate.
     issuer: The name of the issuer of this certificate.
@@ -127,13 +128,31 @@ class CertificateInfo(_messages.Message):
     VALIDATION_FAILED = 2
 
   certificateFingerprint = _messages.StringField(1)
-  certificateThumbprint = _messages.StringField(2)
-  certificateValidationState = _messages.EnumField('CertificateValidationStateValueValuesEnum', 3)
-  issuer = _messages.StringField(4)
-  serialNumber = _messages.StringField(5)
-  subject = _messages.StringField(6)
-  validityExpirationTime = _messages.StringField(7)
-  validityStartTime = _messages.StringField(8)
+  certificateTemplate = _messages.MessageField('CertificateTemplate', 2)
+  certificateThumbprint = _messages.StringField(3)
+  certificateValidationState = _messages.EnumField('CertificateValidationStateValueValuesEnum', 4)
+  issuer = _messages.StringField(5)
+  serialNumber = _messages.StringField(6)
+  subject = _messages.StringField(7)
+  validityExpirationTime = _messages.StringField(8)
+  validityStartTime = _messages.StringField(9)
+
+
+class CertificateTemplate(_messages.Message):
+  r"""CertificateTemplate (v3 Extension in X.509). See
+  https://docs.microsoft.com/en-us/windows/win32/api/certenroll/nn-certenroll-
+  ix509extensiontemplate.
+
+  Fields:
+    id: The template id of the template. Example: "1.3.6.1.4.1.311.21.8.156086
+      21.11768144.5720724.16068415.6889630.81.2472537.7784047".
+    majorVersion: The Major version of the template. Example: 100.
+    minorVersion: The minor version of the template. Example: 12.
+  """
+
+  id = _messages.StringField(1)
+  majorVersion = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  minorVersion = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class CheckTransitiveMembershipResponse(_messages.Message):

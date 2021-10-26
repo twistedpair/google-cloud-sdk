@@ -5228,7 +5228,7 @@ class SparkSqlBatch(_messages.Message):
   (http://spark.apache.org/sql/) queries as a batch workload.
 
   Messages:
-    ScriptVariablesValue: Optional. Mapping of query variable names to values
+    QueryVariablesValue: Optional. Mapping of query variable names to values
       (equivalent to the Spark SQL command: SET name="value";).
 
   Fields:
@@ -5236,25 +5236,25 @@ class SparkSqlBatch(_messages.Message):
       CLASSPATH.
     queryFileUri: Required. The HCFS URI of the script that contains Spark SQL
       queries to execute.
-    scriptVariables: Optional. Mapping of query variable names to values
+    queryVariables: Optional. Mapping of query variable names to values
       (equivalent to the Spark SQL command: SET name="value";).
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
-  class ScriptVariablesValue(_messages.Message):
+  class QueryVariablesValue(_messages.Message):
     r"""Optional. Mapping of query variable names to values (equivalent to the
     Spark SQL command: SET name="value";).
 
     Messages:
-      AdditionalProperty: An additional property for a ScriptVariablesValue
+      AdditionalProperty: An additional property for a QueryVariablesValue
         object.
 
     Fields:
-      additionalProperties: Additional properties of type ScriptVariablesValue
+      additionalProperties: Additional properties of type QueryVariablesValue
     """
 
     class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ScriptVariablesValue object.
+      r"""An additional property for a QueryVariablesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -5268,7 +5268,7 @@ class SparkSqlBatch(_messages.Message):
 
   jarFileUris = _messages.StringField(1, repeated=True)
   queryFileUri = _messages.StringField(2)
-  scriptVariables = _messages.MessageField('ScriptVariablesValue', 3)
+  queryVariables = _messages.MessageField('QueryVariablesValue', 3)
 
 
 class SparkSqlJob(_messages.Message):

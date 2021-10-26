@@ -221,12 +221,15 @@ class DatastreamProjectsLocationsConnectionProfilesPatchRequest(_messages.Messag
       specified in the update_mask are relative to the resource, not the full
       request. A field will be overwritten if it is in the mask. If the user
       does not provide a mask then all fields will be overwritten.
+    validateOnly: Optional. Only validate the connection profile, but do not
+      update any resources. The default is false.
   """
 
   connectionProfile = _messages.MessageField('ConnectionProfile', 1)
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
 
 
 class DatastreamProjectsLocationsFetchStaticIpsRequest(_messages.Message):

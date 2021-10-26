@@ -28,7 +28,9 @@ from googlecloudsdk.core import exceptions
 # Don't apply camel case to keys for dict or list values with these field names.
 # These correspond to map fields in our proto message, where we expect keys to
 # be sent exactly as the user typed them, without transformation to camelCase.
-_SKIP_CAMEL_CASE = ['secretEnv', 'secret_env', 'substitutions']
+_SKIP_CAMEL_CASE = [
+    'secretEnv', 'secret_env', 'substitutions', 'envMap', 'env_map'
+]
 
 # Regex for a valid user-defined substitution variable.
 _BUILTIN_SUBSTITUTION_REGEX = re.compile('^_[A-Z0-9_]+$')

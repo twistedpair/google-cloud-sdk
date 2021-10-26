@@ -195,7 +195,7 @@ class InputConfig(_messages.Message):
 
 
 class Instance(_messages.Message):
-  r"""A Google Cloud Redis instance. next id = 37
+  r"""A Google Cloud Redis instance. next id = 38
 
   Enums:
     ConnectModeValueValuesEnum: Optional. The network connect mode of the
@@ -217,10 +217,11 @@ class Instance(_messages.Message):
       node-max-bytes * stream-node-max-entries
 
   Fields:
-    alternativeLocationId: Optional. Only applicable to STANDARD_HA tier which
-      protects the instance against zonal failures by provisioning it across
-      two zones. If provided, it must be a different zone from the one
-      provided in location_id.
+    alternativeLocationId: Optional. If specified, at least one node will be
+      provisioned in this zone in addition to the zone specified in
+      location_id. Only applicable to standard tier. If provided, it must be a
+      different zone from the one provided in [location_id]. Additional nodes
+      beyond the first 2 will be placed in zones selected by the service.
     authEnabled: Optional. Indicates whether OSS Redis AUTH is enabled for the
       instance. If set to "true" AUTH is enabled on the instance. Default
       value is "false" meaning AUTH is disabled.
@@ -230,11 +231,10 @@ class Instance(_messages.Message):
     connectMode: Optional. The network connect mode of the Redis instance. If
       not provided, the connect mode defaults to DIRECT_PEERING.
     createTime: Output only. The time the instance was created.
-    currentLocationId: Output only. The current zone where the Redis endpoint
-      is placed. For Basic Tier instances, this will always be the same as the
-      location_id provided by the user at creation time. For Standard Tier
-      instances, this can be either location_id or alternative_location_id and
-      can change after a failover event.
+    currentLocationId: Output only. The current zone where the Redis primary
+      node is located. In basic tier, this will always be the same as
+      [location_id]. In standard tier, this can be the zone of any node in the
+      instance.
     displayName: An arbitrary and optional user-provided name for the
       instance.
     host: Output only. Hostname or IP address of the exposed Redis endpoint
@@ -242,10 +242,9 @@ class Instance(_messages.Message):
     labels: Resource labels to represent user provided metadata
     locationId: Optional. The zone where the instance will be provisioned. If
       not provided, the service will choose a zone from the specified region
-      for the instance. For standard tier, instances will be created across
-      two zones for protection against zonal failures. If
-      [alternative_location_id] is also provided, it must be different from
-      [location_id].
+      for the instance. For standard tier, additional nodes will be added
+      across multiple zones for protection against zonal failures. If
+      specified, at least one node will be provisioned in this zone.
     maintenancePolicy: Optional. The maintenance policy for the instance. If
       not provided, maintenance events can be performed at any time.
     maintenanceSchedule: Output only. Date and time of upcoming maintenance
@@ -260,6 +259,7 @@ class Instance(_messages.Message):
       instance should be provisioned in. Refer to location_id and
       alternative_location_id fields for more details.
     nodes: Output only. Info per node.
+    persistenceConfig: Optional. Persistence configuration parameters
     persistenceIamIdentity: Output only. Cloud IAM identity used by import /
       export operations to transfer data to/from Cloud Storage. Format is
       "serviceAccount:". The value may change over time for a given instance
@@ -284,7 +284,7 @@ class Instance(_messages.Message):
       4.0 compatibility (default) * `REDIS_5_0` for Redis 5.0 compatibility *
       `REDIS_6_X` for Redis 6.x compatibility
     replicaCount: Optional. The number of replica nodes. Valid range for
-      standard tier is [1-5] and defaults to 1. Valid value for basic tier is
+      standard tier is [1-5] and defaults to 2. Valid value for basic tier is
       0 and defaults to 0.
     reservedIpRange: Optional. For DIRECT_PEERING mode, the CIDR range of
       internal addresses that are reserved for this instance. Range must be
@@ -292,7 +292,8 @@ class Instance(_messages.Message):
       network. For PRIVATE_SERVICE_ACCESS mode, the name of one allocated IP
       address ranges associated with this private service access connection.
       If not provided, the service will choose an unused /29 block, for
-      example, 10.0.0.0/29 or 192.168.0.0/29.
+      example, 10.0.0.0/29 or 192.168.0.0/29. For READ_REPLICAS_ENABLED the
+      default block size is /28.
     serverCaCerts: Output only. List of server CA certificates for the
       instance.
     state: Output only. The current state of this instance.
@@ -312,7 +313,7 @@ class Instance(_messages.Message):
       DIRECT_PEERING: Connect via direct peering to the Memorystore for Redis
         hosted service.
       PRIVATE_SERVICE_ACCESS: Connect your Memorystore for Redis instance
-        using Private Services Access. Private services access provides an IP
+        using Private Service Access. Private services access provides an IP
         address range for multiple Google Cloud services, including
         Memorystore.
     """
@@ -324,8 +325,8 @@ class Instance(_messages.Message):
     r"""Optional. Read replica mode.
 
     Values:
-      READ_REPLICAS_MODE_UNSPECIFIED: If not set, redis backend would pick the
-        mode based on other fields in the request.
+      READ_REPLICAS_MODE_UNSPECIFIED: If not set, Memorystore Redis backend
+        will pick the mode based on other fields in the request.
       READ_REPLICAS_DISABLED: If disabled, read endpoint will not be provided
         and the instance cannot scale up or down the number of replicas.
       READ_REPLICAS_ENABLED: If enabled, read endpoint will be provided and
@@ -459,20 +460,21 @@ class Instance(_messages.Message):
   memorySizeGb = _messages.IntegerField(13, variant=_messages.Variant.INT32)
   name = _messages.StringField(14)
   nodes = _messages.MessageField('NodeInfo', 15, repeated=True)
-  persistenceIamIdentity = _messages.StringField(16)
-  port = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  readEndpoint = _messages.StringField(18)
-  readEndpointPort = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  readReplicasMode = _messages.EnumField('ReadReplicasModeValueValuesEnum', 20)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 21)
-  redisVersion = _messages.StringField(22)
-  replicaCount = _messages.IntegerField(23, variant=_messages.Variant.INT32)
-  reservedIpRange = _messages.StringField(24)
-  serverCaCerts = _messages.MessageField('TlsCertificate', 25, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 26)
-  statusMessage = _messages.StringField(27)
-  tier = _messages.EnumField('TierValueValuesEnum', 28)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 29)
+  persistenceConfig = _messages.MessageField('PersistenceConfig', 16)
+  persistenceIamIdentity = _messages.StringField(17)
+  port = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  readEndpoint = _messages.StringField(19)
+  readEndpointPort = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  readReplicasMode = _messages.EnumField('ReadReplicasModeValueValuesEnum', 21)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 22)
+  redisVersion = _messages.StringField(23)
+  replicaCount = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  reservedIpRange = _messages.StringField(25)
+  serverCaCerts = _messages.MessageField('TlsCertificate', 26, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 27)
+  statusMessage = _messages.StringField(28)
+  tier = _messages.EnumField('TierValueValuesEnum', 29)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 30)
 
 
 class InstanceAuthString(_messages.Message):
@@ -648,8 +650,8 @@ class MaintenanceSchedule(_messages.Message):
       true.
     endTime: Output only. The end time of any upcoming scheduled maintenance
       for this instance.
-    scheduleDeadlineTime: Output only. The time deadline any schedule start
-      time cannot go beyond, including reschedule.
+    scheduleDeadlineTime: Output only. The deadline that the maintenance
+      schedule start time can not go beyond, including reschedule.
     startTime: Output only. The start time of any upcoming scheduled
       maintenance for this instance.
   """
@@ -664,9 +666,8 @@ class NodeInfo(_messages.Message):
   r"""Node specific properties.
 
   Fields:
-    id: Output only. Output Only. Node identifying string. e.g. 'node-0',
-      'node-1'
-    zone: Output only. Output Only. Location of the node.
+    id: Output only. Node identifying string. e.g. 'node-0', 'node-1'
+    zone: Output only. Location of the node.
   """
 
   id = _messages.StringField(1)
@@ -802,6 +803,77 @@ class OutputConfig(_messages.Message):
   """
 
   gcsDestination = _messages.MessageField('GcsDestination', 1)
+
+
+class PersistenceConfig(_messages.Message):
+  r"""Configuration of the persistence functionality.
+
+  Enums:
+    PersistenceModeValueValuesEnum: Optional. Controls whether Persistence
+      features are enabled. If not provided, the existing value will be used.
+    RdbSnapshotPeriodValueValuesEnum: Optional. Period between RDB snapshots.
+      Snapshots will be attempted every period starting from the provided
+      snapshot start time. For example, a start time of 01/01/2033 06:45 and
+      SIX_HOURS snapshot period will do nothing until 01/01/2033, and then
+      trigger snapshots every day at 06:45, 12:45, 18:45, and 00:45 the next
+      day, and so on. If not provided, TWENTY_FOUR_HOURS will be used as
+      default.
+
+  Fields:
+    persistenceMode: Optional. Controls whether Persistence features are
+      enabled. If not provided, the existing value will be used.
+    rdbNextSnapshotTime: Output only. The next time that a snapshot attempt is
+      scheduled to occur.
+    rdbSnapshotPeriod: Optional. Period between RDB snapshots. Snapshots will
+      be attempted every period starting from the provided snapshot start
+      time. For example, a start time of 01/01/2033 06:45 and SIX_HOURS
+      snapshot period will do nothing until 01/01/2033, and then trigger
+      snapshots every day at 06:45, 12:45, 18:45, and 00:45 the next day, and
+      so on. If not provided, TWENTY_FOUR_HOURS will be used as default.
+    rdbSnapshotStartTime: Optional. Date and time that the first snapshot
+      was/will be attempted, and to which future snapshots will be aligned. If
+      not provided, the current time will be used.
+  """
+
+  class PersistenceModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Controls whether Persistence features are enabled. If not
+    provided, the existing value will be used.
+
+    Values:
+      PERSISTENCE_MODE_UNSPECIFIED: Not set.
+      DISABLED: Persistence is disabled for the instance, and any existing
+        snapshots are deleted.
+      RDB: RDB based Persistence is enabled.
+    """
+    PERSISTENCE_MODE_UNSPECIFIED = 0
+    DISABLED = 1
+    RDB = 2
+
+  class RdbSnapshotPeriodValueValuesEnum(_messages.Enum):
+    r"""Optional. Period between RDB snapshots. Snapshots will be attempted
+    every period starting from the provided snapshot start time. For example,
+    a start time of 01/01/2033 06:45 and SIX_HOURS snapshot period will do
+    nothing until 01/01/2033, and then trigger snapshots every day at 06:45,
+    12:45, 18:45, and 00:45 the next day, and so on. If not provided,
+    TWENTY_FOUR_HOURS will be used as default.
+
+    Values:
+      SNAPSHOT_PERIOD_UNSPECIFIED: Not set.
+      ONE_HOUR: Snapshot every 1 hour.
+      SIX_HOURS: Snapshot every 6 hours.
+      TWELVE_HOURS: Snapshot every 12 hours.
+      TWENTY_FOUR_HOURS: Snapshot every 24 horus.
+    """
+    SNAPSHOT_PERIOD_UNSPECIFIED = 0
+    ONE_HOUR = 1
+    SIX_HOURS = 2
+    TWELVE_HOURS = 3
+    TWENTY_FOUR_HOURS = 4
+
+  persistenceMode = _messages.EnumField('PersistenceModeValueValuesEnum', 1)
+  rdbNextSnapshotTime = _messages.StringField(2)
+  rdbSnapshotPeriod = _messages.EnumField('RdbSnapshotPeriodValueValuesEnum', 3)
+  rdbSnapshotStartTime = _messages.StringField(4)
 
 
 class RedisProjectsLocationsGetRequest(_messages.Message):
@@ -952,7 +1024,7 @@ class RedisProjectsLocationsInstancesPatchRequest(_messages.Message):
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field may
       only include these fields from Instance: * `displayName` * `labels` *
-      `memorySizeGb` * `redisConfig`
+      `memorySizeGb` * `redisConfig` * `replica_count`
   """
 
   instance = _messages.MessageField('Instance', 1)

@@ -310,6 +310,33 @@ class OsconfigV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Update an OS Config patch deployment.
+
+      Args:
+        request: (OsconfigProjectsPatchDeploymentsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PatchDeployment) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/patchDeployments/{patchDeploymentsId}',
+        http_method='PATCH',
+        method_id='osconfig.projects.patchDeployments.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta/{+name}',
+        request_field='patchDeployment',
+        request_type_name='OsconfigProjectsPatchDeploymentsPatchRequest',
+        response_type_name='PatchDeployment',
+        supports_download=False,
+    )
+
   class ProjectsPatchJobsInstanceDetailsService(base_api.BaseApiService):
     """Service class for the projects_patchJobs_instanceDetails resource."""
 

@@ -126,7 +126,7 @@ workload_identity_pool_provider:
       `attribute.{custom_attribute}`, where `{custom_attribute}` is the name of
       the custom attribute to be mapped. You can define a maximum of 50 custom
       attributes. The maximum length of a mapped attribute key is
-      100 characters, and the key may only contain the characters [a-z0-9_].
+      100 characters, and the key may only contain the characters `[a-z_0-9]`.
 
       You can reference these attributes in IAM policies to define fine-grained
       access for a workload to Google Cloud resources. For example:

@@ -304,7 +304,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest",
-      "description": "Request message for ConsumerProcurementService.PlaceOrder. Next Id: 12",
+      "description": "Request message for ConsumerProcurementService.PlaceOrder. Next Id: 13",
       "type": "object",
       "properties": {
         "displayName": {
@@ -351,6 +351,10 @@
             "AUTO_RENEWAL_BEHAVIOR_ENABLE",
             "AUTO_RENEWAL_BEHAVIOR_DISABLE"
           ]
+        },
+        "testConfig": {
+          "description": "Optional. Test configuration for the to-be-placed order. Placing test order is only allowed if the parent is a testing billing account for the service.",
+          "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1TestConfig"
         }
       }
     },
@@ -537,6 +541,17 @@
         "quoteExternalName": {
           "description": "Required. External name of the quote to purchase.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1TestConfig": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1TestConfig",
+      "description": "The test configuration for the resource.",
+      "type": "object",
+      "properties": {
+        "isTesting": {
+          "description": "Whether the resource is for testing or not.",
+          "type": "boolean"
         }
       }
     },
@@ -1388,6 +1403,110 @@
         },
         "nextPageToken": {
           "description": "The token for fetching the next page.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1GrantConsentRequest": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1GrantConsentRequest",
+      "description": "Request message to grant consent.",
+      "type": "object",
+      "properties": {
+        "consent": {
+          "description": "Required. A consent to be granted. Set only agreement_document field.",
+          "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1Consent"
+        }
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1Consent": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1Consent",
+      "description": "A consent resource represents the relationship between a user and an agreement.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of a consent. An examples of valid names would be in the format of: - \"billingAccounts\/{billing_account}\/consents\/{consent}\".",
+          "type": "string"
+        },
+        "agreementDocument": {
+          "description": "Full name of the agreement document that was agreed to for this consent, ## in the format of one of: commerceoffercatalog.googleapis.com\/billingAccounts\/{billing_account}\/offers\/{offer_id}\/agreements\/{agreement_id}\/documents\/{document_id}",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. State of current consent.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified value for the state. Sentinel value; do not use.",
+            "Represent the approved state of the consent.",
+            "Represent the revoked state of the consent."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "REVOKED"
+          ]
+        },
+        "updateTime": {
+          "description": "Output only. The update time of current consent.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "createTime": {
+          "description": "Output only. The creation time of current consent.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1RevokeConsentRequest": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1RevokeConsentRequest",
+      "description": "Request message to revoke a consent.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1CheckConsentRequest": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1CheckConsentRequest",
+      "description": "Request message for check consents.",
+      "type": "object",
+      "properties": {
+        "agreement": {
+          "description": "Required. Agreement to be checked against. A valid format would be - agreements\/{agreement_id}",
+          "type": "string"
+        },
+        "languageCode": {
+          "description": "The language code is used to find the agreement document if check consent doesn't pass. If this field is set, the method will attempt to locate the agreement document written in that language. If such document cannot be found, the request will fail. If this field is not set, the method will try two strategies in the following order: 1) reuse the language of document associated with the most recent consent, 2) use the document written in the default language, while default language is set by the agreement owner. If neither strategy works, the request will fail. Please follow BCP 47 (https:\/\/www.w3.org\/International\/articles\/bcp47\/) for the language string.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1CheckConsentResponse": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1CheckConsentResponse",
+      "description": "Response for check consent.",
+      "type": "object",
+      "properties": {
+        "consent": {
+          "description": "The Consent for this agreement if a consent is active.",
+          "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1Consent"
+        }
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1ListConsentsResponse": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1ListConsentsResponse",
+      "description": "Response message for the list consent request.",
+      "type": "object",
+      "properties": {
+        "consents": {
+          "description": "Consents matching the request.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1Consent"
+          }
+        },
+        "nextPageToken": {
+          "description": "Pagination token for large results.",
           "type": "string"
         }
       }
@@ -2360,6 +2479,135 @@
                   }
                 }
               }
+            }
+          }
+        },
+        "consents": {
+          "methods": {
+            "grant": {
+              "id": "cloudcommerceconsumerprocurement.billingAccounts.consents.grant",
+              "path": "v1alpha1/{+parent}/consents:grant",
+              "flatPath": "v1alpha1/billingAccounts/{billingAccountsId}/consents:grant",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. Parent of the consent to grant. Current supported format includes: - billingAccounts\/{billing_account}",
+                  "pattern": "^billingAccounts\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1GrantConsentRequest"
+              },
+              "response": {
+                "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1Consent"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Grants consent."
+            },
+            "revoke": {
+              "id": "cloudcommerceconsumerprocurement.billingAccounts.consents.revoke",
+              "path": "v1alpha1/{+name}:revoke",
+              "flatPath": "v1alpha1/billingAccounts/{billingAccountsId}/consents/{consentsId}:revoke",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. A consent to be reovked. Examples of valid names would be: - billingAccounts\/{billing_account}\/consents\/{consent_id}",
+                  "pattern": "^billingAccounts\/[^\/]+\/consents\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1RevokeConsentRequest"
+              },
+              "response": {
+                "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1Consent"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Revokes a consent. Revocation is only allowed on a revokable agreement with a current Consent."
+            },
+            "check": {
+              "id": "cloudcommerceconsumerprocurement.billingAccounts.consents.check",
+              "path": "v1alpha1/{+parent}/consents:check",
+              "flatPath": "v1alpha1/billingAccounts/{billingAccountsId}/consents:check",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. Parent of consents. Current supported format includes: - billingAccounts\/{billing_account}",
+                  "pattern": "^billingAccounts\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1CheckConsentRequest"
+              },
+              "response": {
+                "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1CheckConsentResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Checks if a customer's consents satisfy the current agreement."
+            },
+            "list": {
+              "id": "cloudcommerceconsumerprocurement.billingAccounts.consents.list",
+              "path": "v1alpha1/{+parent}/consents",
+              "flatPath": "v1alpha1/billingAccounts/{billingAccountsId}/consents",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. Parent of consents. Current supported format includes: - billingAccounts\/{billing_account}",
+                  "pattern": "^billingAccounts\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of results returned by this request.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "The continuation token, which is used to page through large result sets. To get the next page of results, set this parameter to the value of `nextPageToken` from the previous response.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "agreement": {
+                  "description": "Leave this field unset will return consents of agreements that user has access to. A valid format would be - agreements\/{agreement_id}",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1ListConsentsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Lists current consents."
             }
           }
         }

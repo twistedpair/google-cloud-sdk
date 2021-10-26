@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import parser_errors
 
 
@@ -33,7 +34,6 @@ RANGE_HELP_TEXT = """\
     Cloud Platform features are not supported on legacy networks. Please be
     advised that legacy networks may not be supported in the future.
     """
-
 
 _RANGE_NON_LEGACY_MODE_ERROR = (
     '--range can only be used with --subnet-mode=legacy.')
@@ -95,6 +95,27 @@ def AddMtuArg(parser):
               IP packet that can be transmitted on this network. Default value
               is 1460 bytes, and the maximum is 1500 bytes. The MTU advertised
               via DHCP to all instances attached to this network.""")
+
+
+def AddEnableUlaInternalIpv6Arg(parser):
+  """Adds the --enable-ula-internal-ipv6 flag."""
+  parser.add_argument(
+      '--enable-ula-internal-ipv6', action=arg_parsers.StoreTrueFalseAction,
+      help="""Enable/disable ULA internal IPv6 on this network. Enabling this
+      feature will assign a /48 from google defined ULA prefix fd20::/20.""")
+
+
+def AddInternalIpv6RangeArg(parser):
+  """Adds the --internal-ipv6-range flag."""
+  parser.add_argument(
+      '--internal-ipv6-range',
+      type=str,
+      help="""When enabling ULA internal IPv6, caller can optionally specify
+      the /48 range they want from the google defined ULA prefix fd20::/20.
+      ULA_IPV6_RANGE must be a valid /48 ULA IPv6 address and within the
+      fd20::/20. Operation will fail if the speficied /48 is already in used
+      by another resource. If the field is not speficied, then a /48 range
+      will be randomly allocated from fd20::/20 and returned via this field.""")
 
 
 def AddNetworkFirewallPolicyEnforcementOrderArg(parser):

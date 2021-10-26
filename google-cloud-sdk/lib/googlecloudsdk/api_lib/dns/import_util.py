@@ -23,11 +23,16 @@ import re
 
 from dns import rdatatype
 from dns import zone
+from googlecloudsdk.api_lib.dns import svcb_stub
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import encoding
 import six
+
+
+# Enable support for importing SVCB and HTTPS records.
+svcb_stub.register()
 
 
 class Error(exceptions.Error):
@@ -130,6 +135,7 @@ SUPPORTED_TYPES = frozenset((
     rdatatype.CNAME,
     rdatatype.DNSKEY,
     rdatatype.DS,
+    svcb_stub.HTTPS,  # Replace after updating to dnspython 2.x.
     rdatatype.IPSECKEY,
     rdatatype.MX,
     rdatatype.NAPTR,
@@ -138,6 +144,7 @@ SUPPORTED_TYPES = frozenset((
     rdatatype.SOA,
     rdatatype.SPF,
     rdatatype.SRV,
+    svcb_stub.SVCB,  # Replace after updating to dnspython 2.x.
     rdatatype.SSHFP,
     rdatatype.TLSA,
     rdatatype.TXT,

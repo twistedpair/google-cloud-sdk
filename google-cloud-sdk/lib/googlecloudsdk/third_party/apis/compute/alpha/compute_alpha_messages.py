@@ -1742,6 +1742,8 @@ class AttachedDiskInitializeParams(_messages.Message):
   other, but not both.
 
   Enums:
+    ArchitectureValueValuesEnum: The architecture of the attached disk. Valid
+      values are arm64 or x86_64.
     InterfaceValueValuesEnum: [Deprecated] Specifies the disk interface to use
       for attaching this disk, which is either SCSI or NVME. The default is
       SCSI.
@@ -1754,6 +1756,8 @@ class AttachedDiskInitializeParams(_messages.Message):
       disks.
 
   Fields:
+    architecture: The architecture of the attached disk. Valid values are
+      arm64 or x86_64.
     description: An optional description. Provide this property when creating
       the disk.
     diskName: Specifies the disk name. If not specified, the default is to use
@@ -1832,6 +1836,20 @@ class AttachedDiskInitializeParams(_messages.Message):
       source snapshot.
   """
 
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""The architecture of the attached disk. Valid values are arm64 or
+    x86_64.
+
+    Values:
+      ARCHITECTURE_UNSPECIFIED: Default value indicating Architecture is not
+        set.
+      ARM64: Machines with architecture ARM64
+      X86_64: Machines with architecture X86_64
+    """
+    ARCHITECTURE_UNSPECIFIED = 0
+    ARM64 = 1
+    X86_64 = 2
+
   class InterfaceValueValuesEnum(_messages.Enum):
     r"""[Deprecated] Specifies the disk interface to use for attaching this
     disk, which is either SCSI or NVME. The default is SCSI.
@@ -1885,24 +1903,25 @@ class AttachedDiskInitializeParams(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  description = _messages.StringField(1)
-  diskName = _messages.StringField(2)
-  diskSizeGb = _messages.IntegerField(3)
-  diskType = _messages.StringField(4)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 5, repeated=True)
-  interface = _messages.EnumField('InterfaceValueValuesEnum', 6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  licenseCodes = _messages.IntegerField(8, repeated=True)
-  licenses = _messages.StringField(9, repeated=True)
-  multiWriter = _messages.BooleanField(10)
-  onUpdateAction = _messages.EnumField('OnUpdateActionValueValuesEnum', 11)
-  provisionedIops = _messages.IntegerField(12)
-  replicaZones = _messages.StringField(13, repeated=True)
-  resourcePolicies = _messages.StringField(14, repeated=True)
-  sourceImage = _messages.StringField(15)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 16)
-  sourceSnapshot = _messages.StringField(17)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
+  description = _messages.StringField(2)
+  diskName = _messages.StringField(3)
+  diskSizeGb = _messages.IntegerField(4)
+  diskType = _messages.StringField(5)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 6, repeated=True)
+  interface = _messages.EnumField('InterfaceValueValuesEnum', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  licenseCodes = _messages.IntegerField(9, repeated=True)
+  licenses = _messages.StringField(10, repeated=True)
+  multiWriter = _messages.BooleanField(11)
+  onUpdateAction = _messages.EnumField('OnUpdateActionValueValuesEnum', 12)
+  provisionedIops = _messages.IntegerField(13)
+  replicaZones = _messages.StringField(14, repeated=True)
+  resourcePolicies = _messages.StringField(15, repeated=True)
+  sourceImage = _messages.StringField(16)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
+  sourceSnapshot = _messages.StringField(18)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 19)
 
 
 class AuditConfig(_messages.Message):
@@ -29353,6 +29372,8 @@ class Disk(_messages.Message):
   information, read Regional resources.
 
   Enums:
+    ArchitectureValueValuesEnum: The architecture of the disk. Valid values
+      are ARM64 or X86_64.
     InterfaceValueValuesEnum: [Deprecated] Specifies the disk interface to use
       for attaching this disk, which is either SCSI or NVME. The default is
       SCSI.
@@ -29368,6 +29389,8 @@ class Disk(_messages.Message):
       the setLabels method.
 
   Fields:
+    architecture: The architecture of the disk. Valid values are ARM64 or
+      X86_64.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -29561,6 +29584,19 @@ class Disk(_messages.Message):
       as a field in the request body.
   """
 
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""The architecture of the disk. Valid values are ARM64 or X86_64.
+
+    Values:
+      ARCHITECTURE_UNSPECIFIED: Default value indicating Architecture is not
+        set.
+      ARM64: Machines with architecture ARM64
+      X86_64: Machines with architecture X86_64
+    """
+    ARCHITECTURE_UNSPECIFIED = 0
+    ARM64 = 1
+    X86_64 = 2
+
   class InterfaceValueValuesEnum(_messages.Enum):
     r"""[Deprecated] Specifies the disk interface to use for attaching this
     disk, which is either SCSI or NVME. The default is SCSI.
@@ -29628,51 +29664,52 @@ class Disk(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  creationTimestamp = _messages.StringField(1)
-  description = _messages.StringField(2)
-  diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 3)
-  eraseWindowsVssSignature = _messages.BooleanField(4)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 5, repeated=True)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  interface = _messages.EnumField('InterfaceValueValuesEnum', 7)
-  kind = _messages.StringField(8, default='compute#disk')
-  labelFingerprint = _messages.BytesField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  lastAttachTimestamp = _messages.StringField(11)
-  lastDetachTimestamp = _messages.StringField(12)
-  licenseCodes = _messages.IntegerField(13, repeated=True)
-  licenses = _messages.StringField(14, repeated=True)
-  locationHint = _messages.StringField(15)
-  locked = _messages.BooleanField(16)
-  multiWriter = _messages.BooleanField(17)
-  name = _messages.StringField(18)
-  options = _messages.StringField(19)
-  physicalBlockSizeBytes = _messages.IntegerField(20)
-  provisionedIops = _messages.IntegerField(21)
-  region = _messages.StringField(22)
-  replicaZones = _messages.StringField(23, repeated=True)
-  resourcePolicies = _messages.StringField(24, repeated=True)
-  satisfiesPzs = _messages.BooleanField(25)
-  selfLink = _messages.StringField(26)
-  selfLinkWithId = _messages.StringField(27)
-  sizeGb = _messages.IntegerField(28)
-  sourceDisk = _messages.StringField(29)
-  sourceDiskId = _messages.StringField(30)
-  sourceImage = _messages.StringField(31)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 32)
-  sourceImageId = _messages.StringField(33)
-  sourceInstantSnapshot = _messages.StringField(34)
-  sourceInstantSnapshotId = _messages.StringField(35)
-  sourceSnapshot = _messages.StringField(36)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 37)
-  sourceSnapshotId = _messages.StringField(38)
-  sourceStorageObject = _messages.StringField(39)
-  status = _messages.EnumField('StatusValueValuesEnum', 40)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 41)
-  type = _messages.StringField(42)
-  userLicenses = _messages.StringField(43, repeated=True)
-  users = _messages.StringField(44, repeated=True)
-  zone = _messages.StringField(45)
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 4)
+  eraseWindowsVssSignature = _messages.BooleanField(5)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 6, repeated=True)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  interface = _messages.EnumField('InterfaceValueValuesEnum', 8)
+  kind = _messages.StringField(9, default='compute#disk')
+  labelFingerprint = _messages.BytesField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  lastAttachTimestamp = _messages.StringField(12)
+  lastDetachTimestamp = _messages.StringField(13)
+  licenseCodes = _messages.IntegerField(14, repeated=True)
+  licenses = _messages.StringField(15, repeated=True)
+  locationHint = _messages.StringField(16)
+  locked = _messages.BooleanField(17)
+  multiWriter = _messages.BooleanField(18)
+  name = _messages.StringField(19)
+  options = _messages.StringField(20)
+  physicalBlockSizeBytes = _messages.IntegerField(21)
+  provisionedIops = _messages.IntegerField(22)
+  region = _messages.StringField(23)
+  replicaZones = _messages.StringField(24, repeated=True)
+  resourcePolicies = _messages.StringField(25, repeated=True)
+  satisfiesPzs = _messages.BooleanField(26)
+  selfLink = _messages.StringField(27)
+  selfLinkWithId = _messages.StringField(28)
+  sizeGb = _messages.IntegerField(29)
+  sourceDisk = _messages.StringField(30)
+  sourceDiskId = _messages.StringField(31)
+  sourceImage = _messages.StringField(32)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 33)
+  sourceImageId = _messages.StringField(34)
+  sourceInstantSnapshot = _messages.StringField(35)
+  sourceInstantSnapshotId = _messages.StringField(36)
+  sourceSnapshot = _messages.StringField(37)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 38)
+  sourceSnapshotId = _messages.StringField(39)
+  sourceStorageObject = _messages.StringField(40)
+  status = _messages.EnumField('StatusValueValuesEnum', 41)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 42)
+  type = _messages.StringField(43)
+  userLicenses = _messages.StringField(44, repeated=True)
+  users = _messages.StringField(45, repeated=True)
+  zone = _messages.StringField(46)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -36707,6 +36744,8 @@ class Image(_messages.Message):
   for your VM instances. For more information, read Images.
 
   Enums:
+    ArchitectureValueValuesEnum: The architecture of the image. Valid values
+      are ARM64 or X86_64.
     SourceTypeValueValuesEnum: The type of the image used to create this disk.
       The default and only value is RAW
     StatusValueValuesEnum: [Output Only] The status of the image. An image can
@@ -36720,6 +36759,8 @@ class Image(_messages.Message):
     RawDiskValue: The parameters of the raw disk image.
 
   Fields:
+    architecture: The architecture of the image. Valid values are ARM64 or
+      X86_64.
     archiveSizeBytes: Size of the image tar.gz archive stored in Google Cloud
       Storage (in bytes).
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -36854,6 +36895,19 @@ class Image(_messages.Message):
       cloud/global/licenses/debian-9-stretch
   """
 
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""The architecture of the image. Valid values are ARM64 or X86_64.
+
+    Values:
+      ARCHITECTURE_UNSPECIFIED: Default value indicating Architecture is not
+        set.
+      ARM64: Machines with architecture ARM64
+      X86_64: Machines with architecture X86_64
+    """
+    ARCHITECTURE_UNSPECIFIED = 0
+    ARM64 = 1
+    X86_64 = 2
+
   class SourceTypeValueValuesEnum(_messages.Enum):
     r"""The type of the image used to create this disk. The default and only
     value is RAW
@@ -36945,41 +36999,42 @@ class Image(_messages.Message):
     sha1Checksum = _messages.StringField(2)
     source = _messages.StringField(3)
 
-  archiveSizeBytes = _messages.IntegerField(1)
-  creationTimestamp = _messages.StringField(2)
-  deprecated = _messages.MessageField('DeprecationStatus', 3)
-  description = _messages.StringField(4)
-  diskSizeGb = _messages.IntegerField(5)
-  family = _messages.StringField(6)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 7, repeated=True)
-  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
-  imageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 9)
-  kind = _messages.StringField(10, default='compute#image')
-  labelFingerprint = _messages.BytesField(11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  licenseCodes = _messages.IntegerField(13, repeated=True)
-  licenses = _messages.StringField(14, repeated=True)
-  locked = _messages.BooleanField(15)
-  name = _messages.StringField(16)
-  rawDisk = _messages.MessageField('RawDiskValue', 17)
-  rolloutOverride = _messages.MessageField('RolloutPolicy', 18)
-  satisfiesPzs = _messages.BooleanField(19)
-  selfLink = _messages.StringField(20)
-  selfLinkWithId = _messages.StringField(21)
-  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 22)
-  sourceDisk = _messages.StringField(23)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 24)
-  sourceDiskId = _messages.StringField(25)
-  sourceImage = _messages.StringField(26)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 27)
-  sourceImageId = _messages.StringField(28)
-  sourceSnapshot = _messages.StringField(29)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 30)
-  sourceSnapshotId = _messages.StringField(31)
-  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 32, default='RAW')
-  status = _messages.EnumField('StatusValueValuesEnum', 33)
-  storageLocations = _messages.StringField(34, repeated=True)
-  userLicenses = _messages.StringField(35, repeated=True)
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
+  archiveSizeBytes = _messages.IntegerField(2)
+  creationTimestamp = _messages.StringField(3)
+  deprecated = _messages.MessageField('DeprecationStatus', 4)
+  description = _messages.StringField(5)
+  diskSizeGb = _messages.IntegerField(6)
+  family = _messages.StringField(7)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 8, repeated=True)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  imageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 10)
+  kind = _messages.StringField(11, default='compute#image')
+  labelFingerprint = _messages.BytesField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  licenseCodes = _messages.IntegerField(14, repeated=True)
+  licenses = _messages.StringField(15, repeated=True)
+  locked = _messages.BooleanField(16)
+  name = _messages.StringField(17)
+  rawDisk = _messages.MessageField('RawDiskValue', 18)
+  rolloutOverride = _messages.MessageField('RolloutPolicy', 19)
+  satisfiesPzs = _messages.BooleanField(20)
+  selfLink = _messages.StringField(21)
+  selfLinkWithId = _messages.StringField(22)
+  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 23)
+  sourceDisk = _messages.StringField(24)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 25)
+  sourceDiskId = _messages.StringField(26)
+  sourceImage = _messages.StringField(27)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 28)
+  sourceImageId = _messages.StringField(29)
+  sourceSnapshot = _messages.StringField(30)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 31)
+  sourceSnapshotId = _messages.StringField(32)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 33, default='RAW')
+  status = _messages.EnumField('StatusValueValuesEnum', 34)
+  storageLocations = _messages.StringField(35, repeated=True)
+  userLicenses = _messages.StringField(36, repeated=True)
 
 
 class ImageFamilyView(_messages.Message):
@@ -38467,6 +38522,7 @@ class InstanceGroupManagerAutoHealingPolicy(_messages.Message):
     UpdateInstancesValueValuesEnum:
 
   Fields:
+    autoHealingTriggers: Restricts what triggers autohealing.
     healthCheck: The URL for the health check that signals autohealing.
     initialDelaySec: The number of seconds that the managed instance group
       waits before it applies autohealing policies to new instances or
@@ -38504,10 +38560,58 @@ class InstanceGroupManagerAutoHealingPolicy(_messages.Message):
     ALWAYS = 0
     FOLLOW_UPDATE_POLICY = 1
 
-  healthCheck = _messages.StringField(1)
-  initialDelaySec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  maxUnavailable = _messages.MessageField('FixedOrPercent', 3)
-  updateInstances = _messages.EnumField('UpdateInstancesValueValuesEnum', 4)
+  autoHealingTriggers = _messages.MessageField('InstanceGroupManagerAutoHealingPolicyAutoHealingTriggers', 1)
+  healthCheck = _messages.StringField(2)
+  initialDelaySec = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  maxUnavailable = _messages.MessageField('FixedOrPercent', 4)
+  updateInstances = _messages.EnumField('UpdateInstancesValueValuesEnum', 5)
+
+
+class InstanceGroupManagerAutoHealingPolicyAutoHealingTriggers(_messages.Message):
+  r"""A InstanceGroupManagerAutoHealingPolicyAutoHealingTriggers object.
+
+  Enums:
+    OnHealthCheckValueValuesEnum: If you have configured an application-based
+      health check for the group, this field controls whether to trigger VM
+      autohealing based on a failed health check. Valid values are: - ON
+      (default): The group recreates running VMs that fail the application-
+      based health check. - OFF: When set to OFF, you can still observe
+      instance health state, but the group does not recreate VMs that fail the
+      application-based health check. This is useful for troubleshooting and
+      setting up your health check configuration.
+
+  Fields:
+    onHealthCheck: If you have configured an application-based health check
+      for the group, this field controls whether to trigger VM autohealing
+      based on a failed health check. Valid values are: - ON (default): The
+      group recreates running VMs that fail the application-based health
+      check. - OFF: When set to OFF, you can still observe instance health
+      state, but the group does not recreate VMs that fail the application-
+      based health check. This is useful for troubleshooting and setting up
+      your health check configuration.
+  """
+
+  class OnHealthCheckValueValuesEnum(_messages.Enum):
+    r"""If you have configured an application-based health check for the
+    group, this field controls whether to trigger VM autohealing based on a
+    failed health check. Valid values are: - ON (default): The group recreates
+    running VMs that fail the application-based health check. - OFF: When set
+    to OFF, you can still observe instance health state, but the group does
+    not recreate VMs that fail the application-based health check. This is
+    useful for troubleshooting and setting up your health check configuration.
+
+    Values:
+      OFF: When set to OFF, you can still observe instance health state, but
+        the group does not recreate VMs that fail the application-based health
+        check. This is useful for troubleshooting and setting up your health
+        check configuration.
+      ON: (Default) The group recreates running VMs that fail the group's
+        application-based health check.
+    """
+    OFF = 0
+    ON = 1
+
+  onHealthCheck = _messages.EnumField('OnHealthCheckValueValuesEnum', 1)
 
 
 class InstanceGroupManagerInstanceLifecyclePolicy(_messages.Message):
@@ -41317,6 +41421,8 @@ class InstantSnapshot(_messages.Message):
   create disk rollback points quickly..
 
   Enums:
+    ArchitectureValueValuesEnum: [Output Only] The architecture of the instant
+      snapshot. Valid values are ARM64 or X86_64.
     StatusValueValuesEnum: [Output Only] The status of the instantSnapshot.
       This can be CREATING, DELETING, FAILED, or READY.
 
@@ -41325,6 +41431,8 @@ class InstantSnapshot(_messages.Message):
       modified by the setLabels method. Label values may be empty.
 
   Fields:
+    architecture: [Output Only] The architecture of the instant snapshot.
+      Valid values are ARM64 or X86_64.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -41383,6 +41491,20 @@ class InstantSnapshot(_messages.Message):
       settable as a field in the request body.
   """
 
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The architecture of the instant snapshot. Valid values
+    are ARM64 or X86_64.
+
+    Values:
+      ARCHITECTURE_UNSPECIFIED: Default value indicating Architecture is not
+        set.
+      ARM64: Machines with architecture ARM64
+      X86_64: Machines with architecture X86_64
+    """
+    ARCHITECTURE_UNSPECIFIED = 0
+    ARM64 = 1
+    X86_64 = 2
+
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the instantSnapshot. This can be CREATING,
     DELETING, FAILED, or READY.
@@ -41423,23 +41545,24 @@ class InstantSnapshot(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  creationTimestamp = _messages.StringField(1)
-  description = _messages.StringField(2)
-  diskSizeGb = _messages.IntegerField(3)
-  guestFlush = _messages.BooleanField(4)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default='compute#instantSnapshot')
-  labelFingerprint = _messages.BytesField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  region = _messages.StringField(10)
-  satisfiesPzs = _messages.BooleanField(11)
-  selfLink = _messages.StringField(12)
-  selfLinkWithId = _messages.StringField(13)
-  sourceDisk = _messages.StringField(14)
-  sourceDiskId = _messages.StringField(15)
-  status = _messages.EnumField('StatusValueValuesEnum', 16)
-  zone = _messages.StringField(17)
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  diskSizeGb = _messages.IntegerField(4)
+  guestFlush = _messages.BooleanField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default='compute#instantSnapshot')
+  labelFingerprint = _messages.BytesField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  region = _messages.StringField(11)
+  satisfiesPzs = _messages.BooleanField(12)
+  selfLink = _messages.StringField(13)
+  selfLinkWithId = _messages.StringField(14)
+  sourceDisk = _messages.StringField(15)
+  sourceDiskId = _messages.StringField(16)
+  status = _messages.EnumField('StatusValueValuesEnum', 17)
+  zone = _messages.StringField(18)
 
 
 class InstantSnapshotAggregatedList(_messages.Message):
@@ -44869,12 +44992,10 @@ class LocationPolicy(_messages.Message):
         zones where resources are available while distributing VMs as evenly
         as possible across allowed zones to minimize the impact of zonal
         failure. Recommended for highly available serving workloads.
-      TARGET_SHAPE_UNSPECIFIED: This value is unused.
     """
     ANY = 0
     ANY_SINGLE_ZONE = 1
     BALANCED = 2
-    TARGET_SHAPE_UNSPECIFIED = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LocationsValue(_messages.Message):
@@ -48218,11 +48339,13 @@ class NetworkPeering(_messages.Message):
       create and manage subnetwork routes between two networks when peering
       state is ACTIVE.
     exportCustomRoutes: Whether to export the custom routes to peer network.
+      The default value is false.
     exportSubnetRoutesWithPublicIp: Whether subnet routes with public IP range
       are exported. The default value is true, all subnet routes are exported.
       IPv4 special-use ranges are always exported to peers and are not
       controlled by this field.
     importCustomRoutes: Whether to import the custom routes from peer network.
+      The default value is false.
     importSubnetRoutesWithPublicIp: Whether subnet routes with public IP range
       are imported. The default value is false. IPv4 special-use ranges are
       always imported from peers and are not controlled by this field.
@@ -60296,6 +60419,9 @@ class Scheduling(_messages.Message):
       instance creation where the VM won't be scheduled for maintenance.
     maintenanceInterval: For more information about maintenance intervals, see
       Setting maintenance intervals.
+    maxRunDuration: Specifies the max run duration for the given instance. If
+      specified, the instance termination action will be performed at the end
+      of the run duration.
     minNodeCpus: The minimum number of virtual CPUs this instance will consume
       when running on a sole-tenant node.
     nodeAffinities: A set of node affinity and anti-affinity configurations.
@@ -60310,6 +60436,9 @@ class Scheduling(_messages.Message):
       therefore, in a `TERMINATED` state. See Instance Life Cycle for more
       information on the possible instance states.
     provisioningModel: Specifies the provisioning model of the instance.
+    terminationTime: Specifies the timestamp, when the instance will be
+      terminated, in RFC3339 text format. If specified, the instance
+      termination action will be performed at the termination time.
   """
 
   class InstanceTerminationActionValueValuesEnum(_messages.Enum):
@@ -60375,11 +60504,13 @@ class Scheduling(_messages.Message):
   locationHint = _messages.StringField(8)
   maintenanceFreezeDurationHours = _messages.IntegerField(9, variant=_messages.Variant.INT32)
   maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 10)
-  minNodeCpus = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 12, repeated=True)
-  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 13)
-  preemptible = _messages.BooleanField(14)
-  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 15)
+  maxRunDuration = _messages.MessageField('Duration', 11)
+  minNodeCpus = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 13, repeated=True)
+  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 14)
+  preemptible = _messages.BooleanField(15)
+  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 16)
+  terminationTime = _messages.StringField(17)
 
 
 class SchedulingNodeAffinity(_messages.Message):
@@ -62596,6 +62727,8 @@ class Snapshot(_messages.Message):
   persistent disk snapshots.
 
   Enums:
+    ArchitectureValueValuesEnum: [Output Only] The architecture of the
+      snapshot. Valid values are ARM64 or X86_64.
     StatusValueValuesEnum: [Output Only] The status of the snapshot. This can
       be CREATING, DELETING, FAILED, READY, or UPLOADING.
     StorageBytesStatusValueValuesEnum: [Output Only] An indicator whether
@@ -62609,6 +62742,8 @@ class Snapshot(_messages.Message):
       by the setLabels method. Label values may be empty.
 
   Fields:
+    architecture: [Output Only] The architecture of the snapshot. Valid values
+      are ARM64 or X86_64.
     autoCreated: [Output Only] Set to true if snapshots are automatically
       created by applying resource policy on the target disk.
     chainName: Creates the new snapshot in the snapshot chain labeled with the
@@ -62710,6 +62845,20 @@ class Snapshot(_messages.Message):
       by a list of URLs to the license resource.
   """
 
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The architecture of the snapshot. Valid values are ARM64
+    or X86_64.
+
+    Values:
+      ARCHITECTURE_UNSPECIFIED: Default value indicating Architecture is not
+        set.
+      ARM64: Machines with architecture ARM64
+      X86_64: Machines with architecture X86_64
+    """
+    ARCHITECTURE_UNSPECIFIED = 0
+    ARM64 = 1
+    X86_64 = 2
+
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the snapshot. This can be CREATING,
     DELETING, FAILED, READY, or UPLOADING.
@@ -62765,36 +62914,37 @@ class Snapshot(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  autoCreated = _messages.BooleanField(1)
-  chainName = _messages.StringField(2)
-  creationTimestamp = _messages.StringField(3)
-  description = _messages.StringField(4)
-  diskSizeGb = _messages.IntegerField(5)
-  downloadBytes = _messages.IntegerField(6)
-  guestFlush = _messages.BooleanField(7)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 8, repeated=True)
-  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(10, default='compute#snapshot')
-  labelFingerprint = _messages.BytesField(11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  licenseCodes = _messages.IntegerField(13, repeated=True)
-  licenses = _messages.StringField(14, repeated=True)
-  locationHint = _messages.StringField(15)
-  name = _messages.StringField(16)
-  satisfiesPzs = _messages.BooleanField(17)
-  selfLink = _messages.StringField(18)
-  selfLinkWithId = _messages.StringField(19)
-  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 20)
-  sourceDisk = _messages.StringField(21)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 22)
-  sourceDiskId = _messages.StringField(23)
-  sourceInstantSnapshot = _messages.StringField(24)
-  sourceInstantSnapshotId = _messages.StringField(25)
-  status = _messages.EnumField('StatusValueValuesEnum', 26)
-  storageBytes = _messages.IntegerField(27)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 28)
-  storageLocations = _messages.StringField(29, repeated=True)
-  userLicenses = _messages.StringField(30, repeated=True)
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
+  autoCreated = _messages.BooleanField(2)
+  chainName = _messages.StringField(3)
+  creationTimestamp = _messages.StringField(4)
+  description = _messages.StringField(5)
+  diskSizeGb = _messages.IntegerField(6)
+  downloadBytes = _messages.IntegerField(7)
+  guestFlush = _messages.BooleanField(8)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 9, repeated=True)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(11, default='compute#snapshot')
+  labelFingerprint = _messages.BytesField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  licenseCodes = _messages.IntegerField(14, repeated=True)
+  licenses = _messages.StringField(15, repeated=True)
+  locationHint = _messages.StringField(16)
+  name = _messages.StringField(17)
+  satisfiesPzs = _messages.BooleanField(18)
+  selfLink = _messages.StringField(19)
+  selfLinkWithId = _messages.StringField(20)
+  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
+  sourceDisk = _messages.StringField(22)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 23)
+  sourceDiskId = _messages.StringField(24)
+  sourceInstantSnapshot = _messages.StringField(25)
+  sourceInstantSnapshotId = _messages.StringField(26)
+  status = _messages.EnumField('StatusValueValuesEnum', 27)
+  storageBytes = _messages.IntegerField(28)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 29)
+  storageLocations = _messages.StringField(30, repeated=True)
+  userLicenses = _messages.StringField(31, repeated=True)
 
 
 class SnapshotList(_messages.Message):
@@ -64528,7 +64678,8 @@ class Subnetwork(_messages.Message):
       resource creation time.
     enableFlowLogs: Whether to enable flow logging for this subnetwork. If
       this field is not explicitly set, it will not appear in get listings. If
-      not set the default behavior is to disable flow logging. This field
+      not set the default behavior is determined by the org policy, if there
+      is no org policy specified, then it will default to disabled. This field
       isn't supported with the purpose field set to
       INTERNAL_HTTPS_LOAD_BALANCER.
     enableL2: Enables Layer2 communication on the subnetwork.
@@ -64548,7 +64699,8 @@ class Subnetwork(_messages.Message):
       subnetwork is enabled. The value of the field must be in [0, 1]. Set the
       sampling rate of VPC flow logs within the subnetwork where 1.0 means all
       collected logs are reported and 0.0 means no logs are reported. Default
-      is 0.5, which means half of all collected logs are reported.
+      is 0.5 unless otherwise specified by the org policy, which means half of
+      all collected logs are reported.
     gatewayAddress: [Output Only] The gateway address for default routes to
       reach destination addresses outside this subnetwork.
     id: [Output Only] The unique identifier for the resource. This identifier
@@ -65181,7 +65333,8 @@ class SubnetworkLogConfig(_messages.Message):
       of 5 seconds per connection.
     enable: Whether to enable flow logging for this subnetwork. If this field
       is not explicitly set, it will not appear in get listings. If not set
-      the default behavior is to disable flow logging.
+      the default behavior is determined by the org policy, if there is no org
+      policy specified, then it will default to disabled.
     filterExpr: Can only be specified if VPC flow logs for this subnetwork is
       enabled. Export filter used to define which VPC flow logs should be
       logged.
@@ -65189,7 +65342,8 @@ class SubnetworkLogConfig(_messages.Message):
       subnetwork is enabled. The value of the field must be in [0, 1]. Set the
       sampling rate of VPC flow logs within the subnetwork where 1.0 means all
       collected logs are reported and 0.0 means no logs are reported. Default
-      is 0.5, which means half of all collected logs are reported.
+      is 0.5 unless otherwise specified by the org policy, which means half of
+      all collected logs are reported.
     metadata: Can only be specified if VPC flow logs for this subnetwork is
       enabled. Configures whether all, none or a subset of metadata fields
       should be added to the reported VPC flow logs. Default is

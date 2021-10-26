@@ -214,7 +214,7 @@
           "type": "string"
         },
         "unreachable": {
-          "description": "Locations that could not be reached.",
+          "description": "Locations that could not be reached when making an aggregated query using wildcards.",
           "type": "array",
           "items": {
             "type": "string"
@@ -310,6 +310,15 @@
           "description": "Output only. Vcenter appliance.",
           "readOnly": true,
           "$ref": "Vcenter"
+        },
+        "uid": {
+          "description": "Output only. System-generated unique identifier for the resource.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "etag": {
+          "description": "Checksum that may be sent on update, delete, and undelete requests to ensure that the user-provided value is up to date before the server processes a request. The server computes checksums based on the value of other fields in the request.",
+          "type": "string"
         }
       }
     },
@@ -446,6 +455,10 @@
         "requestId": {
           "description": "Optional. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
           "type": "string"
+        },
+        "etag": {
+          "description": "Optional. Checksum used to ensure that the user-provided value is up to date before the server processes the request. The server compares provided checksum with the current checksum of the resource. If the user-provided value is out of date, this request returns an `ABORTED` error.",
+          "type": "string"
         }
       }
     },
@@ -466,7 +479,7 @@
           "type": "string"
         },
         "unreachable": {
-          "description": "Locations that could not be reached.",
+          "description": "Locations that could not be reached when making an aggregated query using wildcards.",
           "type": "array",
           "items": {
             "type": "string"
@@ -537,6 +550,15 @@
           "description": "Required. Number of bare metal nodes in this cluster.",
           "type": "integer",
           "format": "int32"
+        },
+        "uid": {
+          "description": "Output only. System-generated unique identifier for the resource.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "etag": {
+          "description": "Optional. Checksum that may be sent on update and delete requests to ensure that the user-provided value is up to date before the server processes a request. The server computes checksums based on the value of other fields in the request.",
+          "type": "string"
         }
       }
     },
@@ -557,7 +579,7 @@
           "type": "string"
         },
         "unreachable": {
-          "description": "Locations that could not be reached.",
+          "description": "Locations that could not be reached when making an aggregated query using wildcards.",
           "type": "array",
           "items": {
             "type": "string"
@@ -679,6 +701,15 @@
           "description": "Output only. HCX activation key.",
           "readOnly": true,
           "type": "string"
+        },
+        "uid": {
+          "description": "Output only. System-generated unique identifier for the resource.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "etag": {
+          "description": "Checksum that may be sent on update and delete requests to ensure that the user-provided value is up to date before the server processes a request. The server computes checksums based on the value of other fields in the request.",
+          "type": "string"
         }
       }
     },
@@ -699,7 +730,7 @@
           "type": "string"
         },
         "unreachable": {
-          "description": "Locations that could not be reached.",
+          "description": "Locations that could not be reached when making an aggregated query using wildcards.",
           "type": "array",
           "items": {
             "type": "string"
@@ -751,6 +782,15 @@
         "edgeServicesCidr": {
           "description": "Required. IP address range in CIDR notation used to create internet access and external IP access. An RFC 1918 CIDR block, with a \"\/26\" prefix, is required. The range cannot overlap with any prefixes either in the consumer VPC network or in use by the private clouds attached to that VPC network.",
           "type": "string"
+        },
+        "uid": {
+          "description": "Output only. System-generated unique identifier for the resource.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "etag": {
+          "description": "Checksum that may be sent on update and delete requests to ensure that the user-provided value is up to date before the server processes a request. The server computes checksums based on the value of other fields in the request.",
+          "type": "string"
         }
       }
     },
@@ -799,7 +839,7 @@
           "type": "string"
         },
         "unreachable": {
-          "description": "Locations that could not be reached.",
+          "description": "Locations that could not be reached when making an aggregated query using wildcards.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1424,6 +1464,11 @@
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
+                    },
+                    "etag": {
+                      "description": "Optional. Checksum used to ensure that the user-provided value is up to date before the server processes the request. The server compares the provided checksum with the current checksum of the resource. If the user-provided value is out of date, then this request returns an `ABORTED` error.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -1838,6 +1883,11 @@
                           "description": "Optional. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
                           "location": "query",
                           "type": "string"
+                        },
+                        "etag": {
+                          "description": "Optional. Checksum used to ensure that the user-provided value is up to date before the server processes the request. The server compares provided checksum with the current checksum of the resource. If the user-provided value is out of date, this request returns an `ABORTED` error.",
+                          "location": "query",
+                          "type": "string"
                         }
                       },
                       "parameterOrder": [
@@ -1849,7 +1899,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes a `Cluster` resource. To avoid unintended data loss, migrate or gracefully shut down any workloads running on the cluster before deletion."
+                      "description": "Deletes a `Cluster` resource. To avoid unintended data loss, migrate or gracefully shut down any workloads running on the cluster before deletion. You cannot delete the management cluster of a private cloud using this method."
                     },
                     "setIamPolicy": {
                       "id": "vmwareengine.projects.locations.privateClouds.clusters.setIamPolicy",
@@ -2454,6 +2504,11 @@
                     },
                     "requestId": {
                       "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server guarantees that a request doesn't result in creation of duplicate commitments for at least 60 minutes. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "etag": {
+                      "description": "Optional. Checksum used to ensure that the user-provided value is up to date before the server processes the request. The server compares provided checksum with the current checksum of the resource. If the user-provided value is out of date, this request returns an `ABORTED` error.",
                       "location": "query",
                       "type": "string"
                     }

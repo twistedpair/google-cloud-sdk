@@ -3693,6 +3693,21 @@ class ApigeeOrganizationsSitesApicategoriesListRequest(_messages.Message):
   parent = _messages.StringField(1, required=True)
 
 
+class ApigeeOrganizationsUndeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsUndeleteRequest object.
+
+  Fields:
+    googleCloudApigeeV1UndeleteOrganizationRequest: A
+      GoogleCloudApigeeV1UndeleteOrganizationRequest resource to be passed as
+      the request body.
+    name: Required. Name of the organization. Use the following structure in
+      your request: `organizations/{org}`
+  """
+
+  googleCloudApigeeV1UndeleteOrganizationRequest = _messages.MessageField('GoogleCloudApigeeV1UndeleteOrganizationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class ApigeeProjectsProvisionOrganizationRequest(_messages.Message):
   r"""A ApigeeProjectsProvisionOrganizationRequest object.
 
@@ -8695,6 +8710,10 @@ class GoogleCloudApigeeV1TraceSamplingConfig(_messages.Message):
 
   sampler = _messages.EnumField('SamplerValueValuesEnum', 1)
   samplingRate = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudApigeeV1UndeleteOrganizationRequest(_messages.Message):
+  r"""Request for UndeleteOrganization."""
 
 
 class GoogleCloudApigeeV1UpdateError(_messages.Message):

@@ -20,10 +20,12 @@ from __future__ import unicode_literals
 
 import contextlib
 
+from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.container.gkemulticloud import util as api_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from six.moves.urllib import parse
 
@@ -74,7 +76,15 @@ def GkemulticloudEndpointOverride(location, track=base.ReleaseTrack.GA):
       _ValidateLocation(location)
       regional_ep = _GetEffectiveEndpoint(location, track=track)
       properties.VALUES.api_endpoint_overrides.gkemulticloud.Set(regional_ep)
+
+    # TODO(b/203617640): Remove handling of this exception once API has gone GA.
     yield
+  except apitools_exceptions.HttpNotFoundError as e:
+    if 'Method not found' in e.content:
+      log.warning(
+          'This project may not have been added to the allow list for the Anthos Multi-Cloud API, please reach out to your GCP account team to resolve this'
+      )
+    raise
   finally:
     if not original_ep:
       properties.VALUES.api_endpoint_overrides.gkemulticloud.Set(original_ep)

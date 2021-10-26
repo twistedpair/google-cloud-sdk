@@ -21,7 +21,7 @@ class Error(_messages.Message):
   r"""Error describes why the execution was abnormally terminated.
 
   Fields:
-    context: Human readable stack trace string.
+    context: Human-readable stack trace string.
     payload: Error message and data returned represented as a JSON string.
     stackTrace: Stack trace with detailed information of where error was
       generated.
@@ -124,8 +124,8 @@ class Position(_messages.Message):
   Fields:
     column: The source code column position (of the line) the current
       instruction was generated from.
-    length: The length in bytes of text in this character group, e.g. digits
-      of a number, string length, or AST (abstract syntax tree) node.
+    length: The number of bytes of source code making up this stack trace
+      element.
     line: The source code line number the current instruction was generated
       from.
   """
@@ -139,7 +139,7 @@ class StackTrace(_messages.Message):
   r"""A collection of stack elements (frames) where an error occurred.
 
   Fields:
-    elements: An array of Stack elements.
+    elements: An array of stack elements.
   """
 
   elements = _messages.MessageField('StackTraceElement', 1, repeated=True)
@@ -149,7 +149,7 @@ class StackTraceElement(_messages.Message):
   r"""A single stack element (frame) where an error occurred.
 
   Fields:
-    position: The source position information of the stacktrace element.
+    position: The source position information of the stack trace element.
     routine: The routine where the error occurred.
     step: The step the error occurred at.
   """

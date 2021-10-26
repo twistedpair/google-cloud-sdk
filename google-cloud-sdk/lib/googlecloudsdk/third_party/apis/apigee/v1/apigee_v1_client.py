@@ -7410,6 +7410,33 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Undelete(self, request, global_params=None):
+      r"""Undelete an Apigee organization that is soft-deleted.
+
+      Args:
+        request: (ApigeeOrganizationsUndeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Undelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Undelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}:undelete',
+        http_method='POST',
+        method_id='apigee.organizations.undelete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:undelete',
+        request_field='googleCloudApigeeV1UndeleteOrganizationRequest',
+        request_type_name='ApigeeOrganizationsUndeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
       r"""Updates the properties for an Apigee organization. No other fields in the organization profile will be updated.
 

@@ -373,6 +373,8 @@ class Instance(_messages.Message):
       UPGRADING: The instance is upgrading.
       INITIALIZING: The instance is being created.
       REGISTERING: The instance is getting registered.
+      SUSPENDING: The instance is suspending.
+      SUSPENDED: The instance is suspended.
     """
     STATE_UNSPECIFIED = 0
     STARTING = 1
@@ -384,6 +386,8 @@ class Instance(_messages.Message):
     UPGRADING = 7
     INITIALIZING = 8
     REGISTERING = 9
+    SUSPENDING = 10
+    SUSPENDED = 11
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

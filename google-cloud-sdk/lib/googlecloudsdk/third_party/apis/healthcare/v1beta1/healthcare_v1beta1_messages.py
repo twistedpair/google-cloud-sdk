@@ -7339,9 +7339,27 @@ class ValidationConfig(_messages.Message):
   r"""Contains the configuration for FHIR profiles and validation.
 
   Fields:
+    disableFhirpathValidation: Whether to disable FHIRPath validation for
+      incoming resources. Set this to true to disable checking incoming
+      resources for conformance against FHIRPath requirement defined in the
+      FHIR specification. This property only affects resource types that do
+      not have profiles configured for them, any rules in enabled
+      implementation guides will still be enforced.
     disableProfileValidation: Whether to disable profile validation for this
       FHIR store. Set this to true to disable checking incoming resources for
       conformance against StructureDefinitions in this FHIR store.
+    disableReferenceTypeValidation: Whether to disable reference type
+      validation for incoming resources. Set this to true to disable checking
+      incoming resources for conformance against reference type requirement
+      defined in the FHIR specification. This property only affects resource
+      types that do not have profiles configured for them, any rules in
+      enabled implementation guides will still be enforced.
+    disableRequiredFieldValidation: Whether to disable required fields
+      validation for incoming resources. Set this to true to disable checking
+      incoming resources for conformance against required fields requirement
+      defined in the FHIR specification. This property only affects resource
+      types that do not have profiles configured for them, any rules in
+      enabled implementation guides will still be enforced.
     enabledImplementationGuides: A list of ImplementationGuide URLs in this
       FHIR store that are used to configure the profiles to use for
       validation. For example, to use the US Core profiles for validation, set
@@ -7359,8 +7377,11 @@ class ValidationConfig(_messages.Message):
       not return an error.
   """
 
-  disableProfileValidation = _messages.BooleanField(1)
-  enabledImplementationGuides = _messages.StringField(2, repeated=True)
+  disableFhirpathValidation = _messages.BooleanField(1)
+  disableProfileValidation = _messages.BooleanField(2)
+  disableReferenceTypeValidation = _messages.BooleanField(3)
+  disableRequiredFieldValidation = _messages.BooleanField(4)
+  enabledImplementationGuides = _messages.StringField(5, repeated=True)
 
 
 class VersionSource(_messages.Message):

@@ -152,6 +152,10 @@ class Cluster(_messages.Message):
   Fields:
     createTime: Output only. Creation time of this resource in RFC3339 text
       format.
+    etag: Optional. Checksum that may be sent on update and delete requests to
+      ensure that the user-provided value is up to date before the server
+      processes a request. The server computes checksums based on the value of
+      other fields in the request.
     labels: Labels are a way to attach lightweight metadata to resources for
       filtering and querying resource data. No more than 64 user labels can be
       associated with each resource. Label keys and values can be no longer
@@ -175,6 +179,7 @@ class Cluster(_messages.Message):
     nodeTypeId: Required. The canonical identifier of node types (`NodeType`)
       in this cluster. For example: standard-72.
     state: Output only. State of the resource.
+    uid: Output only. System-generated unique identifier for the resource.
     updateTime: Output only. Last update time of this resource in RFC3339 text
       format.
   """
@@ -233,13 +238,15 @@ class Cluster(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  management = _messages.BooleanField(3)
-  name = _messages.StringField(4)
-  nodeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  nodeTypeId = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  etag = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  management = _messages.BooleanField(4)
+  name = _messages.StringField(5)
+  nodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  nodeTypeId = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class Credentials(_messages.Message):
@@ -327,12 +334,17 @@ class HcxActivationKey(_messages.Message):
   Fields:
     activationKey: Output only. HCX activation key.
     createTime: Output only. Creation time of HCX activation key.
+    etag: Checksum that may be sent on update and delete requests to ensure
+      that the user-provided value is up to date before the server processes a
+      request. The server computes checksums based on the value of other
+      fields in the request.
     name: Output only. The resource name of this HcxActivationKey. Resource
       names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/us-west1/privateClouds/my-
       cloud/hcxActivationKeys/my-key`
     state: Output only. State of HCX activation key.
+    uid: Output only. System-generated unique identifier for the resource.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -351,8 +363,10 @@ class HcxActivationKey(_messages.Message):
 
   activationKey = _messages.StringField(1)
   createTime = _messages.StringField(2)
-  name = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
+  etag = _messages.StringField(3)
+  name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  uid = _messages.StringField(6)
 
 
 class ListClustersResponse(_messages.Message):
@@ -362,7 +376,8 @@ class ListClustersResponse(_messages.Message):
     clusters: A list of private cloud clusters.
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
-    unreachable: Locations that could not be reached.
+    unreachable: Locations that could not be reached when making an aggregated
+      query using wildcards.
   """
 
   clusters = _messages.MessageField('Cluster', 1, repeated=True)
@@ -377,7 +392,8 @@ class ListHcxActivationKeysResponse(_messages.Message):
     hcxActivationKeys: List of HCX activation keys.
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
-    unreachable: Locations that could not be reached.
+    unreachable: Locations that could not be reached when making an aggregated
+      query using wildcards.
   """
 
   hcxActivationKeys = _messages.MessageField('HcxActivationKey', 1, repeated=True)
@@ -405,7 +421,8 @@ class ListNetworkPoliciesResponse(_messages.Message):
     networkPolicies: A list of network policies.
     nextPageToken: A token, which can be send as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
-    unreachable: Locations that could not be reached.
+    unreachable: Locations that could not be reached when making an aggregated
+      query using wildcards.
   """
 
   networkPolicies = _messages.MessageField('NetworkPolicy', 1, repeated=True)
@@ -420,7 +437,8 @@ class ListNodeTypesResponse(_messages.Message):
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
     nodeTypes: A list of Node Types.
-    unreachable: Locations that could not be reached.
+    unreachable: Locations that could not be reached when making an aggregated
+      query using wildcards.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -448,7 +466,8 @@ class ListPrivateCloudsResponse(_messages.Message):
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
     privateClouds: A list of private clouds.
-    unreachable: Locations that could not be reached.
+    unreachable: Locations that could not be reached when making an aggregated
+      query using wildcards.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -614,6 +633,10 @@ class NetworkPolicy(_messages.Message):
       with a "/26" prefix, is required. The range cannot overlap with any
       prefixes either in the consumer VPC network or in use by the private
       clouds attached to that VPC network.
+    etag: Checksum that may be sent on update and delete requests to ensure
+      that the user-provided value is up to date before the server processes a
+      request. The server computes checksums based on the value of other
+      fields in the request.
     externalIp: Network service that allows External IP addresses to be
       assigned to VMware workloads. This service can only be enabled when
       `internet_access` is also enabled.
@@ -641,6 +664,7 @@ class NetworkPolicy(_messages.Message):
       where `{project}` is the project ID or project number of the project
       containing the network. In case of shared VPC, use the project ID or
       project number of the host project containing the shared VPC network.
+    uid: Output only. System-generated unique identifier for the resource.
     updateTime: Output only. Last update time of this resource in RFC3339 text
       format.
   """
@@ -680,12 +704,14 @@ class NetworkPolicy(_messages.Message):
 
   createTime = _messages.StringField(1)
   edgeServicesCidr = _messages.StringField(2)
-  externalIp = _messages.MessageField('NetworkService', 3)
-  internetAccess = _messages.MessageField('NetworkService', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  network = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  etag = _messages.StringField(3)
+  externalIp = _messages.MessageField('NetworkService', 4)
+  internetAccess = _messages.MessageField('NetworkService', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class NetworkService(_messages.Message):
@@ -1011,6 +1037,10 @@ class PrivateCloud(_messages.Message):
     deleteTime: Output only. Time the resource was marked as deleted, in
       RFC3339 text format.
     description: User-provided description for this private cloud.
+    etag: Checksum that may be sent on update, delete, and undelete requests
+      to ensure that the user-provided value is up to date before the server
+      processes a request. The server computes checksums based on the value of
+      other fields in the request.
     expireTime: Output only. Planned deletion time of this resource in RFC3339
       text format.
     hcx: Output only. HCX appliance.
@@ -1042,6 +1072,7 @@ class PrivateCloud(_messages.Message):
     nsx: Output only. NSX appliance.
     state: Output only. State of the resource. New values may be added to this
       enum when appropriate.
+    uid: Output only. System-generated unique identifier for the resource.
     updateTime: Output only. Last update time of this resource in RFC3339 text
       format.
     vcenter: Output only. Vcenter appliance.
@@ -1102,16 +1133,18 @@ class PrivateCloud(_messages.Message):
   createTime = _messages.StringField(1)
   deleteTime = _messages.StringField(2)
   description = _messages.StringField(3)
-  expireTime = _messages.StringField(4)
-  hcx = _messages.MessageField('Hcx', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  managementCluster = _messages.MessageField('ManagementCluster', 7)
-  name = _messages.StringField(8)
-  networkConfig = _messages.MessageField('NetworkConfig', 9)
-  nsx = _messages.MessageField('Nsx', 10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
-  vcenter = _messages.MessageField('Vcenter', 13)
+  etag = _messages.StringField(4)
+  expireTime = _messages.StringField(5)
+  hcx = _messages.MessageField('Hcx', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  managementCluster = _messages.MessageField('ManagementCluster', 8)
+  name = _messages.StringField(9)
+  networkConfig = _messages.MessageField('NetworkConfig', 10)
+  nsx = _messages.MessageField('Nsx', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
+  vcenter = _messages.MessageField('Vcenter', 15)
 
 
 class ResetNsxCredentialsRequest(_messages.Message):
@@ -1315,12 +1348,18 @@ class UndeletePrivateCloudRequest(_messages.Message):
   r"""Request message for VmwareEngine.UndeletePrivateCloud
 
   Fields:
+    etag: Optional. Checksum used to ensure that the user-provided value is up
+      to date before the server processes the request. The server compares
+      provided checksum with the current checksum of the resource. If the
+      user-provided value is out of date, this request returns an `ABORTED`
+      error.
     requestId: Optional. The request ID must be a valid UUID with the
       exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
-  requestId = _messages.StringField(1)
+  etag = _messages.StringField(1)
+  requestId = _messages.StringField(2)
 
 
 class Vcenter(_messages.Message):
@@ -1414,6 +1453,11 @@ class VmwareengineProjectsLocationsNetworkPoliciesDeleteRequest(_messages.Messag
   r"""A VmwareengineProjectsLocationsNetworkPoliciesDeleteRequest object.
 
   Fields:
+    etag: Optional. Checksum used to ensure that the user-provided value is up
+      to date before the server processes the request. The server compares
+      provided checksum with the current checksum of the resource. If the
+      user-provided value is out of date, this request returns an `ABORTED`
+      error.
     name: Required. The resource name of the network policy to delete.
       Resource names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
@@ -1433,8 +1477,9 @@ class VmwareengineProjectsLocationsNetworkPoliciesDeleteRequest(_messages.Messag
       (00000000-0000-0000-0000-000000000000).
   """
 
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class VmwareengineProjectsLocationsNetworkPoliciesGetIamPolicyRequest(_messages.Message):
@@ -1755,6 +1800,11 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersDeleteRequest(_messages.
   object.
 
   Fields:
+    etag: Optional. Checksum used to ensure that the user-provided value is up
+      to date before the server processes the request. The server compares
+      provided checksum with the current checksum of the resource. If the
+      user-provided value is out of date, this request returns an `ABORTED`
+      error.
     name: Required. The resource name of the cluster to delete. Resource names
       are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
@@ -1765,8 +1815,9 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersDeleteRequest(_messages.
       (00000000-0000-0000-0000-000000000000).
   """
 
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class VmwareengineProjectsLocationsPrivateCloudsClustersGetIamPolicyRequest(_messages.Message):
@@ -1955,6 +2006,11 @@ class VmwareengineProjectsLocationsPrivateCloudsDeleteRequest(_messages.Message)
       VmwareEngine.UndeletePrivateCloud. Specifying a value of `0` for this
       field instead begins the deletion process and ceases billing
       immediately.
+    etag: Optional. Checksum used to ensure that the user-provided value is up
+      to date before the server processes the request. The server compares the
+      provided checksum with the current checksum of the resource. If the
+      user-provided value is out of date, then this request returns an
+      `ABORTED` error.
     force: Optional. If set to true, cascade delete is enabled and all
       children of this private cloud resource are also deleted. When this flag
       is set to false, the private cloud will not be deleted if there are any
@@ -1970,9 +2026,10 @@ class VmwareengineProjectsLocationsPrivateCloudsDeleteRequest(_messages.Message)
   """
 
   delayHours = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  force = _messages.BooleanField(2)
-  name = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
+  etag = _messages.StringField(2)
+  force = _messages.BooleanField(3)
+  name = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
 
 
 class VmwareengineProjectsLocationsPrivateCloudsGetIamPolicyRequest(_messages.Message):

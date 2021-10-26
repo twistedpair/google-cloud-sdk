@@ -129,22 +129,22 @@ class CmekSettings(_messages.Message):
       NG]/cryptoKeys/[KEY]" For example:"projects/my-project/locations/us-
       central1/keyRings/my-ring/cryptoKeys/my-key"To enable CMEK for the Logs
       Router, set this field to a valid kms_key_name for which the associated
-      service account has the required
-      roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key.The
-      Cloud KMS key used by the Log Router can be updated by changing the
-      kms_key_name to a new valid key name. Encryption operations that are in
-      progress will be completed with the key that was in use when they
-      started. Decryption operations will be completed using the key that was
-      used at the time of encryption unless access to that key has been
-      revoked.To disable CMEK for the Logs Router, set this field to an empty
-      string.See Enabling CMEK for Logs Router
+      service account has the required cloudkms.cryptoKeyEncrypterDecrypter
+      roles assigned for the key.The Cloud KMS key used by the Log Router can
+      be updated by changing the kms_key_name to a new valid key name or
+      disabled by setting the key name to an empty string. Encryption
+      operations that are in progress will be completed with the key that was
+      in use when they started. Decryption operations will be completed using
+      the key that was used at the time of encryption unless access to that
+      key has been revoked.To disable CMEK for the Logs Router, set this field
+      to an empty string.See Enabling CMEK for Logs Router
       (https://cloud.google.com/logging/docs/routing/managed-encryption) for
       more information.
     name: Output only. The resource name of the CMEK settings.
     serviceAccountId: Output only. The service account that will be used by
       the Logs Router to access your Cloud KMS key.Before enabling CMEK for
-      Logs Router, you must first assign the role
-      roles/cloudkms.cryptoKeyEncrypterDecrypter to the service account that
+      Logs Router, you must first assign the
+      cloudkms.cryptoKeyEncrypterDecrypter role to the service account that
       the Logs Router will use to access your Cloud KMS key. Use
       GetCmekSettings to obtain the service account ID.See Enabling CMEK for
       Logs Router (https://cloud.google.com/logging/docs/routing/managed-
@@ -734,6 +734,11 @@ class LogBucket(_messages.Message):
     analyticsEnabled: Whether advanced log analytics is enabled for this
       bucket.This field may only be set at bucket creation and cannot be
       changed later.
+    cmekSettings: The CMEK settings of the log bucket. If present, new log
+      entries written to this log bucket are encrypted using the CMEK key
+      provided in this configuration. If a log bucket has CMEK settings, the
+      CMEK settings cannot be disabled later by updating the log bucket.
+      Changing the KMS key is allowed.
     createTime: Output only. The creation timestamp of the bucket. This is not
       set for any of the default buckets.
     description: Describes this bucket.
@@ -781,17 +786,18 @@ class LogBucket(_messages.Message):
     DELETE_REQUESTED = 2
 
   analyticsEnabled = _messages.BooleanField(1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  indexConfigs = _messages.MessageField('IndexConfig', 4, repeated=True)
-  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 5)
-  linkedBigqueryDataset = _messages.StringField(6)
-  locked = _messages.BooleanField(7)
-  logLink = _messages.MessageField('LogLink', 8)
-  name = _messages.StringField(9)
-  restrictedFields = _messages.StringField(10, repeated=True)
-  retentionDays = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  updateTime = _messages.StringField(12)
+  cmekSettings = _messages.MessageField('CmekSettings', 2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  indexConfigs = _messages.MessageField('IndexConfig', 5, repeated=True)
+  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 6)
+  linkedBigqueryDataset = _messages.StringField(7)
+  locked = _messages.BooleanField(8)
+  logLink = _messages.MessageField('LogLink', 9)
+  name = _messages.StringField(10)
+  restrictedFields = _messages.StringField(11, repeated=True)
+  retentionDays = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  updateTime = _messages.StringField(13)
 
 
 class LogEntry(_messages.Message):

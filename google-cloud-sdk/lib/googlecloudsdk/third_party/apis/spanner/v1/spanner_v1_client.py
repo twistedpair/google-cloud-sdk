@@ -39,6 +39,7 @@ class SpannerV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_instanceConfigOperations = self.ProjectsInstanceConfigOperationsService(self)
     self.projects_instanceConfigs = self.ProjectsInstanceConfigsService(self)
     self.projects_instances_backupOperations = self.ProjectsInstancesBackupOperationsService(self)
     self.projects_instances_backups_operations = self.ProjectsInstancesBackupsOperationsService(self)
@@ -51,6 +52,43 @@ class SpannerV1(base_api.BaseApiClient):
     self.projects_instances = self.ProjectsInstancesService(self)
     self.projects = self.ProjectsService(self)
     self.scans = self.ScansService(self)
+
+  class ProjectsInstanceConfigOperationsService(base_api.BaseApiService):
+    """Service class for the projects_instanceConfigOperations resource."""
+
+    _NAME = 'projects_instanceConfigOperations'
+
+    def __init__(self, client):
+      super(SpannerV1.ProjectsInstanceConfigOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists the user-managed instance config long-running operations in the given project. An instance config operation has a name of the form `projects//instanceConfigs//operations/`. The long-running operation metadata field type `metadata.type_url` describes the type of the metadata. Operations returned include those that have completed/failed/canceled within the last 7 days, and pending operations. Operations returned are ordered by `operation.metadata.value.start_time` in descending order starting from the most recently started operation.
+
+      Args:
+        request: (SpannerProjectsInstanceConfigOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListInstanceConfigOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/instanceConfigOperations',
+        http_method='GET',
+        method_id='spanner.projects.instanceConfigOperations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/instanceConfigOperations',
+        request_field='',
+        request_type_name='SpannerProjectsInstanceConfigOperationsListRequest',
+        response_type_name='ListInstanceConfigOperationsResponse',
+        supports_download=False,
+    )
 
   class ProjectsInstanceConfigsService(base_api.BaseApiService):
     """Service class for the projects_instanceConfigs resource."""

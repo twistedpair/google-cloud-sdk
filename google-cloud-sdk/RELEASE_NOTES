@@ -5,6 +5,58 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 362.0.0 (2021-10-26)
+
+### Breaking Changes
+
+*   **(Cloud SQL)** Backups are disabled by default when creating new database instances. This was
+  enabled by default in the previous release.
+*   **(Cloud SQL)** Backup start time will not be randomly selected. This was enabled in the
+  previous release. Use `--backup-start-time` to specify the start time for
+  backups.
+
+
+### Cloud Build
+
+* `gcloud builds submit --tag` fails early if a Dockerfile is not found when source is not a directory.
+
+### Cloud DNS
+
+* Added support for the SVCB and HTTPS record types.
+
+### Cloud Dataflow
+
+* Added `--gcs-log-dir` flag to `gcloud dataflow flex-template build` command
+to allow users the ability to specify path to a Google Cloud Storage directory
+for their build log.
+
+### Cloud On Demand Scanning
+
+* Add ARM64 support for `local-extract`.
+
+### Cloud Run
+
+* Promoted `--execution-environment` of `gcloud run` from alpha to beta.
+
+### Compute Engine
+
+* Promoted `--add-share-with` and `--remove-share-with` flags of `glcloud compute reservations update` to GA.
+
+### Managed Active Directory
+
+*   Adding support for `gcloud beta active-directory domains backups` and
+    `gcloud beta active-directory domains restore` for domain backup and
+    restore.
+
+### Miscellaneous
+
+*   Fixed an issue where non-interactive commands could exit with the error
+    'ValueError: invalid width 0'.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 361.0.0 (2021-10-19)
 
 ### Breaking Changes

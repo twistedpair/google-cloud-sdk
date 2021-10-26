@@ -347,7 +347,7 @@
           "$ref": "Money"
         },
         "validateOnly": {
-          "description": "When true, only validation will be performed, without actually registering the domain. Follows: https:\/\/cloud.google.com\/apis\/design\/design_patterns#request_validation",
+          "description": "When true, only validation is performed, without actually registering the domain. Follows: https:\/\/cloud.google.com\/apis\/design\/design_patterns#request_validation",
           "type": "boolean"
         }
       }
@@ -386,11 +386,11 @@
             "The state is undefined.",
             "The domain is being registered.",
             "The domain registration failed. You can delete resources in this state to allow registration to be retried.",
-            "Domain transfer from another registrar to Cloud Domains is in progress. The domain's current registrar may require action to complete the transfer. Check emails from the domain's current registrar to the domain's current registrant for instructions.",
-            "The attempt to transfer the domain from another registrar to Cloud Domains failed. You can delete resources in this state to allow transfer to be retried.",
+            "The domain is being transferred from another registrar to Cloud Domains.",
+            "The attempt to transfer the domain from another registrar to Cloud Domains failed. You can delete resources in this state and retry the transfer.",
             "The domain is registered and operational. The domain renews automatically as long as it remains in this state.",
             "The domain is suspended and inoperative. For more details, see the `issues` field.",
-            "The domain is no longer managed with Cloud Domains. It may have been transferred to another registrar or exported for management in [Google Domains](https:\/\/domains.google\/). You can no longer update it with this API, and information shown about it may be stale. Domains in this state will not be automatically renewed by Cloud Domains."
+            "The domain is no longer managed with Cloud Domains. It may have been transferred to another registrar or exported for management in [Google Domains](https:\/\/domains.google\/). You can no longer update it with this API, and information shown about it may be stale. Domains in this state are not automatically renewed by Cloud Domains."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -441,7 +441,7 @@
           "$ref": "ContactSettings"
         },
         "pendingContactSettings": {
-          "description": "Output only. Pending contact settings for the `Registration`. Updates to the `contact_settings` field that change its `registrant_contact` or `privacy` fields require email confirmation by the `registrant_contact` before taking effect. This field is set only if there are pending updates to the `contact_settings` that have not yet been confirmed. To confirm the changes, the `registrant_contact` must follow the instructions in the email they receive.",
+          "description": "Output only. Pending contact settings for the `Registration`. Updates to the `contact_settings` field that change its `registrant_contact` or `privacy` fields require email confirmation by the `registrant_contact` before taking effect. This field is set only if there are pending updates to the `contact_settings` that have not been confirmed. To confirm the changes, the `registrant_contact` must follow the instructions in the email they receive.",
           "readOnly": true,
           "$ref": "ContactSettings"
         },
@@ -708,7 +708,7 @@
           ]
         },
         "registrantContact": {
-          "description": "Required. The registrant contact for the `Registration`. *Caution: Anyone with access to this email address, phone number, and\/or postal address can take control of the domain.* *Warning: For new `Registration`s, the registrant will receive an email confirmation that they must complete within 15 days to avoid domain suspension.*",
+          "description": "Required. The registrant contact for the `Registration`. *Caution: Anyone with access to this email address, phone number, and\/or postal address can take control of the domain.* *Warning: For new `Registration`s, the registrant receives an email confirmation that they must complete within 15 days to avoid domain suspension.*",
           "$ref": "Contact"
         },
         "adminContact": {
@@ -878,7 +878,7 @@
       "type": "object",
       "properties": {
         "registration": {
-          "description": "Required. The complete `Registration` resource to be created. You can leave `registration.dns_settings` unset to import the domain's current DNS configuration from its current registrar. Use this option only if you are sure that the domain's current DNS service will not cease upon transfer, as is often the case for DNS services provided for free by the registrar.",
+          "description": "Required. The complete `Registration` resource to be created. You can leave `registration.dns_settings` unset to import the domain's current DNS configuration from its current registrar. Use this option only if you are sure that the domain's current DNS service does not cease upon transfer, as is often the case for DNS services provided for free by the registrar.",
           "$ref": "Registration"
         },
         "contactNotices": {
@@ -949,7 +949,7 @@
           "$ref": "ManagementSettings"
         },
         "updateMask": {
-          "description": "Required. The field mask describing which fields to update as a comma-separated list. For example, if only the transfer lock is being updated, the `update_mask` would be `\"transfer_lock_state\"`.",
+          "description": "Required. The field mask describing which fields to update as a comma-separated list. For example, if only the transfer lock is being updated, the `update_mask` is `\"transfer_lock_state\"`.",
           "type": "string",
           "format": "google-fieldmask"
         }
@@ -965,7 +965,7 @@
           "$ref": "DnsSettings"
         },
         "updateMask": {
-          "description": "Required. The field mask describing which fields to update as a comma-separated list. For example, if only the name servers are being updated for an existing Custom DNS configuration, the `update_mask` would be `\"custom_dns.name_servers\"`. When changing the DNS provider from one type to another, pass the new provider's field name as part of the field mask. For example, when changing from a Google Domains DNS configuration to a Custom DNS configuration, the `update_mask` would be `\"custom_dns\"`. \/\/",
+          "description": "Required. The field mask describing which fields to update as a comma-separated list. For example, if only the name servers are being updated for an existing Custom DNS configuration, the `update_mask` is `\"custom_dns.name_servers\"`. When changing the DNS provider from one type to another, pass the new provider's field name as part of the field mask. For example, when changing from a Google Domains DNS configuration to a Custom DNS configuration, the `update_mask` is `\"custom_dns\"`. \/\/",
           "type": "string",
           "format": "google-fieldmask"
         },
@@ -985,7 +985,7 @@
           "$ref": "ContactSettings"
         },
         "updateMask": {
-          "description": "Required. The field mask describing which fields to update as a comma-separated list. For example, if only the registrant contact is being updated, the `update_mask` would be `\"registrant_contact\"`.",
+          "description": "Required. The field mask describing which fields to update as a comma-separated list. For example, if only the registrant contact is being updated, the `update_mask` is `\"registrant_contact\"`.",
           "type": "string",
           "format": "google-fieldmask"
         },
@@ -1540,7 +1540,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets parameters needed to transfer a domain name from another registrar to Cloud Domains. For domains managed by Google Domains, transferring to Cloud Domains is not yet supported. Use the returned values to call `TransferDomain`."
+                  "description": "Gets parameters needed to transfer a domain name from another registrar to Cloud Domains. For domains managed by Google Domains, transferring to Cloud Domains is not supported. Use the returned values to call `TransferDomain`."
                 },
                 "transfer": {
                   "id": "domains.projects.locations.registrations.transfer",
@@ -1568,7 +1568,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Transfers a domain name from another registrar to Cloud Domains. For domains managed by Google Domains, transferring to Cloud Domains is not yet supported. Before calling this method, go to the domain's current registrar to unlock the domain for transfer and retrieve the domain's transfer authorization code. Then call `RetrieveTransferParameters` to confirm that the domain is unlocked and to get values needed to build a call to this method. A successful call creates a `Registration` resource in state `TRANSFER_PENDING`. It can take several days to complete the transfer process. The registrant can often speed up this process by approving the transfer through the current registrar, either by clicking a link in an email from the registrar or by visiting the registrar's website. A few minutes after transfer approval, the resource transitions to state `ACTIVE`, indicating that the transfer was successful. If the transfer is rejected or the request expires without being approved, the resource can end up in state `TRANSFER_FAILED`. If transfer fails, you can safely delete the resource and retry the transfer."
+                  "description": "Transfers a domain name from another registrar to Cloud Domains. For domains managed by Google Domains, transferring to Cloud Domains is not supported. Before calling this method, go to the domain's current registrar to unlock the domain for transfer and retrieve the domain's transfer authorization code. Then call `RetrieveTransferParameters` to confirm that the domain is unlocked and to get values needed to build a call to this method. A successful call creates a `Registration` resource in state `TRANSFER_PENDING`. It can take several days to complete the transfer process. The registrant can often speed up this process by approving the transfer through the current registrar, either by clicking a link in an email from the registrar or by visiting the registrar's website. A few minutes after transfer approval, the resource transitions to state `ACTIVE`, indicating that the transfer was successful. If the transfer is rejected or the request expires without being approved, the resource can end up in state `TRANSFER_FAILED`. If transfer fails, you can safely delete the resource and retry the transfer."
                 },
                 "list": {
                   "id": "domains.projects.locations.registrations.list",
@@ -1650,7 +1650,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. The field mask describing which fields to update as a comma-separated list. For example, if only the labels are being updated, the `update_mask` would be `\"labels\"`.",
+                      "description": "Required. The field mask describing which fields to update as a comma-separated list. For example, if only the labels are being updated, the `update_mask` is `\"labels\"`.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -1780,7 +1780,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Exports a `Registration` resource, such that it is no longer managed by Cloud Domains. When an active domain is successfully exported, you can continue to use the domain in [Google Domains](https:\/\/domains.google\/) until it expires. The calling user becomes the domain's sole owner in Google Domains, and permissions for the domain are subsequently managed there. The domain will not renew automatically unless the new owner sets up billing in Google Domains."
+                  "description": "Exports a `Registration` resource, such that it is no longer managed by Cloud Domains. When an active domain is successfully exported, you can continue to use the domain in [Google Domains](https:\/\/domains.google\/) until it expires. The calling user becomes the domain's sole owner in Google Domains, and permissions for the domain are subsequently managed there. The domain does not renew automatically unless the new owner sets up billing in Google Domains."
                 },
                 "delete": {
                   "id": "domains.projects.locations.registrations.delete",
@@ -1805,7 +1805,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a `Registration` resource. For `Registration` resources using usage billing, this method works if: * `state` is `EXPORTED` with `expire_time` in the past * `state` is `REGISTRATION_FAILED` * `state` is `TRANSFER_FAILED` This method works on any `Registration` resource using subscription billing, provided that the resource was created at least 1 day in the past. When an active domain is successfully deleted, you can continue to use the domain in [Google Domains](https:\/\/domains.google\/) until it expires. The calling user becomes the domain's sole owner in Google Domains, and permissions for the domain are subsequently managed there. The domain will not renew automatically unless the new owner sets up billing in Google Domains."
+                  "description": "Deletes a `Registration` resource. This method works on any `Registration` resource using [Subscription or Commitment billing](\/domains\/pricing#billing-models), provided that the resource was created at least 1 day in the past. For `Registration` resources using [Monthly billing](\/domains\/pricing#billing-models), this method works if: * `state` is `EXPORTED` with `expire_time` in the past * `state` is `REGISTRATION_FAILED` * `state` is `TRANSFER_FAILED` When an active registration is successfully deleted, you can continue to use the domain in [Google Domains](https:\/\/domains.google\/) until it expires. The calling user becomes the domain's sole owner in Google Domains, and permissions for the domain are subsequently managed there. The domain does not renew automatically unless the new owner sets up billing in Google Domains."
                 },
                 "retrieveAuthorizationCode": {
                   "id": "domains.projects.locations.registrations.retrieveAuthorizationCode",

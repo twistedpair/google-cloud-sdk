@@ -412,13 +412,15 @@
             "The state of the DAG run is unknown.",
             "The DAG run is being executed.",
             "The DAG run is finished successfully.",
-            "The DAG run is finished with an error."
+            "The DAG run is finished with an error.",
+            "The DAG run is queued for execution."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "RUNNING",
             "SUCCEEDED",
-            "FAILED"
+            "FAILED",
+            "QUEUED"
           ]
         },
         "executionDate": {
@@ -531,7 +533,12 @@
             "Task waiting to be rescheduled.",
             "Task queued.",
             "Task scheduled for execution.",
-            "Task in sensing mode."
+            "Task in sensing mode.",
+            "Task vanished from DAG before it ran.",
+            "Task is executing.",
+            "External request to shut down (e.g. marked failed when running).",
+            "External request to restart (e.g. cleared when running).",
+            "Deferrable operator waiting on a trigger."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -543,7 +550,12 @@
             "UP_FOR_RESCHEDULE",
             "QUEUED",
             "SCHEDULED",
-            "SENSING"
+            "SENSING",
+            "REMOVED",
+            "RUNNING",
+            "SHUTDOWN",
+            "RESTARTING",
+            "DEFERRED"
           ]
         },
         "tryNumber": {
@@ -833,6 +845,10 @@
             "ENVIRONMENT_SIZE_MEDIUM",
             "ENVIRONMENT_SIZE_LARGE"
           ]
+        },
+        "masterAuthorizedNetworksConfig": {
+          "description": "Optional. The configuration options for GKE clusters master authorized networks. By default master authorized networks feature is: - in case of private environment: enabled with no external networks allowlisted. - in case of public environment: disabled.",
+          "$ref": "MasterAuthorizedNetworksConfig"
         }
       }
     },
@@ -1015,6 +1031,10 @@
         "enablePrivatelyUsedPublicIps": {
           "description": "Optional. When enabled, IPs from public (non-RFC1918) ranges can be used for `IPAllocationPolicy.cluster_ipv4_cidr_block` and `IPAllocationPolicy.service_ipv4_cidr_block`.",
           "type": "boolean"
+        },
+        "cloudComposerConnectionSubnetwork": {
+          "description": "Optional. When specified, the environment will use Private Service Connect instead of VPC peerings to connect to Cloud SQL in the Tenant Project, and the PSC endpoint in the Customer Project will use an IP address from this subnetwork.",
+          "type": "string"
         }
       }
     },
@@ -1241,6 +1261,39 @@
         }
       }
     },
+    "MasterAuthorizedNetworksConfig": {
+      "id": "MasterAuthorizedNetworksConfig",
+      "description": "Configuration options for the master authorized networks feature. Enabled master authorized networks will disallow all external traffic to access Kubernetes master through HTTPS except traffic from the given CIDR blocks, Google Compute Engine Public IPs and Google Prod IPs.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether or not master authorized networks is enabled.",
+          "type": "boolean"
+        },
+        "cidrBlocks": {
+          "description": "cidr_blocks define up to 50 external networks that could access Kubernetes master through HTTPS.",
+          "type": "array",
+          "items": {
+            "$ref": "CidrBlock"
+          }
+        }
+      }
+    },
+    "CidrBlock": {
+      "id": "CidrBlock",
+      "description": "CidrBlock contains an optional name and one CIDR block.",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "description": "display_name is a field for users to identify CIDR blocks.",
+          "type": "string"
+        },
+        "cidrBlock": {
+          "description": "cidr_block must be specified in CIDR notation.",
+          "type": "string"
+        }
+      }
+    },
     "ListEnvironmentsResponse": {
       "id": "ListEnvironmentsResponse",
       "description": "The environments in a project and location.",
@@ -1273,6 +1326,17 @@
       "properties": {
         "imageVersion": {
           "description": "The version of the software running in the environment. This encapsulates both the version of Cloud Composer functionality and the version of Apache Airflow. It must match the regular expression `composer-([0-9]+\\.[0-9]+\\.[0-9]+|latest)-airflow-[0-9]+\\.[0-9]+(\\.[0-9]+.*)?`. When used as input, the server also checks if the provided version is supported and denies the request for an unsupported version. The Cloud Composer portion of the version is a [semantic version](https:\/\/semver.org) or `latest`. When the patch version is omitted, the current Cloud Composer patch version is selected. When `latest` is provided instead of an explicit version number, the server replaces `latest` with the current Cloud Composer version and stores that version number in the same field. The portion of the image version that follows `airflow-` is an official Apache Airflow repository [release name](https:\/\/github.com\/apache\/incubator-airflow\/releases). See also [Version List] (\/composer\/docs\/concepts\/versioning\/composer-versions).",
+          "type": "string"
+        }
+      }
+    },
+    "StoreEnvironmentStateRequest": {
+      "id": "StoreEnvironmentStateRequest",
+      "description": "Store environment state request.",
+      "type": "object",
+      "properties": {
+        "snapshotLocation": {
+          "description": "Location in a Cloud Storage where the snapshot of the state is going to be stored, e.g.: \"gs:\/\/my-bucket\/snapshots\".",
           "type": "string"
         }
       }
@@ -1454,6 +1518,17 @@
           "additionalProperties": {
             "type": "string"
           }
+        }
+      }
+    },
+    "StoreEnvironmentStateResponse": {
+      "id": "StoreEnvironmentStateResponse",
+      "description": "Store environment state response.",
+      "type": "object",
+      "properties": {
+        "snapshotLocation": {
+          "description": "The fully-resolved Cloud Storage location of the created snapshot, e.g.: \"gs:\/\/my-bucket\/snapshots\/project_id\/location\/environment_uuid\/timestamp\". This field is populated only if the snapshot creation was successful.",
+          "type": "string"
         }
       }
     }
@@ -1791,6 +1866,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Check if an upgrade operation on the environment will succeed. In case of problems detailed info can be found in the returned Operation."
+                },
+                "storeEnvironmentState": {
+                  "id": "composer.projects.locations.environments.storeEnvironmentState",
+                  "path": "v1alpha2/{+environment}:storeEnvironmentState",
+                  "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:storeEnvironmentState",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "environment": {
+                      "description": "The resource name of the source environment in the form: \"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "environment"
+                  ],
+                  "request": {
+                    "$ref": "StoreEnvironmentStateRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Store composer environment state. As a result of this operation, snapshot of environment's state is stored in a location specified in the StoreEnvironmentStateRequest."
                 }
               }
               ,

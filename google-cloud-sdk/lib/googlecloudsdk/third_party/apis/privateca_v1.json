@@ -1209,6 +1209,18 @@
           "description": "Optional. The PublishingOptions to follow when issuing Certificates from any CertificateAuthority in this CaPool.",
           "$ref": "PublishingOptions"
         },
+        "createTime": {
+          "description": "Output only. The time at which this CaPool was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time at which this CaPool was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
         "labels": {
           "description": "Optional. Labels with user-defined metadata.",
           "type": "object",

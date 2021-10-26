@@ -97,6 +97,21 @@ class AsymmetricSignRequest(_messages.Message):
   r"""Request message for KeyManagementService.AsymmetricSign.
 
   Fields:
+    data: Optional. This field will only be honored for RAW_PKCS1 keys. The
+      data to sign. A digest is computed over the data that will be signed,
+      PKCS #1 padding is applied to the digest directly and then encrypted.
+    dataCrc32c: Optional. An optional CRC32C checksum of the
+      AsymmetricSignRequest.data. If specified, KeyManagementService will
+      verify the integrity of the received AsymmetricSignRequest.data using
+      this checksum. KeyManagementService will report an error if the checksum
+      verification fails. If you receive a checksum error, your client should
+      verify that CRC32C(AsymmetricSignRequest.data) is equal to
+      AsymmetricSignRequest.data_crc32c, and if so, perform a limited number
+      of retries. A persistent mismatch may indicate an issue in your
+      computation of the CRC32C checksum. Note: This field is defined as int64
+      for reasons of compatibility across different languages. However, it is
+      a non-negative integer, which will never exceed 2^32-1, and can be
+      safely downconverted to uint32 in languages that support this type.
     digest: Optional. The digest of the data to sign. The digest must be
       produced with the same digest algorithm as specified by the key
       version's algorithm.
@@ -114,8 +129,10 @@ class AsymmetricSignRequest(_messages.Message):
       safely downconverted to uint32 in languages that support this type.
   """
 
-  digest = _messages.MessageField('Digest', 1)
-  digestCrc32c = _messages.IntegerField(2)
+  data = _messages.BytesField(1)
+  dataCrc32c = _messages.IntegerField(2)
+  digest = _messages.MessageField('Digest', 3)
+  digestCrc32c = _messages.IntegerField(4)
 
 
 class AsymmetricSignResponse(_messages.Message):
@@ -142,6 +159,14 @@ class AsymmetricSignResponse(_messages.Message):
       compatibility across different languages. However, it is a non-negative
       integer, which will never exceed 2^32-1, and can be safely downconverted
       to uint32 in languages that support this type.
+    verifiedDataCrc32c: Integrity verification field. A flag indicating
+      whether AsymmetricSignRequest.data_crc32c was received by
+      KeyManagementService and used for the integrity verification of the
+      data. A false value of this field indicates either that
+      AsymmetricSignRequest.data_crc32c was left unset or that it was not
+      delivered to KeyManagementService. If you've set
+      AsymmetricSignRequest.data_crc32c but this field is still false, discard
+      the response and perform a limited number of retries.
     verifiedDigestCrc32c: Integrity verification field. A flag indicating
       whether AsymmetricSignRequest.digest_crc32c was received by
       KeyManagementService and used for the integrity verification of the
@@ -170,7 +195,8 @@ class AsymmetricSignResponse(_messages.Message):
   protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 2)
   signature = _messages.BytesField(3)
   signatureCrc32c = _messages.IntegerField(4)
-  verifiedDigestCrc32c = _messages.BooleanField(5)
+  verifiedDataCrc32c = _messages.BooleanField(5)
+  verifiedDigestCrc32c = _messages.BooleanField(6)
 
 
 class AuditConfig(_messages.Message):
@@ -1136,6 +1162,12 @@ class CryptoKeyVersion(_messages.Message):
         SHA256 digest.
       RSA_SIGN_PKCS1_4096_SHA512: RSASSA-PKCS1-v1_5 with a 4096 bit key and a
         SHA512 digest.
+      RSA_SIGN_RAW_PKCS1_2048: RSASSA-PKCS1-v1_5 signing without encoding,
+        with a 2048 bit key.
+      RSA_SIGN_RAW_PKCS1_3072: RSASSA-PKCS1-v1_5 signing without encoding,
+        with a 3072 bit key.
+      RSA_SIGN_RAW_PKCS1_4096: RSASSA-PKCS1-v1_5 signing without encoding,
+        with a 4096 bit key.
       RSA_DECRYPT_OAEP_2048_SHA256: RSAES-OAEP 2048 bit key with a SHA256
         digest.
       RSA_DECRYPT_OAEP_3072_SHA256: RSAES-OAEP 3072 bit key with a SHA256
@@ -1165,18 +1197,21 @@ class CryptoKeyVersion(_messages.Message):
     RSA_SIGN_PKCS1_3072_SHA256 = 7
     RSA_SIGN_PKCS1_4096_SHA256 = 8
     RSA_SIGN_PKCS1_4096_SHA512 = 9
-    RSA_DECRYPT_OAEP_2048_SHA256 = 10
-    RSA_DECRYPT_OAEP_3072_SHA256 = 11
-    RSA_DECRYPT_OAEP_4096_SHA256 = 12
-    RSA_DECRYPT_OAEP_4096_SHA512 = 13
-    RSA_DECRYPT_OAEP_2048_SHA1 = 14
-    RSA_DECRYPT_OAEP_3072_SHA1 = 15
-    RSA_DECRYPT_OAEP_4096_SHA1 = 16
-    EC_SIGN_P256_SHA256 = 17
-    EC_SIGN_P384_SHA384 = 18
-    EC_SIGN_SECP256K1_SHA256 = 19
-    HMAC_SHA256 = 20
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 21
+    RSA_SIGN_RAW_PKCS1_2048 = 10
+    RSA_SIGN_RAW_PKCS1_3072 = 11
+    RSA_SIGN_RAW_PKCS1_4096 = 12
+    RSA_DECRYPT_OAEP_2048_SHA256 = 13
+    RSA_DECRYPT_OAEP_3072_SHA256 = 14
+    RSA_DECRYPT_OAEP_4096_SHA256 = 15
+    RSA_DECRYPT_OAEP_4096_SHA512 = 16
+    RSA_DECRYPT_OAEP_2048_SHA1 = 17
+    RSA_DECRYPT_OAEP_3072_SHA1 = 18
+    RSA_DECRYPT_OAEP_4096_SHA1 = 19
+    EC_SIGN_P256_SHA256 = 20
+    EC_SIGN_P384_SHA384 = 21
+    EC_SIGN_SECP256K1_SHA256 = 22
+    HMAC_SHA256 = 23
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 24
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""Output only. The ProtectionLevel describing how crypto operations are
@@ -1290,6 +1325,12 @@ class CryptoKeyVersionTemplate(_messages.Message):
         SHA256 digest.
       RSA_SIGN_PKCS1_4096_SHA512: RSASSA-PKCS1-v1_5 with a 4096 bit key and a
         SHA512 digest.
+      RSA_SIGN_RAW_PKCS1_2048: RSASSA-PKCS1-v1_5 signing without encoding,
+        with a 2048 bit key.
+      RSA_SIGN_RAW_PKCS1_3072: RSASSA-PKCS1-v1_5 signing without encoding,
+        with a 3072 bit key.
+      RSA_SIGN_RAW_PKCS1_4096: RSASSA-PKCS1-v1_5 signing without encoding,
+        with a 4096 bit key.
       RSA_DECRYPT_OAEP_2048_SHA256: RSAES-OAEP 2048 bit key with a SHA256
         digest.
       RSA_DECRYPT_OAEP_3072_SHA256: RSAES-OAEP 3072 bit key with a SHA256
@@ -1319,18 +1360,21 @@ class CryptoKeyVersionTemplate(_messages.Message):
     RSA_SIGN_PKCS1_3072_SHA256 = 7
     RSA_SIGN_PKCS1_4096_SHA256 = 8
     RSA_SIGN_PKCS1_4096_SHA512 = 9
-    RSA_DECRYPT_OAEP_2048_SHA256 = 10
-    RSA_DECRYPT_OAEP_3072_SHA256 = 11
-    RSA_DECRYPT_OAEP_4096_SHA256 = 12
-    RSA_DECRYPT_OAEP_4096_SHA512 = 13
-    RSA_DECRYPT_OAEP_2048_SHA1 = 14
-    RSA_DECRYPT_OAEP_3072_SHA1 = 15
-    RSA_DECRYPT_OAEP_4096_SHA1 = 16
-    EC_SIGN_P256_SHA256 = 17
-    EC_SIGN_P384_SHA384 = 18
-    EC_SIGN_SECP256K1_SHA256 = 19
-    HMAC_SHA256 = 20
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 21
+    RSA_SIGN_RAW_PKCS1_2048 = 10
+    RSA_SIGN_RAW_PKCS1_3072 = 11
+    RSA_SIGN_RAW_PKCS1_4096 = 12
+    RSA_DECRYPT_OAEP_2048_SHA256 = 13
+    RSA_DECRYPT_OAEP_3072_SHA256 = 14
+    RSA_DECRYPT_OAEP_4096_SHA256 = 15
+    RSA_DECRYPT_OAEP_4096_SHA512 = 16
+    RSA_DECRYPT_OAEP_2048_SHA1 = 17
+    RSA_DECRYPT_OAEP_3072_SHA1 = 18
+    RSA_DECRYPT_OAEP_4096_SHA1 = 19
+    EC_SIGN_P256_SHA256 = 20
+    EC_SIGN_P384_SHA384 = 21
+    EC_SIGN_SECP256K1_SHA256 = 22
+    HMAC_SHA256 = 23
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 24
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""ProtectionLevel to use when creating a CryptoKeyVersion based on this
@@ -1736,6 +1780,12 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
         SHA256 digest.
       RSA_SIGN_PKCS1_4096_SHA512: RSASSA-PKCS1-v1_5 with a 4096 bit key and a
         SHA512 digest.
+      RSA_SIGN_RAW_PKCS1_2048: RSASSA-PKCS1-v1_5 signing without encoding,
+        with a 2048 bit key.
+      RSA_SIGN_RAW_PKCS1_3072: RSASSA-PKCS1-v1_5 signing without encoding,
+        with a 3072 bit key.
+      RSA_SIGN_RAW_PKCS1_4096: RSASSA-PKCS1-v1_5 signing without encoding,
+        with a 4096 bit key.
       RSA_DECRYPT_OAEP_2048_SHA256: RSAES-OAEP 2048 bit key with a SHA256
         digest.
       RSA_DECRYPT_OAEP_3072_SHA256: RSAES-OAEP 3072 bit key with a SHA256
@@ -1765,18 +1815,21 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
     RSA_SIGN_PKCS1_3072_SHA256 = 7
     RSA_SIGN_PKCS1_4096_SHA256 = 8
     RSA_SIGN_PKCS1_4096_SHA512 = 9
-    RSA_DECRYPT_OAEP_2048_SHA256 = 10
-    RSA_DECRYPT_OAEP_3072_SHA256 = 11
-    RSA_DECRYPT_OAEP_4096_SHA256 = 12
-    RSA_DECRYPT_OAEP_4096_SHA512 = 13
-    RSA_DECRYPT_OAEP_2048_SHA1 = 14
-    RSA_DECRYPT_OAEP_3072_SHA1 = 15
-    RSA_DECRYPT_OAEP_4096_SHA1 = 16
-    EC_SIGN_P256_SHA256 = 17
-    EC_SIGN_P384_SHA384 = 18
-    EC_SIGN_SECP256K1_SHA256 = 19
-    HMAC_SHA256 = 20
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 21
+    RSA_SIGN_RAW_PKCS1_2048 = 10
+    RSA_SIGN_RAW_PKCS1_3072 = 11
+    RSA_SIGN_RAW_PKCS1_4096 = 12
+    RSA_DECRYPT_OAEP_2048_SHA256 = 13
+    RSA_DECRYPT_OAEP_3072_SHA256 = 14
+    RSA_DECRYPT_OAEP_4096_SHA256 = 15
+    RSA_DECRYPT_OAEP_4096_SHA512 = 16
+    RSA_DECRYPT_OAEP_2048_SHA1 = 17
+    RSA_DECRYPT_OAEP_3072_SHA1 = 18
+    RSA_DECRYPT_OAEP_4096_SHA1 = 19
+    EC_SIGN_P256_SHA256 = 20
+    EC_SIGN_P384_SHA384 = 21
+    EC_SIGN_SECP256K1_SHA256 = 22
+    HMAC_SHA256 = 23
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 24
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   cryptoKeyVersion = _messages.StringField(2)
@@ -2431,6 +2484,12 @@ class PublicKey(_messages.Message):
         SHA256 digest.
       RSA_SIGN_PKCS1_4096_SHA512: RSASSA-PKCS1-v1_5 with a 4096 bit key and a
         SHA512 digest.
+      RSA_SIGN_RAW_PKCS1_2048: RSASSA-PKCS1-v1_5 signing without encoding,
+        with a 2048 bit key.
+      RSA_SIGN_RAW_PKCS1_3072: RSASSA-PKCS1-v1_5 signing without encoding,
+        with a 3072 bit key.
+      RSA_SIGN_RAW_PKCS1_4096: RSASSA-PKCS1-v1_5 signing without encoding,
+        with a 4096 bit key.
       RSA_DECRYPT_OAEP_2048_SHA256: RSAES-OAEP 2048 bit key with a SHA256
         digest.
       RSA_DECRYPT_OAEP_3072_SHA256: RSAES-OAEP 3072 bit key with a SHA256
@@ -2460,18 +2519,21 @@ class PublicKey(_messages.Message):
     RSA_SIGN_PKCS1_3072_SHA256 = 7
     RSA_SIGN_PKCS1_4096_SHA256 = 8
     RSA_SIGN_PKCS1_4096_SHA512 = 9
-    RSA_DECRYPT_OAEP_2048_SHA256 = 10
-    RSA_DECRYPT_OAEP_3072_SHA256 = 11
-    RSA_DECRYPT_OAEP_4096_SHA256 = 12
-    RSA_DECRYPT_OAEP_4096_SHA512 = 13
-    RSA_DECRYPT_OAEP_2048_SHA1 = 14
-    RSA_DECRYPT_OAEP_3072_SHA1 = 15
-    RSA_DECRYPT_OAEP_4096_SHA1 = 16
-    EC_SIGN_P256_SHA256 = 17
-    EC_SIGN_P384_SHA384 = 18
-    EC_SIGN_SECP256K1_SHA256 = 19
-    HMAC_SHA256 = 20
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 21
+    RSA_SIGN_RAW_PKCS1_2048 = 10
+    RSA_SIGN_RAW_PKCS1_3072 = 11
+    RSA_SIGN_RAW_PKCS1_4096 = 12
+    RSA_DECRYPT_OAEP_2048_SHA256 = 13
+    RSA_DECRYPT_OAEP_3072_SHA256 = 14
+    RSA_DECRYPT_OAEP_4096_SHA256 = 15
+    RSA_DECRYPT_OAEP_4096_SHA512 = 16
+    RSA_DECRYPT_OAEP_2048_SHA1 = 17
+    RSA_DECRYPT_OAEP_3072_SHA1 = 18
+    RSA_DECRYPT_OAEP_4096_SHA1 = 19
+    EC_SIGN_P256_SHA256 = 20
+    EC_SIGN_P384_SHA384 = 21
+    EC_SIGN_SECP256K1_SHA256 = 22
+    HMAC_SHA256 = 23
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 24
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""The ProtectionLevel of the CryptoKeyVersion public key.

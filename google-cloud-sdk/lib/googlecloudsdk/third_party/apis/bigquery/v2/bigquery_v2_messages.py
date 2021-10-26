@@ -1053,6 +1053,15 @@ class DestinationTableProperties(_messages.Message):
       will only be used if the destination table is newly created. If the
       table already exists and a value different than the current description
       is provided, the job will fail.
+    expirationTime: [Optional] The destination table expiration time. If this
+      field is set: For a new table, it will set the table's expiration time
+      (even if there is a dataset level default table expiration time). For an
+      existing table, it will update the table's expiration time. If this
+      field is not set: For a new table, if dataset level default table
+      expiration time is present, that will be applied. For an existing table,
+      no change is made to the table's expiration time. Additionally this
+      field is only applied when data is written to an empty table
+      (WRITE_EMPTY) or data is overwritten to a table (WRITE_TRUNCATE).
     friendlyName: [Optional] The friendly name for the destination table. This
       will only be used if the destination table is newly created. If the
       table already exists and a value different than the current friendly
@@ -1092,8 +1101,9 @@ class DestinationTableProperties(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   description = _messages.StringField(1)
-  friendlyName = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
+  expirationTime = _message_types.DateTimeField(2)
+  friendlyName = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
 
 
 class DmlStatistics(_messages.Message):
@@ -1441,6 +1451,24 @@ class HivePartitioningOptions(_messages.Message):
   mode = _messages.StringField(1)
   requirePartitionFilter = _messages.BooleanField(2)
   sourceUriPrefix = _messages.StringField(3)
+
+
+class IterationResult(_messages.Message):
+  r"""A IterationResult object.
+
+  Fields:
+    durationMs: Time taken to run the iteration in milliseconds.
+    evalLoss: Loss computed on the eval data at the end of iteration.
+    index: Index of the iteration, 0 based.
+    learnRate: Learn rate used for this iteration.
+    trainingLoss: Loss computed on the training data at the end of iteration.
+  """
+
+  durationMs = _messages.IntegerField(1)
+  evalLoss = _messages.FloatField(2)
+  index = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  learnRate = _messages.FloatField(4)
+  trainingLoss = _messages.FloatField(5)
 
 
 class Job(_messages.Message):
@@ -2162,6 +2190,7 @@ class JobStatistics2(_messages.Message):
       only for DML statements INSERT, UPDATE, DELETE or TRUNCATE.
     estimatedBytesProcessed: [Output-only] The original estimate of bytes
       processed for the job.
+    mlStatistics: [Output-only] Statistics of a BigQuery ML training job.
     modelTraining: [Output-only, Beta] Information about create model query
       job progress.
     modelTrainingCurrentIteration: [Output-only, Beta] Deprecated; do not use.
@@ -2238,23 +2267,24 @@ class JobStatistics2(_messages.Message):
   ddlTargetTable = _messages.MessageField('TableReference', 10)
   dmlStats = _messages.MessageField('DmlStatistics', 11)
   estimatedBytesProcessed = _messages.IntegerField(12)
-  modelTraining = _messages.MessageField('BigQueryModelTraining', 13)
-  modelTrainingCurrentIteration = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  modelTrainingExpectedTotalIteration = _messages.IntegerField(15)
-  numDmlAffectedRows = _messages.IntegerField(16)
-  queryPlan = _messages.MessageField('ExplainQueryStage', 17, repeated=True)
-  referencedRoutines = _messages.MessageField('RoutineReference', 18, repeated=True)
-  referencedTables = _messages.MessageField('TableReference', 19, repeated=True)
-  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 20, repeated=True)
-  schema = _messages.MessageField('TableSchema', 21)
-  statementType = _messages.StringField(22)
-  timeline = _messages.MessageField('QueryTimelineSample', 23, repeated=True)
-  totalBytesBilled = _messages.IntegerField(24)
-  totalBytesProcessed = _messages.IntegerField(25)
-  totalBytesProcessedAccuracy = _messages.StringField(26)
-  totalPartitionsProcessed = _messages.IntegerField(27)
-  totalSlotMs = _messages.IntegerField(28)
-  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 29, repeated=True)
+  mlStatistics = _messages.MessageField('MlStatistics', 13)
+  modelTraining = _messages.MessageField('BigQueryModelTraining', 14)
+  modelTrainingCurrentIteration = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  modelTrainingExpectedTotalIteration = _messages.IntegerField(16)
+  numDmlAffectedRows = _messages.IntegerField(17)
+  queryPlan = _messages.MessageField('ExplainQueryStage', 18, repeated=True)
+  referencedRoutines = _messages.MessageField('RoutineReference', 19, repeated=True)
+  referencedTables = _messages.MessageField('TableReference', 20, repeated=True)
+  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 21, repeated=True)
+  schema = _messages.MessageField('TableSchema', 22)
+  statementType = _messages.StringField(23)
+  timeline = _messages.MessageField('QueryTimelineSample', 24, repeated=True)
+  totalBytesBilled = _messages.IntegerField(25)
+  totalBytesProcessed = _messages.IntegerField(26)
+  totalBytesProcessedAccuracy = _messages.StringField(27)
+  totalPartitionsProcessed = _messages.IntegerField(28)
+  totalSlotMs = _messages.IntegerField(29)
+  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 30, repeated=True)
 
 
 class JobStatistics3(_messages.Message):
@@ -2362,6 +2392,20 @@ class MaterializedViewDefinition(_messages.Message):
   lastRefreshTime = _messages.IntegerField(2)
   query = _messages.StringField(3)
   refreshIntervalMs = _messages.IntegerField(4)
+
+
+class MlStatistics(_messages.Message):
+  r"""A MlStatistics object.
+
+  Fields:
+    iterationResults: Results for all completed iterations.
+    maxIterations: Maximum number of iterations specified as max_iterations in
+      the 'CREATE MODEL' query. The actual number of iterations may be less
+      than this number due to early stop.
+  """
+
+  iterationResults = _messages.MessageField('IterationResult', 1, repeated=True)
+  maxIterations = _messages.IntegerField(2)
 
 
 class ModelDefinition(_messages.Message):

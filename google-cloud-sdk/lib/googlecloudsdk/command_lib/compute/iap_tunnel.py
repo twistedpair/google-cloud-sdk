@@ -350,10 +350,10 @@ class _StdinSocket(object):
       # We will use this thread-safe queue to communicate with the input
       # reading thread.
       self._message_queue = queue.Queue()
-      new_thread = threading.Thread(
+      self._reading_thread = threading.Thread(
           target=self._ReadFromStdinAndEnqueueMessageWindows)
-      new_thread.daemon = True
-      new_thread.start()
+      self._reading_thread.daemon = True
+      self._reading_thread.start()
 
   def send(self, data):  # pylint: disable=invalid-name
     files.WriteStreamBytes(sys.stdout, data)

@@ -40,6 +40,7 @@ class OsloginV1alpha(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.users_projects = self.UsersProjectsService(self)
+    self.users_sshPublicKey = self.UsersSshPublicKeyService(self)
     self.users_sshPublicKeys = self.UsersSshPublicKeysService(self)
     self.users = self.UsersService(self)
 
@@ -77,6 +78,43 @@ class OsloginV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='OsloginUsersProjectsDeleteRequest',
         response_type_name='Empty',
+        supports_download=False,
+    )
+
+  class UsersSshPublicKeyService(base_api.BaseApiService):
+    """Service class for the users_sshPublicKey resource."""
+
+    _NAME = 'users_sshPublicKey'
+
+    def __init__(self, client):
+      super(OsloginV1alpha.UsersSshPublicKeyService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create an SSH public key.
+
+      Args:
+        request: (OsloginUsersSshPublicKeyCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SshPublicKey) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/users/{usersId}/sshPublicKey',
+        http_method='POST',
+        method_id='oslogin.users.sshPublicKey.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}/sshPublicKey',
+        request_field='sshPublicKey',
+        request_type_name='OsloginUsersSshPublicKeyCreateRequest',
+        response_type_name='SshPublicKey',
         supports_download=False,
     )
 

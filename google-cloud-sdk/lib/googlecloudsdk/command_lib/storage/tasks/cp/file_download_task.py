@@ -131,7 +131,7 @@ class FileDownloadTask(task.Task):
         the full path of object to download, including bucket. Directories
         will not be accepted. Does not need to contain metadata.
       destination_resource (FileObjectResource|UnknownResource): Must contain
-        local filesystem path to upload object. Does not need to contain
+        local filesystem path to destination object. Does not need to contain
         metadata.
       do_not_decompress (bool): Prevents automatically decompressing
         downloaded gzips.
@@ -155,9 +155,6 @@ class FileDownloadTask(task.Task):
         self._destination_resource.storage_url.url_string)
 
   def _get_temporary_destination_resource(self):
-    if self._destination_resource.storage_url.is_pipe:
-      # Stream download directly to pipe.
-      return self._destination_resource
     temporary_resource = copy.deepcopy(self._destination_resource)
     temporary_resource.storage_url.object_name += TEMPORARY_FILE_SUFFIX
     return temporary_resource
@@ -211,7 +208,7 @@ class FileDownloadTask(task.Task):
     # removing files after a download makes us susceptible to a race condition
     # between two running instances of gcloud storage. See the following PR for
     # more information: https://github.com/GoogleCloudPlatform/gsutil/pull/1202.
-    if destination_url.exists() and not destination_url.is_pipe:
+    if destination_url.exists():
       os.remove(destination_url.object_name)
     temporary_download_file_exists = (
         self._temporary_destination_resource.storage_url.exists())
@@ -260,12 +257,11 @@ class FileDownloadTask(task.Task):
         strategy=self._strategy).execute(task_status_queue=task_status_queue)
 
     temporary_file_url = self._temporary_destination_resource.storage_url
-    if not temporary_file_url.is_pipe:
-      download_util.decompress_or_rename_file(
-          self._source_resource,
-          temporary_file_url.object_name,
-          destination_url.object_name,
-          do_not_decompress_flag=self._do_not_decompress)
+    download_util.decompress_or_rename_file(
+        self._source_resource,
+        temporary_file_url.object_name,
+        destination_url.object_name,
+        do_not_decompress_flag=self._do_not_decompress)
 
     # For sliced download, cleanup is done in the finalized sliced download task
     # We perform cleanup here for all other types in case some corrupt files

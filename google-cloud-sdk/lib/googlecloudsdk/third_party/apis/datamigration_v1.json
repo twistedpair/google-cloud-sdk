@@ -269,7 +269,7 @@
             "The migration job is down for maintenance.",
             "The migration job is in draft mode and no resources are created.",
             "The migration job is being created.",
-            "The migration job is created, not started and is fully editable.",
+            "The migration job is created and not started.",
             "The migration job is running.",
             "The migration job failed.",
             "The migration job has been completed.",

@@ -507,6 +507,10 @@
         "destinationNetworkUri": {
           "description": "URI of the network where this packet is sent to.",
           "type": "string"
+        },
+        "sourceAgentUri": {
+          "description": "URI of the source telemetry agent this packet originates from.",
+          "type": "string"
         }
       }
     },

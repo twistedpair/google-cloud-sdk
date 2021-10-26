@@ -554,7 +554,8 @@ class Deployment(_messages.Message):
       `projects/{project}/locations/{location}/deployments/{deployment}`
     reconcileTimeout: Optional. How long apply attempt should wait for
       resource reconciliation on the Config Controller cluster to complete. If
-      unset, the Deployment will be ACTIVE as soon as resources are applied
+      unset, a default value of 5m will be used. A value of 0s indicates that
+      the Deployment will be ACTIVE as soon as resources are applied
       successfully to the cluster and final resource actuation status will
       need to be polled on asynchronously.
     state: Output only. Current state of the deployment.
@@ -1322,7 +1323,8 @@ class Revision(_messages.Message):
       execution.
     reconcileTimeout: Optional. How long apply attempt should wait for
       resource reconciliation on the Config Controller cluster to complete. If
-      unset, the Revision will be APPLIED as soon as resources are applied
+      unset, a default value of 5m will be used. A value of 0s indicates that
+      the Revision will be APPLIED as soon as resources are applied
       successfully to the cluster and final resource actuation status will
       need to be polled on asynchronously.
     state: Output only. Current state of the revision.

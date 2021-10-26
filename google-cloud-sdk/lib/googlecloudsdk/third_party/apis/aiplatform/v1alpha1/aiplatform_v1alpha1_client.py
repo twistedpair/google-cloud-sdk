@@ -5411,7 +5411,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
     )
 
     def Export(self, request, global_params=None):
-      r"""Exports a trained, exportable, Model to a location specified by the user. A Model is considered to be exportable if it has at least one supported export format.
+      r"""Exports a trained, exportable Model to a location specified by the user. A Model is considered to be exportable if it has at least one supported export format.
 
       Args:
         request: (AiplatformProjectsLocationsModelsExportRequest) input message

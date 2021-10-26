@@ -100,10 +100,6 @@ def _get_raw_destination(destination_string):
 
   raw_destination = _expand_destination_wildcards(destination_string)
   if raw_destination:
-    if (isinstance(raw_destination.storage_url, storage_url.FileUrl) and
-        raw_destination.storage_url.is_pipe):
-      log.warning('Downloading to a pipe.'
-                  ' This command may stall until the pipe is read.')
     return raw_destination
   return resource_reference.UnknownResource(destination_url)
 
@@ -142,6 +138,12 @@ def _destination_is_container(destination):
            destination_url.is_bucket()))
 
 
+def _destination_is_pipe(destination):
+  """Checks if destination points to local pipe-type."""
+  return (isinstance(destination.storage_url, storage_url.FileUrl) and
+          destination.storage_url.is_pipe)
+
+
 def _has_valid_parent_dir(url_object):
   """Returns true if FileUrl with relative path symbol as parent directory."""
   if not isinstance(url_object, storage_url.FileUrl):
@@ -165,6 +167,7 @@ class CopyTaskIterator:
                destination_string,
                custom_md5_digest=None,
                do_not_decompress=False,
+               shared_stream=None,
                task_status_queue=None,
                user_request_args=None):
     """Initializes a CopyTaskIterator instance.
@@ -177,6 +180,7 @@ class CopyTaskIterator:
         for validating a single resource upload.
       do_not_decompress (bool): Prevents automatically decompressing
         downloaded gzips.
+      shared_stream (stream): Multiple tasks may reuse a read or write stream.
       task_status_queue (multiprocessing.Queue|None): Used for estimating total
         workload from this iterator.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
@@ -187,6 +191,7 @@ class CopyTaskIterator:
     self._multiple_sources = self._source_name_iterator.is_plural()
     self._do_not_decompress = do_not_decompress
     self._custom_md5_digest = custom_md5_digest
+    self._shared_stream = shared_stream
     self._task_status_queue = task_status_queue
     self._user_request_args = user_request_args
 
@@ -195,15 +200,16 @@ class CopyTaskIterator:
 
     self._raw_destination = _get_raw_destination(destination_string)
     if self._multiple_sources:
-      self._raise_if_destination_is_file_url_and_not_a_directory()
+      self._raise_if_destination_is_file_url_and_not_a_directory_or_pipe()
 
     if self._multiple_sources and self._custom_md5_digest:
       raise ValueError('Received multiple objects to upload, but only one'
                        'custom MD5 digest is allowed.')
 
-  def _raise_if_destination_is_file_url_and_not_a_directory(self):
+  def _raise_if_destination_is_file_url_and_not_a_directory_or_pipe(self):
     if (isinstance(self._raw_destination.storage_url, storage_url.FileUrl) and
-        not _destination_is_container(self._raw_destination)):
+        not (_destination_is_container(self._raw_destination) or
+             self._raw_destination.storage_url.is_pipe)):
       raise errors.InvalidUrlError(
           'Destination URL must name an existing directory.'
           ' Provided: {}.'.format(
@@ -258,7 +264,7 @@ class CopyTaskIterator:
         # Multiple sources have been already validated in __init__.
         # This check is required for cases where recursion has been requested,
         # but there is only one object that needs to be copied over.
-        self._raise_if_destination_is_file_url_and_not_a_directory()
+        self._raise_if_destination_is_file_url_and_not_a_directory_or_pipe()
 
       if source.original_url.generation:
         source_url_string = source_url.url_string
@@ -277,6 +283,7 @@ class CopyTaskIterator:
           source.resource,
           destination_resource,
           do_not_decompress=self._do_not_decompress,
+          shared_stream=self._shared_stream,
           user_request_args=self._user_request_args)
 
     if (self._task_status_queue and
@@ -291,8 +298,8 @@ class CopyTaskIterator:
     """Returns the final destination StorageUrl instance."""
     completion_is_necessary = (
         _destination_is_container(raw_destination) or
-        self._multiple_sources or
-        source.resource.storage_url != source.expanded_url  # Recursion case.
+        (self._multiple_sources and not _destination_is_pipe(raw_destination))
+        or source.resource.storage_url != source.expanded_url  # Recursion case.
     )
 
     if completion_is_necessary:

@@ -143,6 +143,18 @@ def AddProvisionedIopsFlag(parser, arg_parsers, constants):
               default=constants.DEFAULT_PROVISIONED_IOPS))
 
 
+def AddArchitectureFlag(parser):
+  return parser.add_argument(
+      '--architecture',
+      help=(
+          'Disk resources can be used to create boot disks compatible with '
+          'ARM64 or x86_64 architecture. If this field is not specified, the default '
+          'is ARCHITECTURE_UNSPECIFIED. This means either (1) we do not know if it is '
+          'for ARM64 or X86_64, or (2) CPU architecture does not matter (as is the case for '
+          'non-boot, data disks and data images). It has the same meaning for disks, snapshots '
+          'and instant snapshots.'))
+
+
 SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     resource_name='snapshot',
     completer=SnapshotsCompleter,

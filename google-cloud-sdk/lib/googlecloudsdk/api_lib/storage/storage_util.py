@@ -25,6 +25,7 @@ import re
 import string
 
 from googlecloudsdk.api_lib.util import apis as core_apis
+from googlecloudsdk.command_lib.util import gcloudignore
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
@@ -344,3 +345,76 @@ def RunGsutilCommand(command_name,
   return execution_utils.Exec(gsutil_args, no_exit=True,
                               out_func=out_func,
                               err_func=err_func)
+
+
+class FileMetadata(object):
+  """FileMetadata contains information about a file destined for GCP upload.
+
+  Attributes:
+      root: str, The root directory for considering file metadata.
+      path: str, The path of this file, relative to the root.
+      size: int, The size of this file, in bytes.
+  """
+
+  def __init__(self, root, path):
+    """Collect file metadata.
+
+    Args:
+      root: str, The root directory for considering file metadata.
+      path: str, The path of this file, relative to the root.
+    """
+    self.root = root
+    self.path = path
+    self.size = os.path.getsize(os.path.join(root, path))
+
+
+class Snapshot(object):
+  """Snapshot is a manifest of the source in a directory.
+
+  Attributes:
+    src_dir: str, The root of the snapshot source on the local disk.
+    ignore_file: optional str, an override for .gcloudignore.
+    files: {str: FileMetadata}, A mapping from file path (relative to the
+      snapshot root) to file metadata.
+    dirs: [str], The list of dirs (possibly empty) in the snapshot.
+    uncompressed_size: int, The number of bytes needed to store all of the files
+      in this snapshot, uncompressed.
+    any_files_ignored: bool, whether any files were ignored.
+  """
+
+  def __init__(self, src_dir, ignore_file=None):
+    self.src_dir = src_dir
+    self.files = {}
+    self.dirs = []
+    self.uncompressed_size = 0
+    file_chooser = gcloudignore.GetFileChooserForDir(
+        self.src_dir, write_on_disk=False, ignore_file=ignore_file)
+    self.any_files_ignored = False
+    # Iterate over each directory in the source directory so that we can collect
+    # only the unignored files and directories.
+    for (dirpath, dirnames, filenames) in os.walk(six.text_type(self.src_dir)):
+      relpath = os.path.relpath(dirpath, self.src_dir)
+      for fname in filenames:
+        path = os.path.join(relpath, fname)
+        if os.path.islink(path) and not os.path.exists(path):
+          # The file is a broken symlink; ignore it.
+          log.info(
+              'Ignoring [{}] which is a symlink to non-existent path'.format(
+                  path))
+          continue
+        fpath = os.path.join(relpath, fname) if relpath != '.' else fname
+        if not file_chooser.IsIncluded(fpath):
+          self.any_files_ignored = True
+          continue
+        fm = FileMetadata(self.src_dir, fpath)
+        self.files[fpath] = fm
+        self.uncompressed_size += fm.size
+      # NOTICE: Modifying dirnames is explicitly allowed by os.walk(). The
+      # modified dirnames is used in the next loop iteration which is also
+      # the next os.walk() iteration.
+      for dname in dirnames[:]:  # Make a copy since we modify the original.
+        dpath = os.path.join(relpath, dname) if relpath != '.' else dname
+        if not file_chooser.IsIncluded(dpath, is_dir=True):
+          dirnames.remove(dname)  # Don't recurse into dpath at all.
+          continue
+        self.dirs.append(dpath)

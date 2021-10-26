@@ -84,9 +84,9 @@ _INGRESS_MODES = {
 
 _SANDBOX_CHOICES = {
     'gen1':
-        'Run the application in a first generation execution environement.',
+        'Run the application in a first generation execution environment.',
     'gen2':
-        'Run the application in a second generation execution environement.',
+        'Run the application in a second generation execution environment.',
 }
 
 _DEFAULT_KUBECONFIG_PATH = '~/.kube/config'

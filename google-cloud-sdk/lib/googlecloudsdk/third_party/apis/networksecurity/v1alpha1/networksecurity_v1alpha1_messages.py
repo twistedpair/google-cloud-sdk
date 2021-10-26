@@ -1837,8 +1837,9 @@ class Source(_messages.Message):
       address. At least one IP block should match. Single IP (e.g., "1.2.3.4")
       and CIDR (e.g., "1.2.3.0/24") are supported.
     principals: Optional. List of peer identities to match for authorization.
-      At least one principal should match. Currently, only exact matches are
-      supported.
+      At least one principal should match. Each peer can be an exact match, or
+      a prefix match (example, "namespace/*") or a suffix match (example, //
+      */service-account") or a presence match "*".
   """
 
   ipBlocks = _messages.StringField(1, repeated=True)

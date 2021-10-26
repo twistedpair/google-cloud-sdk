@@ -856,6 +856,7 @@ class GoogleCloudSecuritycenterV1Resource(_messages.Message):
   r"""Information related to the Google Cloud resource.
 
   Fields:
+    displayName: The human readable name of the resource.
     folders: Output only. Contains a Folder message for each folder in the
       assets ancestry. The first folder is the deepest nested folder, and the
       last folder is the folder directly under the Organization.
@@ -869,13 +870,14 @@ class GoogleCloudSecuritycenterV1Resource(_messages.Message):
     type: The full resource type of the resource.
   """
 
-  folders = _messages.MessageField('Folder', 1, repeated=True)
-  name = _messages.StringField(2)
-  parent = _messages.StringField(3)
-  parentDisplayName = _messages.StringField(4)
-  project = _messages.StringField(5)
-  projectDisplayName = _messages.StringField(6)
-  type = _messages.StringField(7)
+  displayName = _messages.StringField(1)
+  folders = _messages.MessageField('Folder', 2, repeated=True)
+  name = _messages.StringField(3)
+  parent = _messages.StringField(4)
+  parentDisplayName = _messages.StringField(5)
+  project = _messages.StringField(6)
+  projectDisplayName = _messages.StringField(7)
+  type = _messages.StringField(8)
 
 
 class GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse(_messages.Message):
@@ -1917,6 +1919,7 @@ class Resource(_messages.Message):
   this finding.
 
   Fields:
+    displayName: The human readable name of the resource.
     folders: Contains a Folder message for each folder in the assets ancestry.
       The first folder is the deepest nested folder, and the last folder is
       the folder directly under the Organization.
@@ -1928,14 +1931,17 @@ class Resource(_messages.Message):
       belongs to.
     projectName: The full resource name of project that the resource belongs
       to.
+    type: The full resource type of the resource.
   """
 
-  folders = _messages.MessageField('Folder', 1, repeated=True)
-  name = _messages.StringField(2)
-  parentDisplayName = _messages.StringField(3)
-  parentName = _messages.StringField(4)
-  projectDisplayName = _messages.StringField(5)
-  projectName = _messages.StringField(6)
+  displayName = _messages.StringField(1)
+  folders = _messages.MessageField('Folder', 2, repeated=True)
+  name = _messages.StringField(3)
+  parentDisplayName = _messages.StringField(4)
+  parentName = _messages.StringField(5)
+  projectDisplayName = _messages.StringField(6)
+  projectName = _messages.StringField(7)
+  type = _messages.StringField(8)
 
 
 class RunAssetDiscoveryRequest(_messages.Message):
@@ -2352,7 +2358,8 @@ class SecuritycenterFoldersSourcesFindingsListRequest(_messages.Message):
       resource.name: `=`, `:` * resource.parent_name: `=`, `:` *
       resource.parent_display_name: `=`, `:` * resource.project_name: `=`, `:`
       * resource.project_display_name: `=`, `:` * resource.type: `=`, `:` *
-      resource.folders.resource_folder: `=`, `:`
+      resource.folders.resource_folder: `=`, `:` * resource.display_name: `=`,
+      `:`
     orderBy: Expression that defines what fields and order to use for sorting.
       The string value should follow SQL syntax: comma separated list of
       fields. For example: "name,resource_properties.a_property". The default
@@ -2969,7 +2976,8 @@ class SecuritycenterOrganizationsSourcesFindingsListRequest(_messages.Message):
       resource.name: `=`, `:` * resource.parent_name: `=`, `:` *
       resource.parent_display_name: `=`, `:` * resource.project_name: `=`, `:`
       * resource.project_display_name: `=`, `:` * resource.type: `=`, `:` *
-      resource.folders.resource_folder: `=`, `:`
+      resource.folders.resource_folder: `=`, `:` * resource.display_name: `=`,
+      `:`
     orderBy: Expression that defines what fields and order to use for sorting.
       The string value should follow SQL syntax: comma separated list of
       fields. For example: "name,resource_properties.a_property". The default
@@ -3499,7 +3507,8 @@ class SecuritycenterProjectsSourcesFindingsListRequest(_messages.Message):
       resource.name: `=`, `:` * resource.parent_name: `=`, `:` *
       resource.parent_display_name: `=`, `:` * resource.project_name: `=`, `:`
       * resource.project_display_name: `=`, `:` * resource.type: `=`, `:` *
-      resource.folders.resource_folder: `=`, `:`
+      resource.folders.resource_folder: `=`, `:` * resource.display_name: `=`,
+      `:`
     orderBy: Expression that defines what fields and order to use for sorting.
       The string value should follow SQL syntax: comma separated list of
       fields. For example: "name,resource_properties.a_property". The default

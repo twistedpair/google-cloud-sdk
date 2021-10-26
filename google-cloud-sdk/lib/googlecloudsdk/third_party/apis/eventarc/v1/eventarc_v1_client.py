@@ -39,12 +39,131 @@ class EventarcV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_channelConnections = self.ProjectsLocationsChannelConnectionsService(self)
     self.projects_locations_channels = self.ProjectsLocationsChannelsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_providers = self.ProjectsLocationsProvidersService(self)
     self.projects_locations_triggers = self.ProjectsLocationsTriggersService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsChannelConnectionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_channelConnections resource."""
+
+    _NAME = 'projects_locations_channelConnections'
+
+    def __init__(self, client):
+      super(EventarcV1.ProjectsLocationsChannelConnectionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a new ChannelConnection in a particular project and location.
+
+      Args:
+        request: (EventarcProjectsLocationsChannelConnectionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/channelConnections',
+        http_method='POST',
+        method_id='eventarc.projects.locations.channelConnections.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['channelConnectionId'],
+        relative_path='v1/{+parent}/channelConnections',
+        request_field='channelConnection',
+        request_type_name='EventarcProjectsLocationsChannelConnectionsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a single ChannelConnection.
+
+      Args:
+        request: (EventarcProjectsLocationsChannelConnectionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/channelConnections/{channelConnectionsId}',
+        http_method='DELETE',
+        method_id='eventarc.projects.locations.channelConnections.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='EventarcProjectsLocationsChannelConnectionsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get a single ChannelConnection.
+
+      Args:
+        request: (EventarcProjectsLocationsChannelConnectionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ChannelConnection) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/channelConnections/{channelConnectionsId}',
+        http_method='GET',
+        method_id='eventarc.projects.locations.channelConnections.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='EventarcProjectsLocationsChannelConnectionsGetRequest',
+        response_type_name='ChannelConnection',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List channel connections.
+
+      Args:
+        request: (EventarcProjectsLocationsChannelConnectionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListChannelConnectionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/channelConnections',
+        http_method='GET',
+        method_id='eventarc.projects.locations.channelConnections.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/channelConnections',
+        request_field='',
+        request_type_name='EventarcProjectsLocationsChannelConnectionsListRequest',
+        response_type_name='ListChannelConnectionsResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsChannelsService(base_api.BaseApiService):
     """Service class for the projects_locations_channels resource."""

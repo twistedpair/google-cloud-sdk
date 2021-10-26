@@ -341,7 +341,9 @@
             "The instance is deleted.",
             "The instance is upgrading.",
             "The instance is being created.",
-            "The instance is getting registered."
+            "The instance is getting registered.",
+            "The instance is suspending.",
+            "The instance is suspended."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -353,7 +355,9 @@
             "DELETED",
             "UPGRADING",
             "INITIALIZING",
-            "REGISTERING"
+            "REGISTERING",
+            "SUSPENDING",
+            "SUSPENDED"
           ]
         },
         "installGpuDriver": {

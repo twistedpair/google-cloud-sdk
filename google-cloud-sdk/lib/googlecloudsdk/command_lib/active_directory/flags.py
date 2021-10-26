@@ -177,6 +177,14 @@ def PeeringUpdateLabelsFlags():
   return [labels_util.GetUpdateLabelsFlag(''), remove_group]
 
 
+def BackupUpdateLabelsFlags():
+  """Defines flags for updating labels."""
+  remove_group = base.ArgumentGroup(mutex=True)
+  remove_group.AddArgument(labels_util.GetClearLabelsFlag())
+  remove_group.AddArgument(labels_util.GetRemoveLabelsFlag(''))
+  return [labels_util.GetUpdateLabelsFlag(''), remove_group]
+
+
 def RegionsType(value):
   """Defines valid GCP regions."""
   return arg_parsers.ArgList(choices=VALID_REGIONS)(value)

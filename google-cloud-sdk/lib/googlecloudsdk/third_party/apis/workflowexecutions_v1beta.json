@@ -214,7 +214,7 @@
           "type": "string"
         },
         "context": {
-          "description": "Human readable stack trace string.",
+          "description": "Human-readable stack trace string.",
           "type": "string"
         },
         "stackTrace": {
@@ -229,7 +229,7 @@
       "type": "object",
       "properties": {
         "elements": {
-          "description": "An array of Stack elements.",
+          "description": "An array of stack elements.",
           "type": "array",
           "items": {
             "$ref": "StackTraceElement"
@@ -251,7 +251,7 @@
           "type": "string"
         },
         "position": {
-          "description": "The source position information of the stacktrace element.",
+          "description": "The source position information of the stack trace element.",
           "$ref": "Position"
         }
       }
@@ -272,7 +272,7 @@
           "format": "int64"
         },
         "length": {
-          "description": "The length in bytes of text in this character group, e.g. digits of a number, string length, or AST (abstract syntax tree) node.",
+          "description": "The number of bytes of source code making up this stack trace element.",
           "type": "string",
           "format": "int64"
         }

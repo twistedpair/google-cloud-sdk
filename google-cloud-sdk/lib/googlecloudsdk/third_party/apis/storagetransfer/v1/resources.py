@@ -31,6 +31,23 @@ class Collections(enum.Enum):
       ['projectId'],
       True
   )
+  PROJECTS = (
+      'projects',
+      'projects/{projectsId}',
+      {},
+      ['projectsId'],
+      True
+  )
+  PROJECTS_AGENTPOOLS = (
+      'projects.agentPools',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/agentPools/{agentPoolsId}',
+      },
+      ['name'],
+      True
+  )
   TRANSFERJOBS = (
       'transferJobs',
       '{+jobName}',

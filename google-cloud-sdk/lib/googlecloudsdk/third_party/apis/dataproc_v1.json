@@ -597,7 +597,7 @@
           "description": "Required. The HCFS URI of the script that contains Spark SQL queries to execute.",
           "type": "string"
         },
-        "scriptVariables": {
+        "queryVariables": {
           "description": "Optional. Mapping of query variable names to values (equivalent to the Spark SQL command: SET name=\"value\";).",
           "type": "object",
           "additionalProperties": {

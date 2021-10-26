@@ -649,12 +649,12 @@ class BuildOptions(_messages.Message):
       LOGGING_UNSPECIFIED: The service determines the logging mode. The
         default is `LEGACY`. Do not rely on the default logging behavior as it
         may change in the future.
-      LEGACY: Cloud Logging and Cloud Storage logging are enabled.
-      GCS_ONLY: Only Cloud Storage logging is enabled.
+      LEGACY: Build logs are stored in Cloud Logging and Cloud Storage.
+      GCS_ONLY: Build logs are stored in Cloud Storage.
       STACKDRIVER_ONLY: This option is the same as CLOUD_LOGGING_ONLY.
-      CLOUD_LOGGING_ONLY: Only Cloud Logging is enabled. Note that logs for
-        both the Cloud Console UI and Cloud SDK are based on Cloud Storage
-        logs, so neither will provide logs if this option is chosen.
+      CLOUD_LOGGING_ONLY: Build logs are stored in Cloud Logging. Selecting
+        this option will not allow [logs
+        streaming](https://cloud.google.com/sdk/gcloud/reference/builds/log).
       NONE: Turn off all logging. No build logs will be captured.
     """
     LOGGING_UNSPECIFIED = 0
@@ -2767,7 +2767,7 @@ class HttpBody(_messages.Message):
 
 
 class HybridPoolConfig(_messages.Message):
-  r"""Configuration for a Hybrid Worker Pool Next ID: 5
+  r"""Configuration for a Hybrid Worker Pool Next ID: 6
 
   Enums:
     BuilderImageCachingValueValuesEnum: Immutable. Controls how the worker
@@ -2782,6 +2782,17 @@ class HybridPoolConfig(_messages.Message):
     builderImageCaching: Immutable. Controls how the worker pool caches
       images. If unspecified during worker pool creation, this field is
       defaulted to VOLUME_CACHING.
+    cachingStorageClass: Immutable. Used as the Kubernetes storageClassName
+      for builder image caching. This provides the value for the
+      storageClassName field for any PersistentVolumeClaims installed on the
+      cluster. Corresponding field in the Kubernetes API: https://github.com/k
+      ubernetes/api/blob/2a5dae08c42b1e8fdc1379432d8898efece65363/core/v1/type
+      s.go#L354. This field allows Hybrid users to control which storage class
+      is used by persistent volume claims. If unspecified,
+      PersistentVolumeClaims will be created without a storageClassName field
+      during installation. The string must be formatted as a valid Kubernetes
+      ObjectMeta name: https://github.com/kubernetes/apimachinery/blob/6c3d2b3
+      6a98a4f86d1fb8ee83f78433cd72aefb8/pkg/apis/meta/v1/types.go#L124.
     defaultWorkerConfig: Default settings which will be applied to builds on
       this worker pool if they are not specified in the build request.
     dockerSecurityPolicy: Immutable. Specify the security policy for the
@@ -2828,9 +2839,10 @@ class HybridPoolConfig(_messages.Message):
     PRIVILEGED_PERMITTED = 2
 
   builderImageCaching = _messages.EnumField('BuilderImageCachingValueValuesEnum', 1)
-  defaultWorkerConfig = _messages.MessageField('HybridWorkerConfig', 2)
-  dockerSecurityPolicy = _messages.EnumField('DockerSecurityPolicyValueValuesEnum', 3)
-  membership = _messages.StringField(4)
+  cachingStorageClass = _messages.StringField(2)
+  defaultWorkerConfig = _messages.MessageField('HybridWorkerConfig', 3)
+  dockerSecurityPolicy = _messages.EnumField('DockerSecurityPolicyValueValuesEnum', 4)
+  membership = _messages.StringField(5)
 
 
 class HybridWorkerConfig(_messages.Message):

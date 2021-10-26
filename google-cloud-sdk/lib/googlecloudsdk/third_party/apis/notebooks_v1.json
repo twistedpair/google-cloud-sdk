@@ -937,7 +937,9 @@
             "The instance is deleted.",
             "The instance is upgrading.",
             "The instance is being created.",
-            "The instance is getting registered."
+            "The instance is getting registered.",
+            "The instance is suspending.",
+            "The instance is suspended."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -949,7 +951,9 @@
             "DELETED",
             "UPGRADING",
             "INITIALIZING",
-            "REGISTERING"
+            "REGISTERING",
+            "SUSPENDING",
+            "SUSPENDED"
           ]
         },
         "installGpuDriver": {
@@ -1856,6 +1860,10 @@
             "DATAPROC"
           ]
         },
+        "kernelSpec": {
+          "description": "Name of the kernel spec to use. This must be specified if the kernel spec name on the execution target does not match the name in the input notebook file.",
+          "type": "string"
+        },
         "dataprocParameters": {
           "description": "Parameters used in Dataproc JobType executions.",
           "$ref": "DataprocParameters"
@@ -1881,6 +1889,7 @@
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
             "Nvidia Tesla T4 GPU.",
+            "Nvidia Tesla A100 GPU.",
             "TPU v2.",
             "TPU v3."
           ],
@@ -1891,6 +1900,7 @@
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
             "NVIDIA_TESLA_T4",
+            "NVIDIA_TESLA_A100",
             "TPU_V2",
             "TPU_V3"
           ]
@@ -1910,10 +1920,6 @@
         "cluster": {
           "description": "URI for cluster used to run Dataproc execution. Format: `projects\/{PROJECT_ID}\/regions\/{REGION}\/clusters\/{CLUSTER_NAME}`",
           "type": "string"
-        },
-        "kernelSpec": {
-          "description": "Name of the kernel spec to use. This must be specified if the 'kernel spec name on the cluster does not match the name in the input 'notebook file.",
-          "type": "string"
         }
       }
     },
@@ -1925,6 +1931,13 @@
         "network": {
           "description": "The full name of the Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Job should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](https:\/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in `12345`, and {network} is a network name. Private services access must already be configured for the network. If left unspecified, the job is not peered with any network.",
           "type": "string"
+        },
+        "env": {
+          "description": "Environment variables. At most 100 environment variables can be specified and unique. Example: GCP_BUCKET=gs:\/\/my-bucket\/samples\/",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -2642,6 +2655,93 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Report and process a runtime event."
+                },
+                "setIamPolicy": {
+                  "id": "notebooks.projects.locations.runtimes.setIamPolicy",
+                  "path": "v1/{+resource}:setIamPolicy",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/runtimes/{runtimesId}:setIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/runtimes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "SetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                },
+                "getIamPolicy": {
+                  "id": "notebooks.projects.locations.runtimes.getIamPolicy",
+                  "path": "v1/{+resource}:getIamPolicy",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/runtimes/{runtimesId}:getIamPolicy",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/runtimes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "options.requestedPolicyVersion": {
+                      "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                },
+                "testIamPermissions": {
+                  "id": "notebooks.projects.locations.runtimes.testIamPermissions",
+                  "path": "v1/{+resource}:testIamPermissions",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/runtimes/{runtimesId}:testIamPermissions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/runtimes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "TestIamPermissionsRequest"
+                  },
+                  "response": {
+                    "$ref": "TestIamPermissionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                 }
               }
             },

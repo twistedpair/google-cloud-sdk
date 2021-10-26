@@ -18,10 +18,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkemulticloud import util as api_util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 CLUSTERS_FORMAT = """\
@@ -209,12 +211,20 @@ class Client(object):
     """List AWS clusters."""
     req = self.messages.GkemulticloudProjectsLocationsAwsClustersListRequest(
         parent=region_ref.RelativeName())
-    for cluster in list_pager.YieldFromList(
-        service=self.service,
-        request=req,
-        field='awsClusters',
-        batch_size_attribute='pageSize'):
-      yield cluster
+    try:
+      for cluster in list_pager.YieldFromList(
+          service=self.service,
+          request=req,
+          field='awsClusters',
+          batch_size_attribute='pageSize'):
+        yield cluster
+    # TODO(b/203617640): Remove handling of this exception once API has gone GA.
+    except apitools_exceptions.HttpNotFoundError as e:
+      if 'Method not found' in e.content:
+        log.warning(
+            'This project may not have been added to the allow list for the Anthos Multi-Cloud API, please reach out to your GCP account team to resolve this'
+        )
+      raise
 
   def Update(self, cluster_ref, args):
     """Updates an Anthos cluster on AWS.

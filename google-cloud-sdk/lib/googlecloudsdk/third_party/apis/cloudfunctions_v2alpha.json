@@ -403,11 +403,6 @@
           "type": "integer",
           "format": "int32"
         },
-        "availableMemoryMb": {
-          "description": "The amount of memory in MB available for a function. Defaults to 256MB.",
-          "type": "integer",
-          "format": "int32"
-        },
         "availableMemory": {
           "description": "The amount of memory available for a function. Defaults to 256M. Supported units are k, M, G, Mi, Gi. If no unit is supplied the value is interpreted as bytes. See https:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/staging\/src\/k8s.io\/apimachinery\/pkg\/api\/resource\/quantity.go a full description.",
           "type": "string"
@@ -549,12 +544,14 @@
           "enumDescriptions": [
             "Not specified. Invalid severity.",
             "ERROR-level severity.",
-            "WARNING-level severity."
+            "WARNING-level severity.",
+            "INFO-level severity."
           ],
           "enum": [
             "SEVERITY_UNSPECIFIED",
             "ERROR",
-            "WARNING"
+            "WARNING",
+            "INFO"
           ]
         },
         "type": {
@@ -1206,12 +1203,14 @@
           "enumDescriptions": [
             "Not specified. Invalid severity.",
             "ERROR-level severity.",
-            "WARNING-level severity."
+            "WARNING-level severity.",
+            "INFO-level severity."
           ],
           "enum": [
             "SEVERITY_UNSPECIFIED",
             "ERROR",
-            "WARNING"
+            "WARNING",
+            "INFO"
           ]
         },
         "type": {

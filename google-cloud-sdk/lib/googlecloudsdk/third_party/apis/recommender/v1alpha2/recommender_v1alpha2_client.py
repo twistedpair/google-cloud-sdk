@@ -1197,6 +1197,33 @@ class RecommenderV1alpha2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def GetConfig(self, request, global_params=None):
+      r"""Gets the requested Recommender Config. There is only one instance of the config for each Recommender.
+
+      Args:
+        request: (RecommenderOrganizationsLocationsRecommendersGetConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1alpha2RecommenderConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/organizations/{organizationsId}/locations/{locationsId}/recommenders/{recommendersId}/config',
+        http_method='GET',
+        method_id='recommender.organizations.locations.recommenders.getConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha2/{+name}',
+        request_field='',
+        request_type_name='RecommenderOrganizationsLocationsRecommendersGetConfigRequest',
+        response_type_name='GoogleCloudRecommenderV1alpha2RecommenderConfig',
+        supports_download=False,
+    )
+
   class OrganizationsLocationsService(base_api.BaseApiService):
     """Service class for the organizations_locations resource."""
 

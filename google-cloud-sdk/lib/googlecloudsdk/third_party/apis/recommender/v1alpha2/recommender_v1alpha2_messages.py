@@ -719,6 +719,8 @@ class GoogleCloudRecommenderV1alpha2Recommendation(_messages.Message):
       "google.iam.policy.Recommender", recommender_subtype can be one of
       "REMOVE_ROLE"/"REPLACE_ROLE"
     stateInfo: Information for state. Contains state and metadata.
+    targetResources: Fully qualified resource names that this recommendation
+      is targeting.
     xorGroupId: Mutually exclusive group ID. A non-empty ID indicates this
       recommendation belongs to a mutually exclusive group, where only one
       recommendation within is suggested to be applied. Unique per
@@ -752,7 +754,8 @@ class GoogleCloudRecommenderV1alpha2Recommendation(_messages.Message):
   priority = _messages.EnumField('PriorityValueValuesEnum', 9)
   recommenderSubtype = _messages.StringField(10)
   stateInfo = _messages.MessageField('GoogleCloudRecommenderV1alpha2RecommendationStateInfo', 11)
-  xorGroupId = _messages.StringField(12)
+  targetResources = _messages.StringField(12, repeated=True)
+  xorGroupId = _messages.StringField(13)
 
 
 class GoogleCloudRecommenderV1alpha2RecommendationContent(_messages.Message):
@@ -1036,12 +1039,14 @@ class RecommenderBillingAccountsLocationsInsightTypesInsightsListRequest(_messag
 
   Fields:
     filter: Filter expression to restrict the insights returned. Supported
-      filter fields: * `stateInfo.state` * `insightSubtype` * `severity`
-      Examples: * `stateInfo.state = ACTIVE OR stateInfo.state = DISMISSED` *
-      `insightSubtype = PERMISSIONS_USAGE` * `severity = CRITICAL OR severity
-      = HIGH` * `stateInfo.state = ACTIVE AND (severity = CRITICAL OR severity
-      = HIGH)` (These expressions are based on the filter language described
-      at https://google.aip.dev/160)
+      filter fields: * `stateInfo.state` * `insightSubtype` * `severity` *
+      `targetResources` Examples: * `stateInfo.state = ACTIVE OR
+      stateInfo.state = DISMISSED` * `insightSubtype = PERMISSIONS_USAGE` *
+      `severity = CRITICAL OR severity = HIGH` * `targetResources :
+      //compute.googleapis.com/projects/1234/zones/us-
+      central1-a/instances/instance-1` * `stateInfo.state = ACTIVE AND
+      (severity = CRITICAL OR severity = HIGH)` (These expressions are based
+      on the filter language described at https://google.aip.dev/160)
     pageSize: Optional. The maximum number of results to return from this
       request. Non-positive values are ignored. If not specified, the server
       will determine the number of results to return.
@@ -1136,11 +1141,13 @@ class RecommenderBillingAccountsLocationsRecommendersRecommendationsListRequest(
   Fields:
     filter: Filter expression to restrict the recommendations returned.
       Supported filter fields: * `state_info.state` * `recommenderSubtype` *
-      `priority` Examples: * `stateInfo.state = ACTIVE OR stateInfo.state =
-      DISMISSED` * `recommenderSubtype = REMOVE_ROLE OR recommenderSubtype =
-      REPLACE_ROLE` * `priority = P1 OR priority = P2` * `stateInfo.state =
-      ACTIVE AND (priority = P1 OR priority = P2)` (These expressions are
-      based on the filter language described at https://google.aip.dev/160)
+      `priority` * `targetResources` Examples: * `stateInfo.state = ACTIVE OR
+      stateInfo.state = DISMISSED` * `recommenderSubtype = REMOVE_ROLE OR
+      recommenderSubtype = REPLACE_ROLE` * `priority = P1 OR priority = P2` *
+      `targetResources : //compute.googleapis.com/projects/1234/zones/us-
+      central1-a/instances/instance-1` * `stateInfo.state = ACTIVE AND
+      (priority = P1 OR priority = P2)` (These expressions are based on the
+      filter language described at https://google.aip.dev/160)
     pageSize: Optional. The maximum number of results to return from this
       request. Non-positive values are ignored. If not specified, the server
       will determine the number of results to return.
@@ -1257,12 +1264,14 @@ class RecommenderFoldersLocationsInsightTypesInsightsListRequest(_messages.Messa
 
   Fields:
     filter: Filter expression to restrict the insights returned. Supported
-      filter fields: * `stateInfo.state` * `insightSubtype` * `severity`
-      Examples: * `stateInfo.state = ACTIVE OR stateInfo.state = DISMISSED` *
-      `insightSubtype = PERMISSIONS_USAGE` * `severity = CRITICAL OR severity
-      = HIGH` * `stateInfo.state = ACTIVE AND (severity = CRITICAL OR severity
-      = HIGH)` (These expressions are based on the filter language described
-      at https://google.aip.dev/160)
+      filter fields: * `stateInfo.state` * `insightSubtype` * `severity` *
+      `targetResources` Examples: * `stateInfo.state = ACTIVE OR
+      stateInfo.state = DISMISSED` * `insightSubtype = PERMISSIONS_USAGE` *
+      `severity = CRITICAL OR severity = HIGH` * `targetResources :
+      //compute.googleapis.com/projects/1234/zones/us-
+      central1-a/instances/instance-1` * `stateInfo.state = ACTIVE AND
+      (severity = CRITICAL OR severity = HIGH)` (These expressions are based
+      on the filter language described at https://google.aip.dev/160)
     pageSize: Optional. The maximum number of results to return from this
       request. Non-positive values are ignored. If not specified, the server
       will determine the number of results to return.
@@ -1352,11 +1361,13 @@ class RecommenderFoldersLocationsRecommendersRecommendationsListRequest(_message
   Fields:
     filter: Filter expression to restrict the recommendations returned.
       Supported filter fields: * `state_info.state` * `recommenderSubtype` *
-      `priority` Examples: * `stateInfo.state = ACTIVE OR stateInfo.state =
-      DISMISSED` * `recommenderSubtype = REMOVE_ROLE OR recommenderSubtype =
-      REPLACE_ROLE` * `priority = P1 OR priority = P2` * `stateInfo.state =
-      ACTIVE AND (priority = P1 OR priority = P2)` (These expressions are
-      based on the filter language described at https://google.aip.dev/160)
+      `priority` * `targetResources` Examples: * `stateInfo.state = ACTIVE OR
+      stateInfo.state = DISMISSED` * `recommenderSubtype = REMOVE_ROLE OR
+      recommenderSubtype = REPLACE_ROLE` * `priority = P1 OR priority = P2` *
+      `targetResources : //compute.googleapis.com/projects/1234/zones/us-
+      central1-a/instances/instance-1` * `stateInfo.state = ACTIVE AND
+      (priority = P1 OR priority = P2)` (These expressions are based on the
+      filter language described at https://google.aip.dev/160)
     pageSize: Optional. The maximum number of results to return from this
       request. Non-positive values are ignored. If not specified, the server
       will determine the number of results to return.
@@ -1480,12 +1491,14 @@ class RecommenderOrganizationsLocationsInsightTypesInsightsListRequest(_messages
 
   Fields:
     filter: Filter expression to restrict the insights returned. Supported
-      filter fields: * `stateInfo.state` * `insightSubtype` * `severity`
-      Examples: * `stateInfo.state = ACTIVE OR stateInfo.state = DISMISSED` *
-      `insightSubtype = PERMISSIONS_USAGE` * `severity = CRITICAL OR severity
-      = HIGH` * `stateInfo.state = ACTIVE AND (severity = CRITICAL OR severity
-      = HIGH)` (These expressions are based on the filter language described
-      at https://google.aip.dev/160)
+      filter fields: * `stateInfo.state` * `insightSubtype` * `severity` *
+      `targetResources` Examples: * `stateInfo.state = ACTIVE OR
+      stateInfo.state = DISMISSED` * `insightSubtype = PERMISSIONS_USAGE` *
+      `severity = CRITICAL OR severity = HIGH` * `targetResources :
+      //compute.googleapis.com/projects/1234/zones/us-
+      central1-a/instances/instance-1` * `stateInfo.state = ACTIVE AND
+      (severity = CRITICAL OR severity = HIGH)` (These expressions are based
+      on the filter language described at https://google.aip.dev/160)
     pageSize: Optional. The maximum number of results to return from this
       request. Non-positive values are ignored. If not specified, the server
       will determine the number of results to return.
@@ -1559,6 +1572,19 @@ class RecommenderOrganizationsLocationsInsightTypesInsightsMarkDismissedRequest(
   name = _messages.StringField(2, required=True)
 
 
+class RecommenderOrganizationsLocationsRecommendersGetConfigRequest(_messages.Message):
+  r"""A RecommenderOrganizationsLocationsRecommendersGetConfigRequest object.
+
+  Fields:
+    name: Required. Name of the Recommendation Config to get. Acceptable
+      formats: * `projects/[PROJECT_NUMBER]/locations/global/recommenders/[REC
+      OMMENDER_ID]/config` * `projects/[PROJECT_ID]/locations/global/recommend
+      ers/[RECOMMENDER_ID]/config`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class RecommenderOrganizationsLocationsRecommendersRecommendationsGetRequest(_messages.Message):
   r"""A RecommenderOrganizationsLocationsRecommendersRecommendationsGetRequest
   object.
@@ -1578,11 +1604,13 @@ class RecommenderOrganizationsLocationsRecommendersRecommendationsListRequest(_m
   Fields:
     filter: Filter expression to restrict the recommendations returned.
       Supported filter fields: * `state_info.state` * `recommenderSubtype` *
-      `priority` Examples: * `stateInfo.state = ACTIVE OR stateInfo.state =
-      DISMISSED` * `recommenderSubtype = REMOVE_ROLE OR recommenderSubtype =
-      REPLACE_ROLE` * `priority = P1 OR priority = P2` * `stateInfo.state =
-      ACTIVE AND (priority = P1 OR priority = P2)` (These expressions are
-      based on the filter language described at https://google.aip.dev/160)
+      `priority` * `targetResources` Examples: * `stateInfo.state = ACTIVE OR
+      stateInfo.state = DISMISSED` * `recommenderSubtype = REMOVE_ROLE OR
+      recommenderSubtype = REPLACE_ROLE` * `priority = P1 OR priority = P2` *
+      `targetResources : //compute.googleapis.com/projects/1234/zones/us-
+      central1-a/instances/instance-1` * `stateInfo.state = ACTIVE AND
+      (priority = P1 OR priority = P2)` (These expressions are based on the
+      filter language described at https://google.aip.dev/160)
     pageSize: Optional. The maximum number of results to return from this
       request. Non-positive values are ignored. If not specified, the server
       will determine the number of results to return.
@@ -1699,12 +1727,14 @@ class RecommenderProjectsLocationsInsightTypesInsightsListRequest(_messages.Mess
 
   Fields:
     filter: Filter expression to restrict the insights returned. Supported
-      filter fields: * `stateInfo.state` * `insightSubtype` * `severity`
-      Examples: * `stateInfo.state = ACTIVE OR stateInfo.state = DISMISSED` *
-      `insightSubtype = PERMISSIONS_USAGE` * `severity = CRITICAL OR severity
-      = HIGH` * `stateInfo.state = ACTIVE AND (severity = CRITICAL OR severity
-      = HIGH)` (These expressions are based on the filter language described
-      at https://google.aip.dev/160)
+      filter fields: * `stateInfo.state` * `insightSubtype` * `severity` *
+      `targetResources` Examples: * `stateInfo.state = ACTIVE OR
+      stateInfo.state = DISMISSED` * `insightSubtype = PERMISSIONS_USAGE` *
+      `severity = CRITICAL OR severity = HIGH` * `targetResources :
+      //compute.googleapis.com/projects/1234/zones/us-
+      central1-a/instances/instance-1` * `stateInfo.state = ACTIVE AND
+      (severity = CRITICAL OR severity = HIGH)` (These expressions are based
+      on the filter language described at https://google.aip.dev/160)
     pageSize: Optional. The maximum number of results to return from this
       request. Non-positive values are ignored. If not specified, the server
       will determine the number of results to return.
@@ -1807,11 +1837,13 @@ class RecommenderProjectsLocationsRecommendersRecommendationsListRequest(_messag
   Fields:
     filter: Filter expression to restrict the recommendations returned.
       Supported filter fields: * `state_info.state` * `recommenderSubtype` *
-      `priority` Examples: * `stateInfo.state = ACTIVE OR stateInfo.state =
-      DISMISSED` * `recommenderSubtype = REMOVE_ROLE OR recommenderSubtype =
-      REPLACE_ROLE` * `priority = P1 OR priority = P2` * `stateInfo.state =
-      ACTIVE AND (priority = P1 OR priority = P2)` (These expressions are
-      based on the filter language described at https://google.aip.dev/160)
+      `priority` * `targetResources` Examples: * `stateInfo.state = ACTIVE OR
+      stateInfo.state = DISMISSED` * `recommenderSubtype = REMOVE_ROLE OR
+      recommenderSubtype = REPLACE_ROLE` * `priority = P1 OR priority = P2` *
+      `targetResources : //compute.googleapis.com/projects/1234/zones/us-
+      central1-a/instances/instance-1` * `stateInfo.state = ACTIVE AND
+      (priority = P1 OR priority = P2)` (These expressions are based on the
+      filter language described at https://google.aip.dev/160)
     pageSize: Optional. The maximum number of results to return from this
       request. Non-positive values are ignored. If not specified, the server
       will determine the number of results to return.

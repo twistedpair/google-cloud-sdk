@@ -38,6 +38,7 @@ class NameExpansionIterator:
   def __init__(self,
                urls,
                all_versions=False,
+               ignore_symlinks=False,
                include_buckets=False,
                recursion_requested=False):
     """Instantiates NameExpansionIterator.
@@ -46,11 +47,13 @@ class NameExpansionIterator:
       urls (Iterable[str]): The URLs to expand.
       all_versions (bool): True if all versions of objects should be fetched,
         else False.
+      ignore_symlinks (bool): Skip over symlinks instead of following them.
       include_buckets (bool): True if buckets should be fetched.
       recursion_requested (bool): True if recursion is requested, else False.
     """
     self._urls = urls
     self._all_versions = all_versions
+    self._ignore_symlinks = ignore_symlinks
     self._include_buckets = include_buckets
     self._recursion_requested = recursion_requested
 
@@ -80,7 +83,9 @@ class NameExpansionIterator:
     for url in self._urls:
       resources = plurality_checkable_iterator.PluralityCheckableIterator(
           wildcard_iterator.get_wildcard_iterator(
-              url, all_versions=self._all_versions))
+              url,
+              all_versions=self._all_versions,
+              ignore_symlinks=self._ignore_symlinks))
       is_name_expansion_iterator_empty = True
       original_storage_url = storage_url.storage_url_from_string(url)
 
@@ -108,7 +113,9 @@ class NameExpansionIterator:
         # Append '**' to fetch all objects under this container.
         new_storage_url = resource.storage_url.join('**')
         child_resources = wildcard_iterator.get_wildcard_iterator(
-            new_storage_url.url_string, all_versions=self._all_versions)
+            new_storage_url.url_string,
+            all_versions=self._all_versions,
+            ignore_symlinks=self._ignore_symlinks)
         for child_resource in child_resources:
           yield self._get_name_expansion_result(
               child_resource, resource.storage_url, original_storage_url)

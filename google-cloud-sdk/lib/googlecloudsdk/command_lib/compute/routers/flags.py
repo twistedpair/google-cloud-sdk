@@ -314,7 +314,7 @@ def AddBgpPeerArgs(parser,
         '--peer-ipv6-nexthop-address',
         type=utils.IPV6Argument,
         help='The IPv6 next hop address of the peer router. Must be a '
-        'Goolge owned global unicast IPv6 address belonging to the range '
+        'Google owned global unicast IPv6 address belonging to the range '
         '2600:2d00:0:2:0:0:0:0/64 in HA0 or 2600:2d00:0:3:0:0:0:0/64 in HA1.')
 
 

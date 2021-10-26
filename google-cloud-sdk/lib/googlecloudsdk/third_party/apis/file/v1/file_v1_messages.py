@@ -1565,8 +1565,8 @@ class OperationMetadata(_messages.Message):
 
 
 class RestoreInstanceRequest(_messages.Message):
-  r"""RestoreInstanceRequest restores an existing instances's file share from
-  a backup.
+  r"""RestoreInstanceRequest restores an existing instance's file share from a
+  backup.
 
   Fields:
     fileShare: Required. Name of the file share in the Cloud Filestore

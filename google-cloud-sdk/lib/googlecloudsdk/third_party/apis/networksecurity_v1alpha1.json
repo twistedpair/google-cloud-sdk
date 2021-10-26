@@ -439,7 +439,7 @@
       "type": "object",
       "properties": {
         "principals": {
-          "description": "Optional. List of peer identities to match for authorization. At least one principal should match. Currently, only exact matches are supported.",
+          "description": "Optional. List of peer identities to match for authorization. At least one principal should match. Each peer can be an exact match, or a prefix match (example, \"namespace\/*\") or a suffix match (example, \/\/ *\/service-account\") or a presence match \"*\".",
           "type": "array",
           "items": {
             "type": "string"

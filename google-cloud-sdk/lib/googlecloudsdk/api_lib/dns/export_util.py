@@ -24,8 +24,13 @@ from dns import rdata
 from dns import rdataclass
 from dns import rdatatype
 from dns import zone
+from googlecloudsdk.api_lib.dns import svcb_stub
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.resource import resource_printer
+
+
+# Enable support for exporting SVCB and HTTPS records.
+svcb_stub.register()
 
 
 class Error(exceptions.Error):

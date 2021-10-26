@@ -242,9 +242,8 @@ def AddBackupStartTime(parser):
   parser.add_argument(
       '--backup-start-time',
       required=False,
-      help=('Start time of daily backups, specified in the 24 hour '
-            'format - HH:MM, in the UTC timezone. A random backup time is '
-            'selected if this is not specified and backups are enabled.'))
+      help=('Start time of daily backups, specified in the HH:MM format, in '
+            'the UTC timezone.'))
 
 
 def AddBackupLocation(parser, allow_empty):

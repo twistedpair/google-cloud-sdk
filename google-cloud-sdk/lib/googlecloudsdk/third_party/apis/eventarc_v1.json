@@ -501,11 +501,6 @@
           "readOnly": true,
           "type": "string"
         },
-        "service": {
-          "description": "Output only. The service hostname. Only available for Google event providers. (e.g. \"storage.googleapis.com\")",
-          "readOnly": true,
-          "type": "string"
-        },
         "displayName": {
           "description": "Output only. Human friendly name for the Provider. For example \"Cloud Storage\".",
           "readOnly": true,
@@ -592,6 +587,63 @@
         },
         "nextPageToken": {
           "description": "A page token that can be sent to ListProviders to request the next page. If this is empty, then there are no more pages.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Unreachable resources, if any.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ChannelConnection": {
+      "id": "ChannelConnection",
+      "description": "A representation of the ChannelConnection resource. A ChannelConnection is a resource which event providers create during the activation process to establish a connection between the provider and the subscriber channel.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The name of the connection.",
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. \/ Output only. Server assigned ID of the resource. The server guarantees uniqueness and immutability until deleted.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "channel": {
+          "description": "Required. The name of the connected subscriber Channel. This is a weak reference to avoid cross project and cross accounts references. This must be in `projects\/{project}\/location\/{location}\/channels\/{channel_id}` format.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The creation time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The last-modified time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "ListChannelConnectionsResponse": {
+      "id": "ListChannelConnectionsResponse",
+      "description": "The response message for the ListChannelConnections method.",
+      "type": "object",
+      "properties": {
+        "channelConnections": {
+          "description": "The requested channel connections, up to the number specified in `page_size`.",
+          "type": "array",
+          "items": {
+            "$ref": "ChannelConnection"
+          }
+        },
+        "nextPageToken": {
+          "description": "A page token that can be sent to ListChannelConnections to request the next page. If this is empty, then there are no more pages.",
           "type": "string"
         },
         "unreachable": {
@@ -1675,6 +1727,129 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "List providers."
+                }
+              }
+            },
+            "channelConnections": {
+              "methods": {
+                "get": {
+                  "id": "eventarc.projects.locations.channelConnections.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/channelConnections/{channelConnectionsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the channel connection to get.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/channelConnections\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ChannelConnection"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Get a single ChannelConnection."
+                },
+                "list": {
+                  "id": "eventarc.projects.locations.channelConnections.list",
+                  "path": "v1/{+parent}/channelConnections",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/channelConnections",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent collection from which to list channel connections.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of channel connections to return on each page. Note: The service may send fewer responses.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The page token; provide the value from the `next_page_token` field in a previous `ListChannelConnections` call to retrieve the subsequent page. When paginating, all other parameters provided to `ListChannelConnetions` match the call that provided the page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListChannelConnectionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "List channel connections."
+                },
+                "create": {
+                  "id": "eventarc.projects.locations.channelConnections.create",
+                  "path": "v1/{+parent}/channelConnections",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/channelConnections",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent collection in which to add this channel connection.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "channelConnectionId": {
+                      "description": "Required. The user-provided ID to be assigned to the channel connection.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "ChannelConnection"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Create a new ChannelConnection in a particular project and location."
+                },
+                "delete": {
+                  "id": "eventarc.projects.locations.channelConnections.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/channelConnections/{channelConnectionsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the channel connection to delete.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/channelConnections\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Delete a single ChannelConnection."
                 }
               }
             }

@@ -656,7 +656,7 @@
           "$ref": "GoogleCloudAiplatformV1beta1EncryptionSpec"
         },
         "network": {
-          "description": "The full name of the Google Compute Engine [network](https:\/\/cloud.google.com\/\/compute\/docs\/networks-and-firewalls#networks) to which the Endpoint should be peered. Private services access must already be configured for the network. If left unspecified, the Endpoint is not peered with any network. [Format](https:\/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/networks\/insert): projects\/{project}\/global\/networks\/{network}. Where {project} is a project number, as in `12345`, and {network} is network name.",
+          "description": "The full name of the Google Compute Engine [network](https:\/\/cloud.google.com\/\/compute\/docs\/networks-and-firewalls#networks) to which the Endpoint should be peered. Private services access must already be configured for the network. If left unspecified, the Endpoint is not peered with any network. [Format](https:\/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/networks\/insert): `projects\/{project}\/global\/networks\/{network}`. Where `{project}` is a project number, as in `12345`, and `{network}` is network name.",
           "type": "string"
         },
         "modelDeploymentMonitoringJob": {
@@ -680,8 +680,7 @@
           "$ref": "GoogleCloudAiplatformV1beta1AutomaticResources"
         },
         "id": {
-          "description": "Output only. The ID of the DeployedModel.",
-          "readOnly": true,
+          "description": "Immutable. The ID of the DeployedModel. If not provided upon deployment, Vertex AI will generate a value for this ID. This value should be 1-10 characters, and valid characters are \/[0-9]\/.",
           "type": "string"
         },
         "model": {
@@ -4371,7 +4370,7 @@
       "type": "object",
       "properties": {
         "deployedModelId": {
-          "description": "Required. The DeployedModel ID of the [google.cloud.aiplatform.master.ModelDeploymentMonitoringObjectiveConfig.deployed_model_id].",
+          "description": "Required. The DeployedModel ID of the [ModelDeploymentMonitoringObjectiveConfig.deployed_model_id].",
           "type": "string"
         },
         "featureDisplayName": {
@@ -5515,6 +5514,11 @@
           "readOnly": true,
           "type": "string"
         },
+        "originalModelInfo": {
+          "description": "Output only. If this Model is a copy of another Model, this contains info about the original.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1beta1ModelOriginalModelInfo"
+        },
         "containerSpec": {
           "description": "Input only. The specification of the container that is to be used when deploying this Model. The specification is ingested upon ModelService.UploadModel, and all binaries it contains are copied and stored internally by Vertex AI. Not present for AutoML Models.",
           "$ref": "GoogleCloudAiplatformV1beta1ModelContainerSpec"
@@ -5644,6 +5648,18 @@
               "IMAGE"
             ]
           }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ModelOriginalModelInfo": {
+      "id": "GoogleCloudAiplatformV1beta1ModelOriginalModelInfo",
+      "description": "Contains information about the original Model if this Model is a copy.",
+      "type": "object",
+      "properties": {
+        "model": {
+          "description": "Output only. The resource name of the Model this Model is a copy of, including the revision. Format: `projects\/{project}\/locations\/{location}\/models\/{model_id}@{version_id}`",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -8327,8 +8343,7 @@
           "$ref": "GoogleCloudAiplatformInternalAutomaticResources"
         },
         "id": {
-          "description": "Output only. The ID of the DeployedModel.",
-          "readOnly": true,
+          "description": "Immutable. The ID of the DeployedModel. If not provided upon deployment, Vertex AI will generate a value for this ID. This value should be 1-10 characters, and valid characters are \/[0-9]\/.",
           "type": "string"
         },
         "model": {
@@ -9141,7 +9156,7 @@
           "$ref": "GoogleCloudAiplatformInternalEncryptionSpec"
         },
         "deIdConfig": {
-          "description": "The de-identification config. If set this field, it will run HITL de-id instead of regular HITL pipeline.",
+          "description": "Use the deidentification input to pass the configs instead. The de-identification config. If set this field, it will run HITL de-id instead of regular HITL pipeline.",
           "$ref": "GoogleCloudAiplatformInternalDeIdentificationConfig"
         },
         "autoAssignConfig": {
@@ -10963,8 +10978,7 @@
           "$ref": "GoogleCloudAiplatformUiAutomaticResources"
         },
         "id": {
-          "description": "Output only. The ID of the DeployedModel.",
-          "readOnly": true,
+          "description": "Immutable. The ID of the DeployedModel. If not provided upon deployment, Vertex AI will generate a value for this ID. This value should be 1-10 characters, and valid characters are \/[0-9]\/.",
           "type": "string"
         },
         "model": {
@@ -12542,6 +12556,20 @@
         }
       }
     },
+    "GoogleCloudAiplatformUiWaitEdgeDeploymentJobOperationMetadata": {
+      "id": "GoogleCloudAiplatformUiWaitEdgeDeploymentJobOperationMetadata",
+      "description": "Metadata message for JobService.WaitEdgeDeploymentJob.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudAiplatformUiWaitEdgeDeploymentJobResponse": {
+      "id": "GoogleCloudAiplatformUiWaitEdgeDeploymentJobResponse",
+      "description": "Response message for JobService.WaitEdgeDeploymentJob.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "GoogleCloudAiplatformUiSchemaImageBoundingBoxAnnotation": {
       "id": "GoogleCloudAiplatformUiSchemaImageBoundingBoxAnnotation",
       "description": "Annotation details specific to image object detection.",
@@ -13829,8 +13857,7 @@
           "$ref": "GoogleCloudAiplatformV1alpha1AutomaticResources"
         },
         "id": {
-          "description": "Output only. The ID of the DeployedModel.",
-          "readOnly": true,
+          "description": "Immutable. The ID of the DeployedModel. If not provided upon deployment, Vertex AI will generate a value for this ID. This value should be 1-10 characters, and valid characters are \/[0-9]\/.",
           "type": "string"
         },
         "model": {
@@ -18946,8 +18973,7 @@
           "$ref": "GoogleCloudAiplatformV1AutomaticResources"
         },
         "id": {
-          "description": "Output only. The ID of the DeployedModel.",
-          "readOnly": true,
+          "description": "Immutable. The ID of the DeployedModel. If not provided upon deployment, Vertex AI will generate a value for this ID. This value should be 1-10 characters, and valid characters are \/[0-9]\/.",
           "type": "string"
         },
         "model": {
@@ -29794,7 +29820,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Exports a trained, exportable, Model to a location specified by the user. A Model is considered to be exportable if it has at least one supported export format."
+                  "description": "Exports a trained, exportable Model to a location specified by the user. A Model is considered to be exportable if it has at least one supported export format."
                 }
               }
               ,
@@ -30659,7 +30685,7 @@
                       "type": "string"
                     },
                     "orderBy": {
-                      "description": "A comma-separated list of fields to order by. The default sort order is in ascending order. Use \"desc\" after a field name for descending. You can have multiple order_by fields provided e.g. \"create_time desc, end_time\", \"end_time, start_time, update_time\" For example, using \"create_time desc, end_time\" will order results by create time in descending order, and if there are multiple jobs having the same create time, order them by the end time in ascending order. if order_by is not specified, it will order by default order is create time in descending order. Supported fields: * `create_time` * `update_time` * `end_time`",
+                      "description": "A comma-separated list of fields to order by. The default sort order is in ascending order. Use \"desc\" after a field name for descending. You can have multiple order_by fields provided e.g. \"create_time desc, end_time\", \"end_time, start_time, update_time\" For example, using \"create_time desc, end_time\" will order results by create time in descending order, and if there are multiple jobs having the same create time, order them by the end time in ascending order. if order_by is not specified, it will order by default order is create time in descending order. Supported fields: * `create_time` * `update_time` * `end_time` * `start_time`",
                       "location": "query",
                       "type": "string"
                     }

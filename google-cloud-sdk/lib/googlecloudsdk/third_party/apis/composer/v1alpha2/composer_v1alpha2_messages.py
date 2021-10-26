@@ -132,6 +132,18 @@ class CheckUpgradeResponse(_messages.Message):
   pypiDependencies = _messages.MessageField('PypiDependenciesValue', 5)
 
 
+class CidrBlock(_messages.Message):
+  r"""CidrBlock contains an optional name and one CIDR block.
+
+  Fields:
+    cidrBlock: cidr_block must be specified in CIDR notation.
+    displayName: display_name is a field for users to identify CIDR blocks.
+  """
+
+  cidrBlock = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+
+
 class ComposerProjectsLocationsEnvironmentsCheckUpgradeRequest(_messages.Message):
   r"""A ComposerProjectsLocationsEnvironmentsCheckUpgradeRequest object.
 
@@ -455,6 +467,22 @@ class ComposerProjectsLocationsEnvironmentsRestartWebServerRequest(_messages.Mes
   restartWebServerRequest = _messages.MessageField('RestartWebServerRequest', 2)
 
 
+class ComposerProjectsLocationsEnvironmentsStoreEnvironmentStateRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsStoreEnvironmentStateRequest
+  object.
+
+  Fields:
+    environment: The resource name of the source environment in the form:
+      "projects/{projectId}/locations/{locationId}/environments/{environmentId
+      }"
+    storeEnvironmentStateRequest: A StoreEnvironmentStateRequest resource to
+      be passed as the request body.
+  """
+
+  environment = _messages.StringField(1, required=True)
+  storeEnvironmentStateRequest = _messages.MessageField('StoreEnvironmentStateRequest', 2)
+
+
 class ComposerProjectsLocationsImageVersionsListRequest(_messages.Message):
   r"""A ComposerProjectsLocationsImageVersionsListRequest object.
 
@@ -594,11 +622,13 @@ class DagRun(_messages.Message):
       RUNNING: The DAG run is being executed.
       SUCCEEDED: The DAG run is finished successfully.
       FAILED: The DAG run is finished with an error.
+      QUEUED: The DAG run is queued for execution.
     """
     STATE_UNSPECIFIED = 0
     RUNNING = 1
     SUCCEEDED = 2
     FAILED = 3
+    QUEUED = 4
 
   dagId = _messages.StringField(1)
   dagRunId = _messages.StringField(2)
@@ -820,6 +850,11 @@ class EnvironmentConfig(_messages.Message):
       per week. This may be split into multiple chunks, each with a size of at
       least 4 hours. If this value is omitted, Cloud Composer components may
       be subject to maintenance at any time.
+    masterAuthorizedNetworksConfig: Optional. The configuration options for
+      GKE clusters master authorized networks. By default master authorized
+      networks feature is: - in case of private environment: enabled with no
+      external networks allowlisted. - in case of public environment:
+      disabled.
     nodeConfig: The configuration used for the Kubernetes Engine cluster.
     nodeCount: The number of nodes in the Kubernetes Engine cluster that will
       be used to run this environment. This field is supported for Cloud
@@ -866,13 +901,14 @@ class EnvironmentConfig(_messages.Message):
   environmentSize = _messages.EnumField('EnvironmentSizeValueValuesEnum', 5)
   gkeCluster = _messages.StringField(6)
   maintenanceWindow = _messages.MessageField('MaintenanceWindow', 7)
-  nodeConfig = _messages.MessageField('NodeConfig', 8)
-  nodeCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 10)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 11)
-  webServerConfig = _messages.MessageField('WebServerConfig', 12)
-  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 13)
-  workloadsConfig = _messages.MessageField('WorkloadsConfig', 14)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 8)
+  nodeConfig = _messages.MessageField('NodeConfig', 9)
+  nodeCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 11)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 12)
+  webServerConfig = _messages.MessageField('WebServerConfig', 13)
+  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 14)
+  workloadsConfig = _messages.MessageField('WorkloadsConfig', 15)
 
 
 class IPAllocationPolicy(_messages.Message):
@@ -1074,6 +1110,22 @@ class MaintenanceWindow(_messages.Message):
   endTime = _messages.StringField(1)
   recurrence = _messages.StringField(2)
   startTime = _messages.StringField(3)
+
+
+class MasterAuthorizedNetworksConfig(_messages.Message):
+  r"""Configuration options for the master authorized networks feature.
+  Enabled master authorized networks will disallow all external traffic to
+  access Kubernetes master through HTTPS except traffic from the given CIDR
+  blocks, Google Compute Engine Public IPs and Google Prod IPs.
+
+  Fields:
+    cidrBlocks: cidr_blocks define up to 50 external networks that could
+      access Kubernetes master through HTTPS.
+    enabled: Whether or not master authorized networks is enabled.
+  """
+
+  cidrBlocks = _messages.MessageField('CidrBlock', 1, repeated=True)
+  enabled = _messages.BooleanField(2)
 
 
 class NodeConfig(_messages.Message):
@@ -1376,6 +1428,10 @@ class PrivateEnvironmentConfig(_messages.Message):
   Composer environment.
 
   Fields:
+    cloudComposerConnectionSubnetwork: Optional. When specified, the
+      environment will use Private Service Connect instead of VPC peerings to
+      connect to Cloud SQL in the Tenant Project, and the PSC endpoint in the
+      Customer Project will use an IP address from this subnetwork.
     cloudComposerNetworkIpv4CidrBlock: Optional. The CIDR block from which IP
       range for Cloud Composer Network in tenant project will be reserved.
       Needs to be disjoint from private_cluster_config.master_ipv4_cidr_block
@@ -1409,14 +1465,15 @@ class PrivateEnvironmentConfig(_messages.Message):
       Composer environments in versions composer-1.*.*-airflow-*.*.*.
   """
 
-  cloudComposerNetworkIpv4CidrBlock = _messages.StringField(1)
-  cloudComposerNetworkIpv4ReservedRange = _messages.StringField(2)
-  cloudSqlIpv4CidrBlock = _messages.StringField(3)
-  enablePrivateEnvironment = _messages.BooleanField(4)
-  enablePrivatelyUsedPublicIps = _messages.BooleanField(5)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 6)
-  webServerIpv4CidrBlock = _messages.StringField(7)
-  webServerIpv4ReservedRange = _messages.StringField(8)
+  cloudComposerConnectionSubnetwork = _messages.StringField(1)
+  cloudComposerNetworkIpv4CidrBlock = _messages.StringField(2)
+  cloudComposerNetworkIpv4ReservedRange = _messages.StringField(3)
+  cloudSqlIpv4CidrBlock = _messages.StringField(4)
+  enablePrivateEnvironment = _messages.BooleanField(5)
+  enablePrivatelyUsedPublicIps = _messages.BooleanField(6)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 7)
+  webServerIpv4CidrBlock = _messages.StringField(8)
+  webServerIpv4ReservedRange = _messages.StringField(9)
 
 
 class RestartWebServerRequest(_messages.Message):
@@ -1783,6 +1840,30 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class StoreEnvironmentStateRequest(_messages.Message):
+  r"""Store environment state request.
+
+  Fields:
+    snapshotLocation: Location in a Cloud Storage where the snapshot of the
+      state is going to be stored, e.g.: "gs://my-bucket/snapshots".
+  """
+
+  snapshotLocation = _messages.StringField(1)
+
+
+class StoreEnvironmentStateResponse(_messages.Message):
+  r"""Store environment state response.
+
+  Fields:
+    snapshotLocation: The fully-resolved Cloud Storage location of the created
+      snapshot, e.g.: "gs://my-
+      bucket/snapshots/project_id/location/environment_uuid/timestamp". This
+      field is populated only if the snapshot creation was successful.
+  """
+
+  snapshotLocation = _messages.StringField(1)
+
+
 class Task(_messages.Message):
   r"""A single task in a DAG.
 
@@ -1909,6 +1990,12 @@ class TaskInstance(_messages.Message):
       QUEUED: Task queued.
       SCHEDULED: Task scheduled for execution.
       SENSING: Task in sensing mode.
+      REMOVED: Task vanished from DAG before it ran.
+      RUNNING: Task is executing.
+      SHUTDOWN: External request to shut down (e.g. marked failed when
+        running).
+      RESTARTING: External request to restart (e.g. cleared when running).
+      DEFERRED: Deferrable operator waiting on a trigger.
     """
     STATE_UNSPECIFIED = 0
     SUCCEEDED = 1
@@ -1920,6 +2007,11 @@ class TaskInstance(_messages.Message):
     QUEUED = 7
     SCHEDULED = 8
     SENSING = 9
+    REMOVED = 10
+    RUNNING = 11
+    SHUTDOWN = 12
+    RESTARTING = 13
+    DEFERRED = 14
 
   dagId = _messages.StringField(1)
   dagRunId = _messages.StringField(2)

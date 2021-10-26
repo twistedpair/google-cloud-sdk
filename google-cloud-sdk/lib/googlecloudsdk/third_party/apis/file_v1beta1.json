@@ -488,7 +488,7 @@
     },
     "RestoreInstanceRequest": {
       "id": "RestoreInstanceRequest",
-      "description": "RestoreInstanceRequest restores an existing instances's file share from a snapshot or backup.",
+      "description": "RestoreInstanceRequest restores an existing instance's file share from a snapshot or backup.",
       "type": "object",
       "properties": {
         "fileShare": {
@@ -507,7 +507,7 @@
     },
     "RevertInstanceRequest": {
       "id": "RevertInstanceRequest",
-      "description": "RevertInstanceRequest reverts the given instances's file system to the specified snapshot.",
+      "description": "RevertInstanceRequest reverts the given instance's file share to the specified snapshot.",
       "type": "object",
       "properties": {
         "targetSnapshotId": {

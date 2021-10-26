@@ -56,7 +56,8 @@ def contains_wildcard(url_string):
 def get_wildcard_iterator(url_str,
                           all_versions=False,
                           fields_scope=cloud_api.FieldsScope.NO_ACL,
-                          get_bucket_metadata=False):
+                          get_bucket_metadata=False,
+                          ignore_symlinks=False):
   """Instantiate a WildcardIterator for the given URL string.
 
   Args:
@@ -67,6 +68,7 @@ def get_wildcard_iterator(url_str,
         returned by API.
     get_bucket_metadata (bool): If true, perform a bucket GET request when
         fetching bucket resources
+    ignore_symlinks (bool): Skip over symlinks instead of following them.
 
   Returns:
     A WildcardIterator object.
@@ -79,7 +81,7 @@ def get_wildcard_iterator(url_str,
         fields_scope,
         get_bucket_metadata=get_bucket_metadata)
   elif isinstance(url, storage_url.FileUrl):
-    return FileWildcardIterator(url)
+    return FileWildcardIterator(url, ignore_symlinks=ignore_symlinks)
   else:
     raise command_errors.InvalidUrlError('Unknown url type %s.' % url)
 
@@ -117,15 +119,17 @@ class WildcardIterator(six.with_metaclass(abc.ABCMeta)):
 class FileWildcardIterator(WildcardIterator):
   """Class to iterate over files and directories."""
 
-  def __init__(self, url):
+  def __init__(self, url, ignore_symlinks=False):
     """Initialize FileWildcardIterator instance.
 
     Args:
       url (FileUrl): A FileUrl instance representing a file path.
+      ignore_symlinks (bool): Skip over symlinks instead of following them.
     """
     super().__init__()
     self._url = _compress_url_wildcards(url)
     self._path = self._url.object_name
+    self._ignore_symlinks = ignore_symlinks
 
   def __iter__(self):
     recursion_needed = '**' in self._path
@@ -142,6 +146,11 @@ class FileWildcardIterator(WildcardIterator):
       # them to be consistent with CloudWildcardIterator.
       if self._path.endswith('**') and (not os.path.exists(path)
                                         or os.path.isdir(path)):
+        continue
+
+      # Follow symlinks unless pointing to directory or exclude flag is present.
+      if os.path.islink(path) and (os.path.isdir(path) or
+                                   self._ignore_symlinks):
         continue
 
       file_url = storage_url.FileUrl(path)

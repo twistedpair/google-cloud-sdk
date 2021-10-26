@@ -454,12 +454,12 @@ class BuildOptions(_messages.Message):
       LOGGING_UNSPECIFIED: The service determines the logging mode. The
         default is `LEGACY`. Do not rely on the default logging behavior as it
         may change in the future.
-      LEGACY: Cloud Logging and Cloud Storage logging are enabled.
-      GCS_ONLY: Only Cloud Storage logging is enabled.
+      LEGACY: Build logs are stored in Cloud Logging and Cloud Storage.
+      GCS_ONLY: Build logs are stored in Cloud Storage.
       STACKDRIVER_ONLY: This option is the same as CLOUD_LOGGING_ONLY.
-      CLOUD_LOGGING_ONLY: Only Cloud Logging is enabled. Note that logs for
-        both the Cloud Console UI and Cloud SDK are based on Cloud Storage
-        logs, so neither will provide logs if this option is chosen.
+      CLOUD_LOGGING_ONLY: Build logs are stored in Cloud Logging. Selecting
+        this option will not allow [logs
+        streaming](https://cloud.google.com/sdk/gcloud/reference/builds/log).
       NONE: Turn off all logging. No build logs will be captured.
     """
     LOGGING_UNSPECIFIED = 0

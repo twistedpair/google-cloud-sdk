@@ -854,6 +854,10 @@
         "identityservice": {
           "description": "Identity Service-specific spec.",
           "$ref": "IdentityServiceMembershipSpec"
+        },
+        "mesh": {
+          "description": "Anthos Service Mesh-specific spec",
+          "$ref": "ServiceMeshMembershipSpec"
         }
       }
     },
@@ -1129,6 +1133,27 @@
         }
       }
     },
+    "ServiceMeshMembershipSpec": {
+      "id": "ServiceMeshMembershipSpec",
+      "description": "**Service Mesh**: Spec for a single Membership for the servicemesh feature",
+      "type": "object",
+      "properties": {
+        "controlPlane": {
+          "description": "Enables automatic control plane management.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified",
+            "Google should provision a control plane revision and make it available in the cluster. Google will enroll this revision in a release channel and keep it up to date. The control plane revision may be a managed service, or a managed install.",
+            "User will manually configure the control plane (e.g. via CLI, or via the ControlPlaneRevision KRM API)"
+          ],
+          "enum": [
+            "CONTROL_PLANE_MANAGEMENT_UNSPECIFIED",
+            "AUTOMATIC",
+            "MANUAL"
+          ]
+        }
+      }
+    },
     "CommonFeatureState": {
       "id": "CommonFeatureState",
       "description": "CommonFeatureState contains Hub-wide Feature status information.",
@@ -1322,6 +1347,62 @@
           "items": {
             "$ref": "ServiceMeshAnalysisMessage"
           }
+        },
+        "controlPlaneManagement": {
+          "description": "Output only. Status of control plane management",
+          "readOnly": true,
+          "$ref": "ServiceMeshControlPlaneManagement"
+        }
+      }
+    },
+    "ServiceMeshControlPlaneManagement": {
+      "id": "ServiceMeshControlPlaneManagement",
+      "description": "Status of control plane management",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "State of control plane management",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified",
+            "DISABLED means that automatic control plane management is not enabled.",
+            "FAILED_PRECONDITION means that automatic control plane management cannot proceed because of some characteristic of the member cluster.",
+            "PROVISIONING means at least one control plane component has not completed provisioning, and none has failed.",
+            "ACTIVE means that all control plane components are ready for use.",
+            "STALLED means that some control plane component could not be provisioned.",
+            "NEEDS_ATTENTION means that all control plane components are ready, but some user intervention is required. (For example that the user should migrate workloads to a new control plane revision.)"
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "DISABLED",
+            "FAILED_PRECONDITION",
+            "PROVISIONING",
+            "ACTIVE",
+            "STALLED",
+            "NEEDS_ATTENTION"
+          ]
+        },
+        "details": {
+          "description": "Explanation of state",
+          "type": "array",
+          "items": {
+            "$ref": "ServiceMeshStatusDetails"
+          }
+        }
+      }
+    },
+    "ServiceMeshStatusDetails": {
+      "id": "ServiceMeshStatusDetails",
+      "description": "Structured and human-readable details for a status.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "A machine-readable code that further describes a broad status.",
+          "type": "string"
+        },
+        "details": {
+          "description": "Human-readable explanation of code.",
+          "type": "string"
         }
       }
     },
@@ -2027,6 +2108,10 @@
           "readOnly": true,
           "type": "string"
         },
+        "managedNamespaces": {
+          "description": "Optional. If true, namespaces must be explicitly declared in a `FleetNamespace` object in order to use Fleet Features.",
+          "type": "boolean"
+        },
         "fleetName": {
           "description": "The name for the fleet. The name must meet the following constraints: + The name of a fleet should be unique within the organization; + It must consist of lower case alphanumeric characters or `-`; + The length of the name must be less than or equal to 63; + Unicode names must be expressed in Punycode format (rfc3492). Examples: + prod-fleet + xn--wlq33vhyw9jb \uFF08Punycode form for \"\u751F\u4EA7\u73AF\u5883\")",
           "type": "string"
@@ -2044,6 +2129,35 @@
           "items": {
             "$ref": "Fleet"
           }
+        }
+      }
+    },
+    "FleetNamespace": {
+      "id": "FleetNamespace",
+      "description": "FleetNamespace represents a namespace across the Fleet",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name for the Fleet Namespace `projects\/{project}\/locations\/{location}\/fleetNamespaces\/{fleet_namespace}`",
+          "type": "string"
+        }
+      }
+    },
+    "ListFleetNamespacesResponse": {
+      "id": "ListFleetNamespacesResponse",
+      "description": "List of fleet namespaces.",
+      "type": "object",
+      "properties": {
+        "fleetNamespaces": {
+          "description": "The list of fleet namespaces",
+          "type": "array",
+          "items": {
+            "$ref": "FleetNamespace"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to request the next page of resources from the `ListFleetNamespaces` method. The value of an empty string means that there are no more resources to return.",
+          "type": "string"
         }
       }
     },
@@ -3306,6 +3420,104 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Search fleets within a given organization or folder, and whose hosting projects the caller has `gkehub.memberships.get` permission on."
+                }
+              }
+            },
+            "fleetNamespaces": {
+              "methods": {
+                "create": {
+                  "id": "gkehub.projects.locations.fleetNamespaces.create",
+                  "path": "v1alpha/{+parent}/fleetNamespaces",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/fleetNamespaces",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent (project and location) where the FleetNamespace will be created. Specified in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "fleetNamespaceId": {
+                      "description": "Required. Client chosen ID for the FleetNamespace. `fleet_namespace_id` must be a valid RFC 1123 compliant DNS label: 1. At most 63 characters in length 2. It must consist of lower case alphanumeric characters or `-` 3. It must start and end with an alphanumeric character Which can be expressed as the regex: `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "FleetNamespace"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a fleet namespace."
+                },
+                "delete": {
+                  "id": "gkehub.projects.locations.fleetNamespaces.delete",
+                  "path": "v1alpha/{+name}",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/fleetNamespaces/{fleetNamespacesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The FleetNamespace resource name in the format `projects\/*\/locations\/*\/fleetNamespaces\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/fleetNamespaces\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a fleet namespace."
+                },
+                "list": {
+                  "id": "gkehub.projects.locations.fleetNamespaces.list",
+                  "path": "v1alpha/{+parent}/fleetNamespaces",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/fleetNamespaces",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent (project and location) where the Features will be listed. Specified in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. When requesting a 'page' of resources, `page_size` specifies number of resources to return. If unspecified or set to 0, all resources will be returned.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. Token returned by previous call to `ListFeatures` which specifies the position in the list from where to continue listing the resources.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListFleetNamespacesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists fleet namespaces."
                 }
               }
             }

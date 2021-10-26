@@ -33,6 +33,18 @@ sql_integration:
     attribute_name: sql_integration
     help: The identifier of the Cloud SQL integration under the domain resource.
 
+backup:
+  name: backup
+  collection: managedidentities.projects.locations.global.domains.backups
+  request_id_field: backupId
+  attributes:
+  - *project
+  - *domain
+  - &backup
+    parameter_name: backupsId
+    attribute_name: backup
+    help: The identifier of the Microsoft Active Directory domain backup.
+
 operation:
   name: operation
   collection: managedidentities.projects.locations.global.operations

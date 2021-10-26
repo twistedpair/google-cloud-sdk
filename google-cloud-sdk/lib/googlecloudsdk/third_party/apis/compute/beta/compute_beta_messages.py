@@ -603,13 +603,18 @@ class AccessConfig(_messages.Message):
     networkTier associated with the Address resource owning that IP.
 
     Values:
+      FIXED_STANDARD: Public internet quality with fixed bandwidth.
       PREMIUM: High quality, Google-grade network tier, support for all
         networking products.
       STANDARD: Public internet quality, only limited support for other
         networking products.
+      STANDARD_OVERRIDES_FIXED_STANDARD: (Output only) Temporary tier for
+        FIXED_STANDARD when fixed standard tier is expired or not configured.
     """
-    PREMIUM = 0
-    STANDARD = 1
+    FIXED_STANDARD = 0
+    PREMIUM = 1
+    STANDARD = 2
+    STANDARD_OVERRIDES_FIXED_STANDARD = 3
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of configuration. The default and only option is
@@ -789,13 +794,18 @@ class Address(_messages.Message):
     Premium Tier. If this field is not specified, it is assumed to be PREMIUM.
 
     Values:
+      FIXED_STANDARD: Public internet quality with fixed bandwidth.
       PREMIUM: High quality, Google-grade network tier, support for all
         networking products.
       STANDARD: Public internet quality, only limited support for other
         networking products.
+      STANDARD_OVERRIDES_FIXED_STANDARD: (Output only) Temporary tier for
+        FIXED_STANDARD when fixed standard tier is expired or not configured.
     """
-    PREMIUM = 0
-    STANDARD = 1
+    FIXED_STANDARD = 0
+    PREMIUM = 1
+    STANDARD = 2
+    STANDARD_OVERRIDES_FIXED_STANDARD = 3
 
   class PurposeValueValuesEnum(_messages.Enum):
     r"""The purpose of this resource, which can be one of the following
@@ -3772,6 +3782,9 @@ class BackendService(_messages.Message):
       and load_balancing_scheme set to INTERNAL_MANAGED. - A global backend
       service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED.
     selfLink: [Output Only] Server-defined URL for the resource.
+    serviceBindings: URLs of networkservices.ServiceBinding resources. Can
+      only be set if load balancing scheme is INTERNAL_SELF_MANAGED. If set,
+      lists of backends and health checks must be both empty.
     sessionAffinity: Type of session affinity to use. The default is NONE.
       Only NONE and HEADER_FIELD are supported when the backend service is
       referenced by a URL map that is bound to target gRPC proxy that has
@@ -3806,7 +3819,7 @@ class BackendService(_messages.Message):
       EXTERNAL: Signifies that this will be used for external HTTP(S), SSL
         Proxy, TCP Proxy, or Network Load Balancing
       EXTERNAL_MANAGED: Signifies that this will be used for External Managed
-        HTTP(S), SSL Proxy, or TCP Proxy Load Balancing.
+        HTTP(S) Load Balancing.
       INTERNAL: Signifies that this will be used for Internal TCP/UDP Load
         Balancing.
       INTERNAL_MANAGED: Signifies that this will be used for Internal HTTP(S)
@@ -3984,9 +3997,10 @@ class BackendService(_messages.Message):
   securityPolicy = _messages.StringField(32)
   securitySettings = _messages.MessageField('SecuritySettings', 33)
   selfLink = _messages.StringField(34)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 35)
-  subsetting = _messages.MessageField('Subsetting', 36)
-  timeoutSec = _messages.IntegerField(37, variant=_messages.Variant.INT32)
+  serviceBindings = _messages.StringField(35, repeated=True)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 36)
+  subsetting = _messages.MessageField('Subsetting', 37)
+  timeoutSec = _messages.IntegerField(38, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -5169,7 +5183,7 @@ class BfdStatusPacketCounts(_messages.Message):
 
 
 class Binding(_messages.Message):
-  r"""Associates `members` with a `role`.
+  r"""Associates `members`, or principals, with a `role`.
 
   Fields:
     bindingId: This is deprecated and has no effect. Do not use.
@@ -5177,12 +5191,12 @@ class Binding(_messages.Message):
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
       not apply to the current request. However, a different role binding
-      might grant the same role to one or more of the members in this binding.
-      To learn which resources support conditions in their IAM policies, see
-      the [IAM
+      might grant the same role to one or more of the principals in this
+      binding. To learn which resources support conditions in their IAM
+      policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the identities requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Cloud Platform
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -5212,8 +5226,8 @@ class Binding(_messages.Message):
       group retains the role in the binding. * `domain:{domain}`: The G Suite
       domain (primary) that represents all the users of that domain. For
       example, `google.com` or `example.com`.
-    role: Role that is assigned to `members`. For example, `roles/viewer`,
-      `roles/editor`, or `roles/owner`.
+    role: Role that is assigned to the list of `members`, or principals. For
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
 
   bindingId = _messages.StringField(1)
@@ -5522,6 +5536,7 @@ class Commitment(_messages.Message):
     Values:
       ACCELERATOR_OPTIMIZED: <no description>
       COMPUTE_OPTIMIZED: <no description>
+      COMPUTE_OPTIMIZED_C2D: <no description>
       GENERAL_PURPOSE: <no description>
       GENERAL_PURPOSE_E2: <no description>
       GENERAL_PURPOSE_N2: <no description>
@@ -5532,13 +5547,14 @@ class Commitment(_messages.Message):
     """
     ACCELERATOR_OPTIMIZED = 0
     COMPUTE_OPTIMIZED = 1
-    GENERAL_PURPOSE = 2
-    GENERAL_PURPOSE_E2 = 3
-    GENERAL_PURPOSE_N2 = 4
-    GENERAL_PURPOSE_N2D = 5
-    GENERAL_PURPOSE_T2D = 6
-    MEMORY_OPTIMIZED = 7
-    TYPE_UNSPECIFIED = 8
+    COMPUTE_OPTIMIZED_C2D = 2
+    GENERAL_PURPOSE = 3
+    GENERAL_PURPOSE_E2 = 4
+    GENERAL_PURPOSE_N2 = 5
+    GENERAL_PURPOSE_N2D = 6
+    GENERAL_PURPOSE_T2D = 7
+    MEMORY_OPTIMIZED = 8
+    TYPE_UNSPECIFIED = 9
 
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
   creationTimestamp = _messages.StringField(2)
@@ -29395,13 +29411,18 @@ class ForwardingRule(_messages.Message):
     value must be equal to the networkTier of the Address.
 
     Values:
+      FIXED_STANDARD: Public internet quality with fixed bandwidth.
       PREMIUM: High quality, Google-grade network tier, support for all
         networking products.
       STANDARD: Public internet quality, only limited support for other
         networking products.
+      STANDARD_OVERRIDES_FIXED_STANDARD: (Output only) Temporary tier for
+        FIXED_STANDARD when fixed standard tier is expired or not configured.
     """
-    PREMIUM = 0
-    STANDARD = 1
+    FIXED_STANDARD = 0
+    PREMIUM = 1
+    STANDARD = 2
+    STANDARD_OVERRIDES_FIXED_STANDARD = 3
 
   class PscConnectionStatusValueValuesEnum(_messages.Enum):
     r"""PscConnectionStatusValueValuesEnum enum type.
@@ -39034,6 +39055,10 @@ class LocationPolicy(_messages.Message):
   r"""Configuration for location policy among multiple possible locations
   (e.g. preferences for zone selection among zones in a single region).
 
+  Enums:
+    TargetShapeValueValuesEnum: Strategy for distributing VMs across zones in
+      a region.
+
   Messages:
     LocationsValue: Location configurations mapped by location name. Currently
       only zone names are supported and must be represented as valid internal
@@ -39043,7 +39068,30 @@ class LocationPolicy(_messages.Message):
     locations: Location configurations mapped by location name. Currently only
       zone names are supported and must be represented as valid internal URLs,
       such as zones/us-central1-a.
+    targetShape: Strategy for distributing VMs across zones in a region.
   """
+
+  class TargetShapeValueValuesEnum(_messages.Enum):
+    r"""Strategy for distributing VMs across zones in a region.
+
+    Values:
+      ANY: GCE picks zones for creating VM instances to fulfill the requested
+        number of VMs within present resource constraints and to maximize
+        utilization of unused zonal reservations. Recommended for batch
+        workloads that do not require high availability.
+      ANY_SINGLE_ZONE: GCE always selects a single zone for all the VMs,
+        optimizing for resource quotas, available reservations and general
+        capacity. Recommended for batch workloads that cannot tollerate
+        distribution over multiple zones. This the default shape in Bulk
+        Insert and Capacity Advisor APIs.
+      BALANCED: GCE prioritizes acquisition of resources, scheduling VMs in
+        zones where resources are available while distributing VMs as evenly
+        as possible across allowed zones to minimize the impact of zonal
+        failure. Recommended for highly available serving workloads.
+    """
+    ANY = 0
+    ANY_SINGLE_ZONE = 1
+    BALANCED = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LocationsValue(_messages.Message):
@@ -39072,6 +39120,7 @@ class LocationPolicy(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   locations = _messages.MessageField('LocationsValue', 1)
+  targetShape = _messages.EnumField('TargetShapeValueValuesEnum', 2)
 
 
 class LocationPolicyLocation(_messages.Message):
@@ -41504,12 +41553,14 @@ class NetworkInterface(_messages.Message):
       for network interfaces.
     name: [Output Only] The name of the network interface, which is generated
       by the server. For network devices, these are eth0, eth1, etc.
-    network: URL of the network resource for this instance. When creating an
-      instance, if neither the network nor the subnetwork is specified, the
-      default network global/networks/default is used; if the network is not
-      specified but the subnetwork is specified, the network is inferred. If
-      you specify this property, you can specify the network as a full or
-      partial URL. For example, the following are all valid URLs: -
+    network: URL of the VPC network resource for this instance. When creating
+      an instance, if neither the network nor the subnetwork is specified, the
+      default network global/networks/default is used. If the selected project
+      doesn't have the default network, you must specify a network or subnet.
+      If the network is not specified but the subnetwork is specified, the
+      network is inferred. If you specify this property, you can specify the
+      network as a full or partial URL. For example, the following are all
+      valid URLs: -
       https://www.googleapis.com/compute/v1/projects/project/global/networks/
       network - projects/project/global/networks/network -
       global/networks/default
@@ -41766,11 +41817,13 @@ class NetworkPeering(_messages.Message):
       create and manage subnetwork routes between two networks when peering
       state is ACTIVE.
     exportCustomRoutes: Whether to export the custom routes to peer network.
+      The default value is false.
     exportSubnetRoutesWithPublicIp: Whether subnet routes with public IP range
       are exported. The default value is true, all subnet routes are exported.
       IPv4 special-use ranges are always exported to peers and are not
       controlled by this field.
     importCustomRoutes: Whether to import the custom routes from peer network.
+      The default value is false.
     importSubnetRoutesWithPublicIp: Whether subnet routes with public IP range
       are imported. The default value is false. IPv4 special-use ranges are
       always imported from peers and are not controlled by this field.
@@ -45911,15 +45964,15 @@ class PerInstanceConfig(_messages.Message):
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
-  `bindings`. A `binding` binds one or more `members` to a single `role`.
-  Members can be user accounts, service accounts, Google groups, and domains
-  (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role. For some types of
-  Google Cloud resources, a `binding` can also specify a `condition`, which is
-  a logical expression that allows access to a resource only if the expression
-  evaluates to `true`. A condition can add constraints based on attributes of
-  the request, the resource, or both. To learn which resources support
-  conditions in their IAM policies, see the [IAM
+  `bindings`. A `binding` binds one or more `members`, or principals, to a
+  single `role`. Principals can be user accounts, service accounts, Google
+  groups, and domains (such as G Suite). A `role` is a named list of
+  permissions; each `role` can be an IAM predefined role or a user-created
+  custom role. For some types of Google Cloud resources, a `binding` can also
+  specify a `condition`, which is a logical expression that allows access to a
+  resource only if the expression evaluates to `true`. A condition can add
+  constraints based on attributes of the request, the resource, or both. To
+  learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
   policies). **JSON example:** { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
@@ -45941,14 +45994,15 @@ class Policy(_messages.Message):
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. Optionally, may
-      specify a `condition` that determines how and when the `bindings` are
-      applied. Each of the `bindings` must contain at least one member. The
-      `bindings` in a `Policy` can refer to up to 1,500 members; up to 250 of
-      these members can be Google groups. Each occurrence of a member counts
-      towards these limits. For example, if the `bindings` grant 50 different
-      roles to `user:alice@example.com`, and not to any other member, then you
-      can add another 1,450 members to the `bindings` in the `Policy`.
+    bindings: Associates a list of `members`, or principals, with a `role`.
+      Optionally, may specify a `condition` that determines how and when the
+      `bindings` are applied. Each of the `bindings` must contain at least one
+      principal. The `bindings` in a `Policy` can refer to up to 1,500
+      principals; up to 250 of these principals can be Google groups. Each
+      occurrence of a principal counts towards these limits. For example, if
+      the `bindings` grant 50 different roles to `user:alice@example.com`, and
+      not to any other principal, then you can add another 1,450 principals to
+      the `bindings` in the `Policy`.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -46175,13 +46229,18 @@ class Project(_messages.Message):
     Initially the default network tier is PREMIUM.
 
     Values:
+      FIXED_STANDARD: Public internet quality with fixed bandwidth.
       PREMIUM: High quality, Google-grade network tier, support for all
         networking products.
       STANDARD: Public internet quality, only limited support for other
         networking products.
+      STANDARD_OVERRIDES_FIXED_STANDARD: (Output only) Temporary tier for
+        FIXED_STANDARD when fixed standard tier is expired or not configured.
     """
-    PREMIUM = 0
-    STANDARD = 1
+    FIXED_STANDARD = 0
+    PREMIUM = 1
+    STANDARD = 2
+    STANDARD_OVERRIDES_FIXED_STANDARD = 3
 
   class XpnProjectStatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The role this project has in a shared VPC configuration.
@@ -46277,13 +46336,18 @@ class ProjectsSetDefaultNetworkTierRequest(_messages.Message):
     r"""Default network tier to be set.
 
     Values:
+      FIXED_STANDARD: Public internet quality with fixed bandwidth.
       PREMIUM: High quality, Google-grade network tier, support for all
         networking products.
       STANDARD: Public internet quality, only limited support for other
         networking products.
+      STANDARD_OVERRIDES_FIXED_STANDARD: (Output only) Temporary tier for
+        FIXED_STANDARD when fixed standard tier is expired or not configured.
     """
-    PREMIUM = 0
-    STANDARD = 1
+    FIXED_STANDARD = 0
+    PREMIUM = 1
+    STANDARD = 2
+    STANDARD_OVERRIDES_FIXED_STANDARD = 3
 
   networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 1)
 
@@ -46295,6 +46359,12 @@ class PublicAdvertisedPrefix(_messages.Message):
 
   Enums:
     StatusValueValuesEnum: The status of the public advertised prefix.
+      Possible values include: - `INITIAL`: RPKI validation is complete. -
+      `PTR_CONFIGURED`: User has configured the PTR. - `VALIDATED`: Reverse
+      DNS lookup is successful. - `REVERSE_DNS_LOOKUP_FAILED`: Reverse DNS
+      lookup failed. - `PREFIX_CONFIGURATION_IN_PROGRESS`: The prefix is being
+      configured. - `PREFIX_CONFIGURATION_COMPLETE`: The prefix is fully
+      configured. - `PREFIX_REMOVAL_IN_PROGRESS`: The prefix is being removed.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -46328,20 +46398,32 @@ class PublicAdvertisedPrefix(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     sharedSecret: [Output Only] The shared secret to be used for reverse DNS
       verification.
-    status: The status of the public advertised prefix.
+    status: The status of the public advertised prefix. Possible values
+      include: - `INITIAL`: RPKI validation is complete. - `PTR_CONFIGURED`:
+      User has configured the PTR. - `VALIDATED`: Reverse DNS lookup is
+      successful. - `REVERSE_DNS_LOOKUP_FAILED`: Reverse DNS lookup failed. -
+      `PREFIX_CONFIGURATION_IN_PROGRESS`: The prefix is being configured. -
+      `PREFIX_CONFIGURATION_COMPLETE`: The prefix is fully configured. -
+      `PREFIX_REMOVAL_IN_PROGRESS`: The prefix is being removed.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""The status of the public advertised prefix.
+    r"""The status of the public advertised prefix. Possible values include: -
+    `INITIAL`: RPKI validation is complete. - `PTR_CONFIGURED`: User has
+    configured the PTR. - `VALIDATED`: Reverse DNS lookup is successful. -
+    `REVERSE_DNS_LOOKUP_FAILED`: Reverse DNS lookup failed. -
+    `PREFIX_CONFIGURATION_IN_PROGRESS`: The prefix is being configured. -
+    `PREFIX_CONFIGURATION_COMPLETE`: The prefix is fully configured. -
+    `PREFIX_REMOVAL_IN_PROGRESS`: The prefix is being removed.
 
     Values:
-      INITIAL: <no description>
-      PREFIX_CONFIGURATION_COMPLETE: <no description>
-      PREFIX_CONFIGURATION_IN_PROGRESS: <no description>
-      PREFIX_REMOVAL_IN_PROGRESS: <no description>
-      PTR_CONFIGURED: <no description>
-      REVERSE_DNS_LOOKUP_FAILED: <no description>
-      VALIDATED: <no description>
+      INITIAL: RPKI validation is complete.
+      PREFIX_CONFIGURATION_COMPLETE: The prefix is fully configured.
+      PREFIX_CONFIGURATION_IN_PROGRESS: The prefix is being configured.
+      PREFIX_REMOVAL_IN_PROGRESS: The prefix is being removed.
+      PTR_CONFIGURED: User has configured the PTR.
+      REVERSE_DNS_LOOKUP_FAILED: Reverse DNS lookup failed.
+      VALIDATED: Reverse DNS lookup is successful.
     """
     INITIAL = 0
     PREFIX_CONFIGURATION_COMPLETE = 1
@@ -46547,7 +46629,12 @@ class PublicDelegatedPrefix(_messages.Message):
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the public delegated
-      prefix.
+      prefix, which can be one of following values: - `INITIALIZING` The
+      public delegated prefix is being initialized and addresses cannot be
+      created yet. - `READY_TO_ANNOUNCE` The public delegated prefix is a live
+      migration prefix and is active. - `ANNOUNCED` The public delegated
+      prefix is active. - `DELETING` The public delegated prefix is being
+      deprovsioned.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -46584,17 +46671,29 @@ class PublicDelegatedPrefix(_messages.Message):
       specify this field as part of the HTTP request URL. It is not settable
       as a field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
-    status: [Output Only] The status of the public delegated prefix.
+    status: [Output Only] The status of the public delegated prefix, which can
+      be one of following values: - `INITIALIZING` The public delegated prefix
+      is being initialized and addresses cannot be created yet. -
+      `READY_TO_ANNOUNCE` The public delegated prefix is a live migration
+      prefix and is active. - `ANNOUNCED` The public delegated prefix is
+      active. - `DELETING` The public delegated prefix is being deprovsioned.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""[Output Only] The status of the public delegated prefix.
+    r"""[Output Only] The status of the public delegated prefix, which can be
+    one of following values: - `INITIALIZING` The public delegated prefix is
+    being initialized and addresses cannot be created yet. -
+    `READY_TO_ANNOUNCE` The public delegated prefix is a live migration prefix
+    and is active. - `ANNOUNCED` The public delegated prefix is active. -
+    `DELETING` The public delegated prefix is being deprovsioned.
 
     Values:
-      ANNOUNCED: <no description>
-      DELETING: <no description>
-      INITIALIZING: <no description>
-      READY_TO_ANNOUNCE: <no description>
+      ANNOUNCED: The public delegated prefix is active.
+      DELETING: The public delegated prefix is being deprovsioned.
+      INITIALIZING: The public delegated prefix is being initialized and
+        addresses cannot be created yet.
+      READY_TO_ANNOUNCE: The public delegated prefix is a live migration
+        prefix and is active.
     """
     ANNOUNCED = 0
     DELETING = 1
@@ -47174,6 +47273,7 @@ class Quota(_messages.Message):
       COMMITTED_NVIDIA_P4_GPUS: <no description>
       COMMITTED_NVIDIA_T4_GPUS: <no description>
       COMMITTED_NVIDIA_V100_GPUS: <no description>
+      COMMITTED_T2A_CPUS: <no description>
       COMMITTED_T2D_CPUS: <no description>
       CPUS: Guest CPUs
       CPUS_ALL_REGIONS: <no description>
@@ -47259,6 +47359,7 @@ class Quota(_messages.Message):
       STATIC_ADDRESSES: <no description>
       STATIC_BYOIP_ADDRESSES: <no description>
       SUBNETWORKS: <no description>
+      T2A_CPUS: <no description>
       T2D_CPUS: <no description>
       TARGET_HTTPS_PROXIES: <no description>
       TARGET_HTTP_PROXIES: <no description>
@@ -47299,103 +47400,105 @@ class Quota(_messages.Message):
     COMMITTED_NVIDIA_P4_GPUS = 24
     COMMITTED_NVIDIA_T4_GPUS = 25
     COMMITTED_NVIDIA_V100_GPUS = 26
-    COMMITTED_T2D_CPUS = 27
-    CPUS = 28
-    CPUS_ALL_REGIONS = 29
-    DISKS_TOTAL_GB = 30
-    E2_CPUS = 31
-    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 32
-    EXTERNAL_PROTOCOL_FORWARDING_RULES = 33
-    EXTERNAL_VPN_GATEWAYS = 34
-    FIREWALLS = 35
-    FORWARDING_RULES = 36
-    GLOBAL_INTERNAL_ADDRESSES = 37
-    GPUS_ALL_REGIONS = 38
-    HEALTH_CHECKS = 39
-    IMAGES = 40
-    INSTANCES = 41
-    INSTANCE_GROUPS = 42
-    INSTANCE_GROUP_MANAGERS = 43
-    INSTANCE_TEMPLATES = 44
-    INTERCONNECTS = 45
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 46
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 47
-    INTERCONNECT_TOTAL_GBPS = 48
-    INTERNAL_ADDRESSES = 49
-    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 50
-    IN_PLACE_SNAPSHOTS = 51
-    IN_USE_ADDRESSES = 52
-    IN_USE_BACKUP_SCHEDULES = 53
-    IN_USE_SNAPSHOT_SCHEDULES = 54
-    LOCAL_SSD_TOTAL_GB = 55
-    M1_CPUS = 56
-    M2_CPUS = 57
-    MACHINE_IMAGES = 58
-    N2A_CPUS = 59
-    N2D_CPUS = 60
-    N2_CPUS = 61
-    NETWORKS = 62
-    NETWORK_ENDPOINT_GROUPS = 63
-    NETWORK_FIREWALL_POLICIES = 64
-    NODE_GROUPS = 65
-    NODE_TEMPLATES = 66
-    NVIDIA_A100_GPUS = 67
-    NVIDIA_K80_GPUS = 68
-    NVIDIA_P100_GPUS = 69
-    NVIDIA_P100_VWS_GPUS = 70
-    NVIDIA_P4_GPUS = 71
-    NVIDIA_P4_VWS_GPUS = 72
-    NVIDIA_T4_GPUS = 73
-    NVIDIA_T4_VWS_GPUS = 74
-    NVIDIA_V100_GPUS = 75
-    PACKET_MIRRORINGS = 76
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 77
-    PREEMPTIBLE_CPUS = 78
-    PREEMPTIBLE_LOCAL_SSD_GB = 79
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 80
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 81
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 82
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 83
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 84
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 85
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 86
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 87
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 88
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 89
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 90
-    PSC_INTERNAL_LB_FORWARDING_RULES = 91
-    PUBLIC_ADVERTISED_PREFIXES = 92
-    PUBLIC_DELEGATED_PREFIXES = 93
-    REGIONAL_AUTOSCALERS = 94
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 95
-    RESERVATIONS = 96
-    RESOURCE_POLICIES = 97
-    ROUTERS = 98
-    ROUTES = 99
-    SECURITY_POLICIES = 100
-    SECURITY_POLICIES_PER_REGION = 101
-    SECURITY_POLICY_CEVAL_RULES = 102
-    SECURITY_POLICY_RULES = 103
-    SECURITY_POLICY_RULES_PER_REGION = 104
-    SERVICE_ATTACHMENTS = 105
-    SNAPSHOTS = 106
-    SSD_TOTAL_GB = 107
-    SSL_CERTIFICATES = 108
-    STATIC_ADDRESSES = 109
-    STATIC_BYOIP_ADDRESSES = 110
-    SUBNETWORKS = 111
-    T2D_CPUS = 112
-    TARGET_HTTPS_PROXIES = 113
-    TARGET_HTTP_PROXIES = 114
-    TARGET_INSTANCES = 115
-    TARGET_POOLS = 116
-    TARGET_SSL_PROXIES = 117
-    TARGET_TCP_PROXIES = 118
-    TARGET_VPN_GATEWAYS = 119
-    URL_MAPS = 120
-    VPN_GATEWAYS = 121
-    VPN_TUNNELS = 122
-    XPN_SERVICE_PROJECTS = 123
+    COMMITTED_T2A_CPUS = 27
+    COMMITTED_T2D_CPUS = 28
+    CPUS = 29
+    CPUS_ALL_REGIONS = 30
+    DISKS_TOTAL_GB = 31
+    E2_CPUS = 32
+    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 33
+    EXTERNAL_PROTOCOL_FORWARDING_RULES = 34
+    EXTERNAL_VPN_GATEWAYS = 35
+    FIREWALLS = 36
+    FORWARDING_RULES = 37
+    GLOBAL_INTERNAL_ADDRESSES = 38
+    GPUS_ALL_REGIONS = 39
+    HEALTH_CHECKS = 40
+    IMAGES = 41
+    INSTANCES = 42
+    INSTANCE_GROUPS = 43
+    INSTANCE_GROUP_MANAGERS = 44
+    INSTANCE_TEMPLATES = 45
+    INTERCONNECTS = 46
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 47
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 48
+    INTERCONNECT_TOTAL_GBPS = 49
+    INTERNAL_ADDRESSES = 50
+    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 51
+    IN_PLACE_SNAPSHOTS = 52
+    IN_USE_ADDRESSES = 53
+    IN_USE_BACKUP_SCHEDULES = 54
+    IN_USE_SNAPSHOT_SCHEDULES = 55
+    LOCAL_SSD_TOTAL_GB = 56
+    M1_CPUS = 57
+    M2_CPUS = 58
+    MACHINE_IMAGES = 59
+    N2A_CPUS = 60
+    N2D_CPUS = 61
+    N2_CPUS = 62
+    NETWORKS = 63
+    NETWORK_ENDPOINT_GROUPS = 64
+    NETWORK_FIREWALL_POLICIES = 65
+    NODE_GROUPS = 66
+    NODE_TEMPLATES = 67
+    NVIDIA_A100_GPUS = 68
+    NVIDIA_K80_GPUS = 69
+    NVIDIA_P100_GPUS = 70
+    NVIDIA_P100_VWS_GPUS = 71
+    NVIDIA_P4_GPUS = 72
+    NVIDIA_P4_VWS_GPUS = 73
+    NVIDIA_T4_GPUS = 74
+    NVIDIA_T4_VWS_GPUS = 75
+    NVIDIA_V100_GPUS = 76
+    PACKET_MIRRORINGS = 77
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 78
+    PREEMPTIBLE_CPUS = 79
+    PREEMPTIBLE_LOCAL_SSD_GB = 80
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 81
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 82
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 83
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 84
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 85
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 86
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 87
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 88
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 89
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 90
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 91
+    PSC_INTERNAL_LB_FORWARDING_RULES = 92
+    PUBLIC_ADVERTISED_PREFIXES = 93
+    PUBLIC_DELEGATED_PREFIXES = 94
+    REGIONAL_AUTOSCALERS = 95
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 96
+    RESERVATIONS = 97
+    RESOURCE_POLICIES = 98
+    ROUTERS = 99
+    ROUTES = 100
+    SECURITY_POLICIES = 101
+    SECURITY_POLICIES_PER_REGION = 102
+    SECURITY_POLICY_CEVAL_RULES = 103
+    SECURITY_POLICY_RULES = 104
+    SECURITY_POLICY_RULES_PER_REGION = 105
+    SERVICE_ATTACHMENTS = 106
+    SNAPSHOTS = 107
+    SSD_TOTAL_GB = 108
+    SSL_CERTIFICATES = 109
+    STATIC_ADDRESSES = 110
+    STATIC_BYOIP_ADDRESSES = 111
+    SUBNETWORKS = 112
+    T2A_CPUS = 113
+    T2D_CPUS = 114
+    TARGET_HTTPS_PROXIES = 115
+    TARGET_HTTP_PROXIES = 116
+    TARGET_INSTANCES = 117
+    TARGET_POOLS = 118
+    TARGET_SSL_PROXIES = 119
+    TARGET_TCP_PROXIES = 120
+    TARGET_VPN_GATEWAYS = 121
+    URL_MAPS = 122
+    VPN_GATEWAYS = 123
+    VPN_TUNNELS = 124
+    XPN_SERVICE_PROJECTS = 125
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -54167,14 +54270,12 @@ class ShareSettings(_messages.Message):
     ShareTypeValueValuesEnum: Type of sharing for this shared-reservation
 
   Messages:
-    ProjectMapValue: A map of project id and project config. Using map format
-      to ease add-to/remove-from the Project list in PATCH command. In future
-      we will deprecate (And later remove) the array one.
+    ProjectMapValue: A map of project id and project config. This is only
+      valid when share_type's value is SPECIFIC_PROJECTS.
 
   Fields:
-    projectMap: A map of project id and project config. Using map format to
-      ease add-to/remove-from the Project list in PATCH command. In future we
-      will deprecate (And later remove) the array one.
+    projectMap: A map of project id and project config. This is only valid
+      when share_type's value is SPECIFIC_PROJECTS.
     projects: A List of Project names to specify consumer projects for this
       shared-reservation. This is only valid when share_type's value is
       SPECIFIC_PROJECTS.
@@ -54195,9 +54296,8 @@ class ShareSettings(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ProjectMapValue(_messages.Message):
-    r"""A map of project id and project config. Using map format to ease add-
-    to/remove-from the Project list in PATCH command. In future we will
-    deprecate (And later remove) the array one.
+    r"""A map of project id and project config. This is only valid when
+    share_type's value is SPECIFIC_PROJECTS.
 
     Messages:
       AdditionalProperty: An additional property for a ProjectMapValue object.
@@ -56133,7 +56233,8 @@ class Subnetwork(_messages.Message):
       resource creation time.
     enableFlowLogs: Whether to enable flow logging for this subnetwork. If
       this field is not explicitly set, it will not appear in get listings. If
-      not set the default behavior is to disable flow logging. This field
+      not set the default behavior is determined by the org policy, if there
+      is no org policy specified, then it will default to disabled. This field
       isn't supported with the purpose field set to
       INTERNAL_HTTPS_LOAD_BALANCER.
     externalIpv6Prefix: [Output Only] The range of external IPv6 addresses
@@ -56693,7 +56794,8 @@ class SubnetworkLogConfig(_messages.Message):
       of 5 seconds per connection.
     enable: Whether to enable flow logging for this subnetwork. If this field
       is not explicitly set, it will not appear in get listings. If not set
-      the default behavior is to disable flow logging.
+      the default behavior is determined by the org policy, if there is no org
+      policy specified, then it will default to disabled.
     filterExpr: Can only be specified if VPC flow logs for this subnetwork is
       enabled. Export filter used to define which VPC flow logs should be
       logged.
@@ -56701,7 +56803,8 @@ class SubnetworkLogConfig(_messages.Message):
       subnetwork is enabled. The value of the field must be in [0, 1]. Set the
       sampling rate of VPC flow logs within the subnetwork where 1.0 means all
       collected logs are reported and 0.0 means no logs are reported. Default
-      is 0.5, which means half of all collected logs are reported.
+      is 0.5 unless otherwise specified by the org policy, which means half of
+      all collected logs are reported.
     metadata: Can only be specified if VPC flow logs for this subnetwork is
       enabled. Configures whether all, none or a subset of metadata fields
       should be added to the reported VPC flow logs. Default is
@@ -61561,11 +61664,44 @@ class UrlMapsScopedList(_messages.Message):
 class UrlMapsValidateRequest(_messages.Message):
   r"""A UrlMapsValidateRequest object.
 
+  Enums:
+    LoadBalancingSchemesValueListEntryValuesEnum:
+
   Fields:
+    loadBalancingSchemes: Specifies the load balancer type(s) this validation
+      request is for. Use EXTERNAL_MANAGED for HTTP/HTTPS External Global Load
+      Balancer with Advanced Traffic Management. Use EXTERNAL for Classic
+      HTTP/HTTPS External Global Load Balancer. Other load balancer types are
+      not supported. For more information, refer to Choosing a load balancer.
+      If unspecified, the load balancing scheme will be inferred from the
+      backend service resources this URL map references. If that can not be
+      inferred (for example, this URL map only references backend buckets, or
+      this Url map is for rewrites and redirects only and doesn't reference
+      any backends), EXTERNAL will be used as the default type. If specified,
+      the scheme(s) must not conflict with the load balancing scheme of the
+      backend service resources this Url map references.
     resource: Content of the UrlMap to be validated.
   """
 
-  resource = _messages.MessageField('UrlMap', 1)
+  class LoadBalancingSchemesValueListEntryValuesEnum(_messages.Enum):
+    r"""LoadBalancingSchemesValueListEntryValuesEnum enum type.
+
+    Values:
+      EXTERNAL: Signifies that this will be used for Classic L7 External Load
+        Balancing.
+      EXTERNAL_MANAGED: Signifies that this will be used for Envoy-based L7
+        External Load Balancing.
+      LOAD_BALANCING_SCHEME_UNSPECIFIED: If unspecified, the validation will
+        try to infer the scheme from the backend service resources this Url
+        map references. If the inferrence is not possible, EXTERNAL will be
+        used as the default type.
+    """
+    EXTERNAL = 0
+    EXTERNAL_MANAGED = 1
+    LOAD_BALANCING_SCHEME_UNSPECIFIED = 2
+
+  loadBalancingSchemes = _messages.EnumField('LoadBalancingSchemesValueListEntryValuesEnum', 1, repeated=True)
+  resource = _messages.MessageField('UrlMap', 2)
 
 
 class UrlMapsValidateResponse(_messages.Message):

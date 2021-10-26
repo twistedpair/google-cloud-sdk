@@ -147,6 +147,10 @@ class AddSubnetworkRequest(_messages.Message):
       the VMs in this subnet. For information about the access types that can
       be set using this field, see [subnetwork](https://cloud.google.com/compu
       te/docs/reference/rest/v1/subnetworks) in the Compute API documentation.
+    purpose: Optional. Defines the purpose field of the subnet, e.g.
+      'PRIVATE_SERVICE_CONNECT'. For information about the purposes that can
+      be set using this field, see [subnetwork](https://cloud.google.com/compu
+      te/docs/reference/rest/v1/subnetworks) in the Compute API documentation.
     region: Required. The name of a [region](/compute/docs/regions-zones) for
       the subnet, such `europe-west1`.
     requestedAddress: Optional. The starting address of a range. The address
@@ -175,12 +179,13 @@ class AddSubnetworkRequest(_messages.Message):
   ipPrefixLength = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   outsideAllocationPublicIpRange = _messages.StringField(5)
   privateIpv6GoogleAccess = _messages.StringField(6)
-  region = _messages.StringField(7)
-  requestedAddress = _messages.StringField(8)
-  requestedRanges = _messages.StringField(9, repeated=True)
-  secondaryIpRangeSpecs = _messages.MessageField('SecondaryIpRangeSpec', 10, repeated=True)
-  subnetwork = _messages.StringField(11)
-  subnetworkUsers = _messages.StringField(12, repeated=True)
+  purpose = _messages.StringField(7)
+  region = _messages.StringField(8)
+  requestedAddress = _messages.StringField(9)
+  requestedRanges = _messages.StringField(10, repeated=True)
+  secondaryIpRangeSpecs = _messages.MessageField('SecondaryIpRangeSpec', 11, repeated=True)
+  subnetwork = _messages.StringField(12)
+  subnetworkUsers = _messages.StringField(13, repeated=True)
 
 
 class Api(_messages.Message):

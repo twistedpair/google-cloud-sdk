@@ -2210,6 +2210,40 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Delete an OS Config Patch Deployment."
+            },
+            "patch": {
+              "id": "osconfig.projects.patchDeployments.patch",
+              "path": "v1alpha2/{+name}",
+              "flatPath": "v1alpha2/projects/{projectsId}/patchDeployments/{patchDeploymentsId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "Unique name of the resource in this project using the form: `projects\/{project_id}\/patchDeployments\/{patch_deployment_id}`. Ignored when creating a new PatchDeployment.",
+                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "Optional. Field mask that controls which fields of the patch deployment should be updated.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "PatchDeployment"
+              },
+              "response": {
+                "$ref": "PatchDeployment"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Update an OS Config patch deployment."
             }
           }
         },

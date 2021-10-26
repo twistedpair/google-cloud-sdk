@@ -18,9 +18,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import ipaddress
 import re
+import textwrap
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import completers
 from googlecloudsdk.command_lib.compute import flags
@@ -57,57 +60,98 @@ def MakeSourceInstanceArg():
   )
 
 
-def AddServiceProxyConfigArgs(parser, hide_arguments=False):
+def AddServiceProxyConfigArgs(parser, hide_arguments=False,
+                              release_track=base.ReleaseTrack.GA):
   """Adds service proxy configuration arguments for instance templates."""
   service_proxy_group = parser.add_group(hidden=hide_arguments)
+
+  service_proxy_spec = {
+      'enabled': None,
+      'serving-ports': str,
+      'proxy-port': int,
+      'tracing': service_proxy_aux_data.TracingState,
+      'access-log': str,
+      'network': str
+  }
+  service_proxy_help = textwrap.dedent("""
+  Controls whether the Traffic Director service proxy (Envoy) and agent are
+  installed and configured on the VM. "cloud-platform" scope is enabled
+  automatically to allow connections to the Traffic Director API. Do not use
+  the --no-scopes flag.
+
+  *enabled*::: If specified, the service-proxy software will be installed when
+  the instance is created. The instance is configured to work with Traffic
+  Director.
+
+  *serving-ports*::: Semi-colon-separated (;) list of the ports, specified
+  inside quotation marks ("), on which the customer's application/workload
+  is serving.
+
+  For example:
+
+        serving-ports="80;8080"
+
+  The service proxy will intercept inbound traffic, then forward it to the
+  specified serving port(s) on localhost. If not provided, no incoming traffic
+  is intercepted.
+
+  *proxy-port*::: The port on which the service proxy listens.
+  The VM intercepts traffic and redirects it to this port to be handled by the
+  service proxy. If omitted, the default value is '15001'.
+
+  *tracing*::: Enables the service proxy to generate distributed tracing
+  information. If set to ON, the service proxy's control plane generates a
+  configuration that enables request ID-based tracing. For more information,
+  refer to the `generate_request_id` documentation for the Envoy proxy. Allowed
+  values are `ON` and `OFF`.
+
+  *access-log*::: The filepath for access logs sent to the service proxy by the
+  control plane. All incoming and outgoing requests are recorded in this file.
+  For more information, refer to the file access log documentation for the Envoy
+  proxy.
+
+  *network*::: The name of a valid VPC network. The Google Cloud Platform VPC
+  network used by the service proxy's control plane to generate dynamic
+  configuration for the service proxy.
+  """)
+
+  if release_track == base.ReleaseTrack.ALPHA:
+    service_proxy_spec.update({
+        'intercept-all-outbound-traffic': None,
+        'exclude-outbound-ip-ranges': str,
+        'exclude-outbound-port-ranges': str
+    })
+    service_proxy_help += textwrap.dedent("""
+    *intercept-all-outbound-traffic*::: Enables interception of all outgoing
+    traffic. The traffic is intercepted by the service proxy and then redirected
+    to external host.
+
+    *exclude-outbound-ip-ranges*::: Semi-colon-separated (;) list of the IPs or
+    CIDRs, specified inside quotation marks ("), that should be excluded from
+    redirection. Only applies when `intercept-all-outbound-traffic` flag is set.
+
+    For example:
+
+         exclude-outbound-ip-ranges="8.8.8.8;129.168.10.0/24"
+
+    *exclude-outbound-port-ranges*::: Semi-colon-separated (;) list of the ports
+    or port ranges, specified inside quotation marks ("), that should be
+    excluded from redirection. Only applies when
+    `intercept-all-outbound-traffic` flag is set.
+
+    For example:
+
+         exclude-outbound-port-ranges="81;8080-8090"
+    """)
+
   service_proxy_group.add_argument(
       '--service-proxy',
       type=arg_parsers.ArgDict(
-          spec={
-              'enabled': None,
-              'serving-ports': str,
-              'proxy-port': int,
-              'tracing': service_proxy_aux_data.TracingState,
-              'access-log': str,
-              'network': str
-          },
+          spec=service_proxy_spec,
           allow_key_only=True,
           required_keys=['enabled']),
       hidden=hide_arguments,
-      help="""\
-      Controls whether the Traffic Director service proxy (Envoy) and agent are installed and configured on the VM.
-      "cloud-platform" scope is enabled automatically to allow connections to the Traffic Director API.
-      Do not use the --no-scopes flag.
-
-      *enabled*::: If specified, the service-proxy software will be installed when the instance is created.
-      The instance is configured to work with Traffic Director.
-
-      *serving-ports*::: Semi-colon-separated (;) list of the ports, specified inside quotation marks ("), on which the customer's application/workload
-      is serving.
-
-      For example:
-
-            --serving-ports="80;8080"
-
-      The service proxy will intercept inbound traffic, then forward it to the specified serving port(s) on localhost.
-      If not provided, no incoming traffic is intercepted.
-
-      *proxy-port*::: The port on which the service proxy listens.
-      The VM intercepts traffic and redirects it to this port to be handled by the service proxy.
-      If omitted, the default value is '15001'.
-
-      *tracing*::: Enables the service proxy to generate distributed tracing information.
-      If set to ON, the service proxy's control plane generates a configuration that enables request ID-based tracing.
-      For more information, refer to the `generate_request_id` documentation
-      for the Envoy proxy. Allowed values are `ON` and `OFF`.
-
-      *access-log*::: The filepath for access logs sent to the service proxy by the control plane.
-      All incoming and outgoing requests are recorded in this file.
-      For more information, refer to the file access log documentation for the Envoy proxy.
-
-      *network*::: The name of a valid VPC network. The Google Cloud Platform VPC network used by the service proxy's control plane
-      to generate dynamic configuration for the service proxy.
-      """)
+      help=service_proxy_help)
   service_proxy_group.add_argument(
       '--service-proxy-labels',
       metavar='KEY=VALUE, ...',
@@ -168,6 +212,56 @@ def ValidateServiceProxyFlags(args):
         raise exceptions.InvalidArgumentException(
             'proxy-port',
             'Port value can only be between 1025 and 65535.')
+
+    if 'exclude-outbound-ip-ranges' in args.service_proxy:
+      if 'intercept-all-outbound-traffic' not in args.service_proxy:
+        raise exceptions.RequiredArgumentException(
+            'intercept-all-outbound-traffic',
+            'exclude-outbound-ip-ranges parameters requires '
+            'intercept-all-outbound-traffic to be set')
+
+      ip_ranges = args.service_proxy['exclude-outbound-ip-ranges'].split(';')
+      for ip_range in ip_ranges:
+        try:
+          ipaddress.ip_network(ip_range)
+        except ValueError:
+          # An invalid IP/CIDR is present in the list of excluded IP ranges.
+          raise exceptions.InvalidArgumentException(
+              'exclude-outbound-ip-ranges',
+              'List of IPs may contain only IPs & CIDRs.')
+
+    if 'exclude-outbound-port-ranges' in args.service_proxy:
+      if 'intercept-all-outbound-traffic' not in args.service_proxy:
+        raise exceptions.RequiredArgumentException(
+            'intercept-all-outbound-traffic',
+            'exclude-outbound-port-ranges parameters requires '
+            'intercept-all-outbound-traffic to be set')
+
+      port_ranges = (args.service_proxy['exclude-outbound-port-ranges']
+                     .split(';'))
+      for port_range in port_ranges:
+        ports = port_range.split('-')
+        try:
+          if len(ports) == 1:
+            ValidateSinglePort(ports[0])
+          elif len(ports) == 2:
+            ValidateSinglePort(ports[0])
+            ValidateSinglePort(ports[1])
+          else:
+            raise ValueError
+        except ValueError:
+          # An invalid port is present in the list of excluded port ranges.
+          raise exceptions.InvalidArgumentException(
+              'exclude-outbound-port-ranges',
+              'List of port ranges can only contain numbers between 1 and '
+              '65535, i.e. "80;8080-8090".')
+
+
+def ValidateSinglePort(port_str):
+  port = int(port_str)
+  if port < 1 or port > 65535:
+    # valid port range is 1 - 65535
+    raise ValueError
 
 
 def AddMeshArgs(parser, hide_arguments=False):

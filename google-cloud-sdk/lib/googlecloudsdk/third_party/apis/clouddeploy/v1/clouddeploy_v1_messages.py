@@ -873,9 +873,9 @@ class DeliveryPipeline(_messages.Message):
     LabelsValue: Labels are attributes that can be set and used by both the
       user and by Google Cloud Deploy. Labels must meet the following
       constraints: Each resource is limited to 64 labels. Keys must conform to
-      the regexp: a-zA-Z{0,62} Values must conform to the regexp:
-      [a-zA-Z0-9_-]{0,63} Both keys and values are additionally constrained to
-      be <= 128 bytes in size.
+      the regexp: `a-zA-Z{0,62}`. Values must conform to the regexp:
+      `[a-zA-Z0-9_-]{0,63}`. Both keys and values are additionally constrained
+      to be <= 128 bytes in size.
 
   Fields:
     annotations: User annotations. These attributes can only be set and used
@@ -893,8 +893,9 @@ class DeliveryPipeline(_messages.Message):
     labels: Labels are attributes that can be set and used by both the user
       and by Google Cloud Deploy. Labels must meet the following constraints:
       Each resource is limited to 64 labels. Keys must conform to the regexp:
-      a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
-      keys and values are additionally constrained to be <= 128 bytes in size.
+      `a-zA-Z{0,62}`. Values must conform to the regexp:
+      `[a-zA-Z0-9_-]{0,63}`. Both keys and values are additionally constrained
+      to be <= 128 bytes in size.
     name: Optional. Name of the `DeliveryPipeline`. Format is
       projects/{project}/ locations/{location}/deliveryPipelines/a-z{0,62}.
     serialPipeline: SerialPipeline defines a sequential set of stages for a
@@ -937,8 +938,9 @@ class DeliveryPipeline(_messages.Message):
     r"""Labels are attributes that can be set and used by both the user and by
     Google Cloud Deploy. Labels must meet the following constraints: Each
     resource is limited to 64 labels. Keys must conform to the regexp:
-    a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
-    keys and values are additionally constrained to be <= 128 bytes in size.
+    `a-zA-Z{0,62}`. Values must conform to the regexp: `[a-zA-Z0-9_-]{0,63}`.
+    Both keys and values are additionally constrained to be <= 128 bytes in
+    size.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1505,9 +1507,9 @@ class Release(_messages.Message):
     LabelsValue: Labels are attributes that can be set and used by both the
       user and by Google Cloud Deploy. Labels must meet the following
       constraints: Each resource is limited to 64 labels. Keys must conform to
-      the regexp: a-zA-Z{0,62} Values must conform to the regexp:
-      [a-zA-Z0-9_-]{0,63} Both keys and values are additionally constrained to
-      be <= 128 bytes in size.
+      the regexp: `a-zA-Z{0,62}`. Values must conform to the regexp:
+      `[a-zA-Z0-9_-]{0,63}`. Both keys and values are additionally constrained
+      to be <= 128 bytes in size.
     TargetArtifactsValue: Output only. Map from target ID to the target
       artifacts created during the render operation.
     TargetRendersValue: Output only. Map from target ID to details of the
@@ -1529,8 +1531,9 @@ class Release(_messages.Message):
     labels: Labels are attributes that can be set and used by both the user
       and by Google Cloud Deploy. Labels must meet the following constraints:
       Each resource is limited to 64 labels. Keys must conform to the regexp:
-      a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
-      keys and values are additionally constrained to be <= 128 bytes in size.
+      `a-zA-Z{0,62}`. Values must conform to the regexp:
+      `[a-zA-Z0-9_-]{0,63}`. Both keys and values are additionally constrained
+      to be <= 128 bytes in size.
     name: Optional. Name of the `Release`. Format is projects/{project}/
       locations/{location}/deliveryPipelines/{deliveryPipeline}/
       releases/a-z{0,62}.
@@ -1602,8 +1605,9 @@ class Release(_messages.Message):
     r"""Labels are attributes that can be set and used by both the user and by
     Google Cloud Deploy. Labels must meet the following constraints: Each
     resource is limited to 64 labels. Keys must conform to the regexp:
-    a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
-    keys and values are additionally constrained to be <= 128 bytes in size.
+    `a-zA-Z{0,62}`. Values must conform to the regexp: `[a-zA-Z0-9_-]{0,63}`.
+    Both keys and values are additionally constrained to be <= 128 bytes in
+    size.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1714,9 +1718,9 @@ class Rollout(_messages.Message):
     LabelsValue: Labels are attributes that can be set and used by both the
       user and by Google Cloud Deploy. Labels must meet the following
       constraints: Each resource is limited to 64 labels. Keys must conform to
-      the regexp: a-zA-Z{0,62} Values must conform to the regexp:
-      [a-zA-Z0-9_-]{0,63} Both keys and values are additionally constrained to
-      be <= 128 bytes in size.
+      the regexp: `a-zA-Z{0,62}`. Values must conform to the regexp:
+      `[a-zA-Z0-9_-]{0,63}`. Both keys and values are additionally constrained
+      to be <= 128 bytes in size.
 
   Fields:
     annotations: User annotations. These attributes can only be set and used
@@ -1744,8 +1748,9 @@ class Rollout(_messages.Message):
     labels: Labels are attributes that can be set and used by both the user
       and by Google Cloud Deploy. Labels must meet the following constraints:
       Each resource is limited to 64 labels. Keys must conform to the regexp:
-      a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
-      keys and values are additionally constrained to be <= 128 bytes in size.
+      `a-zA-Z{0,62}`. Values must conform to the regexp:
+      `[a-zA-Z0-9_-]{0,63}`. Both keys and values are additionally constrained
+      to be <= 128 bytes in size.
     name: Optional. Name of the `Rollout`. Format is projects/{project}/
       locations/{location}/deliveryPipelines/{deliveryPipeline}/
       releases/{release}/rollouts/a-z{0,62}.
@@ -1828,8 +1833,9 @@ class Rollout(_messages.Message):
     r"""Labels are attributes that can be set and used by both the user and by
     Google Cloud Deploy. Labels must meet the following constraints: Each
     resource is limited to 64 labels. Keys must conform to the regexp:
-    a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
-    keys and values are additionally constrained to be <= 128 bytes in size.
+    `a-zA-Z{0,62}`. Values must conform to the regexp: `[a-zA-Z0-9_-]{0,63}`.
+    Both keys and values are additionally constrained to be <= 128 bytes in
+    size.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2055,9 +2061,9 @@ class Target(_messages.Message):
     LabelsValue: Optional. Labels are attributes that can be set and used by
       both the user and by Google Cloud Deploy. Labels must meet the following
       constraints: Each resource is limited to 64 labels. Keys must conform to
-      the regexp: a-zA-Z{0,62} Values must conform to the regexp:
-      [a-zA-Z0-9_-]{0,63} Both keys and values are additionally constrained to
-      be <= 128 bytes in size.
+      the regexp: `a-zA-Z{0,62}`. Values must conform to the regexp:
+      `[a-zA-Z0-9_-]{0,63}`. Both keys and values are additionally constrained
+      to be <= 128 bytes in size.
 
   Fields:
     annotations: Optional. User annotations. These attributes can only be set
@@ -2081,9 +2087,9 @@ class Target(_messages.Message):
     labels: Optional. Labels are attributes that can be set and used by both
       the user and by Google Cloud Deploy. Labels must meet the following
       constraints: Each resource is limited to 64 labels. Keys must conform to
-      the regexp: a-zA-Z{0,62} Values must conform to the regexp:
-      [a-zA-Z0-9_-]{0,63} Both keys and values are additionally constrained to
-      be <= 128 bytes in size.
+      the regexp: `a-zA-Z{0,62}`. Values must conform to the regexp:
+      `[a-zA-Z0-9_-]{0,63}`. Both keys and values are additionally constrained
+      to be <= 128 bytes in size.
     name: Optional. Name of the `Target`. Format is
       projects/{project}/locations/{location}/
       deliveryPipelines/{deliveryPipeline}/targets/a-z{0,62}.
@@ -2127,9 +2133,9 @@ class Target(_messages.Message):
     r"""Optional. Labels are attributes that can be set and used by both the
     user and by Google Cloud Deploy. Labels must meet the following
     constraints: Each resource is limited to 64 labels. Keys must conform to
-    the regexp: a-zA-Z{0,62} Values must conform to the regexp:
-    [a-zA-Z0-9_-]{0,63} Both keys and values are additionally constrained to
-    be <= 128 bytes in size.
+    the regexp: `a-zA-Z{0,62}`. Values must conform to the regexp:
+    `[a-zA-Z0-9_-]{0,63}`. Both keys and values are additionally constrained
+    to be <= 128 bytes in size.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

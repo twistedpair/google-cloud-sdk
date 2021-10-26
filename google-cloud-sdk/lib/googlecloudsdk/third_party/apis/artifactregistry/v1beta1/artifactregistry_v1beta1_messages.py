@@ -591,9 +591,11 @@ class Hash(_messages.Message):
     Values:
       HASH_TYPE_UNSPECIFIED: Unspecified.
       SHA256: SHA256 hash.
+      MD5: MD5 hash.
     """
     HASH_TYPE_UNSPECIFIED = 0
     SHA256 = 1
+    MD5 = 2
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
   value = _messages.BytesField(2)

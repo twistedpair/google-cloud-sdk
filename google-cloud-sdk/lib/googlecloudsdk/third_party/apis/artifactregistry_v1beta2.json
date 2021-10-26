@@ -518,11 +518,13 @@
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",
-            "SHA256 hash."
+            "SHA256 hash.",
+            "MD5 hash."
           ],
           "enum": [
             "HASH_TYPE_UNSPECIFIED",
-            "SHA256"
+            "SHA256",
+            "MD5"
           ]
         },
         "value": {

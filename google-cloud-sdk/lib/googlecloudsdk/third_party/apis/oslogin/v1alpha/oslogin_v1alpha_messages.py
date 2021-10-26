@@ -198,6 +198,18 @@ class OsloginUsersProjectsDeleteRequest(_messages.Message):
   operatingSystemType = _messages.EnumField('OperatingSystemTypeValueValuesEnum', 2)
 
 
+class OsloginUsersSshPublicKeyCreateRequest(_messages.Message):
+  r"""A OsloginUsersSshPublicKeyCreateRequest object.
+
+  Fields:
+    parent: Required. The unique ID for the user in format `users/{user}`.
+    sshPublicKey: A SshPublicKey resource to be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  sshPublicKey = _messages.MessageField('SshPublicKey', 2)
+
+
 class OsloginUsersSshPublicKeysDeleteRequest(_messages.Message):
   r"""A OsloginUsersSshPublicKeysDeleteRequest object.
 

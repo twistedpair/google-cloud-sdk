@@ -698,8 +698,7 @@
           "$ref": "GoogleCloudAiplatformV1alpha1AutomaticResources"
         },
         "id": {
-          "description": "Output only. The ID of the DeployedModel.",
-          "readOnly": true,
+          "description": "Immutable. The ID of the DeployedModel. If not provided upon deployment, Vertex AI will generate a value for this ID. This value should be 1-10 characters, and valid characters are \/[0-9]\/.",
           "type": "string"
         },
         "model": {
@@ -3267,7 +3266,7 @@
       "type": "object",
       "properties": {
         "deployedModelId": {
-          "description": "Required. The DeployedModel ID of the [google.cloud.aiplatform.master.ModelDeploymentMonitoringObjectiveConfig.deployed_model_id].",
+          "description": "Required. The DeployedModel ID of the [ModelDeploymentMonitoringObjectiveConfig.deployed_model_id].",
           "type": "string"
         },
         "featureDisplayName": {
@@ -4369,6 +4368,11 @@
           "readOnly": true,
           "type": "string"
         },
+        "originalModelInfo": {
+          "description": "Output only. If this Model is a copy of another Model, this contains info about the original.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1alpha1ModelOriginalModelInfo"
+        },
         "containerSpec": {
           "description": "Input only. The specification of the container that is to be used when deploying this Model. The specification is ingested upon ModelService.UploadModel, and all binaries it contains are copied and stored internally by Vertex AI. Not present for AutoML Models.",
           "$ref": "GoogleCloudAiplatformV1alpha1ModelContainerSpec"
@@ -4478,6 +4482,18 @@
       "properties": {
         "id": {
           "description": "Output only. The ID of the export format. The possible format IDs are: * `tflite` Used for Android mobile devices. * `edgetpu-tflite` Used for [Edge TPU](https:\/\/cloud.google.com\/edge-tpu\/) devices. * `tf-saved-model` A tensorflow model in SavedModel format. * `tf-js` A [TensorFlow.js](https:\/\/www.tensorflow.org\/js) model that can be used in the browser and in Node.js using JavaScript. * `core-ml` Used for iOS mobile devices. * `custom-trained` A Model that was uploaded or trained by custom code.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1ModelOriginalModelInfo": {
+      "id": "GoogleCloudAiplatformV1alpha1ModelOriginalModelInfo",
+      "description": "Contains information about the original Model if this Model is a copy.",
+      "type": "object",
+      "properties": {
+        "model": {
+          "description": "Output only. The resource name of the Model this Model is a copy of, including the revision. Format: `projects\/{project}\/locations\/{location}\/models\/{model_id}@{version_id}`",
           "readOnly": true,
           "type": "string"
         }
@@ -6972,8 +6988,7 @@
           "$ref": "GoogleCloudAiplatformInternalAutomaticResources"
         },
         "id": {
-          "description": "Output only. The ID of the DeployedModel.",
-          "readOnly": true,
+          "description": "Immutable. The ID of the DeployedModel. If not provided upon deployment, Vertex AI will generate a value for this ID. This value should be 1-10 characters, and valid characters are \/[0-9]\/.",
           "type": "string"
         },
         "model": {
@@ -7786,7 +7801,7 @@
           "$ref": "GoogleCloudAiplatformInternalEncryptionSpec"
         },
         "deIdConfig": {
-          "description": "The de-identification config. If set this field, it will run HITL de-id instead of regular HITL pipeline.",
+          "description": "Use the deidentification input to pass the configs instead. The de-identification config. If set this field, it will run HITL de-id instead of regular HITL pipeline.",
           "$ref": "GoogleCloudAiplatformInternalDeIdentificationConfig"
         },
         "autoAssignConfig": {
@@ -9608,8 +9623,7 @@
           "$ref": "GoogleCloudAiplatformUiAutomaticResources"
         },
         "id": {
-          "description": "Output only. The ID of the DeployedModel.",
-          "readOnly": true,
+          "description": "Immutable. The ID of the DeployedModel. If not provided upon deployment, Vertex AI will generate a value for this ID. This value should be 1-10 characters, and valid characters are \/[0-9]\/.",
           "type": "string"
         },
         "model": {
@@ -11185,6 +11199,20 @@
           "description": "The name of the uploaded Model resource. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
           "type": "string"
         }
+      }
+    },
+    "GoogleCloudAiplatformUiWaitEdgeDeploymentJobOperationMetadata": {
+      "id": "GoogleCloudAiplatformUiWaitEdgeDeploymentJobOperationMetadata",
+      "description": "Metadata message for JobService.WaitEdgeDeploymentJob.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudAiplatformUiWaitEdgeDeploymentJobResponse": {
+      "id": "GoogleCloudAiplatformUiWaitEdgeDeploymentJobResponse",
+      "description": "Response message for JobService.WaitEdgeDeploymentJob.",
+      "type": "object",
+      "properties": {
       }
     },
     "GoogleCloudAiplatformUiSchemaImageBoundingBoxAnnotation": {
@@ -13921,8 +13949,7 @@
           "$ref": "GoogleCloudAiplatformV1beta1AutomaticResources"
         },
         "id": {
-          "description": "Output only. The ID of the DeployedModel.",
-          "readOnly": true,
+          "description": "Immutable. The ID of the DeployedModel. If not provided upon deployment, Vertex AI will generate a value for this ID. This value should be 1-10 characters, and valid characters are \/[0-9]\/.",
           "type": "string"
         },
         "model": {
@@ -18653,8 +18680,7 @@
           "$ref": "GoogleCloudAiplatformV1AutomaticResources"
         },
         "id": {
-          "description": "Output only. The ID of the DeployedModel.",
-          "readOnly": true,
+          "description": "Immutable. The ID of the DeployedModel. If not provided upon deployment, Vertex AI will generate a value for this ID. This value should be 1-10 characters, and valid characters are \/[0-9]\/.",
           "type": "string"
         },
         "model": {
@@ -28192,7 +28218,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Exports a trained, exportable, Model to a location specified by the user. A Model is considered to be exportable if it has at least one supported export format."
+                  "description": "Exports a trained, exportable Model to a location specified by the user. A Model is considered to be exportable if it has at least one supported export format."
                 }
               }
               ,

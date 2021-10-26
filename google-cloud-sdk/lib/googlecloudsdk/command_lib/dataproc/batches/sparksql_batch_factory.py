@@ -73,9 +73,9 @@ class SparkSqlBatchFactory(object):
       params = args.vars
 
     if params:
-      kwargs['scriptVariables'] = encoding.DictToAdditionalPropertyMessage(
+      kwargs['queryVariables'] = encoding.DictToAdditionalPropertyMessage(
           params,
-          self.dataproc.messages.SparkSqlBatch.ScriptVariablesValue,
+          self.dataproc.messages.SparkSqlBatch.QueryVariablesValue,
           sort_items=True)
 
     if local_file_uploader.HasLocalFiles(dependencies):

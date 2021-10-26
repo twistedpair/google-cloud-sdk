@@ -193,6 +193,30 @@ class Channel(_messages.Message):
   updateTime = _messages.StringField(8)
 
 
+class ChannelConnection(_messages.Message):
+  r"""A representation of the ChannelConnection resource. A ChannelConnection
+  is a resource which event providers create during the activation process to
+  establish a connection between the provider and the subscriber channel.
+
+  Fields:
+    channel: Required. The name of the connected subscriber Channel. This is a
+      weak reference to avoid cross project and cross accounts references.
+      This must be in
+      `projects/{project}/location/{location}/channels/{channel_id}` format.
+    createTime: Output only. The creation time.
+    name: Required. The name of the connection.
+    uid: Output only. / Output only. Server assigned ID of the resource. The
+      server guarantees uniqueness and immutability until deleted.
+    updateTime: Output only. The last-modified time.
+  """
+
+  channel = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  uid = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
+
+
 class CloudRun(_messages.Message):
   r"""Represents a Cloud Run destination.
 
@@ -286,6 +310,62 @@ class EventType(_messages.Message):
   eventSchemaUri = _messages.StringField(2)
   filteringAttributes = _messages.MessageField('FilteringAttribute', 3, repeated=True)
   type = _messages.StringField(4)
+
+
+class EventarcProjectsLocationsChannelConnectionsCreateRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsChannelConnectionsCreateRequest object.
+
+  Fields:
+    channelConnection: A ChannelConnection resource to be passed as the
+      request body.
+    channelConnectionId: Required. The user-provided ID to be assigned to the
+      channel connection.
+    parent: Required. The parent collection in which to add this channel
+      connection.
+  """
+
+  channelConnection = _messages.MessageField('ChannelConnection', 1)
+  channelConnectionId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class EventarcProjectsLocationsChannelConnectionsDeleteRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsChannelConnectionsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the channel connection to delete.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class EventarcProjectsLocationsChannelConnectionsGetRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsChannelConnectionsGetRequest object.
+
+  Fields:
+    name: Required. The name of the channel connection to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class EventarcProjectsLocationsChannelConnectionsListRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsChannelConnectionsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of channel connections to return on each
+      page. Note: The service may send fewer responses.
+    pageToken: The page token; provide the value from the `next_page_token`
+      field in a previous `ListChannelConnections` call to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListChannelConnetions` match the call that provided the page token.
+    parent: Required. The parent collection from which to list channel
+      connections.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class EventarcProjectsLocationsChannelsCreateRequest(_messages.Message):
@@ -938,6 +1018,22 @@ class GoogleRpcStatus(_messages.Message):
   message = _messages.StringField(3)
 
 
+class ListChannelConnectionsResponse(_messages.Message):
+  r"""The response message for the ListChannelConnections method.
+
+  Fields:
+    channelConnections: The requested channel connections, up to the number
+      specified in `page_size`.
+    nextPageToken: A page token that can be sent to ListChannelConnections to
+      request the next page. If this is empty, then there are no more pages.
+    unreachable: Unreachable resources, if any.
+  """
+
+  channelConnections = _messages.MessageField('ChannelConnection', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListChannelsResponse(_messages.Message):
   r"""The response message for the ListChannels method.
 
@@ -1194,14 +1290,11 @@ class Provider(_messages.Message):
     name: Output only. In
       `projects/{project}/locations/{location}/providers/{provider-id}`
       format.
-    service: Output only. The service hostname. Only available for Google
-      event providers. (e.g. "storage.googleapis.com")
   """
 
   displayName = _messages.StringField(1)
   eventTypes = _messages.MessageField('EventType', 2, repeated=True)
   name = _messages.StringField(3)
-  service = _messages.StringField(4)
 
 
 class Pubsub(_messages.Message):

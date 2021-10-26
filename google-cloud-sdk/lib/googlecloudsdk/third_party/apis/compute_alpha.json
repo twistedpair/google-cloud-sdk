@@ -4,7 +4,7 @@
   "id": "compute:alpha",
   "name": "compute",
   "version": "alpha",
-  "revision": "20211008",
+  "revision": "20211020",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -2286,6 +2286,20 @@
           "description": "A flag for marketplace VM disk created from the image, which is designed for marketplace VM disk to prevent the proprietary data on the disk from being accessed unwantedly. The flag will be inherited by the disk created from the image. The disk with locked flag set to true will be prohibited from performing the operations below: - R\/W or R\/O disk attach - Disk detach, if disk is created via create-on-create - Create images - Create snapshots - Create disk clone (create disk from the current disk) The image with the locked field set to true will be prohibited from performing the operations below: - Create images from the current image - Update the locked field for the current image The instance with at least one disk with locked flag set to true will be prohibited from performing the operations below: - Secondary disk attach - Create instant snapshot - Create machine images - Create instance template - Delete the instance with --keep-disk parameter set to true ",
           "type": "boolean"
         },
+        "architecture": {
+          "description": "The architecture of the image. Valid values are ARM64 or X86_64.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value indicating Architecture is not set.",
+            "Machines with architecture ARM64",
+            "Machines with architecture X86_64"
+          ],
+          "enum": [
+            "ARCHITECTURE_UNSPECIFIED",
+            "ARM64",
+            "X86_64"
+          ]
+        },
         "userLicenses": {
           "description": "A list of publicly visible user-licenses. Unlike regular licenses, user provided licenses can be modified after the disk is created. This includes a list of URLs to the license resource. For example, to provide a debian license: https:\/\/www.googleapis.com\/compute\/v1\/projects\/debian-cloud\/global\/licenses\/debian-9-stretch ",
           "type": "array",
@@ -4382,6 +4396,20 @@
             "type": "string",
             "format": "int64"
           }
+        },
+        "architecture": {
+          "description": "The architecture of the attached disk. Valid values are arm64 or x86_64.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value indicating Architecture is not set.",
+            "Machines with architecture ARM64",
+            "Machines with architecture X86_64"
+          ],
+          "enum": [
+            "ARCHITECTURE_UNSPECIFIED",
+            "ARM64",
+            "X86_64"
+          ]
         }
       }
     },
@@ -4540,6 +4568,14 @@
             "STOP"
           ]
         },
+        "maxRunDuration": {
+          "description": "Specifies the max run duration for the given instance. If specified, the instance termination action will be performed at the end of the run duration.",
+          "$ref": "Duration"
+        },
+        "terminationTime": {
+          "description": "Specifies the timestamp, when the instance will be terminated, in RFC3339 text format. If specified, the instance termination action will be performed at the termination time.",
+          "type": "string"
+        },
         "currentCpus": {
           "description": "Current number of vCPUs available for VM. 0 or unset means default vCPUs of the current machine type.",
           "type": "integer",
@@ -4586,6 +4622,23 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "Duration": {
+      "id": "Duration",
+      "description": "A Duration represents a fixed-length span of time represented as a count of seconds and fractions of seconds at nanosecond resolution. It is independent of any calendar and concepts like \"day\" or \"month\". Range is approximately 10,000 years.",
+      "type": "object",
+      "properties": {
+        "seconds": {
+          "description": "Span of time at a resolution of a second. Must be from 0 to 315,576,000,000 inclusive. Note: these bounds are computed from: 60 sec\/min * 60 min\/hr * 24 hr\/day * 365.25 days\/year * 10000 years",
+          "type": "string",
+          "format": "int64"
+        },
+        "nanos": {
+          "description": "Span of time that's a fraction of a second at nanosecond resolution. Durations less than one second are represented with a 0 `seconds` field and a positive `nanos` field. Must be from 0 to 999,999,999 inclusive.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -5822,14 +5875,12 @@
           "enumDescriptions": [
             "GCE picks zones for creating VM instances to fulfill the requested number of VMs within present resource constraints and to maximize utilization of unused zonal reservations. Recommended for batch workloads that do not require high availability.",
             "GCE always selects a single zone for all the VMs, optimizing for resource quotas, available reservations and general capacity. Recommended for batch workloads that cannot tollerate distribution over multiple zones. This the default shape in Bulk Insert and Capacity Advisor APIs.",
-            "GCE prioritizes acquisition of resources, scheduling VMs in zones where resources are available while distributing VMs as evenly as possible across allowed zones to minimize the impact of zonal failure. Recommended for highly available serving workloads.",
-            "This value is unused."
+            "GCE prioritizes acquisition of resources, scheduling VMs in zones where resources are available while distributing VMs as evenly as possible across allowed zones to minimize the impact of zonal failure. Recommended for highly available serving workloads."
           ],
           "enum": [
             "ANY",
             "ANY_SINGLE_ZONE",
-            "BALANCED",
-            "TARGET_SHAPE_UNSPECIFIED"
+            "BALANCED"
           ]
         }
       }
@@ -8985,6 +9036,28 @@
           "enum": [
             "ALWAYS",
             "FOLLOW_UPDATE_POLICY"
+          ]
+        },
+        "autoHealingTriggers": {
+          "description": "Restricts what triggers autohealing.",
+          "$ref": "InstanceGroupManagerAutoHealingPolicyAutoHealingTriggers"
+        }
+      }
+    },
+    "InstanceGroupManagerAutoHealingPolicyAutoHealingTriggers": {
+      "id": "InstanceGroupManagerAutoHealingPolicyAutoHealingTriggers",
+      "type": "object",
+      "properties": {
+        "onHealthCheck": {
+          "description": "If you have configured an application-based health check for the group, this field controls whether to trigger VM autohealing based on a failed health check. Valid values are: - ON (default): The group recreates running VMs that fail the application-based health check. - OFF: When set to OFF, you can still observe instance health state, but the group does not recreate VMs that fail the application-based health check. This is useful for troubleshooting and setting up your health check configuration. ",
+          "type": "string",
+          "enumDescriptions": [
+            "When set to OFF, you can still observe instance health state, but the group does not recreate VMs that fail the application-based health check. This is useful for troubleshooting and setting up your health check configuration.",
+            "(Default) The group recreates running VMs that fail the group's application-based health check."
+          ],
+          "enum": [
+            "OFF",
+            "ON"
           ]
         }
       }
@@ -13318,23 +13391,6 @@
         }
       }
     },
-    "Duration": {
-      "id": "Duration",
-      "description": "A Duration represents a fixed-length span of time represented as a count of seconds and fractions of seconds at nanosecond resolution. It is independent of any calendar and concepts like \"day\" or \"month\". Range is approximately 10,000 years.",
-      "type": "object",
-      "properties": {
-        "seconds": {
-          "description": "Span of time at a resolution of a second. Must be from 0 to 315,576,000,000 inclusive. Note: these bounds are computed from: 60 sec\/min * 60 min\/hr * 24 hr\/day * 365.25 days\/year * 10000 years",
-          "type": "string",
-          "format": "int64"
-        },
-        "nanos": {
-          "description": "Span of time that's a fraction of a second at nanosecond resolution. Durations less than one second are represented with a 0 `seconds` field and a positive `nanos` field. Must be from 0 to 999,999,999 inclusive.",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
     "CircuitBreakers": {
       "id": "CircuitBreakers",
       "description": "Settings controlling the volume of requests, connections and retries to this backend service.",
@@ -15164,6 +15220,20 @@
           "description": "[Output Only] The unique ID of the instant snapshot used to create this snapshot. This value identifies the exact instant snapshot that was used to create this persistent disk. For example, if you created the persistent disk from an instant snapshot that was later deleted and recreated under the same name, the source instant snapshot ID would identify the exact instant snapshot that was used.",
           "type": "string"
         },
+        "architecture": {
+          "description": "[Output Only] The architecture of the snapshot. Valid values are ARM64 or X86_64.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value indicating Architecture is not set.",
+            "Machines with architecture ARM64",
+            "Machines with architecture X86_64"
+          ],
+          "enum": [
+            "ARCHITECTURE_UNSPECIFIED",
+            "ARM64",
+            "X86_64"
+          ]
+        },
         "userLicenses": {
           "description": "[Output Only] A list of user provided licenses represented by a list of URLs to the license resource.",
           "type": "array",
@@ -15538,6 +15608,20 @@
         "locationHint": {
           "description": "An opaque location hint used to place the disk close to other resources. This field is for use by internal tools that use the public API.",
           "type": "string"
+        },
+        "architecture": {
+          "description": "The architecture of the disk. Valid values are ARM64 or X86_64.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value indicating Architecture is not set.",
+            "Machines with architecture ARM64",
+            "Machines with architecture X86_64"
+          ],
+          "enum": [
+            "ARCHITECTURE_UNSPECIFIED",
+            "ARM64",
+            "X86_64"
+          ]
         },
         "locked": {
           "description": "[Output Only] The field indicates if the disk is created from a locked source image. Attachment of a disk created from a locked source image will cause the following operations to become irreversibly prohibited: - R\/W or R\/O disk attachment to any other instance - Disk detachment. And the disk can only be deleted when the instance is deleted - Creation of images or snapshots - Disk cloning Furthermore, the instance with at least one disk with locked flag set to true will be prohibited from performing the operations below: - Further attachment of secondary disks. - Detachment of any disks - Create machine images - Create instance template - Delete the instance with --keep-disk parameter set to true for locked disks - Attach a locked disk with --auto-delete parameter set to false ",
@@ -19043,6 +19127,20 @@
         "satisfiesPzs": {
           "description": "[Output Only] Reserved for future use.",
           "type": "boolean"
+        },
+        "architecture": {
+          "description": "[Output Only] The architecture of the instant snapshot. Valid values are ARM64 or X86_64.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value indicating Architecture is not set.",
+            "Machines with architecture ARM64",
+            "Machines with architecture X86_64"
+          ],
+          "enum": [
+            "ARCHITECTURE_UNSPECIFIED",
+            "ARM64",
+            "X86_64"
+          ]
         },
         "kind": {
           "description": "[Output Only] Type of the resource. Always compute#instantSnapshot for InstantSnapshot resources.",
@@ -23447,11 +23545,11 @@
           "type": "boolean"
         },
         "exportCustomRoutes": {
-          "description": "Whether to export the custom routes to peer network.",
+          "description": "Whether to export the custom routes to peer network. The default value is false.",
           "type": "boolean"
         },
         "importCustomRoutes": {
-          "description": "Whether to import the custom routes from peer network.",
+          "description": "Whether to import the custom routes from peer network. The default value is false.",
           "type": "boolean"
         },
         "exchangeSubnetRoutes": {
@@ -32855,7 +32953,7 @@
           "type": "boolean"
         },
         "enableFlowLogs": {
-          "description": "Whether to enable flow logging for this subnetwork. If this field is not explicitly set, it will not appear in get listings. If not set the default behavior is to disable flow logging. This field isn't supported with the purpose field set to INTERNAL_HTTPS_LOAD_BALANCER.",
+          "description": "Whether to enable flow logging for this subnetwork. If this field is not explicitly set, it will not appear in get listings. If not set the default behavior is determined by the org policy, if there is no org policy specified, then it will default to disabled. This field isn't supported with the purpose field set to INTERNAL_HTTPS_LOAD_BALANCER.",
           "type": "boolean"
         },
         "privateIpv6GoogleAccess": {
@@ -32964,7 +33062,7 @@
           ]
         },
         "flowSampling": {
-          "description": "Can only be specified if VPC flow logging for this subnetwork is enabled. The value of the field must be in [0, 1]. Set the sampling rate of VPC flow logs within the subnetwork where 1.0 means all collected logs are reported and 0.0 means no logs are reported. Default is 0.5, which means half of all collected logs are reported.",
+          "description": "Can only be specified if VPC flow logging for this subnetwork is enabled. The value of the field must be in [0, 1]. Set the sampling rate of VPC flow logs within the subnetwork where 1.0 means all collected logs are reported and 0.0 means no logs are reported. Default is 0.5 unless otherwise specified by the org policy, which means half of all collected logs are reported.",
           "type": "number",
           "format": "float"
         },
@@ -33056,7 +33154,7 @@
       "type": "object",
       "properties": {
         "enable": {
-          "description": "Whether to enable flow logging for this subnetwork. If this field is not explicitly set, it will not appear in get listings. If not set the default behavior is to disable flow logging.",
+          "description": "Whether to enable flow logging for this subnetwork. If this field is not explicitly set, it will not appear in get listings. If not set the default behavior is determined by the org policy, if there is no org policy specified, then it will default to disabled.",
           "type": "boolean"
         },
         "aggregationInterval": {
@@ -33080,7 +33178,7 @@
           ]
         },
         "flowSampling": {
-          "description": "Can only be specified if VPC flow logging for this subnetwork is enabled. The value of the field must be in [0, 1]. Set the sampling rate of VPC flow logs within the subnetwork where 1.0 means all collected logs are reported and 0.0 means no logs are reported. Default is 0.5, which means half of all collected logs are reported.",
+          "description": "Can only be specified if VPC flow logging for this subnetwork is enabled. The value of the field must be in [0, 1]. Set the sampling rate of VPC flow logs within the subnetwork where 1.0 means all collected logs are reported and 0.0 means no logs are reported. Default is 0.5 unless otherwise specified by the org policy, which means half of all collected logs are reported.",
           "type": "number",
           "format": "float"
         },
@@ -45699,7 +45797,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "This method suspends a running instance, saving its state to persistent storage, and allows you to resume the instance at a later time. Suspended instances incur reduced per-minute, virtual machine usage charges while they are suspended. Any resources the virtual machine is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted."
+          "description": "This method suspends a running instance, saving its state to persistent storage, and allows you to resume the instance at a later time. Suspended instances incur reduced per-minute, virtual machine usage charges while they are suspended. Any resources the virtual machine is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted. For more information, see Suspending and resuming an instance."
         },
         "resume": {
           "id": "compute.instances.resume",

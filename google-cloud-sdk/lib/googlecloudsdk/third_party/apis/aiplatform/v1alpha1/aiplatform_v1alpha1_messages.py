@@ -5077,7 +5077,9 @@ class GoogleCloudAiplatformInternalDeployedModel(_messages.Message):
       Model.explanation_spec is inherited. If the corresponding
       Model.explanation_spec is not populated, all fields of the
       explanation_spec will be used for the explanation configuration.
-    id: Output only. The ID of the DeployedModel.
+    id: Immutable. The ID of the DeployedModel. If not provided upon
+      deployment, Vertex AI will generate a value for this ID. This value
+      should be 1-10 characters, and valid characters are /[0-9]/.
     model: Required. The name of the Model that this is the deployment of.
       Note that the Model may be in a different location than the
       DeployedModel's Endpoint.
@@ -6144,8 +6146,9 @@ class GoogleCloudAiplatformInternalHumanInTheLoop(_messages.Message):
       DataLabelingJob created from this configuration.
     dataLabelingJobParameters: Required. Input configuration parameters for
       the DataLabelingJob created from this configuration.
-    deIdConfig: The de-identification config. If set this field, it will run
-      HITL de-id instead of regular HITL pipeline.
+    deIdConfig: Use the deidentification input to pass the configs instead.
+      The de-identification config. If set this field, it will run HITL de-id
+      instead of regular HITL pipeline.
     displayName: Required. The user-defined name of the Human in the Loop. The
       name can be up to 128 characters long and can be consist of any UTF-8
       characters. This field should be unique on project-level.
@@ -7390,7 +7393,9 @@ class GoogleCloudAiplatformUiDeployedModel(_messages.Message):
       Model.explanation_spec is inherited. If the corresponding
       Model.explanation_spec is not populated, all fields of the
       explanation_spec will be used for the explanation configuration.
-    id: Output only. The ID of the DeployedModel.
+    id: Immutable. The ID of the DeployedModel. If not provided upon
+      deployment, Vertex AI will generate a value for this ID. This value
+      should be 1-10 characters, and valid characters are /[0-9]/.
     model: Required. The name of the Model that this is the deployment of.
       Note that the Model may be in a different location than the
       DeployedModel's Endpoint.
@@ -10403,6 +10408,14 @@ class GoogleCloudAiplatformUiUploadModelResponse(_messages.Message):
   model = _messages.StringField(1)
 
 
+class GoogleCloudAiplatformUiWaitEdgeDeploymentJobOperationMetadata(_messages.Message):
+  r"""Metadata message for JobService.WaitEdgeDeploymentJob."""
+
+
+class GoogleCloudAiplatformUiWaitEdgeDeploymentJobResponse(_messages.Message):
+  r"""Response message for JobService.WaitEdgeDeploymentJob."""
+
+
 class GoogleCloudAiplatformUiXraiAttribution(_messages.Message):
   r"""An explanation method that redistributes Integrated Gradients
   attributions to segmented regions, taking advantage of the model's fully
@@ -10980,7 +10993,9 @@ class GoogleCloudAiplatformV1DeployedModel(_messages.Message):
       Model.explanation_spec is inherited. If the corresponding
       Model.explanation_spec is not populated, all fields of the
       explanation_spec will be used for the explanation configuration.
-    id: Output only. The ID of the DeployedModel.
+    id: Immutable. The ID of the DeployedModel. If not provided upon
+      deployment, Vertex AI will generate a value for this ID. This value
+      should be 1-10 characters, and valid characters are /[0-9]/.
     model: Required. The name of the Model that this is the deployment of.
       Note that the Model may be in a different location than the
       DeployedModel's Endpoint.
@@ -17575,7 +17590,9 @@ class GoogleCloudAiplatformV1alpha1DeployedModel(_messages.Message):
       Model.explanation_spec is inherited. If the corresponding
       Model.explanation_spec is not populated, all fields of the
       explanation_spec will be used for the explanation configuration.
-    id: Output only. The ID of the DeployedModel.
+    id: Immutable. The ID of the DeployedModel. If not provided upon
+      deployment, Vertex AI will generate a value for this ID. This value
+      should be 1-10 characters, and valid characters are /[0-9]/.
     model: Required. The name of the Model that this is the deployment of.
       Note that the Model may be in a different location than the
       DeployedModel's Endpoint.
@@ -20064,6 +20081,8 @@ class GoogleCloudAiplatformV1alpha1Model(_messages.Message):
       scheme, than the one given on input. The output URI will point to a
       location where the user only has a read access.
     name: The resource name of the Model.
+    originalModelInfo: Output only. If this Model is a copy of another Model,
+      this contains info about the original.
     predictSchemata: The schemata that describe formats of the Model's
       predictions and explanations as given and returned via
       PredictionService.Predict and PredictionService.Explain.
@@ -20190,18 +20209,19 @@ class GoogleCloudAiplatformV1alpha1Model(_messages.Message):
   metadata = _messages.MessageField('extra_types.JsonValue', 11)
   metadataSchemaUri = _messages.StringField(12)
   name = _messages.StringField(13)
-  predictSchemata = _messages.MessageField('GoogleCloudAiplatformV1alpha1PredictSchemata', 14)
-  supportedDeploymentResourcesTypes = _messages.EnumField('SupportedDeploymentResourcesTypesValueListEntryValuesEnum', 15, repeated=True)
-  supportedExportFormats = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelExportFormat', 16, repeated=True)
-  supportedInputStorageFormats = _messages.StringField(17, repeated=True)
-  supportedOutputStorageFormats = _messages.StringField(18, repeated=True)
-  trainingPipeline = _messages.StringField(19)
-  updateTime = _messages.StringField(20)
-  versionAliases = _messages.StringField(21, repeated=True)
-  versionCreateTime = _messages.StringField(22)
-  versionDescription = _messages.StringField(23)
-  versionId = _messages.StringField(24)
-  versionUpdateTime = _messages.StringField(25)
+  originalModelInfo = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelOriginalModelInfo', 14)
+  predictSchemata = _messages.MessageField('GoogleCloudAiplatformV1alpha1PredictSchemata', 15)
+  supportedDeploymentResourcesTypes = _messages.EnumField('SupportedDeploymentResourcesTypesValueListEntryValuesEnum', 16, repeated=True)
+  supportedExportFormats = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelExportFormat', 17, repeated=True)
+  supportedInputStorageFormats = _messages.StringField(18, repeated=True)
+  supportedOutputStorageFormats = _messages.StringField(19, repeated=True)
+  trainingPipeline = _messages.StringField(20)
+  updateTime = _messages.StringField(21)
+  versionAliases = _messages.StringField(22, repeated=True)
+  versionCreateTime = _messages.StringField(23)
+  versionDescription = _messages.StringField(24)
+  versionId = _messages.StringField(25)
+  versionUpdateTime = _messages.StringField(26)
 
 
 class GoogleCloudAiplatformV1alpha1ModelContainerSpec(_messages.Message):
@@ -21075,6 +21095,18 @@ class GoogleCloudAiplatformV1alpha1ModelMonitoringStatsAnomaliesFeatureHistoricS
   predictionStats = _messages.MessageField('GoogleCloudAiplatformV1alpha1FeatureStatsAnomaly', 2, repeated=True)
   threshold = _messages.MessageField('GoogleCloudAiplatformV1alpha1ThresholdConfig', 3)
   trainingStats = _messages.MessageField('GoogleCloudAiplatformV1alpha1FeatureStatsAnomaly', 4)
+
+
+class GoogleCloudAiplatformV1alpha1ModelOriginalModelInfo(_messages.Message):
+  r"""Contains information about the original Model if this Model is a copy.
+
+  Fields:
+    model: Output only. The resource name of the Model this Model is a copy
+      of, including the revision. Format:
+      `projects/{project}/locations/{location}/models/{model_id}@{version_id}`
+  """
+
+  model = _messages.StringField(1)
 
 
 class GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadata(_messages.Message):
@@ -22455,9 +22487,8 @@ class GoogleCloudAiplatformV1alpha1SearchModelDeploymentMonitoringStatsAnomalies
   JobService.SearchModelDeploymentMonitoringStatsAnomalies.
 
   Fields:
-    deployedModelId: Required. The DeployedModel ID of the [google.cloud.aipla
-      tform.master.ModelDeploymentMonitoringObjectiveConfig.deployed_model_id]
-      .
+    deployedModelId: Required. The DeployedModel ID of the
+      [ModelDeploymentMonitoringObjectiveConfig.deployed_model_id].
     endTime: The latest timestamp of stats being generated. If not set,
       indicates feching stats till the latest possible one.
     featureDisplayName: The feature display name. If specified, only return
@@ -24617,7 +24648,9 @@ class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
       Model.explanation_spec is inherited. If the corresponding
       Model.explanation_spec is not populated, all fields of the
       explanation_spec will be used for the explanation configuration.
-    id: Output only. The ID of the DeployedModel.
+    id: Immutable. The ID of the DeployedModel. If not provided upon
+      deployment, Vertex AI will generate a value for this ID. This value
+      should be 1-10 characters, and valid characters are /[0-9]/.
     model: Required. The name of the Model that this is the deployment of.
       Note that the Model may be in a different location than the
       DeployedModel's Endpoint.

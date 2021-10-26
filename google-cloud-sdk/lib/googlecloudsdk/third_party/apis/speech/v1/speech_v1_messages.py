@@ -267,6 +267,18 @@ class RecognitionConfig(_messages.Message):
       only recognize the first channel. The request is billed cumulatively for
       all channels recognized: `audio_channel_count` multiplied by the length
       of the audio.
+    enableSpokenEmojis: The spoken emoji behavior for the call If not set,
+      uses default behavior based on model of choice If 'true', adds spoken
+      emoji formatting for the request. This will replace spoken emojis with
+      the corresponding Unicode symbols in the final transcript. If 'false',
+      spoken emojis are not replaced.
+    enableSpokenPunctuation: The spoken punctuation behavior for the call If
+      not set, uses default behavior based on model of choice e.g.
+      command_and_search will enable spoken punctuation by default If 'true',
+      replaces spoken punctuation with the corresponding symbols in the
+      request. For example, "how are you question mark" becomes "how are
+      you?". See https://cloud.google.com/speech-to-text/docs/spoken-
+      punctuation for support. If 'false', spoken punctuation is not replaced.
     enableWordConfidence: If `true`, the top result includes a list of words
       and the confidence for those words. If `false`, no word-level confidence
       information is returned. The default is `false`.
@@ -378,17 +390,19 @@ class RecognitionConfig(_messages.Message):
   diarizationConfig = _messages.MessageField('SpeakerDiarizationConfig', 3)
   enableAutomaticPunctuation = _messages.BooleanField(4)
   enableSeparateRecognitionPerChannel = _messages.BooleanField(5)
-  enableWordConfidence = _messages.BooleanField(6)
-  enableWordTimeOffsets = _messages.BooleanField(7)
-  encoding = _messages.EnumField('EncodingValueValuesEnum', 8)
-  languageCode = _messages.StringField(9)
-  maxAlternatives = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  metadata = _messages.MessageField('RecognitionMetadata', 11)
-  model = _messages.StringField(12)
-  profanityFilter = _messages.BooleanField(13)
-  sampleRateHertz = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  speechContexts = _messages.MessageField('SpeechContext', 15, repeated=True)
-  useEnhanced = _messages.BooleanField(16)
+  enableSpokenEmojis = _messages.BooleanField(6)
+  enableSpokenPunctuation = _messages.BooleanField(7)
+  enableWordConfidence = _messages.BooleanField(8)
+  enableWordTimeOffsets = _messages.BooleanField(9)
+  encoding = _messages.EnumField('EncodingValueValuesEnum', 10)
+  languageCode = _messages.StringField(11)
+  maxAlternatives = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  metadata = _messages.MessageField('RecognitionMetadata', 13)
+  model = _messages.StringField(14)
+  profanityFilter = _messages.BooleanField(15)
+  sampleRateHertz = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  speechContexts = _messages.MessageField('SpeechContext', 17, repeated=True)
+  useEnhanced = _messages.BooleanField(18)
 
 
 class RecognitionMetadata(_messages.Message):

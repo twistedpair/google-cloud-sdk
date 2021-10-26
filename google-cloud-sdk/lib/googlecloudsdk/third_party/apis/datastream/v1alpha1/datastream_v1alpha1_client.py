@@ -211,7 +211,7 @@ class DatastreamV1alpha1(base_api.BaseApiClient):
         method_id='datastream.projects.locations.connectionProfiles.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['requestId', 'updateMask'],
+        query_params=['requestId', 'updateMask', 'validateOnly'],
         relative_path='v1alpha1/{+name}',
         request_field='connectionProfile',
         request_type_name='DatastreamProjectsLocationsConnectionProfilesPatchRequest',

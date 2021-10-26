@@ -86,10 +86,10 @@ class AllowedSubjectAltNames(_messages.Message):
       allowed_dns_names contains a literal wildcard.
     allowedDnsNames: Optional. Contains valid, fully-qualified host names.
       Glob patterns are also supported. To allow an explicit wildcard
-      certificate, escape with backlash (i.e. "\*"). E.g. for globbed entries:
-      '*bar.com' will allow 'foo.bar.com', but not '*.bar.com', unless the
+      certificate, escape with backlash (i.e. `\*`). E.g. for globbed entries:
+      `*bar.com` will allow `foo.bar.com`, but not `*.bar.com`, unless the
       allow_globbing_dns_wildcards field is set. E.g. for wildcard entries:
-      '\*.bar.com' will allow '*.bar.com', but not 'foo.bar.com'.
+      `\*.bar.com` will allow `*.bar.com`, but not `foo.bar.com`.
     allowedEmailAddresses: Optional. Contains valid RFC 2822 E-mail addresses.
       Glob patterns are also supported.
     allowedIps: Optional. Contains valid 32-bit IPv4 addresses and subnet

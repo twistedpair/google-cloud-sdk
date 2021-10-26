@@ -153,7 +153,7 @@ class ConfigureContactSettingsRequest(_messages.Message):
     contactSettings: Fields of the `ContactSettings` to update.
     updateMask: Required. The field mask describing which fields to update as
       a comma-separated list. For example, if only the registrant contact is
-      being updated, the `update_mask` would be `"registrant_contact"`.
+      being updated, the `update_mask` is `"registrant_contact"`.
     validateOnly: Validate the request without actually updating the contact
       settings.
   """
@@ -183,12 +183,11 @@ class ConfigureDnsSettingsRequest(_messages.Message):
     dnsSettings: Fields of the `DnsSettings` to update.
     updateMask: Required. The field mask describing which fields to update as
       a comma-separated list. For example, if only the name servers are being
-      updated for an existing Custom DNS configuration, the `update_mask`
-      would be `"custom_dns.name_servers"`. When changing the DNS provider
-      from one type to another, pass the new provider's field name as part of
-      the field mask. For example, when changing from a Google Domains DNS
-      configuration to a Custom DNS configuration, the `update_mask` would be
-      `"custom_dns"`. //
+      updated for an existing Custom DNS configuration, the `update_mask` is
+      `"custom_dns.name_servers"`. When changing the DNS provider from one
+      type to another, pass the new provider's field name as part of the field
+      mask. For example, when changing from a Google Domains DNS configuration
+      to a Custom DNS configuration, the `update_mask` is `"custom_dns"`. //
     validateOnly: Validate the request without actually updating the DNS
       settings.
   """
@@ -205,7 +204,7 @@ class ConfigureManagementSettingsRequest(_messages.Message):
     managementSettings: Fields of the `ManagementSettings` to update.
     updateMask: Required. The field mask describing which fields to update as
       a comma-separated list. For example, if only the transfer lock is being
-      updated, the `update_mask` would be `"transfer_lock_state"`.
+      updated, the `update_mask` is `"transfer_lock_state"`.
   """
 
   managementSettings = _messages.MessageField('ManagementSettings', 1)
@@ -247,7 +246,7 @@ class ContactSettings(_messages.Message):
     registrantContact: Required. The registrant contact for the
       `Registration`. *Caution: Anyone with access to this email address,
       phone number, and/or postal address can take control of the domain.*
-      *Warning: For new `Registration`s, the registrant will receive an email
+      *Warning: For new `Registration`s, the registrant receives an email
       confirmation that they must complete within 15 days to avoid domain
       suspension.*
     technicalContact: Required. The technical contact for the `Registration`.
@@ -517,7 +516,7 @@ class DomainsProjectsLocationsRegistrationsPatchRequest(_messages.Message):
     registration: A Registration resource to be passed as the request body.
     updateMask: Required. The field mask describing which fields to update as
       a comma-separated list. For example, if only the labels are being
-      updated, the `update_mask` would be `"labels"`.
+      updated, the `update_mask` is `"labels"`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1350,8 +1349,8 @@ class RegisterDomainRequest(_messages.Message):
       acknowledgement.
     registration: Required. The complete `Registration` resource to be
       created.
-    validateOnly: When true, only validation will be performed, without
-      actually registering the domain. Follows:
+    validateOnly: When true, only validation is performed, without actually
+      registering the domain. Follows:
       https://cloud.google.com/apis/design/design_patterns#request_validation
     yearlyPrice: Required. Yearly price to register or renew the domain. The
       value that should be put here can be obtained from
@@ -1526,9 +1525,9 @@ class Registration(_messages.Message):
       `Registration`. Updates to the `contact_settings` field that change its
       `registrant_contact` or `privacy` fields require email confirmation by
       the `registrant_contact` before taking effect. This field is set only if
-      there are pending updates to the `contact_settings` that have not yet
-      been confirmed. To confirm the changes, the `registrant_contact` must
-      follow the instructions in the email they receive.
+      there are pending updates to the `contact_settings` that have not been
+      confirmed. To confirm the changes, the `registrant_contact` must follow
+      the instructions in the email they receive.
     state: Output only. The state of the `Registration`
     supportedPrivacy: Output only. Set of options for the
       `contact_settings.privacy` field that this `Registration` supports.
@@ -1562,13 +1561,11 @@ class Registration(_messages.Message):
       REGISTRATION_PENDING: The domain is being registered.
       REGISTRATION_FAILED: The domain registration failed. You can delete
         resources in this state to allow registration to be retried.
-      TRANSFER_PENDING: Domain transfer from another registrar to Cloud
-        Domains is in progress. The domain's current registrar may require
-        action to complete the transfer. Check emails from the domain's
-        current registrar to the domain's current registrant for instructions.
+      TRANSFER_PENDING: The domain is being transferred from another registrar
+        to Cloud Domains.
       TRANSFER_FAILED: The attempt to transfer the domain from another
         registrar to Cloud Domains failed. You can delete resources in this
-        state to allow transfer to be retried.
+        state and retry the transfer.
       ACTIVE: The domain is registered and operational. The domain renews
         automatically as long as it remains in this state.
       SUSPENDED: The domain is suspended and inoperative. For more details,
@@ -1577,7 +1574,7 @@ class Registration(_messages.Message):
         have been transferred to another registrar or exported for management
         in [Google Domains](https://domains.google/). You can no longer update
         it with this API, and information shown about it may be stale. Domains
-        in this state will not be automatically renewed by Cloud Domains.
+        in this state are not automatically renewed by Cloud Domains.
     """
     STATE_UNSPECIFIED = 0
     REGISTRATION_PENDING = 1
@@ -1856,7 +1853,7 @@ class TransferDomainRequest(_messages.Message):
     registration: Required. The complete `Registration` resource to be
       created. You can leave `registration.dns_settings` unset to import the
       domain's current DNS configuration from its current registrar. Use this
-      option only if you are sure that the domain's current DNS service will
+      option only if you are sure that the domain's current DNS service does
       not cease upon transfer, as is often the case for DNS services provided
       for free by the registrar.
     validateOnly: Validate the request without actually transferring the

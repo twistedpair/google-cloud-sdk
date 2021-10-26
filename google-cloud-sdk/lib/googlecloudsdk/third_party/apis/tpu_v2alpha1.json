@@ -1261,7 +1261,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Mask of fields from Node to update. Supported fields: None.",
+                      "description": "Required. Mask of fields from Node to update. Supported fields: [description, tags, labels, metadata, network_config.enable_external_ips].",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"

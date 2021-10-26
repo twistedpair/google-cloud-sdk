@@ -752,6 +752,8 @@ class Feature(_messages.Message):
     servicedirectoryFeatureSpec: The specification for Service Directory.
     servicemeshFeatureSpec: The specification for the Service Mesh Feature.
     updateTime: Output only. When the Feature was last updated.
+    workloadcertificateFeatureSpec: The specification for Workload
+      Certificate.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -799,6 +801,7 @@ class Feature(_messages.Message):
   servicedirectoryFeatureSpec = _messages.MessageField('ServiceDirectoryFeatureSpec', 19)
   servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 20)
   updateTime = _messages.StringField(21)
+  workloadcertificateFeatureSpec = _messages.MessageField('WorkloadCertificateFeatureSpec', 22)
 
 
 class FeatureState(_messages.Message):
@@ -908,6 +911,8 @@ class FeatureStateDetails(_messages.Message):
     servicedirectoryFeatureState: State for the Service Directory Feature.
     servicemeshFeatureState: State for the Service Mesh Feature.
     updateTime: The last update time of this status by the controllers
+    workloadcertificateFeatureState: State for the Workload Certificate
+      Feature
   """
 
   class CodeValueValuesEnum(_messages.Enum):
@@ -948,6 +953,7 @@ class FeatureStateDetails(_messages.Message):
   servicedirectoryFeatureState = _messages.MessageField('ServiceDirectoryFeatureState', 15)
   servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 16)
   updateTime = _messages.StringField(17)
+  workloadcertificateFeatureState = _messages.MessageField('WorkloadCertificateFeatureState', 18)
 
 
 class FeatureTest(_messages.Message):
@@ -2541,6 +2547,102 @@ class Type(_messages.Message):
 
   code = _messages.StringField(1)
   displayName = _messages.StringField(2)
+
+
+class WorkloadCertificateFeatureSpec(_messages.Message):
+  r"""WorkloadCertificateFeatureSpec contains the input for the workload
+  identity platform feature. This is required since Feature proto requires a
+  spec.
+
+  Enums:
+    ProvisionGoogleCaValueValuesEnum: Immutable. Specifies CA configuration.
+
+  Messages:
+    MemberConfigsValue: Per-member configuration of workload certificate.
+
+  Fields:
+    defaultConfig: Default membership spec. Users can override the default in
+      the member_configs for each member.
+    memberConfigs: Per-member configuration of workload certificate.
+    provisionGoogleCa: Immutable. Specifies CA configuration.
+  """
+
+  class ProvisionGoogleCaValueValuesEnum(_messages.Enum):
+    r"""Immutable. Specifies CA configuration.
+
+    Values:
+      GOOGLE_CA_PROVISIONING_UNSPECIFIED: Disable default Google managed CA.
+      DISABLED: Disable default Google managed CA.
+      ENABLED: Use default Google managed CA.
+    """
+    GOOGLE_CA_PROVISIONING_UNSPECIFIED = 0
+    DISABLED = 1
+    ENABLED = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MemberConfigsValue(_messages.Message):
+    r"""Per-member configuration of workload certificate.
+
+    Messages:
+      AdditionalProperty: An additional property for a MemberConfigsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type MemberConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MemberConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A WorkloadCertificateMembershipSpec attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('WorkloadCertificateMembershipSpec', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  defaultConfig = _messages.MessageField('WorkloadCertificateMembershipSpec', 1)
+  memberConfigs = _messages.MessageField('MemberConfigsValue', 2)
+  provisionGoogleCa = _messages.EnumField('ProvisionGoogleCaValueValuesEnum', 3)
+
+
+class WorkloadCertificateFeatureState(_messages.Message):
+  r"""WorkloadCertificateFeatureState describes the state of the workload
+  certificate feature. This is required since FeatureStateDetails requires a
+  state.
+  """
+
+
+
+class WorkloadCertificateMembershipSpec(_messages.Message):
+  r"""WorkloadCertificateMembershipSpec contains the membership-specific input
+  for WorkloadCertificate feature.
+
+  Enums:
+    CertificateManagementValueValuesEnum: Specifies workload certificate
+      management.
+
+  Fields:
+    certificateManagement: Specifies workload certificate management.
+  """
+
+  class CertificateManagementValueValuesEnum(_messages.Enum):
+    r"""Specifies workload certificate management.
+
+    Values:
+      CERTIFICATE_MANAGEMENT_UNSPECIFIED: Disable workload certificate
+        feature.
+      DISABLED: Disable workload certificate feature.
+      ENABLED: Enable workload certificate feature.
+    """
+    CERTIFICATE_MANAGEMENT_UNSPECIFIED = 0
+    DISABLED = 1
+    ENABLED = 2
+
+  certificateManagement = _messages.EnumField('CertificateManagementValueValuesEnum', 1)
 
 
 encoding.AddCustomJsonFieldMapping(

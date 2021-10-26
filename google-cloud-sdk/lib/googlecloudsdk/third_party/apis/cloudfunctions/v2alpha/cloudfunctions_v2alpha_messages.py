@@ -801,10 +801,12 @@ class GoogleCloudFunctionsV2alphaStateMessage(_messages.Message):
       SEVERITY_UNSPECIFIED: Not specified. Invalid severity.
       ERROR: ERROR-level severity.
       WARNING: WARNING-level severity.
+      INFO: INFO-level severity.
     """
     SEVERITY_UNSPECIFIED = 0
     ERROR = 1
     WARNING = 2
+    INFO = 3
 
   message = _messages.StringField(1)
   severity = _messages.EnumField('SeverityValueValuesEnum', 2)
@@ -948,10 +950,12 @@ class GoogleCloudFunctionsV2betaStateMessage(_messages.Message):
       SEVERITY_UNSPECIFIED: Not specified. Invalid severity.
       ERROR: ERROR-level severity.
       WARNING: WARNING-level severity.
+      INFO: INFO-level severity.
     """
     SEVERITY_UNSPECIFIED = 0
     ERROR = 1
     WARNING = 2
+    INFO = 3
 
   message = _messages.StringField(1)
   severity = _messages.EnumField('SeverityValueValuesEnum', 2)
@@ -1441,8 +1445,6 @@ class ServiceConfig(_messages.Message):
       value is interpreted as bytes. See https://github.com/kubernetes/kuberne
       tes/blob/master/staging/src/k8s.io/apimachinery/pkg/api/resource/quantit
       y.go a full description.
-    availableMemoryMb: The amount of memory in MB available for a function.
-      Defaults to 256MB.
     environmentVariables: Environment variables that shall be available during
       function execution.
     ingressSettings: The ingress settings for the function, controlling what
@@ -1539,17 +1541,16 @@ class ServiceConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   availableMemory = _messages.StringField(1)
-  availableMemoryMb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 3)
-  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 4)
-  maxInstanceCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  minInstanceCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  service = _messages.StringField(7)
-  serviceAccountEmail = _messages.StringField(8)
-  timeoutSeconds = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  uri = _messages.StringField(10)
-  vpcConnector = _messages.StringField(11)
-  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 12)
+  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 2)
+  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 3)
+  maxInstanceCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  minInstanceCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  service = _messages.StringField(6)
+  serviceAccountEmail = _messages.StringField(7)
+  timeoutSeconds = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  uri = _messages.StringField(9)
+  vpcConnector = _messages.StringField(10)
+  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 11)
 
 
 class SetIamPolicyRequest(_messages.Message):

@@ -2721,6 +2721,13 @@
         }
       }
     },
+    "GoogleCloudApigeeV1UndeleteOrganizationRequest": {
+      "id": "GoogleCloudApigeeV1UndeleteOrganizationRequest",
+      "description": "Request for UndeleteOrganization.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "GoogleCloudApigeeV1GetSyncAuthorizationRequest": {
       "id": "GoogleCloudApigeeV1GetSyncAuthorizationRequest",
       "description": "Request for GetSyncAuthorization.",
@@ -6294,6 +6301,34 @@
             "https://www.googleapis.com/auth/cloud-platform"
           ],
           "description": "Delete an Apigee organization. Only supported for SubscriptionType TRIAL."
+        },
+        "undelete": {
+          "id": "apigee.organizations.undelete",
+          "path": "v1/{+name}:undelete",
+          "flatPath": "v1/organizations/{organizationsId}:undelete",
+          "httpMethod": "POST",
+          "parameters": {
+            "name": {
+              "description": "Required. Name of the organization. Use the following structure in your request: `organizations\/{org}`",
+              "pattern": "^organizations\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "GoogleCloudApigeeV1UndeleteOrganizationRequest"
+          },
+          "response": {
+            "$ref": "GoogleLongrunningOperation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Undelete an Apigee organization that is soft-deleted."
         },
         "getSyncAuthorization": {
           "id": "apigee.organizations.getSyncAuthorization",

@@ -2466,6 +2466,39 @@ class LoggingConfig(_messages.Message):
   componentConfig = _messages.MessageField('LoggingComponentConfig', 1)
 
 
+class MaintenanceExclusionOptions(_messages.Message):
+  r"""Represents the Maintenance exclusion option.
+
+  Enums:
+    ScopeValueValuesEnum: Scope specifies the upgrade scope which upgrades are
+      blocked by the exclusion.
+
+  Fields:
+    scope: Scope specifies the upgrade scope which upgrades are blocked by the
+      exclusion.
+  """
+
+  class ScopeValueValuesEnum(_messages.Enum):
+    r"""Scope specifies the upgrade scope which upgrades are blocked by the
+    exclusion.
+
+    Values:
+      NO_UPGRADES: NO_UPGRADES excludes all upgrades, including patch upgrades
+        and minor upgrades across control planes and nodes. This is the
+        default exclusion behavior.
+      NO_MINOR_UPGRADES: NO_MINOR_UPGRADES excludes all minor upgrades for the
+        cluster, only patches are allowed.
+      NO_MINOR_OR_NODE_UPGRADES: NO_MINOR_OR_NODE_UPGRADES excludes all minor
+        upgrades for the cluster, and also exclude all node pool upgrades.
+        Only control plane patches are allowed.
+    """
+    NO_UPGRADES = 0
+    NO_MINOR_UPGRADES = 1
+    NO_MINOR_OR_NODE_UPGRADES = 2
+
+  scope = _messages.EnumField('ScopeValueValuesEnum', 1)
+
+
 class MaintenancePolicy(_messages.Message):
   r"""MaintenancePolicy defines the maintenance policy to be used for the
   cluster.
@@ -2877,10 +2910,6 @@ class NetworkTags(_messages.Message):
 class NodeConfig(_messages.Message):
   r"""Parameters that describe the nodes in a cluster.
 
-  Enums:
-    MaintenanceIntervalValueValuesEnum: Specifies the frequency of planned
-      maintenance events.
-
   Messages:
     LabelsValue: The map of Kubernetes labels (key/value pairs) to be applied
       to each node. These will added in addition to any default label(s) that
@@ -2947,8 +2976,6 @@ class NodeConfig(_messages.Message):
     machineType: The name of a Google Compute Engine [machine
       type](https://cloud.google.com/compute/docs/machine-types). If
       unspecified, the default machine type is `e2-medium`.
-    maintenanceInterval: Specifies the frequency of planned maintenance
-      events.
     metadata: The metadata key/value pairs assigned to instances in the
       cluster. Keys must conform to the regexp `[a-zA-Z0-9-_]+` and be less
       than 128 bytes in length. These are reflected as part of a URL in the
@@ -3004,6 +3031,7 @@ class NodeConfig(_messages.Message):
     shieldedInstanceConfig: Shielded Instance options.
     spot: Spot flag for enabling Spot VM, which is a rebrand of the existing
       preemptible flag.
+    stableFleetConfig: Stable fleet configs
     tags: The list of instance tags applied to all nodes. Tags are used to
       identify valid sources or targets for network firewalls and are
       specified by the client during cluster or node pool creation. Each tag
@@ -3013,27 +3041,6 @@ class NodeConfig(_messages.Message):
       https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
     workloadMetadataConfig: The workload metadata configuration for this node.
   """
-
-  class MaintenanceIntervalValueValuesEnum(_messages.Enum):
-    r"""Specifies the frequency of planned maintenance events.
-
-    Values:
-      MAINTENANCE_INTERVAL_UNSPECIFIED: The maintenance interval is not
-        explicitly specified for this node.
-      AS_NEEDED: Nodes are eligible to receive infrastructure and hypervisor
-        updates as they become available. This may result in more maintenance
-        operations (live migrations or terminations) for the VM than the
-        PERIODIC option.
-      PERIODIC: Nodes receive infrastructure and hypervisor updates on a
-        periodic basis, minimizing the number of maintenance operations (live
-        migrations or terminations) on an individual VM. This may mean
-        underlying VMs will take longer to receive an update than if it was
-        configured for AS_NEEDED. Security updates will still be applied as
-        soon as they are available.
-    """
-    MAINTENANCE_INTERVAL_UNSPECIFIED = 0
-    AS_NEEDED = 1
-    PERIODIC = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -3117,18 +3124,18 @@ class NodeConfig(_messages.Message):
   linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 12)
   localSsdCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
   machineType = _messages.StringField(14)
-  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 15)
-  metadata = _messages.MessageField('MetadataValue', 16)
-  minCpuPlatform = _messages.StringField(17)
-  nodeGroup = _messages.StringField(18)
-  nodeImageConfig = _messages.MessageField('CustomImageConfig', 19)
-  oauthScopes = _messages.StringField(20, repeated=True)
-  preemptible = _messages.BooleanField(21)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 22)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 23)
-  serviceAccount = _messages.StringField(24)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 25)
-  spot = _messages.BooleanField(26)
+  metadata = _messages.MessageField('MetadataValue', 15)
+  minCpuPlatform = _messages.StringField(16)
+  nodeGroup = _messages.StringField(17)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 18)
+  oauthScopes = _messages.StringField(19, repeated=True)
+  preemptible = _messages.BooleanField(20)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 21)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 22)
+  serviceAccount = _messages.StringField(23)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 24)
+  spot = _messages.BooleanField(25)
+  stableFleetConfig = _messages.MessageField('StableFleetConfig', 26)
   tags = _messages.StringField(27, repeated=True)
   taints = _messages.MessageField('NodeTaint', 28, repeated=True)
   workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 29)
@@ -3139,9 +3146,11 @@ class NodeConfigDefaults(_messages.Message):
 
   Fields:
     gcfsConfig: GCFS (Google Container File System, a.k.a Riptide) options.
+    stableFleetConfig: Stable fleet configs
   """
 
   gcfsConfig = _messages.MessageField('GcfsConfig', 1)
+  stableFleetConfig = _messages.MessageField('StableFleetConfig', 2)
 
 
 class NodeKubeletConfig(_messages.Message):
@@ -4476,6 +4485,43 @@ class ShieldedNodes(_messages.Message):
   enabled = _messages.BooleanField(1)
 
 
+class StableFleetConfig(_messages.Message):
+  r"""StableFleetConfig contains configurations of stable fleet for the node
+  or cluster.
+
+  Enums:
+    MaintenanceIntervalValueValuesEnum: Specifies the frequency of planned
+      maintenance events.
+
+  Fields:
+    maintenanceInterval: Specifies the frequency of planned maintenance
+      events.
+  """
+
+  class MaintenanceIntervalValueValuesEnum(_messages.Enum):
+    r"""Specifies the frequency of planned maintenance events.
+
+    Values:
+      MAINTENANCE_INTERVAL_UNSPECIFIED: The maintenance interval is not
+        explicitly specified
+      AS_NEEDED: Nodes are eligible to receive infrastructure and hypervisor
+        updates as they become available. This may result in more maintenance
+        operations (live migrations or terminations) for the node than the
+        PERIODIC option.
+      PERIODIC: Nodes receive infrastructure and hypervisor updates on a
+        periodic basis, minimizing the number of maintenance operations (live
+        migrations or terminations) on an individual VM. This may mean
+        underlying VMs will take longer to receive an update than if it was
+        configured for AS_NEEDED. Security updates will still be applied as
+        soon as they are available.
+    """
+    MAINTENANCE_INTERVAL_UNSPECIFIED = 0
+    AS_NEEDED = 1
+    PERIODIC = 2
+
+  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 1)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -4791,11 +4837,14 @@ class TimeWindow(_messages.Message):
   Fields:
     endTime: The time that the window ends. The end time should take place
       after the start time.
+    maintenanceExclusionOptions: MaintenanceExclusionOptions provides
+      maintenance exclusion related options.
     startTime: The time that the window first starts.
   """
 
   endTime = _messages.StringField(1)
-  startTime = _messages.StringField(2)
+  maintenanceExclusionOptions = _messages.MessageField('MaintenanceExclusionOptions', 2)
+  startTime = _messages.StringField(3)
 
 
 class TpuConfig(_messages.Message):

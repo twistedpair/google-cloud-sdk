@@ -24,11 +24,13 @@ from googlecloudsdk.command_lib.storage.tasks.cp import daisy_chain_copy_task
 from googlecloudsdk.command_lib.storage.tasks.cp import file_download_task
 from googlecloudsdk.command_lib.storage.tasks.cp import file_upload_task
 from googlecloudsdk.command_lib.storage.tasks.cp import intra_cloud_copy_task
+from googlecloudsdk.command_lib.storage.tasks.cp import streaming_download_task
 
 
 def get_copy_task(source_resource,
                   destination_resource,
                   do_not_decompress=False,
+                  shared_stream=None,
                   user_request_args=None):
   """Factory method that returns the correct copy task for the arguments.
 
@@ -38,6 +40,7 @@ def get_copy_task(source_resource,
         destination to copy file to.
     do_not_decompress (bool): Prevents automatically decompressing
         downloaded gzips.
+    shared_stream (stream): Multiple tasks may reuse this read or write stream.
     user_request_args (UserRequestArgs|None): Values for RequestConfig.
 
   Returns:
@@ -57,6 +60,9 @@ def get_copy_task(source_resource,
 
   if (isinstance(source_url, storage_url.CloudUrl)
       and isinstance(destination_url, storage_url.FileUrl)):
+    if destination_url.is_pipe:
+      return streaming_download_task.StreamingDownloadTask(
+          source_resource, shared_stream)
     return file_download_task.FileDownloadTask(
         source_resource,
         destination_resource,

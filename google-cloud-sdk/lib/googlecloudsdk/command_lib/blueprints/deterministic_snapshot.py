@@ -21,10 +21,10 @@ from __future__ import unicode_literals
 
 import os
 
-from googlecloudsdk.api_lib.cloudbuild import snapshot
+from googlecloudsdk.api_lib.storage import storage_util
 
 
-class DeterministicSnapshot(snapshot.Snapshot):
+class DeterministicSnapshot(storage_util.Snapshot):
   """DeterministicSnapshot is a thin wrapper around Snapshot.
   """
 

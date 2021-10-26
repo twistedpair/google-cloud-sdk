@@ -1019,7 +1019,8 @@ class TpuProjectsLocationsNodesPatchRequest(_messages.Message):
     name: Output only. Immutable. The name of the TPU.
     node: A Node resource to be passed as the request body.
     updateMask: Required. Mask of fields from Node to update. Supported
-      fields: None.
+      fields: [description, tags, labels, metadata,
+      network_config.enable_external_ips].
   """
 
   name = _messages.StringField(1, required=True)

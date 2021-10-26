@@ -202,10 +202,6 @@ def SetUpdateMask(ref, args, request):
       args.IsSpecified('clear_labels')):
     update_mask.append('labels')
 
-  # TODO(b/169913796): Use IsSpecified once allocation-priority is GA
-  if getattr(args, 'allocation_priority', None) is not None:
-    update_mask.append('allocationPriority')
-
   # TODO(b/202893776): Use IsSpecified once allocation-weight is GA
   if getattr(args, 'allocation_weight', None) is not None:
     update_mask.append('allocationWeight')

@@ -382,8 +382,10 @@ class ConnectSettings(_messages.Message):
       POSTGRES_10: The database version is PostgreSQL 10.
       POSTGRES_12: The database version is PostgreSQL 12.
       MYSQL_8_0: The database version is MySQL 8.
-      MYSQL_8_0_18: The database version is MySQL 8.0.18.
-      MYSQL_8_0_26: The database version is MySQL 8.0.21
+      MYSQL_8_0_18: The database major version is MySQL 8.0 and the minor
+        version is 18.
+      MYSQL_8_0_26: The database major version is MySQL 8.0 and the minor
+        version is 26.
       POSTGRES_13: The database version is PostgreSQL 13.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
@@ -525,9 +527,9 @@ class DatabaseInstance(_messages.Message):
       Monitoring API instead. Please see [this
       announcement](https://groups.google.com/d/msg/google-cloud-sql-
       announce/I_7-F9EBhT0/BtvFtdFeAgAJ) for details.
-    databaseInstalledVersion: database_installed_version stores the current
-      fully resolved database version including minor version such as
-      MYSQL_5_6_50
+    databaseInstalledVersion: Output only. The databaseInstalledVersion stores
+      the current fully resolved database version running on the instance
+      including minor version such as MYSQL_5_6_50
     databaseVersion: The database engine type and version. The
       **databaseVersion** field cannot be changed after instance creation. *
       **MySQL instances**: MYSQL_8_0, MYSQL_5_7 (default), or MYSQL_5_6. *
@@ -651,8 +653,10 @@ class DatabaseInstance(_messages.Message):
       POSTGRES_10: The database version is PostgreSQL 10.
       POSTGRES_12: The database version is PostgreSQL 12.
       MYSQL_8_0: The database version is MySQL 8.
-      MYSQL_8_0_18: The database version is MySQL 8.0.18.
-      MYSQL_8_0_26: The database version is MySQL 8.0.21
+      MYSQL_8_0_18: The database major version is MySQL 8.0 and the minor
+        version is 18.
+      MYSQL_8_0_26: The database major version is MySQL 8.0 and the minor
+        version is 26.
       POSTGRES_13: The database version is PostgreSQL 13.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
@@ -704,8 +708,10 @@ class DatabaseInstance(_messages.Message):
       POSTGRES_10: The database version is PostgreSQL 10.
       POSTGRES_12: The database version is PostgreSQL 12.
       MYSQL_8_0: The database version is MySQL 8.
-      MYSQL_8_0_18: The database version is MySQL 8.0.18.
-      MYSQL_8_0_26: The database version is MySQL 8.0.21
+      MYSQL_8_0_18: The database major version is MySQL 8.0 and the minor
+        version is 18.
+      MYSQL_8_0_26: The database major version is MySQL 8.0 and the minor
+        version is 26.
       POSTGRES_13: The database version is PostgreSQL 13.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
@@ -1169,8 +1175,10 @@ class Flag(_messages.Message):
       POSTGRES_10: The database version is PostgreSQL 10.
       POSTGRES_12: The database version is PostgreSQL 12.
       MYSQL_8_0: The database version is MySQL 8.
-      MYSQL_8_0_18: The database version is MySQL 8.0.18.
-      MYSQL_8_0_26: The database version is MySQL 8.0.21
+      MYSQL_8_0_18: The database major version is MySQL 8.0 and the minor
+        version is 18.
+      MYSQL_8_0_26: The database major version is MySQL 8.0 and the minor
+        version is 26.
       POSTGRES_13: The database version is PostgreSQL 13.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.

@@ -1929,6 +1929,39 @@ class LoggingConfig(_messages.Message):
   componentConfig = _messages.MessageField('LoggingComponentConfig', 1)
 
 
+class MaintenanceExclusionOptions(_messages.Message):
+  r"""Represents the Maintenance exclusion option.
+
+  Enums:
+    ScopeValueValuesEnum: Scope specifies the upgrade scope which upgrades are
+      blocked by the exclusion.
+
+  Fields:
+    scope: Scope specifies the upgrade scope which upgrades are blocked by the
+      exclusion.
+  """
+
+  class ScopeValueValuesEnum(_messages.Enum):
+    r"""Scope specifies the upgrade scope which upgrades are blocked by the
+    exclusion.
+
+    Values:
+      NO_UPGRADES: NO_UPGRADES excludes all upgrades, including patch upgrades
+        and minor upgrades across control planes and nodes. This is the
+        default exclusion behavior.
+      NO_MINOR_UPGRADES: NO_MINOR_UPGRADES excludes all minor upgrades for the
+        cluster, only patches are allowed.
+      NO_MINOR_OR_NODE_UPGRADES: NO_MINOR_OR_NODE_UPGRADES excludes all minor
+        upgrades for the cluster, and also exclude all node pool upgrades.
+        Only control plane patches are allowed.
+    """
+    NO_UPGRADES = 0
+    NO_MINOR_UPGRADES = 1
+    NO_MINOR_OR_NODE_UPGRADES = 2
+
+  scope = _messages.EnumField('ScopeValueValuesEnum', 1)
+
+
 class MaintenancePolicy(_messages.Message):
   r"""MaintenancePolicy defines the maintenance policy to be used for the
   cluster.
@@ -2379,6 +2412,8 @@ class NodeConfig(_messages.Message):
       otherwise, if no Service Account is specified, the "default" service
       account is used.
     shieldedInstanceConfig: Shielded Instance options.
+    spot: Spot flag for enabling Spot VM, which is a rebrand of the existing
+      preemptible flag.
     tags: The list of instance tags applied to all nodes. Tags are used to
       identify valid sources or targets for network firewalls and are
       specified by the client during cluster or node pool creation. Each tag
@@ -2480,9 +2515,10 @@ class NodeConfig(_messages.Message):
   sandboxConfig = _messages.MessageField('SandboxConfig', 21)
   serviceAccount = _messages.StringField(22)
   shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 23)
-  tags = _messages.StringField(24, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 25, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 26)
+  spot = _messages.BooleanField(24)
+  tags = _messages.StringField(25, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 26, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 27)
 
 
 class NodeConfigDefaults(_messages.Message):
@@ -3936,11 +3972,14 @@ class TimeWindow(_messages.Message):
   Fields:
     endTime: The time that the window ends. The end time should take place
       after the start time.
+    maintenanceExclusionOptions: MaintenanceExclusionOptions provides
+      maintenance exclusion related options.
     startTime: The time that the window first starts.
   """
 
   endTime = _messages.StringField(1)
-  startTime = _messages.StringField(2)
+  maintenanceExclusionOptions = _messages.MessageField('MaintenanceExclusionOptions', 2)
+  startTime = _messages.StringField(3)
 
 
 class UpdateClusterRequest(_messages.Message):

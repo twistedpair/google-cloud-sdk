@@ -18,7 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import os.path
+import os
 import uuid
 
 from apitools.base.py import encoding
@@ -99,7 +99,7 @@ def _GetBuildTimeout():
 
 
 def _SetBuildSteps(tag, no_cache, messages, substitutions, arg_config,
-                   timeout_str, buildpack):
+                   no_source, source, timeout_str, buildpack):
   """Set build steps."""
   if tag is not None:
     if (properties.VALUES.builds.check_tag.GetBool() and
@@ -135,6 +135,17 @@ def _SetBuildSteps(tag, no_cache, messages, substitutions, arg_config,
             'no-cache',
             'Cannot specify --no-cache if builds/use_kaniko property is '
             'False')
+
+      if not no_source and os.path.isdir(source):
+        found = False
+        for filename in os.listdir(source):
+          if filename == 'Dockerfile':
+            found = True
+            break
+        if not found:
+          raise c_exceptions.InvalidArgumentException(
+              'source', 'Dockerfile required when specifying --tag')
+
       build_config = messages.Build(
           images=[tag],
           steps=[
@@ -411,7 +422,8 @@ def CreateBuildConfig(tag, no_cache, messages, substitutions, arg_config,
 
   timeout_str = _GetBuildTimeout()
   build_config = _SetBuildSteps(tag, no_cache, messages, substitutions,
-                                arg_config, timeout_str, buildpack)
+                                arg_config, no_source, source, timeout_str,
+                                buildpack)
   build_config = _SetSource(build_config, messages, is_specified_source,
                             no_source, source, gcs_source_staging_dir,
                             ignore_file)
@@ -445,7 +457,8 @@ def CreateBuildConfigAlpha(tag,
   timeout_str = _GetBuildTimeout()
 
   build_config = _SetBuildSteps(tag, no_cache, messages, substitutions,
-                                arg_config, timeout_str, buildpack)
+                                arg_config, no_source, source, timeout_str,
+                                buildpack)
   build_config = _SetSource(
       build_config,
       messages,

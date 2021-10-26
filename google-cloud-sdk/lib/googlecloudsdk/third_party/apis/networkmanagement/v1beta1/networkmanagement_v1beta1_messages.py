@@ -552,6 +552,8 @@ class EndpointInfo(_messages.Message):
     destinationNetworkUri: URI of the network where this packet is sent to.
     destinationPort: Destination port. Only valid when protocol is TCP or UDP.
     protocol: IP protocol in string format, for example: "TCP", "UDP", "ICMP".
+    sourceAgentUri: URI of the source telemetry agent this packet originates
+      from.
     sourceIp: Source IP address.
     sourceNetworkUri: URI of the network where this packet originates from.
     sourcePort: Source port. Only valid when protocol is TCP or UDP.
@@ -561,9 +563,10 @@ class EndpointInfo(_messages.Message):
   destinationNetworkUri = _messages.StringField(2)
   destinationPort = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   protocol = _messages.StringField(4)
-  sourceIp = _messages.StringField(5)
-  sourceNetworkUri = _messages.StringField(6)
-  sourcePort = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  sourceAgentUri = _messages.StringField(5)
+  sourceIp = _messages.StringField(6)
+  sourceNetworkUri = _messages.StringField(7)
+  sourcePort = _messages.IntegerField(8, variant=_messages.Variant.INT32)
 
 
 class Expr(_messages.Message):

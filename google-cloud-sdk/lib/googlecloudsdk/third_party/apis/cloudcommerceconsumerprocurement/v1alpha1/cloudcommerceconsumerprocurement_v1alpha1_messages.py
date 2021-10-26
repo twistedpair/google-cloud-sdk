@@ -127,6 +127,75 @@ class CloudcommerceconsumerprocurementBillingAccountsAccountsOperationsListReque
   pageToken = _messages.StringField(4)
 
 
+class CloudcommerceconsumerprocurementBillingAccountsConsentsCheckRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementBillingAccountsConsentsCheckRequest
+  object.
+
+  Fields:
+    googleCloudCommerceConsumerProcurementV1alpha1CheckConsentRequest: A
+      GoogleCloudCommerceConsumerProcurementV1alpha1CheckConsentRequest
+      resource to be passed as the request body.
+    parent: Required. Parent of consents. Current supported format includes: -
+      billingAccounts/{billing_account}
+  """
+
+  googleCloudCommerceConsumerProcurementV1alpha1CheckConsentRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1CheckConsentRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class CloudcommerceconsumerprocurementBillingAccountsConsentsGrantRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementBillingAccountsConsentsGrantRequest
+  object.
+
+  Fields:
+    googleCloudCommerceConsumerProcurementV1alpha1GrantConsentRequest: A
+      GoogleCloudCommerceConsumerProcurementV1alpha1GrantConsentRequest
+      resource to be passed as the request body.
+    parent: Required. Parent of the consent to grant. Current supported format
+      includes: - billingAccounts/{billing_account}
+  """
+
+  googleCloudCommerceConsumerProcurementV1alpha1GrantConsentRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1GrantConsentRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class CloudcommerceconsumerprocurementBillingAccountsConsentsListRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementBillingAccountsConsentsListRequest
+  object.
+
+  Fields:
+    agreement: Leave this field unset will return consents of agreements that
+      user has access to. A valid format would be - agreements/{agreement_id}
+    pageSize: The maximum number of results returned by this request.
+    pageToken: The continuation token, which is used to page through large
+      result sets. To get the next page of results, set this parameter to the
+      value of `nextPageToken` from the previous response.
+    parent: Required. Parent of consents. Current supported format includes: -
+      billingAccounts/{billing_account}
+  """
+
+  agreement = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class CloudcommerceconsumerprocurementBillingAccountsConsentsRevokeRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementBillingAccountsConsentsRevokeRequest
+  object.
+
+  Fields:
+    googleCloudCommerceConsumerProcurementV1alpha1RevokeConsentRequest: A
+      GoogleCloudCommerceConsumerProcurementV1alpha1RevokeConsentRequest
+      resource to be passed as the request body.
+    name: Required. A consent to be reovked. Examples of valid names would be:
+      - billingAccounts/{billing_account}/consents/{consent_id}
+  """
+
+  googleCloudCommerceConsumerProcurementV1alpha1RevokeConsentRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1RevokeConsentRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class CloudcommerceconsumerprocurementBillingAccountsOrdersCancelRequest(_messages.Message):
   r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersCancelRequest
   object.
@@ -746,6 +815,79 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1CancelOrderRequest(_messages
   etag = _messages.StringField(2)
 
 
+class GoogleCloudCommerceConsumerProcurementV1alpha1CheckConsentRequest(_messages.Message):
+  r"""Request message for check consents.
+
+  Fields:
+    agreement: Required. Agreement to be checked against. A valid format would
+      be - agreements/{agreement_id}
+    languageCode: The language code is used to find the agreement document if
+      check consent doesn't pass. If this field is set, the method will
+      attempt to locate the agreement document written in that language. If
+      such document cannot be found, the request will fail. If this field is
+      not set, the method will try two strategies in the following order: 1)
+      reuse the language of document associated with the most recent consent,
+      2) use the document written in the default language, while default
+      language is set by the agreement owner. If neither strategy works, the
+      request will fail. Please follow BCP 47
+      (https://www.w3.org/International/articles/bcp47/) for the language
+      string.
+  """
+
+  agreement = _messages.StringField(1)
+  languageCode = _messages.StringField(2)
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1CheckConsentResponse(_messages.Message):
+  r"""Response for check consent.
+
+  Fields:
+    consent: The Consent for this agreement if a consent is active.
+  """
+
+  consent = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1Consent', 1)
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1Consent(_messages.Message):
+  r"""A consent resource represents the relationship between a user and an
+  agreement.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of current consent.
+
+  Fields:
+    agreementDocument: Full name of the agreement document that was agreed to
+      for this consent, ## in the format of one of: commerceoffercatalog.googl
+      eapis.com/billingAccounts/{billing_account}/offers/{offer_id}/agreements
+      /{agreement_id}/documents/{document_id}
+    createTime: Output only. The creation time of current consent.
+    name: The resource name of a consent. An examples of valid names would be
+      in the format of: -
+      "billingAccounts/{billing_account}/consents/{consent}".
+    state: Output only. State of current consent.
+    updateTime: Output only. The update time of current consent.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of current consent.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified value for the state. Sentinel value; do
+        not use.
+      ACTIVE: Represent the approved state of the consent.
+      REVOKED: Represent the revoked state of the consent.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    REVOKED = 2
+
+  agreementDocument = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  updateTime = _messages.StringField(5)
+
+
 class GoogleCloudCommerceConsumerProcurementV1alpha1CreateAccountMetadata(_messages.Message):
   r"""Message stored in the metadata field of the Operation returned by
   ConsumerProcurementService.CreateAccount.
@@ -1024,6 +1166,17 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1FreeTrialCredit(_messages.Me
   value = _messages.MessageField('GoogleTypeMoney', 5)
 
 
+class GoogleCloudCommerceConsumerProcurementV1alpha1GrantConsentRequest(_messages.Message):
+  r"""Request message to grant consent.
+
+  Fields:
+    consent: Required. A consent to be granted. Set only agreement_document
+      field.
+  """
+
+  consent = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1Consent', 1)
+
+
 class GoogleCloudCommerceConsumerProcurementV1alpha1LineItem(_messages.Message):
   r"""A single item within an order.
 
@@ -1238,6 +1391,18 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ListAccountsResponse(_messag
   """
 
   accounts = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1Account', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1ListConsentsResponse(_messages.Message):
+  r"""Response message for the list consent request.
+
+  Fields:
+    consents: Consents matching the request.
+    nextPageToken: Pagination token for large results.
+  """
+
+  consents = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1Consent', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -1719,7 +1884,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderMetadata(_messages
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest(_messages.Message):
-  r"""Request message for ConsumerProcurementService.PlaceOrder. Next Id: 12
+  r"""Request message for ConsumerProcurementService.PlaceOrder. Next Id: 13
 
   Enums:
     AutoRenewalBehaviorValueValuesEnum: Optional. Auto renewal behavior of the
@@ -1746,6 +1911,9 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest(_messages.
       least 120 minutes after the first request. The request ID must be a
       valid [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier
       #Format).
+    testConfig: Optional. Test configuration for the to-be-placed order.
+      Placing test order is only allowed if the parent is a testing billing
+      account for the service.
   """
 
   class AutoRenewalBehaviorValueValuesEnum(_messages.Enum):
@@ -1772,6 +1940,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest(_messages.
   placeQuoteOrderRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1PlaceQuoteOrderRequest', 6)
   provider = _messages.StringField(7)
   requestId = _messages.StringField(8)
+  testConfig = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1TestConfig', 9)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceProductsOrderRequest(_messages.Message):
@@ -1813,6 +1982,10 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ReplaceOrderAllocationsRespo
   orderAllocations = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation', 1, repeated=True)
 
 
+class GoogleCloudCommerceConsumerProcurementV1alpha1RevokeConsentRequest(_messages.Message):
+  r"""Request message to revoke a consent."""
+
+
 class GoogleCloudCommerceConsumerProcurementV1alpha1Subscription(_messages.Message):
   r"""Subscription information.
 
@@ -1827,6 +2000,16 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Subscription(_messages.Messa
   autoRenewalEnabled = _messages.BooleanField(1)
   endTime = _messages.StringField(2)
   startTime = _messages.StringField(3)
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1TestConfig(_messages.Message):
+  r"""The test configuration for the resource.
+
+  Fields:
+    isTesting: Whether the resource is for testing or not.
+  """
+
+  isTesting = _messages.BooleanField(1)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1UpdateOrderAllocationMetadata(_messages.Message):

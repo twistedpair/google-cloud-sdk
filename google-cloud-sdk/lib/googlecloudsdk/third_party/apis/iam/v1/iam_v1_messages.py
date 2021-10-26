@@ -740,33 +740,6 @@ class IamLocationsWorkforcePoolsSetIamPolicyRequest(_messages.Message):
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
-class IamLocationsWorkforcePoolsSubjectDeleteRequest(_messages.Message):
-  r"""A IamLocationsWorkforcePoolsSubjectDeleteRequest object.
-
-  Fields:
-    name: Required. The name of the WorkforcePoolSubject to delete. Format: `l
-      ocations/{location}/workforcePools/{workforce_pool_id}/subject/{subject}
-      `
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class IamLocationsWorkforcePoolsSubjectUndeleteRequest(_messages.Message):
-  r"""A IamLocationsWorkforcePoolsSubjectUndeleteRequest object.
-
-  Fields:
-    name: Required. The name of the WorkforcePoolSubject to undelete. Format:
-      `locations/{location}/workforcePools/{workforce_pool_id}/subject/{subjec
-      t}`
-    undeleteWorkforcePoolSubjectRequest: A UndeleteWorkforcePoolSubjectRequest
-      resource to be passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  undeleteWorkforcePoolSubjectRequest = _messages.MessageField('UndeleteWorkforcePoolSubjectRequest', 2)
-
-
 class IamLocationsWorkforcePoolsTestIamPermissionsRequest(_messages.Message):
   r"""A IamLocationsWorkforcePoolsTestIamPermissionsRequest object.
 
@@ -3085,10 +3058,6 @@ class UndeleteWorkforcePoolProviderRequest(_messages.Message):
 
 class UndeleteWorkforcePoolRequest(_messages.Message):
   r"""Request message for UndeleteWorkforcePool."""
-
-
-class UndeleteWorkforcePoolSubjectRequest(_messages.Message):
-  r"""Request message for UndeleteWorkforcePoolSubject."""
 
 
 class UndeleteWorkloadIdentityPoolProviderRequest(_messages.Message):

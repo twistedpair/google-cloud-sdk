@@ -41,6 +41,7 @@ class GkehubV1alpha(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.projects_locations_features = self.ProjectsLocationsFeaturesService(self)
     self.projects_locations_fleet = self.ProjectsLocationsFleetService(self)
+    self.projects_locations_fleetNamespaces = self.ProjectsLocationsFleetNamespacesService(self)
     self.projects_locations_fleets = self.ProjectsLocationsFleetsService(self)
     self.projects_locations_memberships = self.ProjectsLocationsMembershipsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
@@ -306,6 +307,97 @@ class GkehubV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='GkehubProjectsLocationsFleetSearchFleetsRequest',
         response_type_name='SearchFleetsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsFleetNamespacesService(base_api.BaseApiService):
+    """Service class for the projects_locations_fleetNamespaces resource."""
+
+    _NAME = 'projects_locations_fleetNamespaces'
+
+    def __init__(self, client):
+      super(GkehubV1alpha.ProjectsLocationsFleetNamespacesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a fleet namespace.
+
+      Args:
+        request: (GkehubProjectsLocationsFleetNamespacesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/fleetNamespaces',
+        http_method='POST',
+        method_id='gkehub.projects.locations.fleetNamespaces.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['fleetNamespaceId'],
+        relative_path='v1alpha/{+parent}/fleetNamespaces',
+        request_field='fleetNamespace',
+        request_type_name='GkehubProjectsLocationsFleetNamespacesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a fleet namespace.
+
+      Args:
+        request: (GkehubProjectsLocationsFleetNamespacesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/fleetNamespaces/{fleetNamespacesId}',
+        http_method='DELETE',
+        method_id='gkehub.projects.locations.fleetNamespaces.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsFleetNamespacesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists fleet namespaces.
+
+      Args:
+        request: (GkehubProjectsLocationsFleetNamespacesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListFleetNamespacesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/fleetNamespaces',
+        http_method='GET',
+        method_id='gkehub.projects.locations.fleetNamespaces.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/fleetNamespaces',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsFleetNamespacesListRequest',
+        response_type_name='ListFleetNamespacesResponse',
         supports_download=False,
     )
 
