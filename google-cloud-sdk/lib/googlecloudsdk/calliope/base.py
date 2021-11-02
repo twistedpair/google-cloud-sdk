@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 
 import abc
 import collections
+import contextlib
 from functools import wraps  # pylint:disable=g-importing-member
 import itertools
 import re
@@ -957,25 +958,93 @@ def ChoiceArgument(name_or_flag, choices, help_str=None, required=False,
                   metavar=metavar, dest=dest, default=default, hidden=hidden)
 
 
+@contextlib.contextmanager
+def WithLegacyQuota():
+  """Context where x-goog-user-project header is not populated.
+
+  In this context, user's setting of quota_project will be ignored, including
+  settings in:
+  - --billing-project
+  - configuration of billing/quota_project
+  - CLOUDSDK_BILLING_QUOTA_PROJECT
+  quota_project settings by the command group's Filter functions will also be
+  ignored. Use this context when you don't want to send the x-goog-user-project
+  header.
+
+  Yields:
+    yield to the surrounded code block.
+  """
+  properties.VALUES.PushInvocationValues()
+  properties.VALUES.SetInvocationValue(properties.VALUES.billing.quota_project,
+                                       properties.VALUES.billing.LEGACY, None)
+  try:
+    yield
+  finally:
+    properties.VALUES.PopInvocationValues()
+
+
+def _SetUserProjectQuotaFallback(value):
+  # We need to clear it first because this function may be called multiple times
+  # when a parent command group call it in its Filter function and later
+  # its child command group call it again to set it to a different value.
+  properties.VALUES.billing.quota_project.ClearCallback()
+  properties.VALUES.billing.quota_project.AddCallback(lambda: value)
+
+
 def DisableUserProjectQuota():
-  """Disable the quota header if the user hasn't manually specified it."""
-  if not properties.VALUES.billing.quota_project.IsExplicitlySet():
-    properties.VALUES.billing.quota_project.Set(
-        properties.VALUES.billing.LEGACY)
+  """Disable the quota project header.
+
+   This function will set the value for properties.VALUES.billing.quota_project
+   which is used to decide if we want to send the quota project header
+   x-goog-user-project and what value to put in the header. Gcloud's property
+   has multiple layers of fallbacks when resolving its value. Specifically for
+   quota_project property:
+
+   L1: invocation stack populated by parsing --billing-project.
+   L2: its env variable CLOUDSDK_BILLING_QUOTA_PROJECT
+   L3: user configuration or installation configuration from gcloud config set.
+   L4: value provided by its fallbacks if exists.
+   L5: default value
+
+  This function sets the value at L4 (fallbacks). It should be used in command
+  group's Filter function so that the command group will work in LEGACY mode
+  (DO NOT send the quota project header). It sets at L4 because:
+
+  1. L1-L3 are user settings we want to honor. This func
+     cannot operate in L1-L3 because it will mix with user settings.
+     Whether the setting is from user is an important information when we decide
+     how override works.
+  2. L4 can override the default value (L5).
+  """
+  _SetUserProjectQuotaFallback(properties.VALUES.billing.LEGACY)
 
 
 def EnableUserProjectQuota():
-  """Enable the quota header for current project."""
-  if not properties.VALUES.billing.quota_project.IsExplicitlySet():
-    properties.VALUES.billing.quota_project.Set(
-        properties.VALUES.billing.CURRENT_PROJECT)
+  """Enable the quota project header for current project.
+
+  The project in core/project will be used to populate the quota project header.
+  It should be used in command group's Filter function so that commands in the
+  group will send the current project (core/project) in the quota project
+  header.
+
+  See the docstring of DisableUserProjectQuota for more information.
+  """
+  _SetUserProjectQuotaFallback(properties.VALUES.billing.CURRENT_PROJECT)
 
 
 def EnableUserProjectQuotaWithFallback():
-  """Tries the current project and fall back to the legacy mode."""
-  if not properties.VALUES.billing.quota_project.IsExplicitlySet():
-    properties.VALUES.billing.quota_project.Set(
-        properties.VALUES.billing.CURRENT_PROJECT_WITH_FALLBACK)
+  """Tries the current project and fall back to the legacy mode.
+
+  The project in core/project will be used to populate the quota project header.
+  It should be used in command group's Filter function so that commands in the
+  group will send the current project (core/project) in the quota project
+  header. If the user does not have the permission to use the project,
+  we will retry the request after removing the quota project header.
+
+  See the docstring of DisableUserProjectQuota for more information.
+  """
+  _SetUserProjectQuotaFallback(
+      properties.VALUES.billing.CURRENT_PROJECT_WITH_FALLBACK)
 
 
 def UserProjectQuotaWithFallbackEnabled():

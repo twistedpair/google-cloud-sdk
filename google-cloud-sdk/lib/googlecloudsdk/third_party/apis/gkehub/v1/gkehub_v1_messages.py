@@ -13,6 +13,21 @@ from apitools.base.py import extra_types
 package = 'gkehub'
 
 
+class AppDevExperienceFeatureSpec(_messages.Message):
+  r"""Spec for App Dev Experience Feature."""
+
+
+class AppDevExperienceFeatureState(_messages.Message):
+  r"""State for App Dev Exp Feature.
+
+  Fields:
+    networkingInstallSucceeded: Status of subcomponent that detects configured
+      Service Mesh resources.
+  """
+
+  networkingInstallSucceeded = _messages.MessageField('Status', 1)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -170,24 +185,28 @@ class CommonFeatureSpec(_messages.Message):
   r"""CommonFeatureSpec contains Hub-wide configuration information
 
   Fields:
+    appdevexperience: Appdevexperience specific spec.
     helloworld: Hello World-specific spec.
     multiclusteringress: Multicluster Ingress-specific spec.
   """
 
-  helloworld = _messages.MessageField('HelloWorldFeatureSpec', 1)
-  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 2)
+  appdevexperience = _messages.MessageField('AppDevExperienceFeatureSpec', 1)
+  helloworld = _messages.MessageField('HelloWorldFeatureSpec', 2)
+  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 3)
 
 
 class CommonFeatureState(_messages.Message):
   r"""CommonFeatureState contains Hub-wide Feature status information.
 
   Fields:
+    appdevexperience: Appdevexperience specific state.
     helloworld: Hello World-specific state.
     state: Output only. The "running state" of the Feature in this Hub.
   """
 
-  helloworld = _messages.MessageField('HelloWorldFeatureState', 1)
-  state = _messages.MessageField('FeatureState', 2)
+  appdevexperience = _messages.MessageField('AppDevExperienceFeatureState', 1)
+  helloworld = _messages.MessageField('HelloWorldFeatureState', 2)
+  state = _messages.MessageField('FeatureState', 3)
 
 
 class ConfigManagementConfigSync(_messages.Message):
@@ -2110,14 +2129,16 @@ class MembershipFeatureState(_messages.Message):
   Membership.
 
   Fields:
+    appdevexperience: Appdevexperience specific state.
     configmanagement: Config Management-specific state.
     helloworld: Hello World-specific state.
     state: The high-level state of this Feature for a single membership.
   """
 
-  configmanagement = _messages.MessageField('ConfigManagementMembershipState', 1)
-  helloworld = _messages.MessageField('HelloWorldMembershipState', 2)
-  state = _messages.MessageField('FeatureState', 3)
+  appdevexperience = _messages.MessageField('AppDevExperienceFeatureState', 1)
+  configmanagement = _messages.MessageField('ConfigManagementMembershipState', 2)
+  helloworld = _messages.MessageField('HelloWorldMembershipState', 3)
+  state = _messages.MessageField('FeatureState', 4)
 
 
 class MembershipState(_messages.Message):
@@ -2527,6 +2548,41 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class Status(_messages.Message):
+  r"""Status specifies state for the subcomponent.
+
+  Enums:
+    CodeValueValuesEnum: Code specifies AppDevExperienceFeature's subcomponent
+      ready state.
+
+  Fields:
+    code: Code specifies AppDevExperienceFeature's subcomponent ready state.
+    description: Description is populated if Code is Failed, explaining why it
+      has failed.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Code specifies AppDevExperienceFeature's subcomponent ready state.
+
+    Values:
+      CODE_UNSPECIFIED: Not set.
+      OK: AppDevExperienceFeature's specified subcomponent is ready.
+      FAILED: AppDevExperienceFeature's specified subcomponent ready state is
+        false. This means AppDevExperienceFeature has encountered an issue
+        that blocks all, or a portion, of its normal operation. See the
+        `description` for more details.
+      UNKNOWN: AppDevExperienceFeature's specified subcomponent has a pending
+        or unknown state.
+    """
+    CODE_UNSPECIFIED = 0
+    OK = 1
+    FAILED = 2
+    UNKNOWN = 3
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  description = _messages.StringField(2)
 
 
 class TestIamPermissionsRequest(_messages.Message):

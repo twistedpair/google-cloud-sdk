@@ -477,7 +477,7 @@ def MakeRequestsAndGetStatusPerInstanceFromOperation(client, requests,
                                      no_followup=True,
                                      always_return_operation=True)
     # There should be only one operation in the list.
-    [operation] = operations
+    [operation] = operations or [None]
     request_results.append((request, operation, errors))
     errors_to_collect.extend(errors)
 

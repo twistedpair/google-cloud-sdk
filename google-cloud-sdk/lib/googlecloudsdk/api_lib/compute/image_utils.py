@@ -338,6 +338,22 @@ def WarnAlias(alias):
   log.warning(msg)
 
 
+def AddArchitectureArg(parser, messages):
+  """Add the image architecture arg."""
+  architecture_enum_type = messages.Image.ArchitectureValueValuesEnum
+  excluded_enums = [
+      'ARCHITECTURE_UNSPECIFIED',
+  ]
+  architecture_choices = sorted(
+      [e for e in architecture_enum_type.names() if e not in excluded_enums])
+  parser.add_argument(
+      '--architecture',
+      choices=architecture_choices,
+      help=(
+          'Storage resources can be used to create boot disks compatible with '
+          'different machine architectures.'))
+
+
 def AddGuestOsFeaturesArg(parser, messages):
   """Add the guest-os-features arg."""
   features_enum_type = messages.GuestOsFeature.TypeValueValuesEnum

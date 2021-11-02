@@ -155,22 +155,16 @@ def _ValidateRegionalArgs(args, include_l7_rxlb):
 def GetRegionalTarget(client,
                       resources,
                       args,
-                      forwarding_rule_ref=None,
+                      forwarding_rule_ref,
                       include_l7_internal_load_balancing=False,
                       include_l7_rxlb=False,
                       include_target_service_attachment=False):
   """Return the forwarding target for a regionally scoped request."""
   _ValidateRegionalArgs(args, include_l7_rxlb=include_l7_rxlb)
-  if forwarding_rule_ref:
-    region_arg = forwarding_rule_ref.region
-    project_arg = forwarding_rule_ref.project
-  else:
-    region_arg = args.region
-    project_arg = None
-
+  region_arg = forwarding_rule_ref.region
+  project_arg = forwarding_rule_ref.project
   if args.target_pool:
-    if not args.target_pool_region and region_arg:
-      args.target_pool_region = region_arg
+    args.target_pool_region = args.target_pool_region or region_arg
     target_ref = flags.TARGET_POOL_ARG.ResolveAsResource(
         args,
         resources,
@@ -185,13 +179,11 @@ def GetRegionalTarget(client,
             properties.VALUES.core.project.GetOrFail()))
     target_region = utils.ZoneNameToRegionName(target_ref.zone)
   elif getattr(args, 'target_vpn_gateway', None):
-    if not args.target_vpn_gateway_region and region_arg:
-      args.target_vpn_gateway_region = region_arg
+    args.target_vpn_gateway_region = args.target_vpn_gateway_region or region_arg
     target_ref = flags.TARGET_VPN_GATEWAY_ARG.ResolveAsResource(args, resources)
     target_region = target_ref.region
   elif getattr(args, 'backend_service', None):
-    if not args.backend_service_region and region_arg:
-      args.backend_service_region = region_arg
+    args.backend_service_region = args.backend_service_region or region_arg
     target_ref = flags.BACKEND_SERVICE_ARG.ResolveAsResource(args, resources)
     target_region = target_ref.region
   elif args.target_http_proxy:
@@ -222,6 +214,15 @@ def GetRegionalTarget(client,
       raise exceptions.ArgumentError(
           'The region of the provided service attachment must equal the '
           '[--region] of the forwarding rule.')
+  else:
+    raise exceptions.ArgumentError("""
+For a regional forwarding rule, exactly one of  ``--target-instance``,
+``--target-pool``, ``--target-http-proxy``, ``--target-https-proxy``,
+``--target-grpc-proxy``, ``--target-ssl-proxy``, ``--target-tcp-proxy``,
+{} ``--target-vpn-gateway`` or ``--backend-service`` must be specified.
+""".format(
+        '``--target-service-attachment``,' if include_target_service_attachment
+    else None))
 
   return target_ref, target_region
 

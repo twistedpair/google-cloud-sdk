@@ -25,6 +25,7 @@ import getpass
 import os
 import re
 import string
+import subprocess
 import tempfile
 import textwrap
 
@@ -45,6 +46,7 @@ import six
 
 
 PER_USER_SSH_CONFIG_FILE = os.path.join('~', '.ssh', 'config')
+SECURITY_KEY_DIR = os.path.join('~', '.ssh', 'google_compute_engine_sk')
 OSLOGIN_ENABLE_METADATA_KEY = 'enable-oslogin'
 OSLOGIN_ENABLE_SK_METADATA_KEY = 'enable-oslogin-sk'
 
@@ -549,6 +551,47 @@ class Keys(object):
           log.debug('Failed to create sentinel file: [{}]'.format(e))
 
 
+def WriteSecurityKeys(oslogin_state):
+  """Writes temporary files from a list of key data.
+
+  Args:
+    oslogin_state: An OsloginState object.
+
+  Returns:
+    List of file paths for security keys or None if security keys are not
+    supported.
+  """
+  # PuTTY does not support security keys, so don't attempt to write any keys.
+  if oslogin_state.environment == 'putty':
+    return None
+
+  security_keys = oslogin_state.security_keys
+
+  # If there are no security keys, just return.
+  if not security_keys:
+    return None
+
+  key_dir = os.path.realpath(files.ExpandHomeDir(SECURITY_KEY_DIR))
+
+  files.MakeDir(key_dir, mode=0o700)
+  key_files = []
+
+  # Remove existing keys
+  for filename in os.listdir(key_dir):
+    if filename.startswith('tmp_sk'):
+      file_path = os.path.join(key_dir, filename)
+      os.remove(file_path)
+
+  # Write new keys
+  for num, key in enumerate(security_keys):
+    filename = 'tmp_sk_{0}'.format(num)
+    file_path = os.path.join(key_dir, filename)
+    files.WriteFileContents(file_path, key, private=True)
+    key_files.append(file_path)
+
+  return key_files
+
+
 class KnownHosts(object):
   """Represents known hosts file, supports read, write and basic key management.
 
@@ -757,6 +800,48 @@ def FeatureEnabledInMetadata(
   return feature_enabled
 
 
+def CheckSshSecurityKeySupport():
+  """Check the local SSH installation for security key support.
+
+  Runs 'ssh -Q key' and looks for keys starting with 'sk-'.
+  PuTTY on Windows will return False.
+
+  Returns:
+    True if SSH supports security keys, False if not, and None if support
+    cannot be determined.
+  """
+  env = Environment.Current()
+
+  # Security Keys are not currently supported in PuTTy.
+  if env.suite == Suite.PUTTY:
+    return False
+
+  ssh_flags = ['-Q', 'key']
+
+  cmd = SSHCommand(None, extra_flags=ssh_flags, tty=False)
+  cmd_list = cmd.Build()
+  log.debug(cmd_list)
+
+  try:
+    output = six.ensure_str(subprocess.check_output(
+        cmd_list, stderr=subprocess.STDOUT))
+    log.debug(output)
+  except subprocess.CalledProcessError:
+    log.debug('Cannot determine SSH supported key types using command: {0}'
+              .format(' '.join(cmd_list)))
+    return None
+
+  keys_supported = output.splitlines()
+  log.debug('Supported SSH key types: {0}'.format(keys_supported))
+
+  for key in keys_supported:
+    if key.startswith('sk-'):
+      return True
+
+  # Keys starting with 'sk-' not found.
+  return False
+
+
 class OsloginState(object):
   """Class for holding OS Login State.
 
@@ -765,15 +850,21 @@ class OsloginState(object):
     security_keys_enabled: bool, True if Security Keys should be used for SSH
       authentication.
     user: str, The username that SSH should use for connecting.
+    ssh_security_key_support: bool, True if the SSH client supports security
+      keys.
+    environment: str, A hint about the current enviornment. ('ssh' or 'putty')
     security_keys: list, A list of 'private' keys associated with the security
       keys configured in the user's account.
   """
 
   def __init__(self, oslogin_enabled=False, security_keys_enabled=False,
-               user=None, security_keys=None):
+               user=None, ssh_security_key_support=None, environment=None,
+               security_keys=None):
     self.oslogin_enabled = oslogin_enabled
     self.security_keys_enabled = security_keys_enabled
     self.user = user
+    self.ssh_security_key_support = ssh_security_key_support
+    self.environment = environment
     if security_keys is None:
       self.security_keys = []
     else:
@@ -784,19 +875,24 @@ class OsloginState(object):
         OS Login Enabled: {0}
         Security Keys Enabled: {1}
         Username: {2}
+        SSH Security Key Support: {3}
+        Environment: {4}
         Security Keys:
-        {3}
+        {5}
         """).format(self.oslogin_enabled,
                     self.security_keys_enabled,
                     self.user,
+                    self.ssh_security_key_support,
+                    self.environment,
                     '\n'.join(self.security_keys))
 
   def __repr__(self):
     return ('OsloginState(oslogin_enabled={0}, security_keys_enabled={1}, '
-            'user={2}, security_keys={3})'.format(self.oslogin_enabled,
-                                                  self.security_keys_enabled,
-                                                  self.user,
-                                                  self.security_keys))
+            'user={2}, ssh_security_key_support={3} environment={4}, '
+            'security_keys={5})'
+            .format(self.oslogin_enabled, self.security_keys_enabled,
+                    self.user, self.ssh_security_key_support, self.environment,
+                    self.security_keys))
 
 
 def GetOsloginState(instance, project, requested_user, public_key,
@@ -848,6 +944,14 @@ def GetOsloginState(instance, project, requested_user, public_key,
       instance, project, OSLOGIN_ENABLE_SK_METADATA_KEY,
       instance_override=instance_enable_security_keys)
 
+  env = Environment.Current()
+  if env.suite == Suite.PUTTY:
+    oslogin_state.environment = 'putty'
+  else:
+    oslogin_state.environment = 'ssh'
+
+  if oslogin_state.security_keys_enabled:
+    oslogin_state.ssh_security_key_support = CheckSshSecurityKeySupport()
   oslogin = oslogin_client.OsloginClient(release_track)
   user_email = (properties.VALUES.auth.impersonate_service_account.Get()
                 or properties.VALUES.core.account.Get())
@@ -1251,7 +1355,7 @@ class SSHCommand(object):
 
   def __init__(self, remote, port=None, identity_file=None,
                options=None, extra_flags=None, remote_command=None, tty=None,
-               iap_tunnel_args=None, remainder=None):
+               iap_tunnel_args=None, remainder=None, identity_list=None):
     """Construct a suite independent SSH command.
 
     Note that `extra_flags` and `remote_command` arguments are lists of strings:
@@ -1277,10 +1381,13 @@ class SSHCommand(object):
         OpenSSH, this can be flags followed by a remote command. Cannot be
         combined with `remote_command`. Use `extra_flags` and `remote_command`
         instead.
+      identity_list: list, A list of paths to private key files. Overrides the
+        identity_file argument, and sets multiple `['-i']` flags.
     """
     self.remote = remote
     self.port = port
     self.identity_file = identity_file
+    self.identity_list = identity_list
     self.options = options or {}
     self.extra_flags = extra_flags or []
     self.remote_command = remote_command or []
@@ -1312,7 +1419,10 @@ class SSHCommand(object):
       port_flag = '-P' if env.suite is Suite.PUTTY else '-p'
       args.extend([port_flag, self.port])
 
-    if self.identity_file:
+    if self.identity_list:
+      for identity_file in self.identity_list:
+        args.extend(['-i', identity_file])
+    elif self.identity_file:
       identity_file = self.identity_file
       if env.suite is Suite.PUTTY and not identity_file.endswith('.ppk'):
         identity_file += '.ppk'
@@ -1325,7 +1435,8 @@ class SSHCommand(object):
 
     args.extend(_BuildIapTunnelProxyCommandArgs(self.iap_tunnel_args, env))
     args.extend(self.extra_flags)
-    args.append(self.remote.ToArg())
+    if self.remote:
+      args.append(self.remote.ToArg())
 
     # TODO(b/38179637): Remove when compute have separated flags from
     # positionals.
@@ -1431,7 +1542,7 @@ class SCPCommand(object):
 
   def __init__(self, sources, destination, recursive=False, compress=False,
                port=None, identity_file=None, options=None, extra_flags=None,
-               iap_tunnel_args=None):
+               iap_tunnel_args=None, identity_list=None):
     """Construct a suite independent SCP command.
 
     Args:
@@ -1449,6 +1560,8 @@ class SCPCommand(object):
         style flags `['-b']` and flags with values `['-k', 'v']` are accepted.
       iap_tunnel_args: iap_tunnel.SshTunnelArgs or None, options about IAP
         Tunnel.
+      identity_list: list, A list of paths to private key files. Overrides the
+        identity_file argument, and sets multiple `['-i']` flags.
     """
     self.sources = [sources] if isinstance(sources, FileReference) else sources
     self.destination = destination
@@ -1456,6 +1569,7 @@ class SCPCommand(object):
     self.compress = compress
     self.port = port
     self.identity_file = identity_file
+    self.identity_list = identity_list
     self.options = options or {}
     self.extra_flags = extra_flags or []
     self.iap_tunnel_args = iap_tunnel_args
@@ -1541,7 +1655,10 @@ class SCPCommand(object):
     if self.port:
       args.extend(['-P', self.port])
 
-    if self.identity_file:
+    if self.identity_list:
+      for identity_file in self.identity_list:
+        args.extend(['-i', identity_file])
+    elif self.identity_file:
       identity_file = self.identity_file
       if env.suite is Suite.PUTTY and not identity_file.endswith('.ppk'):
         identity_file += '.ppk'

@@ -1867,6 +1867,8 @@ class HttpRouteRedirect(_messages.Message):
       supplied together with prefix_redirect. Supply one alone or neither. If
       neither is supplied, the path of the original request will be used for
       the redirect.
+    portRedirect: The port that will be used in the redirected request instead
+      of the one that was supplied in the request.
     prefixRewrite: Indicates that during redirection, the matched prefix (or
       path) should be swapped with this value. This option allows URLs be
       dynamically created based on the request.
@@ -1900,9 +1902,10 @@ class HttpRouteRedirect(_messages.Message):
   hostRedirect = _messages.StringField(1)
   httpsRedirect = _messages.BooleanField(2)
   pathRedirect = _messages.StringField(3)
-  prefixRewrite = _messages.StringField(4)
-  responseCode = _messages.EnumField('ResponseCodeValueValuesEnum', 5)
-  stripQuery = _messages.BooleanField(6)
+  portRedirect = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  prefixRewrite = _messages.StringField(5)
+  responseCode = _messages.EnumField('ResponseCodeValueValuesEnum', 6)
+  stripQuery = _messages.BooleanField(7)
 
 
 class HttpRouteRequestMirrorPolicy(_messages.Message):

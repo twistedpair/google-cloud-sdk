@@ -289,7 +289,7 @@
           "$ref": "NetworkConfig"
         },
         "managementCluster": {
-          "description": "Input only. The management cluster for this private cloud. This field is required during creation of the private cloud to provide details for the default cluster. The following fields can't be changed after private cloud creation: `ManagementCluster.clusterId`, `ManagementCluster.nodeTypeId`, `ManagementCluster.nodeCustomVirtualCpuCount`.",
+          "description": "Input only. The management cluster for this private cloud. This field is required during creation of the private cloud to provide details for the default cluster. The following fields can't be changed after private cloud creation: `ManagementCluster.clusterId`, `ManagementCluster.nodeTypeId`.",
           "$ref": "ManagementCluster"
         },
         "description": {
@@ -314,10 +314,6 @@
         "uid": {
           "description": "Output only. System-generated unique identifier for the resource.",
           "readOnly": true,
-          "type": "string"
-        },
-        "etag": {
-          "description": "Checksum that may be sent on update, delete, and undelete requests to ensure that the user-provided value is up to date before the server processes a request. The server computes checksums based on the value of other fields in the request.",
           "type": "string"
         }
       }
@@ -352,7 +348,7 @@
       "type": "object",
       "properties": {
         "clusterId": {
-          "description": "Required. The user-provided identifier of the new `Cluster`. The identifier must meet the following requirements: * Only contains 1-63 alphanumeric characters and hyphens * Begins with an alphabetical character * Ends with a non-hyphen character * Not formatted as a UUID * Complies with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034){: .external} (section 3.5) @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))",
+          "description": "Required. The user-provided identifier of the new `Cluster`. The identifier must meet the following requirements: * Only contains 1-63 alphanumeric characters and hyphens * Begins with an alphabetical character * Ends with a non-hyphen character * Not formatted as a UUID * Complies with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034) (section 3.5)",
           "type": "string"
         },
         "nodeTypeId": {
@@ -387,6 +383,21 @@
           "description": "Version of the appliance.",
           "type": "string"
         },
+        "state": {
+          "description": "Output only. The state of the appliance.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified appliance state. This is the default value.",
+            "The appliance is operational and can be used.",
+            "The appliance is being deployed."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "CREATING"
+          ]
+        },
         "fqdn": {
           "description": "Fully qualified domain name of the appliance.",
           "type": "string"
@@ -413,6 +424,21 @@
         "version": {
           "description": "Version of the appliance.",
           "type": "string"
+        },
+        "state": {
+          "description": "Output only. The state of the appliance.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified appliance state. This is the default value.",
+            "The appliance is operational and can be used.",
+            "The appliance is being deployed."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "CREATING"
+          ]
         },
         "fqdn": {
           "description": "Fully qualified domain name of the appliance.",
@@ -441,6 +467,21 @@
           "description": "Version of the appliance.",
           "type": "string"
         },
+        "state": {
+          "description": "Output only. The state of the appliance.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified appliance state. This is the default value.",
+            "The appliance is operational and can be used.",
+            "The appliance is being deployed."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "CREATING"
+          ]
+        },
         "fqdn": {
           "description": "Fully qualified domain name of the appliance.",
           "type": "string"
@@ -454,10 +495,6 @@
       "properties": {
         "requestId": {
           "description": "Optional. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-          "type": "string"
-        },
-        "etag": {
-          "description": "Optional. Checksum used to ensure that the user-provided value is up to date before the server processes the request. The server compares provided checksum with the current checksum of the resource. If the user-provided value is out of date, this request returns an `ABORTED` error.",
           "type": "string"
         }
       }
@@ -554,10 +591,6 @@
         "uid": {
           "description": "Output only. System-generated unique identifier for the resource.",
           "readOnly": true,
-          "type": "string"
-        },
-        "etag": {
-          "description": "Optional. Checksum that may be sent on update and delete requests to ensure that the user-provided value is up to date before the server processes a request. The server computes checksums based on the value of other fields in the request.",
           "type": "string"
         }
       }
@@ -706,10 +739,6 @@
           "description": "Output only. System-generated unique identifier for the resource.",
           "readOnly": true,
           "type": "string"
-        },
-        "etag": {
-          "description": "Checksum that may be sent on update and delete requests to ensure that the user-provided value is up to date before the server processes a request. The server computes checksums based on the value of other fields in the request.",
-          "type": "string"
         }
       }
     },
@@ -786,10 +815,6 @@
         "uid": {
           "description": "Output only. System-generated unique identifier for the resource.",
           "readOnly": true,
-          "type": "string"
-        },
-        "etag": {
-          "description": "Checksum that may be sent on update and delete requests to ensure that the user-provided value is up to date before the server processes a request. The server computes checksums based on the value of other fields in the request.",
           "type": "string"
         }
       }
@@ -1368,7 +1393,7 @@
                       "type": "string"
                     },
                     "privateCloudId": {
-                      "description": "Required. The user-provided identifier of the private cloud to be created. This identifier must be unique among each `PrivateCloud` within the parent and becomes the final token in the name URI. The identifier must meet the following requirements: * Only contains 1-63 alphanumeric characters and hyphens * Begins with an alphabetical character * Ends with a non-hyphen character * Not formatted as a UUID * Complies with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034){: .external} (section 3.5) @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))",
+                      "description": "Required. The user-provided identifier of the private cloud to be created. This identifier must be unique among each `PrivateCloud` within the parent and becomes the final token in the name URI. The identifier must meet the following requirements: * Only contains 1-63 alphanumeric characters and hyphens * Begins with an alphabetical character * Ends with a non-hyphen character * Not formatted as a UUID * Complies with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034) (section 3.5)",
                       "location": "query",
                       "type": "string"
                     },
@@ -1464,11 +1489,6 @@
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
-                    },
-                    "etag": {
-                      "description": "Optional. Checksum used to ensure that the user-provided value is up to date before the server processes the request. The server compares the provided checksum with the current checksum of the resource. If the user-provided value is out of date, then this request returns an `ABORTED` error.",
-                      "location": "query",
-                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -1733,7 +1753,7 @@
                           "type": "string"
                         },
                         "filter": {
-                          "description": "A filter expression that matches resources returned in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of clusters, you can exclude the ones named `example-cluster` by specifying `name != \"example-cluster\"`. You can also filter nested fields. For example, you could specify `autoscale_settings.cooldownPeriodMinutes = 2` to include clusters only if they have given a cooldown period in autoscale policy. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (name = \"example-cluster\") (nodeCount = \"3\") ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (name = \"example-cluster-1\") AND (createTime > \"2021-04-12T08:15:10.40Z\") OR (name = \"example-cluster-2\") ```",
+                          "description": " To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (name = \"example-cluster\") (nodeCount = \"3\") ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (name = \"example-cluster-1\") AND (createTime > \"2021-04-12T08:15:10.40Z\") OR (name = \"example-cluster-2\") ```",
                           "location": "query",
                           "type": "string"
                         },
@@ -1793,7 +1813,7 @@
                           "type": "string"
                         },
                         "clusterId": {
-                          "description": "Required. The user-provided identifier of the new `Cluster`. This identifier must be unique among clusters within the parent and becomes the final token in the name URI. The identifier must meet the following requirements: * Only contains 1-63 alphanumeric characters and hyphens * Begins with an alphabetical character * Ends with a non-hyphen character * Not formatted as a UUID * Complies with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034){: .external} (section 3.5) @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))",
+                          "description": "Required. The user-provided identifier of the new `Cluster`. This identifier must be unique among clusters within the parent and becomes the final token in the name URI. The identifier must meet the following requirements: * Only contains 1-63 alphanumeric characters and hyphens * Begins with an alphabetical character * Ends with a non-hyphen character * Not formatted as a UUID * Complies with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034) (section 3.5)",
                           "location": "query",
                           "type": "string"
                         },
@@ -1881,11 +1901,6 @@
                         },
                         "requestId": {
                           "description": "Optional. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "etag": {
-                          "description": "Optional. Checksum used to ensure that the user-provided value is up to date before the server processes the request. The server compares provided checksum with the current checksum of the resource. If the user-provided value is out of date, this request returns an `ABORTED` error.",
                           "location": "query",
                           "type": "string"
                         }
@@ -2006,7 +2021,7 @@
                           "type": "string"
                         },
                         "hcxActivationKeyId": {
-                          "description": "Required. The user-provided identifier of the `HcxActivationKey` to be created. This identifier must be unique among `HcxActivationKey` resources within the parent and becomes the final token in the name URI. The identifier must meet the following requirements: * Only contains 1-63 alphanumeric characters and hyphens * Begins with an alphabetical character * Ends with a non-hyphen character * Not formatted as a UUID * Complies with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034){: .external} (section 3.5) @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))",
+                          "description": "Required. The user-provided identifier of the `HcxActivationKey` to be created. This identifier must be unique among `HcxActivationKey` resources within the parent and becomes the final token in the name URI. The identifier must meet the following requirements: * Only contains 1-63 alphanumeric characters and hyphens * Begins with an alphabetical character * Ends with a non-hyphen character * Not formatted as a UUID * Complies with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034) (section 3.5)",
                           "location": "query",
                           "type": "string"
                         },
@@ -2426,7 +2441,7 @@
                       "type": "string"
                     },
                     "networkPolicyId": {
-                      "description": "Required. The user-provided identifier of the network policy to be created. This identifier must be unique within parent `projects\/{my-project}\/locations\/{us-central1}\/networkPolicies` and becomes the final token in the name URI. The identifier must meet the following requirements: * Only contains 1-63 alphanumeric characters and hyphens * Begins with an alphabetical character * Ends with a non-hyphen character * Not formatted as a UUID * Complies with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034){: .external} (section 3.5) @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))",
+                      "description": "Required. The user-provided identifier of the network policy to be created. This identifier must be unique within parent `projects\/{my-project}\/locations\/{us-central1}\/networkPolicies` and becomes the final token in the name URI. The identifier must meet the following requirements: * Only contains 1-63 alphanumeric characters and hyphens * Begins with an alphabetical character * Ends with a non-hyphen character * Not formatted as a UUID * Complies with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034) (section 3.5)",
                       "location": "query",
                       "type": "string"
                     },
@@ -2504,11 +2519,6 @@
                     },
                     "requestId": {
                       "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server guarantees that a request doesn't result in creation of duplicate commitments for at least 60 minutes. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "etag": {
-                      "description": "Optional. Checksum used to ensure that the user-provided value is up to date before the server processes the request. The server compares provided checksum with the current checksum of the resource. If the user-provided value is out of date, this request returns an `ABORTED` error.",
                       "location": "query",
                       "type": "string"
                     }

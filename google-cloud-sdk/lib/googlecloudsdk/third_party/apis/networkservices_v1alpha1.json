@@ -2293,6 +2293,11 @@
         "stripQuery": {
           "description": "if set to true, any accompanying query portion of the original URL is removed prior to redirecting the request. If set to false, the query portion of the original URL is retained. The default is set to false.",
           "type": "boolean"
+        },
+        "portRedirect": {
+          "description": "The port that will be used in the redirected request instead of the one that was supplied in the request.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

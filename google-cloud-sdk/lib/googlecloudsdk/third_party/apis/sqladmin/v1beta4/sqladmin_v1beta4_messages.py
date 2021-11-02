@@ -284,6 +284,13 @@ class CloneContext(_messages.Message):
   r"""Database instance clone context.
 
   Fields:
+    allocatedIpRange: The name of the allocated ip range for the private ip
+      CloudSQL instance. For example: "google-managed-services-default". If
+      set, the cloned instance ip will be created in the allocated range. The
+      range name must comply with [RFC
+      1035](https://tools.ietf.org/html/rfc1035). Specifically, the name must
+      be 1-63 characters long and match the regular expression
+      [a-z]([-a-z0-9]*[a-z0-9])?. Reserved for future use.
     binLogCoordinates: Binary log coordinates, if specified, identify the
       position up to which the source instance is cloned. If not specified,
       the source instance is cloned up to the most recent binary log
@@ -296,11 +303,12 @@ class CloneContext(_messages.Message):
       source instance is cloned.
   """
 
-  binLogCoordinates = _messages.MessageField('BinLogCoordinates', 1)
-  destinationInstanceName = _messages.StringField(2)
-  kind = _messages.StringField(3)
-  pitrTimestampMs = _messages.IntegerField(4)
-  pointInTime = _messages.StringField(5)
+  allocatedIpRange = _messages.StringField(1)
+  binLogCoordinates = _messages.MessageField('BinLogCoordinates', 2)
+  destinationInstanceName = _messages.StringField(3)
+  kind = _messages.StringField(4)
+  pitrTimestampMs = _messages.IntegerField(5)
+  pointInTime = _messages.StringField(6)
 
 
 class ConnectSettings(_messages.Message):
@@ -481,14 +489,7 @@ class DatabaseInstance(_messages.Message):
       by Google. This property is read-only; use the **tier** property in the
       **settings** object to determine the database type.
     DatabaseVersionValueValuesEnum: The database engine type and version. The
-      **databaseVersion** field cannot be changed after instance creation. *
-      **MySQL instances**: MYSQL_8_0, MYSQL_5_7 (default), or MYSQL_5_6. *
-      **PostgreSQL instances**: POSTGRES_9_6, POSTGRES_10, POSTGRES_11,
-      POSTGRES_12, POSTGRES_13 (default), POSTGRES_14. * **SQL Server
-      instances**: SQLSERVER_2019_STANDARD, SQLSERVER_2019_ENTERPRISE,
-      SQLSERVER_2019_EXPRESS, or SQLSERVER_2019_WEB, SQLSERVER_2017_STANDARD
-      (default), SQLSERVER_2017_ENTERPRISE, SQLSERVER_2017_EXPRESS, or
-      SQLSERVER_2017_WEB.
+      **databaseVersion** field cannot be changed after instance creation.
     InstalledVersionValueValuesEnum: installed_version stores the current
       fully resolved database version including minor version such as
       MYSQL_5_6_50
@@ -499,13 +500,6 @@ class DatabaseInstance(_messages.Message):
       **READ_REPLICA_INSTANCE**: A Cloud SQL instance configured as a read-
       replica.
     StateValueValuesEnum: The current serving state of the Cloud SQL instance.
-      This can be one of the following: * **SQL_INSTANCE_STATE_UNSPECIFIED**:
-      The state of the instance is unknown. * **RUNNABLE**: The instance is
-      running, or has been stopped by owner. * **SUSPENDED**: The instance is
-      not available, for example due to problems with billing. *
-      **PENDING_DELETE**: The instance is being deleted. * **PENDING_CREATE**:
-      The instance is being created. * **MAINTENANCE**: The instance is down
-      for maintenance. * **FAILED**: The instance creation failed.
     SuspensionReasonValueListEntryValuesEnum:
 
   Messages:
@@ -531,14 +525,7 @@ class DatabaseInstance(_messages.Message):
       the current fully resolved database version running on the instance
       including minor version such as MYSQL_5_6_50
     databaseVersion: The database engine type and version. The
-      **databaseVersion** field cannot be changed after instance creation. *
-      **MySQL instances**: MYSQL_8_0, MYSQL_5_7 (default), or MYSQL_5_6. *
-      **PostgreSQL instances**: POSTGRES_9_6, POSTGRES_10, POSTGRES_11,
-      POSTGRES_12, POSTGRES_13 (default), POSTGRES_14. * **SQL Server
-      instances**: SQLSERVER_2019_STANDARD, SQLSERVER_2019_ENTERPRISE,
-      SQLSERVER_2019_EXPRESS, or SQLSERVER_2019_WEB, SQLSERVER_2017_STANDARD
-      (default), SQLSERVER_2017_ENTERPRISE, SQLSERVER_2017_EXPRESS, or
-      SQLSERVER_2017_WEB.
+      **databaseVersion** field cannot be changed after instance creation.
     diskEncryptionConfiguration: Disk encryption configuration specific to an
       instance.
     diskEncryptionStatus: Disk encryption status specific to an instance.
@@ -595,14 +582,7 @@ class DatabaseInstance(_messages.Message):
     serviceAccountEmailAddress: The service account email address assigned to
       the instance. This property is read-only.
     settings: The user settings.
-    state: The current serving state of the Cloud SQL instance. This can be
-      one of the following: * **SQL_INSTANCE_STATE_UNSPECIFIED**: The state of
-      the instance is unknown. * **RUNNABLE**: The instance is running, or has
-      been stopped by owner. * **SUSPENDED**: The instance is not available,
-      for example due to problems with billing. * **PENDING_DELETE**: The
-      instance is being deleted. * **PENDING_CREATE**: The instance is being
-      created. * **MAINTENANCE**: The instance is down for maintenance. *
-      **FAILED**: The instance creation failed.
+    state: The current serving state of the Cloud SQL instance.
     suspensionReason: If the instance state is SUSPENDED, the reason for the
       suspension.
   """
@@ -627,14 +607,7 @@ class DatabaseInstance(_messages.Message):
 
   class DatabaseVersionValueValuesEnum(_messages.Enum):
     r"""The database engine type and version. The **databaseVersion** field
-    cannot be changed after instance creation. * **MySQL instances**:
-    MYSQL_8_0, MYSQL_5_7 (default), or MYSQL_5_6. * **PostgreSQL instances**:
-    POSTGRES_9_6, POSTGRES_10, POSTGRES_11, POSTGRES_12, POSTGRES_13
-    (default), POSTGRES_14. * **SQL Server instances**:
-    SQLSERVER_2019_STANDARD, SQLSERVER_2019_ENTERPRISE,
-    SQLSERVER_2019_EXPRESS, or SQLSERVER_2019_WEB, SQLSERVER_2017_STANDARD
-    (default), SQLSERVER_2017_ENTERPRISE, SQLSERVER_2017_EXPRESS, or
-    SQLSERVER_2017_WEB.
+    cannot be changed after instance creation.
 
     Values:
       SQL_DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
@@ -763,14 +736,7 @@ class DatabaseInstance(_messages.Message):
     READ_REPLICA_INSTANCE = 3
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""The current serving state of the Cloud SQL instance. This can be one
-    of the following: * **SQL_INSTANCE_STATE_UNSPECIFIED**: The state of the
-    instance is unknown. * **RUNNABLE**: The instance is running, or has been
-    stopped by owner. * **SUSPENDED**: The instance is not available, for
-    example due to problems with billing. * **PENDING_DELETE**: The instance
-    is being deleted. * **PENDING_CREATE**: The instance is being created. *
-    **MAINTENANCE**: The instance is down for maintenance. * **FAILED**: The
-    instance creation failed.
+    r"""The current serving state of the Cloud SQL instance.
 
     Values:
       SQL_INSTANCE_STATE_UNSPECIFIED: The state of the instance is unknown.
@@ -1989,6 +1955,18 @@ class OperationsListResponse(_messages.Message):
   items = _messages.MessageField('Operation', 1, repeated=True)
   kind = _messages.StringField(2)
   nextPageToken = _messages.StringField(3)
+
+
+class PasswordStatus(_messages.Message):
+  r"""Read-only password status.
+
+  Fields:
+    locked: If true, user does not have login privileges.
+    passwordExpirationTime: The expiration time of the current password.
+  """
+
+  locked = _messages.BooleanField(1)
+  passwordExpirationTime = _messages.StringField(2)
 
 
 class PasswordValidationPolicy(_messages.Message):
@@ -3607,11 +3585,13 @@ class UserPasswordValidationPolicy(_messages.Message):
     enableFailedAttemptsCheck: If true, failed login attempts check will be
       enabled.
     passwordExpirationDuration: Expiration duration after password is updated.
+    status: Output only. Read-only password status.
   """
 
   allowedFailedAttempts = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   enableFailedAttemptsCheck = _messages.BooleanField(2)
   passwordExpirationDuration = _messages.StringField(3)
+  status = _messages.MessageField('PasswordStatus', 4)
 
 
 class UsersListResponse(_messages.Message):

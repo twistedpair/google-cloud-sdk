@@ -222,6 +222,25 @@ class GcsApi(cloud_api.CloudApi):
       additional_headers = {}
     return self._apitools_request_headers_context(additional_headers)
 
+  def _encryption_headers_for_rewrite_call_context(self, request_config):
+    additional_headers = {}
+    encryption_key = request_config.encryption_key
+    if encryption_key and encryption_key.type == encryption_util.KeyType.CSEK:
+      additional_headers.update({
+          'x-goog-encryption-algorithm': 'AES256',
+          'x-goog-encryption-key': encryption_key.key,
+          'x-goog-encryption-key-sha256': encryption_key.sha256,
+      })
+
+    decryption_key = request_config.decryption_key
+    if decryption_key and decryption_key.type == encryption_util.KeyType.CSEK:
+      additional_headers.update({
+          'x-goog-copy-source-encryption-algorithm': 'AES256',
+          'x-goog-copy-source-encryption-key': decryption_key.key,
+          'x-goog-copy-source-encryption-key-sha256': decryption_key.sha256,
+      })
+    return self._apitools_request_headers_context(additional_headers)
+
   def _get_projection(self, fields_scope, message_class):
     """Generate query projection from fields_scope.
 
@@ -457,6 +476,7 @@ class GcsApi(cloud_api.CloudApi):
   def get_object_metadata(self,
                           bucket_name,
                           object_name,
+                          request_config,
                           generation=None,
                           fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""
@@ -468,13 +488,13 @@ class GcsApi(cloud_api.CloudApi):
     projection = self._get_projection(fields_scope,
                                       self.messages.StorageObjectsGetRequest)
 
-    # TODO(b/160238394) Decrypt metadata fields if necessary.
-    object_metadata = self.client.objects.Get(
-        self.messages.StorageObjectsGetRequest(
-            bucket=bucket_name,
-            object=object_name,
-            generation=generation,
-            projection=projection))
+    with self._encryption_headers_context(request_config.decryption_key):
+      object_metadata = self.client.objects.Get(
+          self.messages.StorageObjectsGetRequest(
+              bucket=bucket_name,
+              object=object_name,
+              generation=generation,
+              projection=projection))
     return gcs_metadata_util.get_object_resource_from_metadata(object_metadata)
 
   @_catch_http_error_raise_gcs_api_error()
@@ -526,7 +546,6 @@ class GcsApi(cloud_api.CloudApi):
                   request_config,
                   progress_callback=None):
     """See super class."""
-    # TODO(b/161898251): Implement encryption and decryption.
     destination_metadata = getattr(destination_resource, 'metadata', None)
     if not destination_metadata:
       destination_metadata = gcs_metadata_util.get_apitools_metadata_from_url(
@@ -573,35 +592,37 @@ class GcsApi(cloud_api.CloudApi):
       resume_rewrite_token = None
       log.debug('No rewrite token found. Starting copy from scratch.')
 
-    while True:
-      request = self.messages.StorageObjectsRewriteRequest(
-          sourceBucket=source_resource.storage_url.bucket_name,
-          sourceObject=source_resource.storage_url.object_name,
-          destinationBucket=destination_resource.storage_url.bucket_name,
-          destinationObject=destination_resource.storage_url.object_name,
-          object=destination_metadata,
-          sourceGeneration=source_generation,
-          ifGenerationMatch=request_config.precondition_generation_match,
-          ifMetagenerationMatch=(
-              request_config.precondition_metageneration_match),
-          destinationPredefinedAcl=predefined_acl,
-          rewriteToken=resume_rewrite_token,
-          maxBytesRewrittenPerCall=max_bytes_per_call)
-      rewrite_response = self.client.objects.Rewrite(request)
-      processed_bytes = rewrite_response.totalBytesRewritten
-      if progress_callback:
-        progress_callback(processed_bytes)
+    with self._encryption_headers_for_rewrite_call_context(request_config):
+      while True:
+        request = self.messages.StorageObjectsRewriteRequest(
+            sourceBucket=source_resource.storage_url.bucket_name,
+            sourceObject=source_resource.storage_url.object_name,
+            destinationBucket=destination_resource.storage_url.bucket_name,
+            destinationObject=destination_resource.storage_url.object_name,
+            object=destination_metadata,
+            sourceGeneration=source_generation,
+            ifGenerationMatch=request_config.precondition_generation_match,
+            ifMetagenerationMatch=(
+                request_config.precondition_metageneration_match),
+            destinationPredefinedAcl=predefined_acl,
+            rewriteToken=resume_rewrite_token,
+            maxBytesRewrittenPerCall=max_bytes_per_call)
 
-      if rewrite_response.done:
-        break
+        rewrite_response = self.client.objects.Rewrite(request)
+        processed_bytes = rewrite_response.totalBytesRewritten
+        if progress_callback:
+          progress_callback(processed_bytes)
 
-      if not resume_rewrite_token:
-        resume_rewrite_token = rewrite_response.rewriteToken
-        if source_resource.size >= scaled_integer.ParseInteger(
-            properties.VALUES.storage.resumable_threshold.Get()):
-          tracker_file_util.write_rewrite_tracker_file(
-              tracker_file_path, rewrite_parameters_hash,
-              rewrite_response.rewriteToken)
+        if rewrite_response.done:
+          break
+
+        if not resume_rewrite_token:
+          resume_rewrite_token = rewrite_response.rewriteToken
+          if source_resource.size >= scaled_integer.ParseInteger(
+              properties.VALUES.storage.resumable_threshold.Get()):
+            tracker_file_util.write_rewrite_tracker_file(
+                tracker_file_path, rewrite_parameters_hash,
+                rewrite_response.rewriteToken)
 
     tracker_file_util.delete_tracker_file(tracker_file_path)
     return gcs_metadata_util.get_object_resource_from_metadata(
@@ -612,7 +633,6 @@ class GcsApi(cloud_api.CloudApi):
                        download_stream,
                        apitools_download,
                        apitools_request,
-                       decryption_wrapper=None,
                        do_not_decompress=False,
                        generation=None,
                        serialization_data=None,
@@ -628,9 +648,6 @@ class GcsApi(cloud_api.CloudApi):
         managing downloads.
       apitools_request (apitools.messages.StorageObjectsGetReqest):
         Holds call to GCS API.
-      decryption_wrapper (CryptoKeyWrapper):
-        utils.encryption_helper.CryptoKeyWrapper that can optionally be added
-        to decrypt an encrypted object.
       do_not_decompress (bool): If true, gzipped objects will not be
         decompressed on-the-fly if supported by the API.
       generation (int): Generation of the object to retrieve.
@@ -713,7 +730,6 @@ class GcsApi(cloud_api.CloudApi):
           download_stream,
           apitools_download,
           apitools_request,
-          decryption_wrapper=decryption_wrapper,
           do_not_decompress=do_not_decompress,
           generation=generation,
           serialization_data=serialization_data,
@@ -723,7 +739,8 @@ class GcsApi(cloud_api.CloudApi):
     # Convert seconds to miliseconds by multiplying by 1000.
     return retry.Retryer(
         max_retrials=properties.VALUES.storage.max_retries.GetInt(),
-        max_wait_ms=properties.VALUES.storage.max_retry_delay.GetInt() * 1000,
+        wait_ceiling_ms=properties.VALUES.storage.max_retry_delay.GetInt() *
+        1000,
         exponential_sleep_multiplier=(
             properties.VALUES.storage.exponential_sleep_multiplier.GetInt()
         )).RetryOnException(
@@ -735,7 +752,7 @@ class GcsApi(cloud_api.CloudApi):
   def download_object(self,
                       cloud_resource,
                       download_stream,
-                      decryption_wrapper=None,
+                      request_config,
                       digesters=None,
                       do_not_decompress=False,
                       download_strategy=cloud_api.DownloadStrategy.RESUMABLE,
@@ -783,30 +800,29 @@ class GcsApi(cloud_api.CloudApi):
         object=cloud_resource.name,
         generation=generation)
 
-    if download_strategy == cloud_api.DownloadStrategy.ONE_SHOT:
-      return self._download_object(
-          cloud_resource,
-          download_stream,
-          apitools_download,
-          request,
-          decryption_wrapper=decryption_wrapper,
-          do_not_decompress=do_not_decompress,
-          generation=generation,
-          serialization_data=serialization_data,
-          start_byte=start_byte,
-          end_byte=end_byte)
-    else:
-      return self._download_object_resumable(
-          cloud_resource,
-          download_stream,
-          apitools_download,
-          request,
-          decryption_wrapper=decryption_wrapper,
-          do_not_decompress=do_not_decompress,
-          generation=generation,
-          serialization_data=serialization_data,
-          start_byte=start_byte,
-          end_byte=end_byte)
+    with self._encryption_headers_context(request_config.decryption_key):
+      if download_strategy == cloud_api.DownloadStrategy.ONE_SHOT:
+        return self._download_object(
+            cloud_resource,
+            download_stream,
+            apitools_download,
+            request,
+            do_not_decompress=do_not_decompress,
+            generation=generation,
+            serialization_data=serialization_data,
+            start_byte=start_byte,
+            end_byte=end_byte)
+      else:
+        return self._download_object_resumable(
+            cloud_resource,
+            download_stream,
+            apitools_download,
+            request,
+            do_not_decompress=do_not_decompress,
+            generation=generation,
+            serialization_data=serialization_data,
+            start_byte=start_byte,
+            end_byte=end_byte)
 
   @_catch_http_error_raise_gcs_api_error()
   def upload_object(self,
@@ -838,7 +854,8 @@ class GcsApi(cloud_api.CloudApi):
           'Invalid upload strategy: {}.'.format(upload_strategy.value))
 
     try:
-      metadata = upload.run()
+      with self._encryption_headers_context(request_config.encryption_key):
+        metadata = upload.run()
     except (
         apitools_exceptions.StreamExhausted,
         apitools_exceptions.TransferError,
@@ -875,10 +892,14 @@ class GcsApi(cloud_api.CloudApi):
         source_message.generation = generation
       source_messages.append(source_message)
 
+    destination_metadata = gcs_metadata_util.get_apitools_metadata_from_url(
+        destination_resource.storage_url)
+    gcs_metadata_util.update_object_metadata_from_request_config(
+        destination_metadata, request_config)
+
     compose_request_payload = self.messages.ComposeRequest(
         sourceObjects=source_messages,
-        destination=gcs_metadata_util.get_apitools_metadata_from_url(
-            destination_resource.storage_url))
+        destination=destination_metadata)
 
     compose_request = self.messages.StorageObjectsComposeRequest(
         composeRequest=compose_request_payload,
@@ -895,5 +916,6 @@ class GcsApi(cloud_api.CloudApi):
           DestinationPredefinedAclValueValuesEnum,
           request_config.predefined_acl_string)
 
-    return gcs_metadata_util.get_object_resource_from_metadata(
-        self.client.objects.Compose(compose_request))
+    with self._encryption_headers_context(request_config.encryption_key):
+      return gcs_metadata_util.get_object_resource_from_metadata(
+          self.client.objects.Compose(compose_request))

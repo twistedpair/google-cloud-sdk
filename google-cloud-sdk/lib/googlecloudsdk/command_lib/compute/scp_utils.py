@@ -114,6 +114,7 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
 
     expiration, expiration_micros = ssh_utils.GetSSHKeyExpirationFromArgs(args)
     identity_file = None
+    identity_file_list = None
     options = None
 
     # The client must be fetched to ensure reauth is performed as needed, even
@@ -121,6 +122,7 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
     # be to just call "store.LoadIfEnabled()" for on-prem.
     compute_client = compute_holder.client
 
+    oslogin_state = ssh.OsloginState()
     if on_prem:
       iap_tunnel_args = iap_tunnel.CreateOnPremSshTunnelArgs(
           args, release_track, remote.host)
@@ -141,7 +143,7 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
         username_requested = False
         remote.user = ssh.GetDefaultSshUsername(warn_on_account_user=True)
       if args.plain:
-        oslogin_state = ssh.OsloginState(user=remote.user)
+        oslogin_state.oslogin_enabled = False
       else:
         public_key = self.keys.GetPublicKey().ToEntry(include_comment=True)
         oslogin_state = ssh.GetOsloginState(
@@ -149,8 +151,11 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
             release_track, username_requested=username_requested)
         remote.user = oslogin_state.user
 
+      # identity_file_list will be None if security keys are not enabled.
+      identity_file_list = ssh.WriteSecurityKeys(oslogin_state)
       if not args.plain:
-        identity_file = self.keys.key_file
+        if not identity_file_list:
+          identity_file = self.keys.key_file
         options = self.GetConfig(ssh_utils.HostKeyAlias(instance),
                                  args.strict_host_key_checking)
 
@@ -168,11 +173,18 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
     cmd = ssh.SCPCommand(
         srcs, dst, identity_file=identity_file, options=options,
         recursive=recursive, compress=compress, port=port,
-        extra_flags=extra_flags, iap_tunnel_args=iap_tunnel_args)
+        extra_flags=extra_flags, iap_tunnel_args=iap_tunnel_args,
+        identity_list=identity_file_list)
 
     if args.dry_run:
       log.out.Print(' '.join(cmd.Build(self.env)))
       return
+
+    # Raise errors if instance requires a security key but the local
+    # environment doesn't support them. This is after the 'dry-run' because
+    # we want to allow printing the command regardless.
+    if release_track != base.ReleaseTrack.GA:
+      ssh_utils.ConfirmSecurityKeyStatus(oslogin_state)
 
     if args.plain or oslogin_state.oslogin_enabled:
       keys_newly_added = False

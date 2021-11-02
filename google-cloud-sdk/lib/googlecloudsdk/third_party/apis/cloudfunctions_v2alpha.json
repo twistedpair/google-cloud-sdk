@@ -463,6 +463,11 @@
           "readOnly": true,
           "type": "string"
         },
+        "gcfUri": {
+          "description": "Output only. URIs of the Service deployed",
+          "readOnly": true,
+          "type": "string"
+        },
         "serviceAccountEmail": {
           "description": "The email of the service's service account. If empty, defaults to `{project_number}-compute@developer.gserviceaccount.com`.",
           "type": "string"

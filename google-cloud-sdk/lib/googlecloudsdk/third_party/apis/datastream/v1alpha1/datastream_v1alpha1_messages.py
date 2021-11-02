@@ -1703,6 +1703,10 @@ class Stream(_messages.Message):
       configuration. Specific objects can be excluded.
     backfillNone: Do not automatically backfill any objects.
     createTime: Output only. The creation time of the stream.
+    customerManagedEncryptionKey: Immutable. A reference to a KMS encryption
+      key. If provided, it will be used to encrypt the data. If left blank,
+      data will be encrypted using an internal Stream-specific encryption key
+      provisioned through KMS.
     destinationConfig: Required. Destination connection profile configuration.
     displayName: Required. Display name.
     errors: Output only. Errors on the Stream.
@@ -1767,14 +1771,15 @@ class Stream(_messages.Message):
   backfillAll = _messages.MessageField('BackfillAllStrategy', 1)
   backfillNone = _messages.MessageField('BackfillNoneStrategy', 2)
   createTime = _messages.StringField(3)
-  destinationConfig = _messages.MessageField('DestinationConfig', 4)
-  displayName = _messages.StringField(5)
-  errors = _messages.MessageField('Error', 6, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  sourceConfig = _messages.MessageField('SourceConfig', 9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  updateTime = _messages.StringField(11)
+  customerManagedEncryptionKey = _messages.StringField(4)
+  destinationConfig = _messages.MessageField('DestinationConfig', 5)
+  displayName = _messages.StringField(6)
+  errors = _messages.MessageField('Error', 7, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  sourceConfig = _messages.MessageField('SourceConfig', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  updateTime = _messages.StringField(12)
 
 
 class Validation(_messages.Message):

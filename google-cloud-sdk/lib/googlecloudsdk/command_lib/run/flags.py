@@ -117,6 +117,7 @@ class KubeconfigError(exceptions.Error):
 class Product(enum.Enum):
   RUN = 'Run'
   EVENTS = 'Events'
+  RUN_APPS = 'RunApps'
 
 
 def AddImageArg(parser, required=True):
@@ -573,8 +574,7 @@ def AddConcurrencyFlag(parser):
           _ConcurrencyValue, 'must be an integer greater than 0 or "default".'),
       help='Set the maximum number of concurrent requests allowed per '
       'container instance. Leave concurrency unspecified or provide the '
-      'special value \'default\' to receive the server default value.'
-  )
+      'special value \'default\' to receive the server default value.')
 
 
 def AddTimeoutFlag(parser):

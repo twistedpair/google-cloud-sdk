@@ -1208,7 +1208,7 @@
       "type": "object",
       "properties": {
         "generateTime": {
-          "description": "Feature generation timestamp. Typically, it is provided by user at feature ingestion time. If not, feature store will use the system timestamp when the data is ingested into feature store.",
+          "description": "Feature generation timestamp. Typically, it is provided by user at feature ingestion time. If not, feature store will use the system timestamp when the data is ingested into feature store. For streaming ingestion, the time, aligned by days, must be no older than five years (1825 days) and no later than one year (366 days) in the future.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -5373,7 +5373,7 @@
       "type": "object",
       "properties": {
         "parameters": {
-          "description": "The runtime parameters of the PipelineJob. The parameters will be passed into PipelineJob.pipeline_spec to replace the placeholders at runtime.",
+          "description": "Deprecated. Use [RuntimeConfig.parameter_values] instead. The runtime parameters of the PipelineJob. The parameters will be passed into PipelineJob.pipeline_spec to replace the placeholders at runtime.",
           "type": "object",
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformV1alpha1Value"

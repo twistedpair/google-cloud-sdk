@@ -62,11 +62,12 @@ def get_copy_task(source_resource,
       and isinstance(destination_url, storage_url.FileUrl)):
     if destination_url.is_pipe:
       return streaming_download_task.StreamingDownloadTask(
-          source_resource, shared_stream)
+          source_resource, shared_stream, user_request_args=user_request_args)
     return file_download_task.FileDownloadTask(
         source_resource,
         destination_resource,
-        do_not_decompress=do_not_decompress)
+        do_not_decompress=do_not_decompress,
+        user_request_args=user_request_args)
 
   if (isinstance(source_url, storage_url.FileUrl)
       and isinstance(destination_url, storage_url.CloudUrl)):

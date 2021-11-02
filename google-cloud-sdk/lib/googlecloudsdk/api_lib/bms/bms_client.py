@@ -67,7 +67,11 @@ class BmsClient(object):
     self._client = apis.GetClientInstance('baremetalsolution', api_version)
     self._messages = apis.GetMessagesModule('baremetalsolution', api_version)
     self.service = self._client.projects_locations_instances
+    self.volumes_service = self._client.projects_locations_volumes
+    self.snapshot_schedule_policies_service = self._client.projects_locations_snapshotSchedulePolicies
+    self.networks_service = self._client.projects_locations_networks
     self.locations_service = self._client.projects_locations
+    self.luns_service = self._client.projects_locations_volumes_luns
 
   @property
   def client(self):
@@ -85,22 +89,29 @@ class BmsClient(object):
   def AggregateYieldFromList(self,
                              service,
                              project_resource,
+                             request_class,
+                             resource,
                              global_params=None,
                              limit=None,
                              method='List',
                              predicate=None,
+                             skip_global_region=True,
                              allow_partial_server_failure=True):
     """Make a series of List requests, across locations in a project.
 
     Args:
       service: apitools_base.BaseApiService, A service with a .List() method.
       project_resource: str, The resource name of the project.
+      request_class: class, The class type of the List RPC request.
+      resource: string, The name (in plural) of the resource type.
       global_params: protorpc.messages.Message, The global query parameters to
         provide when calling the given method.
       limit: int, The maximum number of records to yield. None if all available
         records should be yielded.
       method: str, The name of the method used to fetch resources.
       predicate: lambda, A function that returns true for items to be yielded.
+      skip_global_region: bool, True if global region must be filtered out while
+      iterating over regions
       allow_partial_server_failure: bool, if True don't fail and only print a
         warning if some requests fail as long as at least one succeeds. If
         False, fail the complete command if at least one request fails.
@@ -114,10 +125,9 @@ class BmsClient(object):
     for location in self.ListLocations(project_resource):
       # TODO (b/198857865): Global region will be used when it is ready.
       location_name = location.name.split('/')[-1]
-      if location_name == _GLOBAL_REGION:
+      if skip_global_region and location_name == _GLOBAL_REGION:
         continue
-      request = self.messages.BaremetalsolutionProjectsLocationsInstancesListRequest(
-          parent=location.name, filter=None)
+      request = request_class(parent=location.name)
       try:
         response = getattr(service, method)(
             request, global_params=global_params)
@@ -125,8 +135,7 @@ class BmsClient(object):
       except Exception as e:  # pylint: disable=broad-except
         errors.append(_ParseError(e))
         continue
-
-      items = getattr(response, 'instances')
+      items = getattr(response, resource)
       if predicate:
         items = list(filter(predicate, items))
       for item in items:
@@ -155,11 +164,10 @@ class BmsClient(object):
 
   def ListLocations(self,
                     project_resource,
-                    filter_expression=None,
                     limit=None,
                     page_size=None):
     request = self.messages.BaremetalsolutionProjectsLocationsListRequest(
-        name='projects/' + project_resource, filter=filter_expression)
+        name='projects/' + project_resource)
     return list_pager.YieldFromList(
         self.locations_service,
         request,
@@ -170,12 +178,11 @@ class BmsClient(object):
 
   def List(self,
            location_resource,
-           filter_expression=None,
            limit=None,
            page_size=None):
     location = location_resource.RelativeName()
     request = self.messages.BaremetalsolutionProjectsLocationsInstancesListRequest(
-        parent=location, filter=filter_expression)
+        parent=location)
     return list_pager.YieldFromList(
         self.service,
         request,
@@ -184,16 +191,116 @@ class BmsClient(object):
         batch_size=page_size,
         field='instances')
 
-  def AggregateList(self, project_resource, limit=None):
+  def AggregateListInstances(self, project_resource, limit=None):
     return self.AggregateYieldFromList(
-        self.service, project_resource, limit=limit)
+        self.service,
+        project_resource,
+        self.messages.BaremetalsolutionProjectsLocationsInstancesListRequest,
+        'instances',
+        limit=limit)
+
+  def ListSnapshotSchedulePolicies(self,
+                                   project_resource,
+                                   limit=None,
+                                   page_size=None):
+    parent = 'projects/%s/locations/global' % project_resource
+    request = (
+        self.messages
+        .BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesListRequest(
+            parent=parent))
+    return list_pager.YieldFromList(
+        self.snapshot_schedule_policies_service,
+        request,
+        limit=limit,
+        batch_size_attribute='pageSize',
+        batch_size=page_size,
+        field='snapshotSchedulePolicies')
+
+  def GetSnapshotSchedulePolicy(self, resource):
+    request = self.messages.BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesGetRequest(
+        name=resource.RelativeName())
+    return self.snapshot_schedule_policies_service.Get(request)
+
+  def ListVolumes(self,
+                  location_resource,
+                  limit=None,
+                  page_size=None):
+    location = location_resource.RelativeName()
+    request = self.messages.BaremetalsolutionProjectsLocationsVolumesListRequest(
+        parent=location)
+    return list_pager.YieldFromList(
+        self.volumes_service,
+        request,
+        limit=limit,
+        batch_size_attribute='pageSize',
+        batch_size=page_size,
+        field='volumes')
+
+  def GetVolume(self, resource):
+    request = self.messages.BaremetalsolutionProjectsLocationsVolumesGetRequest(
+        name=resource.RelativeName())
+    return self.volumes_service.Get(request)
+
+  def AggregateListVolumes(self, project_resource, limit=None):
+    return self.AggregateYieldFromList(
+        self.volumes_service,
+        project_resource,
+        self.messages.BaremetalsolutionProjectsLocationsVolumesListRequest,
+        'volumes',
+        limit=limit)
+
+  def ListNetworks(self,
+                   location_resource,
+                   limit=None,
+                   page_size=None):
+    location = location_resource.RelativeName()
+    request = (
+        self.messages
+        .BaremetalsolutionProjectsLocationsNetworksListRequest(
+            parent=location))
+    return list_pager.YieldFromList(
+        self.networks_service,
+        request,
+        limit=limit,
+        batch_size_attribute='pageSize',
+        batch_size=page_size,
+        field='networks')
+
+  def AggregateListNetworks(self, project_resource, limit=None):
+    return self.AggregateYieldFromList(
+        self.networks_service,
+        project_resource,
+        self.messages.BaremetalsolutionProjectsLocationsNetworksListRequest,
+        'networks',
+        limit=limit)
+
+  def GetNetwork(self, resource):
+    request = self.messages.BaremetalsolutionProjectsLocationsNetworksGetRequest(
+        name=resource.RelativeName())
+    return self.networks_service.Get(request)
 
   def IsClientNetwork(self, network):
-    if network.type == self.messages.Network.TypeValueValuesEnum.CLIENT:
-      return True
-    return False
+    return network.type == self.messages.Network.TypeValueValuesEnum.CLIENT
 
   def IsPrivateNetwork(self, network):
-    if network.type == self.messages.Network.TypeValueValuesEnum.PRIVATE:
-      return True
-    return False
+    return network.type == self.messages.Network.TypeValueValuesEnum.PRIVATE
+
+  def ListLUNsForVolume(self, volume_resource, limit=None,
+                        page_size=None):
+    parent = volume_resource.RelativeName()
+    request = (self.messages
+               .BaremetalsolutionProjectsLocationsVolumesLunsListRequest(
+                   parent=parent))
+    return list_pager.YieldFromList(
+        self.luns_service,
+        request,
+        limit=limit,
+        batch_size_attribute='pageSize',
+        batch_size=page_size,
+        field='luns')
+
+  def GetLUN(self, resource):
+    request = (self.messages
+               .BaremetalsolutionProjectsLocationsVolumesLunsGetRequest(
+                   name=resource.RelativeName()))
+    return self.luns_service.Get(request)

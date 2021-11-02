@@ -57,6 +57,7 @@ def CreateUpdateRequest(release_track, ref, args):
         manBlock=args.man_block,
         masterIpv4CidrBlock=master_ipv4_cidr_block,
         network=args.network,
+        subnet=args.subnet,
         servicesCidrBlock=args.services_ipv4_cidr_block,
         servicesNamedRange=args.services_named_range)
     mgmt_config = messages.ManagementConfig(
@@ -69,6 +70,7 @@ def CreateUpdateRequest(release_track, ref, args):
         manBlock=args.man_block,
         masterIpv4CidrBlock=master_ipv4_cidr_block,
         network=args.network,
+        subnet=args.subnet,
         servicesCidrBlock=args.services_ipv4_cidr_block,
         servicesNamedRange=args.services_named_range)
     mgmt_config = messages.ManagementConfig(

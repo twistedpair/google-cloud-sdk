@@ -713,11 +713,14 @@ class CloudbuildProjectsLocationsWorkerPoolsDeleteRequest(_messages.Message):
   r"""A CloudbuildProjectsLocationsWorkerPoolsDeleteRequest object.
 
   Fields:
+    etag: Optional. If this is provided, it must match the server's etag on
+      the workerpool for the request to be processed.
     name: Required. The name of the `WorkerPool` to delete. Format:
       `projects/{project}/locations/{workerPool}/workerPools/{workerPool}`.
   """
 
-  name = _messages.StringField(1, required=True)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class CloudbuildProjectsLocationsWorkerPoolsGetRequest(_messages.Message):
@@ -1892,11 +1895,24 @@ class WorkerPool(_messages.Message):
   Enums:
     StateValueValuesEnum: Output only. `WorkerPool` state.
 
+  Messages:
+    AnnotationsValue: User specified annotations. See
+      https://google.aip.dev/128#annotations for more details such as format
+      and size limitations.
+
   Fields:
+    annotations: User specified annotations. See
+      https://google.aip.dev/128#annotations for more details such as format
+      and size limitations.
     createTime: Output only. Time at which the request to create the
       `WorkerPool` was received.
     deleteTime: Output only. Time at which the request to delete the
       `WorkerPool` was received.
+    displayName: A user-specified, human-readable name for the `WorkerPool`.
+      If provided, this value must be 1-63 characters.
+    etag: Output only. Checksum computed by the server. May be sent on update
+      and delete requests to ensure that the client has an up-to-date value
+      before proceeding.
     name: Output only. The resource name of the `WorkerPool`, with format
       `projects/{project}/locations/{location}/workerPools/{worker_pool}`. The
       value of `{worker_pool}` is provided by `worker_pool_id` in
@@ -1904,6 +1920,7 @@ class WorkerPool(_messages.Message):
       by the endpoint accessed.
     networkConfig: Network configuration for the `WorkerPool`.
     state: Output only. `WorkerPool` state.
+    uid: Output only. A unique identifier for the `WorkerPool`.
     updateTime: Output only. Time at which the request to update the
       `WorkerPool` was received.
     vpcscEnabled: Immutable. If true, the worker pool is created with a VPC-SC
@@ -1930,14 +1947,44 @@ class WorkerPool(_messages.Message):
     DELETING = 3
     DELETED = 4
 
-  createTime = _messages.StringField(1)
-  deleteTime = _messages.StringField(2)
-  name = _messages.StringField(3)
-  networkConfig = _messages.MessageField('NetworkConfig', 4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  updateTime = _messages.StringField(6)
-  vpcscEnabled = _messages.BooleanField(7)
-  workerConfig = _messages.MessageField('WorkerConfig', 8)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""User specified annotations. See https://google.aip.dev/128#annotations
+    for more details such as format and size limitations.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  deleteTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  name = _messages.StringField(6)
+  networkConfig = _messages.MessageField('NetworkConfig', 7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+  vpcscEnabled = _messages.BooleanField(11)
+  workerConfig = _messages.MessageField('WorkerConfig', 12)
 
 
 encoding.AddCustomJsonFieldMapping(

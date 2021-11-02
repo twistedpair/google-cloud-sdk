@@ -45,6 +45,12 @@ class MonitoringV1(base_api.BaseApiClient):
     self.locations = self.LocationsService(self)
     self.operations = self.OperationsService(self)
     self.projects_dashboards = self.ProjectsDashboardsService(self)
+    self.projects_location_prometheus_api_v1_label = self.ProjectsLocationPrometheusApiV1LabelService(self)
+    self.projects_location_prometheus_api_v1_metadata = self.ProjectsLocationPrometheusApiV1MetadataService(self)
+    self.projects_location_prometheus_api_v1 = self.ProjectsLocationPrometheusApiV1Service(self)
+    self.projects_location_prometheus_api = self.ProjectsLocationPrometheusApiService(self)
+    self.projects_location_prometheus = self.ProjectsLocationPrometheusService(self)
+    self.projects_location = self.ProjectsLocationService(self)
     self.projects = self.ProjectsService(self)
 
   class LocationsGlobalMetricsScopesProjectsService(base_api.BaseApiService):
@@ -375,6 +381,201 @@ class MonitoringV1(base_api.BaseApiClient):
         response_type_name='Dashboard',
         supports_download=False,
     )
+
+  class ProjectsLocationPrometheusApiV1LabelService(base_api.BaseApiService):
+    """Service class for the projects_location_prometheus_api_v1_label resource."""
+
+    _NAME = 'projects_location_prometheus_api_v1_label'
+
+    def __init__(self, client):
+      super(MonitoringV1.ProjectsLocationPrometheusApiV1LabelService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Values(self, request, global_params=None):
+      r"""Lists possible values for a given label name.
+
+      Args:
+        request: (MonitoringProjectsLocationPrometheusApiV1LabelValuesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('Values')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Values.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/location/{location}/prometheus/api/v1/label/{label}/values',
+        http_method='GET',
+        method_id='monitoring.projects.location.prometheus.api.v1.label.values',
+        ordered_params=['name', 'location', 'label'],
+        path_params=['label', 'location', 'name'],
+        query_params=['end', 'match', 'start'],
+        relative_path='v1/{+name}/location/{location}/prometheus/api/v1/label/{label}/values',
+        request_field='',
+        request_type_name='MonitoringProjectsLocationPrometheusApiV1LabelValuesRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+  class ProjectsLocationPrometheusApiV1MetadataService(base_api.BaseApiService):
+    """Service class for the projects_location_prometheus_api_v1_metadata resource."""
+
+    _NAME = 'projects_location_prometheus_api_v1_metadata'
+
+    def __init__(self, client):
+      super(MonitoringV1.ProjectsLocationPrometheusApiV1MetadataService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists metadata for metrics.
+
+      Args:
+        request: (MonitoringProjectsLocationPrometheusApiV1MetadataListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/location/{location}/prometheus/api/v1/metadata',
+        http_method='GET',
+        method_id='monitoring.projects.location.prometheus.api.v1.metadata.list',
+        ordered_params=['name', 'location'],
+        path_params=['location', 'name'],
+        query_params=['limit', 'metric'],
+        relative_path='v1/{+name}/location/{location}/prometheus/api/v1/metadata',
+        request_field='',
+        request_type_name='MonitoringProjectsLocationPrometheusApiV1MetadataListRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+  class ProjectsLocationPrometheusApiV1Service(base_api.BaseApiService):
+    """Service class for the projects_location_prometheus_api_v1 resource."""
+
+    _NAME = 'projects_location_prometheus_api_v1'
+
+    def __init__(self, client):
+      super(MonitoringV1.ProjectsLocationPrometheusApiV1Service, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Query(self, request, global_params=None):
+      r"""Evaluate a PromQL query at a single point in time.
+
+      Args:
+        request: (MonitoringProjectsLocationPrometheusApiV1QueryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('Query')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Query.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/location/{location}/prometheus/api/v1/query',
+        http_method='POST',
+        method_id='monitoring.projects.location.prometheus.api.v1.query',
+        ordered_params=['name', 'location'],
+        path_params=['location', 'name'],
+        query_params=[],
+        relative_path='v1/{+name}/location/{location}/prometheus/api/v1/query',
+        request_field='queryInstantRequest',
+        request_type_name='MonitoringProjectsLocationPrometheusApiV1QueryRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+    def QueryRange(self, request, global_params=None):
+      r"""Evaluate a PromQL query with start, end time range.
+
+      Args:
+        request: (MonitoringProjectsLocationPrometheusApiV1QueryRangeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('QueryRange')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    QueryRange.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/location/{location}/prometheus/api/v1/query_range',
+        http_method='POST',
+        method_id='monitoring.projects.location.prometheus.api.v1.query_range',
+        ordered_params=['name', 'location'],
+        path_params=['location', 'name'],
+        query_params=[],
+        relative_path='v1/{+name}/location/{location}/prometheus/api/v1/query_range',
+        request_field='queryRangeRequest',
+        request_type_name='MonitoringProjectsLocationPrometheusApiV1QueryRangeRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+    def Series(self, request, global_params=None):
+      r"""Lists metadata for metrics.
+
+      Args:
+        request: (MonitoringProjectsLocationPrometheusApiV1SeriesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpBody) The response message.
+      """
+      config = self.GetMethodConfig('Series')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Series.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/location/{location}/prometheus/api/v1/series',
+        http_method='POST',
+        method_id='monitoring.projects.location.prometheus.api.v1.series',
+        ordered_params=['name', 'location'],
+        path_params=['location', 'name'],
+        query_params=[],
+        relative_path='v1/{+name}/location/{location}/prometheus/api/v1/series',
+        request_field='querySeriesRequest',
+        request_type_name='MonitoringProjectsLocationPrometheusApiV1SeriesRequest',
+        response_type_name='HttpBody',
+        supports_download=False,
+    )
+
+  class ProjectsLocationPrometheusApiService(base_api.BaseApiService):
+    """Service class for the projects_location_prometheus_api resource."""
+
+    _NAME = 'projects_location_prometheus_api'
+
+    def __init__(self, client):
+      super(MonitoringV1.ProjectsLocationPrometheusApiService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ProjectsLocationPrometheusService(base_api.BaseApiService):
+    """Service class for the projects_location_prometheus resource."""
+
+    _NAME = 'projects_location_prometheus'
+
+    def __init__(self, client):
+      super(MonitoringV1.ProjectsLocationPrometheusService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ProjectsLocationService(base_api.BaseApiService):
+    """Service class for the projects_location resource."""
+
+    _NAME = 'projects_location'
+
+    def __init__(self, client):
+      super(MonitoringV1.ProjectsLocationService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""

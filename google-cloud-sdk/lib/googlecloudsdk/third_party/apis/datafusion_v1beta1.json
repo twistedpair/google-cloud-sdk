@@ -369,7 +369,8 @@
             "Instance is being restarted",
             "Instance is being updated on customer request",
             "Instance is being auto-updated",
-            "Instance is being auto-upgraded"
+            "Instance is being auto-upgraded",
+            "Instance is disabled"
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -381,7 +382,8 @@
             "RESTARTING",
             "UPDATING",
             "AUTO_UPDATING",
-            "AUTO_UPGRADING"
+            "AUTO_UPGRADING",
+            "DISABLED"
           ]
         },
         "stateMessage": {
@@ -456,6 +458,22 @@
         "cryptoKeyConfig": {
           "description": "The crypto key configuration. This field is used by the Customer-Managed Encryption Keys (CMEK) feature.",
           "$ref": "CryptoKeyConfig"
+        },
+        "disabledReason": {
+          "description": "Output only. If the instance state is DISABLED, the reason for disabling the instance.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "This is an unknown reason for disabling.",
+              "The KMS key used by the instance is either revoked or denied access to"
+            ],
+            "enum": [
+              "DISABLED_REASON_UNSPECIFIED",
+              "KMS_KEY_ISSUE"
+            ]
+          }
         }
       }
     },

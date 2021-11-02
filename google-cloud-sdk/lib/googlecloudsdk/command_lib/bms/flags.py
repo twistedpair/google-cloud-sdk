@@ -18,10 +18,39 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import sys
+
+from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.apis import yaml_data
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
+
+
+FILTER_FLAG_NO_SORTBY_DOC = base.Argument(
+    '--filter',
+    metavar='EXPRESSION',
+    require_coverage_in_tests=False,
+    category=base.LIST_COMMAND_FLAGS,
+    help="""\
+    Apply a Boolean filter _EXPRESSION_ to each resource item to be listed.
+    If the expression evaluates `True`, then that item is listed. For more
+    details and examples of filter expressions, run $ gcloud topic filters. This
+    flag interacts with other flags that are applied in this order: *--flatten*,
+    *--filter*, *--limit*.""")
+
+
+LIMIT_FLAG_NO_SORTBY_DOC = base.Argument(
+    '--limit',
+    type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
+    require_coverage_in_tests=False,
+    category=base.LIST_COMMAND_FLAGS,
+    help="""\
+    Maximum number of resources to list. The default is *unlimited*.
+    This flag interacts with other flags that are applied in this order:
+    *--flatten*, *--filter*, *--limit*.
+    """)
 
 
 def AddInstanceArgToParser(parser, positional=False):
@@ -56,3 +85,67 @@ def AddRegionArgToParser(parser, positional=False):
       group_help='region.')
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
+def AddVolumeArgToParser(parser, positional=False):
+  """Sets up an argument for the instance resource."""
+  if positional:
+    name = 'volume'
+  else:
+    name = '--volume'
+  volume_data = yaml_data.ResourceYAMLData.FromPath(
+      'bms.volume')
+  resource_spec = concepts.ResourceSpec.FromYaml(volume_data.GetData())
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name=name,
+      concept_spec=resource_spec,
+      required=True,
+      group_help='volume.')
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
+def AddSnapshotSchedulePolicyArgToParser(parser, positional=False):
+  """Sets up an argument for the snapshot schedule policy resource."""
+  if positional:
+    name = 'snapshot_schedule_policy'
+  else:
+    name = '--snapshot-schedule-policy'
+  policy_data = yaml_data.ResourceYAMLData.FromPath(
+      'bms.snapshot_schedule_policy')
+  resource_spec = concepts.ResourceSpec.FromYaml(policy_data.GetData())
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name=name,
+      concept_spec=resource_spec,
+      required=True,
+      flag_name_overrides={'region': ''},
+      group_help='snapshot_schedule_policy.')
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
+def AddNetworkArgToParser(parser, positional=False):
+  """Sets up an argument for the network resource."""
+  if positional:
+    name = 'network'
+  else:
+    name = '--network'
+  policy_data = yaml_data.ResourceYAMLData.FromPath(
+      'bms.network')
+  resource_spec = concepts.ResourceSpec.FromYaml(policy_data.GetData())
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name=name,
+      concept_spec=resource_spec,
+      required=True,
+      group_help='network.')
+
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
+def AddLunArgToParser(parser):
+  """Sets up an argument for a volume snapshot policy."""
+  name = 'lun'
+  snapshot_data = yaml_data.ResourceYAMLData.FromPath('bms.lun')
+  resource_spec = concepts.ResourceSpec.FromYaml(snapshot_data.GetData())
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name=name,
+      concept_spec=resource_spec,
+      required=True,
+      group_help='lun.')
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)

@@ -19,9 +19,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
-import json
 
 from googlecloudsdk.command_lib.storage import errors
+from googlecloudsdk.command_lib.storage.resources import resource_util
 
 
 class Resource(object):
@@ -56,6 +56,14 @@ class Resource(object):
     """
     self.storage_url = storage_url_object
 
+  def get_json_dump(self):
+    """Formats resource for printing as JSON."""
+    return resource_util.configured_json_dumps(
+        collections.OrderedDict([
+            ('url', self.storage_url.url_string),
+            ('type', self.TYPE_STRING),
+        ]))
+
   def __repr__(self):
     return self.storage_url.url_string
 
@@ -84,9 +92,6 @@ class CloudResource(Resource):
   def scheme(self):
     # TODO(b/168690302): Stop using string scheme in storage_url.py.
     return self.storage_url.scheme
-
-  def get_json_dump(self):
-    raise NotImplementedError('get_json_dump must be overridden.')
 
 
 class BucketResource(CloudResource):
@@ -142,9 +147,6 @@ class BucketResource(CloudResource):
 
   def is_container(self):
     return True
-
-  def get_json_dump(self):
-    super(BucketResource).get_json_dump()
 
 
 class ObjectResource(CloudResource):
@@ -219,9 +221,6 @@ class ObjectResource(CloudResource):
   def is_encrypted(self):
     raise NotImplementedError
 
-  def get_json_dump(self):
-    super(ObjectResource).get_json_dump()
-
 
 class PrefixResource(Resource):
   """Class representing a  cloud object.
@@ -246,12 +245,6 @@ class PrefixResource(Resource):
 
   def is_container(self):
     return True
-
-  def get_json_dump(self):
-    return json.dumps(collections.OrderedDict([
-        ('url', self.storage_url.versionless_url_string),
-        ('type', self.TYPE_STRING),
-    ]), indent=2)
 
 
 class FileObjectResource(Resource):

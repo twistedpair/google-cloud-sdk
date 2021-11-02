@@ -25,6 +25,7 @@ import boto3
 import botocore
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors
+from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.api_lib.storage import s3_metadata_util
 from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage import hash_util
@@ -298,6 +299,8 @@ class S3Api(cloud_api.CloudApi):
             yield self.get_object_metadata(
                 bucket_name=bucket_name,
                 object_name=object_dict['Key'],
+                request_config=request_config_factory.get_request_config(
+                    storage_url.CloudUrl(scheme=storage_url.ProviderPrefix.S3)),
                 generation=object_dict.get('VersionId'),
                 fields_scope=fields_scope)
           else:
@@ -359,15 +362,19 @@ class S3Api(cloud_api.CloudApi):
     if content_encoding is not None:
       return content_encoding
 
-    complete_resource = self.get_object_metadata(resource.bucket, resource.name,
-                                                 resource.generation)
+    complete_resource = self.get_object_metadata(
+        resource.bucket,
+        resource.name,
+        request_config=request_config_factory.get_request_config(
+            storage_url.CloudUrl(scheme=storage_url.ProviderPrefix.S3)),
+        generation=resource.generation)
     return complete_resource.metadata.get('ContentEncoding')
 
   @_catch_client_error_raise_s3_api_error()
   def download_object(self,
                       cloud_resource,
                       download_stream,
-                      decryption_wrapper=None,
+                      request_config,
                       digesters=None,
                       do_not_decompress=False,
                       download_strategy=cloud_api.DownloadStrategy.ONE_SHOT,
@@ -375,6 +382,7 @@ class S3Api(cloud_api.CloudApi):
                       start_byte=0,
                       end_byte=None):
     """See super class."""
+    del request_config
     extra_args = {}
     if cloud_resource.generation:
       extra_args['VersionId'] = cloud_resource.generation
@@ -414,9 +422,6 @@ class S3Api(cloud_api.CloudApi):
 
     return self._get_content_encoding(cloud_resource)
 
-    # TODO(b/161437901): Handle resumed download.
-    # TODO(b/161460749): Handle download retries.
-
   @_catch_client_error_raise_s3_api_error()
   def delete_object(self, object_url, request_config):
     """See super class."""
@@ -434,9 +439,11 @@ class S3Api(cloud_api.CloudApi):
   def get_object_metadata(self,
                           bucket_name,
                           object_name,
+                          request_config,
                           generation=None,
                           fields_scope=None):
     """See super class."""
+    del request_config
     request = {'Bucket': bucket_name, 'Key': object_name}
 
     # The VersionId keyword argument to head_object is not nullable if it is
@@ -492,7 +499,10 @@ class S3Api(cloud_api.CloudApi):
         Bucket=bucket_name,
         Key=object_name,
         ExtraArgs=extra_args)
-    return self.get_object_metadata(bucket_name, object_name)
+    return self.get_object_metadata(
+        bucket_name, object_name,
+        request_config_factory.get_request_config(
+            storage_url.CloudUrl(scheme=storage_url.ProviderPrefix.S3)))
 
   def _upload_using_put_object(self, source_stream, destination_resource,
                                extra_args):

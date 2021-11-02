@@ -32049,6 +32049,14 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
       However, if the Updater determines that the minimal action you specify
       is not enough to perform the update, it might perform a more disruptive
       action.
+    MostDisruptiveAllowedActionValueValuesEnum: Most disruptive action that is
+      allowed to be taken on an instance. You can specify either NONE to
+      forbid any actions, REFRESH to allow actions that do not need instance
+      restart, RESTART to allow actions that can be applied without instance
+      replacing or REPLACE to allow all possible actions. If the Updater
+      determines that the minimal update action needed is more disruptive than
+      most disruptive allowed action you specify it will not perform the
+      update at all.
     ReplacementMethodValueValuesEnum: What action should be used to replace
       instances. See minimal_action.REPLACE
     TypeValueValuesEnum: The type of update process. You can specify either
@@ -32091,6 +32099,13 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
       the Updater will attempt to perform that action only. However, if the
       Updater determines that the minimal action you specify is not enough to
       perform the update, it might perform a more disruptive action.
+    mostDisruptiveAllowedAction: Most disruptive action that is allowed to be
+      taken on an instance. You can specify either NONE to forbid any actions,
+      REFRESH to allow actions that do not need instance restart, RESTART to
+      allow actions that can be applied without instance replacing or REPLACE
+      to allow all possible actions. If the Updater determines that the
+      minimal update action needed is more disruptive than most disruptive
+      allowed action you specify it will not perform the update at all.
     replacementMethod: What action should be used to replace instances. See
       minimal_action.REPLACE
     type: The type of update process. You can specify either PROACTIVE so that
@@ -32122,6 +32137,27 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
     will attempt to perform that action only. However, if the Updater
     determines that the minimal action you specify is not enough to perform
     the update, it might perform a more disruptive action.
+
+    Values:
+      NONE: Do not perform any action.
+      REFRESH: Updates applied in runtime, instances will not be disrupted.
+      REPLACE: Old instances will be deleted. New instances will be created
+        from the target template.
+      RESTART: Every instance will be restarted.
+    """
+    NONE = 0
+    REFRESH = 1
+    REPLACE = 2
+    RESTART = 3
+
+  class MostDisruptiveAllowedActionValueValuesEnum(_messages.Enum):
+    r"""Most disruptive action that is allowed to be taken on an instance. You
+    can specify either NONE to forbid any actions, REFRESH to allow actions
+    that do not need instance restart, RESTART to allow actions that can be
+    applied without instance replacing or REPLACE to allow all possible
+    actions. If the Updater determines that the minimal update action needed
+    is more disruptive than most disruptive allowed action you specify it will
+    not perform the update at all.
 
     Values:
       NONE: Do not perform any action.
@@ -32170,8 +32206,9 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
   maxSurge = _messages.MessageField('FixedOrPercent', 2)
   maxUnavailable = _messages.MessageField('FixedOrPercent', 3)
   minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 4)
-  replacementMethod = _messages.EnumField('ReplacementMethodValueValuesEnum', 5)
-  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  mostDisruptiveAllowedAction = _messages.EnumField('MostDisruptiveAllowedActionValueValuesEnum', 5)
+  replacementMethod = _messages.EnumField('ReplacementMethodValueValuesEnum', 6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
 
 
 class InstanceGroupManagerVersion(_messages.Message):
@@ -42992,7 +43029,6 @@ class Policy(_messages.Message):
       `etag` field whenever you call `setIamPolicy`. If you omit this field,
       then IAM allows you to overwrite a version `3` policy with a version `1`
       policy, and all of the conditions in the version `3` policy are lost.
-    iamOwned: This is deprecated and has no effect. Do not use.
     rules: This is deprecated and has no effect. Do not use.
     version: Specifies the format of the policy. Valid values are `0`, `1`,
       and `3`. Requests that specify an invalid value are rejected. Any
@@ -43016,9 +43052,8 @@ class Policy(_messages.Message):
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
-  iamOwned = _messages.BooleanField(4)
-  rules = _messages.MessageField('Rule', 5, repeated=True)
-  version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  rules = _messages.MessageField('Rule', 4, repeated=True)
+  version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class PreconfiguredWafSet(_messages.Message):

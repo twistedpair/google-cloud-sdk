@@ -199,6 +199,10 @@ class ChannelConnection(_messages.Message):
   establish a connection between the provider and the subscriber channel.
 
   Fields:
+    activationToken: Input only. Activation token for the channel. The token
+      will be used during the creation of ChannelConnection to bind the
+      channel with the provider project. This field will not be stored in the
+      provider resource.
     channel: Required. The name of the connected subscriber Channel. This is a
       weak reference to avoid cross project and cross accounts references.
       This must be in
@@ -210,11 +214,12 @@ class ChannelConnection(_messages.Message):
     updateTime: Output only. The last-modified time.
   """
 
-  channel = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  name = _messages.StringField(3)
-  uid = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  activationToken = _messages.StringField(1)
+  channel = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  name = _messages.StringField(4)
+  uid = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class CloudRun(_messages.Message):

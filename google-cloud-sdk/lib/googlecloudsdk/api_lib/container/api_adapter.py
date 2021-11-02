@@ -320,6 +320,7 @@ PRIMARY_LOGS_OPTIONS = [
     CONTROLLER_MANAGER,
     ADDON_MANAGER,
 ]
+PLACEMENT_OPTIONS = ['UNSPECIFIED', 'COMPACT']
 
 
 def CheckResponse(response):
@@ -480,6 +481,7 @@ class CreateClusterOptions(object):
       enable_cloud_run_alpha=None,
       preemptible=None,
       spot=None,
+      placement_type=None,
       enable_autorepair=None,
       enable_autoupgrade=None,
       service_account=None,
@@ -630,6 +632,7 @@ class CreateClusterOptions(object):
     self.enable_cloud_run_alpha = enable_cloud_run_alpha
     self.preemptible = preemptible
     self.spot = spot
+    self.placement_type = placement_type
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.service_account = service_account
@@ -976,6 +979,7 @@ class CreateNodePoolOptions(object):
                image_family=None,
                preemptible=None,
                spot=None,
+               placement_type=None,
                enable_autorepair=None,
                enable_autoupgrade=None,
                service_account=None,
@@ -1026,6 +1030,7 @@ class CreateNodePoolOptions(object):
     self.image_family = image_family
     self.preemptible = preemptible
     self.spot = spot
+    self.placement_type = placement_type
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.service_account = service_account
@@ -1708,6 +1713,9 @@ class APIAdapter(object):
         pool.upgradeSettings = self.messages.UpgradeSettings()
         pool.upgradeSettings.maxSurge = options.max_surge_upgrade
         pool.upgradeSettings.maxUnavailable = options.max_unavailable_upgrade
+      if options.placement_type == 'COMPACT':
+        pool.placementPolicy = self.messages.PlacementPolicy()
+        pool.placementPolicy.type = self.messages.PlacementPolicy.TypeValueValuesEnum.COMPACT
       pools.append(pool)
       to_add -= nodes
     return pools
@@ -2920,6 +2928,10 @@ class APIAdapter(object):
 
     pool.networkConfig = self._GetNetworkConfig(options)
 
+    if options.placement_type == 'COMPACT':
+      pool.placementPolicy = self.messages.PlacementPolicy()
+      pool.placementPolicy.type = self.messages.PlacementPolicy.TypeValueValuesEnum.COMPACT
+
     return pool
 
   def CreateNodePool(self, node_pool_ref, options):
@@ -3415,7 +3427,7 @@ class APIAdapter(object):
     ]
 
   def AddMaintenanceExclusion(self, cluster_ref, existing_policy, window_name,
-                              window_start, window_end):
+                              window_start, window_end, window_scope):
     """Adds a maintenance exclusion to the cluster's maintenance policy.
 
     Args:
@@ -3426,6 +3438,7 @@ class APIAdapter(object):
       window_start: Start time of the window as a datetime.datetime. Can be
         None.
       window_end: End time of the window as a datetime.datetime.
+      window_scope: Scope that the current exclusion will apply to.
 
     Returns:
       Operation from this cluster update.
@@ -3456,6 +3469,20 @@ class APIAdapter(object):
     exclusions = existing_policy.window.maintenanceExclusions
     window = self.messages.TimeWindow(
         startTime=window_start.isoformat(), endTime=window_end.isoformat())
+    if window_scope is not None:
+      if window_scope == 'no_upgrades':
+        window.maintenanceExclusionOptions = self.messages.MaintenanceExclusionOptions(
+            scope=self.messages.MaintenanceExclusionOptions.ScopeValueValuesEnum
+            .NO_UPGRADES)
+      if window_scope == 'no_minor_upgrades':
+        window.maintenanceExclusionOptions = self.messages.MaintenanceExclusionOptions(
+            scope=self.messages.MaintenanceExclusionOptions.ScopeValueValuesEnum
+            .NO_MINOR_UPGRADES)
+      if window_scope == 'no_minor_or_node_upgrades':
+        window.maintenanceExclusionOptions = self.messages.MaintenanceExclusionOptions(
+            scope=self.messages.MaintenanceExclusionOptions.ScopeValueValuesEnum
+            .NO_MINOR_OR_NODE_UPGRADES)
+
     exclusions.additionalProperties.append(
         exclusions.AdditionalProperty(key=window_name, value=window))
     return self._SendMaintenancePolicyRequest(cluster_ref, existing_policy)
@@ -4511,6 +4538,9 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         pool.upgradeSettings = self.messages.UpgradeSettings()
         pool.upgradeSettings.maxSurge = options.max_surge_upgrade
         pool.upgradeSettings.maxUnavailable = options.max_unavailable_upgrade
+      if options.placement_type == 'COMPACT':
+        pool.placementPolicy = self.messages.PlacementPolicy()
+        pool.placementPolicy.type = self.messages.PlacementPolicy.TypeValueValuesEnum.COMPACT
       pools.append(pool)
       to_add -= nodes
     return pools

@@ -1273,16 +1273,6 @@ class GoogleCloudDataplexV1Asset(_messages.Message):
 class GoogleCloudDataplexV1AssetDiscoverySpec(_messages.Message):
   r"""Settings to manage the metadata discovery and publishing for an asset.
 
-  Enums:
-    InheritanceModeValueValuesEnum: Optional. Inheritance behavior for this
-      config. By default, all fields in this config override any values
-      specified at the zone level. When configured as INHERIT some fields in
-      this config are ignored and the zone level configuration is used
-      instead. All fields that behave this way are called out as such via
-      documentation. Deprecated: Rather than configure inheritance behavior
-      via this enum, users can enable inheritance by omitting the discovery
-      config entirely.
-
   Fields:
     csvOptions: Optional. Configuration for CSV data.
     enabled: Optional. Whether discovery is enabled. When inheritance_mode is
@@ -1299,13 +1289,6 @@ class GoogleCloudDataplexV1AssetDiscoverySpec(_messages.Message):
       glob patterns used to match object names. For BigQuery dataset assets,
       these are interpreted as patterns to match table names. When
       inheritance_mode is set to INHERIT this field is unset and ignored.
-    inheritanceMode: Optional. Inheritance behavior for this config. By
-      default, all fields in this config override any values specified at the
-      zone level. When configured as INHERIT some fields in this config are
-      ignored and the zone level configuration is used instead. All fields
-      that behave this way are called out as such via documentation.
-      Deprecated: Rather than configure inheritance behavior via this enum,
-      users can enable inheritance by omitting the discovery config entirely.
     jsonOptions: Optional. Configuration for Json data.
     publishing: Optional. Settings to manage metadata publishing for the zone.
     schedule: Optional. Cron schedule (https://en.wikipedia.org/wiki/Cron) for
@@ -1313,35 +1296,13 @@ class GoogleCloudDataplexV1AssetDiscoverySpec(_messages.Message):
       least 30 minutes apart.
   """
 
-  class InheritanceModeValueValuesEnum(_messages.Enum):
-    r"""Optional. Inheritance behavior for this config. By default, all fields
-    in this config override any values specified at the zone level. When
-    configured as INHERIT some fields in this config are ignored and the zone
-    level configuration is used instead. All fields that behave this way are
-    called out as such via documentation. Deprecated: Rather than configure
-    inheritance behavior via this enum, users can enable inheritance by
-    omitting the discovery config entirely.
-
-    Values:
-      INHERITANCE_MODE_UNSPECIFIED: Unspecified inheritance mode that is
-        interpreted as OVERRIDE.
-      OVERRIDE: Override all zone config values with those specified at the
-        asset level.
-      INHERIT: All values specified at the zone level should replace those
-        specified at the asset level.
-    """
-    INHERITANCE_MODE_UNSPECIFIED = 0
-    OVERRIDE = 1
-    INHERIT = 2
-
   csvOptions = _messages.MessageField('GoogleCloudDataplexV1AssetDiscoverySpecCsvOptions', 1)
   enabled = _messages.BooleanField(2)
   excludePatterns = _messages.StringField(3, repeated=True)
   includePatterns = _messages.StringField(4, repeated=True)
-  inheritanceMode = _messages.EnumField('InheritanceModeValueValuesEnum', 5)
-  jsonOptions = _messages.MessageField('GoogleCloudDataplexV1AssetDiscoverySpecJsonOptions', 6)
-  publishing = _messages.MessageField('GoogleCloudDataplexV1AssetDiscoverySpecMetadataPublishing', 7)
-  schedule = _messages.StringField(8)
+  jsonOptions = _messages.MessageField('GoogleCloudDataplexV1AssetDiscoverySpecJsonOptions', 5)
+  publishing = _messages.MessageField('GoogleCloudDataplexV1AssetDiscoverySpecMetadataPublishing', 6)
+  schedule = _messages.StringField(7)
 
 
 class GoogleCloudDataplexV1AssetDiscoverySpecCsvOptions(_messages.Message):
@@ -1659,10 +1620,11 @@ class GoogleCloudDataplexV1Entity(_messages.Message):
     format: Required. Identifies the storage format of the entity data. It
       does not apply to entities with data stored in BigQuery.
     id: Required. A user-provided entity ID. It is mutable, and will be used
-      as the published table name.
-    name: Output only. Immutable. The resource name of the entity, of the
-      form: projects/{project_number}/locations/{location_id}/lakes/{lake_id}/
-      zones/{zone_id}/entities/{entity_id}. {entity} is a generated unique ID.
+      as the published table name. Specifying a new ID in an update entity
+      request will override the existing value.
+    name: Output only. The resource name of the entity, of the form: projects/
+      {project_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}
+      /entities/{id}.
     schema: Required. The description of the data structure and layout. The
       schema is not included in list responses. It is only included in SCHEMA
       and FULL entity views of a get entity response.
@@ -2333,7 +2295,7 @@ class GoogleCloudDataplexV1Partition(_messages.Message):
       gs://bucket/path/to/entity/key1=value1/key2=value2.
     name: Output only. The resource name of the partition, of the form: projec
       ts/{project_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_
-      id}/entities/{entity}/partitions/{partition_id}. {partition_id} is a
+      id}/entities/{entity_id}/partitions/{partition_id}. {partition_id} is a
       generated unique ID.
     values: Required. Immutable. The set of values representing the partition,
       which correspond to the partition schema defined in the parent entity.

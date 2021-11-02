@@ -128,6 +128,18 @@ class CheckUpgradeResponse(_messages.Message):
   pypiDependencies = _messages.MessageField('PypiDependenciesValue', 5)
 
 
+class CidrBlock(_messages.Message):
+  r"""CidrBlock contains an optional name and one CIDR block.
+
+  Fields:
+    cidrBlock: cidr_block must be specified in CIDR notation.
+    displayName: display_name is a field for users to identify CIDR blocks.
+  """
+
+  cidrBlock = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+
+
 class ComposerProjectsLocationsEnvironmentsCheckUpgradeRequest(_messages.Message):
   r"""A ComposerProjectsLocationsEnvironmentsCheckUpgradeRequest object.
 
@@ -573,6 +585,11 @@ class EnvironmentConfig(_messages.Message):
       per week. This may be split into multiple chunks, each with a size of at
       least 4 hours. If this value is omitted, Cloud Composer components may
       be subject to maintenance at any time.
+    masterAuthorizedNetworksConfig: Optional. The configuration options for
+      GKE clusters master authorized networks. By default master authorized
+      networks feature is: - in case of private environment: enabled with no
+      external networks allowlisted. - in case of public environment:
+      disabled.
     nodeConfig: The configuration used for the Kubernetes Engine cluster.
     nodeCount: The number of nodes in the Kubernetes Engine cluster that will
       be used to run this environment. This field is supported for Cloud
@@ -619,13 +636,14 @@ class EnvironmentConfig(_messages.Message):
   environmentSize = _messages.EnumField('EnvironmentSizeValueValuesEnum', 5)
   gkeCluster = _messages.StringField(6)
   maintenanceWindow = _messages.MessageField('MaintenanceWindow', 7)
-  nodeConfig = _messages.MessageField('NodeConfig', 8)
-  nodeCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 10)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 11)
-  webServerConfig = _messages.MessageField('WebServerConfig', 12)
-  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 13)
-  workloadsConfig = _messages.MessageField('WorkloadsConfig', 14)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 8)
+  nodeConfig = _messages.MessageField('NodeConfig', 9)
+  nodeCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 11)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 12)
+  webServerConfig = _messages.MessageField('WebServerConfig', 13)
+  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 14)
+  workloadsConfig = _messages.MessageField('WorkloadsConfig', 15)
 
 
 class IPAllocationPolicy(_messages.Message):
@@ -746,10 +764,10 @@ class ListOperationsResponse(_messages.Message):
 
 class MaintenanceWindow(_messages.Message):
   r"""The configuration settings for Cloud Composer maintenance window. The
-  following example: { "startTime":"2019-08-01T01:00:00Z"
+  following example: ``` { "startTime":"2019-08-01T01:00:00Z"
   "endTime":"2019-08-01T07:00:00Z" "recurrence":"FREQ=WEEKLY;BYDAY=TU,WE" }
-  would define a maintenance window between 01 and 07 hours UTC during each
-  Tuesday and Wednesday.
+  ``` would define a maintenance window between 01 and 07 hours UTC during
+  each Tuesday and Wednesday.
 
   Fields:
     endTime: Required. Maintenance window end time. It is used only to
@@ -767,6 +785,22 @@ class MaintenanceWindow(_messages.Message):
   endTime = _messages.StringField(1)
   recurrence = _messages.StringField(2)
   startTime = _messages.StringField(3)
+
+
+class MasterAuthorizedNetworksConfig(_messages.Message):
+  r"""Configuration options for the master authorized networks feature.
+  Enabled master authorized networks will disallow all external traffic to
+  access Kubernetes master through HTTPS except traffic from the given CIDR
+  blocks, Google Compute Engine Public IPs and Google Prod IPs.
+
+  Fields:
+    cidrBlocks: cidr_blocks define up to 50 external networks that could
+      access Kubernetes master through HTTPS.
+    enabled: Whether or not master authorized networks is enabled.
+  """
+
+  cidrBlocks = _messages.MessageField('CidrBlock', 1, repeated=True)
+  enabled = _messages.BooleanField(2)
 
 
 class NodeConfig(_messages.Message):

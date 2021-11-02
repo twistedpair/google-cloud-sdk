@@ -4147,7 +4147,7 @@
                       "type": "string"
                     },
                     "etag": {
-                      "description": "Optional. If this is provided, it must match the server's etag on the workerpool for the request to be processed.",
+                      "description": "Optional. If provided, it must match the server's etag on the workerpool for the request to be processed.",
                       "location": "query",
                       "type": "string"
                     },

@@ -2038,8 +2038,8 @@ class CloudbuildProjectsLocationsWorkerPoolsDeleteRequest(_messages.Message):
   Fields:
     allowMissing: If set to true, and the `WorkerPool` is not found, the
       request will succeed but no action will be taken on the server.
-    etag: Optional. If this is provided, it must match the server's etag on
-      the workerpool for the request to be processed.
+    etag: Optional. If provided, it must match the server's etag on the
+      workerpool for the request to be processed.
     name: Required. The name of the `WorkerPool` to delete. Format:
       `projects/{project}/locations/{workerPool}/workerPools/{workerPool}`.
     validateOnly: If set, validate the request and preview the response, but

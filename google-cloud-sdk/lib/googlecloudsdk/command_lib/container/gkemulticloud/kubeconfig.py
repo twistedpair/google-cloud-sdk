@@ -242,7 +242,9 @@ def _GetConnectGatewayEndpoint():
   endpoint = properties.VALUES.api_endpoint_overrides.gkemulticloud.Get()
   # Multicloud overrides prod endpoint at run time with the regionalized version
   # so we can't simply check that endpoint is not overriden.
-  if endpoint is None or endpoint.endswith('gkemulticloud.googleapis.com/'):
+  if endpoint is None or endpoint.endswith(
+      'gkemulticloud.googleapis.com/') or endpoint.endswith(
+          'preprod-gkemulticloud.sandbox.googleapis.com/'):
     return 'connectgateway.googleapis.com'
   if 'staging-gkemulticloud' in endpoint:
     return 'staging-connectgateway.sandbox.googleapis.com'

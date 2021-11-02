@@ -152,10 +152,6 @@ class Cluster(_messages.Message):
   Fields:
     createTime: Output only. Creation time of this resource in RFC3339 text
       format.
-    etag: Optional. Checksum that may be sent on update and delete requests to
-      ensure that the user-provided value is up to date before the server
-      processes a request. The server computes checksums based on the value of
-      other fields in the request.
     labels: Labels are a way to attach lightweight metadata to resources for
       filtering and querying resource data. No more than 64 user labels can be
       associated with each resource. Label keys and values can be no longer
@@ -238,15 +234,14 @@ class Cluster(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  etag = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  management = _messages.BooleanField(4)
-  name = _messages.StringField(5)
-  nodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  nodeTypeId = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  uid = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  labels = _messages.MessageField('LabelsValue', 2)
+  management = _messages.BooleanField(3)
+  name = _messages.StringField(4)
+  nodeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  nodeTypeId = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class Credentials(_messages.Message):
@@ -310,19 +305,37 @@ class Expr(_messages.Message):
 class Hcx(_messages.Message):
   r"""Details about a HCX Cloud Manager appliance.
 
+  Enums:
+    StateValueValuesEnum: Output only. The state of the appliance.
+
   Fields:
     externalIp: External IP address of the appliance.
     fdqn: Fully qualified domain name of the appliance.
     fqdn: Fully qualified domain name of the appliance.
     internalIp: Internal IP address of the appliance.
+    state: Output only. The state of the appliance.
     version: Version of the appliance.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the appliance.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified appliance state. This is the default
+        value.
+      ACTIVE: The appliance is operational and can be used.
+      CREATING: The appliance is being deployed.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
 
   externalIp = _messages.StringField(1)
   fdqn = _messages.StringField(2)
   fqdn = _messages.StringField(3)
   internalIp = _messages.StringField(4)
-  version = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  version = _messages.StringField(6)
 
 
 class HcxActivationKey(_messages.Message):
@@ -334,10 +347,6 @@ class HcxActivationKey(_messages.Message):
   Fields:
     activationKey: Output only. HCX activation key.
     createTime: Output only. Creation time of HCX activation key.
-    etag: Checksum that may be sent on update and delete requests to ensure
-      that the user-provided value is up to date before the server processes a
-      request. The server computes checksums based on the value of other
-      fields in the request.
     name: Output only. The resource name of this HcxActivationKey. Resource
       names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
@@ -363,10 +372,9 @@ class HcxActivationKey(_messages.Message):
 
   activationKey = _messages.StringField(1)
   createTime = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  name = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  uid = _messages.StringField(6)
+  name = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  uid = _messages.StringField(5)
 
 
 class ListClustersResponse(_messages.Message):
@@ -563,10 +571,8 @@ class ManagementCluster(_messages.Message):
       The identifier must meet the following requirements: * Only contains
       1-63 alphanumeric characters and hyphens * Begins with an alphabetical
       character * Ends with a non-hyphen character * Not formatted as a UUID *
-      Complies with [RFC
-      1034](https://datatracker.ietf.org/doc/html/rfc1034){: .external}
-      (section 3.5) @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[
-      0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))
+      Complies with [RFC 1034](https://datatracker.ietf.org/doc/html/rfc1034)
+      (section 3.5)
     nodeCount: Required. Number of nodes in this cluster.
     nodeTypeId: Required. The canonical identifier of node types (`NodeType`)
       in this cluster. For example: standard-72.
@@ -633,10 +639,6 @@ class NetworkPolicy(_messages.Message):
       with a "/26" prefix, is required. The range cannot overlap with any
       prefixes either in the consumer VPC network or in use by the private
       clouds attached to that VPC network.
-    etag: Checksum that may be sent on update and delete requests to ensure
-      that the user-provided value is up to date before the server processes a
-      request. The server computes checksums based on the value of other
-      fields in the request.
     externalIp: Network service that allows External IP addresses to be
       assigned to VMware workloads. This service can only be enabled when
       `internet_access` is also enabled.
@@ -704,14 +706,13 @@ class NetworkPolicy(_messages.Message):
 
   createTime = _messages.StringField(1)
   edgeServicesCidr = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  externalIp = _messages.MessageField('NetworkService', 4)
-  internetAccess = _messages.MessageField('NetworkService', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  network = _messages.StringField(8)
-  uid = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  externalIp = _messages.MessageField('NetworkService', 3)
+  internetAccess = _messages.MessageField('NetworkService', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  network = _messages.StringField(7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class NetworkService(_messages.Message):
@@ -781,19 +782,37 @@ class NodeType(_messages.Message):
 class Nsx(_messages.Message):
   r"""Details about a NSX Manager appliance.
 
+  Enums:
+    StateValueValuesEnum: Output only. The state of the appliance.
+
   Fields:
     externalIp: External IP address of the appliance.
     fdqn: Fully qualified domain name of the appliance.
     fqdn: Fully qualified domain name of the appliance.
     internalIp: Internal IP address of the appliance.
+    state: Output only. The state of the appliance.
     version: Version of the appliance.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the appliance.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified appliance state. This is the default
+        value.
+      ACTIVE: The appliance is operational and can be used.
+      CREATING: The appliance is being deployed.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
 
   externalIp = _messages.StringField(1)
   fdqn = _messages.StringField(2)
   fqdn = _messages.StringField(3)
   internalIp = _messages.StringField(4)
-  version = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  version = _messages.StringField(6)
 
 
 class Operation(_messages.Message):
@@ -1037,10 +1056,6 @@ class PrivateCloud(_messages.Message):
     deleteTime: Output only. Time the resource was marked as deleted, in
       RFC3339 text format.
     description: User-provided description for this private cloud.
-    etag: Checksum that may be sent on update, delete, and undelete requests
-      to ensure that the user-provided value is up to date before the server
-      processes a request. The server computes checksums based on the value of
-      other fields in the request.
     expireTime: Output only. Planned deletion time of this resource in RFC3339
       text format.
     hcx: Output only. HCX appliance.
@@ -1059,8 +1074,7 @@ class PrivateCloud(_messages.Message):
       cloud. This field is required during creation of the private cloud to
       provide details for the default cluster. The following fields can't be
       changed after private cloud creation: `ManagementCluster.clusterId`,
-      `ManagementCluster.nodeTypeId`,
-      `ManagementCluster.nodeCustomVirtualCpuCount`.
+      `ManagementCluster.nodeTypeId`.
     name: Output only. The resource name of this private cloud. Resource names
       are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
@@ -1133,18 +1147,17 @@ class PrivateCloud(_messages.Message):
   createTime = _messages.StringField(1)
   deleteTime = _messages.StringField(2)
   description = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  expireTime = _messages.StringField(5)
-  hcx = _messages.MessageField('Hcx', 6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  managementCluster = _messages.MessageField('ManagementCluster', 8)
-  name = _messages.StringField(9)
-  networkConfig = _messages.MessageField('NetworkConfig', 10)
-  nsx = _messages.MessageField('Nsx', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
-  vcenter = _messages.MessageField('Vcenter', 15)
+  expireTime = _messages.StringField(4)
+  hcx = _messages.MessageField('Hcx', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  managementCluster = _messages.MessageField('ManagementCluster', 7)
+  name = _messages.StringField(8)
+  networkConfig = _messages.MessageField('NetworkConfig', 9)
+  nsx = _messages.MessageField('Nsx', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
+  vcenter = _messages.MessageField('Vcenter', 14)
 
 
 class ResetNsxCredentialsRequest(_messages.Message):
@@ -1348,36 +1361,48 @@ class UndeletePrivateCloudRequest(_messages.Message):
   r"""Request message for VmwareEngine.UndeletePrivateCloud
 
   Fields:
-    etag: Optional. Checksum used to ensure that the user-provided value is up
-      to date before the server processes the request. The server compares
-      provided checksum with the current checksum of the resource. If the
-      user-provided value is out of date, this request returns an `ABORTED`
-      error.
     requestId: Optional. The request ID must be a valid UUID with the
       exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
-  etag = _messages.StringField(1)
-  requestId = _messages.StringField(2)
+  requestId = _messages.StringField(1)
 
 
 class Vcenter(_messages.Message):
   r"""Details about a vCenter Server management appliance.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the appliance.
 
   Fields:
     externalIp: External IP address of the appliance.
     fdqn: Fully qualified domain name of the appliance.
     fqdn: Fully qualified domain name of the appliance.
     internalIp: Internal IP address of the appliance.
+    state: Output only. The state of the appliance.
     version: Version of the appliance.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the appliance.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified appliance state. This is the default
+        value.
+      ACTIVE: The appliance is operational and can be used.
+      CREATING: The appliance is being deployed.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
 
   externalIp = _messages.StringField(1)
   fdqn = _messages.StringField(2)
   fqdn = _messages.StringField(3)
   internalIp = _messages.StringField(4)
-  version = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  version = _messages.StringField(6)
 
 
 class VmwareengineProjectsLocationsGetRequest(_messages.Message):
@@ -1422,9 +1447,7 @@ class VmwareengineProjectsLocationsNetworkPoliciesCreateRequest(_messages.Messag
       following requirements: * Only contains 1-63 alphanumeric characters and
       hyphens * Begins with an alphabetical character * Ends with a non-hyphen
       character * Not formatted as a UUID * Complies with [RFC
-      1034](https://datatracker.ietf.org/doc/html/rfc1034){: .external}
-      (section 3.5) @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[
-      0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))
+      1034](https://datatracker.ietf.org/doc/html/rfc1034) (section 3.5)
     parent: Required. The resource name of the location (region) to create the
       new network policy in. Resource names are schemeless URIs that follow
       the conventions in https://cloud.google.com/apis/design/resource_names.
@@ -1453,11 +1476,6 @@ class VmwareengineProjectsLocationsNetworkPoliciesDeleteRequest(_messages.Messag
   r"""A VmwareengineProjectsLocationsNetworkPoliciesDeleteRequest object.
 
   Fields:
-    etag: Optional. Checksum used to ensure that the user-provided value is up
-      to date before the server processes the request. The server compares
-      provided checksum with the current checksum of the resource. If the
-      user-provided value is out of date, this request returns an `ABORTED`
-      error.
     name: Required. The resource name of the network policy to delete.
       Resource names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
@@ -1477,9 +1495,8 @@ class VmwareengineProjectsLocationsNetworkPoliciesDeleteRequest(_messages.Messag
       (00000000-0000-0000-0000-000000000000).
   """
 
-  etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
 
 
 class VmwareengineProjectsLocationsNetworkPoliciesGetIamPolicyRequest(_messages.Message):
@@ -1773,9 +1790,7 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersCreateRequest(_messages.
       following requirements: * Only contains 1-63 alphanumeric characters and
       hyphens * Begins with an alphabetical character * Ends with a non-hyphen
       character * Not formatted as a UUID * Complies with [RFC
-      1034](https://datatracker.ietf.org/doc/html/rfc1034){: .external}
-      (section 3.5) @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[
-      0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))
+      1034](https://datatracker.ietf.org/doc/html/rfc1034) (section 3.5)
     parent: Required. The resource name of the private cloud to create a new
       cluster in. Resource names are schemeless URIs that follow the
       conventions in https://cloud.google.com/apis/design/resource_names. For
@@ -1800,11 +1815,6 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersDeleteRequest(_messages.
   object.
 
   Fields:
-    etag: Optional. Checksum used to ensure that the user-provided value is up
-      to date before the server processes the request. The server compares
-      provided checksum with the current checksum of the resource. If the
-      user-provided value is out of date, this request returns an `ABORTED`
-      error.
     name: Required. The resource name of the cluster to delete. Resource names
       are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
@@ -1815,9 +1825,8 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersDeleteRequest(_messages.
       (00000000-0000-0000-0000-000000000000).
   """
 
-  etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
 
 
 class VmwareengineProjectsLocationsPrivateCloudsClustersGetIamPolicyRequest(_messages.Message):
@@ -1860,19 +1869,10 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersListRequest(_messages.Me
   r"""A VmwareengineProjectsLocationsPrivateCloudsClustersListRequest object.
 
   Fields:
-    filter: A filter expression that matches resources returned in the
-      response. The expression must specify the field name, a comparison
-      operator, and the value that you want to use for filtering. The value
-      must be a string, a number, or a boolean. The comparison operator must
-      be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of
-      clusters, you can exclude the ones named `example-cluster` by specifying
-      `name != "example-cluster"`. You can also filter nested fields. For
-      example, you could specify `autoscale_settings.cooldownPeriodMinutes =
-      2` to include clusters only if they have given a cooldown period in
-      autoscale policy. To filter on multiple expressions, provide each
-      separate expression within parentheses. For example: ``` (name =
-      "example-cluster") (nodeCount = "3") ``` By default, each expression is
-      an `AND` expression. However, you can include `AND` and `OR` expressions
+    filter:  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ``` (name = "example-
+      cluster") (nodeCount = "3") ``` By default, each expression is an `AND`
+      expression. However, you can include `AND` and `OR` expressions
       explicitly. For example: ``` (name = "example-cluster-1") AND
       (createTime > "2021-04-12T08:15:10.40Z") OR (name = "example-cluster-2")
       ```
@@ -1978,9 +1978,7 @@ class VmwareengineProjectsLocationsPrivateCloudsCreateRequest(_messages.Message)
       contains 1-63 alphanumeric characters and hyphens * Begins with an
       alphabetical character * Ends with a non-hyphen character * Not
       formatted as a UUID * Complies with [RFC
-      1034](https://datatracker.ietf.org/doc/html/rfc1034){: .external}
-      (section 3.5) @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[
-      0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))
+      1034](https://datatracker.ietf.org/doc/html/rfc1034) (section 3.5)
     requestId: Optional. The request ID must be a valid UUID with the
       exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
@@ -2006,11 +2004,6 @@ class VmwareengineProjectsLocationsPrivateCloudsDeleteRequest(_messages.Message)
       VmwareEngine.UndeletePrivateCloud. Specifying a value of `0` for this
       field instead begins the deletion process and ceases billing
       immediately.
-    etag: Optional. Checksum used to ensure that the user-provided value is up
-      to date before the server processes the request. The server compares the
-      provided checksum with the current checksum of the resource. If the
-      user-provided value is out of date, then this request returns an
-      `ABORTED` error.
     force: Optional. If set to true, cascade delete is enabled and all
       children of this private cloud resource are also deleted. When this flag
       is set to false, the private cloud will not be deleted if there are any
@@ -2026,10 +2019,9 @@ class VmwareengineProjectsLocationsPrivateCloudsDeleteRequest(_messages.Message)
   """
 
   delayHours = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  etag = _messages.StringField(2)
-  force = _messages.BooleanField(3)
-  name = _messages.StringField(4, required=True)
-  requestId = _messages.StringField(5)
+  force = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class VmwareengineProjectsLocationsPrivateCloudsGetIamPolicyRequest(_messages.Message):
@@ -2081,9 +2073,7 @@ class VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysCreateRequest(_
       requirements: * Only contains 1-63 alphanumeric characters and hyphens *
       Begins with an alphabetical character * Ends with a non-hyphen character
       * Not formatted as a UUID * Complies with [RFC
-      1034](https://datatracker.ietf.org/doc/html/rfc1034){: .external}
-      (section 3.5) @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[
-      0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))
+      1034](https://datatracker.ietf.org/doc/html/rfc1034) (section 3.5)
     parent: Required. The resource name of the private cloud to create the key
       for. Resource names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:

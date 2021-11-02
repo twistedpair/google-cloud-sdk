@@ -5,6 +5,78 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 363.0.0 (2021-11-02)
+
+### Cloud SDK
+
+* `gcloud` command-line tool supports authentication using workload identity
+  federation via
+  `gcloud auth login --cred-file=/path/to/workload/identity/config/file`.
+*   Client certificate authorization is enabled for more services when setting
+    `context_aware/use_client_certificate`.
+    Run `gcloud topic client-certificate` to see the list of disallowed
+    services.
+
+### AI
+
+* Fixed crashing on `beta ai tensorboard-experiments delete`.
+
+### Cloud SQL
+
+* Added the following flags to `gcloud sql user create` and
+  created `gcloud sql user set-password-policy` for GA:
+   * `--password-policy-allowed-failed-attempts`
+   * `--password-policy-password-expiration-duration`
+   * `--password-policy-enable-failed-attempts-check`
+   * `--clear-password-policy`
+
+### Compute Engine
+
+* Promoted `--zone` flag of `gcloud compute images describe-from-family` to GA.
+* Added support for `version` value `11` for `short-name` value `debian` in `--os-types` for `gcloud beta compute instances ops-agents policies [create|update]`.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.64.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Eventarc
+
+*  Added the following flags to `gcloud eventarc triggers create` to support creating a trigger with Cloud Run for Anthos service destination:
+   * `--destination-gke-cluster`
+   * `--destination-gke-service`
+   * `--destination-gke-location`
+   * `--destination-gke-namespace`
+   * `--destination-gke-path`
+
+*  Added the following flags to `gcloud eventarc triggers update` to support updating a trigger with Cloud Run for Anthos service destination:
+   * `--destination-gke-path`
+   * `--destination-gke-namespace`
+   * `--destination-gke-service`
+   * `--clear-destination-gke-path`
+
+### GKE Hub
+
+* Promoted the following commands to beta and GA:
+  * `gcloud container hub cloudrun describe`.
+  * `gcloud container hub cloudrun disable`.
+  * `gcloud container hub cloudrun enable`.
+  * `gcloud container hub cloudrun apply`.
+
+### Kubernetes Engine
+
+* Added `--enable-image-streaming` flag to `gcloud container clusters/node-pools create/update` to allow creating clusters/node-pools with image streaming enabled, and enabling image streaming on exisitng clusters/node-pools.
+
+### Secret Manager
+
+* Updated `--filter` flag to be passed to the backend in
+    * `gcloud secrets list`
+    * `gcloud secrets versions list`
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 362.0.0 (2021-10-26)
 
 ### Breaking Changes

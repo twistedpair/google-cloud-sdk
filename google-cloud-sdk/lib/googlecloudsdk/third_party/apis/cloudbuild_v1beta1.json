@@ -244,6 +244,27 @@
         "vpcscEnabled": {
           "description": "Immutable. If true, the worker pool is created with a VPC-SC compatible configuration. Users should set to true if the worker pool project is part of a secured VPC-SC perimeter. DEPRECATED: Use no_public_address in the WorkerConfig instead.",
           "type": "boolean"
+        },
+        "displayName": {
+          "description": "A user-specified, human-readable name for the `WorkerPool`. If provided, this value must be 1-63 characters.",
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. A unique identifier for the `WorkerPool`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "annotations": {
+          "description": "User specified annotations. See https:\/\/google.aip.dev\/128#annotations for more details such as format and size limitations.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "etag": {
+          "description": "Output only. Checksum computed by the server. May be sent on update and delete requests to ensure that the client has an up-to-date value before proceeding.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -1827,6 +1848,11 @@
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workerPools\/[^\/]+$",
                       "location": "path",
                       "required": true,
+                      "type": "string"
+                    },
+                    "etag": {
+                      "description": "Optional. If this is provided, it must match the server's etag on the workerpool for the request to be processed.",
+                      "location": "query",
                       "type": "string"
                     }
                   },

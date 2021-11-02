@@ -20,10 +20,38 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+
+
+class _ProjectNumberPropertyFallthrough(deps.PropertyFallthrough):
+  """A fallthrough for project number from property core/project."""
+
+  def __init__(self):
+    """See base class."""
+    super(_ProjectNumberPropertyFallthrough,
+          self).__init__(prop=properties.VALUES.core.project)
+
+  def _Call(self, parsed_args):
+    """See base class."""
+    return _EnsureProjectNumber(
+        super(_ProjectNumberPropertyFallthrough, self)._Call(parsed_args))
+
+
+class _ProjectNumberArgFallthrough(deps.ArgFallthrough):
+  """A fallthrough for project number from the --project argument."""
+
+  def __init__(self):
+    """See base class."""
+    super(_ProjectNumberArgFallthrough, self).__init__(arg_name='--project')
+
+  def _Call(self, parsed_args):
+    """See base class."""
+    return _EnsureProjectNumber(
+        super(_ProjectNumberArgFallthrough, self)._Call(parsed_args))
 
 
 def GetOperationResource(op):
@@ -51,6 +79,19 @@ def LocationAttributeConfig():
       name='location',
       help_text='Google Cloud location for the {resource}.',
       fallthroughs=[deps.PropertyFallthrough(properties.VALUES.azure.location)])
+
+
+def ProjectAttributeConfig(use_project_number):
+  if not use_project_number:
+    return concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG
+  return concepts.ResourceParameterAttributeConfig(
+      name='project',
+      help_text='Project number of the Google Cloud Platform project for '
+      'the {resource}.',
+      fallthroughs=[
+          _ProjectNumberArgFallthrough(),
+          _ProjectNumberPropertyFallthrough()
+      ])
 
 
 def OperationAttributeConfig():
@@ -94,13 +135,24 @@ def GetAzureNodePoolResourceSpec():
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
-def GetAzureClientResourceSpec():
+def GetAzureClientResourceSpec(use_project_number=False):
+  """Gets the resource spec for an Azure client.
+
+  Args:
+    use_project_number: bool, whether to enforce using project number in the
+      resource spec. Project number should always be used when a resource is
+      referenced in a field e.g. the client field when creating/updating Azure
+      clusters.
+
+  Returns:
+    The resource spec for an Azure client.
+  """
   return concepts.ResourceSpec(
       'gkemulticloud.projects.locations.azureClients',
       resource_name='client',
       azureClientsId=AzureClientAttributeConfig(),
       locationsId=LocationAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=ProjectAttributeConfig(use_project_number))
 
 
 def AddAzureClusterResourceArg(parser, verb, positional=True):
@@ -197,7 +249,7 @@ def AddAzureClusterAndClientResourceArgs(parser, update=False):
               required=True),
           presentation_specs.ResourcePresentationSpec(
               '--client',
-              GetAzureClientResourceSpec(),
+              GetAzureClientResourceSpec(use_project_number=True),
               'Azure client to use for cluster {}.'.format(
                   'update' if update else 'creation'),
               required=(not update),
@@ -230,3 +282,11 @@ def ParseOperationResourceArg(args):
   return resources.REGISTRY.ParseRelativeName(
       args.CONCEPTS.operation_id.Parse().RelativeName(),
       collection='gkemulticloud.projects.locations.operations')
+
+
+def _EnsureProjectNumber(p):
+  if p is None:
+    return p
+  if p.isdigit():
+    return p
+  return project_util.GetProjectNumber(p)

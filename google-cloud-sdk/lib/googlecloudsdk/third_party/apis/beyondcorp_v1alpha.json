@@ -491,6 +491,10 @@
         "principalInfo": {
           "description": "Required. Principal information about the Identity of the connector.",
           "$ref": "PrincipalInfo"
+        },
+        "resourceInfo": {
+          "description": "Optional. Resource info of the connector.",
+          "$ref": "ResourceInfo"
         }
       }
     },
@@ -513,6 +517,55 @@
         "email": {
           "description": "Email address of the service account.",
           "type": "string"
+        }
+      }
+    },
+    "ResourceInfo": {
+      "id": "ResourceInfo",
+      "description": "ResourceInfo represents the information\/status of the associated resource.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Required. Unique Id for the resource.",
+          "type": "string"
+        },
+        "status": {
+          "description": "Overall health status. Overall status is derived based on the status of each sub level resources.",
+          "type": "string",
+          "enumDescriptions": [
+            "Health status is unknown: not initialized or failed to retrieve.",
+            "The resource is healthy.",
+            "The resource is unhealthy.",
+            "The resource is unresponsive.",
+            "The resource is some sub-resources are UNHEALTHY."
+          ],
+          "enum": [
+            "HEALTH_STATUS_UNSPECIFIED",
+            "HEALTHY",
+            "UNHEALTHY",
+            "UNRESPONSIVE",
+            "DEGRADED"
+          ]
+        },
+        "resource": {
+          "description": "Specific details for the resource.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "time": {
+          "description": "The timestamp to collect the info. It is suggested to be set by the topmost level resource only.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "sub": {
+          "description": "List of Info for the sub level resources.",
+          "type": "array",
+          "items": {
+            "$ref": "ResourceInfo"
+          }
         }
       }
     },

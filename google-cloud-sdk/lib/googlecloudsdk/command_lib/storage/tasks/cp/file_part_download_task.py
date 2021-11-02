@@ -27,6 +27,7 @@ import threading
 
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
+from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage import tracker_file_util
@@ -124,7 +125,8 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
                component_number=None,
                total_components=None,
                do_not_decompress=False,
-               strategy=cloud_api.DownloadStrategy.ONE_SHOT):
+               strategy=cloud_api.DownloadStrategy.ONE_SHOT,
+               user_request_args=None):
     """Initializes task.
 
     Args:
@@ -144,15 +146,18 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
         downloaded gzips.
       strategy (cloud_api.DownloadStrategy): Determines what download
         implementation to use.
+      user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
     super(FilePartDownloadTask,
           self).__init__(source_resource, destination_resource, offset, length,
                          component_number, total_components)
     self._do_not_decompress = do_not_decompress
     self._strategy = strategy
+    self._user_request_args = user_request_args
 
-  def _perform_download(self, progress_callback, download_strategy, start_byte,
-                        end_byte, write_mode, digesters):
+  def _perform_download(self, request_config, progress_callback,
+                        download_strategy, start_byte, end_byte, write_mode,
+                        digesters):
     """Prepares file stream, calls API, and validates hash."""
     with files.BinaryFileWriter(
         self._destination_resource.storage_url.object_name,
@@ -165,6 +170,7 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
         api_factory.get_api(provider).download_object(
             self._source_resource,
             download_stream,
+            request_config,
             digesters=digesters,
             do_not_decompress=self._do_not_decompress,
             download_strategy=download_strategy,
@@ -184,12 +190,13 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
           self._destination_resource.storage_url.object_name,
           self._source_resource.md5_hash, calculated_digest)
 
-  def _perform_one_shot_download(self, progress_callback, digesters):
+  def _perform_one_shot_download(self, request_config, progress_callback,
+                                 digesters):
     """Sets up a basic download based on task attributes."""
     start_byte = self._offset
     end_byte = self._offset + self._length - 1
 
-    self._perform_download(progress_callback,
+    self._perform_download(request_config, progress_callback,
                            cloud_api.DownloadStrategy.ONE_SHOT, start_byte,
                            end_byte, files.BinaryFileWriterMode.TRUNCATE,
                            digesters)
@@ -203,7 +210,8 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
         digesters[hash_algorithm] = hash_util.get_hash_from_file_stream(
             file_reader, hash_algorithm, start=start_byte, stop=end_byte)
 
-  def _perform_resumable_download(self, progress_callback, digesters):
+  def _perform_resumable_download(self, request_config, progress_callback,
+                                  digesters):
     """Resume or start download that can be resumabled."""
     copy_component_util.create_file_if_needed(self._source_resource,
                                               self._destination_resource)
@@ -225,7 +233,7 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
       # TRUNCATE can create new file unlike MODIFY.
       write_mode = files.BinaryFileWriterMode.TRUNCATE
 
-    self._perform_download(progress_callback,
+    self._perform_download(request_config, progress_callback,
                            cloud_api.DownloadStrategy.RESUMABLE, start_byte,
                            end_byte, write_mode, digesters)
 
@@ -247,7 +255,8 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
                 })
         ])
 
-  def _perform_component_download(self, progress_callback, digesters):
+  def _perform_component_download(self, request_config, progress_callback,
+                                  digesters):
     """Component download does not validate hash or delete tracker."""
     destination_url = self._destination_resource.storage_url
     end_byte = self._offset + self._length - 1
@@ -280,9 +289,9 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
       # For non-resumable sliced downloads.
       start_byte = self._offset
 
-    self._perform_download(progress_callback, self._strategy, start_byte,
-                           end_byte, files.BinaryFileWriterMode.MODIFY,
-                           digesters)
+    self._perform_download(request_config, progress_callback, self._strategy,
+                           start_byte, end_byte,
+                           files.BinaryFileWriterMode.MODIFY, digesters)
 
     return self._get_output(digesters)
 
@@ -303,9 +312,14 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
         thread_id=threading.get_ident(),
     )
 
+    request_config = request_config_factory.get_request_config(
+        self._source_resource.storage_url,
+        user_request_args=self._user_request_args)
+
     if self._source_resource.size and self._component_number is not None:
       try:
-        return self._perform_component_download(progress_callback, digesters)
+        return self._perform_component_download(request_config,
+                                                progress_callback, digesters)
       # pylint:disable=broad-except
       except Exception as e:
         # pylint:enable=broad-except
@@ -314,6 +328,8 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
             messages=[task.Message(topic=task.Topic.ERROR, payload=e)])
 
     if self._strategy is cloud_api.DownloadStrategy.RESUMABLE:
-      self._perform_resumable_download(progress_callback, digesters)
+      self._perform_resumable_download(request_config, progress_callback,
+                                       digesters)
     else:
-      self._perform_one_shot_download(progress_callback, digesters)
+      self._perform_one_shot_download(request_config, progress_callback,
+                                      digesters)

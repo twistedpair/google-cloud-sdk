@@ -40,7 +40,11 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
+    self.projects_locations_networks = self.ProjectsLocationsNetworksService(self)
+    self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_snapshotSchedulePolicies = self.ProjectsLocationsSnapshotSchedulePoliciesService(self)
     self.projects_locations_volumes_luns = self.ProjectsLocationsVolumesLunsService(self)
+    self.projects_locations_volumes_snapshots = self.ProjectsLocationsVolumesSnapshotsService(self)
     self.projects_locations_volumes = self.ProjectsLocationsVolumesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -101,11 +105,365 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         method_id='baremetalsolution.projects.locations.instances.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        query_params=['pageSize', 'pageToken'],
         relative_path='v2/{+parent}/instances',
         request_field='',
         request_type_name='BaremetalsolutionProjectsLocationsInstancesListRequest',
         response_type_name='ListInstancesResponse',
+        supports_download=False,
+    )
+
+    def Reset(self, request, global_params=None):
+      r"""Perform an ungraceful, hard reset on a server. Equivalent to shutting the power off and then turning it back on.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsInstancesResetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Reset')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Reset.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:reset',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.instances.reset',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:reset',
+        request_field='resetInstanceRequest',
+        request_type_name='BaremetalsolutionProjectsLocationsInstancesResetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsNetworksService(base_api.BaseApiService):
+    """Service class for the projects_locations_networks resource."""
+
+    _NAME = 'projects_locations_networks'
+
+    def __init__(self, client):
+      super(BaremetalsolutionV2.ProjectsLocationsNetworksService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get details of a single network.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsNetworksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Network) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/networks/{networksId}',
+        http_method='GET',
+        method_id='baremetalsolution.projects.locations.networks.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsNetworksGetRequest',
+        response_type_name='Network',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List network in a given project and location.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsNetworksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListNetworksResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/networks',
+        http_method='GET',
+        method_id='baremetalsolution.projects.locations.networks.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/networks',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsNetworksListRequest',
+        response_type_name='ListNetworksResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_operations resource."""
+
+    _NAME = 'projects_locations_operations'
+
+    def __init__(self, client):
+      super(BaremetalsolutionV2.ProjectsLocationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='BaremetalsolutionProjectsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsOperationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='baremetalsolution.projects.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsOperationsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='baremetalsolution.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='baremetalsolution.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2/{+name}/operations',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSnapshotSchedulePoliciesService(base_api.BaseApiService):
+    """Service class for the projects_locations_snapshotSchedulePolicies resource."""
+
+    _NAME = 'projects_locations_snapshotSchedulePolicies'
+
+    def __init__(self, client):
+      super(BaremetalsolutionV2.ProjectsLocationsSnapshotSchedulePoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a snapshot schedule policy in the specified project.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SnapshotSchedulePolicy) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/snapshotSchedulePolicies',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.snapshotSchedulePolicies.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['snapshotSchedulePolicyId'],
+        relative_path='v2/{+parent}/snapshotSchedulePolicies',
+        request_field='snapshotSchedulePolicy',
+        request_type_name='BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesCreateRequest',
+        response_type_name='SnapshotSchedulePolicy',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a named snapshot schedule policy.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/snapshotSchedulePolicies/{snapshotSchedulePoliciesId}',
+        http_method='DELETE',
+        method_id='baremetalsolution.projects.locations.snapshotSchedulePolicies.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get details of a single snapshot schedule policy.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SnapshotSchedulePolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/snapshotSchedulePolicies/{snapshotSchedulePoliciesId}',
+        http_method='GET',
+        method_id='baremetalsolution.projects.locations.snapshotSchedulePolicies.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesGetRequest',
+        response_type_name='SnapshotSchedulePolicy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List snapshot schedule policies in a given project and location.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSnapshotSchedulePoliciesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/snapshotSchedulePolicies',
+        http_method='GET',
+        method_id='baremetalsolution.projects.locations.snapshotSchedulePolicies.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/snapshotSchedulePolicies',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesListRequest',
+        response_type_name='ListSnapshotSchedulePoliciesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update a snapshot schedule policy in the specified project.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SnapshotSchedulePolicy) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/snapshotSchedulePolicies/{snapshotSchedulePoliciesId}',
+        http_method='PATCH',
+        method_id='baremetalsolution.projects.locations.snapshotSchedulePolicies.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='snapshotSchedulePolicy',
+        request_type_name='BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesPatchRequest',
+        response_type_name='SnapshotSchedulePolicy',
         supports_download=False,
     )
 
@@ -165,11 +523,156 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         method_id='baremetalsolution.projects.locations.volumes.luns.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        query_params=['pageSize', 'pageToken'],
         relative_path='v2/{+parent}/luns',
         request_field='',
         request_type_name='BaremetalsolutionProjectsLocationsVolumesLunsListRequest',
         response_type_name='ListLunsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsVolumesSnapshotsService(base_api.BaseApiService):
+    """Service class for the projects_locations_volumes_snapshots resource."""
+
+    _NAME = 'projects_locations_volumes_snapshots'
+
+    def __init__(self, client):
+      super(BaremetalsolutionV2.ProjectsLocationsVolumesSnapshotsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a storage volume snapshot in a containing volume.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsVolumesSnapshotsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VolumeSnapshot) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/snapshots',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.volumes.snapshots.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/snapshots',
+        request_field='volumeSnapshot',
+        request_type_name='BaremetalsolutionProjectsLocationsVolumesSnapshotsCreateRequest',
+        response_type_name='VolumeSnapshot',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a storage volume snapshot for a given volume.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsVolumesSnapshotsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/snapshots/{snapshotsId}',
+        http_method='DELETE',
+        method_id='baremetalsolution.projects.locations.volumes.snapshots.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsVolumesSnapshotsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get details of a single storage volume snapshot.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsVolumesSnapshotsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VolumeSnapshot) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/snapshots/{snapshotsId}',
+        http_method='GET',
+        method_id='baremetalsolution.projects.locations.volumes.snapshots.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsVolumesSnapshotsGetRequest',
+        response_type_name='VolumeSnapshot',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List storage volume snapshots for given storage volume.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsVolumesSnapshotsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListVolumeSnapshotsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/snapshots',
+        http_method='GET',
+        method_id='baremetalsolution.projects.locations.volumes.snapshots.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/snapshots',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsVolumesSnapshotsListRequest',
+        response_type_name='ListVolumeSnapshotsResponse',
+        supports_download=False,
+    )
+
+    def RestoreVolumeSnapshot(self, request, global_params=None):
+      r"""Restore a storage volume snapshot to its containing volume.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsVolumesSnapshotsRestoreVolumeSnapshotRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RestoreVolumeSnapshot')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RestoreVolumeSnapshot.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/snapshots/{snapshotsId}:restoreVolumeSnapshot',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.volumes.snapshots.restoreVolumeSnapshot',
+        ordered_params=['volumeSnapshot'],
+        path_params=['volumeSnapshot'],
+        query_params=[],
+        relative_path='v2/{+volumeSnapshot}:restoreVolumeSnapshot',
+        request_field='restoreVolumeSnapshotRequest',
+        request_type_name='BaremetalsolutionProjectsLocationsVolumesSnapshotsRestoreVolumeSnapshotRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -182,6 +685,87 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
       super(BaremetalsolutionV2.ProjectsLocationsVolumesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Get(self, request, global_params=None):
+      r"""Get details of a single storage volume.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsVolumesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Volume) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}',
+        http_method='GET',
+        method_id='baremetalsolution.projects.locations.volumes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsVolumesGetRequest',
+        response_type_name='Volume',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List storage volumes in a given project and location.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsVolumesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListVolumesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/volumes',
+        http_method='GET',
+        method_id='baremetalsolution.projects.locations.volumes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/volumes',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsVolumesListRequest',
+        response_type_name='ListVolumesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update details of a single storage volume.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsVolumesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}',
+        http_method='PATCH',
+        method_id='baremetalsolution.projects.locations.volumes.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='volume',
+        request_type_name='BaremetalsolutionProjectsLocationsVolumesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""

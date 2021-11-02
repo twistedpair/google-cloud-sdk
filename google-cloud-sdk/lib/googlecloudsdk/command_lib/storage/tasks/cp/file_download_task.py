@@ -123,7 +123,8 @@ class FileDownloadTask(task.Task):
   def __init__(self,
                source_resource,
                destination_resource,
-               do_not_decompress=False):
+               do_not_decompress=False,
+               user_request_args=None):
     """Initializes task.
 
     Args:
@@ -135,11 +136,13 @@ class FileDownloadTask(task.Task):
         metadata.
       do_not_decompress (bool): Prevents automatically decompressing
         downloaded gzips.
+      user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
     super(FileDownloadTask, self).__init__()
     self._source_resource = source_resource
     self._destination_resource = destination_resource
     self._do_not_decompress = do_not_decompress
+    self._user_request_args = user_request_args
 
     self._temporary_destination_resource = (
         self._get_temporary_destination_resource())
@@ -179,7 +182,8 @@ class FileDownloadTask(task.Task):
               length=length,
               component_number=i,
               total_components=len(component_offsets_and_lengths),
-              strategy=self._strategy))
+              strategy=self._strategy,
+              user_request_args=self._user_request_args))
 
     finalize_sliced_download_task_list = [
         finalize_sliced_download_task.FinalizeSlicedDownloadTask(
@@ -254,7 +258,9 @@ class FileDownloadTask(task.Task):
         offset=0,
         length=self._source_resource.size,
         do_not_decompress=self._do_not_decompress,
-        strategy=self._strategy).execute(task_status_queue=task_status_queue)
+        strategy=self._strategy,
+        user_request_args=self._user_request_args,
+    ).execute(task_status_queue=task_status_queue)
 
     temporary_file_url = self._temporary_destination_resource.storage_url
     download_util.decompress_or_rename_file(

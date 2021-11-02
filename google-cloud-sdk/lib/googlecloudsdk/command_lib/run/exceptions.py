@@ -173,11 +173,9 @@ def MaybeRaiseCustomFieldMismatch(error, help_text=''):
           'by gcloud. Please change your port from "{}" to an integer value to '
           'be compatible with gcloud.'.format(regex_match.group(2)))
     elif regex_match.group(1) == 'value':
-      raise FieldMismatchError(
-          '{0}\n{1}'.format(six.text_type(error), help_text)
-      )
-  else:
-    raise error
+      raise FieldMismatchError('{0}\n{1}'.format(
+          six.text_type(error), help_text))
+  raise error
 
 
 class KubernetesError(exceptions.Error):
@@ -186,6 +184,10 @@ class KubernetesError(exceptions.Error):
 
 class UnsupportedOperationError(exceptions.Error):
   """The requested operation is not supported."""
+
+
+class IntegrationsOperationError(exceptions.Error):
+  """An error encountered when waiting for LRO to finish."""
 
 
 class KubernetesExceptionParser(object):

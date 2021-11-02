@@ -333,6 +333,34 @@
       "description": "ServiceMeshFeatureSpec contains the input for the service mesh feature.",
       "type": "object",
       "properties": {
+        "membershipSpecs": {
+          "description": "Optional. Map from full path to the membership, to its individual config.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "ServiceMeshMembershipSpec"
+          }
+        }
+      }
+    },
+    "ServiceMeshMembershipSpec": {
+      "id": "ServiceMeshMembershipSpec",
+      "description": "**Service Mesh**: Spec for a single Membership for the servicemesh feature",
+      "type": "object",
+      "properties": {
+        "controlPlane": {
+          "description": "Enables automatic control plane management.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified",
+            "Google should provision a control plane revision and make it available in the cluster. Google will enroll this revision in a release channel and keep it up to date. The control plane revision may be a managed service, or a managed install.",
+            "User will manually configure the control plane (e.g. via CLI, or via the ControlPlaneRevision KRM API)"
+          ],
+          "enum": [
+            "CONTROL_PLANE_MANAGEMENT_UNSPECIFIED",
+            "AUTOMATIC",
+            "MANUAL"
+          ]
+        }
       }
     },
     "AuthorizerFeatureSpec": {
@@ -1044,6 +1072,11 @@
           "items": {
             "$ref": "ServiceMeshAnalysisMessage"
           }
+        },
+        "controlPlaneManagement": {
+          "description": "Output only. Status of control plane management",
+          "readOnly": true,
+          "$ref": "ControlPlaneManagement"
         }
       }
     },
@@ -1119,6 +1152,57 @@
         },
         "code": {
           "description": "A 7 character code matching `^IST[0-9]{4}$` or `^ASM[0-9]{4}$`, intended to uniquely identify the message type. (e.g. \"IST0001\" is mapped to the \"InternalError\" message type.)",
+          "type": "string"
+        }
+      }
+    },
+    "ControlPlaneManagement": {
+      "id": "ControlPlaneManagement",
+      "description": "Status of control plane management. Only reported per-member.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "State of control plane management",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified",
+            "DISABLED means that automatic control plane management is not enabled.",
+            "FAILED_PRECONDITION means that automatic control plane management cannot proceed because of some characteristic of the member cluster.",
+            "PROVISIONING means at least one control plane component has not completed provisioning, and none has failed.",
+            "ACTIVE means that all control plane components are ready for use.",
+            "STALLED means that some control plane component could not be provisioned.",
+            "NEEDS_ATTENTION means that all control plane components are ready, but some user intervention is required. (For example that the user should migrate workloads to a new control plane revision.)"
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "DISABLED",
+            "FAILED_PRECONDITION",
+            "PROVISIONING",
+            "ACTIVE",
+            "STALLED",
+            "NEEDS_ATTENTION"
+          ]
+        },
+        "details": {
+          "description": "Explanation of state",
+          "type": "array",
+          "items": {
+            "$ref": "StatusDetails"
+          }
+        }
+      }
+    },
+    "StatusDetails": {
+      "id": "StatusDetails",
+      "description": "Structured and human-readable details for a status.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "A machine-readable code that further describes a broad status.",
+          "type": "string"
+        },
+        "details": {
+          "description": "Human-readable explanation of code.",
           "type": "string"
         }
       }

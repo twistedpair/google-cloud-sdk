@@ -1532,7 +1532,7 @@
       "type": "object",
       "properties": {
         "generateTime": {
-          "description": "Feature generation timestamp. Typically, it is provided by user at feature ingestion time. If not, feature store will use the system timestamp when the data is ingested into feature store.",
+          "description": "Feature generation timestamp. Typically, it is provided by user at feature ingestion time. If not, feature store will use the system timestamp when the data is ingested into feature store. For streaming ingestion, the time, aligned by days, must be no older than five years (1825 days) and no later than one year (366 days) in the future.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -6660,7 +6660,7 @@
       "type": "object",
       "properties": {
         "parameters": {
-          "description": "The runtime parameters of the PipelineJob. The parameters will be passed into PipelineJob.pipeline_spec to replace the placeholders at runtime.",
+          "description": "Deprecated. Use [RuntimeConfig.parameter_values] instead. The runtime parameters of the PipelineJob. The parameters will be passed into PipelineJob.pipeline_spec to replace the placeholders at runtime.",
           "type": "object",
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformV1beta1Value"
@@ -6669,6 +6669,13 @@
         "gcsOutputDirectory": {
           "description": "Required. A path in a Cloud Storage bucket, which will be treated as the root output directory of the pipeline. It is used by the system to generate the paths of output artifacts. The artifact paths are generated with a sub-path pattern `{job_id}\/{task_id}\/{output_key}` under the specified output directory. The service account specified in this pipeline must have the `storage.objects.get` and `storage.objects.create` permissions for this bucket.",
           "type": "string"
+        },
+        "parameterValues": {
+          "description": "The runtime parameters of the PipelineJob. The parameters will be passed into PipelineJob.pipeline_spec to replace the placeholders at runtime.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any"
+          }
         }
       }
     },

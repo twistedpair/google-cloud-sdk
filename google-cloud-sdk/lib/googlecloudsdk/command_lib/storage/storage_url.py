@@ -25,6 +25,7 @@ import os
 import stat
 
 from googlecloudsdk.command_lib.storage import errors
+from googlecloudsdk.core import log
 from googlecloudsdk.core.util import platforms
 
 import six
@@ -148,6 +149,28 @@ class FileUrl(StorageUrl):
       self.object_name = filename.replace('/', os.sep)
     else:
       self.object_name = filename
+
+    self._warn_if_unsupported_double_wildcard()
+
+  def _warn_if_unsupported_double_wildcard(self):
+    """Log warning if ** use may lead to undefined results."""
+    # Accepted 'url_string' values with '**', where '^' = start, and '$' = end.
+    # - ^**$
+    # - ^**/
+    # - /**$
+    # - /**/
+    if not self.object_name:
+      return
+    delimiter_bounded_url = self.delimiter + self.object_name + self.delimiter
+    split_url = delimiter_bounded_url.split(
+        '{delim}**{delim}'.format(delim=self.delimiter))
+    removed_correct_double_wildcards_url_string = ''.join(split_url)
+    if '**' in removed_correct_double_wildcards_url_string:
+      # Found a center '**' not in the format '/**/'.
+      log.warning(
+          '** behavior is undefined if directly preceeded or followed by'
+          ' with characters other than / in the cloud and {} locally.'.format(
+              os.sep))
 
   @property
   def delimiter(self):

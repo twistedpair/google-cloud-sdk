@@ -214,7 +214,7 @@
           }
         },
         "includeOsvData": {
-          "description": "Whether to include OSV data in the scan.",
+          "description": "[DEPRECATED] Whether to include OSV data in the scan. For backwards compatibility reasons, this field can be neither removed nor renamed.",
           "type": "boolean"
         }
       }

@@ -44,8 +44,7 @@ def AnalyzePackagesBeta(project, location, resource_uri, packages):
   return client.projects_locations_scans.AnalyzePackages(req)
 
 
-def AnalyzePackagesGA(
-    project, location, resource_uri, packages, include_osv_data):
+def AnalyzePackagesGA(project, location, resource_uri, packages):
   """Make an RPC to the On-Demand Scanning v1 AnalyzePackages method."""
   client = GetClient('v1')
   messages = GetMessages('v1')
@@ -53,7 +52,6 @@ def AnalyzePackagesGA(
       parent=PARENT_TEMPLATE.format(project, location),
       analyzePackagesRequestV1=messages.AnalyzePackagesRequestV1(
           packages=packages,
-          resourceUri=resource_uri,
-          includeOsvData=include_osv_data),
+          resourceUri=resource_uri),
   )
   return client.projects_locations_scans.AnalyzePackages(req)

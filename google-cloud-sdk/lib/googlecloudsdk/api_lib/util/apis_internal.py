@@ -274,9 +274,7 @@ def _GetEffectiveApiEndpoint(api_name, api_version, client_class=None):
     return _GetMtlsEndpoint(api_name, api_version, client_class)
   if (properties.VALUES.context_aware.use_client_certificate.GetBool() and
       _MtlsAllowed(api_name, api_version)):
-    mtls_endpoint = _GetMtlsEndpoint(api_name, api_version, client_class)
-    if mtls_endpoint:
-      return mtls_endpoint
+    return _GetMtlsEndpoint(api_name, api_version, client_class)
   return client_class.BASE_URL
 
 

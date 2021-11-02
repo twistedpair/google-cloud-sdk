@@ -107,3 +107,28 @@ os_policy_assignment_operation:
     attribute_name: operation
     help: |
       OS policy assignment operation.
+
+instance_os_policy_assignment:
+  name: Instance OS policy assignment
+  collection: osconfig.projects.locations.instances.osPolicyAssignments
+  attributes:
+  - *project
+  - *location
+  - *instance
+  - &instance_os_policy_assignment
+    parameter_name: osPolicyAssignmentsId
+    attribute_name: instance_os_policy_assignment
+    help: |
+      Instance OS policy assignment.
+
+# Name of the `os_policy_assignment_report` has to be `OS policy assignment` so the help
+# help text generated can be accurate in the id it requests.
+# Reference: yaqs/1680031777009172480
+os_policy_assignment_report:
+  name: OS policy assignment
+  collection: osconfig.projects.locations.instances.osPolicyAssignments.reports
+  attributes:
+  - *project
+  - *location
+  - *instance
+  - *instance_os_policy_assignment

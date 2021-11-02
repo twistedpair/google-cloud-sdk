@@ -204,6 +204,7 @@ class CloudApi(object):
   def get_object_metadata(self,
                           bucket_name,
                           object_name,
+                          request_config,
                           generation=None,
                           fields_scope=None):
     """Gets object metadata.
@@ -215,6 +216,7 @@ class CloudApi(object):
     Args:
       bucket_name (str): Bucket containing the object.
       object_name (str): Object name.
+      request_config (RequestConfig): Contains API call arguments.
       generation (string): Generation of the object to retrieve.
       fields_scope (FieldsScope): Determines the fields and projection
         parameters of API call.
@@ -294,7 +296,7 @@ class CloudApi(object):
   def download_object(self,
                       cloud_resource,
                       download_stream,
-                      decryption_wrapper=None,
+                      request_config,
                       digesters=None,
                       do_not_decompress=False,
                       download_strategy=DownloadStrategy.ONE_SHOT,
@@ -307,9 +309,7 @@ class CloudApi(object):
       cloud_resource (resource_reference.ObjectResource): Contains
         metadata and information about object being downloaded.
       download_stream (stream): Stream to send the object data to.
-      decryption_wrapper (CryptoKeyWrapper):
-        utils.encryption_helper.CryptoKeyWrapper that can optionally be added
-        to decrypt an encrypted object.
+      request_config (RequestConfig): Contains arguments for API calls.
       digesters (dict): Dict of {string : digester}, where string is the name of
         a hash algorithm, and digester is a validation digester object that
         update(bytes) and digest() using that algorithm. Implementation can

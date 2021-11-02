@@ -206,6 +206,7 @@ _APT_CODENAMES = {
     '8': 'jessie',
     '9': 'stretch',
     '10': 'buster',
+    '11': 'bullseye',
     '16.04': 'xenial',
     '18.04': 'bionic',
     '19.10': 'eoan',

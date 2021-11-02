@@ -39,19 +39,28 @@ class BaremetalsolutionProjectsLocationsInstancesListRequest(_messages.Message):
   r"""A BaremetalsolutionProjectsLocationsInstancesListRequest object.
 
   Fields:
-    filter: Filtering results.
-    orderBy: Hint for how to order the results.
     pageSize: Requested page size. Server may return fewer items than
       requested. If unspecified, the server will pick an appropriate default.
     pageToken: A token identifying a page of results from the server.
     parent: Required. Parent value for ListInstancesRequest.
   """
 
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class BaremetalsolutionProjectsLocationsInstancesResetRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsInstancesResetRequest object.
+
+  Fields:
+    name: Required. Name of the resource.
+    resetInstanceRequest: A ResetInstanceRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  resetInstanceRequest = _messages.MessageField('ResetInstanceRequest', 2)
 
 
 class BaremetalsolutionProjectsLocationsListRequest(_messages.Message):
@@ -74,6 +83,179 @@ class BaremetalsolutionProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class BaremetalsolutionProjectsLocationsNetworksGetRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsNetworksGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BaremetalsolutionProjectsLocationsNetworksListRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsNetworksListRequest object.
+
+  Fields:
+    pageSize: Requested page size. The server might return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results from the server.
+    parent: Required. Parent value for ListNetworksRequest.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class BaremetalsolutionProjectsLocationsOperationsCancelRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsOperationsCancelRequest object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class BaremetalsolutionProjectsLocationsOperationsDeleteRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BaremetalsolutionProjectsLocationsOperationsGetRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BaremetalsolutionProjectsLocationsOperationsListRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesCreateRequest(_messages.Message):
+  r"""A
+  BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The parent project and location containing the
+      SnapshotSchedulePolicy.
+    snapshotSchedulePolicy: A SnapshotSchedulePolicy resource to be passed as
+      the request body.
+    snapshotSchedulePolicyId: Required. Snapshot policy ID
+  """
+
+  parent = _messages.StringField(1, required=True)
+  snapshotSchedulePolicy = _messages.MessageField('SnapshotSchedulePolicy', 2)
+  snapshotSchedulePolicyId = _messages.StringField(3)
+
+
+class BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesDeleteRequest(_messages.Message):
+  r"""A
+  BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the snapshot schedule policy to delete.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesGetRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesListRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesListRequest
+  object.
+
+  Fields:
+    pageSize: The maximum number of items to return.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+    parent: Required. The parent project containing the Snapshot Schedule
+      Policies.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesPatchRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesPatchRequest
+  object.
+
+  Fields:
+    name: Output only. The name of the snapshot schedule policy.
+    snapshotSchedulePolicy: A SnapshotSchedulePolicy resource to be passed as
+      the request body.
+    updateMask: Required. The list of fields to update.
+  """
+
+  name = _messages.StringField(1, required=True)
+  snapshotSchedulePolicy = _messages.MessageField('SnapshotSchedulePolicy', 2)
+  updateMask = _messages.StringField(3)
+
+
+class BaremetalsolutionProjectsLocationsVolumesGetRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsVolumesGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BaremetalsolutionProjectsLocationsVolumesListRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsVolumesListRequest object.
+
+  Fields:
+    pageSize: Requested page size. The server might return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results from the server.
+    parent: Required. Parent value for ListVolumesRequest.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class BaremetalsolutionProjectsLocationsVolumesLunsGetRequest(_messages.Message):
   r"""A BaremetalsolutionProjectsLocationsVolumesLunsGetRequest object.
 
@@ -88,19 +270,112 @@ class BaremetalsolutionProjectsLocationsVolumesLunsListRequest(_messages.Message
   r"""A BaremetalsolutionProjectsLocationsVolumesLunsListRequest object.
 
   Fields:
-    filter: Filtering results.
-    orderBy: Hint for how to order the results.
     pageSize: Requested page size. The server might return fewer items than
       requested. If unspecified, server will pick an appropriate default.
     pageToken: A token identifying a page of results from the server.
     parent: Required. Parent value for ListLunsRequest.
   """
 
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class BaremetalsolutionProjectsLocationsVolumesPatchRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsVolumesPatchRequest object.
+
+  Fields:
+    name: Output only. The resource name of this `Volume`. Resource names are
+      schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. Format:
+      `projects/{project}/locations/{location}/volumes/{volume}`
+    updateMask: The list of fields to update. The only currently supported
+      fields are: `snapshot_auto_delete_behavior`
+      `snapshot_schedule_policy_name`
+    volume: A Volume resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateMask = _messages.StringField(2)
+  volume = _messages.MessageField('Volume', 3)
+
+
+class BaremetalsolutionProjectsLocationsVolumesSnapshotsCreateRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsVolumesSnapshotsCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The volume to snapshot.
+    volumeSnapshot: A VolumeSnapshot resource to be passed as the request
+      body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  volumeSnapshot = _messages.MessageField('VolumeSnapshot', 2)
+
+
+class BaremetalsolutionProjectsLocationsVolumesSnapshotsDeleteRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsVolumesSnapshotsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the snapshot to delete.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BaremetalsolutionProjectsLocationsVolumesSnapshotsGetRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsVolumesSnapshotsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BaremetalsolutionProjectsLocationsVolumesSnapshotsListRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsVolumesSnapshotsListRequest object.
+
+  Fields:
+    pageSize: Requested page size. The server might return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results from the server.
+    parent: Required. Parent value for ListVolumesRequest.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class BaremetalsolutionProjectsLocationsVolumesSnapshotsRestoreVolumeSnapshotRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsVolumesSnapshotsRestoreVolumeSnapsho
+  tRequest object.
+
+  Fields:
+    restoreVolumeSnapshotRequest: A RestoreVolumeSnapshotRequest resource to
+      be passed as the request body.
+    volumeSnapshot: Required. Name of the resource.
+  """
+
+  restoreVolumeSnapshotRequest = _messages.MessageField('RestoreVolumeSnapshotRequest', 1)
+  volumeSnapshot = _messages.StringField(2, required=True)
+
+
+class CancelOperationRequest(_messages.Message):
+  r"""The request message for Operations.CancelOperation."""
+
+
+class Empty(_messages.Message):
+  r"""A generic empty message that you can re-use to avoid defining duplicated
+  empty messages in your APIs. A typical example is to use it as the request
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
+  """
+
 
 
 class Instance(_messages.Message):
@@ -222,6 +497,75 @@ class ListLunsResponse(_messages.Message):
   luns = _messages.MessageField('Lun', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListNetworksResponse(_messages.Message):
+  r"""Response message containing the list of networks.
+
+  Fields:
+    networks: The list of networks.
+    nextPageToken: A token identifying a page of results from the server.
+    unreachable: Locations that could not be reached.
+  """
+
+  networks = _messages.MessageField('Network', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListOperationsResponse(_messages.Message):
+  r"""The response message for Operations.ListOperations.
+
+  Fields:
+    nextPageToken: The standard List next-page token.
+    operations: A list of operations that matches the specified filter in the
+      request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListSnapshotSchedulePoliciesResponse(_messages.Message):
+  r"""Response message containing the list of snapshot schedule policies.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    snapshotSchedulePolicies: The snapshot schedule policies registered in
+      this project.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  snapshotSchedulePolicies = _messages.MessageField('SnapshotSchedulePolicy', 2, repeated=True)
+
+
+class ListVolumeSnapshotsResponse(_messages.Message):
+  r"""Response message containing the list of storage volume snapshots.
+
+  Fields:
+    nextPageToken: A token identifying a page of results from the server.
+    unreachable: Locations that could not be reached.
+    volumeSnapshots: The list of storage volumes.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  unreachable = _messages.StringField(2, repeated=True)
+  volumeSnapshots = _messages.MessageField('VolumeSnapshot', 3, repeated=True)
+
+
+class ListVolumesResponse(_messages.Message):
+  r"""Response message containing the list of storage volumes.
+
+  Fields:
+    nextPageToken: A token identifying a page of results from the server.
+    unreachable: Locations that could not be reached.
+    volumes: The list of storage volumes.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  unreachable = _messages.StringField(2, repeated=True)
+  volumes = _messages.MessageField('Volume', 3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -438,6 +782,175 @@ class Network(_messages.Message):
   vrf = _messages.MessageField('VRF', 9)
 
 
+class Operation(_messages.Message):
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
+
+  Messages:
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
+      that returns a long-running operation should document the metadata type,
+      if any.
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
+      methods, the response should have the type `XxxResponse`, where `Xxx` is
+      the original method name. For example, if the original method name is
+      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+
+  Fields:
+    done: If the value is `false`, it means the operation is still in
+      progress. If `true`, the operation is completed, and either `error` or
+      `response` is available.
+    error: The error result of the operation in case of failure or
+      cancellation.
+    metadata: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
+      that returns a long-running operation should document the metadata type,
+      if any.
+    name: The server-assigned name, which is only unique within the same
+      service that originally returns it. If you use the default HTTP mapping,
+      the `name` should be a resource name ending with
+      `operations/{unique_id}`.
+    response: The normal response of the operation in case of success. If the
+      original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
+      methods, the response should have the type `XxxResponse`, where `Xxx` is
+      the original method name. For example, if the original method name is
+      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Service-specific metadata associated with the operation. It typically
+    contains progress information and common metadata such as create time.
+    Some services might not provide such metadata. Any method that returns a
+    long-running operation should document the metadata type, if any.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResponseValue(_messages.Message):
+    r"""The normal response of the operation in case of success. If the
+    original method returns no data on success, such as `Delete`, the response
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
+    methods, the response should have the type `XxxResponse`, where `Xxx` is
+    the original method name. For example, if the original method name is
+    `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResponseValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResponseValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  done = _messages.BooleanField(1)
+  error = _messages.MessageField('Status', 2)
+  metadata = _messages.MessageField('MetadataValue', 3)
+  name = _messages.StringField(4)
+  response = _messages.MessageField('ResponseValue', 5)
+
+
+class ResetInstanceRequest(_messages.Message):
+  r"""Message requesting to reset a server."""
+
+
+class RestoreVolumeSnapshotRequest(_messages.Message):
+  r"""Message for restoring a volume snapshot."""
+
+
+class Schedule(_messages.Message):
+  r"""A snapshot schedule.
+
+  Fields:
+    crontabSpec: A crontab-like specification that the schedule uses to take
+      snapshots.
+    prefix: A list of snapshot names created in this schedule.
+    retentionCount: The maximum number of snapshots to retain in this
+      schedule.
+  """
+
+  crontabSpec = _messages.StringField(1)
+  prefix = _messages.StringField(2)
+  retentionCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class SnapshotReservationDetail(_messages.Message):
+  r"""Details about snapshot space reservation and usage on the storage
+  volume.
+
+  Fields:
+    reservedSpaceGib: The space on this storage volume reserved for snapshots,
+      shown in GiB.
+    reservedSpaceRemainingGib: The amount, in GiB, of available space in this
+      storage volume's reserved snapshot space.
+    reservedSpaceUsedPercent: The percent of snapshot space on this storage
+      volume actually being used by the snapshot copies. This value might be
+      higher than 100% if the snapshot copies have overflowed into the data
+      portion of the storage volume.
+  """
+
+  reservedSpaceGib = _messages.IntegerField(1)
+  reservedSpaceRemainingGib = _messages.IntegerField(2)
+  reservedSpaceUsedPercent = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class SnapshotSchedulePolicy(_messages.Message):
+  r"""A snapshot schedule policy.
+
+  Fields:
+    description: The description of the snapshot schedule policy.
+    name: Output only. The name of the snapshot schedule policy.
+    schedules: The snapshot schedules contained in this policy. You can
+      specify a maxiumum of 5 schedules.
+    volumes: The names of the volumes associated with this policy.
+  """
+
+  description = _messages.StringField(1)
+  name = _messages.StringField(2)
+  schedules = _messages.MessageField('Schedule', 3, repeated=True)
+  volumes = _messages.StringField(4, repeated=True)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -501,6 +1014,57 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class Status(_messages.Message):
+  r"""The `Status` type defines a logical error model that is suitable for
+  different programming environments, including REST APIs and RPC APIs. It is
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details. You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    code: The status code, which should be an enum value of google.rpc.Code.
+    details: A list of messages that carry the error details. There is a
+      common set of message types for APIs to use.
+    message: A developer-facing error message, which should be in English. Any
+      user-facing error message should be localized and sent in the
+      google.rpc.Status.details field, or localized by the client.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  message = _messages.StringField(3)
+
+
 class VRF(_messages.Message):
   r"""A network VRF.
 
@@ -532,6 +1096,111 @@ class VRF(_messages.Message):
   name = _messages.StringField(3)
   routeTarget = _messages.IntegerField(4)
   state = _messages.EnumField('StateValueValuesEnum', 5)
+
+
+class Volume(_messages.Message):
+  r"""A storage volume.
+
+  Enums:
+    SnapshotAutoDeleteBehaviorValueValuesEnum: The behavior to use when
+      snapshot reserved space is full.
+    StateValueValuesEnum: The state of this storage volume.
+    StorageTypeValueValuesEnum: The storage type for this volume.
+
+  Fields:
+    autoGrownSizeGib: The size, in GiB, that this storage volume has expanded
+      as a result of an auto grow policy. In the absence of auto-grow, the
+      value is 0.
+    currentSizeGib: The current size of this storage volume, in GiB, including
+      space reserved for snapshots. This size might be different than the
+      requested size if the storage volume has been configured with auto grow
+      or auto shrink.
+    name: Output only. The resource name of this `Volume`. Resource names are
+      schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. Format:
+      `projects/{project}/locations/{location}/volumes/{volume}`
+    remainingSpaceGib: The space remaining in the storage volume for new LUNs,
+      in GiB, excluding space reserved for snapshots.
+    requestedSizeGib: The requested size of this storage volume, in GiB.
+    snapshotAutoDeleteBehavior: The behavior to use when snapshot reserved
+      space is full.
+    snapshotReservationDetail: Details about snapshot space reservation and
+      usage on the storage volume.
+    snapshotSchedulePolicy: The name of the snapshot schedule policy in use
+      for this volume, if any.
+    state: The state of this storage volume.
+    storageType: The storage type for this volume.
+  """
+
+  class SnapshotAutoDeleteBehaviorValueValuesEnum(_messages.Enum):
+    r"""The behavior to use when snapshot reserved space is full.
+
+    Values:
+      SNAPSHOT_AUTO_DELETE_BEHAVIOR_UNSPECIFIED: The unspecified behavior.
+      DISABLED: Don't delete any snapshots. This disables new snapshot
+        creation, as long as the snapshot reserved space is full.
+      OLDEST_FIRST: Delete the oldest snapshots first.
+      NEWEST_FIRST: Delete the newest snapshots first.
+    """
+    SNAPSHOT_AUTO_DELETE_BEHAVIOR_UNSPECIFIED = 0
+    DISABLED = 1
+    OLDEST_FIRST = 2
+    NEWEST_FIRST = 3
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The state of this storage volume.
+
+    Values:
+      STATE_UNSPECIFIED: The storage volume is in an unknown state.
+      CREATING: The storage volume is being created.
+      READY: The storage volume is ready for use.
+      DELETING: The storage volume has been requested to be deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    DELETING = 3
+
+  class StorageTypeValueValuesEnum(_messages.Enum):
+    r"""The storage type for this volume.
+
+    Values:
+      STORAGE_TYPE_UNSPECIFIED: The storage type for this volume is unknown.
+      SSD: The storage type for this volume is SSD.
+      HDD: This storage type for this volume is HDD.
+    """
+    STORAGE_TYPE_UNSPECIFIED = 0
+    SSD = 1
+    HDD = 2
+
+  autoGrownSizeGib = _messages.IntegerField(1)
+  currentSizeGib = _messages.IntegerField(2)
+  name = _messages.StringField(3)
+  remainingSpaceGib = _messages.IntegerField(4)
+  requestedSizeGib = _messages.IntegerField(5)
+  snapshotAutoDeleteBehavior = _messages.EnumField('SnapshotAutoDeleteBehaviorValueValuesEnum', 6)
+  snapshotReservationDetail = _messages.MessageField('SnapshotReservationDetail', 7)
+  snapshotSchedulePolicy = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 10)
+
+
+class VolumeSnapshot(_messages.Message):
+  r"""Snapshot registered for a given storage volume.
+
+  Fields:
+    createTime: Optional. The creation time of the storage volume snapshot.
+    description: The description of the storage volume snapshot.
+    name: Output only. The name of the storage volume snapshot.
+    sizeBytes: The size of the storage volume snapshot, in bytes.
+    storageVolume: The storage volume this snapshot belongs to.
+  """
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  name = _messages.StringField(3)
+  sizeBytes = _messages.IntegerField(4)
+  storageVolume = _messages.StringField(5)
 
 
 encoding.AddCustomJsonFieldMapping(

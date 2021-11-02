@@ -656,6 +656,49 @@ class ConfigSyncVersion(_messages.Message):
   syncer = _messages.StringField(7)
 
 
+class ControlPlaneManagement(_messages.Message):
+  r"""Status of control plane management. Only reported per-member.
+
+  Enums:
+    StateValueValuesEnum: State of control plane management
+
+  Fields:
+    details: Explanation of state
+    state: State of control plane management
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of control plane management
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified
+      DISABLED: DISABLED means that automatic control plane management is not
+        enabled.
+      FAILED_PRECONDITION: FAILED_PRECONDITION means that automatic control
+        plane management cannot proceed because of some characteristic of the
+        member cluster.
+      PROVISIONING: PROVISIONING means at least one control plane component
+        has not completed provisioning, and none has failed.
+      ACTIVE: ACTIVE means that all control plane components are ready for
+        use.
+      STALLED: STALLED means that some control plane component could not be
+        provisioned.
+      NEEDS_ATTENTION: NEEDS_ATTENTION means that all control plane components
+        are ready, but some user intervention is required. (For example that
+        the user should migrate workloads to a new control plane revision.)
+    """
+    STATE_UNSPECIFIED = 0
+    DISABLED = 1
+    FAILED_PRECONDITION = 2
+    PROVISIONING = 3
+    ACTIVE = 4
+    STALLED = 5
+    NEEDS_ATTENTION = 6
+
+  details = _messages.MessageField('StatusDetails', 1, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -2307,8 +2350,43 @@ class ServiceMeshAnalysisMessageBase(_messages.Message):
 
 class ServiceMeshFeatureSpec(_messages.Message):
   r"""ServiceMeshFeatureSpec contains the input for the service mesh feature.
+
+  Messages:
+    MembershipSpecsValue: Optional. Map from full path to the membership, to
+      its individual config.
+
+  Fields:
+    membershipSpecs: Optional. Map from full path to the membership, to its
+      individual config.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MembershipSpecsValue(_messages.Message):
+    r"""Optional. Map from full path to the membership, to its individual
+    config.
+
+    Messages:
+      AdditionalProperty: An additional property for a MembershipSpecsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type MembershipSpecsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MembershipSpecsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ServiceMeshMembershipSpec attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ServiceMeshMembershipSpec', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  membershipSpecs = _messages.MessageField('MembershipSpecsValue', 1)
 
 
 class ServiceMeshFeatureState(_messages.Message):
@@ -2318,9 +2396,41 @@ class ServiceMeshFeatureState(_messages.Message):
   Fields:
     analysisMessages: Output only. Results of running Service Mesh analyzers
       against member clusters, or the entire mesh.
+    controlPlaneManagement: Output only. Status of control plane management
   """
 
   analysisMessages = _messages.MessageField('ServiceMeshAnalysisMessage', 1, repeated=True)
+  controlPlaneManagement = _messages.MessageField('ControlPlaneManagement', 2)
+
+
+class ServiceMeshMembershipSpec(_messages.Message):
+  r"""**Service Mesh**: Spec for a single Membership for the servicemesh
+  feature
+
+  Enums:
+    ControlPlaneValueValuesEnum: Enables automatic control plane management.
+
+  Fields:
+    controlPlane: Enables automatic control plane management.
+  """
+
+  class ControlPlaneValueValuesEnum(_messages.Enum):
+    r"""Enables automatic control plane management.
+
+    Values:
+      CONTROL_PLANE_MANAGEMENT_UNSPECIFIED: Unspecified
+      AUTOMATIC: Google should provision a control plane revision and make it
+        available in the cluster. Google will enroll this revision in a
+        release channel and keep it up to date. The control plane revision may
+        be a managed service, or a managed install.
+      MANUAL: User will manually configure the control plane (e.g. via CLI, or
+        via the ControlPlaneRevision KRM API)
+    """
+    CONTROL_PLANE_MANAGEMENT_UNSPECIFIED = 0
+    AUTOMATIC = 1
+    MANUAL = 2
+
+  controlPlane = _messages.EnumField('ControlPlaneValueValuesEnum', 1)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -2436,6 +2546,18 @@ class Status(_messages.Message):
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   description = _messages.StringField(2)
+
+
+class StatusDetails(_messages.Message):
+  r"""Structured and human-readable details for a status.
+
+  Fields:
+    code: A machine-readable code that further describes a broad status.
+    details: Human-readable explanation of code.
+  """
+
+  code = _messages.StringField(1)
+  details = _messages.StringField(2)
 
 
 class SyncError(_messages.Message):

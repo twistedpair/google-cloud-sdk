@@ -89,7 +89,7 @@ def _create_or_modify_creds(transfer_spec, args, messages):
     if args.source_creds_file:
       creds_dict = creds_util.get_values_for_keys_from_file(
           args.source_creds_file,
-          ['aws_access_key_id', 'aws_secret_access_key'])
+          ['aws_access_key_id', 'aws_secret_access_key', 'role_arn'])
     else:
       log.warning('No --source-creds-file flag. Checking system config files'
                   ' for AWS credentials.')
@@ -97,12 +97,13 @@ def _create_or_modify_creds(transfer_spec, args, messages):
 
     aws_access_key = creds_dict.get('aws_access_key_id', None)
     secret_access_key = creds_dict.get('aws_secret_access_key', None)
-    if not (aws_access_key and secret_access_key):
+    role_arn = creds_dict.get('role_arn', None)
+    if not ((aws_access_key and secret_access_key) or role_arn):
       log.warning('Missing AWS source creds.')
 
-    creds_dict.get('aws_access_key_id', None)
     transfer_spec.awsS3DataSource.awsAccessKey = messages.AwsAccessKey(
         accessKeyId=aws_access_key, secretAccessKey=secret_access_key)
+    transfer_spec.awsS3DataSource.roleArn = role_arn
 
   elif transfer_spec.azureBlobStorageDataSource:
     if args.source_creds_file:

@@ -250,7 +250,8 @@ def CreatePersistentCreateDiskMessages(client,
                                        create_disks,
                                        support_kms=False,
                                        container_mount_disk=None,
-                                       support_multi_writer=False):
+                                       support_multi_writer=False,
+                                       support_disk_architecture=False):
   """Returns a list of AttachedDisk messages.
 
   Args:
@@ -276,12 +277,15 @@ def CreatePersistentCreateDiskMessages(client,
     support_kms: if KMS is supported
     container_mount_disk: list of disks to be mounted to container, if any.
     support_multi_writer: if multi writer disks are supported.
+    support_disk_architecture: If creating disks with a specified architecture
+      is supported.
 
   Returns:
     list of API messages for attached disks
   """
 
   disks_messages = []
+  messages = client.messages
   for disk in create_disks or []:
     name = disk.get('name')
     # Resolves the mode.
@@ -331,6 +335,11 @@ def CreatePersistentCreateDiskMessages(client,
     multi_writer = disk.get('multi-writer')
     if support_multi_writer and multi_writer:
       init_params.multiWriter = True
+
+    disk_architecture = disk.get('architecture')
+    if support_disk_architecture and disk_architecture:
+      init_params.architecture = messages.AttachedDiskInitializeParams.ArchitectureValueValuesEnum(
+          disk_architecture)
 
     create_disk = client.messages.AttachedDisk(
         autoDelete=auto_delete,

@@ -45,17 +45,17 @@ def AddBitbucketServerConfigArgs(parser, update=False):
       help='The Cloud Build API key that should be associated with this config.'
   )
   parser.add_argument(
-      '--admin-access-token-name',
+      '--admin-access-token-secret-version',
       required=not update,
       help='Secret Manager resource containing the admin access token. The secret is specified in resource URL format projects/{secret_project}/secrets/{secret_name}/versions/{secret_version}.'
   )
   parser.add_argument(
-      '--read-access-token-name',
+      '--read-access-token-secret-version',
       required=not update,
       help='Secret Manager resource containing the read access token. The secret is specified in resource URL format projects/{secret_project}/secrets/{secret_name}/versions/{secret_version}.'
   )
   parser.add_argument(
-      '--webhook-secret-name',
+      '--webhook-secret-secret-version',
       required=not update,
       help='Secret Manager resource containing the webhook secret. The secret is specified in resource URL format projects/{secret_project}/secrets/{secret_name}/versions/{secret_version}.'
   )

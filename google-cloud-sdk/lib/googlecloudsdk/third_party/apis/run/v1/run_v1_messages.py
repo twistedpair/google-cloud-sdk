@@ -495,6 +495,16 @@ class DomainMappingStatus(_messages.Message):
   url = _messages.StringField(5)
 
 
+class Empty(_messages.Message):
+  r"""A generic empty message that you can re-use to avoid defining duplicated
+  empty messages in your APIs. A typical example is to use it as the request
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
+  """
+
+
+
 class EnvFromSource(_messages.Message):
   r"""Not supported by Cloud Run EnvFromSource represents the source of a set
   of ConfigMaps
@@ -625,6 +635,10 @@ class GoogleCloudRunV1Condition(_messages.Message):
   severity = _messages.StringField(4)
   status = _messages.StringField(5)
   type = _messages.StringField(6)
+
+
+class GoogleLongrunningCancelOperationRequest(_messages.Message):
+  r"""The request message for Operations.CancelOperation."""
 
 
 class HTTPGetAction(_messages.Message):
@@ -2047,6 +2061,20 @@ class RunNamespacesServicesReplaceServiceRequest(_messages.Message):
   dryRun = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   service = _messages.MessageField('Service', 3)
+
+
+class RunOperationsCancelRequest(_messages.Message):
+  r"""A RunOperationsCancelRequest object.
+
+  Fields:
+    googleLongrunningCancelOperationRequest: A
+      GoogleLongrunningCancelOperationRequest resource to be passed as the
+      request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  googleLongrunningCancelOperationRequest = _messages.MessageField('GoogleLongrunningCancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class RunProjectsAuthorizeddomainsListRequest(_messages.Message):

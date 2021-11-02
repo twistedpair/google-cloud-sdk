@@ -17,7 +17,21 @@ region:
   - &region
     parameter_name: locationsId
     attribute_name: region
-    help: Region of the instance.
+    help: Region of the resource.
+  disable_auto_completers: false
+
+global_only_region:
+  name: global_only_region
+  collection: baremetalsolution.projects.locations
+  attributes:
+  - *project
+  - &global_only_region
+    parameter_name: locationsId
+    attribute_name: region
+    help: Region of the resource.
+    fallthroughs:
+    - hook: googlecloudsdk.command_lib.bms.util:DefaultToGlobal
+      hint: "global is the only supported location"
   disable_auto_completers: false
 
 instance:
@@ -30,4 +44,53 @@ instance:
     parameter_name: instancesId
     attribute_name: instance
     help: Bare Metal Solution instance.
+  disable_auto_completers: false
+
+volume:
+  name: volume
+  collection: baremetalsolution.projects.locations.volumes
+  attributes:
+  - *project
+  - *region
+  - &volume
+    parameter_name: volumesId
+    attribute_name: volume
+    help: Bare Metal Solution volume.
+  disable_auto_completers: false
+
+snapshot_schedule_policy:
+  name: snapshot_schedule_policy
+  collection: baremetalsolution.projects.locations.snapshotSchedulePolicies
+  attributes:
+  - *project
+  - *global_only_region
+  - &snapshot_schedule_policy
+    parameter_name: snapshotSchedulePoliciesId
+    attribute_name: snapshot_schedule_policy
+    help: Bare Metal Solution snapshot schedule policy.
+  disable_auto_completers: false
+
+network:
+  name: network
+  collection: baremetalsolution.projects.locations.networks
+  attributes:
+  - *project
+  - *region
+  - &network
+    parameter_name: networksId
+    attribute_name: network
+    help: Bare Metal Solution network.
+  disable_auto_completers: false
+
+lun:
+  name: lun
+  collection: baremetalsolution.projects.locations.volumes.luns
+  attributes:
+  - *project
+  - *region
+  - *volume
+  - &lun
+    parameter_name: lunsId
+    attribute_name: lun
+    help: Bare Metal Solution volume LUN.
   disable_auto_completers: false

@@ -228,7 +228,7 @@ def AddCreateDestinationArgs(parser, release_track, required=False):
   )
   _AddCreateCloudRunDestinationArgs(dest_group)
   if release_track == base.ReleaseTrack.GA:
-    _AddCreateGKEDestinationArgs(dest_group, hidden=True)
+    _AddCreateGKEDestinationArgs(dest_group)
     _AddCreateWorkflowDestinationArgs(dest_group, hidden=True)
 
 
@@ -274,7 +274,7 @@ def AddUpdateDestinationArgs(parser, release_track, required=False):
       help='Flags for updating the destination to which events should be sent.')
   _AddUpdateCloudRunDestinationArgs(dest_group)
   if release_track == base.ReleaseTrack.GA:
-    _AddUpdateGKEDestinationArgs(dest_group, hidden=True)
+    _AddUpdateGKEDestinationArgs(dest_group)
     _AddUpdateWorkflowDestinationArgs(dest_group, hidden=True)
 
 
@@ -349,7 +349,7 @@ def _AddDestinationGKEClusterArg(parser, required=False):
       '--destination-gke-cluster',
       required=required,
       help='Name of the GKE cluster that the destination GKE service is '
-      'running in.')
+      'running in.  The cluster must be in the same project as the trigger.')
 
 
 def _AddDestinationGKELocationArg(parser, required=False):
@@ -368,7 +368,7 @@ def _AddDestinationGKENamespaceArg(parser, required=False):
       '--destination-gke-namespace',
       required=required,
       help='Namespace that the destination GKE service is running in. If '
-      "not specified, it defaults to the ``default'' namespace.")
+      "not specified, the ``default'' namespace is used.")
 
 
 def _AddDestinationGKEServiceArg(parser, required=False):
@@ -377,7 +377,7 @@ def _AddDestinationGKEServiceArg(parser, required=False):
       '--destination-gke-service',
       required=required,
       help='Name of the destination GKE service that receives the events '
-      'for the trigger. The service must be in the same project as the trigger.'
+      'for the trigger.'
   )
 
 

@@ -116,7 +116,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Immutable. The resource name of the entity, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/entities\/{entity_id}. {entity} is a generated unique ID.",
+          "description": "Output only. The resource name of the entity, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/entities\/{id}.",
           "readOnly": true,
           "type": "string"
         },
@@ -141,7 +141,7 @@
           "format": "google-datetime"
         },
         "id": {
-          "description": "Required. A user-provided entity ID. It is mutable, and will be used as the published table name.",
+          "description": "Required. A user-provided entity ID. It is mutable, and will be used as the published table name. Specifying a new ID in an update entity request will override the existing value.",
           "type": "string"
         },
         "etag": {
@@ -558,7 +558,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of the partition, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/entities\/{entity}\/partitions\/{partition_id}. {partition_id} is a generated unique ID.",
+          "description": "Output only. The resource name of the partition, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/entities\/{entity_id}\/partitions\/{partition_id}. {partition_id} is a generated unique ID.",
           "readOnly": true,
           "type": "string"
         },
@@ -1662,20 +1662,6 @@
         "schedule": {
           "description": "Optional. Cron schedule (https:\/\/en.wikipedia.org\/wiki\/Cron) for running discovery jobs periodically. Discovery jobs must be scheduled at least 30 minutes apart.",
           "type": "string"
-        },
-        "inheritanceMode": {
-          "description": "Optional. Inheritance behavior for this config. By default, all fields in this config override any values specified at the zone level. When configured as INHERIT some fields in this config are ignored and the zone level configuration is used instead. All fields that behave this way are called out as such via documentation. Deprecated: Rather than configure inheritance behavior via this enum, users can enable inheritance by omitting the discovery config entirely.",
-          "type": "string",
-          "enumDescriptions": [
-            "Unspecified inheritance mode that is interpreted as OVERRIDE.",
-            "Override all zone config values with those specified at the asset level.",
-            "All values specified at the zone level should replace those specified at the asset level."
-          ],
-          "enum": [
-            "INHERITANCE_MODE_UNSPECIFIED",
-            "OVERRIDE",
-            "INHERIT"
-          ]
         },
         "publishing": {
           "description": "Optional. Settings to manage metadata publishing for the zone.",

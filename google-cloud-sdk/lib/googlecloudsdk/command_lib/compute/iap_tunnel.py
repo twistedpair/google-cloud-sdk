@@ -86,18 +86,21 @@ def AddSshTunnelArgs(parser, tunnel_through_iap_scope):
       """)
 
 
-def AddIpBasedTunnelArgs(parser):
+def AddHostBasedTunnelArgs(parser):
   group = parser.add_argument_group()
   group.add_argument(
       '--network',
       default=None,
       required=True,
-      help='Configures the VPC network to use when connecting via IP.')
+      help=(
+          'Configures the VPC network to use when connecting via IP address or '
+          'FQDN.'))
   group.add_argument(
       '--region',
       default=None,
       required=True,
-      help='Configures the region to use when connecting via IP.')
+      help=('Configures the region to use when connecting via IP address or '
+            'FQDN.'))
 
 
 def AddProxyServerHelperArgs(parser):
@@ -149,14 +152,14 @@ def CreateSshTunnelArgs(args, track, instance_ref, external_interface):
   return res
 
 
-def CreateOnPremSshTunnelArgs(args, track, ip):
+def CreateOnPremSshTunnelArgs(args, track, host):
   """Construct an SshTunnelArgs from command line args and values for on-prem.
 
   Args:
     args: The parsed commandline arguments. May or may not have had
       AddSshTunnelArgs called.
     track: ReleaseTrack, The currently running release track.
-    ip: The target IP address.
+    host: The target IP address or FQDN.
   Returns:
     SshTunnelArgs.
   """
@@ -166,7 +169,7 @@ def CreateOnPremSshTunnelArgs(args, track, ip):
   res.project = properties.VALUES.core.project.GetOrFail()
   res.region = args.region
   res.network = args.network
-  res.instance = ip
+  res.instance = host
 
   _AddPassThroughArgs(args, res)
 
@@ -196,7 +199,7 @@ class SshTunnelArgs(object):
     track: str/None, the prefix of the track for the inner gcloud.
     project: str, the project id (string with dashes).
     zone: str, the zone name.
-    instance: str, the instance name (or IP for on-prem).
+    instance: str, the instance name (or IP or FQDN for on-prem).
     region: str, the region name (on-prem only).
     network: str, the network name (on-prem only).
     pass_through_args: [str], additional args to be passed to the inner gcloud.
@@ -572,7 +575,7 @@ class _BaseIapTunnelHelper(object):
     self._port = None
     self._region = None
     self._network = None
-    self._ip = None
+    self._host = None
     self._port = None
 
     # Means that a ctrl-c was seen in server mode (never true in Stdin mode).
@@ -584,10 +587,10 @@ class _BaseIapTunnelHelper(object):
     self._interface = interface
     self._port = port
 
-  def ConfigureForIP(self, region, network, ip, port):
+  def ConfigureForHost(self, region, network, host, port):
     self._region = region
     self._network = network
-    self._ip = ip
+    self._host = host
     self._port = port
 
   def _InitiateWebSocketConnection(self, local_conn, get_access_token_callback,
@@ -614,7 +617,7 @@ class _BaseIapTunnelHelper(object):
                                      proxy_info=proxy_info,
                                      region=self._region,
                                      network=self._network,
-                                     ip=self._ip)
+                                     host=self._host)
 
   def _RunReceiveLocalData(self, conn, socket_address, user_agent):
     """Receive data from provided local connection and send over WebSocket.

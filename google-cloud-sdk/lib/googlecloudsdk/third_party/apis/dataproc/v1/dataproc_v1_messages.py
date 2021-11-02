@@ -2316,6 +2316,10 @@ class DiskConfig(_messages.Message):
       Drive), "pd-ssd" (Persistent Disk Solid State Drive), or "pd-standard"
       (Persistent Disk Hard Disk Drive). See Disk types
       (https://cloud.google.com/compute/docs/disks#disk-types).
+    localSsdInterface: Optional. Interface type of local SSDs (default is
+      "scsi"). Valid values: "scsi" (Small Computer System Interface), "nvme"
+      (Non-Volatile Memory Express). See SSD Interface types
+      (https://cloud.google.com/compute/docs/disks/local-ssd#performance).
     numLocalSsds: Optional. Number of attached SSDs, from 0 to 4 (default is
       0). If SSDs are not attached, the boot disk is used to store runtime
       logs and HDFS
@@ -2327,7 +2331,8 @@ class DiskConfig(_messages.Message):
 
   bootDiskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   bootDiskType = _messages.StringField(2)
-  numLocalSsds = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  localSsdInterface = _messages.StringField(3)
+  numLocalSsds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class DriverRunner(_messages.Message):

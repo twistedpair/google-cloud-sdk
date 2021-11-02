@@ -30,9 +30,11 @@ import re
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors as api_errors
+from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.resources import resource_reference
+from googlecloudsdk.core import log
 
 import six
 
@@ -140,17 +142,18 @@ class FileWildcardIterator(WildcardIterator):
     else:
       hidden_file_iterator = []
     for path in itertools.chain(normal_file_iterator, hidden_file_iterator):
+      # Follow symlinks unless pointing to directory or exclude flag is present.
+      if os.path.islink(path) and (os.path.isdir(path) or
+                                   self._ignore_symlinks):
+        log.warning('Skipping symlink {}'.format(path))
+        continue
+
       # For pattern like foo/bar/**, glob returns first path as 'foo/bar/'
       # even when foo/bar does not exist. So we skip non-existing paths.
       # Glob also returns intermediate directories if called with **. We skip
       # them to be consistent with CloudWildcardIterator.
       if self._path.endswith('**') and (not os.path.exists(path)
                                         or os.path.isdir(path)):
-        continue
-
-      # Follow symlinks unless pointing to directory or exclude flag is present.
-      if os.path.islink(path) and (os.path.isdir(path) or
-                                   self._ignore_symlinks):
         continue
 
       file_url = storage_url.FileUrl(path)
@@ -213,9 +216,13 @@ class CloudWildcardIterator(WildcardIterator):
       try:
         # Assume that the url represents a single object.
         return [
-            self._client.get_object_metadata(bucket_name, self._url.object_name,
-                                             self._url.generation,
-                                             self._fields_scope)
+            self._client.get_object_metadata(
+                bucket_name,
+                self._url.object_name,
+                # TODO(b/197754758): add user request args from surface.
+                request_config_factory.get_request_config(self._url),
+                self._url.generation,
+                self._fields_scope)
         ]
       except api_errors.NotFoundError:
         # Object does not exist. Could be a prefix.

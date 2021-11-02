@@ -78,7 +78,7 @@ more information, see `gcloud topic gcloudignore`. By default, `.git` and
 Git repositories can either be a Cloud Source Repositories (CSR) repository (in
 which case you must have permission to access it) or a public Git repository
 (e.g. on GitHub). Each takes the form `_URL_@_REF_`:
-  * Example CSR `_URL_`: https://source.cloud.google.com/my-project/my-csr-repository
+  * Example CSR `_URL_`: https://source.cloud.google.com/p/my-project/r/my-csr-repository
   * Example GitHub `_URL_`: https://github.com/google/repository
   * `@` is a literal `@` character. `_REF_` is a commit hash, branch, or tag.
 
@@ -183,7 +183,7 @@ Examples:
 
 Push blueprint artifacts to the "blueprints/compute" folder:
 
-  $ {command} [...] my-deployment --target-git="https://source.cloud.google.com/my-project/my-csr-repository"
+  $ {command} [...] my-deployment --target-git="https://source.cloud.google.com/p/my-project/r/my-csr-repository"
     --target-git-subdir="blueprints/compute"
 """
 
@@ -193,7 +193,7 @@ is run.
 
 The Git repository must be a Cloud Source Repositories (CSR)
 repository:
-  * Example CSR `_URL_`: https://source.cloud.google.com/my-project/my-csr-repository
+  * Example CSR `_URL_`: https://source.cloud.google.com/p/my-project/r/my-csr-repository
 
 The 'Cloud Build' service account must hold the `source.repos.update`
 permission. The role `roles/source.writer` contains this permission. Here is an
@@ -209,7 +209,7 @@ Examples:
 
 Create a deployment to use a CSR repository:
 
-  $ {command} [...] new-deployment --target-git="https://source.cloud.google.com/my-project/my-csr-repository"
+  $ {command} [...] new-deployment --target-git="https://source.cloud.google.com/p/my-project/r/my-csr-repository"
 """
   target_details = parser.add_group(hidden=hidden)
   target_details.add_argument(

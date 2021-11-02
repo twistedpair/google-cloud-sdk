@@ -54,7 +54,7 @@ SUBPROTOCOL_TAG_ACK = 0x0007
 IapTunnelTargetInfo = collections.namedtuple(
     'IapTunnelTarget',
     ['project', 'zone', 'instance', 'interface', 'port', 'url_override',
-     'proxy_info', 'network', 'region', 'ip'])
+     'proxy_info', 'network', 'region', 'host'])
 
 
 class CACertsFileUnavailable(exceptions.Error):
@@ -89,7 +89,7 @@ def ValidateParameters(tunnel_target):
   """Validate the parameters.
 
   Inspects the parameters to ensure that they are valid for either a VM
-  instance-based connection, or an IP-based connection.
+  instance-based connection, or a host-based connection.
 
   Args:
     tunnel_target: The argument container.
@@ -104,9 +104,9 @@ def ValidateParameters(tunnel_target):
       raise MissingTunnelParameter('Missing required tunnel argument: ' +
                                    field_name)
 
-  if tunnel_target.region or tunnel_target.network or tunnel_target.ip:
+  if tunnel_target.region or tunnel_target.network or tunnel_target.host:
     for field_name, field_value in tunnel_target._asdict().items():
-      if not field_value and field_name in ('region', 'network', 'ip'):
+      if not field_value and field_name in ('region', 'network', 'host'):
         raise MissingTunnelParameter('Missing required tunnel argument: ' +
                                      field_name)
       if field_value and field_name in ('instance', 'interface', 'zone'):
@@ -156,12 +156,12 @@ def CheckPythonVersion(ignore_certs):
 
 def CreateWebSocketConnectUrl(tunnel_target):
   """Create Connect URL for WebSocket connection."""
-  if tunnel_target.ip:
+  if tunnel_target.host:
     return _CreateWebSocketUrl(CONNECT_ENDPOINT,
                                {'project': tunnel_target.project,
                                 'region': tunnel_target.region,
                                 'network': tunnel_target.network,
-                                'ip': tunnel_target.ip,
+                                'host': tunnel_target.host,
                                 'port': tunnel_target.port},
                                tunnel_target.url_override)
   else:
@@ -178,7 +178,7 @@ def CreateWebSocketReconnectUrl(tunnel_target, sid, ack_bytes):
   """Create Reconnect URL for WebSocket connection."""
   url_query_pieces = {'sid': sid, 'ack': ack_bytes}
 
-  if tunnel_target.ip:
+  if tunnel_target.host:
     url_query_pieces['region'] = tunnel_target.region
   else:
     url_query_pieces['zone'] = tunnel_target.zone

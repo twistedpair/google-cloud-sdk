@@ -7221,6 +7221,33 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetControlPlaneAccess(self, request, global_params=None):
+      r"""Lists the service accounts with the permissions required to allow Apigee runtime-plane components access to control plane resources. Currently, the permissions required are to: 1. Allow Synchronizer to download environment data from the control plane. 2. Allow the UDCA to upload analytics data. 3. Allow the Logger component to write logs to the control plane. For more information regarding the Synchronizer, see [Configure the Synchronizer](https://cloud.google.com/apigee/docs/hybrid/latest/synchronizer-access). **Note**: Available to Apigee hybrid only.
+
+      Args:
+        request: (ApigeeOrganizationsGetControlPlaneAccessRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ControlPlaneAccess) The response message.
+      """
+      config = self.GetMethodConfig('GetControlPlaneAccess')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetControlPlaneAccess.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/controlPlaneAccess',
+        http_method='GET',
+        method_id='apigee.organizations.getControlPlaneAccess',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsGetControlPlaneAccessRequest',
+        response_type_name='GoogleCloudApigeeV1ControlPlaneAccess',
+        supports_download=False,
+    )
+
     def GetDeployedIngressConfig(self, request, global_params=None):
       r"""Gets the deployed ingress configuration for an organization.
 
@@ -7461,6 +7488,33 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='<request>',
         request_type_name='GoogleCloudApigeeV1Organization',
         response_type_name='GoogleCloudApigeeV1Organization',
+        supports_download=False,
+    )
+
+    def UpdateControlPlaneAccess(self, request, global_params=None):
+      r"""Updates the permissions required to allow Apigee runtime-plane components access to the control plane. Currently, the permissions required are to: 1. Allow Synchronizer to download environment data from the control plane. 2. Allow the UDCA to upload analytics data. 3. Allow the Logger component to write logs to the control plane. You must call this API to enable proper functioning of hybrid. For more information regarding the Synchronizer, see [Configure the Synchronizer](https://cloud.google.com/apigee/docs/hybrid/latest/synchronizer-access). **Note**: Available to Apigee hybrid only.
+
+      Args:
+        request: (ApigeeOrganizationsUpdateControlPlaneAccessRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateControlPlaneAccess')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateControlPlaneAccess.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/controlPlaneAccess',
+        http_method='PATCH',
+        method_id='apigee.organizations.updateControlPlaneAccess',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudApigeeV1ControlPlaneAccess',
+        request_type_name='ApigeeOrganizationsUpdateControlPlaneAccessRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

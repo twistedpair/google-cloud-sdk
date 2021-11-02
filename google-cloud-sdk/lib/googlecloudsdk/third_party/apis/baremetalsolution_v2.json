@@ -109,6 +109,100 @@
     }
   },
   "schemas": {
+    "ListOperationsResponse": {
+      "id": "ListOperationsResponse",
+      "description": "The response message for Operations.ListOperations.",
+      "type": "object",
+      "properties": {
+        "operations": {
+          "description": "A list of operations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Operation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Operation": {
+      "id": "Operation",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "Status"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "CancelOperationRequest": {
+      "id": "CancelOperationRequest",
+      "description": "The request message for Operations.CancelOperation.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "ListInstancesResponse": {
       "id": "ListInstancesResponse",
       "description": "Response message for the list of servers.",
@@ -389,6 +483,301 @@
         }
       }
     },
+    "ResetInstanceRequest": {
+      "id": "ResetInstanceRequest",
+      "description": "Message requesting to reset a server.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ListVolumesResponse": {
+      "id": "ListVolumesResponse",
+      "description": "Response message containing the list of storage volumes.",
+      "type": "object",
+      "properties": {
+        "volumes": {
+          "description": "The list of storage volumes.",
+          "type": "array",
+          "items": {
+            "$ref": "Volume"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results from the server.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Volume": {
+      "id": "Volume",
+      "description": "A storage volume.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of this `Volume`. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. Format: `projects\/{project}\/locations\/{location}\/volumes\/{volume}`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "storageType": {
+          "description": "The storage type for this volume.",
+          "type": "string",
+          "enumDescriptions": [
+            "The storage type for this volume is unknown.",
+            "The storage type for this volume is SSD.",
+            "This storage type for this volume is HDD."
+          ],
+          "enum": [
+            "STORAGE_TYPE_UNSPECIFIED",
+            "SSD",
+            "HDD"
+          ]
+        },
+        "state": {
+          "description": "The state of this storage volume.",
+          "type": "string",
+          "enumDescriptions": [
+            "The storage volume is in an unknown state.",
+            "The storage volume is being created.",
+            "The storage volume is ready for use.",
+            "The storage volume has been requested to be deleted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "READY",
+            "DELETING"
+          ]
+        },
+        "requestedSizeGib": {
+          "description": "The requested size of this storage volume, in GiB.",
+          "type": "string",
+          "format": "int64"
+        },
+        "currentSizeGib": {
+          "description": "The current size of this storage volume, in GiB, including space reserved for snapshots. This size might be different than the requested size if the storage volume has been configured with auto grow or auto shrink.",
+          "type": "string",
+          "format": "int64"
+        },
+        "autoGrownSizeGib": {
+          "description": "The size, in GiB, that this storage volume has expanded as a result of an auto grow policy. In the absence of auto-grow, the value is 0.",
+          "type": "string",
+          "format": "int64"
+        },
+        "remainingSpaceGib": {
+          "description": "The space remaining in the storage volume for new LUNs, in GiB, excluding space reserved for snapshots.",
+          "type": "string",
+          "format": "int64"
+        },
+        "snapshotReservationDetail": {
+          "description": "Details about snapshot space reservation and usage on the storage volume.",
+          "$ref": "SnapshotReservationDetail"
+        },
+        "snapshotAutoDeleteBehavior": {
+          "description": "The behavior to use when snapshot reserved space is full.",
+          "type": "string",
+          "enumDescriptions": [
+            "The unspecified behavior.",
+            "Don't delete any snapshots. This disables new snapshot creation, as long as the snapshot reserved space is full.",
+            "Delete the oldest snapshots first.",
+            "Delete the newest snapshots first."
+          ],
+          "enum": [
+            "SNAPSHOT_AUTO_DELETE_BEHAVIOR_UNSPECIFIED",
+            "DISABLED",
+            "OLDEST_FIRST",
+            "NEWEST_FIRST"
+          ]
+        },
+        "snapshotSchedulePolicy": {
+          "description": "The name of the snapshot schedule policy in use for this volume, if any.",
+          "type": "string"
+        }
+      }
+    },
+    "SnapshotReservationDetail": {
+      "id": "SnapshotReservationDetail",
+      "description": "Details about snapshot space reservation and usage on the storage volume.",
+      "type": "object",
+      "properties": {
+        "reservedSpaceGib": {
+          "description": "The space on this storage volume reserved for snapshots, shown in GiB.",
+          "type": "string",
+          "format": "int64"
+        },
+        "reservedSpaceUsedPercent": {
+          "description": "The percent of snapshot space on this storage volume actually being used by the snapshot copies. This value might be higher than 100% if the snapshot copies have overflowed into the data portion of the storage volume.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "reservedSpaceRemainingGib": {
+          "description": "The amount, in GiB, of available space in this storage volume's reserved snapshot space.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ListNetworksResponse": {
+      "id": "ListNetworksResponse",
+      "description": "Response message containing the list of networks.",
+      "type": "object",
+      "properties": {
+        "networks": {
+          "description": "The list of networks.",
+          "type": "array",
+          "items": {
+            "$ref": "Network"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results from the server.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ListSnapshotSchedulePoliciesResponse": {
+      "id": "ListSnapshotSchedulePoliciesResponse",
+      "description": "Response message containing the list of snapshot schedule policies.",
+      "type": "object",
+      "properties": {
+        "snapshotSchedulePolicies": {
+          "description": "The snapshot schedule policies registered in this project.",
+          "type": "array",
+          "items": {
+            "$ref": "SnapshotSchedulePolicy"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "SnapshotSchedulePolicy": {
+      "id": "SnapshotSchedulePolicy",
+      "description": "A snapshot schedule policy.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The name of the snapshot schedule policy.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "description": {
+          "description": "The description of the snapshot schedule policy.",
+          "type": "string"
+        },
+        "schedules": {
+          "description": "The snapshot schedules contained in this policy. You can specify a maxiumum of 5 schedules.",
+          "type": "array",
+          "items": {
+            "$ref": "Schedule"
+          }
+        },
+        "volumes": {
+          "description": "The names of the volumes associated with this policy.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Schedule": {
+      "id": "Schedule",
+      "description": "A snapshot schedule.",
+      "type": "object",
+      "properties": {
+        "crontabSpec": {
+          "description": "A crontab-like specification that the schedule uses to take snapshots.",
+          "type": "string"
+        },
+        "retentionCount": {
+          "description": "The maximum number of snapshots to retain in this schedule.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "prefix": {
+          "description": "A list of snapshot names created in this schedule.",
+          "type": "string"
+        }
+      }
+    },
+    "VolumeSnapshot": {
+      "id": "VolumeSnapshot",
+      "description": "Snapshot registered for a given storage volume.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The name of the storage volume snapshot.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "description": {
+          "description": "The description of the storage volume snapshot.",
+          "type": "string"
+        },
+        "sizeBytes": {
+          "description": "The size of the storage volume snapshot, in bytes.",
+          "type": "string",
+          "format": "int64"
+        },
+        "createTime": {
+          "description": "Optional. The creation time of the storage volume snapshot.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "storageVolume": {
+          "description": "The storage volume this snapshot belongs to.",
+          "type": "string"
+        }
+      }
+    },
+    "RestoreVolumeSnapshotRequest": {
+      "id": "RestoreVolumeSnapshotRequest",
+      "description": "Message for restoring a volume snapshot.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ListVolumeSnapshotsResponse": {
+      "id": "ListVolumeSnapshotsResponse",
+      "description": "Response message containing the list of storage volume snapshots.",
+      "type": "object",
+      "properties": {
+        "volumeSnapshots": {
+          "description": "The list of storage volumes.",
+          "type": "array",
+          "items": {
+            "$ref": "VolumeSnapshot"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results from the server.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "ListLunsResponse": {
       "id": "ListLunsResponse",
       "description": "Response message containing the list of storage volume luns.",
@@ -541,6 +930,129 @@
           }
           ,
           "resources": {
+            "operations": {
+              "methods": {
+                "list": {
+                  "id": "baremetalsolution.projects.locations.operations.list",
+                  "path": "v2/{+name}/operations",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/operations",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The standard list filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The standard list page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ListOperationsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                },
+                "get": {
+                  "id": "baremetalsolution.projects.locations.operations.get",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                },
+                "delete": {
+                  "id": "baremetalsolution.projects.locations.operations.delete",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                },
+                "cancel": {
+                  "id": "baremetalsolution.projects.locations.operations.cancel",
+                  "path": "v2/{+name}:cancel",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "CancelOperationRequest"
+                  },
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                }
+              }
+            },
             "instances": {
               "methods": {
                 "list": {
@@ -564,16 +1076,6 @@
                     },
                     "pageToken": {
                       "description": "A token identifying a page of results from the server.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "filter": {
-                      "description": "Filtering results.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "orderBy": {
-                      "description": "Hint for how to order the results.",
                       "location": "query",
                       "type": "string"
                     }
@@ -613,11 +1115,283 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Get details about a single server."
+                },
+                "reset": {
+                  "id": "baremetalsolution.projects.locations.instances.reset",
+                  "path": "v2/{+name}:reset",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:reset",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "ResetInstanceRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Perform an ungraceful, hard reset on a server. Equivalent to shutting the power off and then turning it back on."
                 }
               }
             },
             "volumes": {
+              "methods": {
+                "list": {
+                  "id": "baremetalsolution.projects.locations.volumes.list",
+                  "path": "v2/{+parent}/volumes",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/volumes",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Parent value for ListVolumesRequest.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Requested page size. The server might return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A token identifying a page of results from the server.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListVolumesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "List storage volumes in a given project and location."
+                },
+                "get": {
+                  "id": "baremetalsolution.projects.locations.volumes.get",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Volume"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Get details of a single storage volume."
+                },
+                "patch": {
+                  "id": "baremetalsolution.projects.locations.volumes.patch",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The resource name of this `Volume`. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. Format: `projects\/{project}\/locations\/{location}\/volumes\/{volume}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "The list of fields to update. The only currently supported fields are: `snapshot_auto_delete_behavior` `snapshot_schedule_policy_name`",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Volume"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Update details of a single storage volume."
+                }
+              }
+              ,
               "resources": {
+                "snapshots": {
+                  "methods": {
+                    "create": {
+                      "id": "baremetalsolution.projects.locations.volumes.snapshots.create",
+                      "path": "v2/{+parent}/snapshots",
+                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/snapshots",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The volume to snapshot.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "VolumeSnapshot"
+                      },
+                      "response": {
+                        "$ref": "VolumeSnapshot"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Create a storage volume snapshot in a containing volume."
+                    },
+                    "restoreVolumeSnapshot": {
+                      "id": "baremetalsolution.projects.locations.volumes.snapshots.restoreVolumeSnapshot",
+                      "path": "v2/{+volumeSnapshot}:restoreVolumeSnapshot",
+                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/snapshots/{snapshotsId}:restoreVolumeSnapshot",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "volumeSnapshot": {
+                          "description": "Required. Name of the resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+\/snapshots\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "volumeSnapshot"
+                      ],
+                      "request": {
+                        "$ref": "RestoreVolumeSnapshotRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Restore a storage volume snapshot to its containing volume."
+                    },
+                    "delete": {
+                      "id": "baremetalsolution.projects.locations.volumes.snapshots.delete",
+                      "path": "v2/{+name}",
+                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/snapshots/{snapshotsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the snapshot to delete.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+\/snapshots\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Empty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a storage volume snapshot for a given volume."
+                    },
+                    "get": {
+                      "id": "baremetalsolution.projects.locations.volumes.snapshots.get",
+                      "path": "v2/{+name}",
+                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/snapshots/{snapshotsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. Name of the resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+\/snapshots\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "VolumeSnapshot"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Get details of a single storage volume snapshot."
+                    },
+                    "list": {
+                      "id": "baremetalsolution.projects.locations.volumes.snapshots.list",
+                      "path": "v2/{+parent}/snapshots",
+                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/snapshots",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Parent value for ListVolumesRequest.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Requested page size. The server might return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A token identifying a page of results from the server.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListVolumeSnapshotsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "List storage volume snapshots for given storage volume."
+                    }
+                  }
+                },
                 "luns": {
                   "methods": {
                     "get": {
@@ -668,16 +1442,6 @@
                           "description": "A token identifying a page of results from the server.",
                           "location": "query",
                           "type": "string"
-                        },
-                        "filter": {
-                          "description": "Filtering results.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "orderBy": {
-                          "description": "Hint for how to order the results.",
-                          "location": "query",
-                          "type": "string"
                         }
                       },
                       "parameterOrder": [
@@ -692,6 +1456,228 @@
                       "description": "List storage volume luns for given storage volume."
                     }
                   }
+                }
+              }
+            },
+            "networks": {
+              "methods": {
+                "list": {
+                  "id": "baremetalsolution.projects.locations.networks.list",
+                  "path": "v2/{+parent}/networks",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/networks",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Parent value for ListNetworksRequest.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Requested page size. The server might return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A token identifying a page of results from the server.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListNetworksResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "List network in a given project and location."
+                },
+                "get": {
+                  "id": "baremetalsolution.projects.locations.networks.get",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/networks/{networksId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/networks\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Network"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Get details of a single network."
+                }
+              }
+            },
+            "snapshotSchedulePolicies": {
+              "methods": {
+                "list": {
+                  "id": "baremetalsolution.projects.locations.snapshotSchedulePolicies.list",
+                  "path": "v2/{+parent}/snapshotSchedulePolicies",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/snapshotSchedulePolicies",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent project containing the Snapshot Schedule Policies.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of items to return.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The next_page_token value returned from a previous List request, if any.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListSnapshotSchedulePoliciesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "List snapshot schedule policies in a given project and location."
+                },
+                "get": {
+                  "id": "baremetalsolution.projects.locations.snapshotSchedulePolicies.get",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/snapshotSchedulePolicies/{snapshotSchedulePoliciesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/snapshotSchedulePolicies\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "SnapshotSchedulePolicy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Get details of a single snapshot schedule policy."
+                },
+                "create": {
+                  "id": "baremetalsolution.projects.locations.snapshotSchedulePolicies.create",
+                  "path": "v2/{+parent}/snapshotSchedulePolicies",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/snapshotSchedulePolicies",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent project and location containing the SnapshotSchedulePolicy.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "snapshotSchedulePolicyId": {
+                      "description": "Required. Snapshot policy ID",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "SnapshotSchedulePolicy"
+                  },
+                  "response": {
+                    "$ref": "SnapshotSchedulePolicy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Create a snapshot schedule policy in the specified project."
+                },
+                "patch": {
+                  "id": "baremetalsolution.projects.locations.snapshotSchedulePolicies.patch",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/snapshotSchedulePolicies/{snapshotSchedulePoliciesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The name of the snapshot schedule policy.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/snapshotSchedulePolicies\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. The list of fields to update.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "SnapshotSchedulePolicy"
+                  },
+                  "response": {
+                    "$ref": "SnapshotSchedulePolicy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Update a snapshot schedule policy in the specified project."
+                },
+                "delete": {
+                  "id": "baremetalsolution.projects.locations.snapshotSchedulePolicies.delete",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/snapshotSchedulePolicies/{snapshotSchedulePoliciesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the snapshot schedule policy to delete.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/snapshotSchedulePolicies\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Delete a named snapshot schedule policy."
                 }
               }
             }

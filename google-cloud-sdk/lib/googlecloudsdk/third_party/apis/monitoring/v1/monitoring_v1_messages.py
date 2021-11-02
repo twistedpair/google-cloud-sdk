@@ -761,6 +761,67 @@ class GridLayout(_messages.Message):
   widgets = _messages.MessageField('Widget', 2, repeated=True)
 
 
+class HttpBody(_messages.Message):
+  r"""Message that represents an arbitrary HTTP body. It should only be used
+  for payload formats that can't be represented as JSON, such as raw binary or
+  an HTML page.This message can be used both in streaming and non-streaming
+  API methods in the request as well as the response.It can be used as a top-
+  level request field, which is convenient if one wants to extract parameters
+  from either the URL or HTTP template into the request fields and also want
+  access to the raw HTTP body.Example: message GetResourceRequest { // A
+  unique request id. string request_id = 1; // The raw HTTP body is bound to
+  this field. google.api.HttpBody http_body = 2; } service ResourceService {
+  rpc GetResource(GetResourceRequest) returns (google.api.HttpBody); rpc
+  UpdateResource(google.api.HttpBody) returns (google.protobuf.Empty); }
+  Example with streaming methods: service CaldavService { rpc
+  GetCalendar(stream google.api.HttpBody) returns (stream
+  google.api.HttpBody); rpc UpdateCalendar(stream google.api.HttpBody) returns
+  (stream google.api.HttpBody); } Use of this type only changes how the
+  request and response bodies are handled, all other features will continue to
+  work unchanged.
+
+  Messages:
+    ExtensionsValueListEntry: A ExtensionsValueListEntry object.
+
+  Fields:
+    contentType: The HTTP Content-Type header value specifying the content
+      type of the body.
+    data: The HTTP request/response body as raw binary.
+    extensions: Application specific response metadata. Must be set in the
+      first response for streaming APIs.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExtensionsValueListEntry(_messages.Message):
+    r"""A ExtensionsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ExtensionsValueListEntry object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExtensionsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  contentType = _messages.StringField(1)
+  data = _messages.BytesField(2)
+  extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
+
+
 class ListDashboardsResponse(_messages.Message):
   r"""The ListDashboards request.
 
@@ -965,6 +1026,110 @@ class MonitoringProjectsDashboardsPatchRequest(_messages.Message):
   dashboard = _messages.MessageField('Dashboard', 1)
   name = _messages.StringField(2, required=True)
   validateOnly = _messages.BooleanField(3)
+
+
+class MonitoringProjectsLocationPrometheusApiV1LabelValuesRequest(_messages.Message):
+  r"""A MonitoringProjectsLocationPrometheusApiV1LabelValuesRequest object.
+
+  Fields:
+    end: The end time to evaluate the query for. Either floating point UNIX
+      seconds or RFC3339 formatted timestamp.
+    label: The label name for which values are queried.
+    location: Location of the resource information. Has to be "global" now.
+    match: A list of matchers encoded in the Prometheus label matcher format
+      to constrain the values to series that satisfy them.
+    name: The workspace on which to execute the request. It is not part of the
+      open source API but used as a request path prefix to distinguish
+      different virtual Prometheus instances of Google Prometheus Engine. The
+      format is: projects/PROJECT_ID_OR_NUMBER.
+    start: The start time to evaluate the query for. Either floating point
+      UNIX seconds or RFC3339 formatted timestamp.
+  """
+
+  end = _messages.StringField(1)
+  label = _messages.StringField(2, required=True)
+  location = _messages.StringField(3, required=True)
+  match = _messages.StringField(4)
+  name = _messages.StringField(5, required=True)
+  start = _messages.StringField(6)
+
+
+class MonitoringProjectsLocationPrometheusApiV1MetadataListRequest(_messages.Message):
+  r"""A MonitoringProjectsLocationPrometheusApiV1MetadataListRequest object.
+
+  Fields:
+    limit: Maximum number of metrics to return.
+    location: Location of the resource information. Has to be "global" for
+      now.
+    metric: The metric name for which to query metadata. If unset, all metric
+      metadata is returned.
+    name: Required. The workspace on which to execute the request. It is not
+      part of the open source API but used as a request path prefix to
+      distinguish different virtual Prometheus instances of Google Prometheus
+      Engine. The format is: projects/PROJECT_ID_OR_NUMBER.
+  """
+
+  limit = _messages.IntegerField(1)
+  location = _messages.StringField(2, required=True)
+  metric = _messages.StringField(3)
+  name = _messages.StringField(4, required=True)
+
+
+class MonitoringProjectsLocationPrometheusApiV1QueryRangeRequest(_messages.Message):
+  r"""A MonitoringProjectsLocationPrometheusApiV1QueryRangeRequest object.
+
+  Fields:
+    location: Location of the resource information. Has to be "global" now.
+    name: The project on which to execute the request. Data associcated with
+      the project's workspace stored under the The format is:
+      projects/PROJECT_ID_OR_NUMBER. Open source API but used as a request
+      path prefix to distinguish different virtual Prometheus instances of
+      Google Prometheus Engine.
+    queryRangeRequest: A QueryRangeRequest resource to be passed as the
+      request body.
+  """
+
+  location = _messages.StringField(1, required=True)
+  name = _messages.StringField(2, required=True)
+  queryRangeRequest = _messages.MessageField('QueryRangeRequest', 3)
+
+
+class MonitoringProjectsLocationPrometheusApiV1QueryRequest(_messages.Message):
+  r"""A MonitoringProjectsLocationPrometheusApiV1QueryRequest object.
+
+  Fields:
+    location: Location of the resource information. Has to be "global" now.
+    name: The project on which to execute the request. Data associcated with
+      the project's workspace stored under the The format is:
+      projects/PROJECT_ID_OR_NUMBER. Open source API but used as a request
+      path prefix to distinguish different virtual Prometheus instances of
+      Google Prometheus Engine.
+    queryInstantRequest: A QueryInstantRequest resource to be passed as the
+      request body.
+  """
+
+  location = _messages.StringField(1, required=True)
+  name = _messages.StringField(2, required=True)
+  queryInstantRequest = _messages.MessageField('QueryInstantRequest', 3)
+
+
+class MonitoringProjectsLocationPrometheusApiV1SeriesRequest(_messages.Message):
+  r"""A MonitoringProjectsLocationPrometheusApiV1SeriesRequest object.
+
+  Fields:
+    location: Location of the resource information. Has to be "global" for
+      now.
+    name: Required. The workspace on which to execute the request. It is not
+      part of the open source API but used as a request path prefix to
+      distinguish different virtual Prometheus instances of Google Prometheus
+      Engine. The format is: projects/PROJECT_ID_OR_NUMBER.
+    querySeriesRequest: A QuerySeriesRequest resource to be passed as the
+      request body.
+  """
+
+  location = _messages.StringField(1, required=True)
+  name = _messages.StringField(2, required=True)
+  querySeriesRequest = _messages.MessageField('QuerySeriesRequest', 3)
 
 
 class MosaicLayout(_messages.Message):
@@ -1241,6 +1406,74 @@ class PickTimeSeriesFilter(_messages.Message):
   direction = _messages.EnumField('DirectionValueValuesEnum', 1)
   numTimeSeries = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   rankingMethod = _messages.EnumField('RankingMethodValueValuesEnum', 3)
+
+
+class QueryInstantRequest(_messages.Message):
+  r"""QueryInstantRequest holds all parameters of the Prometheus upstream
+  instant query API plus GCM specific parameters.
+
+  Fields:
+    query: A PromQL query string. Query lanauge documentation:
+      https://prometheus.io/docs/prometheus/latest/querying/basics/.
+    time: The single point in time to evaluate the query for. Either floating
+      point UNIX seconds or RFC3339 formatted timestamp.
+    timeout: An upper bound timeout for the query. Either a Prometheus
+      duration string
+      (https://prometheus.io/docs/prometheus/latest/querying/basics/#time-
+      durations) or floating point seconds. This non-standard encoding must be
+      used for compatibility with the open source API. Clients may still
+      implement timeouts at the connection level while ignoring this field.
+  """
+
+  query = _messages.StringField(1)
+  time = _messages.StringField(2)
+  timeout = _messages.StringField(3)
+
+
+class QueryRangeRequest(_messages.Message):
+  r"""QueryRangeRequest holds all parameters of the Prometheus upstream range
+  query API plus GCM specific parameters.
+
+  Fields:
+    end: The end time to evaluate the query for. Either floating point UNIX
+      seconds or RFC3339 formatted timestamp.
+    query: A PromQL query string. Query lanauge documentation:
+      https://prometheus.io/docs/prometheus/latest/querying/basics/.
+    start: The start time to evaluate the query for. Either floating point
+      UNIX seconds or RFC3339 formatted timestamp.
+    step: The resolution of query result. Either a Prometheus duration string
+      (https://prometheus.io/docs/prometheus/latest/querying/basics/#time-
+      durations) or floating point seconds. This non-standard encoding must be
+      used for compatibility with the open source API. Clients may still
+      implement timeouts at the connection level while ignoring this field.
+    timeout: An upper bound timeout for the query. Either a Prometheus
+      duration string
+      (https://prometheus.io/docs/prometheus/latest/querying/basics/#time-
+      durations) or floating point seconds. This non-standard encoding must be
+      used for compatibility with the open source API. Clients may still
+      implement timeouts at the connection level while ignoring this field.
+  """
+
+  end = _messages.StringField(1)
+  query = _messages.StringField(2)
+  start = _messages.StringField(3)
+  step = _messages.StringField(4)
+  timeout = _messages.StringField(5)
+
+
+class QuerySeriesRequest(_messages.Message):
+  r"""QuerySeries holds all parameters of the Prometheus upstream API for
+  querying series.
+
+  Fields:
+    end: The end time to evaluate the query for. Either floating point UNIX
+      seconds or RFC3339 formatted timestamp.
+    start: The start time to evaluate the query for. Either floating point
+      UNIX seconds or RFC3339 formatted timestamp.
+  """
+
+  end = _messages.StringField(1)
+  start = _messages.StringField(2)
 
 
 class RatioPart(_messages.Message):

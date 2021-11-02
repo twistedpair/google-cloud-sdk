@@ -31,6 +31,14 @@ CRM_STAGING_GLOBAL_API = (
 CRM_STAGING_REGIONAL_SUFFIX = (
     'stagqual-cloudresourcemanager.sandbox.googleapis.com/')
 
+# A few zones are too long to fit into the API name character limit,
+# so we truncated them.
+LOCATION_MAPPING = {
+    'northamerica-northeast2-staginga': 'nane2staginga',
+    'northamerica-northeast2-stagingb': 'nane2stagingb',
+    'northamerica-northeast2-stagingc': 'nane2stagingc'
+}
+
 
 @contextlib.contextmanager
 def CrmEndpointOverrides(location):
@@ -56,6 +64,7 @@ def CrmEndpointOverrides(location):
       if is_staging_env:
         # Staging endpoints are formatted differently from other envs due to
         # length; manually set the correct staging regional endpoint value.
+        location = LOCATION_MAPPING.get(location, location)
         endpoint_property.Set(
             _DeriveCrmRegionalEndpoint('https://' + CRM_STAGING_REGIONAL_SUFFIX,
                                        location.replace('-', '')))

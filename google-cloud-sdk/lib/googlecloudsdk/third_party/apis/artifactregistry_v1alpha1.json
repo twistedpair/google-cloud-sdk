@@ -971,7 +971,7 @@
     },
     "DockerImage": {
       "id": "DockerImage",
-      "description": "DockerImage represents a docker artifact. The following fields are returned as untyped metadata in the Version resource, using camelcase keys (i.e. metadata.imageSizeBytes): - imageSizeBytes - mediaType - buildTime",
+      "description": "DockerImage represents a docker artifact. The following fields are returned as untyped metadata in the Version resource, using camelcase keys (i.e. metadata.imageSizeBytes): * imageSizeBytes * mediaType * buildTime",
       "type": "object",
       "properties": {
         "name": {

@@ -40,6 +40,7 @@ def CheckFieldsSpecifiedBeta(unused_instance_ref, args, patch_request):
       'maintenance_window_day',
       'maintenance_window_hour',
       'maintenance_window_any',
+      'replica_count',
   ]
   return CheckFieldsSpecifiedCommon(args, patch_request, additional_update_args)
 
@@ -53,7 +54,6 @@ def CheckFieldsSpecifiedAlpha(unused_instance_ref, args, patch_request):
       'persistence_mode',
       'rdb_snapshot_period',
       'rdb_snapshot_start_time',
-      'read_replicas_mode',
       'replica_count',
   ]
   return CheckFieldsSpecifiedCommon(args, patch_request, additional_update_args)
@@ -208,13 +208,6 @@ def UpdateRdbSnapshotStartTime(unused_instance_ref, args, patch_request):
   """Hook to update RDB snapshot start time."""
   if args.IsSpecified('rdb_snapshot_start_time'):
     patch_request = AddFieldToUpdateMask('persistence_config', patch_request)
-  return patch_request
-
-
-def UpdateReadReplicasMode(unused_instance_ref, args, patch_request):
-  """Hook to update read reaplicas mode."""
-  if args.IsSpecified('read_replicas_mode'):
-    patch_request = AddFieldToUpdateMask('read_replicas_mode', patch_request)
   return patch_request
 
 

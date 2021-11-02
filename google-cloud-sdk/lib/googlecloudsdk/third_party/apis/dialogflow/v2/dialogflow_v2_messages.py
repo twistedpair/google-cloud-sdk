@@ -5945,7 +5945,7 @@ class GoogleCloudDialogflowCxV3beta1EnvironmentTestCasesConfig(_messages.Message
 
   Fields:
     enableContinuousRun: Whether to run test cases in
-      TestCasesConfig.test_cases periodically. Default false. If set to ture,
+      TestCasesConfig.test_cases periodically. Default false. If set to true,
       run once a day.
     enablePredeploymentRun: Whether to run test cases in
       TestCasesConfig.test_cases before deploying a flow version to the
@@ -7678,9 +7678,11 @@ class GoogleCloudDialogflowV2Agent(_messages.Message):
 
     Values:
       TIER_UNSPECIFIED: Not specified. This value should never be used.
-      TIER_STANDARD: Standard tier.
-      TIER_ENTERPRISE: Enterprise tier (Essentials).
-      TIER_ENTERPRISE_PLUS: Enterprise tier (Plus).
+      TIER_STANDARD: Trial Edition, previously known as Standard Edition.
+      TIER_ENTERPRISE: Essentials Edition, previously known as Enterprise
+        Essential Edition.
+      TIER_ENTERPRISE_PLUS: Essentials Edition (same as TIER_ENTERPRISE),
+        previously known as Enterprise Plus Edition.
     """
     TIER_UNSPECIFIED = 0
     TIER_STANDARD = 1

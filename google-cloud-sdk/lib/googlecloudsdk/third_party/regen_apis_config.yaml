@@ -57,6 +57,7 @@ apis:
     v1:
       discovery_doc: admin_v1.json
       default: true
+      mtls_endpoint_override: https://www.mtls.googleapis.com/admin/directory/v1/
       resources:
         customer:
           path: customer/{customerId}
@@ -213,8 +214,10 @@ apis:
           path: resources
     v1p2beta1:
       discovery_doc: cloudasset_v1p2beta1.json
+      mtls_endpoint_override: https://cloudasset.mtls.googleapis.com/
     v1p4alpha1:
       discovery_doc: cloudasset_v1p4alpha1.json
+      mtls_endpoint_override: https://cloudasset.mtls.googleapis.com/
     v1p4beta1:
       discovery_doc: cloudasset_v1p4beta1.json
     v1p5beta1:
@@ -320,7 +323,6 @@ apis:
   cloudkms:
     v1:
       discovery_doc: cloudkms_v1.json
-      enable_mtls: true
       default: true
   cloudresourcemanager:
     v1beta1:
@@ -337,16 +339,20 @@ apis:
       discovery_doc: cloudresourcemanager_v2alpha1.json
     v2beta1:
       discovery_doc: cloudresourcemanager_v2beta1.json
+      mtls_endpoint_override: https://cloudresourcemanager.mtls.googleapis.com/
     v2:
       discovery_doc: cloudresourcemanager_v2.json
+      mtls_endpoint_override: https://cloudresourcemanager.mtls.googleapis.com/
     v3:
       discovery_doc: cloudresourcemanager_v3.json
   cloudshell:
     v1alpha1:
       discovery_doc: cloudshell_v1alpha1.json
+      enable_mtls: false
       default: true
     v1:
       discovery_doc: cloudshell_v1.json
+      enable_mtls: false
   cloudtasks:
     v2beta2:
       discovery_doc: cloudtasks_v2beta2.json
@@ -365,6 +371,7 @@ apis:
       discovery_doc: cloudscheduler_v1beta1.json
     v1:
       discovery_doc: cloudscheduler_v1.json
+      mtls_endpoint_override: https://cloudscheduler.mtls.googleapis.com/
       default: true
   composer:
     v1alpha2:
@@ -380,8 +387,6 @@ apis:
   compute:
     alpha:
       discovery_doc: compute_alpha.json
-      enable_mtls: true
-      mtls_endpoint_override: https://compute.mtls.googleapis.com/compute/alpha/
       resources:
         regionAcceleratorTypes:
           path: projects/{project}/regions/{region}/acceleratorTypes/{acceleratorType}
@@ -393,8 +398,6 @@ apis:
           path: projects/{project}/global/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
     beta:
       discovery_doc: compute_beta.json
-      enable_mtls: true
-      mtls_endpoint_override: https://compute.mtls.googleapis.com/compute/beta/
       unelidable_request_methods:
         - compute.disks.resize
       resources:
@@ -406,8 +409,6 @@ apis:
           path: projects/{project}/global/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
     v1:
       discovery_doc: compute_v1.json
-      enable_mtls: true
-      mtls_endpoint_override: https://compute.mtls.googleapis.com/compute/v1/
       default: true
       resources:
         nextHopGateways:
@@ -418,7 +419,6 @@ apis:
     v1:
       discovery_doc: container_v1.json
       default: true
-      enable_mtls: true
       resources:
         projects.zones:
           path: projects/{projectId}/zones/{zoneId}
@@ -479,12 +479,16 @@ apis:
   datafusion:
     v1beta1:
       discovery_doc: datafusion_v1beta1.json
+      enable_mtls: false
   datamigration:
     v1alpha2:
       discovery_doc: datamigration_v1alpha2.json
       default: true
     v1:
       discovery_doc: datamigration_v1.json
+  datapipelines:
+    v1:
+      discovery_doc: datapipelines_v1.json
   dataplex:
     v1:
       discovery_doc: dataplex_v1.json
@@ -524,11 +528,14 @@ apis:
   deploymentmanager:
     alpha:
       discovery_doc: deploymentmanager_alpha.json
+      mtls_endpoint_override: https://www.mtls.googleapis.com/deploymentmanager/alpha/
     v2:
       discovery_doc: deploymentmanager_v2.json
+      mtls_endpoint_override: https://www.mtls.googleapis.com/deploymentmanager/v2/
       default: true
     v2beta:
       discovery_doc: deploymentmanager_v2beta.json
+      mtls_endpoint_override: https://www.mtls.googleapis.com/deploymentmanager/v2beta/
   dialogflow:
     v2:
       discovery_doc: dialogflow_v2.json
@@ -538,32 +545,41 @@ apis:
   discovery:
     v1:
       discovery_doc: discovery_v1.json
+      mtls_endpoint_override: https://www.mtls.googleapis.com/discovery/v1/
       resources:
         apis.versions:
           path: '{api}/{version}'
   dns:
     v1:
       discovery_doc: dns_v1.json
+      mtls_endpoint_override: https://dns.mtls.googleapis.com/dns/v1/
       default: true
     v1beta2:
       discovery_doc: dns_v1beta2.json
+      mtls_endpoint_override: https://dns.mtls.googleapis.com/dns/v1beta2/
     v1alpha2:
       discovery_doc: dns_v1alpha2.json
   domains:
     v1:
       discovery_doc: domains_v1.json
+      enable_mtls: false
       default: true
     v1beta1:
       discovery_doc: domains_v1beta1.json
+      enable_mtls: false
     v1alpha2:
       discovery_doc: domains_v1alpha2.json
+      enable_mtls: false
   edgecontainer:
     v1:
       discovery_doc: edgecontainer_v1.json
+      enable_mtls: false
     v1beta:
       discovery_doc: edgecontainer_v1beta.json
+      enable_mtls: false
     v1alpha:
       discovery_doc: edgecontainer_v1alpha.json
+      enable_mtls: false
       default: true
   essentialcontacts:
     v1alpha1:
@@ -755,6 +771,7 @@ apis:
   ids:
     v1:
       discovery_doc: ids_v1.json
+      enable_mtls: false
       resources:
           projects:
             path: projects/{projectId}
@@ -772,6 +789,7 @@ apis:
   language:
     v1beta2:
       discovery_doc: language_v1beta2.json
+      mtls_endpoint_override: https://language.mtls.googleapis.com/
       resources:
         documents:
           path: documents
@@ -795,7 +813,6 @@ apis:
       default: true
   logging:
     v2:
-      enable_mtls: true
       discovery_doc: logging_v2.json
       default: true
   memcache:
@@ -819,6 +836,7 @@ apis:
     v3:
       discovery_doc: monitoring_v3.json
       default: true
+      mtls_endpoint_override: https://monitoring.mtls.googleapis.com/
       resources:
         projects.alertPolicies.conditions:
           path: projects/{projectsId}/alertPolicies/{alertPoliciesId}/conditions/{conditionsId}
@@ -847,19 +865,25 @@ apis:
   networkservices:
     v1alpha1:
       discovery_doc: networkservices_v1alpha1.json
+      enable_mtls: false
     v1beta1:
       discovery_doc: networkservices_v1beta1.json
+      enable_mtls: false
     v1:
       discovery_doc: networkservices_v1.json
+      enable_mtls: false
       default: true
   networksecurity:
     v1:
       discovery_doc: networksecurity_v1.json
+      enable_mtls: false
       default: true
     v1beta1:
       discovery_doc: networksecurity_v1beta1.json
+      enable_mtls: false
     v1alpha1:
       discovery_doc: networksecurity_v1alpha1.json
+      enable_mtls: false
   notebooks:
     v1:
       discovery_doc: notebooks_v1.json
@@ -874,17 +898,20 @@ apis:
       default: true
   policytroubleshooter:
     v1beta:
+      enable_mtls: false
       resources:
         iam:
           path: iam
       discovery_doc: policytroubleshooter_v1beta.json
     v1:
       default: true
+      enable_mtls: false
       resources:
         iam:
           path: iam
       discovery_doc: policytroubleshooter_v1.json
     v2alpha1:
+      enable_mtls: false
       resources:
         iam:
           path: iam
@@ -918,10 +945,10 @@ apis:
     v1alpha1:
       default: true
       discovery_doc: publicca_v1alpha1.json
+      enable_mtls: false
   pubsub:
     v1:
       discovery_doc: pubsub_v1.json
-      enable_mtls:  true
       resources:
         projects.snapshots:
           path: projects/{projectsId}/snapshots/{snapshotsId}
@@ -1017,6 +1044,7 @@ apis:
   servicenetworking:
     v1beta:
       discovery_doc: servicenetworking_v1beta.json
+      mtls_endpoint_override: https://servicenetworking.mtls.googleapis.com/
       default: false
     v1:
       discovery_doc: servicenetworking_v1.json
@@ -1024,6 +1052,7 @@ apis:
   serviceusage:
     v1alpha:
       discovery_doc: serviceusage_v1alpha.json
+      mtls_endpoint_override: https://serviceusage.mtls.googleapis.com/
     v1beta1:
       discovery_doc: serviceusage_v1beta1.json
     v1:
@@ -1032,13 +1061,13 @@ apis:
   source:
     v1:
       discovery_doc: source_v1.json
+      mtls_endpoint_override: https://source.mtls.googleapis.com/
   sourcerepo:
     v1:
       discovery_doc: sourcerepo_v1.json
   spanner:
     v1:
       discovery_doc: spanner_v1.json
-      enable_mtls: true
       default: true
   speech:
     v1:
@@ -1136,6 +1165,7 @@ apis:
   bigquery:
     v2:
       discovery_doc: bigquery_v2.json
+      mtls_endpoint_override: https://bigquery.mtls.googleapis.com/bigquery/v2/
       resources:
         tabledata:
           path: projects/{projectId}/datasets/{datasetId}/tables/{tableId}
@@ -1151,27 +1181,13 @@ apis:
           path: projects/{projectsId}/scanConfigs/{scanConfigsId}/scanRuns/{scanRunsId}
           enable_uri_parsing: false
   recommender:
-    v1alpha1:
-      discovery_doc: recommender_v1alpha1.json
-      default: true
-      resources:
-        projects.locations:
-          path: projects/{projectsId}/locations/{locationsId}
-          enable_uri_parsing: false
-        projects.locations.recommenders:
-          path: projects/{projectsId}/locations/{locationsId}/recommenders/{recommendersId}
-          enable_uri_parsing: false
-        projects.locations.recommenders.recommendations:
-          path: projects/{projectsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}
-          enable_uri_parsing: false
-        operations:
-          path: operations/{+operationId}
     v1alpha2:
       discovery_doc: recommender_v1alpha2.json
     v1beta1:
       discovery_doc: recommender_v1beta1.json
     v1:
       discovery_doc: recommender_v1.json
+      default: true
   gameservices:
     v1alpha:
       discovery_doc: gameservices_v1alpha.json
@@ -1232,3 +1248,4 @@ apis:
   baremetalsolution:
     v2:
       discovery_doc: baremetalsolution_v2.json
+      enable_mtls: false

@@ -27,6 +27,7 @@ import threading
 
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
+from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_status
@@ -35,7 +36,7 @@ from googlecloudsdk.command_lib.storage.tasks import task_status
 class StreamingDownloadTask(task.Task):
   """Represents a command operation triggering a streaming download."""
 
-  def __init__(self, source_resource, download_stream):
+  def __init__(self, source_resource, download_stream, user_request_args=None):
     """Initializes task.
 
     Args:
@@ -43,10 +44,12 @@ class StreamingDownloadTask(task.Task):
         download, including bucket. Directories will not be accepted. Does not
         need to contain metadata.
       download_stream (stream): Reusable stream to write download to.
+      user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
     super(StreamingDownloadTask, self).__init__()
     self._source_resource = source_resource
     self._download_stream = download_stream
+    self._user_request_args = user_request_args
 
   def execute(self, task_status_queue=None):
     """Runs download to stream."""
@@ -61,9 +64,14 @@ class StreamingDownloadTask(task.Task):
         thread_id=threading.get_ident(),
     )
 
+    request_config = request_config_factory.get_request_config(
+        self._source_resource.storage_url,
+        user_request_args=self._user_request_args)
+
     provider = self._source_resource.storage_url.scheme
     api_factory.get_api(provider).download_object(
         self._source_resource,
         self._download_stream,
+        request_config,
         download_strategy=cloud_api.DownloadStrategy.ONE_SHOT,
         progress_callback=progress_callback)

@@ -368,10 +368,14 @@ class DaisyChainCopyTask(task.Task):
 
   def _run_download(self, daisy_chain_stream):
     """Performs the download operation."""
+    request_config = request_config_factory.get_request_config(
+        self._source_resource.storage_url,
+        user_request_args=self._user_request_args)
+
     client = api_factory.get_api(self._source_resource.storage_url.scheme)
     try:
       client.download_object(self._source_resource,
-                             daisy_chain_stream.writable_stream)
+                             daisy_chain_stream.writable_stream, request_config)
     except _AbruptShutdownError:
       # Shutdown caused by interuption from another thread.
       pass

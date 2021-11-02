@@ -195,7 +195,7 @@ class ArtifactregistryProjectsLocationsRepositoriesYumartifactsUploadRequest(_me
 class DockerImage(_messages.Message):
   r"""DockerImage represents a docker artifact. The following fields are
   returned as untyped metadata in the Version resource, using camelcase keys
-  (i.e. metadata.imageSizeBytes): - imageSizeBytes - mediaType - buildTime
+  (i.e. metadata.imageSizeBytes): * imageSizeBytes * mediaType * buildTime
 
   Fields:
     buildTime: The time this image was built. This field is returned as the

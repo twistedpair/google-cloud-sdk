@@ -16,8 +16,8 @@ class GoogleCloudRecaptchaenterpriseV1AndroidKeySettings(_messages.Message):
   r"""Settings specific to keys that can be used by Android apps.
 
   Fields:
-    allowAllPackageNames: If set to true, it means allowed_package_names will
-      not be enforced.
+    allowAllPackageNames: If set to true, allowed_package_names are not
+      enforced.
     allowedPackageNames: Android package names of apps allowed to use the key.
       Example: 'com.companyname.appname'
   """
@@ -176,8 +176,7 @@ class GoogleCloudRecaptchaenterpriseV1IOSKeySettings(_messages.Message):
   r"""Settings specific to keys that can be used by iOS apps.
 
   Fields:
-    allowAllBundleIds: If set to true, it means allowed_bundle_ids will not be
-      enforced.
+    allowAllBundleIds: If set to true, allowed_bundle_ids are not enforced.
     allowedBundleIds: iOS bundle ids of apps allowed to use the key. Example:
       'com.companyname.productname.appname'
   """
@@ -429,10 +428,10 @@ class GoogleCloudRecaptchaenterpriseV1TestingOptions(_messages.Message):
       TESTING_CHALLENGE_UNSPECIFIED: Perform the normal risk analysis and
         return either nocaptcha or a challenge depending on risk and trust
         factors.
-      NOCAPTCHA: Challenge requests for this key will always return a
-        nocaptcha, which does not require a solution.
-      UNSOLVABLE_CHALLENGE: Challenge requests for this key will always return
-        an unsolvable challenge.
+      NOCAPTCHA: Challenge requests for this key always return a nocaptcha,
+        which does not require a solution.
+      UNSOLVABLE_CHALLENGE: Challenge requests for this key always return an
+        unsolvable challenge.
     """
     TESTING_CHALLENGE_UNSPECIFIED = 0
     NOCAPTCHA = 1
@@ -502,9 +501,9 @@ class GoogleCloudRecaptchaenterpriseV1WebKeySettings(_messages.Message):
   Fields:
     allowAllDomains: If set to true, it means allowed_domains will not be
       enforced.
-    allowAmpTraffic: Required. Whether this key can be used on AMP
-      (Accelerated Mobile Pages) websites. This can only be set for the SCORE
-      integration type.
+    allowAmpTraffic: If set to true, the key can be used on AMP (Accelerated
+      Mobile Pages) websites. This is supported only for the SCORE integration
+      type.
     allowedDomains: Domains or subdomains of websites allowed to use the key.
       All subdomains of an allowed domain are automatically allowed. A valid
       domain requires a host and must not include any path, port, query or

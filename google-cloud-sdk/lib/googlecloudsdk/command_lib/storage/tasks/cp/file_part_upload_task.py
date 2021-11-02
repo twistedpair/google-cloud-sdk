@@ -191,7 +191,8 @@ class FilePartUploadTask(file_part_task.FilePartTask):
         if tracker_data and tracker_data.complete:
           try:
             destination_resource = api.get_object_metadata(
-                destination_url.bucket_name, destination_url.object_name)
+                destination_url.bucket_name, destination_url.object_name,
+                request_config)
           except api_errors.CloudApiError:
             # Any problem fetching existing object metadata can be ignored,
             # since we'll just reupload the object.
@@ -243,7 +244,7 @@ class FilePartUploadTask(file_part_task.FilePartTask):
         # Convert seconds to miliseconds by multiplying by 1000.
         destination_resource = retry.Retryer(
             max_retrials=properties.VALUES.storage.max_retries.GetInt(),
-            max_wait_ms=properties.VALUES.storage.max_retry_delay.GetInt() *
+            wait_ceiling_ms=properties.VALUES.storage.max_retry_delay.GetInt() *
             1000,
             exponential_sleep_multiplier=(
                 properties.VALUES.storage.exponential_sleep_multiplier.GetInt()

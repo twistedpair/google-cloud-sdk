@@ -627,6 +627,10 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        },
+        "activationToken": {
+          "description": "Input only. Activation token for the channel. The token will be used during the creation of ChannelConnection to bind the channel with the provider project. This field will not be stored in the provider resource.",
+          "type": "string"
         }
       }
     },

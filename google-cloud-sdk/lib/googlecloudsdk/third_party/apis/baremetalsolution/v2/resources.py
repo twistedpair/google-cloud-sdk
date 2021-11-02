@@ -52,11 +52,48 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_NETWORKS = (
+      'projects.locations.networks',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/networks/'
+              '{networksId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_OPERATIONS = (
+      'projects.locations.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SNAPSHOTSCHEDULEPOLICIES = (
+      'projects.locations.snapshotSchedulePolicies',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'snapshotSchedulePolicies/{snapshotSchedulePoliciesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_VOLUMES = (
       'projects.locations.volumes',
-      'projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}',
-      {},
-      ['projectsId', 'locationsId', 'volumesId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/volumes/'
+              '{volumesId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_VOLUMES_LUNS = (
@@ -66,6 +103,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/volumes/'
               '{volumesId}/luns/{lunsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_VOLUMES_SNAPSHOTS = (
+      'projects.locations.volumes.snapshots',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/volumes/'
+              '{volumesId}/snapshots/{snapshotsId}',
       },
       ['name'],
       True

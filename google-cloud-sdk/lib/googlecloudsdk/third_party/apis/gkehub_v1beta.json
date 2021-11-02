@@ -323,6 +323,10 @@
         "multiclusteringress": {
           "description": "Multicluster Ingress-specific spec.",
           "$ref": "MultiClusterIngressFeatureSpec"
+        },
+        "appdevexperience": {
+          "description": "Appdevexperience specific spec.",
+          "$ref": "AppDevExperienceFeatureSpec"
         }
       }
     },
@@ -349,6 +353,13 @@
             "ANTHOS_LICENSE"
           ]
         }
+      }
+    },
+    "AppDevExperienceFeatureSpec": {
+      "id": "AppDevExperienceFeatureSpec",
+      "description": "Spec for App Dev Experience Feature.",
+      "type": "object",
+      "properties": {
       }
     },
     "MembershipFeatureSpec": {
@@ -606,10 +617,52 @@
       "description": "CommonFeatureState contains Hub-wide Feature status information.",
       "type": "object",
       "properties": {
+        "appdevexperience": {
+          "description": "Appdevexperience specific state.",
+          "$ref": "AppDevExperienceFeatureState"
+        },
         "state": {
           "description": "Output only. The \"running state\" of the Feature in this Hub.",
           "readOnly": true,
           "$ref": "FeatureState"
+        }
+      }
+    },
+    "AppDevExperienceFeatureState": {
+      "id": "AppDevExperienceFeatureState",
+      "description": "State for App Dev Exp Feature.",
+      "type": "object",
+      "properties": {
+        "networkingInstallSucceeded": {
+          "description": "Status of subcomponent that detects configured Service Mesh resources.",
+          "$ref": "Status"
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "Status specifies state for the subcomponent.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "Code specifies AppDevExperienceFeature's subcomponent ready state.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not set.",
+            "AppDevExperienceFeature's specified subcomponent is ready.",
+            "AppDevExperienceFeature's specified subcomponent ready state is false. This means AppDevExperienceFeature has encountered an issue that blocks all, or a portion, of its normal operation. See the `description` for more details.",
+            "AppDevExperienceFeature's specified subcomponent has a pending or unknown state."
+          ],
+          "enum": [
+            "CODE_UNSPECIFIED",
+            "OK",
+            "FAILED",
+            "UNKNOWN"
+          ]
+        },
+        "description": {
+          "description": "Description is populated if Code is Failed, explaining why it has failed.",
+          "type": "string"
         }
       }
     },
@@ -661,6 +714,10 @@
         "identityservice": {
           "description": "Identity Service-specific state.",
           "$ref": "IdentityServiceMembershipState"
+        },
+        "appdevexperience": {
+          "description": "Appdevexperience specific state.",
+          "$ref": "AppDevExperienceFeatureState"
         },
         "state": {
           "description": "The high-level state of this Feature for a single membership.",

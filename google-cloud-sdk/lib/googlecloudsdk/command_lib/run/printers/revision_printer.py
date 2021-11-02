@@ -28,6 +28,7 @@ import six
 
 
 REVISION_PRINTER_FORMAT = 'revision'
+EXECUTION_ENV_VALS = {'gen1': 'First Generation', 'gen2': 'Second Generation'}
 
 
 class RevisionPrinter(cp.CustomPrinterBase):
@@ -62,6 +63,13 @@ class RevisionPrinter(cp.CustomPrinterBase):
     return record.annotations.get(revision.MAX_SCALE_ANNOTATION, '')
 
   @staticmethod
+  def GetExecutionEnv(record):
+    execution_env_value = k8s_util.GetExecutionEnvironment(record)
+    if execution_env_value in EXECUTION_ENV_VALS:
+      return EXECUTION_ENV_VALS[execution_env_value]
+    return execution_env_value
+
+  @staticmethod
   def TransformSpec(record):
     limits = container_util.GetLimits(record)
     return cp.Labeled([
@@ -82,4 +90,5 @@ class RevisionPrinter(cp.CustomPrinterBase):
         ('SQL connections', k8s_util.GetCloudSqlInstances(record)),
         ('Timeout', RevisionPrinter.GetTimeout(record)),
         ('VPC connector', k8s_util.GetVpcConnector(record)),
+        ('Execution Environment', RevisionPrinter.GetExecutionEnv(record)),
     ])

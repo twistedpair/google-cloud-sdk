@@ -450,6 +450,33 @@ class ComposerV1alpha2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def LoadEnvironmentState(self, request, global_params=None):
+      r"""Loads Cloud Composer environment state. As a result of this operation, a snapshot of environment's specified in LoadEnvironmentStateRequest is loaded into the environment.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsLoadEnvironmentStateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('LoadEnvironmentState')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    LoadEnvironmentState.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:loadEnvironmentState',
+        http_method='POST',
+        method_id='composer.projects.locations.environments.loadEnvironmentState',
+        ordered_params=['environment'],
+        path_params=['environment'],
+        query_params=[],
+        relative_path='v1alpha2/{+environment}:loadEnvironmentState',
+        request_field='loadEnvironmentStateRequest',
+        request_type_name='ComposerProjectsLocationsEnvironmentsLoadEnvironmentStateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Update an environment.
 
@@ -505,7 +532,7 @@ class ComposerV1alpha2(base_api.BaseApiClient):
     )
 
     def StoreEnvironmentState(self, request, global_params=None):
-      r"""Store composer environment state. As a result of this operation, snapshot of environment's state is stored in a location specified in the StoreEnvironmentStateRequest.
+      r"""Stores Cloud Composer environment state. As a result of this operation, snapshot of environment's state is stored in a location specified in the StoreEnvironmentStateRequest.
 
       Args:
         request: (ComposerProjectsLocationsEnvironmentsStoreEnvironmentStateRequest) input message

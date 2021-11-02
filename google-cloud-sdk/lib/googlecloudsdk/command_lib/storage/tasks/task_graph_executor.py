@@ -136,10 +136,9 @@ class SharedProcessContext:
     encryption_util._key_store = self._key_store
 
   def __exit__(self, exc_type, exc_value, exc_traceback):
-    del exc_type, exc_value, exc_traceback
     if multiprocessing_context.get_start_method() == 'fork':
       return
-    self._creds_context_manager.__exit__()
+    self._creds_context_manager.__exit__(exc_type, exc_value, exc_traceback)
 
 
 @crash_handling.CrashManager

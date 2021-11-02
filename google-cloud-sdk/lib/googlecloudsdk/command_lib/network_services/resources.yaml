@@ -80,6 +80,18 @@ router:
     attribute_name: router
     help: Id of the router.
 
+mesh:
+  name: mesh
+  collection: networkservices.projects.locations.meshes
+  request_id_field: meshId
+  attributes:
+  - *project
+  - *location
+  - &mesh
+    parameter_name: meshesId
+    attribute_name: mesh
+    help: Id of the mesh.
+
 httpRoute:
   name: http route
   collection: networkservices.projects.locations.httpRoutes

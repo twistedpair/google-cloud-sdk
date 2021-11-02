@@ -638,7 +638,8 @@ def AddCreateDiskArgs(parser,
                       include_name=True,
                       support_boot=False,
                       support_multi_writer=False,
-                      support_replica_zones=False):
+                      support_replica_zones=False,
+                      support_disk_architecture=False):
   """Adds create-disk argument for instances and instance-templates."""
 
   disk_device_name_help = _GetDiskDeviceNameHelp(
@@ -861,6 +862,14 @@ def AddCreateDiskArgs(parser,
       and the zone of the newly created instance.
       """
     spec['replica-zones'] = arg_parsers.ArgList(max_length=1)
+
+  if support_disk_architecture:
+    spec['architecture'] = str
+    disk_help += """
+      *architecture*:::  Storage resources can be used to create boot disks
+      compatible with different machine architectures. ARCHITECTURE must be
+      one of: ARM64, X86_64.
+      """
 
   parser.add_argument(
       '--create-disk',

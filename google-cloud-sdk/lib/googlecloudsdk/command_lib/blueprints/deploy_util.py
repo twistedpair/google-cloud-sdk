@@ -53,6 +53,9 @@ _KRMAPIHOSTING_INSTANCE_SUFFIX_LENGTH = 5
 # is '172.16.0.128/28'
 _DEFAULT_KRMAPIHOSTING_MASTER_CIDR_BLOCK = '172.16.0.144/28'
 
+# The maximum amount of time to wait for the long-running operation.
+_MAX_WAIT_TIME_MS = 3 * 60 * 60 * 1000
+
 
 def _UploadSourceDirToGCS(gcs_client, source, gcs_source_staging, ignore_file):
   """Uploads a local directory to GCS.
@@ -392,8 +395,8 @@ def _CreateConfigControllerInstance(location_full_name):
   log.debug('Config Controller Cluster Creation LRO: %s', op.name)
   cluster_name = krmapihosting_util.WaitForCreateKrmApiHostOperation(
       op,
-      progress_message='Waiting for instance to create (this can take up to 20 minutes)'
-  ).name
+      progress_message='Waiting for instance to create (this can take up to 20 minutes)',
+      max_wait_ms=_MAX_WAIT_TIME_MS).name
 
   log.status.Print(
       textwrap.dedent('''\

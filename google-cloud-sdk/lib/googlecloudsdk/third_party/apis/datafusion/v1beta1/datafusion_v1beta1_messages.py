@@ -696,6 +696,7 @@ class Instance(_messages.Message):
   r"""Represents a Data Fusion instance.
 
   Enums:
+    DisabledReasonValueListEntryValuesEnum:
     StateValueValuesEnum: Output only. The current state of this Data Fusion
       instance.
     TypeValueValuesEnum: Required. Instance type.
@@ -720,6 +721,8 @@ class Instance(_messages.Message):
       pipelines. This allows users to have fine-grained access control on
       Dataproc's accesses to cloud resources.
     description: A description of this instance.
+    disabledReason: Output only. If the instance state is DISABLED, the reason
+      for disabling the instance.
     displayName: Display name for an instance.
     enableRbac: Option to enable granular role-based access control.
     enableStackdriverLogging: Option to enable Stackdriver Logging.
@@ -755,6 +758,17 @@ class Instance(_messages.Message):
       Only DEVELOPER instances use this field.
   """
 
+  class DisabledReasonValueListEntryValuesEnum(_messages.Enum):
+    r"""DisabledReasonValueListEntryValuesEnum enum type.
+
+    Values:
+      DISABLED_REASON_UNSPECIFIED: This is an unknown reason for disabling.
+      KMS_KEY_ISSUE: The KMS key used by the instance is either revoked or
+        denied access to
+    """
+    DISABLED_REASON_UNSPECIFIED = 0
+    KMS_KEY_ISSUE = 1
+
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of this Data Fusion instance.
 
@@ -769,6 +783,7 @@ class Instance(_messages.Message):
       UPDATING: Instance is being updated on customer request
       AUTO_UPDATING: Instance is being auto-updated
       AUTO_UPGRADING: Instance is being auto-upgraded
+      DISABLED: Instance is disabled
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -780,6 +795,7 @@ class Instance(_messages.Message):
     UPDATING = 7
     AUTO_UPDATING = 8
     AUTO_UPGRADING = 9
+    DISABLED = 10
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Required. Instance type.
@@ -861,26 +877,27 @@ class Instance(_messages.Message):
   cryptoKeyConfig = _messages.MessageField('CryptoKeyConfig', 5)
   dataprocServiceAccount = _messages.StringField(6)
   description = _messages.StringField(7)
-  displayName = _messages.StringField(8)
-  enableRbac = _messages.BooleanField(9)
-  enableStackdriverLogging = _messages.BooleanField(10)
-  enableStackdriverMonitoring = _messages.BooleanField(11)
-  gcsBucket = _messages.StringField(12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  name = _messages.StringField(14)
-  networkConfig = _messages.MessageField('NetworkConfig', 15)
-  options = _messages.MessageField('OptionsValue', 16)
-  p4ServiceAccount = _messages.StringField(17)
-  privateInstance = _messages.BooleanField(18)
-  serviceAccount = _messages.StringField(19)
-  serviceEndpoint = _messages.StringField(20)
-  state = _messages.EnumField('StateValueValuesEnum', 21)
-  stateMessage = _messages.StringField(22)
-  tenantProjectId = _messages.StringField(23)
-  type = _messages.EnumField('TypeValueValuesEnum', 24)
-  updateTime = _messages.StringField(25)
-  version = _messages.StringField(26)
-  zone = _messages.StringField(27)
+  disabledReason = _messages.EnumField('DisabledReasonValueListEntryValuesEnum', 8, repeated=True)
+  displayName = _messages.StringField(9)
+  enableRbac = _messages.BooleanField(10)
+  enableStackdriverLogging = _messages.BooleanField(11)
+  enableStackdriverMonitoring = _messages.BooleanField(12)
+  gcsBucket = _messages.StringField(13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  name = _messages.StringField(15)
+  networkConfig = _messages.MessageField('NetworkConfig', 16)
+  options = _messages.MessageField('OptionsValue', 17)
+  p4ServiceAccount = _messages.StringField(18)
+  privateInstance = _messages.BooleanField(19)
+  serviceAccount = _messages.StringField(20)
+  serviceEndpoint = _messages.StringField(21)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  stateMessage = _messages.StringField(23)
+  tenantProjectId = _messages.StringField(24)
+  type = _messages.EnumField('TypeValueValuesEnum', 25)
+  updateTime = _messages.StringField(26)
+  version = _messages.StringField(27)
+  zone = _messages.StringField(28)
 
 
 class ListAvailableVersionsResponse(_messages.Message):

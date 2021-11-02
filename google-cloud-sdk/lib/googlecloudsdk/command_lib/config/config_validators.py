@@ -76,17 +76,15 @@ def WarnIfSettingProjectWithNoAccess(scope, project):
   if (scope == properties.Scope.USER and
       properties.VALUES.core.account.Get()):
     project_ref = command_lib_util.ParseProject(project)
-    base.DisableUserProjectQuota()
     try:
-      projects_api.Get(project_ref, disable_api_enablement_check=True)
+      with base.WithLegacyQuota():
+        projects_api.Get(project_ref, disable_api_enablement_check=True)
     except (apitools_exceptions.HttpError,
             c_store.NoCredentialsForAccountException,
             api_lib_util_exceptions.HttpException):
       log.warning(
           'You do not appear to have access to project [{}] or'
           ' it does not exist.'.format(project))
-    finally:
-      base.EnableUserProjectQuota()
 
 
 def WarnIfActivateUseClientCertificate(prop):

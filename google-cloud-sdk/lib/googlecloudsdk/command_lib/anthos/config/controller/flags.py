@@ -39,7 +39,19 @@ def AddNetworkFlag(parser):
   parser.add_argument(
       "--network",
       help=("Existing VPC Network to put the GKE cluster and nodes in. "
-            "Defaults to 'default' if flag is not provided."))
+            "Defaults to 'default' if flag is not provided. If "
+            "`--subnet=SUBNET` is also specified, subnet must be a subnetwork "
+            "of the network specified by this `--network=NETWORK` flag."))
+
+
+def AddSubnetFlag(parser):
+  """Adds --subnet flag."""
+  parser.add_argument(
+      "--subnet",
+      help=("Specifies the subnet that the VM instances are a part of. "
+            "`--network=NETWORK` must also be specified, subnet must be a "
+            "subnetwork of the network specified by the `--network=NETWORK` "
+            "flag."))
 
 
 def AddManBlockFlag(parser):

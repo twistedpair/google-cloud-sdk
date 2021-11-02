@@ -1,0 +1,36 @@
+project:
+  name: project
+  collection: gkehub.projects
+  attributes:
+  - &project
+    parameter_name: projectsId
+    attribute_name: project
+    help: The project name.
+    property: core/project
+
+location:
+  name: location
+  collection: gkehub.projects.locations
+  attributes:
+  - *project
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    help: The location name.
+    fallthroughs:
+    - hook: googlecloudsdk.command_lib.container.hub.util:DefaultToGlobal
+      hint: "global is the only supported location"
+
+fleet:
+  name: fleet
+  collection: gkehub.projects.locations.fleets
+  attributes:
+  - *project
+  - *location
+  - &fleet
+    parameter_name: fleetsId
+    attribute_name: fleet
+    help: The fleet ID.
+    fallthroughs:
+    - hook: googlecloudsdk.command_lib.container.fleet.util:DefaultFleetID
+      hint: "default is the only supported fleet ID"

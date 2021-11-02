@@ -102,3 +102,17 @@ def ValidateInstance(value, param_name):
   """
   if not value:
     raise exceptions.Error('Missing required parameter ' + param_name)
+
+
+def ValidateInstanceOsPolicyAssignment(value, param_name):
+  """Check if os policy assignment id is non-null/empty; doesn't check whether it exists.
+
+  Args:
+    value: str, the os policy assignment id value to check
+    param_name: str, the parameter's name; included in the exception's message
+
+  Raises:
+    exceptions.Error: if value is empty
+  """
+  if not value:
+    raise exceptions.Error('Missing required parameter ' + param_name)

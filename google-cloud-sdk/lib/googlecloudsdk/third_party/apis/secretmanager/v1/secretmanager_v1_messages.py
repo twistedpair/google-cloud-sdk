@@ -716,9 +716,19 @@ class SecretPayload(_messages.Message):
 
   Fields:
     data: The secret data. Must be no larger than 64KiB.
+    dataCrc32c: Optional. If specified, SecretManagerService will verify the
+      integrity of the received data on SecretManagerService.AddSecretVersion
+      calls using the crc32c checksum and store it to include in future
+      SecretManagerService.AccessSecretVersion responses. If a checksum is not
+      provided in the SecretManagerService.AddSecretVersion request, the
+      SecretManagerService will generate and store one for you. The CRC32C
+      value is encoded as a Int64 for compatibility, and can be safely
+      downconverted to uint32 in languages that support this type.
+      https://cloud.google.com/apis/design/design_patterns#integer_types
   """
 
   data = _messages.BytesField(1)
+  dataCrc32c = _messages.IntegerField(2)
 
 
 class SecretVersion(_messages.Message):
@@ -728,6 +738,9 @@ class SecretVersion(_messages.Message):
     StateValueValuesEnum: Output only. The current state of the SecretVersion.
 
   Fields:
+    clientSpecifiedPayloadChecksum: Output only. True if payload checksum
+      specified in SecretPayload object has been received by
+      SecretManagerService on SecretManagerService.AddSecretVersion.
     createTime: Output only. The time at which the SecretVersion was created.
     destroyTime: Output only. The time this SecretVersion was destroyed. Only
       present if state is DESTROYED.
@@ -755,12 +768,13 @@ class SecretVersion(_messages.Message):
     DISABLED = 2
     DESTROYED = 3
 
-  createTime = _messages.StringField(1)
-  destroyTime = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  name = _messages.StringField(4)
-  replicationStatus = _messages.MessageField('ReplicationStatus', 5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
+  clientSpecifiedPayloadChecksum = _messages.BooleanField(1)
+  createTime = _messages.StringField(2)
+  destroyTime = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  name = _messages.StringField(5)
+  replicationStatus = _messages.MessageField('ReplicationStatus', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
 
 
 class SecretmanagerProjectsLocationsGetRequest(_messages.Message):

@@ -340,6 +340,22 @@ class ComposerProjectsLocationsEnvironmentsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class ComposerProjectsLocationsEnvironmentsLoadEnvironmentStateRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsLoadEnvironmentStateRequest
+  object.
+
+  Fields:
+    environment: The resource name of the target environment in the form:
+      "projects/{projectId}/locations/{locationId}/environments/{environmentId
+      }"
+    loadEnvironmentStateRequest: A LoadEnvironmentStateRequest resource to be
+      passed as the request body.
+  """
+
+  environment = _messages.StringField(1, required=True)
+  loadEnvironmentStateRequest = _messages.MessageField('LoadEnvironmentStateRequest', 2)
+
+
 class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
   r"""A ComposerProjectsLocationsEnvironmentsPatchRequest object.
 
@@ -1087,12 +1103,31 @@ class ListTasksResponse(_messages.Message):
   tasks = _messages.MessageField('Task', 2, repeated=True)
 
 
+class LoadEnvironmentStateRequest(_messages.Message):
+  r"""Load environment state request.
+
+  Fields:
+    skipPypiPackagesInstallation: Whether or not to skip installing Pypi
+      packages when loading the environment's state.
+    snapshotLocation: A Cloud Storage location of a snapshot to load, e.g.:
+      "gs://my-
+      bucket/snapshots/project_id/location/environment_uuid/timestamp".
+  """
+
+  skipPypiPackagesInstallation = _messages.BooleanField(1)
+  snapshotLocation = _messages.StringField(2)
+
+
+class LoadEnvironmentStateResponse(_messages.Message):
+  r"""Load environment state response."""
+
+
 class MaintenanceWindow(_messages.Message):
   r"""The configuration settings for Cloud Composer maintenance window. The
-  following example: { "startTime":"2019-08-01T01:00:00Z"
+  following example: ``` { "startTime":"2019-08-01T01:00:00Z"
   "endTime":"2019-08-01T07:00:00Z" "recurrence":"FREQ=WEEKLY;BYDAY=TU,WE" }
-  would define a maintenance window between 01 and 07 hours UTC during each
-  Tuesday and Wednesday.
+  ``` would define a maintenance window between 01 and 07 hours UTC during
+  each Tuesday and Wednesday.
 
   Fields:
     endTime: Required. Maintenance window end time. It is used only to

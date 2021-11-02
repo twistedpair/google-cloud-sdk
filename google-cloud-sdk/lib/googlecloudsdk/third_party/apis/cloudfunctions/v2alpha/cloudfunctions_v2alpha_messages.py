@@ -1447,6 +1447,7 @@ class ServiceConfig(_messages.Message):
       y.go a full description.
     environmentVariables: Environment variables that shall be available during
       function execution.
+    gcfUri: Output only. URIs of the Service deployed
     ingressSettings: The ingress settings for the function, controlling what
       traffic can reach it.
     maxInstanceCount: The limit on the maximum number of function instances
@@ -1542,15 +1543,16 @@ class ServiceConfig(_messages.Message):
 
   availableMemory = _messages.StringField(1)
   environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 2)
-  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 3)
-  maxInstanceCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  minInstanceCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  service = _messages.StringField(6)
-  serviceAccountEmail = _messages.StringField(7)
-  timeoutSeconds = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  uri = _messages.StringField(9)
-  vpcConnector = _messages.StringField(10)
-  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 11)
+  gcfUri = _messages.StringField(3)
+  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 4)
+  maxInstanceCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  minInstanceCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  service = _messages.StringField(7)
+  serviceAccountEmail = _messages.StringField(8)
+  timeoutSeconds = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  uri = _messages.StringField(10)
+  vpcConnector = _messages.StringField(11)
+  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 12)
 
 
 class SetIamPolicyRequest(_messages.Message):

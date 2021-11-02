@@ -999,6 +999,13 @@
           "description": "Required. The Azure Active Directory Application ID.",
           "type": "string"
         },
+        "annotations": {
+          "description": "Optional. Annotations on the resource. This field has the same restrictions as Kubernetes annotations. The total size of all keys and values combined is limited to 256k. Keys can have 2 segments: prefix (optional) and name (required), separated by a slash (\/). Prefix must be a DNS subdomain. Name must be 63 characters or less, begin and end with alphanumerics, with dashes (-), underscores (_), dots (.), and alphanumerics between.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "pemCertificate": {
           "description": "Output only. The PEM encoded x509 certificate.",
           "readOnly": true,

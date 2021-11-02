@@ -42,7 +42,7 @@ def get_values_for_keys_from_file(file_path, keys):
 
   Raises:
     ValueError: The file was the incorrect format.
-    KeyError: Key was missing or duplicate key was found.
+    KeyError: Duplicate key found.
   """
   result = {}
   real_path = os.path.realpath(os.path.expanduser(file_path))
@@ -68,9 +68,6 @@ def get_values_for_keys_from_file(file_path, keys):
               raise KeyError('Duplicate key in file: {}'.format(key))
             result[key] = section_dict[key]
 
-  for key in keys:
-    if key not in result:
-      raise KeyError('Key missing from file: {}'.format(key))
   return result
 
 

@@ -22211,7 +22211,10 @@ class GoogleCloudAiplatformV1beta1FeatureValueMetadata(_messages.Message):
   Fields:
     generateTime: Feature generation timestamp. Typically, it is provided by
       user at feature ingestion time. If not, feature store will use the
-      system timestamp when the data is ingested into feature store.
+      system timestamp when the data is ingested into feature store. For
+      streaming ingestion, the time, aligned by days, must be no older than
+      five years (1825 days) and no later than one year (366 days) in the
+      future.
   """
 
   generateTime = _messages.StringField(1)
@@ -25377,9 +25380,12 @@ class GoogleCloudAiplatformV1beta1PipelineJobRuntimeConfig(_messages.Message):
   r"""The runtime config of a PipelineJob.
 
   Messages:
-    ParametersValue: The runtime parameters of the PipelineJob. The parameters
-      will be passed into PipelineJob.pipeline_spec to replace the
+    ParameterValuesValue: The runtime parameters of the PipelineJob. The
+      parameters will be passed into PipelineJob.pipeline_spec to replace the
       placeholders at runtime.
+    ParametersValue: Deprecated. Use [RuntimeConfig.parameter_values] instead.
+      The runtime parameters of the PipelineJob. The parameters will be passed
+      into PipelineJob.pipeline_spec to replace the placeholders at runtime.
 
   Fields:
     gcsOutputDirectory: Required. A path in a Cloud Storage bucket, which will
@@ -25389,16 +25395,46 @@ class GoogleCloudAiplatformV1beta1PipelineJobRuntimeConfig(_messages.Message):
       under the specified output directory. The service account specified in
       this pipeline must have the `storage.objects.get` and
       `storage.objects.create` permissions for this bucket.
-    parameters: The runtime parameters of the PipelineJob. The parameters will
-      be passed into PipelineJob.pipeline_spec to replace the placeholders at
-      runtime.
+    parameterValues: The runtime parameters of the PipelineJob. The parameters
+      will be passed into PipelineJob.pipeline_spec to replace the
+      placeholders at runtime.
+    parameters: Deprecated. Use [RuntimeConfig.parameter_values] instead. The
+      runtime parameters of the PipelineJob. The parameters will be passed
+      into PipelineJob.pipeline_spec to replace the placeholders at runtime.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
-  class ParametersValue(_messages.Message):
+  class ParameterValuesValue(_messages.Message):
     r"""The runtime parameters of the PipelineJob. The parameters will be
     passed into PipelineJob.pipeline_spec to replace the placeholders at
     runtime.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParameterValuesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ParameterValuesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParameterValuesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    r"""Deprecated. Use [RuntimeConfig.parameter_values] instead. The runtime
+    parameters of the PipelineJob. The parameters will be passed into
+    PipelineJob.pipeline_spec to replace the placeholders at runtime.
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.
@@ -25421,7 +25457,8 @@ class GoogleCloudAiplatformV1beta1PipelineJobRuntimeConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   gcsOutputDirectory = _messages.StringField(1)
-  parameters = _messages.MessageField('ParametersValue', 2)
+  parameterValues = _messages.MessageField('ParameterValuesValue', 2)
+  parameters = _messages.MessageField('ParametersValue', 3)
 
 
 class GoogleCloudAiplatformV1beta1PipelineTaskDetail(_messages.Message):

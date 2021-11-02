@@ -1330,6 +1330,44 @@ VM instances."""
       '--spot', action='store_true', help=help_text, hidden=hidden)
 
 
+def AddPlacementTypeFlag(parser, for_node_pool=False, hidden=True):
+  """Adds a --placement-type flag to parser."""
+  if for_node_pool:
+    help_text = textwrap.dedent("""\
+      Placement type allows to define the type of node placement within this node
+      pool.
+
+      `UNSPECIFIED` - No requirements on the placement of nodes. This is the
+      default option.
+
+      `COMPACT` - Google will attempt to place the nodes in a close proximity to each
+      other. This helps to reduce the communication latency between the nodes, but
+      imposes additional limitations on the node pool size.
+
+        $ {command} node-pool-1 --cluster=example-cluster --placement-type=COMPACT
+      """)
+  else:
+    help_text = textwrap.dedent("""\
+      Placement type allows to define the type of node placement within the default
+      node pool of this cluster.
+
+      `UNSPECIFIED` - No requirements on the placement of nodes. This is the
+      default option.
+
+      `COMPACT` - Google will attempt to place the nodes in a close proximity to each
+      other. This helps to reduce the communication latency between the nodes, but
+      imposes additional limitations on the node pool size.
+
+        $ {command} example-cluster --placement-type=COMPACT
+      """)
+
+  parser.add_argument(
+      '--placement-type',
+      choices=api_adapter.PLACEMENT_OPTIONS,
+      help=help_text,
+      hidden=hidden)
+
+
 def AddNodePoolNameArg(parser, help_text):
   """Adds a name flag to the given parser.
 
@@ -1857,11 +1895,9 @@ family of flags.
     AddMaintenanceExclusionFlags(group)
 
 
-def AddMaintenanceExclusionFlags(parser, hidden=False):
+def AddMaintenanceExclusionFlags(parser, hidden=False, enable_scope=False):
   """Adds flags related to adding a maintenance exclusion to the parser."""
-  group = parser.add_group(
-      hidden=hidden,
-      help="""\
+  help_text = """\
 Sets a period of time in which maintenance should not occur. This is compatible
 with both daily and recurring maintenance windows.
 +
@@ -1871,7 +1907,25 @@ Examples:
   --add-maintenance-exclusion-name=holidays-2000 \
   --add-maintenance-exclusion-start=2000-11-20T00:00:00 \
   --add-maintenance-exclusion-end=2000-12-31T23:59:59
-""")
+"""
+
+  if enable_scope:
+    help_text = """\
+Sets a period of time in which maintenance should not occur. This is compatible
+with both daily and recurring maintenance windows.
+If `--add-maintenance-exclusion-scope` is not specified, the exclusion will
+exclude all upgrades.
++
+Examples:
++
+  $ {command} example-cluster \
+  --add-maintenance-exclusion-name=holidays-2000 \
+  --add-maintenance-exclusion-start=2000-11-20T00:00:00 \
+  --add-maintenance-exclusion-end=2000-12-31T23:59:59 \
+  --add-maintenance-exclusion-scope=no_upgrades
+"""
+
+  group = parser.add_group(hidden=hidden, help=help_text)
 
   group.add_argument(
       '--add-maintenance-exclusion-name',
@@ -1901,6 +1955,21 @@ time formats.
 End time of the exclusion window. Must take place after the start time. See
 $ gcloud topic datetimes for information on time formats.
 """)
+
+  group.add_argument(
+      '--add-maintenance-exclusion-scope',
+      type=arg_parsers.RegexpValidator(
+          r'^(no_upgrades|no_minor_upgrades|no_minor_or_node_upgrades)$',
+          'Must be in one of "no_upgrades", "no_minor_upgrades" or "no_minor_or_node_upgrades"'
+      ),
+      required=False,
+      metavar='SCOPE',
+      help="""\
+Scope of the exclusion window to specify the type of upgrades that the exclusion
+will apply to. Must be in one of no_upgrades, no_minor_upgrades or no_minor_or_node_upgrades.
+If not specified in an exclusion, defaults to no_upgrades.
+""",
+      hidden=not enable_scope)
 
   parser.add_argument(
       '--remove-maintenance-exclusion',
@@ -3841,7 +3910,7 @@ Specifies whether to enable GCFS on {}.""".format(target)
       action='store_true')
 
 
-def AddEnableImageStreamingFlag(parser, for_node_pool=False, hidden=True):
+def AddEnableImageStreamingFlag(parser, for_node_pool=False):
   """Adds the argument to handle image streaming configurations."""
   target = 'node pool' if for_node_pool else 'cluster'
   help_text = """\
@@ -3850,7 +3919,6 @@ Specifies whether to enable image streaming on {}.""".format(target)
       '--enable-image-streaming',
       help=help_text,
       default=None,
-      hidden=hidden,
       action='store_true')
 
 

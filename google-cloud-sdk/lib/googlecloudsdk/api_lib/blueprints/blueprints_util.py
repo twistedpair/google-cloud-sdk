@@ -26,12 +26,16 @@ from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import progress_tracker
+from googlecloudsdk.core.util import retry
 
 _API_NAME = 'config'
 _ALPHA_API_VERSION = 'v1alpha1'
 
 # The maximum amount of time to wait in between polling long-running operations.
 _WAIT_CEILING_MS = 10 * 1000
+
+# The maximum amount of time to wait for the long-running operation.
+_MAX_WAIT_TIME_MS = 3 * 60 * 60 * 1000
 
 RELEASE_TRACK_TO_API_VERSION = {
     base.ReleaseTrack.ALPHA: 'v1alpha1',
@@ -318,11 +322,18 @@ def WaitForApplyLROWithStagedTracker(poller,
           if not tracker.IsComplete(ordered_stages[i]):
             tracker.CompleteStage(ordered_stages[i])
 
-    operation = waiter.PollUntilDone(
-        poller,
-        operation_ref,
-        status_update=_StatusUpdate,
-        wait_ceiling_ms=_WAIT_CEILING_MS)
+    try:
+      operation = waiter.PollUntilDone(
+          poller,
+          operation_ref,
+          status_update=_StatusUpdate,
+          max_wait_ms=_MAX_WAIT_TIME_MS,
+          wait_ceiling_ms=_WAIT_CEILING_MS)
+    except retry.WaitException:
+      # Operation timed out.
+      raise waiter.TimeoutError(
+          '{0} timed out after {1} seconds. Please retry this operation.'
+          .format(operation_ref.Name(), _MAX_WAIT_TIME_MS / 1000))
     result = poller.GetResult(operation)
 
     if preview:
@@ -386,7 +397,11 @@ def WaitForDeletePreviewOperation(operation):
       client.projects_locations_operations)
   progress_message = 'Previewing the deployment deletion'
   result = waiter.WaitFor(
-      poller, operation_ref, progress_message, wait_ceiling_ms=_WAIT_CEILING_MS)
+      poller,
+      operation_ref,
+      progress_message,
+      max_wait_ms=_MAX_WAIT_TIME_MS,
+      wait_ceiling_ms=_WAIT_CEILING_MS)
   json = encoding.MessageToJson(result)
   messages = GetMessagesModule()
   return encoding.JsonToMessage(messages.Preview, json)

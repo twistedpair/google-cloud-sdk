@@ -1949,10 +1949,9 @@ class _SectionDataproc(_Section):
     self.region = self._Add(
         'region',
         help_text=(
-            'Cloud Dataproc region to use. Each Cloud Dataproc '
-            'region constitutes an independent resource namespace constrained '
-            'to deploying instances into Compute Engine zones inside '
-            'the region.'))
+            'Dataproc region to use. Each Dataproc region constitutes an '
+            'independent resource namespace constrained to deploying instances '
+            'into Compute Engine zones inside the region.'))
 
 
 class _SectionDeclarative(_Section):
@@ -3220,8 +3219,12 @@ class _Property(object):
     self.__callbacks.append(callback)
 
   def RemoveCallback(self, callback):
-    """Removess given callback for this property."""
+    """Removes given callback for this property."""
     self.__callbacks.remove(callback)
+
+  def ClearCallback(self):
+    """Removes all callbacks for this property."""
+    self.__callbacks[:] = []
 
   def EnvironmentName(self):
     """Get the name of the environment variable for this property.
@@ -3372,6 +3375,8 @@ def PersistProperty(prop, value, scope=None):
       but there is not SDK root.
   """
   prop.Validate(value)
+  if six.PY3:
+    value = _EscapePercentSign(value)
   if scope == Scope.INSTALLATION:
     config.EnsureSDKWriteAccess()
     config_file = config.Paths().installation_properties_path
@@ -3602,3 +3607,22 @@ def GetMetricsEnvironment():
     return 'GCE'
 
   return None
+
+
+def _EscapePercentSign(value):
+  """Escape '%' in property value.
+
+  Do nothing if value contains '%%', i.e. value was escaped by user.
+
+  Args:
+    value: property value
+
+  Returns:
+    str, value with escaped % sign
+  """
+  if not isinstance(value, six.string_types) or '%%' in value:
+    return value
+  elif '%' in value:
+    return value.replace('%', '%%')
+  else:
+    return value

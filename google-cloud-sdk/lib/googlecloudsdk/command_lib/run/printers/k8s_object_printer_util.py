@@ -105,4 +105,4 @@ def GetBinAuthzBreakglass(record):
 
 
 def GetExecutionEnvironment(record):
-  return record.annotations.get(k8s_object.EXECUTION_ENVIRONMENT_ANNOTATION)
+  return record.annotations.get(k8s_object.EXECUTION_ENVIRONMENT_ANNOTATION, '')

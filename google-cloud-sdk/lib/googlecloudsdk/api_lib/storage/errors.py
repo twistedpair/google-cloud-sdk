@@ -26,6 +26,11 @@ class CloudApiError(core_exceptions.Error):
   pass
 
 
+class RetryableApiError(CloudApiError):
+  """Error raised to indicate a transient network error."""
+  pass
+
+
 class GcsApiError(CloudApiError, api_exceptions.HttpException):
   pass
 

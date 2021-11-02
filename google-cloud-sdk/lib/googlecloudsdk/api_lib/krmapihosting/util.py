@@ -28,6 +28,9 @@ _DEFAULT_API_VERSION = 'v1alpha1'
 # The maximum amount of time to wait in between polling long-running operations.
 _WAIT_CEILING_MS = 10 * 1000
 
+# The maximum amount of time to wait for the long-running operation.
+_MAX_WAIT_TIME_MS = 30 * 60 * 1000
+
 
 def GetMessagesModule(api_version=_DEFAULT_API_VERSION):
   return apis.GetMessagesModule('krmapihosting', api_version)
@@ -110,12 +113,15 @@ def CreateKrmApiHost(parent, krm_api_host_id, krm_api_host):
 
 
 def WaitForCreateKrmApiHostOperation(
-    operation, progress_message='Waiting for cluster to create'):
+    operation,
+    progress_message='Waiting for cluster to create',
+    max_wait_ms=_MAX_WAIT_TIME_MS):
   """Waits for the given "create" LRO to complete.
 
   Args:
     operation: the operation to poll.
     progress_message: the message to display while waiting for the operation.
+    max_wait_ms: number of ms to wait before raising TimeoutError.
 
   Raises:
     apitools.base.py.HttpError: if the request returns an HTTP error.
@@ -129,7 +135,11 @@ def WaitForCreateKrmApiHostOperation(
   poller = waiter.CloudOperationPollerNoResources(
       client.projects_locations_operations)
   result = waiter.WaitFor(
-      poller, operation_ref, progress_message, wait_ceiling_ms=_WAIT_CEILING_MS)
+      poller,
+      operation_ref,
+      progress_message,
+      max_wait_ms=max_wait_ms,
+      wait_ceiling_ms=_WAIT_CEILING_MS)
   json = encoding.MessageToJson(result)
   messages = GetMessagesModule()
   return encoding.JsonToMessage(messages.KrmApiHost, json)

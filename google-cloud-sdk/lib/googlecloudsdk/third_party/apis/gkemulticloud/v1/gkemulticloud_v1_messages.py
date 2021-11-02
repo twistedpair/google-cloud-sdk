@@ -1439,7 +1439,23 @@ class GoogleCloudGkemulticloudV1AzureClient(_messages.Message):
   Each `AzureClient` resource is bound to a single Azure Active Directory
   Application and tenant.
 
+  Messages:
+    AnnotationsValue: Optional. Annotations on the resource. This field has
+      the same restrictions as Kubernetes annotations. The total size of all
+      keys and values combined is limited to 256k. Keys can have 2 segments:
+      prefix (optional) and name (required), separated by a slash (/). Prefix
+      must be a DNS subdomain. Name must be 63 characters or less, begin and
+      end with alphanumerics, with dashes (-), underscores (_), dots (.), and
+      alphanumerics between.
+
   Fields:
+    annotations: Optional. Annotations on the resource. This field has the
+      same restrictions as Kubernetes annotations. The total size of all keys
+      and values combined is limited to 256k. Keys can have 2 segments: prefix
+      (optional) and name (required), separated by a slash (/). Prefix must be
+      a DNS subdomain. Name must be 63 characters or less, begin and end with
+      alphanumerics, with dashes (-), underscores (_), dots (.), and
+      alphanumerics between.
     applicationId: Required. The Azure Active Directory Application ID.
     createTime: Output only. The time at which this resource was created.
     name: The name of this resource. `AzureClient` resource names are
@@ -1451,12 +1467,44 @@ class GoogleCloudGkemulticloudV1AzureClient(_messages.Message):
     uid: Output only. A globally unique identifier for the client.
   """
 
-  applicationId = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  name = _messages.StringField(3)
-  pemCertificate = _messages.StringField(4)
-  tenantId = _messages.StringField(5)
-  uid = _messages.StringField(6)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Annotations on the resource. This field has the same
+    restrictions as Kubernetes annotations. The total size of all keys and
+    values combined is limited to 256k. Keys can have 2 segments: prefix
+    (optional) and name (required), separated by a slash (/). Prefix must be a
+    DNS subdomain. Name must be 63 characters or less, begin and end with
+    alphanumerics, with dashes (-), underscores (_), dots (.), and
+    alphanumerics between.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  applicationId = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  name = _messages.StringField(4)
+  pemCertificate = _messages.StringField(5)
+  tenantId = _messages.StringField(6)
+  uid = _messages.StringField(7)
 
 
 class GoogleCloudGkemulticloudV1AzureCluster(_messages.Message):

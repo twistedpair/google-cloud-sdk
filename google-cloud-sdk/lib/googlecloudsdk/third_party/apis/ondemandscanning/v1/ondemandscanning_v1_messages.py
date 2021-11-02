@@ -75,7 +75,9 @@ class AnalyzePackagesRequestV1(_messages.Message):
   create Vulnerability Occurrences for it.
 
   Fields:
-    includeOsvData: Whether to include OSV data in the scan.
+    includeOsvData: [DEPRECATED] Whether to include OSV data in the scan. For
+      backwards compatibility reasons, this field can be neither removed nor
+      renamed.
     packages: The packages to analyze.
     resourceUri: Required. The resource URI of the container image being
       scanned.

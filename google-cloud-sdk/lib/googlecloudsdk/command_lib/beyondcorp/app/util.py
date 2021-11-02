@@ -20,7 +20,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core import yaml
 
 MEMBER_PARSE_ERROR = ('Error parsing member [{}]: member must be prefixed of '
                       'the form serviceAccount:<value>.')
@@ -46,14 +45,10 @@ def MemberProcessor(member):
   Returns:
     string: Returns <value> part from 'serviceAccount:<value>'.
   """
-  try:
-    member_array = member.split(':')
+  member_array = member.split(':')
 
-    if len(member_array) == 2 and member_array[0] == MEMBER_PREFIX:
-      return member_array[1]
-    else:
-      raise MemberParseError(
-          MEMBER_PARSE_ERROR.format(member))
-
-  except yaml.YAMLParseError as ype:
-    raise MemberParseError('Error parsing member [{}]'.format(ype))
+  if len(member_array) == 2 and member_array[0] == MEMBER_PREFIX:
+    return member_array[1]
+  else:
+    raise MemberParseError(
+        MEMBER_PARSE_ERROR.format(member))

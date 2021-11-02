@@ -1062,6 +1062,55 @@ def AddPasswordPolicyClearPasswordPolicy(parser, show_negated_in_help=False):
       **kwargs)
 
 
+def AddPasswordPolicyAllowedFailedAttempts(parser):
+  """Add the flag to set number of failed login attempts allowed before a user is locked.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--password-policy-allowed-failed-attempts',
+      type=int,
+      required=False,
+      default=None,
+      help='Number of failed login attempts allowed before a user is locked out.'
+  )
+
+
+def AddPasswordPolicyPasswordExpirationDuration(parser):
+  """Add the flag to specify expiration duration after password is updated.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--password-policy-password-expiration-duration',
+      default=None,
+      type=arg_parsers.Duration(lower_bound='1s'),
+      required=False,
+      help="""\
+        Expiration duration after a password is updated, for example,
+        2m for 2 minutes. See `gcloud topic datetimes` for information on
+        duration formats.
+      """)
+
+
+def AddPasswordPolicyEnableFailedAttemptsCheck(parser,
+                                               show_negated_in_help=True):
+  """Add the flag to enable the failed login attempts check.
+
+  Args:
+    parser: The current argparse parser to add this to.
+    show_negated_in_help: Show nagative action in help.
+  """
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
+  parser.add_argument(
+      '--password-policy-enable-failed-attempts-check',
+      required=False,
+      help='Enables the failed login attempts check if set to true.',
+      **kwargs)
+
+
 INSTANCES_USERLABELS_FORMAT = ':(settings.userLabels:alias=labels:label=LABELS)'
 
 INSTANCES_FORMAT_COLUMNS = [
@@ -1131,7 +1180,8 @@ USERS_FORMAT = """
   table(
     name.yesno(no='(anonymous)'),
     host,
-    type.yesno(no='BUILT_IN')
+    type.yesno(no='BUILT_IN'),
+    passwordPolicy
   )
 """
 
@@ -1140,7 +1190,8 @@ USERS_FORMAT_BETA = """
     name.yesno(no='(anonymous)'),
     host,
     type.yesno(no='BUILT_IN'),
-    iamEmail
+    iamEmail,
+    passwordPolicy
   )
 """
 

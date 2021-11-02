@@ -35,7 +35,7 @@ _SUPPORTED_OS_SHORT_NAMES_AND_VERSIONS = {
         '7', '8'
     ],
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.DEBIAN: [
-        '9', '10'
+        '9', '10', '11'
     ],
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.RHEL: ['7', '8'],
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.SLES: [

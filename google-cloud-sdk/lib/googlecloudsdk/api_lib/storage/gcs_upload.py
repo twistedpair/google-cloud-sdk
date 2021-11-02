@@ -22,7 +22,9 @@ import json
 
 from apitools.base.py import transfer
 
+from googlecloudsdk.api_lib.storage import errors
 from googlecloudsdk.api_lib.storage import gcs_metadata_util
+from googlecloudsdk.api_lib.storage import retry_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import scaled_integer
 
@@ -129,13 +131,16 @@ class ResumableUpload(_Upload):
     self._tracker_callback = tracker_callback
 
   def run(self):
+    max_retries = properties.VALUES.storage.max_retries.GetInt()
     if self._serialization_data is not None:
+      # FromData implicitly sets strategy as RESUMABLE.
       apitools_upload = transfer.Upload.FromData(
           self._source_stream,
           json.dumps(self._serialization_data),
           self._gcs_api.client.http,
           auto_transfer=False,
-          gzip_encoded=self._request_config.gzip_encoded)
+          gzip_encoded=self._request_config.gzip_encoded,
+          num_retries=max_retries)
     else:
       apitools_upload = transfer.Upload(
           self._source_stream,
@@ -144,9 +149,11 @@ class ResumableUpload(_Upload):
           chunksize=scaled_integer.ParseInteger(
               properties.VALUES.storage.upload_chunk_size.Get()),
           gzip_encoded=self._request_config.gzip_encoded,
-          total_size=self._request_config.size)
+          total_size=self._request_config.size,
+          num_retries=max_retries)
       apitools_upload.strategy = transfer.RESUMABLE_UPLOAD
     apitools_upload.bytes_http = self._http_client
+    retry_util.set_retry_func(apitools_upload)
 
     if not apitools_upload.initialized:
       self._gcs_api.client.objects.Insert(
@@ -155,10 +162,29 @@ class ResumableUpload(_Upload):
     if self._tracker_callback is not None:
       self._tracker_callback(apitools_upload.serialization_data)
 
-    if self._request_config.gzip_encoded:
-      http_response = apitools_upload.StreamInChunks()
-    else:
-      http_response = apitools_upload.StreamMedia()
+    attempt = 0
+    last_progress_byte = apitools_upload.progress
+    # Not using Retryer because we do not require any delays between runs
+    # and updating the attempts requires manipulating state.retrial.
+    while True:
+      try:
+        if self._request_config.gzip_encoded:
+          http_response = apitools_upload.StreamInChunks()
+        else:
+          http_response = apitools_upload.StreamMedia()
+        break
+      except errors.RetryableApiError:
+        apitools_upload.RefreshResumableUploadState()
+        if apitools_upload.progress > last_progress_byte:
+          # Progress was made.
+          last_progress_byte = apitools_upload.progress
+          attempt = 0
+          continue
+      attempt += 1
+      if attempt > max_retries:
+        raise errors.ResumableUploadAbortError(
+            'Max attempts reached after retrying {} times.'
+            ' Aborting.'.format(attempt))
 
     return self._gcs_api.client.objects.ProcessHttpResponse(
         self._gcs_api.client.objects.GetMethodConfig('Insert'),

@@ -92,7 +92,8 @@ def CreateDiskMessages(args,
                        support_persistent_attached_disks=True,
                        support_replica_zones=False,
                        use_disk_type_uri=True,
-                       support_multi_writer=False):
+                       support_multi_writer=False,
+                       support_disk_architecture=False):
   """Creates disk messages for a single instance."""
 
   container_mount_disk = []
@@ -129,7 +130,8 @@ def CreateDiskMessages(args,
           enable_image_csek=support_image_csek,
           support_replica_zones=support_replica_zones,
           use_disk_type_uri=use_disk_type_uri,
-          support_multi_writer=support_multi_writer))
+          support_multi_writer=support_multi_writer,
+          support_disk_architecture=support_disk_architecture))
 
   local_nvdimms = []
   if support_nvdimm:
@@ -251,7 +253,8 @@ def CreatePersistentCreateDiskMessages(compute_client,
                                        support_replica_zones=False,
                                        use_disk_type_uri=True,
                                        support_multi_writer=False,
-                                       support_image_family_scope=False):
+                                       support_image_family_scope=False,
+                                       support_disk_architecture=False):
   """Returns a list of AttachedDisk messages for newly creating disks.
 
   Args:
@@ -284,6 +287,8 @@ def CreatePersistentCreateDiskMessages(compute_client,
     use_disk_type_uri: True to use disk type URI, False if naked type.
     support_multi_writer: True if we allow multiple instances to write to disk.
     support_image_family_scope: True if the zonal image views are supported.
+    support_disk_architecture: The machine architecture the created disk is
+      compatible with.
 
   Returns:
     list of API messages for attached disks
@@ -393,6 +398,11 @@ def CreatePersistentCreateDiskMessages(compute_client,
     provisioned_iops = disk.get('provisioned-iops')
     if provisioned_iops:
       initialize_params.provisionedIops = provisioned_iops
+
+    disk_architecture = disk.get('architecture')
+    if support_disk_architecture and disk_architecture:
+      initialize_params.architecture = messages.AttachedDiskInitializeParams.ArchitectureValueValuesEnum(
+          disk_architecture)
 
     device_name = instance_utils.GetDiskDeviceName(disk, name,
                                                    container_mount_disk)

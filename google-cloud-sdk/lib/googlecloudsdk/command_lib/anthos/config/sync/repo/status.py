@@ -19,9 +19,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+import datetime
 import fnmatch
 import json
-import sys
 
 from googlecloudsdk.command_lib.anthos.config.sync.repo import utils
 from googlecloudsdk.core import exceptions
@@ -36,6 +36,7 @@ class RepoStatus:
     self.pending = 0
     self.error = 0
     self.stalled = 0
+    self.reconciling = 0
     self.total = 0
     self.namespace = ''
     self.name = ''
@@ -84,25 +85,19 @@ def ListRepos(project_id, status, namespace, membership, selector, targets):
 
   """
   if targets and targets not in ['all', 'fleet-clusters', 'config-controller']:
-    log.status.Print(
+    raise exceptions.Error(
         '--targets must be one of "all", "fleet-clusters" and "config-controller"'
     )
-    sys.exit(1)
   if targets != 'fleet-clusters' and membership:
-    log.status.Print(
+    raise exceptions.Error(
         '--membership should only be specified when --targets=fleet-clusters')
-    sys.exit(1)
-
   if status not in ['all', 'synced', 'error', 'pending', 'stalled']:
-    log.status.Print(
+    raise exceptions.Error(
         '--status must be one of "all", "synced", "pending", "error", "stalled"'
     )
-    sys.exit(1)
-
   selector_map, err = _ParseSelector(selector)
   if err:
-    log.status.Print(err)
-    sys.exit(1)
+    raise exceptions.Error(err)
 
   repo_cross_clusters = RawRepos()
 
@@ -132,8 +127,7 @@ def ListRepos(project_id, status, namespace, membership, selector, targets):
     try:
       memberships = utils.ListMemberships(project_id)
     except exceptions.Error as err:
-      log.error(err)
-      sys.exit(1)
+      raise err
 
     for member in memberships:
       if not _MembershipMatched(member, membership):
@@ -194,7 +188,8 @@ def _GetRepoStatus(rs, git):
     namespace, name = _GetObjectKey(obj)
     repo_status.namespace = namespace
     repo_status.name = name
-    status, _ = _GetStatusAndErrors(obj)
+    single_repo_status = _GetStatusForRepo(obj)
+    status = single_repo_status.status
     if status == 'SYNCED':
       repo_status.synced += 1
     elif status == 'PENDING':
@@ -203,6 +198,8 @@ def _GetRepoStatus(rs, git):
       repo_status.error += 1
     elif status == 'STALLED':
       repo_status.stalled += 1
+    elif status == 'RECONCILING':
+      repo_status.reconciling += 1
     repo_status.total += 1
     repo_status.cluster_type = pair.cluster_type
   return repo_status
@@ -261,42 +258,6 @@ def _StatusMatched(status, repo_status):
     return repo_status.synced == repo_status.total
 
 
-def _GetStatusAndErrors(obj):
-  """Get the status and errors for a RepoSync|RootSync CR.
-
-  Args:
-    obj: The json object that represents a RepoSync|RootSync CR.
-
-  Returns:
-    Status and the errors from the RepoSync|RootSync CR.
-  """
-  # TODO(b/202334872): The logic below doesn't work for the latest version of
-  # Config Sync with the syncing condition type. We need to support it as well.
-  status = 'SYNCED'
-  rendering = _GetPathValue(obj, ['status', 'rendering', 'commit'])
-  source = _GetPathValue(obj, ['status', 'source', 'commit'])
-  sync = _GetPathValue(obj, ['status', 'sync', 'commit'])
-  if source != sync or (rendering and rendering != source):
-    status = 'PENDING'
-  errors = []
-  errors += _GetPathValue(obj, ['status', 'rendering', 'errors'], [])
-  errors += _GetPathValue(obj, ['status', 'source', 'errors'], [])
-  errors += _GetPathValue(obj, ['status', 'sync', 'errors'], [])
-
-  # check for the stalling condition or reconciling condition
-  return_errors = []
-
-  for condition in obj['status']['conditions']:
-    if condition['type'] == 'Stalled' and condition['status'] == 'True':
-      return_errors.append(condition['message'])
-      status = 'STALLED'
-  if errors:
-    status = 'ERROR'
-  for err in errors:
-    return_errors.append(err['errorMessage'])
-  return status, return_errors
-
-
 def _GetConditionForType(obj, condition_type):
   """Return the object condition for the given type.
 
@@ -328,6 +289,8 @@ def _GetPathValue(obj, paths, default_value=None):
   Returns:
     The field value of the given paths if found. Otherwise it returns None.
   """
+  if not obj:
+    return default_value
   for p in paths:
     if p in obj:
       obj = obj[p]
@@ -456,7 +419,7 @@ def _AppendReposAndResourceGroups(membership, repos_cross_clusters,
   """
   params = []
   if not namespace:
-    params = ['-all-namespaces']
+    params = ['--all-namespaces']
   else:
     params = ['-n', namespace]
   repos, err = utils.RunKubectl(
@@ -588,20 +551,17 @@ def DescribeRepo(project, name, namespace, source, managed_resources):
 
   """
   if name and source or namespace and source:
-    log.error('--name and --namespace cannot be specified together with '
-              '--resource.')
-    sys.exit(1)
+    raise exceptions.Error(
+        '--name and --namespace cannot be specified together with '
+        '--source.')
   if name and not namespace or namespace and not name:
-    log.error('--name and --namespace must be specified together.')
-    sys.exit(1)
-
+    raise exceptions.Error('--name and --namespace must be specified together.')
   if managed_resources not in [
-      'all', 'failed', 'inprogress', 'notfound', 'failed', 'unknown'
+      'all', 'current', 'inprogress', 'notfound', 'failed', 'unknown'
   ]:
-    log.error(
-        '--managed-resources must be one of all, failed, inprogress, notfound, failed or unknown'
+    raise exceptions.Error(
+        '--managed-resources must be one of all, current, inprogress, notfound, failed or unknown'
     )
-    sys.exit(1)
 
   repo_cross_clusters = RawRepos()
   # Get repos from the Config Controller cluster
@@ -622,15 +582,14 @@ def DescribeRepo(project, name, namespace, source, managed_resources):
         _AppendReposAndResourceGroups(cluster, repo_cross_clusters,
                                       'Config Controller', name, namespace,
                                       source)
-      except exceptions as err:
+      except exceptions.Error as err:
         log.error(err)
 
   # Get repos from memberships
   try:
     memberships = utils.ListMemberships(project)
   except exceptions.Error as err:
-    log.error(err)
-    sys.exit(1)
+    raise err
   for membership in memberships:
     try:
       utils.KubeconfigForMembership(project, membership)
@@ -661,8 +620,10 @@ def _Describe(status_filter, repos_cross_clusters):
   describe_result = DescribeResult()
   for source_key, repos in repos_cross_clusters.GetRepos().items():
     for cluster, pair in repos.items():
-      status, errors = _GetStatusAndErrors(pair.repo)
-      commit = _GetLatestCommit(pair.repo)
+      single_repo_status = _GetStatusForRepo(pair.repo)
+      status = single_repo_status.GetStatus()
+      errors = single_repo_status.GetErrors()
+      commit = single_repo_status.GetCommit()
       for resource in pair.rg['status']['resourceStatuses']:
         describe_result.AppendManagedResources(resource, cluster, status_filter)
       status_result = DetailedStatus(source_key, commit, status, errors,
@@ -671,9 +632,126 @@ def _Describe(status_filter, repos_cross_clusters):
   return describe_result
 
 
-def _GetLatestCommit(obj):
-  # TODO(b/202334872): We simply treat the .status.source.commit
-  # as the latest commit here.
-  # This should be modified to include .status.sync.commit and
-  # .status.rendering.commit as well.
-  return _GetPathValue(obj, ['status', 'source', 'commit'])
+class SingleRepoStatus:
+  """SingleRepoStatus represents a single repo status on a single cluster."""
+
+  def __init__(self, status, errors, commit):
+    self.status = status
+    self.errors = errors
+    self.commit = commit
+
+  def GetStatus(self):
+    return self.status
+
+  def GetErrors(self):
+    return self.errors
+
+  def GetCommit(self):
+    return self.commit
+
+
+def _GetStatusForRepo(obj):
+  """Get the status for a repo.
+
+  Args:
+    obj: The RepoSync|RootSync object.
+
+  Returns:
+    a SingleRepoStatus object that represents the RepoSync|RootSync object.
+  """
+  stalled = _GetConditionForType(obj, 'Stalled')
+  if stalled and stalled['status'] == 'True':
+    return SingleRepoStatus('STALLED', [stalled['message']], '')
+  reconciling = _GetConditionForType(obj, 'Reconciling')
+  if reconciling and reconciling['status'] == 'True':
+    return SingleRepoStatus('RECONCILING', [], '')
+  # When syncing condition is available for
+  # Config Sync with version >= 1.10.0
+  syncing = _GetConditionForType(obj, 'Syncing')
+  if syncing:
+    errs = _GetPathValue(syncing, ['errors'], [])
+    commit = syncing['commit']
+    if errs:
+      return SingleRepoStatus('ERROR', _GetErrorMessages(errs), commit)
+    if syncing['status'] == 'True':
+      return SingleRepoStatus('PENDING', [], commit)
+    return SingleRepoStatus('SYNCED', [], commit)
+  # When syncing condition is not availalbe for
+  # Config Sync with version < 1.10.0
+  rendering = _GetPathValue(obj, ['status', 'rendering', 'commit'], '')
+  source = _GetPathValue(obj, ['status', 'source', 'commit'], '')
+  sync = _GetPathValue(obj, ['status', 'sync', 'commit'], '')
+  status = ''
+  # The field `.status.rendering` is in 1.9.0+.
+  if not rendering:
+    errors = []
+    if not source and not sync:
+      status = 'PENDING'
+    elif source != sync:
+      errors = _GetPathValue(obj, ['status', 'source', 'errors'], [])
+      if errors:
+        status = 'ERROR'
+      else:
+        status = 'PENDING'
+    else:
+      errors += _GetPathValue(obj, ['status', 'source', 'errors'], [])
+      errors += _GetPathValue(obj, ['status', 'sync', 'errors'], [])
+      if errors:
+        status = 'ERROR'
+      else:
+        status = 'SYNCED'
+    return SingleRepoStatus(status, _GetErrorMessages(errors), source)
+  # The following logic applies to Config Sync versions between 1.9.0 and
+  # 1.10.0 where .status.rendering status is present but syncing condition
+  # is not supported.
+  stalled_ts = _GetPathValue(stalled, ['lastUpdateTime'],
+                             '2000-01-01T23:50:20Z')
+  reconciling_ts = _GetPathValue(reconciling, ['lastUpdateTime'],
+                                 '2000-01-01T23:50:20Z')
+  rendering_ts = _GetPathValue(obj, ['status', 'rendering', 'lastUpdate'],
+                               '2000-01-01T23:50:20Z')
+  source_ts = _GetPathValue(obj, ['status', 'source', 'lastUpdate'],
+                            '2000-01-01T23:50:20Z')
+  sync_ts = _GetPathValue(obj, ['status', 'sync', 'lastUpdate'],
+                          '2000-01-01T23:50:20Z')
+  stalled_time = _TimeFromString(stalled_ts)
+  reconciling_time = _TimeFromString(reconciling_ts)
+  rendering_time = _TimeFromString(rendering_ts)
+  source_time = _TimeFromString(source_ts)
+  sync_time = _TimeFromString(sync_ts)
+  if stalled_time > rendering_time and stalled_time > source_time and stalled_time > sync_time or reconciling_time > rendering_time and reconciling_time > source_time and stalled_time > sync_time:
+    return SingleRepoStatus('PENDING', [], '')
+  if rendering_time > source_time and rendering_time > sync_time:
+    errors = _GetPathValue(obj, ['status', 'rendering', 'errors'], [])
+    if errors:
+      status = 'ERROR'
+    else:
+      status = 'PENDING'
+    return SingleRepoStatus(status, _GetErrorMessages(errors), rendering)
+  elif source_time > rendering_time and source_time > sync_time:
+    errors = _GetPathValue(obj, ['status', 'source', 'errors'], [])
+    if errors:
+      status = 'ERROR'
+    else:
+      status = 'PENDING'
+    return SingleRepoStatus(status, _GetErrorMessages(errors), source)
+  else:
+    errors = _GetPathValue(obj, ['status', 'sync', 'errors'], [])
+    if errors:
+      status = 'ERROR'
+    else:
+      status = 'SYNCED'
+    return SingleRepoStatus(status, _GetErrorMessages(errors), sync)
+
+
+def _GetErrorMessages(errors):
+  """return the errorMessage list from a list of ConfigSync errors."""
+  return_errors = []
+  for err in errors:
+    return_errors.append(err['errorMessage'])
+  return return_errors
+
+
+def _TimeFromString(timestamp):
+  """return the datetime from a timestamp string."""
+  return datetime.datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%SZ')

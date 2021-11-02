@@ -260,6 +260,7 @@ class BlueGreenInfo(_messages.Message):
     greenInstanceGroupUrls: The resource URLs of the [managed instance groups]
       (/compute/docs/instance-groups/creating-groups-of-managed-instances)
       associated with green pool.
+    greenPoolVersion: Version of green pool.
     phase: Current blue/green update phase.
   """
 
@@ -288,7 +289,8 @@ class BlueGreenInfo(_messages.Message):
   blueInstanceGroupUrls = _messages.StringField(1, repeated=True)
   bluePoolDeletionStartTime = _messages.StringField(2)
   greenInstanceGroupUrls = _messages.StringField(3, repeated=True)
-  phase = _messages.EnumField('PhaseValueValuesEnum', 4)
+  greenPoolVersion = _messages.StringField(4)
+  phase = _messages.EnumField('PhaseValueValuesEnum', 5)
 
 
 class BlueGreenSettings(_messages.Message):
@@ -2569,11 +2571,11 @@ class MaintenanceWindow(_messages.Message):
 
 
 class ManagedPrometheusConfig(_messages.Message):
-  r"""ManagedPrometheusConfig defines the configuration for Prometheus managed
-  collection.
+  r"""ManagedPrometheusConfig defines the configuration for Google Cloud
+  Managed Service for Prometheus.
 
   Fields:
-    enabled: Enable managed collection.
+    enabled: Enable Managed Collection.
   """
 
   enabled = _messages.BooleanField(1)
@@ -2760,8 +2762,8 @@ class MonitoringConfig(_messages.Message):
 
   Fields:
     componentConfig: Monitoring components configuration
-    managedPrometheusConfig: Enable Google Prometheus Managed Collection in
-      the cluster.
+    managedPrometheusConfig: Enable Google Cloud Managed Service for
+      Prometheus in the cluster.
   """
 
   componentConfig = _messages.MessageField('MonitoringComponentConfig', 1)

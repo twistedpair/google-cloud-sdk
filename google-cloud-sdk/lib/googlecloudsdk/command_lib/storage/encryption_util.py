@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import base64
 import collections
 import enum
 import functools
@@ -110,7 +111,7 @@ def parse_key(raw_key):
       raise
     key_type = KeyType.CSEK
     sha256 = hash_util.get_base64_hash_digest_string(
-        hashlib.sha256(raw_key_bytes))
+        hashlib.sha256(base64.b64decode(raw_key_bytes)))
   return EncryptionKey(key=raw_key, sha256=sha256, type=key_type)
 
 
@@ -207,4 +208,3 @@ def get_decryption_key(sha256_hash):
   """Returns a key that matches sha256_hash, or None if no key is found."""
   if _key_store.initialized:
     return _key_store.decryption_key_index.get(sha256_hash)
-

@@ -2761,6 +2761,18 @@ class ApigeeOrganizationsEnvironmentsUpdateTraceConfigRequest(_messages.Message)
   updateMask = _messages.StringField(3)
 
 
+class ApigeeOrganizationsGetControlPlaneAccessRequest(_messages.Message):
+  r"""A ApigeeOrganizationsGetControlPlaneAccessRequest object.
+
+  Fields:
+    name: Required. Resource name of the Control Plane Access. Use the
+      following structure in your request:
+      `organizations/{org}/controlPlaneAccess`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ApigeeOrganizationsGetDeployedIngressConfigRequest(_messages.Message):
   r"""A ApigeeOrganizationsGetDeployedIngressConfigRequest object.
 
@@ -3708,6 +3720,24 @@ class ApigeeOrganizationsUndeleteRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class ApigeeOrganizationsUpdateControlPlaneAccessRequest(_messages.Message):
+  r"""A ApigeeOrganizationsUpdateControlPlaneAccessRequest object.
+
+  Fields:
+    googleCloudApigeeV1ControlPlaneAccess: A
+      GoogleCloudApigeeV1ControlPlaneAccess resource to be passed as the
+      request body.
+    name: The resource name of the ControlPlaneAccess. Format:
+      "organizations/{org}/controlPlaneAccess"
+    updateMask: List of fields to be updated. Fields that can be updated:
+      portal_disabled, release_channel, addon_config.
+  """
+
+  googleCloudApigeeV1ControlPlaneAccess = _messages.MessageField('GoogleCloudApigeeV1ControlPlaneAccess', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class ApigeeProjectsProvisionOrganizationRequest(_messages.Message):
   r"""A ApigeeProjectsProvisionOrganizationRequest object.
 
@@ -4200,6 +4230,9 @@ class GoogleCloudApigeeV1ApiProxyRevision(_messages.Message):
     displayName: Human-readable name of the API proxy.
     entityMetaDataAsProperties: Metadata describing the API proxy revision as
       a key-value map.
+    integrationEndpoints: List of IntegrationEndpoints in the '/integration-
+      endpoints' directory of the API proxy. This is a 'manifest' setting
+      designed to provide visibility into the contents of the API proxy.
     lastModifiedAt: Time that the API proxy revision was last modified in
       milliseconds since epoch.
     name: Name of the API proxy.
@@ -4263,21 +4296,22 @@ class GoogleCloudApigeeV1ApiProxyRevision(_messages.Message):
   description = _messages.StringField(5)
   displayName = _messages.StringField(6)
   entityMetaDataAsProperties = _messages.MessageField('EntityMetaDataAsPropertiesValue', 7)
-  lastModifiedAt = _messages.IntegerField(8)
-  name = _messages.StringField(9)
-  policies = _messages.StringField(10, repeated=True)
-  proxies = _messages.StringField(11, repeated=True)
-  proxyEndpoints = _messages.StringField(12, repeated=True)
-  resourceFiles = _messages.MessageField('GoogleCloudApigeeV1ResourceFiles', 13)
-  resources = _messages.StringField(14, repeated=True)
-  revision = _messages.StringField(15)
-  sharedFlows = _messages.StringField(16, repeated=True)
-  spec = _messages.StringField(17)
-  targetEndpoints = _messages.StringField(18, repeated=True)
-  targetServers = _messages.StringField(19, repeated=True)
-  targets = _messages.StringField(20, repeated=True)
-  teams = _messages.StringField(21, repeated=True)
-  type = _messages.StringField(22)
+  integrationEndpoints = _messages.StringField(8, repeated=True)
+  lastModifiedAt = _messages.IntegerField(9)
+  name = _messages.StringField(10)
+  policies = _messages.StringField(11, repeated=True)
+  proxies = _messages.StringField(12, repeated=True)
+  proxyEndpoints = _messages.StringField(13, repeated=True)
+  resourceFiles = _messages.MessageField('GoogleCloudApigeeV1ResourceFiles', 14)
+  resources = _messages.StringField(15, repeated=True)
+  revision = _messages.StringField(16)
+  sharedFlows = _messages.StringField(17, repeated=True)
+  spec = _messages.StringField(18)
+  targetEndpoints = _messages.StringField(19, repeated=True)
+  targetServers = _messages.StringField(20, repeated=True)
+  targets = _messages.StringField(21, repeated=True)
+  teams = _messages.StringField(22, repeated=True)
+  type = _messages.StringField(23)
 
 
 class GoogleCloudApigeeV1ApiResponseWrapper(_messages.Message):
@@ -4666,6 +4700,39 @@ class GoogleCloudApigeeV1ConnectorsPlatformConfig(_messages.Message):
 
   enabled = _messages.BooleanField(1)
   expiresAt = _messages.IntegerField(2)
+
+
+class GoogleCloudApigeeV1ControlPlaneAccess(_messages.Message):
+  r"""ControlPlaneAccess is the request body and response body of
+  UpdateControlPlaneAccess. and the response body of GetControlPlaneAccess.
+  The input identities contains an array of service accounts to grant access
+  to the respective control plane resource, with each service account
+  specified using the following format: `serviceAccount:`***service-account-
+  name***. The ***service-account-name*** is formatted like an email address.
+  For example: `my-control-plane-
+  service_account@my_project_id.iam.gserviceaccount.com` You might specify
+  multiple service accounts, for example, if you have multiple environments
+  and wish to assign a unique service account to each one.
+
+  Fields:
+    loggerIdentities: Array of service accounts to grant access to control
+      plane resources (for the Logger component).
+    name: The resource name of the ControlPlaneAccess. Format:
+      "organizations/{org}/controlPlaneAccess"
+    synchronizerIdentities: Required. Array of service accounts to grant
+      access to control plane resources (for the Synchronizer component). The
+      service accounts must have **Apigee Synchronizer Manager** role. See
+      also [Create service
+      accounts](https://cloud.google.com/apigee/docs/hybrid/latest/sa-
+      about#create-the-service-accounts).
+    udcaIdentities: Required. Array of service accounts to grant access to
+      control plane resources (for the UDCA component).
+  """
+
+  loggerIdentities = _messages.StringField(1, repeated=True)
+  name = _messages.StringField(2)
+  synchronizerIdentities = _messages.StringField(3, repeated=True)
+  udcaIdentities = _messages.StringField(4, repeated=True)
 
 
 class GoogleCloudApigeeV1Credential(_messages.Message):

@@ -1122,7 +1122,7 @@
     },
     "MaintenanceWindow": {
       "id": "MaintenanceWindow",
-      "description": "The configuration settings for Cloud Composer maintenance window. The following example: { \"startTime\":\"2019-08-01T01:00:00Z\" \"endTime\":\"2019-08-01T07:00:00Z\" \"recurrence\":\"FREQ=WEEKLY;BYDAY=TU,WE\" } would define a maintenance window between 01 and 07 hours UTC during each Tuesday and Wednesday.",
+      "description": "The configuration settings for Cloud Composer maintenance window. The following example: ``` { \"startTime\":\"2019-08-01T01:00:00Z\" \"endTime\":\"2019-08-01T07:00:00Z\" \"recurrence\":\"FREQ=WEEKLY;BYDAY=TU,WE\" } ``` would define a maintenance window between 01 and 07 hours UTC during each Tuesday and Wednesday.",
       "type": "object",
       "properties": {
         "startTime": {
@@ -1341,6 +1341,21 @@
         }
       }
     },
+    "LoadEnvironmentStateRequest": {
+      "id": "LoadEnvironmentStateRequest",
+      "description": "Load environment state request.",
+      "type": "object",
+      "properties": {
+        "snapshotLocation": {
+          "description": "A Cloud Storage location of a snapshot to load, e.g.: \"gs:\/\/my-bucket\/snapshots\/project_id\/location\/environment_uuid\/timestamp\".",
+          "type": "string"
+        },
+        "skipPypiPackagesInstallation": {
+          "description": "Whether or not to skip installing Pypi packages when loading the environment's state.",
+          "type": "boolean"
+        }
+      }
+    },
     "ListImageVersionsResponse": {
       "id": "ListImageVersionsResponse",
       "description": "The ImageVersions in a project and location.",
@@ -1530,6 +1545,13 @@
           "description": "The fully-resolved Cloud Storage location of the created snapshot, e.g.: \"gs:\/\/my-bucket\/snapshots\/project_id\/location\/environment_uuid\/timestamp\". This field is populated only if the snapshot creation was successful.",
           "type": "string"
         }
+      }
+    },
+    "LoadEnvironmentStateResponse": {
+      "id": "LoadEnvironmentStateResponse",
+      "description": "Load environment state response.",
+      "type": "object",
+      "properties": {
       }
     }
   },
@@ -1893,7 +1915,35 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Store composer environment state. As a result of this operation, snapshot of environment's state is stored in a location specified in the StoreEnvironmentStateRequest."
+                  "description": "Stores Cloud Composer environment state. As a result of this operation, snapshot of environment's state is stored in a location specified in the StoreEnvironmentStateRequest."
+                },
+                "loadEnvironmentState": {
+                  "id": "composer.projects.locations.environments.loadEnvironmentState",
+                  "path": "v1alpha2/{+environment}:loadEnvironmentState",
+                  "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:loadEnvironmentState",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "environment": {
+                      "description": "The resource name of the target environment in the form: \"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "environment"
+                  ],
+                  "request": {
+                    "$ref": "LoadEnvironmentStateRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Loads Cloud Composer environment state. As a result of this operation, a snapshot of environment's specified in LoadEnvironmentStateRequest is loaded into the environment."
                 }
               }
               ,
