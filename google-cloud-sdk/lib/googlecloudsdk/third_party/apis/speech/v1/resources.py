@@ -34,6 +34,42 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS = (
+      'projects',
+      'projects/{projectsId}',
+      {},
+      ['projectsId'],
+      True
+  )
+  PROJECTS_LOCATIONS = (
+      'projects.locations',
+      'projects/{projectsId}/locations/{locationsId}',
+      {},
+      ['projectsId', 'locationsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_CUSTOMCLASSES = (
+      'projects.locations.customClasses',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/customClasses/'
+              '{customClassesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_PHRASESETS = (
+      'projects.locations.phraseSets',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/phraseSets/'
+              '{phraseSetsId}',
+      },
+      ['name'],
+      True
+  )
   SPEECH = (
       'speech',
       'speech',

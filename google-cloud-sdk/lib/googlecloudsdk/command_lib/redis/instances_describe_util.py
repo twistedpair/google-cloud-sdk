@@ -68,9 +68,8 @@ def FormatResponse(response, _):
     modified_mw_policy['createTime'] = response.maintenancePolicy.createTime
     modified_mw_policy['updateTime'] = response.maintenancePolicy.updateTime
 
-    mwlist = response.maintenancePolicy.weeklyMaintenanceWindow
     modified_mwlist = []
-    for mw in mwlist:
+    for mw in response.maintenancePolicy.weeklyMaintenanceWindow:
       item = {}
       # convert seconds to minutes
       duration_secs = int(mw.duration[:-1])
@@ -82,5 +81,14 @@ def FormatResponse(response, _):
 
     modified_mw_policy['maintenanceWindow'] = modified_mwlist
     modified_response['maintenancePolicy'] = modified_mw_policy
+
+  if response.nodes:
+    modified_node_list = []
+    for node in response.nodes:
+      item = {}
+      item['id'] = node.id
+      item['zone'] = node.zone
+      modified_node_list.append(item)
+    modified_response['nodes'] = modified_node_list
 
   return modified_response

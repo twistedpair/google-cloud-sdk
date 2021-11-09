@@ -290,12 +290,11 @@ def CreateSchedulingMessage(messages,
     scheduling.locationHint = location_hint
 
   if maintenance_freeze_duration:
-    scheduling.maintenanceFreezeDurationHours = \
-      maintenance_freeze_duration // 3600  # sec to hour
+    scheduling.maintenanceFreezeDurationHours = maintenance_freeze_duration // 3600
 
   if maintenance_interval:
-    scheduling.maintenanceInterval = messages.\
-      Scheduling.MaintenanceIntervalValueValuesEnum(maintenance_interval)
+    scheduling.maintenanceInterval = messages.Scheduling.MaintenanceIntervalValueValuesEnum(
+        maintenance_interval)
 
   if host_error_timeout_seconds:
     scheduling.hostErrorTimeoutSeconds = host_error_timeout_seconds
@@ -337,7 +336,8 @@ def CreateAdvancedMachineFeaturesMessage(messages,
                                          enable_nested_virtualization=None,
                                          threads_per_core=None,
                                          numa_node_count=None,
-                                         visible_core_count=None):
+                                         visible_core_count=None,
+                                         enable_uefi_networking=None):
   """Create AdvancedMachineFeatures message for an Instance."""
   # Start with an empty AdvancedMachineFeatures and optionally add on
   # the features we have like CreateSchedulingMessage does. This lets us
@@ -355,6 +355,9 @@ def CreateAdvancedMachineFeaturesMessage(messages,
 
   if visible_core_count is not None:
     features.visibleCoreCount = visible_core_count
+
+  if enable_uefi_networking is not None:
+    features.enableUefiNetworking = enable_uefi_networking
 
   return features
 
@@ -765,9 +768,8 @@ def GetNetworkPerformanceConfig(args, client):
   for config in network_perf_args:
     total_tier = config.get('total-egress-bandwidth-tier', '').upper()
     if total_tier:
-      network_perf_configs.totalEgressBandwidthTier = \
-        client.messages.NetworkPerformanceConfig.\
-          TotalEgressBandwidthTierValueValuesEnum(total_tier)
+      network_perf_configs.totalEgressBandwidthTier = client.messages.NetworkPerformanceConfig.TotalEgressBandwidthTierValueValuesEnum(
+          total_tier)
 
   return network_perf_configs
 

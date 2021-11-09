@@ -798,12 +798,12 @@
       "type": "object",
       "properties": {
         "minNodeCount": {
-          "description": "Required. Minimum number of nodes in the NodePool. Must be >= 1 and <= max_node_count.",
+          "description": "Required. Minimum number of nodes in the node pool. Must be greater than or equal to 1 and less than or equal to max_node_count.",
           "type": "integer",
           "format": "int32"
         },
         "maxNodeCount": {
-          "description": "Required. Maximum number of nodes in the NodePool. Must be >= min_node_count.",
+          "description": "Required. Maximum number of nodes in the node pool. Must be greater than or equal to min_node_count and less than or equal to 50.",
           "type": "integer",
           "format": "int32"
         }
@@ -1542,12 +1542,12 @@
       "type": "object",
       "properties": {
         "minNodeCount": {
-          "description": "Required. Minimum number of nodes in the node pool. Must be >= 1 and <= max_node_count.",
+          "description": "Required. Minimum number of nodes in the node pool. Must be greater than or equal to 1 and less than or equal to max_node_count.",
           "type": "integer",
           "format": "int32"
         },
         "maxNodeCount": {
-          "description": "Required. Maximum number of nodes in the node pool. Must be >= min_node_count.",
+          "description": "Required. Maximum number of nodes in the node pool. Must be greater than or equal to min_node_count and less than or equal to 50.",
           "type": "integer",
           "format": "int32"
         }

@@ -40,6 +40,9 @@ class DataplexV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_lakes_actions = self.ProjectsLocationsLakesActionsService(self)
+    self.projects_locations_lakes_content = self.ProjectsLocationsLakesContentService(self)
+    self.projects_locations_lakes_environments_sessions = self.ProjectsLocationsLakesEnvironmentsSessionsService(self)
+    self.projects_locations_lakes_environments = self.ProjectsLocationsLakesEnvironmentsService(self)
     self.projects_locations_lakes_tasks_jobs = self.ProjectsLocationsLakesTasksJobsService(self)
     self.projects_locations_lakes_tasks = self.ProjectsLocationsLakesTasksService(self)
     self.projects_locations_lakes_zones_actions = self.ProjectsLocationsLakesZonesActionsService(self)
@@ -87,6 +90,495 @@ class DataplexV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataplexProjectsLocationsLakesActionsListRequest',
         response_type_name='GoogleCloudDataplexV1ListActionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsLakesContentService(base_api.BaseApiService):
+    """Service class for the projects_locations_lakes_content resource."""
+
+    _NAME = 'projects_locations_lakes_content'
+
+    def __init__(self, client):
+      super(DataplexV1.ProjectsLocationsLakesContentService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a content resource.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesContentCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/content',
+        http_method='POST',
+        method_id='dataplex.projects.locations.lakes.content.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['validateOnly'],
+        relative_path='v1/{+parent}/content',
+        request_field='googleCloudDataplexV1Content',
+        request_type_name='DataplexProjectsLocationsLakesContentCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete the content resource. All the child resources must have been deleted before content deletion can be initiated.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesContentDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/content/{contentId}',
+        http_method='DELETE',
+        method_id='dataplex.projects.locations.lakes.content.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLakesContentDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get content resource.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesContentGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1Content) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/content/{contentId}',
+        http_method='GET',
+        method_id='dataplex.projects.locations.lakes.content.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLakesContentGetRequest',
+        response_type_name='GoogleCloudDataplexV1Content',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesContentGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/content/{contentId}:getIamPolicy',
+        http_method='GET',
+        method_id='dataplex.projects.locations.lakes.content.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLakesContentGetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists content under the given lake.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesContentListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1ListContentResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/content',
+        http_method='GET',
+        method_id='dataplex.projects.locations.lakes.content.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/content',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLakesContentListRequest',
+        response_type_name='GoogleCloudDataplexV1ListContentResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update the content resource.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesContentPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/content/{contentId}',
+        http_method='PATCH',
+        method_id='dataplex.projects.locations.lakes.content.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudDataplexV1Content',
+        request_type_name='DataplexProjectsLocationsLakesContentPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesContentSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/content/{contentId}:setIamPolicy',
+        http_method='POST',
+        method_id='dataplex.projects.locations.lakes.content.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='googleIamV1SetIamPolicyRequest',
+        request_type_name='DataplexProjectsLocationsLakesContentSetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesContentTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/content/{contentId}:testIamPermissions',
+        http_method='POST',
+        method_id='dataplex.projects.locations.lakes.content.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='googleIamV1TestIamPermissionsRequest',
+        request_type_name='DataplexProjectsLocationsLakesContentTestIamPermissionsRequest',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsLakesEnvironmentsSessionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_lakes_environments_sessions resource."""
+
+    _NAME = 'projects_locations_lakes_environments_sessions'
+
+    def __init__(self, client):
+      super(DataplexV1.ProjectsLocationsLakesEnvironmentsSessionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists session resources in an environment.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesEnvironmentsSessionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1ListSessionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/environments/{environmentsId}/sessions',
+        http_method='GET',
+        method_id='dataplex.projects.locations.lakes.environments.sessions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/sessions',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLakesEnvironmentsSessionsListRequest',
+        response_type_name='GoogleCloudDataplexV1ListSessionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsLakesEnvironmentsService(base_api.BaseApiService):
+    """Service class for the projects_locations_lakes_environments resource."""
+
+    _NAME = 'projects_locations_lakes_environments'
+
+    def __init__(self, client):
+      super(DataplexV1.ProjectsLocationsLakesEnvironmentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a environment resource.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesEnvironmentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/environments',
+        http_method='POST',
+        method_id='dataplex.projects.locations.lakes.environments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['environmentId', 'validateOnly'],
+        relative_path='v1/{+parent}/environments',
+        request_field='googleCloudDataplexV1Environment',
+        request_type_name='DataplexProjectsLocationsLakesEnvironmentsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete the environment resource. All the child resources must have been deleted before environment deletion can be initiated.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesEnvironmentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/environments/{environmentsId}',
+        http_method='DELETE',
+        method_id='dataplex.projects.locations.lakes.environments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLakesEnvironmentsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get environment resource.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesEnvironmentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1Environment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/environments/{environmentsId}',
+        http_method='GET',
+        method_id='dataplex.projects.locations.lakes.environments.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLakesEnvironmentsGetRequest',
+        response_type_name='GoogleCloudDataplexV1Environment',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesEnvironmentsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/environments/{environmentsId}:getIamPolicy',
+        http_method='GET',
+        method_id='dataplex.projects.locations.lakes.environments.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLakesEnvironmentsGetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists environments under the given lake.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesEnvironmentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1ListEnvironmentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/environments',
+        http_method='GET',
+        method_id='dataplex.projects.locations.lakes.environments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/environments',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLakesEnvironmentsListRequest',
+        response_type_name='GoogleCloudDataplexV1ListEnvironmentsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update the environment resource.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesEnvironmentsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/environments/{environmentsId}',
+        http_method='PATCH',
+        method_id='dataplex.projects.locations.lakes.environments.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudDataplexV1Environment',
+        request_type_name='DataplexProjectsLocationsLakesEnvironmentsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesEnvironmentsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/environments/{environmentsId}:setIamPolicy',
+        http_method='POST',
+        method_id='dataplex.projects.locations.lakes.environments.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='googleIamV1SetIamPolicyRequest',
+        request_type_name='DataplexProjectsLocationsLakesEnvironmentsSetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesEnvironmentsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/environments/{environmentsId}:testIamPermissions',
+        http_method='POST',
+        method_id='dataplex.projects.locations.lakes.environments.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='googleIamV1TestIamPermissionsRequest',
+        request_type_name='DataplexProjectsLocationsLakesEnvironmentsTestIamPermissionsRequest',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
         supports_download=False,
     )
 

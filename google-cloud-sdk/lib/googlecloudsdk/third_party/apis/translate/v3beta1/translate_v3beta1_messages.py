@@ -83,6 +83,7 @@ class BatchTranslateDocumentRequest(_messages.Message):
   r"""The BatchTranslateDocument request.
 
   Messages:
+    FormatConversionsValue: Optional.
     GlossariesValue: Optional. Glossaries to be applied. It's keyed by target
       language code.
     ModelsValue: Optional. The models to use for translation. Map's key is
@@ -95,6 +96,7 @@ class BatchTranslateDocumentRequest(_messages.Message):
       requested for a language pair, then default google model (nmt) is used.
 
   Fields:
+    formatConversions: Optional.
     glossaries: Optional. Glossaries to be applied. It's keyed by target
       language code.
     inputConfigs: Required. Input configurations. The total number of files
@@ -118,6 +120,32 @@ class BatchTranslateDocumentRequest(_messages.Message):
     targetLanguageCodes: Required. The BCP-47 language code to use for
       translation of the input document. Specify up to 10 language codes here.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FormatConversionsValue(_messages.Message):
+    r"""Optional.
+
+    Messages:
+      AdditionalProperty: An additional property for a FormatConversionsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        FormatConversionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FormatConversionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class GlossariesValue(_messages.Message):
@@ -175,12 +203,13 @@ class BatchTranslateDocumentRequest(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  glossaries = _messages.MessageField('GlossariesValue', 1)
-  inputConfigs = _messages.MessageField('BatchDocumentInputConfig', 2, repeated=True)
-  models = _messages.MessageField('ModelsValue', 3)
-  outputConfig = _messages.MessageField('BatchDocumentOutputConfig', 4)
-  sourceLanguageCode = _messages.StringField(5)
-  targetLanguageCodes = _messages.StringField(6, repeated=True)
+  formatConversions = _messages.MessageField('FormatConversionsValue', 1)
+  glossaries = _messages.MessageField('GlossariesValue', 2)
+  inputConfigs = _messages.MessageField('BatchDocumentInputConfig', 3, repeated=True)
+  models = _messages.MessageField('ModelsValue', 4)
+  outputConfig = _messages.MessageField('BatchDocumentOutputConfig', 5)
+  sourceLanguageCode = _messages.StringField(6)
+  targetLanguageCodes = _messages.StringField(7, repeated=True)
 
 
 class BatchTranslateTextRequest(_messages.Message):

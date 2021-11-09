@@ -411,6 +411,9 @@
           "description": "This field links to the associated service directory namespace. Do not set this field for public zones or forwarding zones.",
           "$ref": "ManagedZoneServiceDirectoryConfig"
         },
+        "cloudLoggingConfig": {
+          "$ref": "ManagedZoneCloudLoggingConfig"
+        },
         "kind": {
           "default": "dns#managedZone",
           "type": "string"
@@ -676,6 +679,21 @@
         },
         "kind": {
           "default": "dns#managedZoneServiceDirectoryConfigNamespace",
+          "type": "string"
+        }
+      }
+    },
+    "ManagedZoneCloudLoggingConfig": {
+      "id": "ManagedZoneCloudLoggingConfig",
+      "description": "Cloud Logging configurations for publicly visible zones.",
+      "type": "object",
+      "properties": {
+        "enableLogging": {
+          "description": "If set, enable query logging for this ManagedZone. False by default, making logging opt-in.",
+          "type": "boolean"
+        },
+        "kind": {
+          "default": "dns#managedZoneCloudLoggingConfig",
           "type": "string"
         }
       }

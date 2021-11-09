@@ -310,14 +310,12 @@
             "Unspecified.",
             "Finding has been muted.",
             "Finding has been unmuted.",
-            "Deprecated.",
             "Finding has never been muted\/unmuted."
           ],
           "enum": [
             "MUTE_UNSPECIFIED",
             "MUTED",
             "UNMUTED",
-            "NEVER_MUTED",
             "UNDEFINED"
           ]
         },
@@ -333,14 +331,16 @@
             "Describes unwanted or malicious activity.",
             "Describes a potential weakness in software that increases risk to Confidentiality & Integrity & Availability.",
             "Describes a potential weakness in cloud resource\/asset configuration that increases risk.",
-            "Describes a security observation that is for informational purposes."
+            "Describes a security observation that is for informational purposes.",
+            "Describes an error that prevents some SCC functionality."
           ],
           "enum": [
             "FINDING_CLASS_UNSPECIFIED",
             "THREAT",
             "VULNERABILITY",
             "MISCONFIGURATION",
-            "OBSERVATION"
+            "OBSERVATION",
+            "SCC_ERROR"
           ]
         },
         "indicator": {
@@ -1384,14 +1384,12 @@
             "Unspecified.",
             "Finding has been muted.",
             "Finding has been unmuted.",
-            "Deprecated.",
             "Finding has never been muted\/unmuted."
           ],
           "enum": [
             "MUTE_UNSPECIFIED",
             "MUTED",
             "UNMUTED",
-            "NEVER_MUTED",
             "UNDEFINED"
           ]
         }

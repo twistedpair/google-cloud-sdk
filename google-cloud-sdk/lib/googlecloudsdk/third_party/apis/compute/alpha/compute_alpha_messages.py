@@ -32188,11 +32188,16 @@ class FirewallPolicyRuleMatcher(_messages.Message):
   Fields:
     destAddressGroups: Address groups which should be matched against the
       traffic destination. Maximum number of destination address groups is 10.
+    destFqdns: Fully Qualified Domain Name (FQDN) which should be matched
+      against traffic destination. Maximum number of destination fqdn allowed
+      is 5000.
     destIpRanges: CIDR IP address range. Maximum number of destination CIDR IP
       ranges allowed is 5000.
     layer4Configs: Pairs of IP protocols and ports that the rule should match.
     srcAddressGroups: Address groups which should be matched against the
       traffic source. Maximum number of source address groups is 10.
+    srcFqdns: Fully Qualified Domain Name (FQDN) which should be matched
+      against traffic source. Maximum number of source fqdn allowed is 5000.
     srcIpRanges: CIDR IP address range. Maximum number of source CIDR IP
       ranges allowed is 5000.
     srcSecureTags: List of secure tag values, which should be matched at the
@@ -32202,11 +32207,13 @@ class FirewallPolicyRuleMatcher(_messages.Message):
   """
 
   destAddressGroups = _messages.StringField(1, repeated=True)
-  destIpRanges = _messages.StringField(2, repeated=True)
-  layer4Configs = _messages.MessageField('FirewallPolicyRuleMatcherLayer4Config', 3, repeated=True)
-  srcAddressGroups = _messages.StringField(4, repeated=True)
-  srcIpRanges = _messages.StringField(5, repeated=True)
-  srcSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 6, repeated=True)
+  destFqdns = _messages.StringField(2, repeated=True)
+  destIpRanges = _messages.StringField(3, repeated=True)
+  layer4Configs = _messages.MessageField('FirewallPolicyRuleMatcherLayer4Config', 4, repeated=True)
+  srcAddressGroups = _messages.StringField(5, repeated=True)
+  srcFqdns = _messages.StringField(6, repeated=True)
+  srcIpRanges = _messages.StringField(7, repeated=True)
+  srcSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 8, repeated=True)
 
 
 class FirewallPolicyRuleMatcherLayer4Config(_messages.Message):
@@ -34415,9 +34422,8 @@ class HealthCheck(_messages.Message):
 
   Enums:
     TypeValueValuesEnum: Specifies the type of the healthCheck, either TCP,
-      SSL, HTTP, HTTPS or HTTP2. If not specified, the default is TCP. Exactly
-      one of the protocol-specific health check field must be specified, which
-      must match type field.
+      SSL, HTTP, HTTPS or HTTP2. Exactly one of the protocol-specific health
+      check field must be specified, which must match type field.
 
   Fields:
     checkIntervalSec: How often (in seconds) to send a health check. The
@@ -34454,9 +34460,8 @@ class HealthCheck(_messages.Message):
       default value is 5 seconds. It is invalid for timeoutSec to have greater
       value than checkIntervalSec.
     type: Specifies the type of the healthCheck, either TCP, SSL, HTTP, HTTPS
-      or HTTP2. If not specified, the default is TCP. Exactly one of the
-      protocol-specific health check field must be specified, which must match
-      type field.
+      or HTTP2. Exactly one of the protocol-specific health check field must
+      be specified, which must match type field.
     udpHealthCheck: A UDPHealthCheck attribute.
     unhealthyThreshold: A so-far healthy instance will be marked unhealthy
       after this many consecutive failures. The default value is 2.
@@ -34464,9 +34469,8 @@ class HealthCheck(_messages.Message):
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Specifies the type of the healthCheck, either TCP, SSL, HTTP, HTTPS or
-    HTTP2. If not specified, the default is TCP. Exactly one of the protocol-
-    specific health check field must be specified, which must match type
-    field.
+    HTTP2. Exactly one of the protocol-specific health check field must be
+    specified, which must match type field.
 
     Values:
       GRPC: <no description>
@@ -37722,6 +37726,37 @@ class InstanceAggregatedList(_messages.Message):
   selfLink = _messages.StringField(5)
   unreachables = _messages.StringField(6, repeated=True)
   warning = _messages.MessageField('WarningValue', 7)
+
+
+class InstanceConsumptionData(_messages.Message):
+  r"""A InstanceConsumptionData object.
+
+  Fields:
+    consumptionInfo: Resources consumed by the instance.
+    instance: Server-defined URL for the instance.
+  """
+
+  consumptionInfo = _messages.MessageField('InstanceConsumptionInfo', 1)
+  instance = _messages.StringField(2)
+
+
+class InstanceConsumptionInfo(_messages.Message):
+  r"""A InstanceConsumptionInfo object.
+
+  Fields:
+    guestCpus: The number of virtual CPUs that are available to the instance.
+    localSsdGb: The amount of local SSD storage available to the instance,
+      defined in GiB.
+    memoryMb: The amount of physical memory available to the instance, defined
+      in MiB.
+    minNodeCpus: The minimal guaranteed number of virtual CPUs that are
+      reserved.
+  """
+
+  guestCpus = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  localSsdGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  memoryMb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minNodeCpus = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class InstanceGroup(_messages.Message):
@@ -42485,8 +42520,11 @@ class InterconnectAttachment(_messages.Message):
       the subnet) to be used for the customer router address. The id must be
       in the range of 1 to 6. If a subnet mask is supplied, it must be /125,
       and the subnet should either be 0 or match the selected subnet.
-    dataplaneVersion: [Output Only] Dataplane version for this
-      InterconnectAttachment.
+    dataplaneVersion: [Output only for types PARTNER and DEDICATED. Not
+      present for PARTNER_PROVIDER.] Dataplane version for this
+      InterconnectAttachment. This field is only present for Dataplane version
+      2 and higher. Absence of this field in the API output indicates that the
+      Dataplane is version 1.
     description: An optional description of this resource.
     edgeAvailabilityDomain: Desired availability domain for the attachment.
       Only available for type PARTNER, at creation time, and can take one of
@@ -45200,7 +45238,9 @@ class MachineImage(_messages.Message):
       the following are valid values: -
       https://www.googleapis.com/compute/v1/projects/project/zones/zone
       /instances/instance - projects/project/zones/zone/instances/instance
-    sourceInstanceProperties: [Output Only] Properties of source instance.
+    sourceInstanceProperties: [Output Only] DEPRECATED: Please use
+      instance_properties instead for source instance related properties. New
+      properties will not be added to this field.
     status: [Output Only] The status of the machine image. One of the
       following values: INVALID, CREATING, READY, DELETING, and UPLOADING.
     storageLocations: The regional or multi-regional Cloud Storage bucket
@@ -49092,8 +49132,11 @@ class NodeGroupNode(_messages.Message):
 
   Fields:
     accelerators: Accelerators for this node.
+    consumedResources: Node resources that are reserved by all instances.
     cpuOvercommitType: CPU overcommit.
     disks: Local disk configurations.
+    instanceConsumptionDatas: Instance data that shows consumed resources on
+      the node.
     instances: Instances scheduled on this node.
     name: The name of the node.
     nodeType: The type of this node.
@@ -49101,6 +49144,7 @@ class NodeGroupNode(_messages.Message):
     serverBinding: Binding properties for the physical server.
     serverId: Server ID associated with this node.
     status: A StatusValueValuesEnum attribute.
+    totalResources: Total amount of available resources on the node.
   """
 
   class CpuOvercommitTypeValueValuesEnum(_messages.Enum):
@@ -49132,15 +49176,18 @@ class NodeGroupNode(_messages.Message):
     REPAIRING = 4
 
   accelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
-  cpuOvercommitType = _messages.EnumField('CpuOvercommitTypeValueValuesEnum', 2)
-  disks = _messages.MessageField('LocalDisk', 3, repeated=True)
-  instances = _messages.StringField(4, repeated=True)
-  name = _messages.StringField(5)
-  nodeType = _messages.StringField(6)
-  satisfiesPzs = _messages.BooleanField(7)
-  serverBinding = _messages.MessageField('ServerBinding', 8)
-  serverId = _messages.StringField(9)
-  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  consumedResources = _messages.MessageField('InstanceConsumptionInfo', 2)
+  cpuOvercommitType = _messages.EnumField('CpuOvercommitTypeValueValuesEnum', 3)
+  disks = _messages.MessageField('LocalDisk', 4, repeated=True)
+  instanceConsumptionDatas = _messages.MessageField('InstanceConsumptionData', 5, repeated=True)
+  instances = _messages.StringField(6, repeated=True)
+  name = _messages.StringField(7)
+  nodeType = _messages.StringField(8)
+  satisfiesPzs = _messages.BooleanField(9)
+  serverBinding = _messages.MessageField('ServerBinding', 10)
+  serverId = _messages.StringField(11)
+  status = _messages.EnumField('StatusValueValuesEnum', 12)
+  totalResources = _messages.MessageField('InstanceConsumptionInfo', 13)
 
 
 class NodeGroupsAddNodesRequest(_messages.Message):
@@ -60166,7 +60213,8 @@ class SSLHealthCheck(_messages.Message):
 
 
 class SavedAttachedDisk(_messages.Message):
-  r"""An instance-attached disk resource.
+  r"""DEPRECATED: Please use compute#savedDisk instead. An instance-attached
+  disk resource.
 
   Enums:
     InterfaceValueValuesEnum: Specifies the disk interface to use for
@@ -61368,9 +61416,19 @@ class SecurityPolicyRule(_messages.Message):
       field may only be specified when versioned_expr is set to FIREWALL.
 
   Fields:
-    action: The Action to perform when the client connection triggers the
-      rule. Can currently be either "allow" or "deny()" where valid values for
-      status are 403, 404, and 502.
+    action: The Action to perform when the rule is matched. The following are
+      the valid actions: - allow: allow access to target. - deny(): deny
+      access to target, returns the HTTP response code specified (valid values
+      are 403, 404, and 502). - rate_based_ban: limit client traffic to the
+      configured threshold and ban the client if the traffic exceeds the
+      threshold. Configure parameters for this action in RateLimitOptions.
+      Requires rate_limit_options to be set. - redirect: redirect to a
+      different target. This can either be an internal reCAPTCHA redirect, or
+      an external URL-based redirect via a 302 response. Parameters for this
+      action can be configured via redirectOptions. - throttle: limit client
+      traffic to the configured threshold. Configure parameters for this
+      action in rateLimitOptions. Requires rate_limit_options to be set for
+      this.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     direction: The direction in which this rule applies. This field may only
@@ -61569,19 +61627,17 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
 
   Enums:
     EnforceOnKeyValueValuesEnum: Determines the key to enforce the
-      rate_limit_threshold on. Possible values are: "ALL" -- A single rate
-      limit threshold is applied to all the requests matching this rule. This
-      is the default value if this field 'enforce_on_key' is not configured.
-      "ALL_IPS" -- This definition, equivalent to "ALL", has been depprecated.
-      "IP" -- The source IP address of the request is the key. Each IP has
-      this limit enforced separately. "HTTP_HEADER" -- The value of the HTTP
-      header whose name is configured under "enforce_on_key_name". The key
-      value is truncated to the first 128 bytes of the header value. If no
-      such header is present in the request, the key type defaults to "ALL".
-      "XFF_IP" -- The first IP address (i.e. the originating client IP
-      address) specified in the list of IPs under X-Forwarded-For HTTP header.
-      If no such header is present or the value is not a valid IP, the key
-      type defaults to "ALL".
+      rate_limit_threshold on. Possible values are: - ALL: A single rate limit
+      threshold is applied to all the requests matching this rule. This is the
+      default value if this field 'enforce_on_key' is not configured. - IP:
+      The source IP address of the request is the key. Each IP has this limit
+      enforced separately. - HTTP_HEADER: The value of the HTTP header whose
+      name is configured under "enforce_on_key_name". The key value is
+      truncated to the first 128 bytes of the header value. If no such header
+      is present in the request, the key type defaults to ALL. - XFF_IP: The
+      first IP address (i.e. the originating client IP address) specified in
+      the list of IPs under X-Forwarded-For HTTP header. If no such header is
+      present or the value is not a valid IP, the key type defaults to ALL.
 
   Fields:
     banDurationSec: Can only be specified if the action for the rule is
@@ -61595,19 +61651,17 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
     conformAction: Action to take for requests that are under the configured
       rate limit threshold. Valid option is "allow" only.
     enforceOnKey: Determines the key to enforce the rate_limit_threshold on.
-      Possible values are: "ALL" -- A single rate limit threshold is applied
-      to all the requests matching this rule. This is the default value if
-      this field 'enforce_on_key' is not configured. "ALL_IPS" -- This
-      definition, equivalent to "ALL", has been depprecated. "IP" -- The
-      source IP address of the request is the key. Each IP has this limit
-      enforced separately. "HTTP_HEADER" -- The value of the HTTP header whose
-      name is configured under "enforce_on_key_name". The key value is
-      truncated to the first 128 bytes of the header value. If no such header
-      is present in the request, the key type defaults to "ALL". "XFF_IP" --
-      The first IP address (i.e. the originating client IP address) specified
-      in the list of IPs under X-Forwarded-For HTTP header. If no such header
-      is present or the value is not a valid IP, the key type defaults to
-      "ALL".
+      Possible values are: - ALL: A single rate limit threshold is applied to
+      all the requests matching this rule. This is the default value if this
+      field 'enforce_on_key' is not configured. - IP: The source IP address of
+      the request is the key. Each IP has this limit enforced separately. -
+      HTTP_HEADER: The value of the HTTP header whose name is configured under
+      "enforce_on_key_name". The key value is truncated to the first 128 bytes
+      of the header value. If no such header is present in the request, the
+      key type defaults to ALL. - XFF_IP: The first IP address (i.e. the
+      originating client IP address) specified in the list of IPs under
+      X-Forwarded-For HTTP header. If no such header is present or the value
+      is not a valid IP, the key type defaults to ALL.
     enforceOnKeyName: Rate limit key name applicable only for the following
       key types: HTTP_HEADER -- Name of the HTTP header whose value is taken
       as the key value.
@@ -61619,18 +61673,17 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
 
   class EnforceOnKeyValueValuesEnum(_messages.Enum):
     r"""Determines the key to enforce the rate_limit_threshold on. Possible
-    values are: "ALL" -- A single rate limit threshold is applied to all the
+    values are: - ALL: A single rate limit threshold is applied to all the
     requests matching this rule. This is the default value if this field
-    'enforce_on_key' is not configured. "ALL_IPS" -- This definition,
-    equivalent to "ALL", has been depprecated. "IP" -- The source IP address
-    of the request is the key. Each IP has this limit enforced separately.
-    "HTTP_HEADER" -- The value of the HTTP header whose name is configured
-    under "enforce_on_key_name". The key value is truncated to the first 128
-    bytes of the header value. If no such header is present in the request,
-    the key type defaults to "ALL". "XFF_IP" -- The first IP address (i.e. the
-    originating client IP address) specified in the list of IPs under
-    X-Forwarded-For HTTP header. If no such header is present or the value is
-    not a valid IP, the key type defaults to "ALL".
+    'enforce_on_key' is not configured. - IP: The source IP address of the
+    request is the key. Each IP has this limit enforced separately. -
+    HTTP_HEADER: The value of the HTTP header whose name is configured under
+    "enforce_on_key_name". The key value is truncated to the first 128 bytes
+    of the header value. If no such header is present in the request, the key
+    type defaults to ALL. - XFF_IP: The first IP address (i.e. the originating
+    client IP address) specified in the list of IPs under X-Forwarded-For HTTP
+    header. If no such header is present or the value is not a valid IP, the
+    key type defaults to ALL.
 
     Values:
       ALL: <no description>
@@ -63128,7 +63181,8 @@ class SourceInstanceParams(_messages.Message):
 
 
 class SourceInstanceProperties(_messages.Message):
-  r"""A SourceInstanceProperties object.
+  r"""DEPRECATED: Please use compute#instanceProperties instead. New
+  properties will not be added to this field.
 
   Enums:
     KeyRevocationActionTypeValueValuesEnum: KeyRevocationActionType of the

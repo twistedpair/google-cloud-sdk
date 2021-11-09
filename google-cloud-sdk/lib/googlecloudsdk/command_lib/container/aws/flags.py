@@ -36,7 +36,6 @@ def AddVpcId(parser):
 def AddServiceLoadBalancerSubnetIDs(parser):
   parser.add_argument(
       '--service-load-balancer-subnet-ids',
-      required=True,
       type=arg_parsers.ArgList(),
       metavar='SUBNET_ID',
       help='Subnets for the services of type Load Balancer.')
@@ -123,11 +122,10 @@ def AddMainVolumeIops(parser):
   _AddVolumeIops(parser, 'main')
 
 
-def _AddKmsKeyArn(parser, prefix, target, required=False, hidden=False):
+def _AddKmsKeyArn(parser, prefix, target, required=False):
   parser.add_argument(
       '--{}-kms-key-arn'.format(prefix),
       required=required,
-      hidden=hidden,
       help='Amazon Resource Name (ARN) of the AWS KMS key to encrypt the {}.'
       .format(target))
 
@@ -146,7 +144,7 @@ def AddDatabaseEncryptionKmsKeyArn(parser):
 
 def AddConfigEncryptionKmsKeyArn(parser):
   # TODO(b/202339655): Require config encryption after dropping 1.20 and lower.
-  _AddKmsKeyArn(parser, 'config-encryption', 'user data', hidden=True)
+  _AddKmsKeyArn(parser, 'config-encryption', 'user data')
 
 
 def AddProxyConfig(parser):

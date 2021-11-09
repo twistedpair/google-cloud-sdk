@@ -643,7 +643,7 @@
           "type": "string"
         },
         "containerImage": {
-          "description": "Optional. Container image to use for workload execution.",
+          "description": "Optional. Optional custom container image for the job runtime environment. If not specified, a default container image will be used.",
           "type": "string"
         },
         "properties": {

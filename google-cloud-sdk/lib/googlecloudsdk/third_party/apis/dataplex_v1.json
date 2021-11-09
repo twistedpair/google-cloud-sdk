@@ -997,6 +997,14 @@
           "items": {
             "type": "string"
           }
+        },
+        "expectedFormat": {
+          "description": "The expected data format of the entity.",
+          "type": "string"
+        },
+        "newFormat": {
+          "description": "The new unexpected data format within the entity.",
+          "type": "string"
         }
       }
     },
@@ -1031,6 +1039,20 @@
       "description": "Action details for invalid or unsupported partitions detected by discovery.",
       "type": "object",
       "properties": {
+        "expectedStructure": {
+          "description": "The issue type of InvalidDataPartition.",
+          "type": "string",
+          "enumDescriptions": [
+            "PartitionStructure unspecified.",
+            "Consistent hive-style partition definition (both raw and curated zone).",
+            "Hive style partition definition (curated zone only)."
+          ],
+          "enum": [
+            "PARTITION_STRUCTURE_UNSPECIFIED",
+            "CONSISTENT_KEYS",
+            "HIVE_STYLE_KEYS"
+          ]
+        }
       }
     },
     "GoogleCloudDataplexV1ActionMissingData": {
@@ -1976,7 +1998,7 @@
           }
         },
         "serviceAccount": {
-          "description": "Optional. Service account to use to execute a task. If not provided, the default Compute service account for the project is used.",
+          "description": "Required. Service account to use to execute a task. If not provided, the default Compute service account for the project is used.",
           "type": "string"
         },
         "serviceAccountScopes": {
@@ -2037,7 +2059,7 @@
           }
         },
         "infrastructureSpec": {
-          "description": "Required. Infrastructure specification for the execution.",
+          "description": "Optional. Infrastructure specification for the execution.",
           "$ref": "GoogleCloudDataplexV1TaskInfrastructureSpec"
         }
       }
@@ -2249,6 +2271,383 @@
       "description": "Cancel task jobs.",
       "type": "object",
       "properties": {
+      }
+    },
+    "GoogleCloudDataplexV1Environment": {
+      "id": "GoogleCloudDataplexV1Environment",
+      "description": "Environment represents a user-visible compute infrastructure for analytics within a lake.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The relative resource name of the environment, of the form: projects\/{project_id}\/locations\/{location_id}\/lakes\/{lake_id}\/environment\/{environment_id}",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Optional. User friendly display name.",
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. System generated globally unique ID for the environment. This ID will be different if the environment is deleted and re-created with the same name.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Environment creation time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time when the environment was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Optional. User defined labels for the environment.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "Optional. Description of the environment.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. Current state of the environment.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "State is not specified.",
+            "Resource is active, i.e., ready to use.",
+            "Resource is under creation.",
+            "Resource is under deletion.",
+            "Resource is active but has unresolved actions."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "CREATING",
+            "DELETING",
+            "ACTION_REQUIRED"
+          ]
+        },
+        "infrastructureSpec": {
+          "description": "Required. Infrastructure specification for the Environment.",
+          "$ref": "GoogleCloudDataplexV1EnvironmentInfrastructureSpec"
+        },
+        "sessionSpec": {
+          "description": "Optional. Configuration for sessions created for this environment.",
+          "$ref": "GoogleCloudDataplexV1EnvironmentSessionSpec"
+        },
+        "sessionStatus": {
+          "description": "Output only. Status of sessions created for this environment.",
+          "readOnly": true,
+          "$ref": "GoogleCloudDataplexV1EnvironmentSessionStatus"
+        },
+        "endpoints": {
+          "description": "Output only. URI Endpoints to access sessions associated with the Environment.",
+          "readOnly": true,
+          "$ref": "GoogleCloudDataplexV1EnvironmentEndpoints"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1EnvironmentInfrastructureSpec": {
+      "id": "GoogleCloudDataplexV1EnvironmentInfrastructureSpec",
+      "description": "Configuration for the underlying infrastructure used to run workloads.",
+      "type": "object",
+      "properties": {
+        "compute": {
+          "description": "Optional. Compute resources needed for analyze interactive workloads.",
+          "$ref": "GoogleCloudDataplexV1EnvironmentInfrastructureSpecComputeResources"
+        },
+        "osImage": {
+          "description": "Required. Software Runtime Configuration for analyze interactive workloads.",
+          "$ref": "GoogleCloudDataplexV1EnvironmentInfrastructureSpecOsImageRuntime"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1EnvironmentInfrastructureSpecComputeResources": {
+      "id": "GoogleCloudDataplexV1EnvironmentInfrastructureSpecComputeResources",
+      "description": "Compute resources associated with the analyze interactive workloads.",
+      "type": "object",
+      "properties": {
+        "diskSizeGb": {
+          "description": "Optional. Size in GB of the disk. Default is 100 GB.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "nodeCount": {
+          "description": "Optional. Total number of worker nodes in the cluster 1 master + N workers.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxNodeCount": {
+          "description": "Optional. Max configurable nodes. If max_node_count > node_count, then auto-scaling is enabled.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1EnvironmentInfrastructureSpecOsImageRuntime": {
+      "id": "GoogleCloudDataplexV1EnvironmentInfrastructureSpecOsImageRuntime",
+      "description": "Software Runtime Configuration to run Analyze.",
+      "type": "object",
+      "properties": {
+        "imageVersion": {
+          "description": "Required. Dataplex Image version.",
+          "type": "string"
+        },
+        "javaLibraries": {
+          "description": "Optional. List of Java jars to be included in the runtime environment. Valid input includes Cloud Storage URIs to Jar binaries. For example, gs:\/\/bucket-name\/my\/path\/to\/file.jar",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "pythonPackages": {
+          "description": "Optional. A list of python packages to be installed. Valid formats include Cloud Storage URI to a PIP installable library. For example, gs:\/\/bucket-name\/my\/path\/to\/lib.tar.gz",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "properties": {
+          "description": "Optional. Override to common configuration of open source components installed on the Dataproc cluster. The properties to set on daemon config files. Property keys are specified in prefix:property format.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudDataplexV1EnvironmentSessionSpec": {
+      "id": "GoogleCloudDataplexV1EnvironmentSessionSpec",
+      "type": "object",
+      "properties": {
+        "maxIdleDuration": {
+          "description": "Optional. The idle time configuration of the session. The session will be auto-terminated at the end of this period.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1EnvironmentSessionStatus": {
+      "id": "GoogleCloudDataplexV1EnvironmentSessionStatus",
+      "type": "object",
+      "properties": {
+        "active": {
+          "description": "Output only. Queries over sessions to mark whether the environment is currently active or not",
+          "readOnly": true,
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1EnvironmentEndpoints": {
+      "id": "GoogleCloudDataplexV1EnvironmentEndpoints",
+      "type": "object",
+      "properties": {
+        "notebooks": {
+          "description": "Output only. URI to serve notebook APIs",
+          "readOnly": true,
+          "type": "string"
+        },
+        "sql": {
+          "description": "Output only. URI to serve SQL APIs",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1ListEnvironmentsResponse": {
+      "id": "GoogleCloudDataplexV1ListEnvironmentsResponse",
+      "description": "List environments response.",
+      "type": "object",
+      "properties": {
+        "environments": {
+          "description": "Environments under the given parent lake.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDataplexV1Environment"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1Content": {
+      "id": "GoogleCloudDataplexV1Content",
+      "description": "Content represents a user-visible notebook or a sql script",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The relative resource name of the content, of the form: projects\/{project_id}\/locations\/{location_id}\/lakes\/{lake_id}\/content\/{content_id}",
+          "readOnly": true,
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. System generated globally unique ID for the content. This ID will be different if the content is deleted and re-created with the same name.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "path": {
+          "description": "Required. The path for the Content file, represented as directory structure. Unique within a lake. Limited to alphanumerics, hyphens, underscores, dots and slashes.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Content creation time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time when the content was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Optional. User defined labels for the content.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "Optional. Description of the content.",
+          "type": "string"
+        },
+        "dataText": {
+          "description": "Required. Content data in string format.",
+          "type": "string"
+        },
+        "sqlScript": {
+          "description": "Sql Script related configurations.",
+          "$ref": "GoogleCloudDataplexV1ContentSqlScript"
+        },
+        "notebook": {
+          "description": "Notebook related configurations.",
+          "$ref": "GoogleCloudDataplexV1ContentNotebook"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1ContentSqlScript": {
+      "id": "GoogleCloudDataplexV1ContentSqlScript",
+      "description": "Configuration for the Sql Script content.",
+      "type": "object",
+      "properties": {
+        "engine": {
+          "description": "Required. Query Engine to be used for the Sql Query.",
+          "type": "string",
+          "enumDescriptions": [
+            "Value was unspecified.",
+            "Spark SQL Query."
+          ],
+          "enum": [
+            "QUERY_ENGINE_UNSPECIFIED",
+            "SPARK"
+          ]
+        }
+      }
+    },
+    "GoogleCloudDataplexV1ContentNotebook": {
+      "id": "GoogleCloudDataplexV1ContentNotebook",
+      "description": "Configuration for Notebook content.",
+      "type": "object",
+      "properties": {
+        "kernelType": {
+          "description": "Required. Kernel Type of the notebook.",
+          "type": "string",
+          "enumDescriptions": [
+            "Kernel Type unspecified.",
+            "Python 3 Kernel."
+          ],
+          "enum": [
+            "KERNEL_TYPE_UNSPECIFIED",
+            "PYTHON3"
+          ]
+        }
+      }
+    },
+    "GoogleCloudDataplexV1ListContentResponse": {
+      "id": "GoogleCloudDataplexV1ListContentResponse",
+      "description": "List content response.",
+      "type": "object",
+      "properties": {
+        "content": {
+          "description": "Content under the given parent lake.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDataplexV1Content"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1ListSessionsResponse": {
+      "id": "GoogleCloudDataplexV1ListSessionsResponse",
+      "description": "List sessions response.",
+      "type": "object",
+      "properties": {
+        "sessions": {
+          "description": "Sessions under a given environment.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDataplexV1Session"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1Session": {
+      "id": "GoogleCloudDataplexV1Session",
+      "description": "Represents an active analyze session running for a user.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The relative resource name of the content, of the form: projects\/{project_id}\/locations\/{location_id}\/lakes\/{lake_id}\/environment\/{environment_id}\/sessions\/{session_id}",
+          "readOnly": true,
+          "type": "string"
+        },
+        "userId": {
+          "description": "Output only. Email of user running the session.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Session start time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "State is not specified.",
+            "Resource is active, i.e., ready to use.",
+            "Resource is under creation.",
+            "Resource is under deletion.",
+            "Resource is active but has unresolved actions."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "CREATING",
+            "DELETING",
+            "ACTION_REQUIRED"
+          ]
+        }
       }
     },
     "GoogleCloudLocationListLocationsResponse": {
@@ -3318,7 +3717,7 @@
                           "type": "string"
                         },
                         "zoneId": {
-                          "description": "Required. Zone identifier. This ID will be used to generate names such as database and dataset names when publishing metadata to Hive Metastore and BigQuery. * Must contain only lowercase letters, numbers and hyphens. * Must start with a letter. * Must end with a number or a letter. * Must be between 1-63 characters. * Must be unique within the lake. * Must not be one of the reserved IDs (i.e. \"default\", \"global-temp\")",
+                          "description": "Required. Zone identifier. This ID will be used to generate names such as database and dataset names when publishing metadata to Hive Metastore and BigQuery. * Must contain only lowercase letters, numbers and hyphens. * Must start with a letter. * Must end with a number or a letter. * Must be between 1-63 characters. * Must be unique across all lakes from all locations in a project. * Must not be one of the reserved IDs (i.e. \"default\", \"global-temp\")",
                           "location": "query",
                           "type": "string"
                         },
@@ -4504,6 +4903,582 @@
                           "description": "Cancel jobs running for the task resource."
                         }
                       }
+                    }
+                  }
+                },
+                "environments": {
+                  "methods": {
+                    "create": {
+                      "id": "dataplex.projects.locations.lakes.environments.create",
+                      "path": "v1/{+parent}/environments",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/environments",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the parent lake: projects\/{project_id}\/locations\/{location_id}\/lakes\/{lake_id}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "environmentId": {
+                          "description": "Required. Environment identifier. * Must contain only lowercase letters, numbers and hyphens. * Must start with a letter. * Must be between 1-63 characters. * Must end with a number or a letter. * Must be unique within the lake.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "validateOnly": {
+                          "description": "Optional. Only validate the request, but do not perform mutations. The default is false.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudDataplexV1Environment"
+                      },
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Create a environment resource."
+                    },
+                    "patch": {
+                      "id": "dataplex.projects.locations.lakes.environments.patch",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/environments/{environmentsId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Output only. The relative resource name of the environment, of the form: projects\/{project_id}\/locations\/{location_id}\/lakes\/{lake_id}\/environment\/{environment_id}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/environments\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Required. Mask of fields to update.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        },
+                        "validateOnly": {
+                          "description": "Optional. Only validate the request, but do not perform mutations. The default is false.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudDataplexV1Environment"
+                      },
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Update the environment resource."
+                    },
+                    "delete": {
+                      "id": "dataplex.projects.locations.lakes.environments.delete",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/environments/{environmentsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the environment: projects\/{project_id}\/locations\/{location_id}\/lakes\/{lake_id}\/environments\/{environment_id}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/environments\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Delete the environment resource. All the child resources must have been deleted before environment deletion can be initiated."
+                    },
+                    "list": {
+                      "id": "dataplex.projects.locations.lakes.environments.list",
+                      "path": "v1/{+parent}/environments",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/environments",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the parent lake: projects\/{project_id}\/locations\/{location_id}\/lakes\/{lake_id}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. Maximum number of environments to return. The service may return fewer than this value. If unspecified, at most 10 environments will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "Optional. Page token received from a previous ListEnvironments call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to ListEnvironments must match the call that provided the page token.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "Optional. Filter request.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Optional. Order by fields for the result.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudDataplexV1ListEnvironmentsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists environments under the given lake."
+                    },
+                    "get": {
+                      "id": "dataplex.projects.locations.lakes.environments.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/environments/{environmentsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the environment: projects\/{project_id}\/locations\/{location_id}\/lakes\/{lake_id}\/environments\/{environment_id}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/environments\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudDataplexV1Environment"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Get environment resource."
+                    },
+                    "setIamPolicy": {
+                      "id": "dataplex.projects.locations.lakes.environments.setIamPolicy",
+                      "path": "v1/{+resource}:setIamPolicy",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/environments/{environmentsId}:setIamPolicy",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/environments\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "GoogleIamV1SetIamPolicyRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleIamV1Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Sets the access control policy on the specified resource. Replaces any existing policy.Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors."
+                    },
+                    "getIamPolicy": {
+                      "id": "dataplex.projects.locations.lakes.environments.getIamPolicy",
+                      "path": "v1/{+resource}:getIamPolicy",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/environments/{environmentsId}:getIamPolicy",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/environments\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "options.requestedPolicyVersion": {
+                          "description": "Optional. The policy format version to be returned.Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected.Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset.To learn which resources support conditions in their IAM policies, see the IAM documentation (https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "response": {
+                        "$ref": "GoogleIamV1Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                    },
+                    "testIamPermissions": {
+                      "id": "dataplex.projects.locations.lakes.environments.testIamPermissions",
+                      "path": "v1/{+resource}:testIamPermissions",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/environments/{environmentsId}:testIamPermissions",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/environments\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "GoogleIamV1TestIamPermissionsRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleIamV1TestIamPermissionsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                    }
+                  }
+                  ,
+                  "resources": {
+                    "sessions": {
+                      "methods": {
+                        "list": {
+                          "id": "dataplex.projects.locations.lakes.environments.sessions.list",
+                          "path": "v1/{+parent}/sessions",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/environments/{environmentsId}/sessions",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The resource name of the parent environment: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/environment\/{environment_id}",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/environments\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "Optional. Maximum number of sessions to return. The service may return fewer than this value. If unspecified, at most 10 sessions will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "Optional. Page token received from a previous ListSessions call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to ListSessions must match the call that provided the page token.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "GoogleCloudDataplexV1ListSessionsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Lists session resources in an environment."
+                        }
+                      }
+                    }
+                  }
+                },
+                "content": {
+                  "methods": {
+                    "create": {
+                      "id": "dataplex.projects.locations.lakes.content.create",
+                      "path": "v1/{+parent}/content",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/content",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the parent lake: projects\/{project_id}\/locations\/{location_id}\/lakes\/{lake_id}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "validateOnly": {
+                          "description": "Optional. Only validate the request, but do not perform mutations. The default is false.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudDataplexV1Content"
+                      },
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Create a content resource."
+                    },
+                    "patch": {
+                      "id": "dataplex.projects.locations.lakes.content.patch",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/content/{contentId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Output only. The relative resource name of the content, of the form: projects\/{project_id}\/locations\/{location_id}\/lakes\/{lake_id}\/content\/{content_id}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/content\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Required. Mask of fields to update.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        },
+                        "validateOnly": {
+                          "description": "Optional. Only validate the request, but do not perform mutations. The default is false.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudDataplexV1Content"
+                      },
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Update the content resource."
+                    },
+                    "delete": {
+                      "id": "dataplex.projects.locations.lakes.content.delete",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/content/{contentId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the content: projects\/{project_id}\/locations\/{location_id}\/lakes\/{lake_id}\/content\/{content_id}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/content\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Delete the content resource. All the child resources must have been deleted before content deletion can be initiated."
+                    },
+                    "list": {
+                      "id": "dataplex.projects.locations.lakes.content.list",
+                      "path": "v1/{+parent}/content",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/content",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the parent lake: projects\/{project_id}\/locations\/{location_id}\/lakes\/{lake_id}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. Maximum number of content to return. The service may return fewer than this value. If unspecified, at most 10 content will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "Optional. Page token received from a previous ListContent call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to ListContent must match the call that provided the page token.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "Optional. Filter request. Filters are case-sensitive. The following formats are supported:path = \"\/user\/directory\/notebook1.ipynb\" path = starts_with(\"\/my\/notebook\/directory\/file.ipynb\") labels.key1 = \"value1\" labels:key1 is_notebook is_sql_script = trueThese restrictions can be coinjoined with AND, OR and NOT conjunctions.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudDataplexV1ListContentResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists content under the given lake."
+                    },
+                    "get": {
+                      "id": "dataplex.projects.locations.lakes.content.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/content/{contentId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the content: projects\/{project_id}\/locations\/{location_id}\/lakes\/{lake_id}\/content\/{content_id}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/content\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "view": {
+                          "description": "Optional. Specify content view to make a partial request.",
+                          "location": "query",
+                          "type": "string",
+                          "enumDescriptions": [
+                            "The default \/ unset value. The API will default to the BASIC view.",
+                            "Will not return the data_text field.",
+                            "Returns the complete proto."
+                          ],
+                          "enum": [
+                            "CONTENT_VIEW_UNSPECIFIED",
+                            "BASIC",
+                            "FULL"
+                          ]
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudDataplexV1Content"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Get content resource."
+                    },
+                    "setIamPolicy": {
+                      "id": "dataplex.projects.locations.lakes.content.setIamPolicy",
+                      "path": "v1/{+resource}:setIamPolicy",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/content/{contentId}:setIamPolicy",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/content\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "GoogleIamV1SetIamPolicyRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleIamV1Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Sets the access control policy on the specified resource. Replaces any existing policy.Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors."
+                    },
+                    "getIamPolicy": {
+                      "id": "dataplex.projects.locations.lakes.content.getIamPolicy",
+                      "path": "v1/{+resource}:getIamPolicy",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/content/{contentId}:getIamPolicy",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/content\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "options.requestedPolicyVersion": {
+                          "description": "Optional. The policy format version to be returned.Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected.Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset.To learn which resources support conditions in their IAM policies, see the IAM documentation (https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "response": {
+                        "$ref": "GoogleIamV1Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                    },
+                    "testIamPermissions": {
+                      "id": "dataplex.projects.locations.lakes.content.testIamPermissions",
+                      "path": "v1/{+resource}:testIamPermissions",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/content/{contentId}:testIamPermissions",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/content\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "GoogleIamV1TestIamPermissionsRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleIamV1TestIamPermissionsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                     }
                   }
                 }

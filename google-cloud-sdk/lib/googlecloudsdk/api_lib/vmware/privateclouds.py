@@ -33,7 +33,15 @@ class PrivateCloudsClient(util.VmwareClientBase):
   def Get(self, resource):
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsGetRequest(
         name=resource.RelativeName())
-    return self.service.Get(request)
+
+    response = self.service.Get(request)
+    if response.vcenter is not None:
+      response.vcenter.fdqn = None
+    if response.hcx is not None:
+      response.hcx.fdqn = None
+    if response.nsx is not None:
+      response.nsx.fdqn = None
+    return response
 
   def Create(self,
              resource,

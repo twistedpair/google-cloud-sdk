@@ -159,9 +159,14 @@ class CallFunctionResponse(_messages.Message):
 class CloudFunction(_messages.Message):
   r"""Describes a Cloud Function that contains user computation executed in
   response to an event. It encapsulate function and triggers configurations.
-  Next tag: 35
+  Next tag: 36
 
   Enums:
+    DockerRegistryValueValuesEnum: Docker Registry to use for this deployment.
+      If `docker_repository` field is specified, this field will be
+      automatically set as `ARTIFACT_REGISTRY`. If unspecified, it currently
+      defaults to `CONTAINER_REGISTRY`. This field may be overridden by the
+      backend for eligible deployments.
     IngressSettingsValueValuesEnum: The ingress settings for the function,
       controlling what traffic can reach it.
     StatusValueValuesEnum: Output only. Status of the function deployment.
@@ -195,6 +200,11 @@ class CloudFunction(_messages.Message):
       Custom Workers Builder (`roles/cloudbuild.customworkers.builder`) in the
       project.
     description: User-provided description of a function.
+    dockerRegistry: Docker Registry to use for this deployment. If
+      `docker_repository` field is specified, this field will be automatically
+      set as `ARTIFACT_REGISTRY`. If unspecified, it currently defaults to
+      `CONTAINER_REGISTRY`. This field may be overridden by the backend for
+      eligible deployments.
     dockerRepository: User managed repository created in Artifact Registry
       optionally with a customer managed encryption key. If specified,
       deployments will use Artifact Registry. If unspecified and the
@@ -301,6 +311,27 @@ class CloudFunction(_messages.Message):
     vpcConnectorEgressSettings: The egress settings for the connector,
       controlling what traffic is diverted through it.
   """
+
+  class DockerRegistryValueValuesEnum(_messages.Enum):
+    r"""Docker Registry to use for this deployment. If `docker_repository`
+    field is specified, this field will be automatically set as
+    `ARTIFACT_REGISTRY`. If unspecified, it currently defaults to
+    `CONTAINER_REGISTRY`. This field may be overridden by the backend for
+    eligible deployments.
+
+    Values:
+      DOCKER_REGISTRY_UNSPECIFIED: Unspecified.
+      CONTAINER_REGISTRY: Docker images will be stored in multi-regional
+        Container Registry repositories named `gcf`.
+      ARTIFACT_REGISTRY: Docker images will be stored in regional Artifact
+        Registry repositories. By default, GCF will create and use
+        repositories named `gcf-artifacts` in every region in which a function
+        is deployed. But the repository to use can also be specified by the
+        user using the `docker_repository` field.
+    """
+    DOCKER_REGISTRY_UNSPECIFIED = 0
+    CONTAINER_REGISTRY = 1
+    ARTIFACT_REGISTRY = 2
 
   class IngressSettingsValueValuesEnum(_messages.Enum):
     r"""The ingress settings for the function, controlling what traffic can
@@ -436,32 +467,33 @@ class CloudFunction(_messages.Message):
   buildName = _messages.StringField(4)
   buildWorkerPool = _messages.StringField(5)
   description = _messages.StringField(6)
-  dockerRepository = _messages.StringField(7)
-  entryPoint = _messages.StringField(8)
-  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 9)
-  eventTrigger = _messages.MessageField('EventTrigger', 10)
-  httpsTrigger = _messages.MessageField('HttpsTrigger', 11)
-  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 12)
-  kmsKeyName = _messages.StringField(13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  maxInstances = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  minInstances = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  name = _messages.StringField(17)
-  network = _messages.StringField(18)
-  runtime = _messages.StringField(19)
-  secretEnvironmentVariables = _messages.MessageField('SecretEnvVar', 20, repeated=True)
-  secretVolumes = _messages.MessageField('SecretVolume', 21, repeated=True)
-  serviceAccountEmail = _messages.StringField(22)
-  sourceArchiveUrl = _messages.StringField(23)
-  sourceRepository = _messages.MessageField('SourceRepository', 24)
-  sourceToken = _messages.StringField(25)
-  sourceUploadUrl = _messages.StringField(26)
-  status = _messages.EnumField('StatusValueValuesEnum', 27)
-  timeout = _messages.StringField(28)
-  updateTime = _messages.StringField(29)
-  versionId = _messages.IntegerField(30)
-  vpcConnector = _messages.StringField(31)
-  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 32)
+  dockerRegistry = _messages.EnumField('DockerRegistryValueValuesEnum', 7)
+  dockerRepository = _messages.StringField(8)
+  entryPoint = _messages.StringField(9)
+  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 10)
+  eventTrigger = _messages.MessageField('EventTrigger', 11)
+  httpsTrigger = _messages.MessageField('HttpsTrigger', 12)
+  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 13)
+  kmsKeyName = _messages.StringField(14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  maxInstances = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  minInstances = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  name = _messages.StringField(18)
+  network = _messages.StringField(19)
+  runtime = _messages.StringField(20)
+  secretEnvironmentVariables = _messages.MessageField('SecretEnvVar', 21, repeated=True)
+  secretVolumes = _messages.MessageField('SecretVolume', 22, repeated=True)
+  serviceAccountEmail = _messages.StringField(23)
+  sourceArchiveUrl = _messages.StringField(24)
+  sourceRepository = _messages.MessageField('SourceRepository', 25)
+  sourceToken = _messages.StringField(26)
+  sourceUploadUrl = _messages.StringField(27)
+  status = _messages.EnumField('StatusValueValuesEnum', 28)
+  timeout = _messages.StringField(29)
+  updateTime = _messages.StringField(30)
+  versionId = _messages.IntegerField(31)
+  vpcConnector = _messages.StringField(32)
+  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 33)
 
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):

@@ -46,6 +46,18 @@ cluster:
     help: Resource ID of the cluster
   disable_auto_completers: false
 
+hcx_activation_key:
+  name: HCX activation key
+  collection: vmwareengine.projects.locations.privateClouds.hcxActivationKeys
+  attributes:
+  - *project
+  - *location
+  - *privatecloud
+  - &hcx_activation_key
+    parameter_name: hcxActivationKeysId
+    attribute_name: hcx-activation-key
+    help: Resource ID of the HCX activation key
+  disable_auto_completers: false
 
 operation:
   name: operation

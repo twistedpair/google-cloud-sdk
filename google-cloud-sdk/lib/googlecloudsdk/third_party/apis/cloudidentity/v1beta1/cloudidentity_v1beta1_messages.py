@@ -115,6 +115,62 @@ class CancelWipeDeviceUserResponse(_messages.Message):
   deviceUser = _messages.MessageField('DeviceUser', 1)
 
 
+class CertificateInfo(_messages.Message):
+  r"""Stores information about a certificate.
+
+  Enums:
+    ValidationStateValueValuesEnum: Validation state of this certificate.
+
+  Fields:
+    certificateTemplate: The X.509 extension for CertificateTemplate.
+    fingerprint: The encoded certificate fingerprint.
+    issuer: The name of the issuer of this certificate.
+    serialNumber: Serial number of the certificate, Example: "123456789".
+    subject: The subject name of this certificate.
+    thumbprint: The certificate thumbprint.
+    validationState: Validation state of this certificate.
+    validityExpirationTime: Certificate not valid at or after this timestamp.
+    validityStartTime: Certificate not valid before this timestamp.
+  """
+
+  class ValidationStateValueValuesEnum(_messages.Enum):
+    r"""Validation state of this certificate.
+
+    Values:
+      CERTIFICATE_VALIDATION_STATE_UNSPECIFIED: Default value.
+      VALIDATION_SUCCESSFUL: Certificate validation was successful.
+      VALIDATION_FAILED: Certificate validation failed.
+    """
+    CERTIFICATE_VALIDATION_STATE_UNSPECIFIED = 0
+    VALIDATION_SUCCESSFUL = 1
+    VALIDATION_FAILED = 2
+
+  certificateTemplate = _messages.MessageField('CertificateTemplate', 1)
+  fingerprint = _messages.StringField(2)
+  issuer = _messages.StringField(3)
+  serialNumber = _messages.StringField(4)
+  subject = _messages.StringField(5)
+  thumbprint = _messages.StringField(6)
+  validationState = _messages.EnumField('ValidationStateValueValuesEnum', 7)
+  validityExpirationTime = _messages.StringField(8)
+  validityStartTime = _messages.StringField(9)
+
+
+class CertificateTemplate(_messages.Message):
+  r"""CertificateTemplate (v3 Extension in X.509).
+
+  Fields:
+    id: The template id of the template. Example: "1.3.6.1.4.1.311.21.8.156086
+      21.11768144.5720724.16068415.6889630.81.2472537.7784047".
+    majorVersion: The Major version of the template. Example: 100.
+    minorVersion: The minor version of the template. Example: 12.
+  """
+
+  id = _messages.StringField(1)
+  majorVersion = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  minorVersion = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class CheckTransitiveMembershipResponse(_messages.Message):
   r"""The response message for MembershipsService.CheckTransitiveMembership.
 
@@ -1160,6 +1216,8 @@ class Device(_messages.Message):
     enabledUsbDebugging: Output only. Whether USB debugging is enabled on
       device.
     encryptionState: Output only. Device encryption state.
+    endpointVerificationSpecificAttributes: Output only. Attributes specific
+      to Endpoint Verification devices.
     imei: Output only. IMEI number of device if GSM device; empty otherwise.
     kernelVersion: Output only. Kernel version of the device.
     lastSyncTime: Most recent time when device synced with this service.
@@ -1284,22 +1342,23 @@ class Device(_messages.Message):
   enabledDeveloperOptions = _messages.BooleanField(10)
   enabledUsbDebugging = _messages.BooleanField(11)
   encryptionState = _messages.EnumField('EncryptionStateValueValuesEnum', 12)
-  imei = _messages.StringField(13)
-  kernelVersion = _messages.StringField(14)
-  lastSyncTime = _messages.StringField(15)
-  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 16)
-  manufacturer = _messages.StringField(17)
-  meid = _messages.StringField(18)
-  model = _messages.StringField(19)
-  name = _messages.StringField(20)
-  networkOperator = _messages.StringField(21)
-  osVersion = _messages.StringField(22)
-  otherAccounts = _messages.StringField(23, repeated=True)
-  ownerType = _messages.EnumField('OwnerTypeValueValuesEnum', 24)
-  releaseVersion = _messages.StringField(25)
-  securityPatchTime = _messages.StringField(26)
-  serialNumber = _messages.StringField(27)
-  wifiMacAddresses = _messages.StringField(28, repeated=True)
+  endpointVerificationSpecificAttributes = _messages.MessageField('EndpointVerificationSpecificAttributes', 13)
+  imei = _messages.StringField(14)
+  kernelVersion = _messages.StringField(15)
+  lastSyncTime = _messages.StringField(16)
+  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 17)
+  manufacturer = _messages.StringField(18)
+  meid = _messages.StringField(19)
+  model = _messages.StringField(20)
+  name = _messages.StringField(21)
+  networkOperator = _messages.StringField(22)
+  osVersion = _messages.StringField(23)
+  otherAccounts = _messages.StringField(24, repeated=True)
+  ownerType = _messages.EnumField('OwnerTypeValueValuesEnum', 25)
+  releaseVersion = _messages.StringField(26)
+  securityPatchTime = _messages.StringField(27)
+  serialNumber = _messages.StringField(28)
+  wifiMacAddresses = _messages.StringField(29, repeated=True)
 
 
 class DeviceUser(_messages.Message):
@@ -1471,6 +1530,17 @@ class DynamicGroupStatus(_messages.Message):
   statusTime = _messages.StringField(2)
 
 
+class EndpointVerificationSpecificAttributes(_messages.Message):
+  r"""Resource representing the Endpoint Verification-specific attributes of a
+  Device.
+
+  Fields:
+    certificateInfo: Details of certificates.
+  """
+
+  certificateInfo = _messages.MessageField('CertificateInfo', 1, repeated=True)
+
+
 class EntityKey(_messages.Message):
   r"""A unique identifier for an entity in the Cloud Identity Groups API. An
   entity can represent either a group with an optional `namespace` or a user
@@ -1502,6 +1572,19 @@ class ExpiryDetail(_messages.Message):
   """
 
   expireTime = _messages.StringField(1)
+
+
+class FirstAdminInvitationInfo(_messages.Message):
+  r"""Message containing first admin invitation info for customers
+
+  Fields:
+    isFirstAdmin: Optional. To enable First Admin Invitation for Domained
+      Customer
+    primaryDomain: Optional. Domain information of first admin invited
+  """
+
+  isFirstAdmin = _messages.BooleanField(1)
+  primaryDomain = _messages.StringField(2)
 
 
 class GetMembershipGraphResponse(_messages.Message):
@@ -2857,8 +2940,13 @@ class SecuritySettings(_messages.Message):
 class SendUserInvitationRequest(_messages.Message):
   r"""A request to send email for inviting target user corresponding to the
   UserInvitation.
+
+  Fields:
+    firstAdminInvitationInfo: Optional. First admin invitation info for
+      customers
   """
 
+  firstAdminInvitationInfo = _messages.MessageField('FirstAdminInvitationInfo', 1)
 
 
 class StandardQueryParameters(_messages.Message):

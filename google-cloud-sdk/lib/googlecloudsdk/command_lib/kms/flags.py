@@ -305,10 +305,7 @@ def AddOptionalTargetKeyFileArgument(parser):
 
 def AddDigestAlgorithmFlag(parser, help_action):
   parser.add_argument(
-      '--digest-algorithm',
-      choices=sorted(maps.DIGESTS),
-      help=help_action,
-      required=True)
+      '--digest-algorithm', choices=sorted(maps.DIGESTS), help=help_action)
 
 
 def AddImportedVersionAlgorithmFlag(parser):

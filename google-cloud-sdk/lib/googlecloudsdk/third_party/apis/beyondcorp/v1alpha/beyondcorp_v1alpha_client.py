@@ -470,6 +470,33 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ReportStatus(self, request, global_params=None):
+      r"""Report status for a given connector.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsConnectorsReportStatusRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('ReportStatus')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReportStatus.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/connectors/{connectorsId}:reportStatus',
+        http_method='POST',
+        method_id='beyondcorp.projects.locations.connectors.reportStatus',
+        ordered_params=['connector'],
+        path_params=['connector'],
+        query_params=[],
+        relative_path='v1alpha/{+connector}:reportStatus',
+        request_field='reportStatusRequest',
+        request_type_name='BeyondcorpProjectsLocationsConnectorsReportStatusRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def ResolveInstanceConfig(self, request, global_params=None):
       r"""Get instance config for a given connector. An internal method called by a connector to get its container config.
 

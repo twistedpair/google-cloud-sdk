@@ -51,7 +51,8 @@ class Client(object):
             private_visibility_config=None,
             forwarding_config=None,
             peering_config=None,
-            service_directory_config=None):
+            service_directory_config=None,
+            cloud_logging_config=None):
     """Managed Zones Update Request."""
     zone = self.messages.ManagedZone(
         name=zone_ref.Name(),
@@ -66,6 +67,8 @@ class Client(object):
       zone.peeringConfig = peering_config
     if service_directory_config:
       zone.serviceDirectoryConfig = service_directory_config
+    if cloud_logging_config:
+      zone.cloudLoggingConfig = cloud_logging_config
 
     operation = self._service.Patch(
         self.messages.DnsManagedZonesPatchRequest(

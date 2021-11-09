@@ -851,6 +851,12 @@ class BuildTrigger(_messages.Message):
   r"""Configuration for an automated build in response to source repository
   changes.
 
+  Enums:
+    EventTypeValueValuesEnum: Optional. EventType allows the user to
+      explicitly set the type of event to which this BuildTrigger should
+      respond. This field is optional but will be validated against the rest
+      of the configuration if it is set.
+
   Messages:
     SubstitutionsValue: Substitutions for Build resource. The keys must match
       the following regular expression: `^_[A-Z0-9_]+$`.
@@ -871,6 +877,10 @@ class BuildTrigger(_messages.Message):
       build whenever a Cloud Scheduler event is received.
     description: Human-readable description of this trigger.
     disabled: If true, the trigger will never automatically execute a build.
+    eventType: Optional. EventType allows the user to explicitly set the type
+      of event to which this BuildTrigger should respond. This field is
+      optional but will be validated against the rest of the configuration if
+      it is set.
     filename: Path, from the source root, to the build configuration file
       (i.e. cloudbuild.yaml).
     filter: A Common Expression Language string.
@@ -926,6 +936,24 @@ class BuildTrigger(_messages.Message):
       creates a build whenever a webhook is sent to a trigger's webhook URL.
   """
 
+  class EventTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. EventType allows the user to explicitly set the type of
+    event to which this BuildTrigger should respond. This field is optional
+    but will be validated against the rest of the configuration if it is set.
+
+    Values:
+      EVENT_TYPE_UNSPECIFIED: EVENT_TYPE_UNSPECIFIED event_types are ignored.
+      REPO: REPO corresponds to the supported VCS integrations.
+      WEBHOOK: WEBHOOK corresponds to webhook triggers.
+      PUBSUB: PUBSUB corresponds to pubsub triggers.
+      MANUAL: MANUAL corresponds to manual-only invoked triggers.
+    """
+    EVENT_TYPE_UNSPECIFIED = 0
+    REPO = 1
+    WEBHOOK = 2
+    PUBSUB = 3
+    MANUAL = 4
+
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SubstitutionsValue(_messages.Message):
     r"""Substitutions for Build resource. The keys must match the following
@@ -960,22 +988,23 @@ class BuildTrigger(_messages.Message):
   cron = _messages.MessageField('CronConfig', 6)
   description = _messages.StringField(7)
   disabled = _messages.BooleanField(8)
-  filename = _messages.StringField(9)
-  filter = _messages.StringField(10)
-  gitFileSource = _messages.MessageField('GitFileSource', 11)
-  github = _messages.MessageField('GitHubEventsConfig', 12)
-  id = _messages.StringField(13)
-  ignoredFiles = _messages.StringField(14, repeated=True)
-  includedFiles = _messages.StringField(15, repeated=True)
-  name = _messages.StringField(16)
-  pubsubConfig = _messages.MessageField('PubsubConfig', 17)
-  resourceName = _messages.StringField(18)
-  serviceAccount = _messages.StringField(19)
-  sourceToBuild = _messages.MessageField('GitRepoSource', 20)
-  substitutions = _messages.MessageField('SubstitutionsValue', 21)
-  tags = _messages.StringField(22, repeated=True)
-  triggerTemplate = _messages.MessageField('RepoSource', 23)
-  webhookConfig = _messages.MessageField('WebhookConfig', 24)
+  eventType = _messages.EnumField('EventTypeValueValuesEnum', 9)
+  filename = _messages.StringField(10)
+  filter = _messages.StringField(11)
+  gitFileSource = _messages.MessageField('GitFileSource', 12)
+  github = _messages.MessageField('GitHubEventsConfig', 13)
+  id = _messages.StringField(14)
+  ignoredFiles = _messages.StringField(15, repeated=True)
+  includedFiles = _messages.StringField(16, repeated=True)
+  name = _messages.StringField(17)
+  pubsubConfig = _messages.MessageField('PubsubConfig', 18)
+  resourceName = _messages.StringField(19)
+  serviceAccount = _messages.StringField(20)
+  sourceToBuild = _messages.MessageField('GitRepoSource', 21)
+  substitutions = _messages.MessageField('SubstitutionsValue', 22)
+  tags = _messages.StringField(23, repeated=True)
+  triggerTemplate = _messages.MessageField('RepoSource', 24)
+  webhookConfig = _messages.MessageField('WebhookConfig', 25)
 
 
 class BuiltImage(_messages.Message):
@@ -1807,7 +1836,10 @@ class CloudbuildProjectsLocationsGithubInstallationsPatchRequest(_messages.Messa
     installationId: Unique identifier of the GitHub installation. Deprecated.
       Should set installation.id
     installationsId: A string attribute.
-    name: The name of the `GitHubInstallation` to update. Format:
+    name: The `Installation` name with format:
+      `projects/{project}/locations/{location}/installations/{installation}`,
+      where {installation} is GitHub installation ID created by GitHub.
+    name1: The name of the `GitHubInstallation` to update. Format:
       `projects/{project}/locations/{location}/installations/{installation}`
     projectId: ID of the project.
     updateMask: Update mask for the Installation resource. If this is set, the
@@ -1819,8 +1851,9 @@ class CloudbuildProjectsLocationsGithubInstallationsPatchRequest(_messages.Messa
   installationId = _messages.IntegerField(2)
   installationsId = _messages.StringField(3, required=True)
   name = _messages.StringField(4, required=True)
-  projectId = _messages.StringField(5)
-  updateMask = _messages.StringField(6)
+  name1 = _messages.StringField(5)
+  projectId = _messages.StringField(6)
+  updateMask = _messages.StringField(7)
 
 
 class CloudbuildProjectsLocationsInstallationsDeleteRequest(_messages.Message):
@@ -1858,7 +1891,10 @@ class CloudbuildProjectsLocationsInstallationsPatchRequest(_messages.Message):
     installation: A Installation resource to be passed as the request body.
     installationId: Unique identifier of the GitHub installation. Deprecated.
       Should set installation.id
-    name: The name of the `GitHubInstallation` to update. Format:
+    name: The `Installation` name with format:
+      `projects/{project}/locations/{location}/installations/{installation}`,
+      where {installation} is GitHub installation ID created by GitHub.
+    name1: The name of the `GitHubInstallation` to update. Format:
       `projects/{project}/locations/{location}/installations/{installation}`
     projectId: ID of the project.
     updateMask: Update mask for the Installation resource. If this is set, the
@@ -1869,8 +1905,9 @@ class CloudbuildProjectsLocationsInstallationsPatchRequest(_messages.Message):
   installation = _messages.MessageField('Installation', 1)
   installationId = _messages.IntegerField(2)
   name = _messages.StringField(3, required=True)
-  projectId = _messages.StringField(4)
-  updateMask = _messages.StringField(5)
+  name1 = _messages.StringField(4)
+  projectId = _messages.StringField(5)
+  updateMask = _messages.StringField(6)
 
 
 class CloudbuildProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -2801,7 +2838,7 @@ class HybridPoolConfig(_messages.Message):
       not been altered by misuse of privileged Docker daemon.
     membership: Required. Immutable. The Anthos/GKE Hub membership of the
       cluster which will run the actual build operations. Example:
-      /projects/{project}/locations/{location}/memberships/{cluster_name}
+      projects/{project}/locations/{location}/memberships/{cluster_name}
   """
 
   class BuilderImageCachingValueValuesEnum(_messages.Enum):
@@ -2927,6 +2964,9 @@ class Installation(_messages.Message):
       enterprise config that should be applied to this installation. For
       example: "projects/{$project_id}/githubEnterpriseConfigs/{$config_id}"
     id: GitHub installation ID, created by GitHub.
+    name: The `Installation` name with format:
+      `projects/{project}/locations/{location}/installations/{installation}`,
+      where {installation} is GitHub installation ID created by GitHub.
     projectId: The project ID of the GCP project the installation is
       associated with.
     projectNum: Numerical ID of the project.
@@ -2940,9 +2980,10 @@ class Installation(_messages.Message):
   enterpriseConfig = _messages.MessageField('GitHubEnterpriseConfig', 2)
   enterpriseConfigResourceName = _messages.StringField(3)
   id = _messages.IntegerField(4)
-  projectId = _messages.StringField(5)
-  projectNum = _messages.IntegerField(6)
-  repositorySettingList = _messages.MessageField('GitHubRepositorySettingList', 7)
+  name = _messages.StringField(5)
+  projectId = _messages.StringField(6)
+  projectNum = _messages.IntegerField(7)
+  repositorySettingList = _messages.MessageField('GitHubRepositorySettingList', 8)
 
 
 class ListBitbucketServerConfigsResponse(_messages.Message):

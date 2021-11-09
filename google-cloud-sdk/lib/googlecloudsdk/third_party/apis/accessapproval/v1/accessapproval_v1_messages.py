@@ -18,7 +18,7 @@ class AccessApprovalSettings(_messages.Message):
 
   Fields:
     enrolledAncestor: Output only. This field is read only (not settable via
-      UpdateAccessAccessApprovalSettings method). If the field is true, that
+      UpdateAccessApprovalSettings method). If the field is true, that
       indicates that at least one service is enrolled for Access Approval in
       one or more ancestors of the Project or Folder (this field will always
       be unset for the organization since organizations do not have
@@ -141,7 +141,8 @@ class AccessapprovalFoldersApprovalRequestsGetRequest(_messages.Message):
   r"""A AccessapprovalFoldersApprovalRequestsGetRequest object.
 
   Fields:
-    name: Name of the approval request to retrieve.
+    name: The name of the approval request to retrieve. Format: "{projects|fol
+      ders|organizations}/{id}/approvalRequests/{approval_request}"
   """
 
   name = _messages.StringField(1, required=True)
@@ -185,7 +186,8 @@ class AccessapprovalFoldersGetAccessApprovalSettingsRequest(_messages.Message):
   r"""A AccessapprovalFoldersGetAccessApprovalSettingsRequest object.
 
   Fields:
-    name: Name of the AccessApprovalSettings to retrieve.
+    name: The name of the AccessApprovalSettings to retrieve. Format:
+      "{projects|folders|organizations}/{id}/accessApprovalSettings"
   """
 
   name = _messages.StringField(1, required=True)
@@ -246,7 +248,8 @@ class AccessapprovalOrganizationsApprovalRequestsGetRequest(_messages.Message):
   r"""A AccessapprovalOrganizationsApprovalRequestsGetRequest object.
 
   Fields:
-    name: Name of the approval request to retrieve.
+    name: The name of the approval request to retrieve. Format: "{projects|fol
+      ders|organizations}/{id}/approvalRequests/{approval_request}"
   """
 
   name = _messages.StringField(1, required=True)
@@ -290,7 +293,8 @@ class AccessapprovalOrganizationsGetAccessApprovalSettingsRequest(_messages.Mess
   r"""A AccessapprovalOrganizationsGetAccessApprovalSettingsRequest object.
 
   Fields:
-    name: Name of the AccessApprovalSettings to retrieve.
+    name: The name of the AccessApprovalSettings to retrieve. Format:
+      "{projects|folders|organizations}/{id}/accessApprovalSettings"
   """
 
   name = _messages.StringField(1, required=True)
@@ -351,7 +355,8 @@ class AccessapprovalProjectsApprovalRequestsGetRequest(_messages.Message):
   r"""A AccessapprovalProjectsApprovalRequestsGetRequest object.
 
   Fields:
-    name: Name of the approval request to retrieve.
+    name: The name of the approval request to retrieve. Format: "{projects|fol
+      ders|organizations}/{id}/approvalRequests/{approval_request}"
   """
 
   name = _messages.StringField(1, required=True)
@@ -395,7 +400,8 @@ class AccessapprovalProjectsGetAccessApprovalSettingsRequest(_messages.Message):
   r"""A AccessapprovalProjectsGetAccessApprovalSettingsRequest object.
 
   Fields:
-    name: Name of the AccessApprovalSettings to retrieve.
+    name: The name of the AccessApprovalSettings to retrieve. Format:
+      "{projects|folders|organizations}/{id}/accessApprovalSettings"
   """
 
   name = _messages.StringField(1, required=True)
@@ -525,20 +531,22 @@ class EnrolledService(_messages.Message):
       Compute Engine * Cloud Dataflow * Cloud DLP * Cloud EKM * Cloud HSM *
       Cloud Identity and Access Management * Cloud Logging * Cloud Pub/Sub *
       Cloud Spanner * Cloud SQL * Cloud Storage * Google Kubernetes Engine *
-      Persistent Disk * Speaker ID Note: These values are supported as input
-      for legacy purposes, but will not be returned from the API. * all * ga-
-      only * appengine.googleapis.com * bigquery.googleapis.com *
-      bigtable.googleapis.com * container.googleapis.com *
-      cloudkms.googleapis.com * cloudsql.googleapis.com *
-      compute.googleapis.com * dataflow.googleapis.com * dlp.googleapis.com *
-      iam.googleapis.com * logging.googleapis.com * pubsub.googleapis.com *
-      spanner.googleapis.com * speakerid.googleapis.com *
-      storage.googleapis.com Calls to UpdateAccessApprovalSettings using 'all'
-      or any of the XXX.googleapis.com will be translated to the associated
-      product name ('all', 'App Engine', etc.). Note: 'all' will enroll the
-      resource in all products supported at both 'GA' and 'Preview' levels.
-      More information about levels of support is available at
-      https://cloud.google.com/access-approval/docs/supported-services
+      Organization Policy Serivice * Persistent Disk * Speaker ID Note: These
+      values are supported as input for legacy purposes, but will not be
+      returned from the API. * all * ga-only * appengine.googleapis.com *
+      bigquery.googleapis.com * bigtable.googleapis.com *
+      container.googleapis.com * cloudkms.googleapis.com *
+      cloudsql.googleapis.com * compute.googleapis.com *
+      dataflow.googleapis.com * dlp.googleapis.com * iam.googleapis.com *
+      logging.googleapis.com * orgpolicy.googleapis.com *
+      pubsub.googleapis.com * spanner.googleapis.com *
+      speakerid.googleapis.com * storage.googleapis.com Calls to
+      UpdateAccessApprovalSettings using 'all' or any of the
+      XXX.googleapis.com will be translated to the associated product name
+      ('all', 'App Engine', etc.). Note: 'all' will enroll the resource in all
+      products supported at both 'GA' and 'Preview' levels. More information
+      about levels of support is available at https://cloud.google.com/access-
+      approval/docs/supported-services
     enrollmentLevel: The enrollment level of the service.
   """
 

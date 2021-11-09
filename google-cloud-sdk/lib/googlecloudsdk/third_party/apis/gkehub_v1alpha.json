@@ -960,7 +960,7 @@
           "type": "string"
         },
         "secretType": {
-          "description": "Type of secret configured for access to the Git repo.",
+          "description": "Type of secret configured for access to the Git repo. Must be one of ssh, cookiefile, gcenode, token, gcpserviceaccount or none. The validation of this is case-sensitive. Required.",
           "type": "string"
         },
         "httpsProxy": {
@@ -2175,9 +2175,9 @@
         }
       }
     },
-    "SearchFleetsResponse": {
-      "id": "SearchFleetsResponse",
-      "description": "Response message for the `FleetService.SearchFleetsResponse` method.",
+    "ListFleetsResponse": {
+      "id": "ListFleetsResponse",
+      "description": "Response message for the `GkeHub.ListFleetsResponse` method.",
       "type": "object",
       "properties": {
         "fleets": {
@@ -2186,6 +2186,10 @@
           "items": {
             "$ref": "Fleet"
           }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
         }
       }
     },
@@ -3439,44 +3443,36 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Removes a Fleet. There must be no memberships remaining in the Fleet."
-                }
-              }
-            },
-            "fleet": {
-              "methods": {
-                "searchFleets": {
-                  "id": "gkehub.projects.locations.fleet.searchFleets",
-                  "path": "v1alpha/projects/{projectsId}/locations/{locationsId}/fleet:searchFleets",
-                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/fleet:searchFleets",
+                },
+                "list": {
+                  "id": "gkehub.projects.locations.fleets.list",
+                  "path": "v1alpha/{+parent}/fleets",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/fleets",
                   "httpMethod": "GET",
                   "parameters": {
-                    "projectsId": {
+                    "parent": {
+                      "description": "Required. The organization or project to list for Fleets under, in the format `organizations\/*\/locations\/*` or `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
-                    "locationsId": {
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "query": {
-                      "description": "Required. A query string for searching for fleets. The currently supported query field is `ancestor`. Use \"ancestor=organizations\/{org_id}\" to search for fleets in an organization, and \"ancestor=folders\/{folder_id}\" to search for fleets in a folder. Search expressions are case insensitive.",
+                    "pageToken": {
+                      "description": "A page token, received from a previous `ListFleets` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListFleets` must match the call that provided the page token.",
                       "location": "query",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "locationsId"
+                    "parent"
                   ],
                   "response": {
-                    "$ref": "SearchFleetsResponse"
+                    "$ref": "ListFleetsResponse"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Search fleets within a given organization or folder, and whose hosting projects the caller has `gkehub.memberships.get` permission on."
+                  "description": "Returns all fleets within an organization or a project that the caller has access to."
                 }
               }
             },
@@ -3575,6 +3571,48 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Lists fleet namespaces."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "organizations": {
+      "resources": {
+        "locations": {
+          "resources": {
+            "fleets": {
+              "methods": {
+                "list": {
+                  "id": "gkehub.organizations.locations.fleets.list",
+                  "path": "v1alpha/{+parent}/fleets",
+                  "flatPath": "v1alpha/organizations/{organizationsId}/locations/{locationsId}/fleets",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The organization or project to list for Fleets under, in the format `organizations\/*\/locations\/*` or `projects\/*\/locations\/*`.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageToken": {
+                      "description": "A page token, received from a previous `ListFleets` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListFleets` must match the call that provided the page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListFleetsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns all fleets within an organization or a project that the caller has access to."
                 }
               }
             }

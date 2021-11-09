@@ -1710,6 +1710,11 @@ class FhirConfig(_messages.Message):
   r"""Specifies how to handle de-identification of a FHIR store.
 
   Fields:
+    defaultKeepExtensions: The behaviour for handling FHIR extensions that
+      aren't otherwise specified for de-identification. If true, all
+      extensions are preserved during de-identification by default. If false
+      or unspecified, all extensions are removed during de-identification by
+      default.
     fieldMetadataList: Specifies FHIR paths to match and how to transform
       them. Any field that is not matched by a FieldMetadata is passed through
       to the output dataset unmodified. All extensions will be processed
@@ -1717,7 +1722,8 @@ class FhirConfig(_messages.Message):
       more than one FieldMetadata, the first FieldMetadata.Action is applied.
   """
 
-  fieldMetadataList = _messages.MessageField('FieldMetadata', 1, repeated=True)
+  defaultKeepExtensions = _messages.BooleanField(1)
+  fieldMetadataList = _messages.MessageField('FieldMetadata', 2, repeated=True)
 
 
 class FhirFilter(_messages.Message):

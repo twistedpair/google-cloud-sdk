@@ -24,7 +24,6 @@ from googlecloudsdk.api_lib.ai import util as api_util
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.ai import constants
 from googlecloudsdk.command_lib.ai import validation
-from googlecloudsdk.command_lib.ai.custom_jobs import custom_jobs_util
 from googlecloudsdk.command_lib.ai.custom_jobs import local_util
 from googlecloudsdk.command_lib.ai.docker import utils as docker_utils
 from googlecloudsdk.core.util import files
@@ -46,24 +45,89 @@ def ValidateCreateArgs(args, job_spec_from_config, version):
 
 
 def _ValidateWorkerPoolSpecArgs(worker_pool_specs, version):
-  """Validate the argument values specified via `--worker-pool-spec` flags."""
-  if custom_jobs_util.IsLocalPackagingRequired(worker_pool_specs):
-    # We don't support local packaging for distributed training yet.
-    if len(worker_pool_specs) > 1:
-      raise exceptions.InvalidArgumentException(
-          '--worker-pool-spec',
-          'Local package is not supported for multiple worker pools.')
+  """Validates the argument values specified via `--worker-pool-spec` flags.
 
-  for spec in worker_pool_specs:
+  Args:
+    worker_pool_specs: List[dict], a list of worker pool specs specified in
+      command line.
+    version: str, the API version this command will interact with, either GA or
+      BETA.
+  """
+  is_local_package_defined = _ValidateFirstWorkerPoolSpec(
+      worker_pool_specs[0], version=version)
+
+  if len(worker_pool_specs) > 1:
+    _ValidateRestWorkerPoolSpecs(worker_pool_specs[1:], version,
+                                 is_local_package_defined)
+
+
+def _ValidateFirstWorkerPoolSpec(spec, version):
+  """Validates the argument value specified in the first `--worker-pool-spec` flags.
+
+  Args:
+    spec: dict, the specification of the first worker pool.
+    version: str, the API version this command will interact with, either GA or
+      BETA.
+
+  Returns:
+    A boolean value whether a local package will be used for all worker pools.
+  """
+  if not spec:
+    raise exceptions.InvalidArgumentException(
+        '--worker-pool-spec',
+        'Empty value is not allowed for the first `--worker-pool-spec` flag.')
+
+  _ValidateHardwareInSingleWorkerPool(spec, version)
+
+  if version == constants.GA_VERSION:
+    _ValidateNonLocalSoftwareInSingleWorkerPool(spec)
+  else:
+    _ValidateSoftwareInSingleWorkerPool(spec)
+
+  return 'local-package-path' in spec
+
+
+def _ValidateRestWorkerPoolSpecs(specs,
+                                 version,
+                                 is_local_package_already_specified=False):
+  """Validates the argument values specified in all but the first `--worker-pool-spec` flags.
+
+  Args:
+    specs: List[dict], the list all but the first worker pool specs specified in
+      command line.
+    version: str, the API version this command will interact with, either GA or
+      BETA.
+    is_local_package_already_specified: bool, whether local package is specified
+      in the first worker pool.
+  """
+  for spec in specs:
     if spec:
-      if version == constants.GA_VERSION:
-        _ValidateSingleWorkerPoolSpecArgsGa(spec)
+      _ValidateHardwareInSingleWorkerPool(spec, version)
+
+      local_package_only_fields = {'script', 'local-package-path'
+                                  }.intersection(spec.keys())
+      if local_package_only_fields:
+        raise exceptions.InvalidArgumentException(
+            '--worker-pool-spec',
+            'Keys [{}] are only allowed in the first `--worker-pool-spec` flag.'
+            .format(', '.join(local_package_only_fields)))
+
+      if is_local_package_already_specified:
+        software_fields = {
+            'executor-image-uri', 'container-image-uri', 'python-module'
+        }.intersection(spec.keys())
+        if software_fields:
+          raise exceptions.InvalidArgumentException(
+              '--worker-pool-spec',
+              ('Since a local package is specified in the first '
+               '`--worker-pool-spec` flag, keys [{}] are not allowed in others.'
+              ).format(', '.join(software_fields)))
       else:
-        _ValidateSingleWorkerPoolSpecArgsBetaAlpha(spec)
+        _ValidateNonLocalSoftwareInSingleWorkerPool(spec)
 
 
 def _ValidateHardwareInSingleWorkerPool(spec, api_version):
-  """Validate the hardware specified in a single `--worker-pool-spec` flag."""
+  """Validates the hardware specified in a single `--worker-pool-spec` flag."""
   if 'machine-type' not in spec:
     raise exceptions.InvalidArgumentException(
         '--worker-pool-spec',
@@ -90,9 +154,58 @@ def _ValidateHardwareInSingleWorkerPool(spec, api_version):
                expected=', '.join(v for v in sorted(valid_types))))
 
 
-def _ValidateSingleWorkerPoolSpecArgsGa(spec):
-  """Validate a single `--worker-pool-spec` flag value."""
-  _ValidateHardwareInSingleWorkerPool(spec, constants.GA_VERSION)
+def _ValidateSoftwareInSingleWorkerPool(spec):
+  """Validates the software specified in a single `--worker-pool-spec`.
+
+  Args:
+    spec: dict, the specification of the first worker pool.
+  """
+  _ValidateHardwareInSingleWorkerPool(spec, constants.BETA_VERSION)
+
+  has_executor_image = 'executor-image-uri' in spec
+  has_container_image = 'container-image-uri' in spec
+
+  if has_executor_image == has_container_image:
+    raise exceptions.InvalidArgumentException(
+        '--worker-pool-spec',
+        ('Exactly one of keys [executor-image-uri, container-image-uri] '
+         'is required.'))
+
+  if has_container_image:
+    disallowed_keys = set([
+        'python-module',
+        'script',
+        'local-package-path',
+        'requirements',
+        'extra-dirs',
+        'extra-packages',
+    ]).intersection(spec.keys())
+    if disallowed_keys:
+      raise exceptions.InvalidArgumentException(
+          '--worker-pool-spec',
+          'Keys [{}] are not allowed together with key [container-image-uri].'
+          .format(', '.join(sorted(disallowed_keys))))
+
+  if has_executor_image:
+    if ('python-module' in spec) == ('script' in spec):
+      raise exceptions.InvalidArgumentException(
+          '--worker-pool-spec',
+          'Exactly one of keys [python-module, script] is required.')
+    if ('script' in spec) and ('local-package-path' not in spec):
+      raise exceptions.InvalidArgumentException(
+          '--worker-pool-spec',
+          ('Missing required key [local-package-path], '
+           'key [script] is only allowed together with it.'))
+
+
+def _ValidateNonLocalSoftwareInSingleWorkerPool(spec):
+  """Validate the software specified in a single `--worker-pool-spec`.
+
+  Different from the above one, this method does not allow any local package.
+
+  Args:
+    spec: dict, the specification of the first worker pool.
+  """
 
   has_executor_image = 'executor-image-uri' in spec
   has_container_image = 'container-image-uri' in spec
@@ -113,40 +226,6 @@ def _ValidateSingleWorkerPoolSpecArgsGa(spec):
   if has_executor_image and not has_python_module:
     raise exceptions.InvalidArgumentException(
         '--worker-pool-spec', 'Key [python-module] is required.')
-
-
-def _ValidateSingleWorkerPoolSpecArgsBetaAlpha(spec):
-  """Validate a single `--worker-pool-spec` flag value in alpha or beta version."""
-  _ValidateHardwareInSingleWorkerPool(spec, constants.BETA_VERSION)
-
-  has_executor_image = 'executor-image-uri' in spec
-  has_container_image = 'container-image-uri' in spec
-
-  if has_executor_image == has_container_image:
-    raise exceptions.InvalidArgumentException(
-        '--worker-pool-spec',
-        ('Exactly one of keys [executor-image-uri, container-image-uri] '
-         'is required.'))
-
-  if has_container_image:
-    disallowed_keys = set(['python-module', 'script',
-                           'local-package-path']).intersection(spec.keys())
-    if disallowed_keys:
-      raise exceptions.InvalidArgumentException(
-          '--worker-pool-spec',
-          'Keys [{}] are not allowed together with key [container-image-uri]'
-          .format(', '.join(disallowed_keys)))
-
-  if has_executor_image:
-    if ('python-module' in spec) == ('script' in spec):
-      raise exceptions.InvalidArgumentException(
-          '--worker-pool-spec',
-          'Exactly one of keys [python-module, script] is required.')
-    if ('script' in spec) and ('local-package-path' not in spec):
-      raise exceptions.InvalidArgumentException(
-          '--worker-pool-spec',
-          ('Missing required key [local-package-path], '
-           'key [script] is only allowed together with it.'))
 
 
 def _ValidateWorkerPoolSpecsFromConfig(job_spec):

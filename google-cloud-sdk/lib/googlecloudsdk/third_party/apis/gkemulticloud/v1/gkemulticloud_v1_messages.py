@@ -1287,10 +1287,10 @@ class GoogleCloudGkemulticloudV1AwsNodePoolAutoscaling(_messages.Message):
   autoscaler to adjust the size of the node pool to the current cluster usage.
 
   Fields:
-    maxNodeCount: Required. Maximum number of nodes in the NodePool. Must be
-      >= min_node_count.
-    minNodeCount: Required. Minimum number of nodes in the NodePool. Must be
-      >= 1 and <= max_node_count.
+    maxNodeCount: Required. Maximum number of nodes in the node pool. Must be
+      greater than or equal to min_node_count and less than or equal to 50.
+    minNodeCount: Required. Minimum number of nodes in the node pool. Must be
+      greater than or equal to 1 and less than or equal to max_node_count.
   """
 
   maxNodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2076,9 +2076,9 @@ class GoogleCloudGkemulticloudV1AzureNodePoolAutoscaling(_messages.Message):
 
   Fields:
     maxNodeCount: Required. Maximum number of nodes in the node pool. Must be
-      >= min_node_count.
+      greater than or equal to min_node_count and less than or equal to 50.
     minNodeCount: Required. Minimum number of nodes in the node pool. Must be
-      >= 1 and <= max_node_count.
+      greater than or equal to 1 and less than or equal to max_node_count.
   """
 
   maxNodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)

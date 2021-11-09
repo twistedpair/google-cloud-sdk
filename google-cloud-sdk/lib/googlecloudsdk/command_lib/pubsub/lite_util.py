@@ -165,6 +165,16 @@ def GetResourceInfo(request):
   return resource, resource_name
 
 
+def LocationToZoneOrRegion(location_id):
+  # pylint: disable=g-import-not-at-top
+  from google.cloud.pubsublite import types
+  # pylint: enable=g-import-not-at-top
+  if len(location_id.split('-')) == 3:
+    return types.CloudZone.parse(location_id)
+  else:
+    return types.CloudRegion.parse(location_id)
+
+
 def DeriveLocationFromResource(resource):
   """Returns the location from a resource string."""
   location = resource[resource.index(LOCATIONS_RESOURCE_PATH) +

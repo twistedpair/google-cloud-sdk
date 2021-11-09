@@ -12,6 +12,41 @@ from apitools.base.py import encoding
 package = 'recaptchaenterprise'
 
 
+class GoogleCloudRecaptchaenterpriseV1AccountDefenderAssessment(_messages.Message):
+  r"""Account Defender risk assessment.
+
+  Enums:
+    LabelsValueListEntryValuesEnum:
+
+  Fields:
+    labels: Labels for this request.
+  """
+
+  class LabelsValueListEntryValuesEnum(_messages.Enum):
+    r"""LabelsValueListEntryValuesEnum enum type.
+
+    Values:
+      ACCOUNT_DEFENDER_LABEL_UNSPECIFIED: Default unspecified type.
+      PROFILE_MATCH: The request matches a known good profile for the user.
+      SUSPICIOUS_LOGIN_ACTIVITY: The request is potentially a suspicious login
+        event and should be further verified either via multi-factor
+        authentication or another system.
+      SUSPICIOUS_ACCOUNT_CREATION: The request matched a profile that
+        previously had suspicious account creation behavior. This could mean
+        this is a fake account.
+      RELATED_ACCOUNTS_NUMBER_HIGH: The account in the request has a high
+        number of related accounts. It does not necessarily imply that the
+        account is bad but could require investigating.
+    """
+    ACCOUNT_DEFENDER_LABEL_UNSPECIFIED = 0
+    PROFILE_MATCH = 1
+    SUSPICIOUS_LOGIN_ACTIVITY = 2
+    SUSPICIOUS_ACCOUNT_CREATION = 3
+    RELATED_ACCOUNTS_NUMBER_HIGH = 4
+
+  labels = _messages.EnumField('LabelsValueListEntryValuesEnum', 1, repeated=True)
+
+
 class GoogleCloudRecaptchaenterpriseV1AndroidKeySettings(_messages.Message):
   r"""Settings specific to keys that can be used by Android apps.
 
@@ -40,6 +75,11 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
     annotation: Optional. The annotation that will be assigned to the Event.
       This field can be left empty to provide reasons that apply to an event
       without concluding whether the event is legitimate or fraudulent.
+    hashedAccountId: Optional. Optional unique stable hashed user identifier
+      to apply to the assessment. This is an alternative to setting the
+      hashed_account_id in CreateAssessment, for example when the account
+      identifier is not yet known in the initial request. It is recommended
+      that the identifier is hashed using hmac-sha256 with stable secret.
     reasons: Optional. Optional reasons for the annotation that will be
       assigned to the Event.
   """
@@ -100,7 +140,8 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
     INCORRECT_PASSWORD = 7
 
   annotation = _messages.EnumField('AnnotationValueValuesEnum', 1)
-  reasons = _messages.EnumField('ReasonsValueListEntryValuesEnum', 2, repeated=True)
+  hashedAccountId = _messages.BytesField(2)
+  reasons = _messages.EnumField('ReasonsValueListEntryValuesEnum', 3, repeated=True)
 
 
 class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentResponse(_messages.Message):
@@ -111,6 +152,8 @@ class GoogleCloudRecaptchaenterpriseV1Assessment(_messages.Message):
   r"""A recaptcha assessment resource.
 
   Fields:
+    accountDefenderAssessment: Assessment returned by Account Defender when a
+      hashed_account_id is provided.
     event: The event being assessed.
     name: Output only. The resource name for the Assessment in the format
       "projects/{project}/assessments/{assessment}".
@@ -119,10 +162,11 @@ class GoogleCloudRecaptchaenterpriseV1Assessment(_messages.Message):
     tokenProperties: Output only. Properties of the provided event token.
   """
 
-  event = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1Event', 1)
-  name = _messages.StringField(2)
-  riskAnalysis = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1RiskAnalysis', 3)
-  tokenProperties = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TokenProperties', 4)
+  accountDefenderAssessment = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1AccountDefenderAssessment', 1)
+  event = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1Event', 2)
+  name = _messages.StringField(3)
+  riskAnalysis = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1RiskAnalysis', 4)
+  tokenProperties = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TokenProperties', 5)
 
 
 class GoogleCloudRecaptchaenterpriseV1ChallengeMetrics(_messages.Message):
@@ -155,6 +199,9 @@ class GoogleCloudRecaptchaenterpriseV1Event(_messages.Message):
     expectedAction: Optional. The expected action for this type of event. This
       should be the same action provided at token generation time on client-
       side platforms already integrated with recaptcha enterprise.
+    hashedAccountId: Optional. Optional unique stable hashed user identifier
+      for the request. The identifier should ideally be hashed using sha256
+      with stable secret.
     siteKey: Optional. The site key that was used to invoke reCAPTCHA on your
       site and generate the token.
     token: Optional. The user response token provided by the reCAPTCHA client-
@@ -166,10 +213,11 @@ class GoogleCloudRecaptchaenterpriseV1Event(_messages.Message):
   """
 
   expectedAction = _messages.StringField(1)
-  siteKey = _messages.StringField(2)
-  token = _messages.StringField(3)
-  userAgent = _messages.StringField(4)
-  userIpAddress = _messages.StringField(5)
+  hashedAccountId = _messages.BytesField(2)
+  siteKey = _messages.StringField(3)
+  token = _messages.StringField(4)
+  userAgent = _messages.StringField(5)
+  userIpAddress = _messages.StringField(6)
 
 
 class GoogleCloudRecaptchaenterpriseV1IOSKeySettings(_messages.Message):
@@ -251,6 +299,32 @@ class GoogleCloudRecaptchaenterpriseV1ListKeysResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class GoogleCloudRecaptchaenterpriseV1ListRelatedAccountGroupMembershipsResponse(_messages.Message):
+  r"""The response to a `ListRelatedAccountGroupMemberships` call.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    relatedAccountGroupMemberships: The memberships listed by the query.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  relatedAccountGroupMemberships = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1RelatedAccountGroupMembership', 2, repeated=True)
+
+
+class GoogleCloudRecaptchaenterpriseV1ListRelatedAccountGroupsResponse(_messages.Message):
+  r"""The response to a `ListRelatedAccountGroups` call.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    relatedAccountGroups: The groups of related accounts listed by the query.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  relatedAccountGroups = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1RelatedAccountGroup', 2, repeated=True)
+
+
 class GoogleCloudRecaptchaenterpriseV1Metrics(_messages.Message):
   r"""Metrics for a single Key.
 
@@ -273,6 +347,34 @@ class GoogleCloudRecaptchaenterpriseV1Metrics(_messages.Message):
 
 class GoogleCloudRecaptchaenterpriseV1MigrateKeyRequest(_messages.Message):
   r"""The migrate key request message."""
+
+
+class GoogleCloudRecaptchaenterpriseV1RelatedAccountGroup(_messages.Message):
+  r"""A group of related accounts.
+
+  Fields:
+    name: Required. The resource name for the related account group in the
+      format
+      `projects/{project}/relatedaccountgroups/{related_account_group}`.
+  """
+
+  name = _messages.StringField(1)
+
+
+class GoogleCloudRecaptchaenterpriseV1RelatedAccountGroupMembership(_messages.Message):
+  r"""A membership in a group of related accounts.
+
+  Fields:
+    hashedAccountId: The unique stable hashed user identifier of the member.
+      The identifier corresponds to a `hashed_account_id` provided in a
+      previous CreateAssessment or AnnotateAssessment call.
+    name: Required. The resource name for this membership in the format `proje
+      cts/{project}/relatedaccountgroups/{relatedaccountgroup}/memberships/{me
+      mbership}`.
+  """
+
+  hashedAccountId = _messages.BytesField(1)
+  name = _messages.StringField(2)
 
 
 class GoogleCloudRecaptchaenterpriseV1RiskAnalysis(_messages.Message):
@@ -401,6 +503,43 @@ class GoogleCloudRecaptchaenterpriseV1ScoreMetrics(_messages.Message):
 
   actionMetrics = _messages.MessageField('ActionMetricsValue', 1)
   overallMetrics = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1ScoreDistribution', 2)
+
+
+class GoogleCloudRecaptchaenterpriseV1SearchRelatedAccountGroupMembershipsRequest(_messages.Message):
+  r"""The request message to search related account group memberships.
+
+  Fields:
+    hashedAccountId: Optional. The unique stable hashed user identifier we
+      should search connections to. The identifier should correspond to a
+      `hashed_account_id` provided in a previous CreateAssessment or
+      AnnotateAssessment call.
+    pageSize: Optional. The maximum number of groups to return. The service
+      may return fewer than this value. If unspecified, at most 50 groups will
+      be returned. The maximum value is 1000; values above 1000 will be
+      coerced to 1000.
+    pageToken: Optional. A page token, received from a previous
+      `SearchRelatedAccountGroupMemberships` call. Provide this to retrieve
+      the subsequent page. When paginating, all other parameters provided to
+      `SearchRelatedAccountGroupMemberships` must match the call that provided
+      the page token.
+  """
+
+  hashedAccountId = _messages.BytesField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
+class GoogleCloudRecaptchaenterpriseV1SearchRelatedAccountGroupMembershipsResponse(_messages.Message):
+  r"""The response to a `SearchRelatedAccountGroupMemberships` call.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    relatedAccountGroupMemberships: The queried memberships.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  relatedAccountGroupMemberships = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1RelatedAccountGroupMembership', 2, repeated=True)
 
 
 class GoogleCloudRecaptchaenterpriseV1TestingOptions(_messages.Message):
@@ -693,6 +832,66 @@ class RecaptchaenterpriseProjectsKeysPatchRequest(_messages.Message):
   googleCloudRecaptchaenterpriseV1Key = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1Key', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class RecaptchaenterpriseProjectsRelatedaccountgroupmembershipsSearchRequest(_messages.Message):
+  r"""A RecaptchaenterpriseProjectsRelatedaccountgroupmembershipsSearchRequest
+  object.
+
+  Fields:
+    googleCloudRecaptchaenterpriseV1SearchRelatedAccountGroupMembershipsReques
+      t: A GoogleCloudRecaptchaenterpriseV1SearchRelatedAccountGroupMembership
+      sRequest resource to be passed as the request body.
+    parent: Required. The name of the project to search related account group
+      memberships from, in the format "projects/{project}".
+  """
+
+  googleCloudRecaptchaenterpriseV1SearchRelatedAccountGroupMembershipsRequest = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1SearchRelatedAccountGroupMembershipsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class RecaptchaenterpriseProjectsRelatedaccountgroupsListRequest(_messages.Message):
+  r"""A RecaptchaenterpriseProjectsRelatedaccountgroupsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of groups to return. The service
+      may return fewer than this value. If unspecified, at most 50 groups will
+      be returned. The maximum value is 1000; values above 1000 will be
+      coerced to 1000.
+    pageToken: Optional. A page token, received from a previous
+      `ListRelatedAccountGroups` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `ListRelatedAccountGroups` must match the call that provided the page
+      token.
+    parent: Required. The name of the project to list related account groups
+      from, in the format "projects/{project}".
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class RecaptchaenterpriseProjectsRelatedaccountgroupsMembershipsListRequest(_messages.Message):
+  r"""A RecaptchaenterpriseProjectsRelatedaccountgroupsMembershipsListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. The maximum number of accounts to return. The service
+      may return fewer than this value. If unspecified, at most 50 accounts
+      will be returned. The maximum value is 1000; values above 1000 will be
+      coerced to 1000.
+    pageToken: Optional. A page token, received from a previous
+      `ListRelatedAccountGroupMemberships` call. When paginating, all other
+      parameters provided to `ListRelatedAccountGroupMemberships` must match
+      the call that provided the page token.
+    parent: Required. The resource name for the related account group in the
+      format `projects/{project}/relatedaccountgroups/{relatedaccountgroup}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class StandardQueryParameters(_messages.Message):

@@ -76,6 +76,21 @@ def AddClusterArgToParser(parser, positional=False):
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
+def AddHcxActivationKeyArgToParser(parser):
+  """Sets up an argument for the HCX activation key resource."""
+  hcx_activation_key_data = yaml_data.ResourceYAMLData.FromPath(
+      'vmware.hcx_activation_key')
+  resource_spec = concepts.ResourceSpec.FromYaml(
+      hcx_activation_key_data.GetData())
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name='hcx_activation_key',
+      concept_spec=resource_spec,
+      required=True,
+      group_help='hcxactivationkey.',
+  )
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
 def AddLocationArgToParser(parser, positional=False):
   """Parses location flag."""
   location_data = yaml_data.ResourceYAMLData.FromPath('vmware.location')
@@ -142,4 +157,3 @@ def AddLabelsToMessage(labels, message):
   message.labels = labels_util.ParseCreateArgs(
       LabelHolder(labels),
       type(message).LabelsValue)
-

@@ -30,8 +30,6 @@ class _AzureClientBase(object):
   """Base class for Azure clients."""
 
   def __init__(self, client=None, messages=None, track=base.ReleaseTrack.GA):
-    if track != base.ReleaseTrack.ALPHA:
-      raise Exception('Only ALPHA release track currently supported.')
     self.track = track
     self.client = client or util.GetClientInstance(track)
     self.messages = messages or util.GetMessagesModule(track)
@@ -409,12 +407,16 @@ class NodePoolsClient(_AzureClientBase):
   def Update(self,
              nodepool_ref,
              node_version=None,
+             min_nodes=None,
+             max_nodes=None,
              validate_only=None):
     """Updates a node pool in an Anthos cluster on Azure including node pool version.
 
     Args:
       nodepool_ref: obj, Node pool object to be updated.
       node_version: str, Node pool version to use in the node pool update.
+      min_nodes: int, Minimum number of nodes in the node pool.
+      max_nodes: int, Maximum number of nodes in the node pool.
       validate_only: bool, Validate the update of the node pool.
 
     Returns:
@@ -432,6 +434,14 @@ class NodePoolsClient(_AzureClientBase):
     if node_version:
       nodepool.version = node_version
       update_mask.append('version')
+
+    nodepool.autoscaling = type(nodepool).autoscaling.type()
+    if min_nodes is not None:
+      nodepool.autoscaling.minNodeCount = min_nodes
+      update_mask.append('autoscaling.minNodeCount')
+    if max_nodes is not None:
+      nodepool.autoscaling.maxNodeCount = max_nodes
+      update_mask.append('autoscaling.maxNodeCount')
 
     req.updateMask = ','.join(update_mask)
     return self._service.Patch(req)

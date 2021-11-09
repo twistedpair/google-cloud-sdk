@@ -46,3 +46,7 @@ properties:
       operating system is this number of cores multiplied by the instance's
       count of visible threads per physical core.
     type: integer
+  enableUefiNetworking:
+    description: |-
+      Whether to enable UEFI networking during instance creation.
+    type: boolean

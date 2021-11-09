@@ -1093,6 +1093,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.workflows = self._Add('workflows', command='gcloud workflows')
     self.sddc = self._Add('sddc', command='gcloud vmware sddc')
     self.vmwareengine = self._Add('vmwareengine', command='gcloud vmware')
+    self.beyondcorp = self._Add('beyondcorp', hidden=True)
 
   def EndpointValidator(self, value):
     """Checks to see if the endpoint override string is valid."""

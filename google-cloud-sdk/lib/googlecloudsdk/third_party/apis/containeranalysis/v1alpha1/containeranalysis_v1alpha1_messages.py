@@ -301,120 +301,6 @@ class BuildSignature(_messages.Message):
   signature = _messages.StringField(4)
 
 
-class BuildStep(_messages.Message):
-  r"""A step in the build pipeline.
-
-  Enums:
-    StatusValueValuesEnum: Output only. Status of the build step. At this
-      time, build step status is only updated on build completion; step status
-      is not updated in real-time as the build progresses.
-
-  Fields:
-    args: A list of arguments that will be presented to the step when it is
-      started. If the image used to run the step's container has an
-      entrypoint, the `args` are used as arguments to that entrypoint. If the
-      image does not define an entrypoint, the first element in args is used
-      as the entrypoint, and the remainder will be used as arguments.
-    dir: Working directory to use when running this step's container. If this
-      value is a relative path, it is relative to the build's working
-      directory. If this value is absolute, it may be outside the build's
-      working directory, in which case the contents of the path may not be
-      persisted across build step executions, unless a `volume` for that path
-      is specified. If the build specifies a `RepoSource` with `dir` and a
-      step with a `dir`, which specifies an absolute path, the `RepoSource`
-      `dir` is ignored for the step's execution.
-    entrypoint: Entrypoint to be used instead of the build step image's
-      default entrypoint. If unset, the image's default entrypoint is used.
-    env: A list of environment variable definitions to be used when running a
-      step. The elements are of the form "KEY=VALUE" for the environment
-      variable "KEY" being given the value "VALUE".
-    id: Unique identifier for this build step, used in `wait_for` to reference
-      this build step as a dependency.
-    name: Required. The name of the container image that will run this
-      particular build step. If the image is available in the host's Docker
-      daemon's cache, it will be run directly. If not, the host will attempt
-      to pull the image first, using the builder service account's credentials
-      if necessary. The Docker daemon's cache will already have the latest
-      versions of all of the officially supported build steps
-      ([https://github.com/GoogleCloudPlatform/cloud-
-      builders](https://github.com/GoogleCloudPlatform/cloud-builders)). The
-      Docker daemon will also have cached many of the layers for some popular
-      images, like "ubuntu", "debian", but they will be refreshed at the time
-      you attempt to use them. If you built an image in a previous build step,
-      it will be stored in the host's Docker daemon's cache and is available
-      to use as the name for a later build step.
-    pullTiming: Output only. Stores timing information for pulling this build
-      step's builder image only.
-    script: A shell script to be executed in the step. When script is
-      provided, the user cannot specify the entrypoint or args.
-    secretEnv: A list of environment variables which are encrypted using a
-      Cloud Key Management Service crypto key. These values must be specified
-      in the build's `Secret`.
-    status: Output only. Status of the build step. At this time, build step
-      status is only updated on build completion; step status is not updated
-      in real-time as the build progresses.
-    timeout: Time limit for executing this build step. If not defined, the
-      step has no time limit and will be allowed to continue to run until
-      either it completes or the build itself times out.
-    timing: Output only. Stores timing information for executing this build
-      step.
-    volumes: List of volumes to mount into the build step. Each volume is
-      created as an empty volume prior to execution of the build step. Upon
-      completion of the build, volumes and their contents are discarded. Using
-      a named volume in only one step is not valid as it is indicative of a
-      build request with an incorrect configuration.
-    waitFor: The ID(s) of the step(s) that this build step depends on. This
-      build step will not start until all the build steps in `wait_for` have
-      completed successfully. If `wait_for` is empty, this build step will
-      start when all previous build steps in the `Build.Steps` list have
-      completed successfully.
-  """
-
-  class StatusValueValuesEnum(_messages.Enum):
-    r"""Output only. Status of the build step. At this time, build step status
-    is only updated on build completion; step status is not updated in real-
-    time as the build progresses.
-
-    Values:
-      STATUS_UNKNOWN: Status of the build is unknown.
-      PENDING: Build has been created and is pending execution and queuing. It
-        has not been queued.
-      QUEUED: Build or step is queued; work has not yet begun.
-      WORKING: Build or step is being executed.
-      SUCCESS: Build or step finished successfully.
-      FAILURE: Build or step failed to complete successfully.
-      INTERNAL_ERROR: Build or step failed due to an internal cause.
-      TIMEOUT: Build or step took longer than was allowed.
-      CANCELLED: Build or step was canceled by a user.
-      EXPIRED: Build was enqueued for longer than the value of `queue_ttl`.
-    """
-    STATUS_UNKNOWN = 0
-    PENDING = 1
-    QUEUED = 2
-    WORKING = 3
-    SUCCESS = 4
-    FAILURE = 5
-    INTERNAL_ERROR = 6
-    TIMEOUT = 7
-    CANCELLED = 8
-    EXPIRED = 9
-
-  args = _messages.StringField(1, repeated=True)
-  dir = _messages.StringField(2)
-  entrypoint = _messages.StringField(3)
-  env = _messages.StringField(4, repeated=True)
-  id = _messages.StringField(5)
-  name = _messages.StringField(6)
-  pullTiming = _messages.MessageField('TimeSpan', 7)
-  script = _messages.StringField(8)
-  secretEnv = _messages.StringField(9, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 10)
-  timeout = _messages.StringField(11)
-  timing = _messages.MessageField('TimeSpan', 12)
-  volumes = _messages.MessageField('Volume', 13, repeated=True)
-  waitFor = _messages.StringField(14, repeated=True)
-
-
 class BuildType(_messages.Message):
   r"""Note holding the version of the provider's builder and the signature of
   the provenance message in linked BuildDetails.
@@ -567,6 +453,1136 @@ class ComplianceVersion(_messages.Message):
 
   cpeUri = _messages.StringField(1)
   version = _messages.StringField(2)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1ApprovalConfig(_messages.Message):
+  r"""ApprovalConfig describes configuration for manual approval of a build.
+
+  Fields:
+    approvalRequired: Whether or not approval is needed. If this is set on a
+      build, it will become pending when created, and will need to be
+      explicitly approved to start.
+  """
+
+  approvalRequired = _messages.BooleanField(1)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1ApprovalResult(_messages.Message):
+  r"""ApprovalResult describes the decision and associated metadata of a
+  manual approval of a build.
+
+  Enums:
+    DecisionValueValuesEnum: Required. The decision of this manual approval.
+
+  Fields:
+    approvalTime: Output only. The time when the approval decision was made.
+    approverAccount: Output only. Email of the user that called the
+      ApproveBuild API to approve or reject a build at the time that the API
+      was called.
+    comment: Optional. An optional comment for this manual approval result.
+    decision: Required. The decision of this manual approval.
+    url: Optional. An optional URL tied to this manual approval result. This
+      field is essentially the same as comment, except that it will be
+      rendered by the UI differently. An example use case is a link to an
+      external job that approved this Build.
+  """
+
+  class DecisionValueValuesEnum(_messages.Enum):
+    r"""Required. The decision of this manual approval.
+
+    Values:
+      DECISION_UNSPECIFIED: Default enum type. This should not be used.
+      APPROVED: Build is approved.
+      REJECTED: Build is rejected.
+    """
+    DECISION_UNSPECIFIED = 0
+    APPROVED = 1
+    REJECTED = 2
+
+  approvalTime = _messages.StringField(1)
+  approverAccount = _messages.StringField(2)
+  comment = _messages.StringField(3)
+  decision = _messages.EnumField('DecisionValueValuesEnum', 4)
+  url = _messages.StringField(5)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1Artifacts(_messages.Message):
+  r"""Artifacts produced by a build that should be uploaded upon successful
+  completion of all build steps.
+
+  Fields:
+    images: A list of images to be pushed upon the successful completion of
+      all build steps. The images will be pushed using the builder service
+      account's credentials. The digests of the pushed images will be stored
+      in the Build resource's results field. If any of the images fail to be
+      pushed, the build is marked FAILURE.
+    objects: A list of objects to be uploaded to Cloud Storage upon successful
+      completion of all build steps. Files in the workspace matching specified
+      paths globs will be uploaded to the specified Cloud Storage location
+      using the builder service account's credentials. The location and
+      generation of the uploaded objects will be stored in the Build
+      resource's results field. If any objects fail to be pushed, the build is
+      marked FAILURE.
+  """
+
+  images = _messages.StringField(1, repeated=True)
+  objects = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1ArtifactsArtifactObjects', 2)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1ArtifactsArtifactObjects(_messages.Message):
+  r"""Files in the workspace to upload to Cloud Storage upon successful
+  completion of all build steps.
+
+  Fields:
+    location: Cloud Storage bucket and optional object path, in the form
+      "gs://bucket/path/to/somewhere/". (see [Bucket Name
+      Requirements](https://cloud.google.com/storage/docs/bucket-
+      naming#requirements)). Files in the workspace matching any path pattern
+      will be uploaded to Cloud Storage with this location as a prefix.
+    paths: Path globs used to match files in the build's workspace.
+    timing: Output only. Stores timing information for pushing all artifact
+      objects.
+  """
+
+  location = _messages.StringField(1)
+  paths = _messages.StringField(2, repeated=True)
+  timing = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1TimeSpan', 3)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1Build(_messages.Message):
+  r"""A build resource in the Cloud Build API. At a high level, a `Build`
+  describes where to find source code, how to build it (for example, the
+  builder image to run on the source), and where to store the built artifacts.
+  Fields can include the following variables, which will be expanded when the
+  build is created: - $PROJECT_ID: the project ID of the build. -
+  $PROJECT_NUMBER: the project number of the build. - $LOCATION: the
+  location/region of the build. - $BUILD_ID: the autogenerated ID of the
+  build. - $REPO_NAME: the source repository name specified by RepoSource. -
+  $BRANCH_NAME: the branch name specified by RepoSource. - $TAG_NAME: the tag
+  name specified by RepoSource. - $REVISION_ID or $COMMIT_SHA: the commit SHA
+  specified by RepoSource or resolved from the specified branch or tag. -
+  $SHORT_SHA: first 7 characters of $REVISION_ID or $COMMIT_SHA.
+
+  Enums:
+    StatusValueValuesEnum: Output only. Status of the build.
+
+  Messages:
+    SubstitutionsValue: Substitutions data for `Build` resource.
+    TimingValue: Output only. Stores timing information for phases of the
+      build. Valid keys are: * BUILD: time to execute all build steps. * PUSH:
+      time to push all specified images. * FETCHSOURCE: time to fetch source.
+      * SETUPBUILD: time to set up build. If the build does not specify source
+      or images, these keys will not be included.
+
+  Fields:
+    approval: Output only. Describes this build's approval configuration,
+      status, and result.
+    artifacts: Artifacts produced by the build that should be uploaded upon
+      successful completion of all build steps.
+    availableSecrets: Secrets and secret environment variables.
+    buildTriggerId: Output only. The ID of the `BuildTrigger` that triggered
+      this build, if it was triggered automatically.
+    createTime: Output only. Time at which the request to create the build was
+      received.
+    failureInfo: Output only. Contains information about the build when
+      status=FAILURE.
+    finishTime: Output only. Time at which execution of the build was
+      finished. The difference between finish_time and start_time is the
+      duration of the build's execution.
+    id: Output only. Unique identifier of the build.
+    images: A list of images to be pushed upon the successful completion of
+      all build steps. The images are pushed using the builder service
+      account's credentials. The digests of the pushed images will be stored
+      in the `Build` resource's results field. If any of the images fail to be
+      pushed, the build status is marked `FAILURE`.
+    logUrl: Output only. URL to logs for this build in Google Cloud Console.
+    logsBucket: Google Cloud Storage bucket where logs should be written (see
+      [Bucket Name Requirements](https://cloud.google.com/storage/docs/bucket-
+      naming#requirements)). Logs file names will be of the format
+      `${logs_bucket}/log-${build_id}.txt`.
+    name: Output only. The 'Build' name with format:
+      `projects/{project}/locations/{location}/builds/{build}`, where {build}
+      is a unique identifier generated by the service.
+    options: Special options for this build.
+    projectId: Output only. ID of the project.
+    queueTtl: TTL in queue for this build. If provided and the build is
+      enqueued longer than this value, the build will expire and the build
+      status will be `EXPIRED`. The TTL starts ticking from create_time.
+    results: Output only. Results of the build.
+    secrets: Secrets to decrypt using Cloud Key Management Service. Note:
+      Secret Manager is the recommended technique for managing sensitive data
+      with Cloud Build. Use `available_secrets` to configure builds to access
+      secrets from Secret Manager. For instructions, see:
+      https://cloud.google.com/cloud-build/docs/securing-builds/use-secrets
+    serviceAccount: IAM service account whose credentials will be used at
+      build runtime. Must be of the format
+      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. ACCOUNT can be email
+      address or uniqueId of the service account.
+    source: The location of the source files to build.
+    sourceProvenance: Output only. A permanent fixed identifier for source.
+    startTime: Output only. Time at which execution of the build was started.
+    status: Output only. Status of the build.
+    statusDetail: Output only. Customer-readable message about the current
+      status.
+    steps: Required. The operations to be performed on the workspace.
+    substitutions: Substitutions data for `Build` resource.
+    tags: Tags for annotation of a `Build`. These are not docker tags.
+    timeout: Amount of time that this build should be allowed to run, to
+      second granularity. If this amount of time elapses, work on the build
+      will cease and the build status will be `TIMEOUT`. `timeout` starts
+      ticking from `startTime`. Default time is ten minutes.
+    timing: Output only. Stores timing information for phases of the build.
+      Valid keys are: * BUILD: time to execute all build steps. * PUSH: time
+      to push all specified images. * FETCHSOURCE: time to fetch source. *
+      SETUPBUILD: time to set up build. If the build does not specify source
+      or images, these keys will not be included.
+    warnings: Output only. Non-fatal problems encountered during the execution
+      of the build.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""Output only. Status of the build.
+
+    Values:
+      STATUS_UNKNOWN: Status of the build is unknown.
+      PENDING: Build has been created and is pending execution and queuing. It
+        has not been queued.
+      QUEUED: Build or step is queued; work has not yet begun.
+      WORKING: Build or step is being executed.
+      SUCCESS: Build or step finished successfully.
+      FAILURE: Build or step failed to complete successfully.
+      INTERNAL_ERROR: Build or step failed due to an internal cause.
+      TIMEOUT: Build or step took longer than was allowed.
+      CANCELLED: Build or step was canceled by a user.
+      EXPIRED: Build was enqueued for longer than the value of `queue_ttl`.
+    """
+    STATUS_UNKNOWN = 0
+    PENDING = 1
+    QUEUED = 2
+    WORKING = 3
+    SUCCESS = 4
+    FAILURE = 5
+    INTERNAL_ERROR = 6
+    TIMEOUT = 7
+    CANCELLED = 8
+    EXPIRED = 9
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SubstitutionsValue(_messages.Message):
+    r"""Substitutions data for `Build` resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a SubstitutionsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type SubstitutionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SubstitutionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TimingValue(_messages.Message):
+    r"""Output only. Stores timing information for phases of the build. Valid
+    keys are: * BUILD: time to execute all build steps. * PUSH: time to push
+    all specified images. * FETCHSOURCE: time to fetch source. * SETUPBUILD:
+    time to set up build. If the build does not specify source or images,
+    these keys will not be included.
+
+    Messages:
+      AdditionalProperty: An additional property for a TimingValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TimingValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TimingValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ContaineranalysisGoogleDevtoolsCloudbuildV1TimeSpan
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1TimeSpan', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  approval = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1BuildApproval', 1)
+  artifacts = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Artifacts', 2)
+  availableSecrets = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Secrets', 3)
+  buildTriggerId = _messages.StringField(4)
+  createTime = _messages.StringField(5)
+  failureInfo = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1BuildFailureInfo', 6)
+  finishTime = _messages.StringField(7)
+  id = _messages.StringField(8)
+  images = _messages.StringField(9, repeated=True)
+  logUrl = _messages.StringField(10)
+  logsBucket = _messages.StringField(11)
+  name = _messages.StringField(12)
+  options = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions', 13)
+  projectId = _messages.StringField(14)
+  queueTtl = _messages.StringField(15)
+  results = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Results', 16)
+  secrets = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Secret', 17, repeated=True)
+  serviceAccount = _messages.StringField(18)
+  source = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Source', 19)
+  sourceProvenance = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1SourceProvenance', 20)
+  startTime = _messages.StringField(21)
+  status = _messages.EnumField('StatusValueValuesEnum', 22)
+  statusDetail = _messages.StringField(23)
+  steps = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1BuildStep', 24, repeated=True)
+  substitutions = _messages.MessageField('SubstitutionsValue', 25)
+  tags = _messages.StringField(26, repeated=True)
+  timeout = _messages.StringField(27)
+  timing = _messages.MessageField('TimingValue', 28)
+  warnings = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1BuildWarning', 29, repeated=True)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildApproval(_messages.Message):
+  r"""BuildApproval describes a build's approval configuration, state, and
+  result.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of this build's approval.
+
+  Fields:
+    config: Output only. Configuration for manual approval of this build.
+    result: Output only. Result of manual approval for this Build.
+    state: Output only. The state of this build's approval.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of this build's approval.
+
+    Values:
+      STATE_UNSPECIFIED: Default enum type. This should not be used.
+      PENDING: Build approval is pending.
+      APPROVED: Build approval has been approved.
+      REJECTED: Build approval has been rejected.
+      CANCELLED: Build was cancelled while it was still pending approval.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    APPROVED = 2
+    REJECTED = 3
+    CANCELLED = 4
+
+  config = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1ApprovalConfig', 1)
+  result = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1ApprovalResult', 2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildFailureInfo(_messages.Message):
+  r"""A fatal problem encountered during the execution of the build.
+
+  Enums:
+    TypeValueValuesEnum: The name of the failure.
+
+  Fields:
+    detail: Explains the failure issue in more detail using hard-coded text.
+    type: The name of the failure.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The name of the failure.
+
+    Values:
+      FAILURE_TYPE_UNSPECIFIED: Type unspecified
+      PUSH_FAILED: Unable to push the image to the repository.
+      PUSH_IMAGE_NOT_FOUND: Final image not found.
+      PUSH_NOT_AUTHORIZED: Unauthorized push of the final image.
+      LOGGING_FAILURE: Backend logging failures. Should retry.
+      USER_BUILD_STEP: A build step has failed.
+      FETCH_SOURCE_FAILED: The source fetching has failed.
+    """
+    FAILURE_TYPE_UNSPECIFIED = 0
+    PUSH_FAILED = 1
+    PUSH_IMAGE_NOT_FOUND = 2
+    PUSH_NOT_AUTHORIZED = 3
+    LOGGING_FAILURE = 4
+    USER_BUILD_STEP = 5
+    FETCH_SOURCE_FAILED = 6
+
+  detail = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message):
+  r"""Optional arguments to enable specific features of builds.
+
+  Enums:
+    LogStreamingOptionValueValuesEnum: Option to define build log streaming
+      behavior to Google Cloud Storage.
+    LoggingValueValuesEnum: Option to specify the logging mode, which
+      determines if and where build logs are stored.
+    MachineTypeValueValuesEnum: Compute Engine machine type on which to run
+      the build.
+    RequestedVerifyOptionValueValuesEnum: Requested verifiability options.
+    SourceProvenanceHashValueListEntryValuesEnum:
+    SubstitutionOptionValueValuesEnum: Option to specify behavior when there
+      is an error in the substitution checks. NOTE: this is always set to
+      ALLOW_LOOSE for triggered builds and cannot be overridden in the build
+      configuration file.
+
+  Fields:
+    diskSizeGb: Requested disk size for the VM that runs the build. Note that
+      this is *NOT* "disk free"; some of the space will be used by the
+      operating system and build utilities. Also note that this is the minimum
+      disk size that will be allocated for the build -- the build may run with
+      a larger disk than requested. At present, the maximum disk size is
+      1000GB; builds that request more than the maximum are rejected with an
+      error.
+    dynamicSubstitutions: Option to specify whether or not to apply bash style
+      string operations to the substitutions. NOTE: this is always enabled for
+      triggered builds and cannot be overridden in the build configuration
+      file.
+    env: A list of global environment variable definitions that will exist for
+      all build steps in this build. If a variable is defined in both globally
+      and in a build step, the variable will use the build step value. The
+      elements are of the form "KEY=VALUE" for the environment variable "KEY"
+      being given the value "VALUE".
+    logStreamingOption: Option to define build log streaming behavior to
+      Google Cloud Storage.
+    logging: Option to specify the logging mode, which determines if and where
+      build logs are stored.
+    machineType: Compute Engine machine type on which to run the build.
+    pool: Optional. Specification for execution on a `WorkerPool`. See
+      [running builds in a private
+      pool](https://cloud.google.com/build/docs/private-pools/run-builds-in-
+      private-pool) for more information.
+    requestedVerifyOption: Requested verifiability options.
+    secretEnv: A list of global environment variables, which are encrypted
+      using a Cloud Key Management Service crypto key. These values must be
+      specified in the build's `Secret`. These variables will be available to
+      all build steps in this build.
+    sourceProvenanceHash: Requested hash for SourceProvenance.
+    substitutionOption: Option to specify behavior when there is an error in
+      the substitution checks. NOTE: this is always set to ALLOW_LOOSE for
+      triggered builds and cannot be overridden in the build configuration
+      file.
+    volumes: Global list of volumes to mount for ALL build steps Each volume
+      is created as an empty volume prior to starting the build process. Upon
+      completion of the build, volumes and their contents are discarded.
+      Global volume names and paths cannot conflict with the volumes defined a
+      build step. Using a global volume in a build with only one step is not
+      valid as it is indicative of a build request with an incorrect
+      configuration.
+    workerPool: This field deprecated; please use `pool.name` instead.
+  """
+
+  class LogStreamingOptionValueValuesEnum(_messages.Enum):
+    r"""Option to define build log streaming behavior to Google Cloud Storage.
+
+    Values:
+      STREAM_DEFAULT: Service may automatically determine build log streaming
+        behavior.
+      STREAM_ON: Build logs should be streamed to Google Cloud Storage.
+      STREAM_OFF: Build logs should not be streamed to Google Cloud Storage;
+        they will be written when the build is completed.
+    """
+    STREAM_DEFAULT = 0
+    STREAM_ON = 1
+    STREAM_OFF = 2
+
+  class LoggingValueValuesEnum(_messages.Enum):
+    r"""Option to specify the logging mode, which determines if and where
+    build logs are stored.
+
+    Values:
+      LOGGING_UNSPECIFIED: The service determines the logging mode. The
+        default is `LEGACY`. Do not rely on the default logging behavior as it
+        may change in the future.
+      LEGACY: Build logs are stored in Cloud Logging and Cloud Storage.
+      GCS_ONLY: Build logs are stored in Cloud Storage.
+      STACKDRIVER_ONLY: This option is the same as CLOUD_LOGGING_ONLY.
+      CLOUD_LOGGING_ONLY: Build logs are stored in Cloud Logging. Selecting
+        this option will not allow [logs
+        streaming](https://cloud.google.com/sdk/gcloud/reference/builds/log).
+      NONE: Turn off all logging. No build logs will be captured.
+    """
+    LOGGING_UNSPECIFIED = 0
+    LEGACY = 1
+    GCS_ONLY = 2
+    STACKDRIVER_ONLY = 3
+    CLOUD_LOGGING_ONLY = 4
+    NONE = 5
+
+  class MachineTypeValueValuesEnum(_messages.Enum):
+    r"""Compute Engine machine type on which to run the build.
+
+    Values:
+      UNSPECIFIED: Standard machine type.
+      N1_HIGHCPU_8: Highcpu machine with 8 CPUs.
+      N1_HIGHCPU_32: Highcpu machine with 32 CPUs.
+      E2_HIGHCPU_8: Highcpu e2 machine with 8 CPUs.
+      E2_HIGHCPU_32: Highcpu e2 machine with 32 CPUs.
+    """
+    UNSPECIFIED = 0
+    N1_HIGHCPU_8 = 1
+    N1_HIGHCPU_32 = 2
+    E2_HIGHCPU_8 = 3
+    E2_HIGHCPU_32 = 4
+
+  class RequestedVerifyOptionValueValuesEnum(_messages.Enum):
+    r"""Requested verifiability options.
+
+    Values:
+      NOT_VERIFIED: Not a verifiable build. (default)
+      VERIFIED: Verified build.
+    """
+    NOT_VERIFIED = 0
+    VERIFIED = 1
+
+  class SourceProvenanceHashValueListEntryValuesEnum(_messages.Enum):
+    r"""SourceProvenanceHashValueListEntryValuesEnum enum type.
+
+    Values:
+      NONE: No hash requested.
+      SHA256: Use a sha256 hash.
+      MD5: Use a md5 hash.
+    """
+    NONE = 0
+    SHA256 = 1
+    MD5 = 2
+
+  class SubstitutionOptionValueValuesEnum(_messages.Enum):
+    r"""Option to specify behavior when there is an error in the substitution
+    checks. NOTE: this is always set to ALLOW_LOOSE for triggered builds and
+    cannot be overridden in the build configuration file.
+
+    Values:
+      MUST_MATCH: Fails the build if error in substitutions checks, like
+        missing a substitution in the template or in the map.
+      ALLOW_LOOSE: Do not fail the build if error in substitutions checks.
+    """
+    MUST_MATCH = 0
+    ALLOW_LOOSE = 1
+
+  diskSizeGb = _messages.IntegerField(1)
+  dynamicSubstitutions = _messages.BooleanField(2)
+  env = _messages.StringField(3, repeated=True)
+  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 4)
+  logging = _messages.EnumField('LoggingValueValuesEnum', 5)
+  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 6)
+  pool = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptionsPoolOption', 7)
+  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 8)
+  secretEnv = _messages.StringField(9, repeated=True)
+  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 10, repeated=True)
+  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 11)
+  volumes = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Volume', 12, repeated=True)
+  workerPool = _messages.StringField(13)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptionsPoolOption(_messages.Message):
+  r"""Details about how a build should be executed on a `WorkerPool`. See
+  [running builds in a private
+  pool](https://cloud.google.com/build/docs/private-pools/run-builds-in-
+  private-pool) for more information.
+
+  Fields:
+    name: The `WorkerPool` resource to execute the build on. You must have
+      `cloudbuild.workerpools.use` on the project hosting the WorkerPool.
+      Format
+      projects/{project}/locations/{location}/workerPools/{workerPoolId}
+  """
+
+  name = _messages.StringField(1)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildStep(_messages.Message):
+  r"""A step in the build pipeline.
+
+  Enums:
+    StatusValueValuesEnum: Output only. Status of the build step. At this
+      time, build step status is only updated on build completion; step status
+      is not updated in real-time as the build progresses.
+
+  Fields:
+    args: A list of arguments that will be presented to the step when it is
+      started. If the image used to run the step's container has an
+      entrypoint, the `args` are used as arguments to that entrypoint. If the
+      image does not define an entrypoint, the first element in args is used
+      as the entrypoint, and the remainder will be used as arguments.
+    dir: Working directory to use when running this step's container. If this
+      value is a relative path, it is relative to the build's working
+      directory. If this value is absolute, it may be outside the build's
+      working directory, in which case the contents of the path may not be
+      persisted across build step executions, unless a `volume` for that path
+      is specified. If the build specifies a `RepoSource` with `dir` and a
+      step with a `dir`, which specifies an absolute path, the `RepoSource`
+      `dir` is ignored for the step's execution.
+    entrypoint: Entrypoint to be used instead of the build step image's
+      default entrypoint. If unset, the image's default entrypoint is used.
+    env: A list of environment variable definitions to be used when running a
+      step. The elements are of the form "KEY=VALUE" for the environment
+      variable "KEY" being given the value "VALUE".
+    id: Unique identifier for this build step, used in `wait_for` to reference
+      this build step as a dependency.
+    name: Required. The name of the container image that will run this
+      particular build step. If the image is available in the host's Docker
+      daemon's cache, it will be run directly. If not, the host will attempt
+      to pull the image first, using the builder service account's credentials
+      if necessary. The Docker daemon's cache will already have the latest
+      versions of all of the officially supported build steps
+      ([https://github.com/GoogleCloudPlatform/cloud-
+      builders](https://github.com/GoogleCloudPlatform/cloud-builders)). The
+      Docker daemon will also have cached many of the layers for some popular
+      images, like "ubuntu", "debian", but they will be refreshed at the time
+      you attempt to use them. If you built an image in a previous build step,
+      it will be stored in the host's Docker daemon's cache and is available
+      to use as the name for a later build step.
+    pullTiming: Output only. Stores timing information for pulling this build
+      step's builder image only.
+    script: A shell script to be executed in the step. When script is
+      provided, the user cannot specify the entrypoint or args.
+    secretEnv: A list of environment variables which are encrypted using a
+      Cloud Key Management Service crypto key. These values must be specified
+      in the build's `Secret`.
+    status: Output only. Status of the build step. At this time, build step
+      status is only updated on build completion; step status is not updated
+      in real-time as the build progresses.
+    timeout: Time limit for executing this build step. If not defined, the
+      step has no time limit and will be allowed to continue to run until
+      either it completes or the build itself times out.
+    timing: Output only. Stores timing information for executing this build
+      step.
+    volumes: List of volumes to mount into the build step. Each volume is
+      created as an empty volume prior to execution of the build step. Upon
+      completion of the build, volumes and their contents are discarded. Using
+      a named volume in only one step is not valid as it is indicative of a
+      build request with an incorrect configuration.
+    waitFor: The ID(s) of the step(s) that this build step depends on. This
+      build step will not start until all the build steps in `wait_for` have
+      completed successfully. If `wait_for` is empty, this build step will
+      start when all previous build steps in the `Build.Steps` list have
+      completed successfully.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""Output only. Status of the build step. At this time, build step status
+    is only updated on build completion; step status is not updated in real-
+    time as the build progresses.
+
+    Values:
+      STATUS_UNKNOWN: Status of the build is unknown.
+      PENDING: Build has been created and is pending execution and queuing. It
+        has not been queued.
+      QUEUED: Build or step is queued; work has not yet begun.
+      WORKING: Build or step is being executed.
+      SUCCESS: Build or step finished successfully.
+      FAILURE: Build or step failed to complete successfully.
+      INTERNAL_ERROR: Build or step failed due to an internal cause.
+      TIMEOUT: Build or step took longer than was allowed.
+      CANCELLED: Build or step was canceled by a user.
+      EXPIRED: Build was enqueued for longer than the value of `queue_ttl`.
+    """
+    STATUS_UNKNOWN = 0
+    PENDING = 1
+    QUEUED = 2
+    WORKING = 3
+    SUCCESS = 4
+    FAILURE = 5
+    INTERNAL_ERROR = 6
+    TIMEOUT = 7
+    CANCELLED = 8
+    EXPIRED = 9
+
+  args = _messages.StringField(1, repeated=True)
+  dir = _messages.StringField(2)
+  entrypoint = _messages.StringField(3)
+  env = _messages.StringField(4, repeated=True)
+  id = _messages.StringField(5)
+  name = _messages.StringField(6)
+  pullTiming = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1TimeSpan', 7)
+  script = _messages.StringField(8)
+  secretEnv = _messages.StringField(9, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  timeout = _messages.StringField(11)
+  timing = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1TimeSpan', 12)
+  volumes = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Volume', 13, repeated=True)
+  waitFor = _messages.StringField(14, repeated=True)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildWarning(_messages.Message):
+  r"""A non-fatal problem encountered during the execution of the build.
+
+  Enums:
+    PriorityValueValuesEnum: The priority for this warning.
+
+  Fields:
+    priority: The priority for this warning.
+    text: Explanation of the warning generated.
+  """
+
+  class PriorityValueValuesEnum(_messages.Enum):
+    r"""The priority for this warning.
+
+    Values:
+      PRIORITY_UNSPECIFIED: Should not be used.
+      INFO: e.g. deprecation warnings and alternative feature highlights.
+      WARNING: e.g. automated detection of possible issues with the build.
+      ALERT: e.g. alerts that a feature used in the build is pending removal
+    """
+    PRIORITY_UNSPECIFIED = 0
+    INFO = 1
+    WARNING = 2
+    ALERT = 3
+
+  priority = _messages.EnumField('PriorityValueValuesEnum', 1)
+  text = _messages.StringField(2)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1BuiltImage(_messages.Message):
+  r"""An image built by the pipeline.
+
+  Fields:
+    digest: Docker Registry 2.0 digest.
+    name: Name used to push the container image to Google Container Registry,
+      as presented to `docker push`.
+    pushTiming: Output only. Stores timing information for pushing the
+      specified image.
+  """
+
+  digest = _messages.StringField(1)
+  name = _messages.StringField(2)
+  pushTiming = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1TimeSpan', 3)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1FileHashes(_messages.Message):
+  r"""Container message for hashes of byte content of files, used in
+  SourceProvenance messages to verify integrity of source input to the build.
+
+  Fields:
+    fileHash: Collection of file hashes.
+  """
+
+  fileHash = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Hash', 1, repeated=True)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1Hash(_messages.Message):
+  r"""Container message for hash values.
+
+  Enums:
+    TypeValueValuesEnum: The type of hash that was performed.
+
+  Fields:
+    type: The type of hash that was performed.
+    value: The hash value.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of hash that was performed.
+
+    Values:
+      NONE: No hash requested.
+      SHA256: Use a sha256 hash.
+      MD5: Use a md5 hash.
+    """
+    NONE = 0
+    SHA256 = 1
+    MD5 = 2
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
+  value = _messages.BytesField(2)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1InlineSecret(_messages.Message):
+  r"""Pairs a set of secret environment variables mapped to encrypted values
+  with the Cloud KMS key to use to decrypt the value.
+
+  Messages:
+    EnvMapValue: Map of environment variable name to its encrypted value.
+      Secret environment variables must be unique across all of a build's
+      secrets, and must be used by at least one build step. Values can be at
+      most 64 KB in size. There can be at most 100 secret values across all of
+      a build's secrets.
+
+  Fields:
+    envMap: Map of environment variable name to its encrypted value. Secret
+      environment variables must be unique across all of a build's secrets,
+      and must be used by at least one build step. Values can be at most 64 KB
+      in size. There can be at most 100 secret values across all of a build's
+      secrets.
+    kmsKeyName: Resource name of Cloud KMS crypto key to decrypt the encrypted
+      value. In format: projects/*/locations/*/keyRings/*/cryptoKeys/*
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class EnvMapValue(_messages.Message):
+    r"""Map of environment variable name to its encrypted value. Secret
+    environment variables must be unique across all of a build's secrets, and
+    must be used by at least one build step. Values can be at most 64 KB in
+    size. There can be at most 100 secret values across all of a build's
+    secrets.
+
+    Messages:
+      AdditionalProperty: An additional property for a EnvMapValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type EnvMapValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EnvMapValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A byte attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.BytesField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  envMap = _messages.MessageField('EnvMapValue', 1)
+  kmsKeyName = _messages.StringField(2)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1RepoSource(_messages.Message):
+  r"""Location of the source in a Google Cloud Source Repository.
+
+  Messages:
+    SubstitutionsValue: Substitutions to use in a triggered build. Should only
+      be used with RunBuildTrigger
+
+  Fields:
+    branchName: Regex matching branches to build. The syntax of the regular
+      expressions accepted is the syntax accepted by RE2 and described at
+      https://github.com/google/re2/wiki/Syntax
+    commitSha: Explicit commit SHA to build.
+    dir: Directory, relative to the source root, in which to run the build.
+      This must be a relative path. If a step's `dir` is specified and is an
+      absolute path, this value is ignored for that step's execution.
+    invertRegex: Only trigger a build if the revision regex does NOT match the
+      revision regex.
+    projectId: ID of the project that owns the Cloud Source Repository. If
+      omitted, the project ID requesting the build is assumed.
+    repoName: Name of the Cloud Source Repository.
+    substitutions: Substitutions to use in a triggered build. Should only be
+      used with RunBuildTrigger
+    tagName: Regex matching tags to build. The syntax of the regular
+      expressions accepted is the syntax accepted by RE2 and described at
+      https://github.com/google/re2/wiki/Syntax
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SubstitutionsValue(_messages.Message):
+    r"""Substitutions to use in a triggered build. Should only be used with
+    RunBuildTrigger
+
+    Messages:
+      AdditionalProperty: An additional property for a SubstitutionsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type SubstitutionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SubstitutionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  branchName = _messages.StringField(1)
+  commitSha = _messages.StringField(2)
+  dir = _messages.StringField(3)
+  invertRegex = _messages.BooleanField(4)
+  projectId = _messages.StringField(5)
+  repoName = _messages.StringField(6)
+  substitutions = _messages.MessageField('SubstitutionsValue', 7)
+  tagName = _messages.StringField(8)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1Results(_messages.Message):
+  r"""Artifacts created by the build pipeline.
+
+  Fields:
+    artifactManifest: Path to the artifact manifest. Only populated when
+      artifacts are uploaded.
+    artifactTiming: Time to push all non-container artifacts.
+    buildStepImages: List of build step digests, in the order corresponding to
+      build step indices.
+    buildStepOutputs: List of build step outputs, produced by builder images,
+      in the order corresponding to build step indices. [Cloud
+      Builders](https://cloud.google.com/cloud-build/docs/cloud-builders) can
+      produce this output by writing to `$BUILDER_OUTPUT/output`. Only the
+      first 4KB of data is stored.
+    images: Container images that were built as a part of the build.
+    numArtifacts: Number of artifacts uploaded. Only populated when artifacts
+      are uploaded.
+  """
+
+  artifactManifest = _messages.StringField(1)
+  artifactTiming = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1TimeSpan', 2)
+  buildStepImages = _messages.StringField(3, repeated=True)
+  buildStepOutputs = _messages.BytesField(4, repeated=True)
+  images = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1BuiltImage', 5, repeated=True)
+  numArtifacts = _messages.IntegerField(6)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1Secret(_messages.Message):
+  r"""Pairs a set of secret environment variables containing encrypted values
+  with the Cloud KMS key to use to decrypt the value. Note: Use `kmsKeyName`
+  with `available_secrets` instead of using `kmsKeyName` with `secret`. For
+  instructions see: https://cloud.google.com/cloud-build/docs/securing-
+  builds/use-encrypted-credentials.
+
+  Messages:
+    SecretEnvValue: Map of environment variable name to its encrypted value.
+      Secret environment variables must be unique across all of a build's
+      secrets, and must be used by at least one build step. Values can be at
+      most 64 KB in size. There can be at most 100 secret values across all of
+      a build's secrets.
+
+  Fields:
+    kmsKeyName: Cloud KMS key name to use to decrypt these envs.
+    secretEnv: Map of environment variable name to its encrypted value. Secret
+      environment variables must be unique across all of a build's secrets,
+      and must be used by at least one build step. Values can be at most 64 KB
+      in size. There can be at most 100 secret values across all of a build's
+      secrets.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SecretEnvValue(_messages.Message):
+    r"""Map of environment variable name to its encrypted value. Secret
+    environment variables must be unique across all of a build's secrets, and
+    must be used by at least one build step. Values can be at most 64 KB in
+    size. There can be at most 100 secret values across all of a build's
+    secrets.
+
+    Messages:
+      AdditionalProperty: An additional property for a SecretEnvValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type SecretEnvValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SecretEnvValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A byte attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.BytesField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  kmsKeyName = _messages.StringField(1)
+  secretEnv = _messages.MessageField('SecretEnvValue', 2)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1SecretManagerSecret(_messages.Message):
+  r"""Pairs a secret environment variable with a SecretVersion in Secret
+  Manager.
+
+  Fields:
+    env: Environment variable name to associate with the secret. Secret
+      environment variables must be unique across all of a build's secrets,
+      and must be used by at least one build step.
+    versionName: Resource name of the SecretVersion. In format:
+      projects/*/secrets/*/versions/*
+  """
+
+  env = _messages.StringField(1)
+  versionName = _messages.StringField(2)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1Secrets(_messages.Message):
+  r"""Secrets and secret environment variables.
+
+  Fields:
+    inline: Secrets encrypted with KMS key and the associated secret
+      environment variable.
+    secretManager: Secrets in Secret Manager and associated secret environment
+      variable.
+  """
+
+  inline = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1InlineSecret', 1, repeated=True)
+  secretManager = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1SecretManagerSecret', 2, repeated=True)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1Source(_messages.Message):
+  r"""Location of the source in a supported storage service.
+
+  Fields:
+    repoSource: If provided, get the source from this location in a Cloud
+      Source Repository.
+    storageSource: If provided, get the source from this location in Google
+      Cloud Storage.
+    storageSourceManifest: If provided, get the source from this manifest in
+      Google Cloud Storage. This feature is in Preview; see description
+      [here](https://github.com/GoogleCloudPlatform/cloud-
+      builders/tree/master/gcs-fetcher).
+  """
+
+  repoSource = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1RepoSource', 1)
+  storageSource = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSource', 2)
+  storageSourceManifest = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSourceManifest', 3)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1SourceProvenance(_messages.Message):
+  r"""Provenance of the source. Ways to find the original source, or verify
+  that some source was used for this build.
+
+  Messages:
+    FileHashesValue: Output only. Hash(es) of the build source, which can be
+      used to verify that the original source integrity was maintained in the
+      build. Note that `FileHashes` will only be populated if `BuildOptions`
+      has requested a `SourceProvenanceHash`. The keys to this map are file
+      paths used as build source and the values contain the hash values for
+      those files. If the build source came in a single package such as a
+      gzipped tarfile (`.tar.gz`), the `FileHash` will be for the single path
+      to that file.
+
+  Fields:
+    fileHashes: Output only. Hash(es) of the build source, which can be used
+      to verify that the original source integrity was maintained in the
+      build. Note that `FileHashes` will only be populated if `BuildOptions`
+      has requested a `SourceProvenanceHash`. The keys to this map are file
+      paths used as build source and the values contain the hash values for
+      those files. If the build source came in a single package such as a
+      gzipped tarfile (`.tar.gz`), the `FileHash` will be for the single path
+      to that file.
+    resolvedRepoSource: A copy of the build's `source.repo_source`, if exists,
+      with any revisions resolved.
+    resolvedStorageSource: A copy of the build's `source.storage_source`, if
+      exists, with any generations resolved.
+    resolvedStorageSourceManifest: A copy of the build's
+      `source.storage_source_manifest`, if exists, with any revisions
+      resolved. This feature is in Preview.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FileHashesValue(_messages.Message):
+    r"""Output only. Hash(es) of the build source, which can be used to verify
+    that the original source integrity was maintained in the build. Note that
+    `FileHashes` will only be populated if `BuildOptions` has requested a
+    `SourceProvenanceHash`. The keys to this map are file paths used as build
+    source and the values contain the hash values for those files. If the
+    build source came in a single package such as a gzipped tarfile
+    (`.tar.gz`), the `FileHash` will be for the single path to that file.
+
+    Messages:
+      AdditionalProperty: An additional property for a FileHashesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type FileHashesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FileHashesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ContaineranalysisGoogleDevtoolsCloudbuildV1FileHashes
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1FileHashes', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  fileHashes = _messages.MessageField('FileHashesValue', 1)
+  resolvedRepoSource = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1RepoSource', 2)
+  resolvedStorageSource = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSource', 3)
+  resolvedStorageSourceManifest = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSourceManifest', 4)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSource(_messages.Message):
+  r"""Location of the source in an archive file in Google Cloud Storage.
+
+  Fields:
+    bucket: Google Cloud Storage bucket containing the source (see [Bucket
+      Name Requirements](https://cloud.google.com/storage/docs/bucket-
+      naming#requirements)).
+    generation: Google Cloud Storage generation for the object. If the
+      generation is omitted, the latest generation will be used.
+    object: Google Cloud Storage object containing the source. This object
+      must be a zipped (`.zip`) or gzipped archive file (`.tar.gz`) containing
+      source to build.
+  """
+
+  bucket = _messages.StringField(1)
+  generation = _messages.IntegerField(2)
+  object = _messages.StringField(3)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSourceManifest(_messages.Message):
+  r"""Location of the source manifest in Google Cloud Storage. This feature is
+  in Preview; see description
+  [here](https://github.com/GoogleCloudPlatform/cloud-
+  builders/tree/master/gcs-fetcher).
+
+  Fields:
+    bucket: Google Cloud Storage bucket containing the source manifest (see
+      [Bucket Name Requirements](https://cloud.google.com/storage/docs/bucket-
+      naming#requirements)).
+    generation: Google Cloud Storage generation for the object. If the
+      generation is omitted, the latest generation will be used.
+    object: Google Cloud Storage object containing the source manifest. This
+      object must be a JSON file.
+  """
+
+  bucket = _messages.StringField(1)
+  generation = _messages.IntegerField(2)
+  object = _messages.StringField(3)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1TimeSpan(_messages.Message):
+  r"""Start and end times for a build execution phase.
+
+  Fields:
+    endTime: End of time span.
+    startTime: Start of time span.
+  """
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1Volume(_messages.Message):
+  r"""Volume describes a Docker container volume which is mounted into build
+  steps in order to persist files across build step execution.
+
+  Fields:
+    name: Name of the volume to mount. Volume names must be unique per build
+      step and must be valid names for Docker volumes. Each named volume must
+      be used by at least two build steps.
+    path: Path at which to mount the volume. Paths must be absolute and cannot
+      conflict with other volume paths on the same build step or with certain
+      reserved volume paths.
+  """
+
+  name = _messages.StringField(1)
+  path = _messages.StringField(2)
 
 
 class ContaineranalysisProjectsNotesCreateRequest(_messages.Message):
@@ -3570,18 +4586,6 @@ class TestIamPermissionsResponse(_messages.Message):
   permissions = _messages.StringField(1, repeated=True)
 
 
-class TimeSpan(_messages.Message):
-  r"""Start and end times for a build execution phase.
-
-  Fields:
-    endTime: End of time span.
-    startTime: Start of time span.
-  """
-
-  endTime = _messages.StringField(1)
-  startTime = _messages.StringField(2)
-
-
 class UpdateOperationRequest(_messages.Message):
   r"""Request for updating an existing operation
 
@@ -3695,23 +4699,6 @@ class Version(_messages.Message):
   kind = _messages.EnumField('KindValueValuesEnum', 3)
   name = _messages.StringField(4)
   revision = _messages.StringField(5)
-
-
-class Volume(_messages.Message):
-  r"""Volume describes a Docker container volume which is mounted into build
-  steps in order to persist files across build step execution.
-
-  Fields:
-    name: Name of the volume to mount. Volume names must be unique per build
-      step and must be valid names for Docker volumes. Each named volume must
-      be used by at least two build steps.
-    path: Path at which to mount the volume. Paths must be absolute and cannot
-      conflict with other volume paths on the same build step or with certain
-      reserved volume paths.
-  """
-
-  name = _messages.StringField(1)
-  path = _messages.StringField(2)
 
 
 class VulnerabilityDetails(_messages.Message):

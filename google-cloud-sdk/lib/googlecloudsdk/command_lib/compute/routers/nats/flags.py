@@ -214,7 +214,7 @@ def _AddMinPortsPerVmArg(parser,
 
     If Dynamic Port Allocation is disabled, this defaults to 64.
 
-    If Dynamic Port Allocation is enabled, this defaults to 32; and must be set
+    If Dynamic Port Allocation is enabled, this defaults to 32 and must be set
     to a power of 2 that is at least 32 and lower than maxPortsPerVm.
     """)
   _AddClearableArgument(
@@ -232,7 +232,7 @@ def _AddDynamicPortAllocationArgs(parser, for_create=False):
   max_ports_help_text = textwrap.dedent("""\
   Maximum ports to be allocated to a VM.
 
-  This field can only be set when Dynamic Port Allocation is enabled, and
+  This field can only be set when Dynamic Port Allocation is enabled and
   defaults to 65536. It must be set to a power of 2 that is greater than
   minPortsPerVm and at most 65536.
   """)

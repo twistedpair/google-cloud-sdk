@@ -98,8 +98,6 @@ def _ConstructWorkerPoolSpecs(aiplatform_client, specs, **kwargs):
   Returns:
     A list of WorkerPoolSpec message instances for creating a custom job.
   """
-
-  # TODO(b/184350069): Support creating jobs with auto-packaging.
   worker_pool_specs = []
 
   for spec in specs:
@@ -112,18 +110,13 @@ def _ConstructWorkerPoolSpecs(aiplatform_client, specs, **kwargs):
   return worker_pool_specs
 
 
-def IsLocalPackagingRequired(worker_pool_specs):
-  """Check if any one of the given worker pool specs requires local packaging."""
-  return worker_pool_specs and any(
-      ('local-package-path' in spec) for spec in worker_pool_specs)
-
-
 def _PrepareTrainingImage(project,
                           job_name,
                           base_image,
                           local_package,
                           script,
-                          python_module=None):
+                          python_module=None,
+                          **kwargs):
   """Build a training image from local package and push it to Cloud for later usage."""
   output_image = docker_utils.GenerateImageName(
       base_name=job_name, project=project, is_gcr=True)
@@ -133,7 +126,8 @@ def _PrepareTrainingImage(project,
       host_workdir=files.ExpandHomeDir(local_package),
       main_script=script,
       python_module=python_module,
-      output_image_name=output_image)
+      output_image_name=output_image,
+      **kwargs)
   log.status.Print('\nA custom container image is built locally.\n')
 
   push_command = ['docker', 'push', output_image]
@@ -166,27 +160,33 @@ def UpdateWorkerPoolSpecsIfLocalPackageRequired(
     All updated worker pool specifications that uses the already built
     packages and are expectedly passed to a custom-jobs create RPC request.
   """
+
+  image_built_for_first_worker = None
+  if worker_pool_specs and 'local-package-path' in worker_pool_specs[0]:
+    base_image = worker_pool_specs[0].pop('executor-image-uri')
+    local_package = worker_pool_specs[0].pop('local-package-path')
+
+    python_module = worker_pool_specs[0].pop('python-module', None)
+    if python_module:
+      script = local_util.ModuleToPath(python_module)
+    else:
+      script = worker_pool_specs[0].pop('script')
+
+    image_built_for_first_worker = _PrepareTrainingImage(
+        project=project,
+        job_name=job_name,
+        base_image=base_image,
+        local_package=local_package,
+        script=script,
+        python_module=python_module,
+        requirements=worker_pool_specs[0].pop('requirements', None),
+        extra_packages=worker_pool_specs[0].pop('extra-packages', None),
+        extra_dirs=worker_pool_specs[0].pop('extra-dirs', None))
+
   for spec in worker_pool_specs:
-    if 'local-package-path' in spec:
+    if image_built_for_first_worker and spec:
       new_spec = spec.copy()
-
-      base_image = new_spec.pop('executor-image-uri')
-      local_package = new_spec.pop('local-package-path')
-
-      python_module = new_spec.pop('python-module', None)
-      if python_module:
-        script = local_util.ModuleToPath(python_module)
-      else:
-        script = new_spec.pop('script')
-
-      new_spec['container-image-uri'] = _PrepareTrainingImage(
-          project=project,
-          job_name=job_name,
-          base_image=base_image,
-          local_package=local_package,
-          script=script,
-          python_module=python_module)
-
+      new_spec['container-image-uri'] = image_built_for_first_worker
       yield new_spec
     else:
       yield spec

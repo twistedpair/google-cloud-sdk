@@ -1387,6 +1387,7 @@ class TransferSpec(_messages.Message):
       included in the set of data source and data sink objects. Object
       conditions based on objects' "last modification time" do not exclude
       objects in a data sink.
+    posixDataSink: A POSIX Filesystem data sink.
     posixDataSource: A POSIX Filesystem data source.
     transferOptions: If the option delete_objects_unique_in_sink is `true` and
       time-based object conditions such as 'last modification time' are
@@ -1399,8 +1400,9 @@ class TransferSpec(_messages.Message):
   gcsDataSource = _messages.MessageField('GcsData', 4)
   httpDataSource = _messages.MessageField('HttpData', 5)
   objectConditions = _messages.MessageField('ObjectConditions', 6)
-  posixDataSource = _messages.MessageField('PosixFilesystem', 7)
-  transferOptions = _messages.MessageField('TransferOptions', 8)
+  posixDataSink = _messages.MessageField('PosixFilesystem', 7)
+  posixDataSource = _messages.MessageField('PosixFilesystem', 8)
+  transferOptions = _messages.MessageField('TransferOptions', 9)
 
 
 class UpdateTransferJobRequest(_messages.Message):

@@ -394,6 +394,8 @@ class ConnectSettings(_messages.Message):
         version is 18.
       MYSQL_8_0_26: The database major version is MySQL 8.0 and the minor
         version is 26.
+      MYSQL_8_0_27: The database major version is MySQL 8.0 and the minor
+        version is 27.
       POSTGRES_13: The database version is PostgreSQL 13.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
@@ -418,11 +420,12 @@ class ConnectSettings(_messages.Message):
     MYSQL_8_0 = 13
     MYSQL_8_0_18 = 14
     MYSQL_8_0_26 = 15
-    POSTGRES_13 = 16
-    SQLSERVER_2019_STANDARD = 17
-    SQLSERVER_2019_ENTERPRISE = 18
-    SQLSERVER_2019_EXPRESS = 19
-    SQLSERVER_2019_WEB = 20
+    MYSQL_8_0_27 = 16
+    POSTGRES_13 = 17
+    SQLSERVER_2019_STANDARD = 18
+    SQLSERVER_2019_ENTERPRISE = 19
+    SQLSERVER_2019_EXPRESS = 20
+    SQLSERVER_2019_WEB = 21
 
   backendType = _messages.EnumField('BackendTypeValueValuesEnum', 1)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
@@ -493,12 +496,7 @@ class DatabaseInstance(_messages.Message):
     InstalledVersionValueValuesEnum: installed_version stores the current
       fully resolved database version including minor version such as
       MYSQL_5_6_50
-    InstanceTypeValueValuesEnum: The instance type. This can be one of the
-      following: * **CLOUD_SQL_INSTANCE**: A Cloud SQL instance that is not
-      replicating from a primary instance. * **ON_PREMISES_INSTANCE**: An
-      instance running on the customer's premises. *
-      **READ_REPLICA_INSTANCE**: A Cloud SQL instance configured as a read-
-      replica.
+    InstanceTypeValueValuesEnum: The instance type.
     StateValueValuesEnum: The current serving state of the Cloud SQL instance.
     SuspensionReasonValueListEntryValuesEnum:
 
@@ -538,11 +536,7 @@ class DatabaseInstance(_messages.Message):
       secondary zone.
     installedVersion: installed_version stores the current fully resolved
       database version including minor version such as MYSQL_5_6_50
-    instanceType: The instance type. This can be one of the following: *
-      **CLOUD_SQL_INSTANCE**: A Cloud SQL instance that is not replicating
-      from a primary instance. * **ON_PREMISES_INSTANCE**: An instance running
-      on the customer's premises. * **READ_REPLICA_INSTANCE**: A Cloud SQL
-      instance configured as a read-replica.
+    instanceType: The instance type.
     ipAddresses: The assigned IP addresses for the instance.
     ipv6Address: The IPv6 address assigned to the instance. (Deprecated) This
       property was applicable only to First Generation instances.
@@ -630,6 +624,8 @@ class DatabaseInstance(_messages.Message):
         version is 18.
       MYSQL_8_0_26: The database major version is MySQL 8.0 and the minor
         version is 26.
+      MYSQL_8_0_27: The database major version is MySQL 8.0 and the minor
+        version is 27.
       POSTGRES_13: The database version is PostgreSQL 13.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
@@ -654,11 +650,12 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0 = 13
     MYSQL_8_0_18 = 14
     MYSQL_8_0_26 = 15
-    POSTGRES_13 = 16
-    SQLSERVER_2019_STANDARD = 17
-    SQLSERVER_2019_ENTERPRISE = 18
-    SQLSERVER_2019_EXPRESS = 19
-    SQLSERVER_2019_WEB = 20
+    MYSQL_8_0_27 = 16
+    POSTGRES_13 = 17
+    SQLSERVER_2019_STANDARD = 18
+    SQLSERVER_2019_ENTERPRISE = 19
+    SQLSERVER_2019_EXPRESS = 20
+    SQLSERVER_2019_WEB = 21
 
   class InstalledVersionValueValuesEnum(_messages.Enum):
     r"""installed_version stores the current fully resolved database version
@@ -685,6 +682,8 @@ class DatabaseInstance(_messages.Message):
         version is 18.
       MYSQL_8_0_26: The database major version is MySQL 8.0 and the minor
         version is 26.
+      MYSQL_8_0_27: The database major version is MySQL 8.0 and the minor
+        version is 27.
       POSTGRES_13: The database version is PostgreSQL 13.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
@@ -709,23 +708,21 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0 = 13
     MYSQL_8_0_18 = 14
     MYSQL_8_0_26 = 15
-    POSTGRES_13 = 16
-    SQLSERVER_2019_STANDARD = 17
-    SQLSERVER_2019_ENTERPRISE = 18
-    SQLSERVER_2019_EXPRESS = 19
-    SQLSERVER_2019_WEB = 20
+    MYSQL_8_0_27 = 16
+    POSTGRES_13 = 17
+    SQLSERVER_2019_STANDARD = 18
+    SQLSERVER_2019_ENTERPRISE = 19
+    SQLSERVER_2019_EXPRESS = 20
+    SQLSERVER_2019_WEB = 21
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
-    r"""The instance type. This can be one of the following: *
-    **CLOUD_SQL_INSTANCE**: A Cloud SQL instance that is not replicating from
-    a primary instance. * **ON_PREMISES_INSTANCE**: An instance running on the
-    customer's premises. * **READ_REPLICA_INSTANCE**: A Cloud SQL instance
-    configured as a read-replica.
+    r"""The instance type.
 
     Values:
       SQL_INSTANCE_TYPE_UNSPECIFIED: This is an unknown Cloud SQL instance
         type.
-      CLOUD_SQL_INSTANCE: A regular Cloud SQL instance.
+      CLOUD_SQL_INSTANCE: A regular Cloud SQL instance that is not replicating
+        from a primary instance.
       ON_PREMISES_INSTANCE: An instance running on the customer's premises
         that is not managed by Cloud SQL.
       READ_REPLICA_INSTANCE: A Cloud SQL instance acting as a read-replica.
@@ -748,8 +745,7 @@ class DatabaseInstance(_messages.Message):
       MAINTENANCE: The instance is down for maintenance.
       FAILED: The creation of the instance failed or a fatal error occurred
         during maintenance.
-      ONLINE_MAINTENANCE: The instance is under maintenance operations and the
-        database is available.
+      ONLINE_MAINTENANCE: Deprecated - This is an internal state, b/197569332
     """
     SQL_INSTANCE_STATE_UNSPECIFIED = 0
     RUNNABLE = 1
@@ -962,9 +958,7 @@ class ExportContext(_messages.Message):
   r"""Database instance export context.
 
   Enums:
-    FileTypeValueValuesEnum: The file type for the specified uri. * **SQL**:
-      The file contains SQL statements. * **CSV**: The file contains CSV data.
-      * **BAK**: The file contains backup data for a SQL Server instance.
+    FileTypeValueValuesEnum: The file type for the specified uri.
 
   Messages:
     CsvExportOptionsValue: Options for exporting data as CSV. **MySQL** and
@@ -974,20 +968,17 @@ class ExportContext(_messages.Message):
   Fields:
     csvExportOptions: Options for exporting data as CSV. **MySQL** and
       **PostgreSQL** instances only.
-    databases: Databases to be exported. * **MySQL instances:** If
-      **fileType** is **SQL** and no database is specified, all databases are
-      exported, except for the **mysql** system database. If **fileType** is
-      **CSV**, you can specify one database, either by using this property or
-      by using the **csvExportOptions.selectQuery** property, which takes
-      precedence over this property. * **PostgreSQL instances:** You must
-      specify one database to be exported. If **fileType** is **CSV**, this
-      database must match the one specified in the
-      **csvExportOptions.selectQuery** property. * **SQL Server instances:**
-      You must specify one database to be exported, and the **fileType** must
-      be **BAK**.
-    fileType: The file type for the specified uri. * **SQL**: The file
-      contains SQL statements. * **CSV**: The file contains CSV data. *
-      **BAK**: The file contains backup data for a SQL Server instance.
+    databases: Databases to be exported. **MySQL instances:** If **fileType**
+      is **SQL** and no database is specified, all databases are exported,
+      except for the **mysql** system database. If **fileType** is **CSV**,
+      you can specify one database, either by using this property or by using
+      the **csvExportOptions.selectQuery** property, which takes precedence
+      over this property. **PostgreSQL instances:** You must specify one
+      database to be exported. If **fileType** is **CSV**, this database must
+      match the one specified in the **csvExportOptions.selectQuery**
+      property. **SQL Server instances:** You must specify one database to be
+      exported, and the **fileType** must be **BAK**.
+    fileType: The file type for the specified uri.
     kind: This is always **sql#exportContext**.
     offload: Option for export offload.
     sqlExportOptions: Options for exporting data as SQL statements.
@@ -999,9 +990,7 @@ class ExportContext(_messages.Message):
   """
 
   class FileTypeValueValuesEnum(_messages.Enum):
-    r"""The file type for the specified uri. * **SQL**: The file contains SQL
-    statements. * **CSV**: The file contains CSV data. * **BAK**: The file
-    contains backup data for a SQL Server instance.
+    r"""The file type for the specified uri.
 
     Values:
       SQL_FILE_TYPE_UNSPECIFIED: Unknown file type.
@@ -1056,11 +1045,11 @@ class ExportContext(_messages.Message):
 
       Fields:
         masterData: Option to include SQL statement required to set up
-          replication. * If set to **1**, the dump file includes a CHANGE
-          MASTER TO statement with the binary log coordinates, and --set-gtid-
-          purged is set to ON. * If set to **2**, the CHANGE MASTER TO
-          statement is written as a SQL comment and has no effect. * If set to
-          any value other than **1**, --set-gtid-purged is set to OFF.
+          replication. If set to **1**, the dump file includes a CHANGE MASTER
+          TO statement with the binary log coordinates, and --set-gtid-purged
+          is set to ON. If set to **2**, the CHANGE MASTER TO statement is
+          written as a SQL comment and has no effect. If set to any value
+          other than **1**, --set-gtid-purged is set to OFF.
       """
 
       masterData = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1145,6 +1134,8 @@ class Flag(_messages.Message):
         version is 18.
       MYSQL_8_0_26: The database major version is MySQL 8.0 and the minor
         version is 26.
+      MYSQL_8_0_27: The database major version is MySQL 8.0 and the minor
+        version is 27.
       POSTGRES_13: The database version is PostgreSQL 13.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
@@ -1169,11 +1160,12 @@ class Flag(_messages.Message):
     MYSQL_8_0 = 13
     MYSQL_8_0_18 = 14
     MYSQL_8_0_26 = 15
-    POSTGRES_13 = 16
-    SQLSERVER_2019_STANDARD = 17
-    SQLSERVER_2019_ENTERPRISE = 18
-    SQLSERVER_2019_EXPRESS = 19
-    SQLSERVER_2019_WEB = 20
+    MYSQL_8_0_27 = 16
+    POSTGRES_13 = 17
+    SQLSERVER_2019_STANDARD = 18
+    SQLSERVER_2019_ENTERPRISE = 19
+    SQLSERVER_2019_EXPRESS = 20
+    SQLSERVER_2019_WEB = 21
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the flag. Flags are typed to being **BOOLEAN**,
@@ -1760,9 +1752,7 @@ class Operation(_messages.Message):
       * **CREATE** * **DELETE** * **UPDATE** * **RESTART** * **IMPORT** *
       **EXPORT** * **BACKUP_VOLUME** * **RESTORE_VOLUME** * **CREATE_USER** *
       **DELETE_USER** * **CREATE_DATABASE** * **DELETE_DATABASE**
-    StatusValueValuesEnum: The status of an operation. Valid values are: *
-      **PENDING** * **RUNNING** * **DONE** *
-      **SQL_OPERATION_STATUS_UNSPECIFIED**
+    StatusValueValuesEnum: The status of an operation.
 
   Fields:
     backupContext: The context for backup operation, if applicable.
@@ -1788,8 +1778,7 @@ class Operation(_messages.Message):
     startTime: The time this operation actually started in UTC timezone in
       [RFC 3339](https://tools.ietf.org/html/rfc3339) format, for example
       **2012-11-15T16:19:00.094Z**.
-    status: The status of an operation. Valid values are: * **PENDING** *
-      **RUNNING** * **DONE** * **SQL_OPERATION_STATUS_UNSPECIFIED**
+    status: The status of an operation.
     targetId: Name of the database instance related to this operation.
     targetLink: A string attribute.
     targetProject: The project ID of the target instance related to this
@@ -1883,8 +1872,7 @@ class Operation(_messages.Message):
     START_EXTERNAL_SYNC = 34
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""The status of an operation. Valid values are: * **PENDING** *
-    **RUNNING** * **DONE** * **SQL_OPERATION_STATUS_UNSPECIFIED**
+    r"""The status of an operation.
 
     Values:
       SQL_OPERATION_STATUS_UNSPECIFIED: The state of the operation is unknown.

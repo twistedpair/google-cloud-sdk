@@ -14,6 +14,204 @@ from apitools.base.py import extra_types
 package = 'translate'
 
 
+class BatchDocumentInputConfig(_messages.Message):
+  r"""Input configuration for BatchTranslateDocument request.
+
+  Fields:
+    gcsSource: Google Cloud Storage location for the source input. This can be
+      a single file (for example, `gs://translation-test/input.docx`) or a
+      wildcard (for example, `gs://translation-test/*`). File mime type is
+      determined based on extension. Supported mime type includes: - `pdf`,
+      application/pdf - `docx`, application/vnd.openxmlformats-
+      officedocument.wordprocessingml.document - `pptx`,
+      application/vnd.openxmlformats-
+      officedocument.presentationml.presentation - `xlsx`,
+      application/vnd.openxmlformats-officedocument.spreadsheetml.sheet The
+      max file size to support for `.docx`, `.pptx` and `.xlsx` is 100MB. The
+      max file size to support for `.pdf` is 1GB and the max page limit is
+      1000 pages. The max file size to support for all input documents is 1GB.
+  """
+
+  gcsSource = _messages.MessageField('GcsSource', 1)
+
+
+class BatchDocumentOutputConfig(_messages.Message):
+  r"""Output configuration for BatchTranslateDocument request.
+
+  Fields:
+    gcsDestination: Google Cloud Storage destination for output content. For
+      every single input document (for example, gs://a/b/c.[extension]), we
+      generate at most 2 * n output files. (n is the # of
+      target_language_codes in the BatchTranslateDocumentRequest). While the
+      input documents are being processed, we write/update an index file
+      `index.csv` under `gcs_destination.output_uri_prefix` (for example,
+      gs://translation_output/index.csv) The index file is generated/updated
+      as new files are being translated. The format is:
+      input_document,target_language_code,translation_output,error_output,
+      glossary_translation_output,glossary_error_output `input_document` is
+      one file we matched using gcs_source.input_uri. `target_language_code`
+      is provided in the request. `translation_output` contains the
+      translations. (details provided below) `error_output` contains the error
+      message during processing of the file. Both translations_file and
+      errors_file could be empty strings if we have no content to output.
+      `glossary_translation_output` and `glossary_error_output` are the
+      translated output/error when we apply glossaries. They could also be
+      empty if we have no content to output. Once a row is present in
+      index.csv, the input/output matching never changes. Callers should also
+      expect all the content in input_file are processed and ready to be
+      consumed (that is, no partial output file is written). Since index.csv
+      will be keeping updated during the process, please make sure there is no
+      custom retention policy applied on the output bucket that may avoid file
+      updating. (https://cloud.google.com/storage/docs/bucket-
+      lock?hl=en#retention-policy) The naming format of translation output
+      files follows (for target language code [trg]): `translation_output`:
+      gs://translation_output/a_b_c_[trg]_translation.[extension]
+      `glossary_translation_output`:
+      gs://translation_test/a_b_c_[trg]_glossary_translation.[extension] The
+      output document will maintain the same file format as the input
+      document. The naming format of error output files follows (for target
+      language code [trg]): `error_output`:
+      gs://translation_test/a_b_c_[trg]_errors.txt `glossary_error_output`:
+      gs://translation_test/a_b_c_[trg]_glossary_translation.txt The error
+      output is a txt file containing error details.
+  """
+
+  gcsDestination = _messages.MessageField('GcsDestination', 1)
+
+
+class BatchTranslateDocumentRequest(_messages.Message):
+  r"""The BatchTranslateDocument request.
+
+  Messages:
+    FormatConversionsValue: Optional.
+    GlossariesValue: Optional. Glossaries to be applied. It's keyed by target
+      language code.
+    ModelsValue: Optional. The models to use for translation. Map's key is
+      target language code. Map's value is the model name. Value can be a
+      built-in general model, or an AutoML Translation model. The value format
+      depends on model type: - AutoML Translation models: `projects/{project-
+      number-or-id}/locations/{location-id}/models/{model-id}` - General
+      (built-in) models: `projects/{project-number-or-id}/locations/{location-
+      id}/models/general/nmt`, If the map is empty or a specific model is not
+      requested for a language pair, then default google model (nmt) is used.
+
+  Fields:
+    formatConversions: Optional.
+    glossaries: Optional. Glossaries to be applied. It's keyed by target
+      language code.
+    inputConfigs: Required. Input configurations. The total number of files
+      matched should be <= 100. The total content size to translate should be
+      <= 100M Unicode codepoints. The files must use UTF-8 encoding.
+    models: Optional. The models to use for translation. Map's key is target
+      language code. Map's value is the model name. Value can be a built-in
+      general model, or an AutoML Translation model. The value format depends
+      on model type: - AutoML Translation models: `projects/{project-number-
+      or-id}/locations/{location-id}/models/{model-id}` - General (built-in)
+      models: `projects/{project-number-or-id}/locations/{location-
+      id}/models/general/nmt`, If the map is empty or a specific model is not
+      requested for a language pair, then default google model (nmt) is used.
+    outputConfig: Required. Output configuration. If 2 input configs match to
+      the same file (that is, same input path), we don't generate output for
+      duplicate inputs.
+    sourceLanguageCode: Required. The BCP-47 language code of the input
+      document if known, for example, "en-US" or "sr-Latn". Supported language
+      codes are listed in Language Support
+      (https://cloud.google.com/translate/docs/languages).
+    targetLanguageCodes: Required. The BCP-47 language code to use for
+      translation of the input document. Specify up to 10 language codes here.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FormatConversionsValue(_messages.Message):
+    r"""Optional.
+
+    Messages:
+      AdditionalProperty: An additional property for a FormatConversionsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        FormatConversionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FormatConversionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class GlossariesValue(_messages.Message):
+    r"""Optional. Glossaries to be applied. It's keyed by target language
+    code.
+
+    Messages:
+      AdditionalProperty: An additional property for a GlossariesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type GlossariesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a GlossariesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A TranslateTextGlossaryConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('TranslateTextGlossaryConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ModelsValue(_messages.Message):
+    r"""Optional. The models to use for translation. Map's key is target
+    language code. Map's value is the model name. Value can be a built-in
+    general model, or an AutoML Translation model. The value format depends on
+    model type: - AutoML Translation models: `projects/{project-number-or-
+    id}/locations/{location-id}/models/{model-id}` - General (built-in)
+    models: `projects/{project-number-or-id}/locations/{location-
+    id}/models/general/nmt`, If the map is empty or a specific model is not
+    requested for a language pair, then default google model (nmt) is used.
+
+    Messages:
+      AdditionalProperty: An additional property for a ModelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ModelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ModelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  formatConversions = _messages.MessageField('FormatConversionsValue', 1)
+  glossaries = _messages.MessageField('GlossariesValue', 2)
+  inputConfigs = _messages.MessageField('BatchDocumentInputConfig', 3, repeated=True)
+  models = _messages.MessageField('ModelsValue', 4)
+  outputConfig = _messages.MessageField('BatchDocumentOutputConfig', 5)
+  sourceLanguageCode = _messages.StringField(6)
+  targetLanguageCodes = _messages.StringField(7, repeated=True)
+
+
 class BatchTranslateTextRequest(_messages.Message):
   r"""The batch translation request.
 
@@ -253,6 +451,96 @@ class DetectedLanguage(_messages.Message):
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
   languageCode = _messages.StringField(2)
+
+
+class DocumentInputConfig(_messages.Message):
+  r"""A document translation request input config.
+
+  Fields:
+    content: Document's content represented as a stream of bytes.
+    gcsSource: Google Cloud Storage location. This must be a single file. For
+      example: gs://example_bucket/example_file.pdf
+    mimeType: Specifies the input document's mime_type. If not specified it
+      will be determined using the file extension for gcs_source provided
+      files. For a file provided through bytes content the mime_type must be
+      provided. Currently supported mime types are: - application/pdf -
+      application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      - application/vnd.openxmlformats-
+      officedocument.presentationml.presentation -
+      application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+  """
+
+  content = _messages.BytesField(1)
+  gcsSource = _messages.MessageField('GcsSource', 2)
+  mimeType = _messages.StringField(3)
+
+
+class DocumentOutputConfig(_messages.Message):
+  r"""A document translation request output config.
+
+  Fields:
+    gcsDestination: Optional. Google Cloud Storage destination for the
+      translation output, e.g., `gs://my_bucket/my_directory/`. The
+      destination directory provided does not have to be empty, but the bucket
+      must exist. If a file with the same name as the output file already
+      exists in the destination an error will be returned. For a
+      DocumentInputConfig.contents provided document, the output file will
+      have the name "output_[trg]_translations.[ext]", where - [trg]
+      corresponds to the translated file's language code, - [ext] corresponds
+      to the translated file's extension according to its mime type. For a
+      DocumentInputConfig.gcs_uri provided document, the output file will have
+      a name according to its URI. For example: an input file with URI:
+      "gs://a/b/c.[extension]" stored in a gcs_destination bucket with name
+      "my_bucket" will have an output URI:
+      "gs://my_bucket/a_b_c_[trg]_translations.[ext]", where - [trg]
+      corresponds to the translated file's language code, - [ext] corresponds
+      to the translated file's extension according to its mime type. If the
+      document was directly provided through the request, then the output
+      document will have the format:
+      "gs://my_bucket/translated_document_[trg]_translations.[ext], where -
+      [trg] corresponds to the translated file's language code, - [ext]
+      corresponds to the translated file's extension according to its mime
+      type. If a glossary was provided, then the output URI for the glossary
+      translation will be equal to the default output URI but have
+      `glossary_translations` instead of `translations`. For the previous
+      example, its glossary URI would be:
+      "gs://my_bucket/a_b_c_[trg]_glossary_translations.[ext]". Thus the max
+      number of output files will be 2 (Translated document, Glossary
+      translated document). Callers should expect no partial outputs. If there
+      is any error during document translation, no output will be stored in
+      the Cloud Storage bucket.
+    mimeType: Optional. Specifies the translated document's mime_type. If not
+      specified, the translated file's mime type will be the same as the input
+      file's mime type. Currently only support the output mime type to be the
+      same as input mime type. - application/pdf -
+      application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      - application/vnd.openxmlformats-
+      officedocument.presentationml.presentation -
+      application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+  """
+
+  gcsDestination = _messages.MessageField('GcsDestination', 1)
+  mimeType = _messages.StringField(2)
+
+
+class DocumentTranslation(_messages.Message):
+  r"""A translated document message.
+
+  Fields:
+    byteStreamOutputs: The array of translated documents. It is expected to be
+      size 1 for now. We may produce multiple translated documents in the
+      future for other type of file formats.
+    detectedLanguageCode: The detected language for the input document. If the
+      user did not provide the source language for the input document, this
+      field will have the language code automatically detected. If the source
+      language was passed, auto-detection of the language does not occur and
+      this field is empty.
+    mimeType: The translated document's mime type.
+  """
+
+  byteStreamOutputs = _messages.BytesField(1, repeated=True)
+  detectedLanguageCode = _messages.StringField(2)
+  mimeType = _messages.StringField(3)
 
 
 class Empty(_messages.Message):
@@ -826,6 +1114,116 @@ class SupportedLanguages(_messages.Message):
   languages = _messages.MessageField('SupportedLanguage', 1, repeated=True)
 
 
+class TranslateDocumentRequest(_messages.Message):
+  r"""A document translation request.
+
+  Messages:
+    LabelsValue: Optional. The labels with user-defined metadata for the
+      request. Label keys and values can be no longer than 63 characters
+      (Unicode codepoints), can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. Label values are optional. Label keys must start with a letter.
+      See https://cloud.google.com/translate/docs/advanced/labels for more
+      information.
+
+  Fields:
+    documentInputConfig: Required. Input configurations.
+    documentOutputConfig: Optional. Output configurations. Defines if the
+      output file should be stored within Cloud Storage as well as the desired
+      output format. If not provided the translated file will only be returned
+      through a byte-stream and its output mime type will be the same as the
+      input file's mime type.
+    glossaryConfig: Optional. Glossary to be applied. The glossary must be
+      within the same region (have the same location-id) as the model,
+      otherwise an INVALID_ARGUMENT (400) error is returned.
+    labels: Optional. The labels with user-defined metadata for the request.
+      Label keys and values can be no longer than 63 characters (Unicode
+      codepoints), can only contain lowercase letters, numeric characters,
+      underscores and dashes. International characters are allowed. Label
+      values are optional. Label keys must start with a letter. See
+      https://cloud.google.com/translate/docs/advanced/labels for more
+      information.
+    model: Optional. The `model` type requested for this translation. The
+      format depends on model type: - AutoML Translation models:
+      `projects/{project-number-or-id}/locations/{location-id}/models/{model-
+      id}` - General (built-in) models: `projects/{project-number-or-
+      id}/locations/{location-id}/models/general/nmt`, If not provided, the
+      default Google model (NMT) will be used for translation.
+    sourceLanguageCode: Optional. The BCP-47 language code of the input
+      document if known, for example, "en-US" or "sr-Latn". Supported language
+      codes are listed in Language Support. If the source language isn't
+      specified, the API attempts to identify the source language
+      automatically and returns the source language within the response.
+      Source language must be specified if the request contains a glossary or
+      a custom model.
+    targetLanguageCode: Required. The BCP-47 language code to use for
+      translation of the input document, set to one of the language codes
+      listed in Language Support.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels with user-defined metadata for the request. Label
+    keys and values can be no longer than 63 characters (Unicode codepoints),
+    can only contain lowercase letters, numeric characters, underscores and
+    dashes. International characters are allowed. Label values are optional.
+    Label keys must start with a letter. See
+    https://cloud.google.com/translate/docs/advanced/labels for more
+    information.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  documentInputConfig = _messages.MessageField('DocumentInputConfig', 1)
+  documentOutputConfig = _messages.MessageField('DocumentOutputConfig', 2)
+  glossaryConfig = _messages.MessageField('TranslateTextGlossaryConfig', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  model = _messages.StringField(5)
+  sourceLanguageCode = _messages.StringField(6)
+  targetLanguageCode = _messages.StringField(7)
+
+
+class TranslateDocumentResponse(_messages.Message):
+  r"""A translated document response message.
+
+  Fields:
+    documentTranslation: Translated document.
+    glossaryConfig: The `glossary_config` used for this translation.
+    glossaryDocumentTranslation: The document's translation output if a
+      glossary is provided in the request. This can be the same as
+      [TranslateDocumentResponse.document_translation] if no glossary terms
+      apply.
+    model: Only present when 'model' is present in the request. 'model' is
+      normalized to have a project number. For example: If the 'model' field
+      in TranslateDocumentRequest is: `projects/{project-
+      id}/locations/{location-id}/models/general/nmt` then `model` here would
+      be normalized to `projects/{project-number}/locations/{location-
+      id}/models/general/nmt`.
+  """
+
+  documentTranslation = _messages.MessageField('DocumentTranslation', 1)
+  glossaryConfig = _messages.MessageField('TranslateTextGlossaryConfig', 2)
+  glossaryDocumentTranslation = _messages.MessageField('DocumentTranslation', 3)
+  model = _messages.StringField(4)
+
+
 class TranslateProjectsDetectLanguageRequest(_messages.Message):
   r"""A TranslateProjectsDetectLanguageRequest object.
 
@@ -871,6 +1269,23 @@ class TranslateProjectsGetSupportedLanguagesRequest(_messages.Message):
   displayLanguageCode = _messages.StringField(1)
   model = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class TranslateProjectsLocationsBatchTranslateDocumentRequest(_messages.Message):
+  r"""A TranslateProjectsLocationsBatchTranslateDocumentRequest object.
+
+  Fields:
+    batchTranslateDocumentRequest: A BatchTranslateDocumentRequest resource to
+      be passed as the request body.
+    parent: Required. Location to make a regional call. Format:
+      `projects/{project-number-or-id}/locations/{location-id}`. The `global`
+      location is not supported for batch translation. Only AutoML Translation
+      models or glossaries within the same region (have the same location-id)
+      can be used, otherwise an INVALID_ARGUMENT (400) error is returned.
+  """
+
+  batchTranslateDocumentRequest = _messages.MessageField('BatchTranslateDocumentRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class TranslateProjectsLocationsBatchTranslateTextRequest(_messages.Message):
@@ -1097,6 +1512,25 @@ class TranslateProjectsLocationsOperationsWaitRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   waitOperationRequest = _messages.MessageField('WaitOperationRequest', 2)
+
+
+class TranslateProjectsLocationsTranslateDocumentRequest(_messages.Message):
+  r"""A TranslateProjectsLocationsTranslateDocumentRequest object.
+
+  Fields:
+    parent: Required. Location to make a regional call. Format:
+      `projects/{project-number-or-id}/locations/{location-id}`. For global
+      calls, use `projects/{project-number-or-id}/locations/global` or
+      `projects/{project-number-or-id}`. Non-global location is required for
+      requests using AutoML models or custom glossaries. Models and glossaries
+      must be within the same region (have the same location-id), otherwise an
+      INVALID_ARGUMENT (400) error is returned.
+    translateDocumentRequest: A TranslateDocumentRequest resource to be passed
+      as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  translateDocumentRequest = _messages.MessageField('TranslateDocumentRequest', 2)
 
 
 class TranslateProjectsLocationsTranslateTextRequest(_messages.Message):

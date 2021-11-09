@@ -3159,6 +3159,15 @@ def AddThreadsPerCoreArgs(parser):
     """)
 
 
+def AddEnableUefiNetworkingArgs(parser):
+  parser.add_argument(
+      '--enable-uefi-networking',
+      action=arg_parsers.StoreTrueFalseAction,
+      help="""\
+      If set to true, enables UEFI networking for the instance creation.
+      """)
+
+
 def AddNumaNodeCountArgs(parser):
   parser.add_argument(
       '--numa-node-count',

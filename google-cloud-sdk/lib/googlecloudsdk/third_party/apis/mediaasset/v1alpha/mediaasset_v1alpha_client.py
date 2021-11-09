@@ -1085,6 +1085,33 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Search(self, request, global_params=None):
+      r"""Search returns the resources (e.g., assets and annotations) under a Video Asset Type that match the given query. Search covers both media content and metadata.
+
+      Args:
+        request: (MediaassetProjectsLocationsAssetTypesSearchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchAssetTypeResponse) The response message.
+      """
+      config = self.GetMethodConfig('Search')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Search.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}:search',
+        http_method='POST',
+        method_id='mediaasset.projects.locations.assetTypes.search',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:search',
+        request_field='searchAssetTypeRequest',
+        request_type_name='MediaassetProjectsLocationsAssetTypesSearchRequest',
+        response_type_name='SearchAssetTypeResponse',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 

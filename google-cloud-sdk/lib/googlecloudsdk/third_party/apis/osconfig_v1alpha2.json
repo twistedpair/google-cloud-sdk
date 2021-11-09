@@ -1911,6 +1911,61 @@
           "format": "google-datetime"
         }
       }
+    },
+    "GoogleCloudOsconfigV1__OSPolicyAssignmentOperationMetadata": {
+      "id": "GoogleCloudOsconfigV1__OSPolicyAssignmentOperationMetadata",
+      "description": "OS policy assignment operation metadata provided by OS policy assignment API methods that return long running operations.",
+      "type": "object",
+      "properties": {
+        "osPolicyAssignment": {
+          "description": "Reference to the `OSPolicyAssignment` API resource. Format: `projects\/{project_number}\/locations\/{location}\/osPolicyAssignments\/{os_policy_assignment_id@revision_id}`",
+          "type": "string"
+        },
+        "apiMethod": {
+          "description": "The OS policy assignment API method.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value",
+            "Create OS policy assignment API method",
+            "Update OS policy assignment API method",
+            "Delete OS policy assignment API method"
+          ],
+          "enum": [
+            "API_METHOD_UNSPECIFIED",
+            "CREATE",
+            "UPDATE",
+            "DELETE"
+          ]
+        },
+        "rolloutState": {
+          "description": "State of the rollout",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid value",
+            "The rollout is in progress.",
+            "The rollout is being cancelled.",
+            "The rollout is cancelled.",
+            "The rollout has completed successfully."
+          ],
+          "enum": [
+            "ROLLOUT_STATE_UNSPECIFIED",
+            "IN_PROGRESS",
+            "CANCELLING",
+            "CANCELLED",
+            "SUCCEEDED"
+          ]
+        },
+        "rolloutStartTime": {
+          "description": "Rollout start time",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "rolloutUpdateTime": {
+          "description": "Rollout update time",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
     }
   },
   "resources": {

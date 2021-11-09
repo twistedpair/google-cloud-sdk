@@ -45,14 +45,10 @@ _REPLICAPLACEMENT_FORMAT_HELP = (
     'Replica placement is of format subnetid:zone, for example subnetid12345:1')
 
 
-def AddRegion(parser, hidden=False):
+def AddRegion(parser):
   """Add the --location flag."""
   parser.add_argument(
-      '--location',
-      help='Anthos GKE Multi-cloud location.',
-      required=True,
-      hidden=hidden,
-  )
+      '--location', help='Anthos GKE Multi-cloud location.', required=True)
 
 
 def AddPodAddressCidrBlocks(parser):
@@ -136,22 +132,23 @@ def GetNodeVersion(args):
   return args.node_version
 
 
-def AddAutoscaling(parser):
-  """Add node pool autoscaling flags.
+def AddAutoscaling(parser, required=True):
+  """Adds node pool autoscaling flags.
 
   Args:
     parser: The argparse.parser to add the arguments to.
+    required: bool, whether autoscaling flags are required.
   """
 
   group = parser.add_argument_group('Node pool autoscaling')
   group.add_argument(
       '--min-nodes',
-      required=True,
+      required=required,
       type=int,
       help='Minimum number of nodes in the node pool.')
   group.add_argument(
       '--max-nodes',
-      required=True,
+      required=required,
       type=int,
       help='Maximum number of nodes in the node pool.')
 
@@ -285,35 +282,30 @@ def AddCluster(parser, help_action):
       help='Name of the cluster to {} node pools with.'.format(help_action))
 
 
-def AddDatabaseEncryption(parser, hidden):
+def AddDatabaseEncryption(parser):
   """Adds database encryption flags.
 
   Args:
     parser: The argparse.parser to add the arguments to.
-    hidden: bool, If True, database encryption flags will be hidden.
   """
   parser.add_argument(
       '--database-encryption-key-id',
-      hidden=hidden,
       help=('URL the of the Azure Key Vault key (with its version) '
             'to use to encrypt / decrypt cluster secrets.'))
 
 
-def AddConfigEncryption(parser, hidden):
+def AddConfigEncryption(parser):
   """Adds config encryption flags.
 
   Args:
     parser: The argparse.parser to add the arguments to.
-    hidden: bool, If True, config encryption flags will be hidden.
   """
   parser.add_argument(
       '--config-encryption-key-id',
-      hidden=hidden,
       help=('URL the of the Azure Key Vault key (with its version) '
             'to use to encrypt / decrypt config data.'))
   parser.add_argument(
       '--config-encryption-public-key',
-      hidden=hidden,
       help=('RSA key of the Azure Key Vault public key to use for encrypting '
             'config data.'))
 
@@ -475,7 +467,6 @@ def AddProxyConfig(parser):
 def AddFleetProject(parser):
   parser.add_argument(
       '--fleet-project',
-      hidden=True,
       help='Name of the Fleet host project where the cluster is registered.')
 
 
@@ -505,5 +496,4 @@ def AddPrivateEndpoint(parser):
       '--private-endpoint',
       default=False,
       action='store_true',
-      hidden=True,
       help='If set, use private VPC for authentication.')

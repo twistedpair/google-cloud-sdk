@@ -299,6 +299,26 @@
           "description": "Optional. The encryption options for the Cloud Composer environment and its dependencies. Cannot be updated. This field is supported for Cloud Composer environments in versions composer-1.*.*-airflow-*.*.*.",
           "$ref": "EncryptionConfig"
         },
+        "workloadsConfig": {
+          "description": "Optional. The workloads configuration settings for the GKE cluster associated with the Cloud Composer environment. The GKE cluster runs Airflow scheduler, web server and workers workloads. This field is supported for Cloud Composer environments in versions composer-2.*.*-airflow-*.*.* and newer.",
+          "$ref": "WorkloadsConfig"
+        },
+        "environmentSize": {
+          "description": "Optional. The size of the Cloud Composer environment. This field is supported for Cloud Composer environments in versions composer-2.*.*-airflow-*.*.* and newer.",
+          "type": "string",
+          "enumDescriptions": [
+            "The size of the environment is unspecified.",
+            "The environment size is small.",
+            "The environment size is medium.",
+            "The environment size is large."
+          ],
+          "enum": [
+            "ENVIRONMENT_SIZE_UNSPECIFIED",
+            "ENVIRONMENT_SIZE_SMALL",
+            "ENVIRONMENT_SIZE_MEDIUM",
+            "ENVIRONMENT_SIZE_LARGE"
+          ]
+        },
         "airflowUri": {
           "description": "Output only. The URI of the Apache Airflow Web UI hosted within this environment (see [Airflow web interface](\/composer\/docs\/how-to\/accessing\/airflow-web-interface)).",
           "type": "string"
@@ -448,6 +468,15 @@
           "description": "Output only. The IP range reserved for the tenant project's App Engine VMs. This field is supported for Cloud Composer environments in versions composer-1.*.*-airflow-*.*.*.",
           "readOnly": true,
           "type": "string"
+        },
+        "cloudComposerNetworkIpv4CidrBlock": {
+          "description": "Optional. The CIDR block from which IP range for Cloud Composer Network in tenant project will be reserved. Needs to be disjoint from private_cluster_config.master_ipv4_cidr_block and cloud_sql_ipv4_cidr_block. This field is supported for Cloud Composer environments in versions composer-2.*.*-airflow-*.*.* and newer.",
+          "type": "string"
+        },
+        "cloudComposerNetworkIpv4ReservedRange": {
+          "description": "Output only. The IP range reserved for the tenant project's Cloud Composer network. This field is supported for Cloud Composer environments in versions composer-2.*.*-airflow-*.*.* and newer.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -530,6 +559,106 @@
         "kmsKeyName": {
           "description": "Optional. Customer-managed Encryption Key available through Google's Key Management Service. Cannot be updated. If not specified, Google-managed key will be used.",
           "type": "string"
+        }
+      }
+    },
+    "WorkloadsConfig": {
+      "id": "WorkloadsConfig",
+      "description": "The Kubernetes workloads configuration for GKE cluster associated with the Cloud Composer environment. Supported for Cloud Composer environments in versions composer-2.*.*-airflow-*.*.* and newer.",
+      "type": "object",
+      "properties": {
+        "scheduler": {
+          "description": "Optional. Resources used by Airflow schedulers.",
+          "$ref": "SchedulerResource"
+        },
+        "webServer": {
+          "description": "Optional. Resources used by Airflow web server.",
+          "$ref": "WebServerResource"
+        },
+        "worker": {
+          "description": "Optional. Resources used by Airflow workers.",
+          "$ref": "WorkerResource"
+        }
+      }
+    },
+    "SchedulerResource": {
+      "id": "SchedulerResource",
+      "description": "Configuration for resources used by Airflow schedulers.",
+      "type": "object",
+      "properties": {
+        "cpu": {
+          "description": "Optional. CPU request and limit for a single Airflow scheduler replica.",
+          "type": "number",
+          "format": "float"
+        },
+        "memoryGb": {
+          "description": "Optional. Memory (GB) request and limit for a single Airflow scheduler replica.",
+          "type": "number",
+          "format": "float"
+        },
+        "storageGb": {
+          "description": "Optional. Storage (GB) request and limit for a single Airflow scheduler replica.",
+          "type": "number",
+          "format": "float"
+        },
+        "count": {
+          "description": "Optional. The number of schedulers.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "WebServerResource": {
+      "id": "WebServerResource",
+      "description": "Configuration for resources used by Airflow web server.",
+      "type": "object",
+      "properties": {
+        "cpu": {
+          "description": "Optional. CPU request and limit for Airflow web server.",
+          "type": "number",
+          "format": "float"
+        },
+        "memoryGb": {
+          "description": "Optional. Memory (GB) request and limit for Airflow web server.",
+          "type": "number",
+          "format": "float"
+        },
+        "storageGb": {
+          "description": "Optional. Storage (GB) request and limit for Airflow web server.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "WorkerResource": {
+      "id": "WorkerResource",
+      "description": "Configuration for resources used by Airflow workers.",
+      "type": "object",
+      "properties": {
+        "cpu": {
+          "description": "Optional. CPU request and limit for a single Airflow worker replica.",
+          "type": "number",
+          "format": "float"
+        },
+        "memoryGb": {
+          "description": "Optional. Memory (GB) request and limit for a single Airflow worker replica.",
+          "type": "number",
+          "format": "float"
+        },
+        "storageGb": {
+          "description": "Optional. Storage (GB) request and limit for a single Airflow worker replica.",
+          "type": "number",
+          "format": "float"
+        },
+        "minCount": {
+          "description": "Optional. Minimum number of workers for autoscaling.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxCount": {
+          "description": "Optional. Maximum number of workers for autoscaling.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

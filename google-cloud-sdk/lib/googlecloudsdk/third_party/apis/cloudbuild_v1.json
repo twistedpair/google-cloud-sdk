@@ -1431,6 +1431,24 @@
         "serviceAccount": {
           "description": "The service account used for all user-controlled operations including UpdateBuildTrigger, RunBuildTrigger, CreateBuild, and CancelBuild. If no service account is set, then the standard Cloud Build service account ([PROJECT_NUM]@system.gserviceaccount.com) will be used instead. Format: `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT_ID_OR_EMAIL}`",
           "type": "string"
+        },
+        "eventType": {
+          "description": "Optional. EventType allows the user to explicitly set the type of event to which this BuildTrigger should respond. This field is optional but will be validated against the rest of the configuration if it is set.",
+          "type": "string",
+          "enumDescriptions": [
+            "EVENT_TYPE_UNSPECIFIED event_types are ignored.",
+            "REPO corresponds to the supported VCS integrations.",
+            "WEBHOOK corresponds to webhook triggers.",
+            "PUBSUB corresponds to pubsub triggers.",
+            "MANUAL corresponds to manual-only invoked triggers."
+          ],
+          "enum": [
+            "EVENT_TYPE_UNSPECIFIED",
+            "REPO",
+            "WEBHOOK",
+            "PUBSUB",
+            "MANUAL"
+          ]
         }
       }
     },
@@ -1976,6 +1994,10 @@
       "description": "A GitHub-app installation.",
       "type": "object",
       "properties": {
+        "name": {
+          "description": "The `Installation` name with format: `projects\/{project}\/locations\/{location}\/installations\/{installation}`, where {installation} is GitHub installation ID created by GitHub.",
+          "type": "string"
+        },
         "id": {
           "description": "GitHub installation ID, created by GitHub.",
           "type": "string",
@@ -2302,7 +2324,7 @@
       "type": "object",
       "properties": {
         "membership": {
-          "description": "Required. Immutable. The Anthos\/GKE Hub membership of the cluster which will run the actual build operations. Example: \/projects\/{project}\/locations\/{location}\/memberships\/{cluster_name}",
+          "description": "Required. Immutable. The Anthos\/GKE Hub membership of the cluster which will run the actual build operations. Example: projects\/{project}\/locations\/{location}\/memberships\/{cluster_name}",
           "type": "string"
         },
         "defaultWorkerConfig": {
@@ -3419,7 +3441,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "The name of the `GitHubInstallation` to update. Format: `projects\/{project}\/locations\/{location}\/installations\/{installation}`",
+                          "description": "The `Installation` name with format: `projects\/{project}\/locations\/{location}\/installations\/{installation}`, where {installation} is GitHub installation ID created by GitHub.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3428,6 +3450,11 @@
                         "installationsId": {
                           "location": "path",
                           "required": true,
+                          "type": "string"
+                        },
+                        "name1": {
+                          "description": "The name of the `GitHubInstallation` to update. Format: `projects\/{project}\/locations\/{location}\/installations\/{installation}`",
+                          "location": "query",
                           "type": "string"
                         },
                         "projectId": {
@@ -3548,10 +3575,15 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "The name of the `GitHubInstallation` to update. Format: `projects\/{project}\/locations\/{location}\/installations\/{installation}`",
+                      "description": "The `Installation` name with format: `projects\/{project}\/locations\/{location}\/installations\/{installation}`, where {installation} is GitHub installation ID created by GitHub.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/installations\/[^\/]+$",
                       "location": "path",
                       "required": true,
+                      "type": "string"
+                    },
+                    "name1": {
+                      "description": "The name of the `GitHubInstallation` to update. Format: `projects\/{project}\/locations\/{location}\/installations\/{installation}`",
+                      "location": "query",
                       "type": "string"
                     },
                     "projectId": {

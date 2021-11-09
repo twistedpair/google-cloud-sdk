@@ -49,7 +49,7 @@ class PublisherClient(object):
   def _TopicResourceToPath(self, resource):
     return types.TopicPath(
         project=lite_util.ProjectIdToProjectNumber(resource.projectsId),
-        location=types.CloudZone.parse(resource.locationsId),
+        location=lite_util.LocationToZoneOrRegion(resource.locationsId),
         name=resource.topicsId)
 
   def Publish(self,
@@ -85,8 +85,9 @@ class PublisherClient(object):
       attributes[message_transforms.PUBSUB_LITE_EVENT_TIME] = (
           message_transforms.encode_attribute_event_time(event_time))
     try:
-      return self._client.publish(topic_path, http_encoding.Encode(message),
-                                  ordering_key, **attributes).result()
+      return types.MessageMetadata.decode(
+          self._client.publish(topic_path, http_encoding.Encode(message),
+                               ordering_key, **attributes).result())
     except Exception as e:
       raise topics.PublishOperationException(
           'Publish operation failed with error: {error}'.format(error=e))

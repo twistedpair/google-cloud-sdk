@@ -43,13 +43,15 @@ class ContainerAnalysisMetadata:
       self.vulnerability.AddOccurrence(occ)
     elif occ.kind == messages.Occurrence.KindValueValuesEnum.IMAGE:
       self.image.AddOccurrence(occ)
-    elif occ.kind == messages.Occurrence.KindValueValuesEnum.BUILD:
+    elif occ.kind == messages.Occurrence.KindValueValuesEnum.BUILD and occ.build and occ.build.provenance:
       self.build.AddOccurrence(occ)
     elif occ.kind == messages.Occurrence.KindValueValuesEnum.DEPLOYMENT:
       self.deployment.AddOccurrence(occ)
     elif occ.kind == messages.Occurrence.KindValueValuesEnum.DISCOVERY:
       self.discovery.AddOccurrence(occ)
     elif occ.kind == messages.Occurrence.KindValueValuesEnum.DSSE_ATTESTATION:
+      self.provenance.AddOccurrence(occ)
+    elif occ.kind == messages.Occurrence.KindValueValuesEnum.BUILD and occ.build and occ.build.intotoStatement:
       self.provenance.AddOccurrence(occ)
 
   def ImagesListView(self):

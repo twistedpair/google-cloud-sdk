@@ -300,7 +300,7 @@ class BlueGreenSettings(_messages.Message):
 
   Fields:
     nodePoolSoakDuration: Time needed after draining entire blue pool. After
-      this period, blue pool will be cleaned up. Default is 1 day.
+      this period, blue pool will be cleaned up.
     standardRolloutPolicy: Standard policy for the blue/green update.
   """
 
@@ -625,6 +625,7 @@ class Cluster(_messages.Message):
       identity.
     workloadCertificates: Configuration for issuance of mTLS keys and
       certificates to Kubernetes pods.
+    workloadConfig: Enable/Disable Workload Configuration for the cluster.
     workloadIdentityConfig: Configuration for the use of k8s Service Accounts
       in GCP IAM policies.
     workloadMonitoringEnabledEap: Whether to send workload metrics from the
@@ -777,9 +778,10 @@ class Cluster(_messages.Message):
   verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 73)
   workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 74)
   workloadCertificates = _messages.MessageField('WorkloadCertificates', 75)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 76)
-  workloadMonitoringEnabledEap = _messages.BooleanField(77)
-  zone = _messages.StringField(78)
+  workloadConfig = _messages.MessageField('WorkloadConfig', 76)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 77)
+  workloadMonitoringEnabledEap = _messages.BooleanField(78)
+  zone = _messages.StringField(79)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -983,6 +985,8 @@ class ClusterUpdate(_messages.Message):
       workload identity.
     desiredWorkloadCertificates: Configuration for issuance of mTLS keys and
       certificates to Kubernetes pods.
+    desiredWorkloadConfig: Enable/Disable Workload Configuration for the
+      cluster.
     desiredWorkloadIdentityConfig: Configuration for Workload Identity.
     desiredWorkloadMonitoringEapConfig: Configuration for workload monitoring
       EAP.
@@ -1070,10 +1074,11 @@ class ClusterUpdate(_messages.Message):
   desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 48)
   desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 49)
   desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 50)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 51)
-  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 52)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 53)
-  securityProfile = _messages.MessageField('SecurityProfile', 54)
+  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 51)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 52)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 53)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 54)
+  securityProfile = _messages.MessageField('SecurityProfile', 55)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -5360,6 +5365,38 @@ class WorkloadCertificates(_messages.Message):
   """
 
   enableCertificates = _messages.BooleanField(1)
+
+
+class WorkloadConfig(_messages.Message):
+  r"""WorkloadConfig defines the flags to enable or disable the workload
+  configurations for the cluster.
+
+  Enums:
+    AuditModeValueValuesEnum: Sets which mode the audit scanning should be for
+      a cluster.
+
+  Fields:
+    auditMode: Sets which mode the audit scanning should be for a cluster.
+  """
+
+  class AuditModeValueValuesEnum(_messages.Enum):
+    r"""Sets which mode the audit scanning should be for a cluster.
+
+    Values:
+      MODE_UNSPECIFIED: Default value meaning that no mode has been specified.
+      DISABLED: This disables WorkloafConfiguration on the cluster, meaning
+        that nothing is surfaced.
+      BASELINE: Surfaces configurations that are not in line with the Pod
+        Security Standard Baseline policy.
+      RESTRICTED: Surfaces configurations that are not in line with the Pod
+        Security Standard Restricted policy.
+    """
+    MODE_UNSPECIFIED = 0
+    DISABLED = 1
+    BASELINE = 2
+    RESTRICTED = 3
+
+  auditMode = _messages.EnumField('AuditModeValueValuesEnum', 1)
 
 
 class WorkloadIdentityConfig(_messages.Message):

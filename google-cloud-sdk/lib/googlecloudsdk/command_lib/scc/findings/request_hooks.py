@@ -93,7 +93,11 @@ def SetMuteReqHook(ref, args, req):
   """"Sets a finding's mute state."""
   del ref
   parent = _ValidateAndGetParent(args)
-  req.name = parent + "/sources/" + args.source + "/findings/" + args.findingId
+  if parent is not None:
+    _ValidateSourceAndFindingIdIfParentProvided(args)
+    req.name = parent + "/sources/" + args.source + "/findings/" + args.finding
+  else:
+    req.name = _GetFindingNameForParent(args)
   return req
 
 
@@ -269,3 +273,12 @@ def _ValidateMutexOnFindingAndSourceAndOrganization(args):
         "Only provide a full resouce name "
         "(organizations/123/sources/456/findings/789) or an --organization flag"
         " and --sources flag, not both.")
+
+
+def _ValidateSourceAndFindingIdIfParentProvided(args):
+  """Validates that source and finding id are provided if parent is provided."""
+  if args.source is None:
+    raise InvalidSCCInputError("--source flag must be provided.")
+  if "/" in args.finding:
+    raise InvalidSCCInputError(
+        "Finding id must be provided, instead of the full resource name.")

@@ -390,6 +390,13 @@ class UpdateManager(object):
       # directory.  This is OK since these directories won't ever be deleted.
       return True
 
+    # 1) On linux it usually works ok, but then your CWD ends up being in the
+    #    backup directory of the SDK, and not in the actual SDK anymore.
+    #    Can be very confusing
+    # 2) On windows, the directory is just locked and the update fails.
+    #    The error message is not very useful from the OS and people
+    #    don't know what's wrong.
+
     raise InvalidCWDError(
         'Your current working directory is inside the Cloud SDK install root:'
         ' {root}.  In order to perform this update, run the command from '
@@ -1073,7 +1080,7 @@ To revert your SDK to the previously installed version, you may run:
       bad_commands = self.FindAllOtherToolsOnPath()
       if bad_commands:
         log.warning("""\
-  There are other instances of Google Cloud Platform tools on your system PATH.
+  There are other instances of Google Cloud tools on your system PATH.
   Please remove the following to avoid confusion or accidental invocation:
 
   {0}
@@ -1082,7 +1089,7 @@ To revert your SDK to the previously installed version, you may run:
       duplicate_commands = self.FindAllDuplicateToolsOnPath()
       if duplicate_commands:
         log.warning("""\
-  There are alternate versions of the following Google Cloud Platform tools on
+  There are alternate versions of the following Google Cloud tools on
   your system PATH. Please double check your PATH:
 
   {0}

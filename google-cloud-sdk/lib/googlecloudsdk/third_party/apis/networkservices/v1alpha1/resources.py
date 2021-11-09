@@ -85,6 +85,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_GATEWAYS = (
+      'projects.locations.gateways',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/gateways/'
+              '{gatewaysId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_GRPCROUTES = (
       'projects.locations.grpcRoutes',
       '{+name}',

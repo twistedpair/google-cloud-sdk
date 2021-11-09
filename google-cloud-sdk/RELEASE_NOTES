@@ -5,6 +5,98 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 364.0.0 (2021-11-09)
+
+### Cloud SDK
+
+* Updated bundled Python executable for windows to 3.8.10.
+
+### AI
+
+* Added `--kms-key` flag to `gcloud beta ai tensorboards create` to support configuring customer-managed encryption key spec.
+* Promoted `gcloud ai tensorboards` to GA.
+* Modified `--worker-pool-spec` flag of `gcloud beta ai custom-jobs create` to support auto training image building for distributed training.
+  * If a `local-package-path` is specified in the first `--worker-pool-spec` flag, other `--worker-pool-spec` flags just have to specify the hardware related fields and they will use the same container image built for the first one.
+  * Added `requirements` field to support installing extra public PyPI dependencies when building the image.
+  * Added `extra-packages` field to support installing extra custom dependencies when building the image.
+  * Added `extra-dirs` field to support copies more directories under `local-package-path` to the training image.
+
+### Anthos Multicloud
+
+* Promoted `gcloud container aws` to GA.
+* Promoted `gcloud container azure` to GA.
+
+### App Engine
+
+* Updated the Java SDK to version 1.9.92.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/java/release-notes>.
+
+### Artifact Registry
+
+* Updated `gcloud artifacts docker images describe`, when used with `--show-provenance`
+  flag, to support returning provenances in the SLSA provenance format. See <https://slsa.dev/>
+  for more information.
+
+### Cloud DNS
+
+* Added cloud logging support for `gcloud dns managed-zones`.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.13.1
+  * Fix request timestamps in WebSocket messages.
+
+### Cloud Key Management Service
+
+*  Added support for signing directly on `input-file` in `gcloud kms asymmetric-sign` without specifying a `digest-algorithm`.
+
+### Cloud Memorystore
+
+*   Added `--read-replicas-mode` flag to `gcloud beta redis instances create` to support the multiple read replicas feature.
+*   Added `--replica-count` flag to `gcloud beta redis instances create` and `gcloud beta redis instances update` to support replica nodes scaling when multiple read replicas are enabled.
+
+### Cloud Run
+
+* `--[clear|set|update|remove]-secrets` flags are now supported for
+  `--platform=managed` in GA for deployments and service updates.
+
+### Cloud Security Command Center
+
+*   Added `gcloud findings set-mute` command and `gcloud muteconfigs` command group to support mute features.
+
+### Compute Engine
+
+* Promoted `--enable-dynamic-port-allocation` and `--max-ports-per-vm` flags of `gcloud compute routers nats create` and `gcloud compute routers nats update` to beta.
+* Promoted `--clear-max-ports-per-vm` flag of `gcloud compute routers nats update` to beta.
+* Promoted `--troubleshoot` flag of `gcloud compute ssh` to beta.
+* Added `--enable-uefi-networking` flag to
+  `gcloud compute instances create`, `gcloud compute instance-templates create`
+  and `gcloud compute instances bulk create` to support UEFI networking when creating instances.
+* Updated import and export schemas for:
+  - `gcloud beta compute forwarding-rules`.
+  - `gcloud beta compute backend-services`.
+
+### Compute OS Config
+
+* Promoted `gcloud compute os-config os-policy-assignment-reports` commands to GA.
+* `compute os-config os-policy-assignment-reports` command accepts user's compute/zone property when `--location` is not set.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.65.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Kubernetes Engine
+
+* Promoted `--cluster-dns`, `--cluster-dns-domain` and `--cluster-dns-scope=vpc`
+  flags of `gcloud container clusters create` and
+  `gcloud container clusters update` to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 363.0.0 (2021-11-02)
 
 ### Cloud SDK

@@ -587,12 +587,14 @@ class Finding(_messages.Message):
         configuration that increases risk.
       OBSERVATION: Describes a security observation that is for informational
         purposes.
+      SCC_ERROR: Describes an error that prevents some SCC functionality.
     """
     FINDING_CLASS_UNSPECIFIED = 0
     THREAT = 1
     VULNERABILITY = 2
     MISCONFIGURATION = 3
     OBSERVATION = 4
+    SCC_ERROR = 5
 
   class SeverityValueValuesEnum(_messages.Enum):
     r"""The severity of the finding. This field is managed by the source that

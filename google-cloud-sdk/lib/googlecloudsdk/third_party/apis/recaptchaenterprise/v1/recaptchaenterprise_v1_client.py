@@ -41,6 +41,9 @@ class RecaptchaenterpriseV1(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.projects_assessments = self.ProjectsAssessmentsService(self)
     self.projects_keys = self.ProjectsKeysService(self)
+    self.projects_relatedaccountgroupmemberships = self.ProjectsRelatedaccountgroupmembershipsService(self)
+    self.projects_relatedaccountgroups_memberships = self.ProjectsRelatedaccountgroupsMembershipsService(self)
+    self.projects_relatedaccountgroups = self.ProjectsRelatedaccountgroupsService(self)
     self.projects = self.ProjectsService(self)
 
   class ProjectsAssessmentsService(base_api.BaseApiService):
@@ -303,6 +306,117 @@ class RecaptchaenterpriseV1(base_api.BaseApiClient):
         request_field='googleCloudRecaptchaenterpriseV1Key',
         request_type_name='RecaptchaenterpriseProjectsKeysPatchRequest',
         response_type_name='GoogleCloudRecaptchaenterpriseV1Key',
+        supports_download=False,
+    )
+
+  class ProjectsRelatedaccountgroupmembershipsService(base_api.BaseApiService):
+    """Service class for the projects_relatedaccountgroupmemberships resource."""
+
+    _NAME = 'projects_relatedaccountgroupmemberships'
+
+    def __init__(self, client):
+      super(RecaptchaenterpriseV1.ProjectsRelatedaccountgroupmembershipsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Search(self, request, global_params=None):
+      r"""Search group memberships related to a given account.
+
+      Args:
+        request: (RecaptchaenterpriseProjectsRelatedaccountgroupmembershipsSearchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecaptchaenterpriseV1SearchRelatedAccountGroupMembershipsResponse) The response message.
+      """
+      config = self.GetMethodConfig('Search')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Search.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/relatedaccountgroupmemberships:search',
+        http_method='POST',
+        method_id='recaptchaenterprise.projects.relatedaccountgroupmemberships.search',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/relatedaccountgroupmemberships:search',
+        request_field='googleCloudRecaptchaenterpriseV1SearchRelatedAccountGroupMembershipsRequest',
+        request_type_name='RecaptchaenterpriseProjectsRelatedaccountgroupmembershipsSearchRequest',
+        response_type_name='GoogleCloudRecaptchaenterpriseV1SearchRelatedAccountGroupMembershipsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsRelatedaccountgroupsMembershipsService(base_api.BaseApiService):
+    """Service class for the projects_relatedaccountgroups_memberships resource."""
+
+    _NAME = 'projects_relatedaccountgroups_memberships'
+
+    def __init__(self, client):
+      super(RecaptchaenterpriseV1.ProjectsRelatedaccountgroupsMembershipsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Get the memberships in a group of related accounts.
+
+      Args:
+        request: (RecaptchaenterpriseProjectsRelatedaccountgroupsMembershipsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecaptchaenterpriseV1ListRelatedAccountGroupMembershipsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/relatedaccountgroups/{relatedaccountgroupsId}/memberships',
+        http_method='GET',
+        method_id='recaptchaenterprise.projects.relatedaccountgroups.memberships.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/memberships',
+        request_field='',
+        request_type_name='RecaptchaenterpriseProjectsRelatedaccountgroupsMembershipsListRequest',
+        response_type_name='GoogleCloudRecaptchaenterpriseV1ListRelatedAccountGroupMembershipsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsRelatedaccountgroupsService(base_api.BaseApiService):
+    """Service class for the projects_relatedaccountgroups resource."""
+
+    _NAME = 'projects_relatedaccountgroups'
+
+    def __init__(self, client):
+      super(RecaptchaenterpriseV1.ProjectsRelatedaccountgroupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""List groups of related accounts.
+
+      Args:
+        request: (RecaptchaenterpriseProjectsRelatedaccountgroupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecaptchaenterpriseV1ListRelatedAccountGroupsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/relatedaccountgroups',
+        http_method='GET',
+        method_id='recaptchaenterprise.projects.relatedaccountgroups.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/relatedaccountgroups',
+        request_field='',
+        request_type_name='RecaptchaenterpriseProjectsRelatedaccountgroupsListRequest',
+        response_type_name='GoogleCloudRecaptchaenterpriseV1ListRelatedAccountGroupsResponse',
         supports_download=False,
     )
 

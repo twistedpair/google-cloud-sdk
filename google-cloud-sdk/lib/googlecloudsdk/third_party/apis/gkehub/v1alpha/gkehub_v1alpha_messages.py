@@ -573,7 +573,9 @@ class ConfigManagementGitConfig(_messages.Message):
     policyDir: The path within the Git repository that represents the top
       level of the repo to sync. Default: the root directory of the
       repository.
-    secretType: Type of secret configured for access to the Git repo.
+    secretType: Type of secret configured for access to the Git repo. Must be
+      one of ssh, cookiefile, gcenode, token, gcpserviceaccount or none. The
+      validation of this is case-sensitive. Required.
     syncBranch: The branch of the repository to sync from. Default: master.
     syncRepo: The URL of the Git repository to use as the source of truth.
     syncRev: Git revision (tag or hash) to check out. Default HEAD.
@@ -1275,6 +1277,22 @@ class GkeCluster(_messages.Message):
   resourceLink = _messages.StringField(2)
 
 
+class GkehubOrganizationsLocationsFleetsListRequest(_messages.Message):
+  r"""A GkehubOrganizationsLocationsFleetsListRequest object.
+
+  Fields:
+    pageToken: A page token, received from a previous `ListFleets` call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to `ListFleets` must match the call that provided
+      the page token.
+    parent: Required. The organization or project to list for Fleets under, in
+      the format `organizations/*/locations/*` or `projects/*/locations/*`.
+  """
+
+  pageToken = _messages.StringField(1)
+  parent = _messages.StringField(2, required=True)
+
+
 class GkehubProjectsLocationsFeaturesCreateRequest(_messages.Message):
   r"""A GkehubProjectsLocationsFeaturesCreateRequest object.
 
@@ -1499,24 +1517,6 @@ class GkehubProjectsLocationsFleetNamespacesListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
-class GkehubProjectsLocationsFleetSearchFleetsRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsFleetSearchFleetsRequest object.
-
-  Fields:
-    locationsId: A string attribute.
-    projectsId: A string attribute.
-    query: Required. A query string for searching for fleets. The currently
-      supported query field is `ancestor`. Use
-      "ancestor=organizations/{org_id}" to search for fleets in an
-      organization, and "ancestor=folders/{folder_id}" to search for fleets in
-      a folder. Search expressions are case insensitive.
-  """
-
-  locationsId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
-  query = _messages.StringField(3)
-
-
 class GkehubProjectsLocationsFleetsCreateRequest(_messages.Message):
   r"""A GkehubProjectsLocationsFleetsCreateRequest object.
 
@@ -1550,6 +1550,22 @@ class GkehubProjectsLocationsFleetsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsFleetsListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFleetsListRequest object.
+
+  Fields:
+    pageToken: A page token, received from a previous `ListFleets` call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to `ListFleets` must match the call that provided
+      the page token.
+    parent: Required. The organization or project to list for Fleets under, in
+      the format `organizations/*/locations/*` or `projects/*/locations/*`.
+  """
+
+  pageToken = _messages.StringField(1)
+  parent = _messages.StringField(2, required=True)
 
 
 class GkehubProjectsLocationsFleetsPatchRequest(_messages.Message):
@@ -2286,6 +2302,19 @@ class ListFleetNamespacesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListFleetsResponse(_messages.Message):
+  r"""Response message for the `GkeHub.ListFleetsResponse` method.
+
+  Fields:
+    fleets: The list of matching fleets.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  fleets = _messages.MessageField('Fleet', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -2942,16 +2971,6 @@ class ResourceOptions(_messages.Message):
 
   connectVersion = _messages.StringField(1)
   v1beta1Crd = _messages.BooleanField(2)
-
-
-class SearchFleetsResponse(_messages.Message):
-  r"""Response message for the `FleetService.SearchFleetsResponse` method.
-
-  Fields:
-    fleets: The list of matching fleets.
-  """
-
-  fleets = _messages.MessageField('Fleet', 1, repeated=True)
 
 
 class ServiceMeshAnalysisMessage(_messages.Message):

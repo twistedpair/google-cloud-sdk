@@ -830,14 +830,16 @@ class Catalog(_messages.Message):
 
   Fields:
     createTime: Output only. The creation time of the catalog.
+    items: List of asset types and their configurations within this catalog.
     name: The resource name of the catalog, in the following form:
       `projects/{project}/locations/{location}/catalogs/{catalog}`.
     updateTime: Output only. The last-modified time of the catalog.
   """
 
   createTime = _messages.StringField(1)
-  name = _messages.StringField(2)
-  updateTime = _messages.StringField(3)
+  items = _messages.MessageField('Item', 2, repeated=True)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
 
 
 class CatalogConfig(_messages.Message):
@@ -849,6 +851,19 @@ class CatalogConfig(_messages.Message):
   """
 
   catalog = _messages.StringField(1)
+
+
+class CatalogIndexedFieldConfig(_messages.Message):
+  r"""CatalogIndexedFieldConfig configured the asset type's metadata fields
+  that need to be included in catalog's search result.
+
+  Fields:
+    expression: The expression that points to the indexed field in the asset.
+      If it's empty, the default is metadata.word, where the word is the
+      search operator that this field is mapped to.
+  """
+
+  expression = _messages.StringField(1)
 
 
 class ComplexFieldAllowedValues(_messages.Message):
@@ -1699,6 +1714,53 @@ class Input(_messages.Message):
 
   required = _messages.BooleanField(1)
   type = _messages.StringField(2)
+
+
+class Item(_messages.Message):
+  r"""Catalog search item that includes the asset type and it's configuration.
+
+  Messages:
+    IndexedFieldConfigsValue: A map between user-defined word and
+      IndexedFieldConfig, where the word is indexed with the value configured
+      by IndexedFieldConfig and customers can use the word as search operator.
+
+  Fields:
+    assetType: The asset type name that this catalog item configured.
+    indexedFieldConfigs: A map between user-defined word and
+      IndexedFieldConfig, where the word is indexed with the value configured
+      by IndexedFieldConfig and customers can use the word as search operator.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class IndexedFieldConfigsValue(_messages.Message):
+    r"""A map between user-defined word and IndexedFieldConfig, where the word
+    is indexed with the value configured by IndexedFieldConfig and customers
+    can use the word as search operator.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        IndexedFieldConfigsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        IndexedFieldConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a IndexedFieldConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A CatalogIndexedFieldConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('CatalogIndexedFieldConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  assetType = _messages.StringField(1)
+  indexedFieldConfigs = _messages.MessageField('IndexedFieldConfigsValue', 2)
 
 
 class LinkConfig(_messages.Message):
@@ -2735,6 +2797,20 @@ class MediaassetProjectsLocationsAssetTypesRulesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class MediaassetProjectsLocationsAssetTypesSearchRequest(_messages.Message):
+  r"""A MediaassetProjectsLocationsAssetTypesSearchRequest object.
+
+  Fields:
+    name: Required. The asset type resource name, in the following form:
+      `projects/{project}/locations/{location}/assetTypes/{type}`.
+    searchAssetTypeRequest: A SearchAssetTypeRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  searchAssetTypeRequest = _messages.MessageField('SearchAssetTypeRequest', 2)
+
+
 class MediaassetProjectsLocationsAssetTypesSetIamPolicyRequest(_messages.Message):
   r"""A MediaassetProjectsLocationsAssetTypesSetIamPolicyRequest object.
 
@@ -3724,6 +3800,81 @@ class Rule(_messages.Message):
   updateTime = _messages.StringField(8)
 
 
+class SearchAssetTypeRequest(_messages.Message):
+  r"""Request message for AssetTypesService.Search.
+
+  Enums:
+    TypeValueValuesEnum: By default, search at segment level.
+
+  Fields:
+    pageSize: The maximum number of items to return. If unspecified, server
+      will pick an appropriate default. Server may return fewer items than
+      requested. A caller should only rely on response's next_page_token to
+      determine if there are more realms left to be queried.
+    pageToken: The next_page_token value returned from a previous Search
+      request, if any.
+    query: Search query.
+    type: By default, search at segment level.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""By default, search at segment level.
+
+    Values:
+      REQUEST_TYPE_UNSPECIFIED: Unspecified type.
+      REQUEST_TYPE_ASSET: Video-level search. That is, search over videos and
+        video-level metadata.
+      REQUEST_TYPE_SEGMENT: Segment-level search. That is, search over
+        segments within videos and annotations.
+    """
+    REQUEST_TYPE_UNSPECIFIED = 0
+    REQUEST_TYPE_ASSET = 1
+    REQUEST_TYPE_SEGMENT = 2
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  query = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+
+
+class SearchAssetTypeResponse(_messages.Message):
+  r"""Response message for AssetTypesService.Search.
+
+  Fields:
+    items: Returned search results.
+    nextPageToken: The next-page continuation token.
+  """
+
+  items = _messages.MessageField('SearchResultItem', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class SearchResultItem(_messages.Message):
+  r"""Encapsulates each piece of data that matches the search query.
+
+  Fields:
+    asset: The resource name of the asset in the form:
+      'projects/{project}/locations/{location}/assetTypes/{type}/assets/{asset
+      }'
+    segments: Matching segments within the above asset.
+  """
+
+  asset = _messages.StringField(1)
+  segments = _messages.MessageField('Segment', 2, repeated=True)
+
+
+class Segment(_messages.Message):
+  r"""Represents a segment of a video asset that matches a search query.
+
+  Fields:
+    endOffset: Segment end offet timestamp.
+    startOffset: Segment start offset timestamp.
+  """
+
+  endOffset = _messages.StringField(1)
+  startOffset = _messages.StringField(2)
+
+
 class SortOrderConfig(_messages.Message):
   r"""A SortOrderConfig object.
 
@@ -3956,12 +4107,18 @@ class TransformationStatus(_messages.Message):
   Enums:
     StateValueValuesEnum: State of the asset transformation.
 
+  Messages:
+    ProgressReportValue: Output only. A struct that was provided by the
+      Transformer as progress report.
+
   Fields:
     invocationId: A UUID of the asset transformation run.
     lastInvocationStatus: Status of the last invocation of the asset
       transformation.
     lastInvocationTime: Output only. Time at which the last invocation of the
       asset transformation occurred.
+    progressReport: Output only. A struct that was provided by the Transformer
+      as progress report.
     state: State of the asset transformation.
   """
 
@@ -3981,10 +4138,37 @@ class TransformationStatus(_messages.Message):
     COMPLETED = 3
     CANCELLED = 4
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ProgressReportValue(_messages.Message):
+    r"""Output only. A struct that was provided by the Transformer as progress
+    report.
+
+    Messages:
+      AdditionalProperty: An additional property for a ProgressReportValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ProgressReportValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   invocationId = _messages.StringField(1)
   lastInvocationStatus = _messages.MessageField('Status', 2)
   lastInvocationTime = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
+  progressReport = _messages.MessageField('ProgressReportValue', 4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class Transformer(_messages.Message):

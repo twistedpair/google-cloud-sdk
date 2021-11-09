@@ -45,6 +45,163 @@ class DataplexProjectsLocationsLakesActionsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class DataplexProjectsLocationsLakesContentCreateRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesContentCreateRequest object.
+
+  Fields:
+    googleCloudDataplexV1Content: A GoogleCloudDataplexV1Content resource to
+      be passed as the request body.
+    parent: Required. The resource name of the parent lake:
+      projects/{project_id}/locations/{location_id}/lakes/{lake_id}
+    validateOnly: Optional. Only validate the request, but do not perform
+      mutations. The default is false.
+  """
+
+  googleCloudDataplexV1Content = _messages.MessageField('GoogleCloudDataplexV1Content', 1)
+  parent = _messages.StringField(2, required=True)
+  validateOnly = _messages.BooleanField(3)
+
+
+class DataplexProjectsLocationsLakesContentDeleteRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesContentDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the content: projects/{project_id}/lo
+      cations/{location_id}/lakes/{lake_id}/content/{content_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataplexProjectsLocationsLakesContentGetIamPolicyRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesContentGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned.Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.To learn
+      which resources support conditions in their IAM policies, see the IAM
+      documentation (https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsLakesContentGetRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesContentGetRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Optional. Specify content view to make a partial
+      request.
+
+  Fields:
+    name: Required. The resource name of the content: projects/{project_id}/lo
+      cations/{location_id}/lakes/{lake_id}/content/{content_id}
+    view: Optional. Specify content view to make a partial request.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. Specify content view to make a partial request.
+
+    Values:
+      CONTENT_VIEW_UNSPECIFIED: The default / unset value. The API will
+        default to the BASIC view.
+      BASIC: Will not return the data_text field.
+      FULL: Returns the complete proto.
+    """
+    CONTENT_VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
+
+  name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
+
+
+class DataplexProjectsLocationsLakesContentListRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesContentListRequest object.
+
+  Fields:
+    filter: Optional. Filter request. Filters are case-sensitive. The
+      following formats are supported:path = "/user/directory/notebook1.ipynb"
+      path = starts_with("/my/notebook/directory/file.ipynb") labels.key1 =
+      "value1" labels:key1 is_notebook is_sql_script = trueThese restrictions
+      can be coinjoined with AND, OR and NOT conjunctions.
+    pageSize: Optional. Maximum number of content to return. The service may
+      return fewer than this value. If unspecified, at most 10 content will be
+      returned. The maximum value is 1000; values above 1000 will be coerced
+      to 1000.
+    pageToken: Optional. Page token received from a previous ListContent call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to ListContent must match the call that provided the
+      page token.
+    parent: Required. The resource name of the parent lake:
+      projects/{project_id}/locations/{location_id}/lakes/{lake_id}
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class DataplexProjectsLocationsLakesContentPatchRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesContentPatchRequest object.
+
+  Fields:
+    googleCloudDataplexV1Content: A GoogleCloudDataplexV1Content resource to
+      be passed as the request body.
+    name: Output only. The relative resource name of the content, of the form:
+      projects/{project_id}/locations/{location_id}/lakes/{lake_id}/content/{c
+      ontent_id}
+    updateMask: Required. Mask of fields to update.
+    validateOnly: Optional. Only validate the request, but do not perform
+      mutations. The default is false.
+  """
+
+  googleCloudDataplexV1Content = _messages.MessageField('GoogleCloudDataplexV1Content', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
+class DataplexProjectsLocationsLakesContentSetIamPolicyRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesContentSetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsLakesContentTestIamPermissionsRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesContentTestIamPermissionsRequest object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class DataplexProjectsLocationsLakesCreateRequest(_messages.Message):
   r"""A DataplexProjectsLocationsLakesCreateRequest object.
 
@@ -79,6 +236,170 @@ class DataplexProjectsLocationsLakesDeleteRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class DataplexProjectsLocationsLakesEnvironmentsCreateRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesEnvironmentsCreateRequest object.
+
+  Fields:
+    environmentId: Required. Environment identifier. * Must contain only
+      lowercase letters, numbers and hyphens. * Must start with a letter. *
+      Must be between 1-63 characters. * Must end with a number or a letter. *
+      Must be unique within the lake.
+    googleCloudDataplexV1Environment: A GoogleCloudDataplexV1Environment
+      resource to be passed as the request body.
+    parent: Required. The resource name of the parent lake:
+      projects/{project_id}/locations/{location_id}/lakes/{lake_id}
+    validateOnly: Optional. Only validate the request, but do not perform
+      mutations. The default is false.
+  """
+
+  environmentId = _messages.StringField(1)
+  googleCloudDataplexV1Environment = _messages.MessageField('GoogleCloudDataplexV1Environment', 2)
+  parent = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class DataplexProjectsLocationsLakesEnvironmentsDeleteRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesEnvironmentsDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the environment: projects/{project_id
+      }/locations/{location_id}/lakes/{lake_id}/environments/{environment_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataplexProjectsLocationsLakesEnvironmentsGetIamPolicyRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesEnvironmentsGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned.Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.To learn
+      which resources support conditions in their IAM policies, see the IAM
+      documentation (https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsLakesEnvironmentsGetRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesEnvironmentsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the environment: projects/{project_id
+      }/locations/{location_id}/lakes/{lake_id}/environments/{environment_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataplexProjectsLocationsLakesEnvironmentsListRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesEnvironmentsListRequest object.
+
+  Fields:
+    filter: Optional. Filter request.
+    orderBy: Optional. Order by fields for the result.
+    pageSize: Optional. Maximum number of environments to return. The service
+      may return fewer than this value. If unspecified, at most 10
+      environments will be returned. The maximum value is 1000; values above
+      1000 will be coerced to 1000.
+    pageToken: Optional. Page token received from a previous ListEnvironments
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to ListEnvironments must match the call that
+      provided the page token.
+    parent: Required. The resource name of the parent lake:
+      projects/{project_id}/locations/{location_id}/lakes/{lake_id}
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class DataplexProjectsLocationsLakesEnvironmentsPatchRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesEnvironmentsPatchRequest object.
+
+  Fields:
+    googleCloudDataplexV1Environment: A GoogleCloudDataplexV1Environment
+      resource to be passed as the request body.
+    name: Output only. The relative resource name of the environment, of the
+      form: projects/{project_id}/locations/{location_id}/lakes/{lake_id}/envi
+      ronment/{environment_id}
+    updateMask: Required. Mask of fields to update.
+    validateOnly: Optional. Only validate the request, but do not perform
+      mutations. The default is false.
+  """
+
+  googleCloudDataplexV1Environment = _messages.MessageField('GoogleCloudDataplexV1Environment', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
+class DataplexProjectsLocationsLakesEnvironmentsSessionsListRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesEnvironmentsSessionsListRequest object.
+
+  Fields:
+    pageSize: Optional. Maximum number of sessions to return. The service may
+      return fewer than this value. If unspecified, at most 10 sessions will
+      be returned. The maximum value is 1000; values above 1000 will be
+      coerced to 1000.
+    pageToken: Optional. Page token received from a previous ListSessions
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to ListSessions must match the call that
+      provided the page token.
+    parent: Required. The resource name of the parent environment: projects/{p
+      roject_number}/locations/{location_id}/lakes/{lake_id}/environment/{envi
+      ronment_id}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DataplexProjectsLocationsLakesEnvironmentsSetIamPolicyRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesEnvironmentsSetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsLakesEnvironmentsTestIamPermissionsRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesEnvironmentsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class DataplexProjectsLocationsLakesGetIamPolicyRequest(_messages.Message):
@@ -615,9 +936,9 @@ class DataplexProjectsLocationsLakesZonesCreateRequest(_messages.Message):
       such as database and dataset names when publishing metadata to Hive
       Metastore and BigQuery. * Must contain only lowercase letters, numbers
       and hyphens. * Must start with a letter. * Must end with a number or a
-      letter. * Must be between 1-63 characters. * Must be unique within the
-      lake. * Must not be one of the reserved IDs (i.e. "default", "global-
-      temp")
+      letter. * Must be between 1-63 characters. * Must be unique across all
+      lakes from all locations in a project. * Must not be one of the reserved
+      IDs (i.e. "default", "global-temp")
   """
 
   googleCloudDataplexV1Zone = _messages.MessageField('GoogleCloudDataplexV1Zone', 1)
@@ -1093,11 +1414,15 @@ class GoogleCloudDataplexV1ActionInvalidDataFormat(_messages.Message):
   discovery.
 
   Fields:
+    expectedFormat: The expected data format of the entity.
+    newFormat: The new unexpected data format within the entity.
     sampledDataLocations: The list of data locations sampled and used for
       format/schema inference.
   """
 
-  sampledDataLocations = _messages.StringField(1, repeated=True)
+  expectedFormat = _messages.StringField(1)
+  newFormat = _messages.StringField(2)
+  sampledDataLocations = _messages.StringField(3, repeated=True)
 
 
 class GoogleCloudDataplexV1ActionInvalidDataOrganization(_messages.Message):
@@ -1107,8 +1432,28 @@ class GoogleCloudDataplexV1ActionInvalidDataOrganization(_messages.Message):
 class GoogleCloudDataplexV1ActionInvalidDataPartition(_messages.Message):
   r"""Action details for invalid or unsupported partitions detected by
   discovery.
+
+  Enums:
+    ExpectedStructureValueValuesEnum: The issue type of InvalidDataPartition.
+
+  Fields:
+    expectedStructure: The issue type of InvalidDataPartition.
   """
 
+  class ExpectedStructureValueValuesEnum(_messages.Enum):
+    r"""The issue type of InvalidDataPartition.
+
+    Values:
+      PARTITION_STRUCTURE_UNSPECIFIED: PartitionStructure unspecified.
+      CONSISTENT_KEYS: Consistent hive-style partition definition (both raw
+        and curated zone).
+      HIVE_STYLE_KEYS: Hive style partition definition (curated zone only).
+    """
+    PARTITION_STRUCTURE_UNSPECIFIED = 0
+    CONSISTENT_KEYS = 1
+    HIVE_STYLE_KEYS = 2
+
+  expectedStructure = _messages.EnumField('ExpectedStructureValueValuesEnum', 1)
 
 
 class GoogleCloudDataplexV1ActionInvalidDiscoveryConfig(_messages.Message):
@@ -1588,6 +1933,114 @@ class GoogleCloudDataplexV1CancelJobRequest(_messages.Message):
   r"""Cancel task jobs."""
 
 
+class GoogleCloudDataplexV1Content(_messages.Message):
+  r"""Content represents a user-visible notebook or a sql script
+
+  Messages:
+    LabelsValue: Optional. User defined labels for the content.
+
+  Fields:
+    createTime: Output only. Content creation time.
+    dataText: Required. Content data in string format.
+    description: Optional. Description of the content.
+    labels: Optional. User defined labels for the content.
+    name: Output only. The relative resource name of the content, of the form:
+      projects/{project_id}/locations/{location_id}/lakes/{lake_id}/content/{c
+      ontent_id}
+    notebook: Notebook related configurations.
+    path: Required. The path for the Content file, represented as directory
+      structure. Unique within a lake. Limited to alphanumerics, hyphens,
+      underscores, dots and slashes.
+    sqlScript: Sql Script related configurations.
+    uid: Output only. System generated globally unique ID for the content.
+      This ID will be different if the content is deleted and re-created with
+      the same name.
+    updateTime: Output only. The time when the content was last updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. User defined labels for the content.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  dataText = _messages.StringField(2)
+  description = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  notebook = _messages.MessageField('GoogleCloudDataplexV1ContentNotebook', 6)
+  path = _messages.StringField(7)
+  sqlScript = _messages.MessageField('GoogleCloudDataplexV1ContentSqlScript', 8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+
+
+class GoogleCloudDataplexV1ContentNotebook(_messages.Message):
+  r"""Configuration for Notebook content.
+
+  Enums:
+    KernelTypeValueValuesEnum: Required. Kernel Type of the notebook.
+
+  Fields:
+    kernelType: Required. Kernel Type of the notebook.
+  """
+
+  class KernelTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Kernel Type of the notebook.
+
+    Values:
+      KERNEL_TYPE_UNSPECIFIED: Kernel Type unspecified.
+      PYTHON3: Python 3 Kernel.
+    """
+    KERNEL_TYPE_UNSPECIFIED = 0
+    PYTHON3 = 1
+
+  kernelType = _messages.EnumField('KernelTypeValueValuesEnum', 1)
+
+
+class GoogleCloudDataplexV1ContentSqlScript(_messages.Message):
+  r"""Configuration for the Sql Script content.
+
+  Enums:
+    EngineValueValuesEnum: Required. Query Engine to be used for the Sql
+      Query.
+
+  Fields:
+    engine: Required. Query Engine to be used for the Sql Query.
+  """
+
+  class EngineValueValuesEnum(_messages.Enum):
+    r"""Required. Query Engine to be used for the Sql Query.
+
+    Values:
+      QUERY_ENGINE_UNSPECIFIED: Value was unspecified.
+      SPARK: Spark SQL Query.
+    """
+    QUERY_ENGINE_UNSPECIFIED = 0
+    SPARK = 1
+
+  engine = _messages.EnumField('EngineValueValuesEnum', 1)
+
+
 class GoogleCloudDataplexV1Entity(_messages.Message):
   r"""Represents tables and fileset metadata contained within a zone.
 
@@ -1715,6 +2168,212 @@ class GoogleCloudDataplexV1EntityCompatibilityStatusCompatibility(_messages.Mess
 
   compatible = _messages.BooleanField(1)
   reason = _messages.StringField(2)
+
+
+class GoogleCloudDataplexV1Environment(_messages.Message):
+  r"""Environment represents a user-visible compute infrastructure for
+  analytics within a lake.
+
+  Enums:
+    StateValueValuesEnum: Output only. Current state of the environment.
+
+  Messages:
+    LabelsValue: Optional. User defined labels for the environment.
+
+  Fields:
+    createTime: Output only. Environment creation time.
+    description: Optional. Description of the environment.
+    displayName: Optional. User friendly display name.
+    endpoints: Output only. URI Endpoints to access sessions associated with
+      the Environment.
+    infrastructureSpec: Required. Infrastructure specification for the
+      Environment.
+    labels: Optional. User defined labels for the environment.
+    name: Output only. The relative resource name of the environment, of the
+      form: projects/{project_id}/locations/{location_id}/lakes/{lake_id}/envi
+      ronment/{environment_id}
+    sessionSpec: Optional. Configuration for sessions created for this
+      environment.
+    sessionStatus: Output only. Status of sessions created for this
+      environment.
+    state: Output only. Current state of the environment.
+    uid: Output only. System generated globally unique ID for the environment.
+      This ID will be different if the environment is deleted and re-created
+      with the same name.
+    updateTime: Output only. The time when the environment was last updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the environment.
+
+    Values:
+      STATE_UNSPECIFIED: State is not specified.
+      ACTIVE: Resource is active, i.e., ready to use.
+      CREATING: Resource is under creation.
+      DELETING: Resource is under deletion.
+      ACTION_REQUIRED: Resource is active but has unresolved actions.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    DELETING = 3
+    ACTION_REQUIRED = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. User defined labels for the environment.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  endpoints = _messages.MessageField('GoogleCloudDataplexV1EnvironmentEndpoints', 4)
+  infrastructureSpec = _messages.MessageField('GoogleCloudDataplexV1EnvironmentInfrastructureSpec', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  sessionSpec = _messages.MessageField('GoogleCloudDataplexV1EnvironmentSessionSpec', 8)
+  sessionStatus = _messages.MessageField('GoogleCloudDataplexV1EnvironmentSessionStatus', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  uid = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
+
+
+class GoogleCloudDataplexV1EnvironmentEndpoints(_messages.Message):
+  r"""A GoogleCloudDataplexV1EnvironmentEndpoints object.
+
+  Fields:
+    notebooks: Output only. URI to serve notebook APIs
+    sql: Output only. URI to serve SQL APIs
+  """
+
+  notebooks = _messages.StringField(1)
+  sql = _messages.StringField(2)
+
+
+class GoogleCloudDataplexV1EnvironmentInfrastructureSpec(_messages.Message):
+  r"""Configuration for the underlying infrastructure used to run workloads.
+
+  Fields:
+    compute: Optional. Compute resources needed for analyze interactive
+      workloads.
+    osImage: Required. Software Runtime Configuration for analyze interactive
+      workloads.
+  """
+
+  compute = _messages.MessageField('GoogleCloudDataplexV1EnvironmentInfrastructureSpecComputeResources', 1)
+  osImage = _messages.MessageField('GoogleCloudDataplexV1EnvironmentInfrastructureSpecOsImageRuntime', 2)
+
+
+class GoogleCloudDataplexV1EnvironmentInfrastructureSpecComputeResources(_messages.Message):
+  r"""Compute resources associated with the analyze interactive workloads.
+
+  Fields:
+    diskSizeGb: Optional. Size in GB of the disk. Default is 100 GB.
+    maxNodeCount: Optional. Max configurable nodes. If max_node_count >
+      node_count, then auto-scaling is enabled.
+    nodeCount: Optional. Total number of worker nodes in the cluster 1 master
+      + N workers.
+  """
+
+  diskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  maxNodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  nodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudDataplexV1EnvironmentInfrastructureSpecOsImageRuntime(_messages.Message):
+  r"""Software Runtime Configuration to run Analyze.
+
+  Messages:
+    PropertiesValue: Optional. Override to common configuration of open source
+      components installed on the Dataproc cluster. The properties to set on
+      daemon config files. Property keys are specified in prefix:property
+      format.
+
+  Fields:
+    imageVersion: Required. Dataplex Image version.
+    javaLibraries: Optional. List of Java jars to be included in the runtime
+      environment. Valid input includes Cloud Storage URIs to Jar binaries.
+      For example, gs://bucket-name/my/path/to/file.jar
+    properties: Optional. Override to common configuration of open source
+      components installed on the Dataproc cluster. The properties to set on
+      daemon config files. Property keys are specified in prefix:property
+      format.
+    pythonPackages: Optional. A list of python packages to be installed. Valid
+      formats include Cloud Storage URI to a PIP installable library. For
+      example, gs://bucket-name/my/path/to/lib.tar.gz
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PropertiesValue(_messages.Message):
+    r"""Optional. Override to common configuration of open source components
+    installed on the Dataproc cluster. The properties to set on daemon config
+    files. Property keys are specified in prefix:property format.
+
+    Messages:
+      AdditionalProperty: An additional property for a PropertiesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type PropertiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PropertiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  imageVersion = _messages.StringField(1)
+  javaLibraries = _messages.StringField(2, repeated=True)
+  properties = _messages.MessageField('PropertiesValue', 3)
+  pythonPackages = _messages.StringField(4, repeated=True)
+
+
+class GoogleCloudDataplexV1EnvironmentSessionSpec(_messages.Message):
+  r"""A GoogleCloudDataplexV1EnvironmentSessionSpec object.
+
+  Fields:
+    maxIdleDuration: Optional. The idle time configuration of the session. The
+      session will be auto-terminated at the end of this period.
+  """
+
+  maxIdleDuration = _messages.StringField(1)
+
+
+class GoogleCloudDataplexV1EnvironmentSessionStatus(_messages.Message):
+  r"""A GoogleCloudDataplexV1EnvironmentSessionStatus object.
+
+  Fields:
+    active: Output only. Queries over sessions to mark whether the environment
+      is currently active or not
+  """
+
+  active = _messages.BooleanField(1)
 
 
 class GoogleCloudDataplexV1Job(_messages.Message):
@@ -2039,6 +2698,19 @@ class GoogleCloudDataplexV1ListAssetsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class GoogleCloudDataplexV1ListContentResponse(_messages.Message):
+  r"""List content response.
+
+  Fields:
+    content: Content under the given parent lake.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+  """
+
+  content = _messages.MessageField('GoogleCloudDataplexV1Content', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class GoogleCloudDataplexV1ListEntitiesResponse(_messages.Message):
   r"""List metadata entities response.
 
@@ -2049,6 +2721,19 @@ class GoogleCloudDataplexV1ListEntitiesResponse(_messages.Message):
   """
 
   entities = _messages.MessageField('GoogleCloudDataplexV1Entity', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudDataplexV1ListEnvironmentsResponse(_messages.Message):
+  r"""List environments response.
+
+  Fields:
+    environments: Environments under the given parent lake.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+  """
+
+  environments = _messages.MessageField('GoogleCloudDataplexV1Environment', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -2091,6 +2776,19 @@ class GoogleCloudDataplexV1ListPartitionsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   partitions = _messages.MessageField('GoogleCloudDataplexV1Partition', 2, repeated=True)
+
+
+class GoogleCloudDataplexV1ListSessionsResponse(_messages.Message):
+  r"""List sessions response.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    sessions: Sessions under a given environment.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sessions = _messages.MessageField('GoogleCloudDataplexV1Session', 2, repeated=True)
 
 
 class GoogleCloudDataplexV1ListTasksResponse(_messages.Message):
@@ -2484,6 +3182,43 @@ class GoogleCloudDataplexV1SchemaSchemaField(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 5)
 
 
+class GoogleCloudDataplexV1Session(_messages.Message):
+  r"""Represents an active analyze session running for a user.
+
+  Enums:
+    StateValueValuesEnum:
+
+  Fields:
+    createTime: Output only. Session start time.
+    name: Output only. The relative resource name of the content, of the form:
+      projects/{project_id}/locations/{location_id}/lakes/{lake_id}/environmen
+      t/{environment_id}/sessions/{session_id}
+    state: A StateValueValuesEnum attribute.
+    userId: Output only. Email of user running the session.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""StateValueValuesEnum enum type.
+
+    Values:
+      STATE_UNSPECIFIED: State is not specified.
+      ACTIVE: Resource is active, i.e., ready to use.
+      CREATING: Resource is under creation.
+      DELETING: Resource is under deletion.
+      ACTION_REQUIRED: Resource is active but has unresolved actions.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    DELETING = 3
+    ACTION_REQUIRED = 4
+
+  createTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  userId = _messages.StringField(4)
+
+
 class GoogleCloudDataplexV1StorageFormat(_messages.Message):
   r"""Describes the format of the data within its storage location.
 
@@ -2705,7 +3440,7 @@ class GoogleCloudDataplexV1TaskExecutionSpec(_messages.Message):
       the last argument.
     maxJobExecutionLifetime: Optional. The maximum duration after which the
       job execution is expired.
-    serviceAccount: Optional. Service account to use to execute a task. If not
+    serviceAccount: Required. Service account to use to execute a task. If not
       provided, the default Compute service account for the project is used.
     serviceAccountScopes: Optional. The set of auth scopes and permissions
       granted to the service account. By default, the CLOUD_PLATFORM auth
@@ -2862,7 +3597,7 @@ class GoogleCloudDataplexV1TaskSparkTaskConfig(_messages.Message):
       .tar.gz, .tgz, and .zip.
     fileUris: Optional. GCS URIs of files to be placed in the working
       directory of each executor.
-    infrastructureSpec: Required. Infrastructure specification for the
+    infrastructureSpec: Optional. Infrastructure specification for the
       execution.
     mainClass: The name of the driver's main class. The jar file that contains
       the class must be in the default CLASSPATH or specified in

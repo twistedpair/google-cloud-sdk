@@ -1089,6 +1089,87 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Creates a new Gateway in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsGatewaysCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways',
+        http_method='POST',
+        method_id='networkservices.projects.locations.gateways.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['gatewayId'],
+        relative_path='v1alpha1/{+parent}/gateways',
+        request_field='gateway',
+        request_type_name='NetworkservicesProjectsLocationsGatewaysCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single Gateway.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsGatewaysDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}',
+        http_method='DELETE',
+        method_id='networkservices.projects.locations.gateways.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsGatewaysDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single Gateway.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsGatewaysGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Gateway) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.gateways.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsGatewaysGetRequest',
+        response_type_name='Gateway',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
@@ -1113,6 +1194,60 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='NetworkservicesProjectsLocationsGatewaysGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Gateways in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsGatewaysListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListGatewaysResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways',
+        http_method='GET',
+        method_id='networkservices.projects.locations.gateways.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/gateways',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsGatewaysListRequest',
+        response_type_name='ListGatewaysResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single Gateway.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsGatewaysPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}',
+        http_method='PATCH',
+        method_id='networkservices.projects.locations.gateways.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='gateway',
+        request_type_name='NetworkservicesProjectsLocationsGatewaysPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

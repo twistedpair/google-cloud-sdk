@@ -3095,6 +3095,7 @@ class BackendBucketCdnPolicy(_messages.Message):
       headers are matched - e.g. Pragma or Authorization headers. Up to 5
       headers can be specified. The cache is bypassed for all
       cdnPolicy.cacheMode settings.
+    cacheKeyPolicy: The CacheKeyPolicy for this CdnPolicy.
     cacheMode: Specifies the cache setting for all responses from this
       backend. The possible values are: USE_ORIGIN_HEADERS Requires the origin
       to set valid caching headers to cache content. Responses without these
@@ -3217,16 +3218,17 @@ class BackendBucketCdnPolicy(_messages.Message):
     USE_ORIGIN_HEADERS = 3
 
   bypassCacheOnRequestHeaders = _messages.MessageField('BackendBucketCdnPolicyBypassCacheOnRequestHeader', 1, repeated=True)
-  cacheMode = _messages.EnumField('CacheModeValueValuesEnum', 2)
-  clientTtl = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  defaultTtl = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  maxTtl = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  negativeCaching = _messages.BooleanField(6)
-  negativeCachingPolicy = _messages.MessageField('BackendBucketCdnPolicyNegativeCachingPolicy', 7, repeated=True)
-  requestCoalescing = _messages.BooleanField(8)
-  serveWhileStale = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  signedUrlCacheMaxAgeSec = _messages.IntegerField(10)
-  signedUrlKeyNames = _messages.StringField(11, repeated=True)
+  cacheKeyPolicy = _messages.MessageField('BackendBucketCdnPolicyCacheKeyPolicy', 2)
+  cacheMode = _messages.EnumField('CacheModeValueValuesEnum', 3)
+  clientTtl = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  defaultTtl = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  maxTtl = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  negativeCaching = _messages.BooleanField(7)
+  negativeCachingPolicy = _messages.MessageField('BackendBucketCdnPolicyNegativeCachingPolicy', 8, repeated=True)
+  requestCoalescing = _messages.BooleanField(9)
+  serveWhileStale = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  signedUrlCacheMaxAgeSec = _messages.IntegerField(11)
+  signedUrlKeyNames = _messages.StringField(12, repeated=True)
 
 
 class BackendBucketCdnPolicyBypassCacheOnRequestHeader(_messages.Message):
@@ -3240,6 +3242,22 @@ class BackendBucketCdnPolicyBypassCacheOnRequestHeader(_messages.Message):
   """
 
   headerName = _messages.StringField(1)
+
+
+class BackendBucketCdnPolicyCacheKeyPolicy(_messages.Message):
+  r"""Message containing what to include in the cache key for a request for
+  Cloud CDN.
+
+  Fields:
+    includeHttpHeaders: Allows HTTP request headers (by name) to be used in
+      the cache key.
+    queryStringWhitelist: Names of query string parameters to include in cache
+      keys. All other parameters will be excluded. '&' and '=' will be percent
+      encoded and not treated as delimiters.
+  """
+
+  includeHttpHeaders = _messages.StringField(1, repeated=True)
+  queryStringWhitelist = _messages.StringField(2, repeated=True)
 
 
 class BackendBucketCdnPolicyNegativeCachingPolicy(_messages.Message):
@@ -5167,6 +5185,11 @@ class CacheKeyPolicy(_messages.Message):
   Fields:
     includeHost: If true, requests to different hosts will be cached
       separately.
+    includeHttpHeaders: Allows HTTP request headers (by name) to be used in
+      the cache key.
+    includeNamedCookies: Allows HTTP cookies (by name) to be used in the cache
+      key. The name=value pair will be used in the cache key Cloud CDN
+      generates.
     includeProtocol: If true, http and https requests will be cached
       separately.
     includeQueryString: If true, include query string parameters in the cache
@@ -5184,10 +5207,12 @@ class CacheKeyPolicy(_messages.Message):
   """
 
   includeHost = _messages.BooleanField(1)
-  includeProtocol = _messages.BooleanField(2)
-  includeQueryString = _messages.BooleanField(3)
-  queryStringBlacklist = _messages.StringField(4, repeated=True)
-  queryStringWhitelist = _messages.StringField(5, repeated=True)
+  includeHttpHeaders = _messages.StringField(2, repeated=True)
+  includeNamedCookies = _messages.StringField(3, repeated=True)
+  includeProtocol = _messages.BooleanField(4)
+  includeQueryString = _messages.BooleanField(5)
+  queryStringBlacklist = _messages.StringField(6, repeated=True)
+  queryStringWhitelist = _messages.StringField(7, repeated=True)
 
 
 class CircuitBreakers(_messages.Message):
@@ -11768,6 +11793,13 @@ class ComputeInstancesInsertRequest(_messages.Message):
       /global/instanceTemplates/instanceTemplate -
       projects/project/global/instanceTemplates/instanceTemplate -
       global/instanceTemplates/instanceTemplate
+    sourceMachineImage: Specifies the machine image to use to create the
+      instance. This field is optional. It can be a full or partial URL. For
+      example, the following are all valid URLs to a machine image: -
+      https://www.googleapis.com/compute/v1/projects/project/global/global
+      /machineImages/machineImage -
+      projects/project/global/global/machineImages/machineImage -
+      global/machineImages/machineImage
     zone: The name of the zone for this request.
   """
 
@@ -11775,7 +11807,8 @@ class ComputeInstancesInsertRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   sourceInstanceTemplate = _messages.StringField(4)
-  zone = _messages.StringField(5, required=True)
+  sourceMachineImage = _messages.StringField(5)
+  zone = _messages.StringField(6, required=True)
 
 
 class ComputeInstancesListReferrersRequest(_messages.Message):
@@ -13197,6 +13230,165 @@ class ComputeLicensesSetIamPolicyRequest(_messages.Message):
 
 class ComputeLicensesTestIamPermissionsRequest(_messages.Message):
   r"""A ComputeLicensesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+
+
+class ComputeMachineImagesDeleteRequest(_messages.Message):
+  r"""A ComputeMachineImagesDeleteRequest object.
+
+  Fields:
+    machineImage: The name of the machine image to delete.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  machineImage = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class ComputeMachineImagesGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeMachineImagesGetIamPolicyRequest object.
+
+  Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
+class ComputeMachineImagesGetRequest(_messages.Message):
+  r"""A ComputeMachineImagesGetRequest object.
+
+  Fields:
+    machineImage: The name of the machine image.
+    project: Project ID for this request.
+  """
+
+  machineImage = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeMachineImagesInsertRequest(_messages.Message):
+  r"""A ComputeMachineImagesInsertRequest object.
+
+  Fields:
+    machineImage: A MachineImage resource to be passed as the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    sourceInstance: Required. Source instance that is used to create the
+      machine image from.
+  """
+
+  machineImage = _messages.MessageField('MachineImage', 1)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  sourceInstance = _messages.StringField(4)
+
+
+class ComputeMachineImagesListRequest(_messages.Message):
+  r"""A ComputeMachineImagesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
+      instances, you can exclude instances named `example-instance` by
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
+      fields. For example, you could specify `scheduling.automaticRestart =
+      false` to include instances only if they are not scheduled for automatic
+      restarts. You can use filtering on nested fields to filter based on
+      resource labels. To filter on multiple expressions, provide each
+      separate expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ```
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
+
+
+class ComputeMachineImagesSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeMachineImagesSetIamPolicyRequest object.
+
+  Fields:
+    globalSetPolicyRequest: A GlobalSetPolicyRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  globalSetPolicyRequest = _messages.MessageField('GlobalSetPolicyRequest', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
+class ComputeMachineImagesTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeMachineImagesTestIamPermissionsRequest object.
 
   Fields:
     project: Project ID for this request.
@@ -28312,9 +28504,8 @@ class HealthCheck(_messages.Message):
 
   Enums:
     TypeValueValuesEnum: Specifies the type of the healthCheck, either TCP,
-      SSL, HTTP, HTTPS or HTTP2. If not specified, the default is TCP. Exactly
-      one of the protocol-specific health check field must be specified, which
-      must match type field.
+      SSL, HTTP, HTTPS or HTTP2. Exactly one of the protocol-specific health
+      check field must be specified, which must match type field.
 
   Fields:
     checkIntervalSec: How often (in seconds) to send a health check. The
@@ -28349,18 +28540,16 @@ class HealthCheck(_messages.Message):
       default value is 5 seconds. It is invalid for timeoutSec to have greater
       value than checkIntervalSec.
     type: Specifies the type of the healthCheck, either TCP, SSL, HTTP, HTTPS
-      or HTTP2. If not specified, the default is TCP. Exactly one of the
-      protocol-specific health check field must be specified, which must match
-      type field.
+      or HTTP2. Exactly one of the protocol-specific health check field must
+      be specified, which must match type field.
     unhealthyThreshold: A so-far healthy instance will be marked unhealthy
       after this many consecutive failures. The default value is 2.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Specifies the type of the healthCheck, either TCP, SSL, HTTP, HTTPS or
-    HTTP2. If not specified, the default is TCP. Exactly one of the protocol-
-    specific health check field must be specified, which must match type
-    field.
+    HTTP2. Exactly one of the protocol-specific health check field must be
+    specified, which must match type field.
 
     Values:
       GRPC: <no description>
@@ -30764,6 +30953,9 @@ class Instance(_messages.Message):
     shieldedInstanceConfig: A ShieldedInstanceConfig attribute.
     shieldedInstanceIntegrityPolicy: A ShieldedInstanceIntegrityPolicy
       attribute.
+    sourceMachineImage: Source machine image
+    sourceMachineImageEncryptionKey: Source machine image encryption key when
+      creating an instance from a machine image.
     startRestricted: [Output Only] Whether a VM has been restricted for start
       because Compute Engine has detected suspicious activity.
     status: [Output Only] The status of the instance. One of the following
@@ -30895,11 +31087,13 @@ class Instance(_messages.Message):
   serviceAccounts = _messages.MessageField('ServiceAccount', 32, repeated=True)
   shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 33)
   shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 34)
-  startRestricted = _messages.BooleanField(35)
-  status = _messages.EnumField('StatusValueValuesEnum', 36)
-  statusMessage = _messages.StringField(37)
-  tags = _messages.MessageField('Tags', 38)
-  zone = _messages.StringField(39)
+  sourceMachineImage = _messages.StringField(35)
+  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 36)
+  startRestricted = _messages.BooleanField(37)
+  status = _messages.EnumField('StatusValueValuesEnum', 38)
+  statusMessage = _messages.StringField(39)
+  tags = _messages.MessageField('Tags', 40)
+  zone = _messages.StringField(41)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -34556,8 +34750,11 @@ class InterconnectAttachment(_messages.Message):
     customerRouterIpAddress: [Output Only] IPv4 address + prefix length to be
       configured on the customer router subinterface for this interconnect
       attachment.
-    dataplaneVersion: [Output Only] Dataplane version for this
-      InterconnectAttachment.
+    dataplaneVersion: [Output only for types PARTNER and DEDICATED. Not
+      present for PARTNER_PROVIDER.] Dataplane version for this
+      InterconnectAttachment. This field is only present for Dataplane version
+      2 and higher. Absence of this field in the API output indicates that the
+      Dataplane is version 1.
     description: An optional description of this resource.
     edgeAvailabilityDomain: Desired availability domain for the attachment.
       Only available for type PARTNER, at creation time, and can take one of
@@ -36596,6 +36793,259 @@ class LogConfigDataAccessOptions(_messages.Message):
     LOG_MODE_UNSPECIFIED = 1
 
   logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
+
+
+class MachineImage(_messages.Message):
+  r"""Represents a machine image resource. A machine image is a Compute Engine
+  resource that stores all the configuration, metadata, permissions, and data
+  from one or more disks required to create a Virtual machine (VM) instance.
+  For more information, see Machine images.
+
+  Enums:
+    StatusValueValuesEnum: [Output Only] The status of the machine image. One
+      of the following values: INVALID, CREATING, READY, DELETING, and
+      UPLOADING.
+
+  Fields:
+    creationTimestamp: [Output Only] The creation timestamp for this machine
+      image in RFC3339 text format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    guestFlush: [Input Only] Whether to attempt an application consistent
+      machine image by informing the OS to prepare for the snapshot process.
+      Currently only supported on Windows instances using the Volume Shadow
+      Copy Service (VSS).
+    id: [Output Only] A unique identifier for this machine image. The server
+      defines this identifier.
+    instanceProperties: [Output Only] Properties of source instance
+    kind: [Output Only] The resource type, which is always
+      compute#machineImage for machine image.
+    machineImageEncryptionKey: Encrypts the machine image using a customer-
+      supplied encryption key. After you encrypt a machine image using a
+      customer-supplied key, you must provide the same key if you use the
+      machine image later. For example, you must provide the encryption key
+      when you create an instance from the encrypted machine image in a future
+      request. Customer-supplied encryption keys do not protect access to
+      metadata of the machine image. If you do not provide an encryption key
+      when creating the machine image, then the machine image will be
+      encrypted using an automatically generated key and you do not need to
+      provide a key to use the machine image later.
+    name: Name of the resource; provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    satisfiesPzs: [Output Only] Reserved for future use.
+    savedDisks: An array of Machine Image specific properties for disks
+      attached to the source instance
+    selfLink: [Output Only] The URL for this machine image. The server defines
+      this URL.
+    sourceDiskEncryptionKeys: [Input Only] The customer-supplied encryption
+      key of the disks attached to the source instance. Required if the source
+      disk is protected by a customer-supplied encryption key.
+    sourceInstance: The source instance used to create the machine image. You
+      can provide this as a partial or full URL to the resource. For example,
+      the following are valid values: -
+      https://www.googleapis.com/compute/v1/projects/project/zones/zone
+      /instances/instance - projects/project/zones/zone/instances/instance
+    sourceInstanceProperties: [Output Only] DEPRECATED: Please use
+      instance_properties instead for source instance related properties. New
+      properties will not be added to this field.
+    status: [Output Only] The status of the machine image. One of the
+      following values: INVALID, CREATING, READY, DELETING, and UPLOADING.
+    storageLocations: The regional or multi-regional Cloud Storage bucket
+      location where the machine image is stored.
+    totalStorageBytes: [Output Only] Total size of the storage used by the
+      machine image.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The status of the machine image. One of the following
+    values: INVALID, CREATING, READY, DELETING, and UPLOADING.
+
+    Values:
+      CREATING: <no description>
+      DELETING: <no description>
+      INVALID: <no description>
+      READY: <no description>
+      UPLOADING: <no description>
+    """
+    CREATING = 0
+    DELETING = 1
+    INVALID = 2
+    READY = 3
+    UPLOADING = 4
+
+  creationTimestamp = _messages.StringField(1)
+  description = _messages.StringField(2)
+  guestFlush = _messages.BooleanField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  instanceProperties = _messages.MessageField('InstanceProperties', 5)
+  kind = _messages.StringField(6, default='compute#machineImage')
+  machineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 7)
+  name = _messages.StringField(8)
+  satisfiesPzs = _messages.BooleanField(9)
+  savedDisks = _messages.MessageField('SavedDisk', 10, repeated=True)
+  selfLink = _messages.StringField(11)
+  sourceDiskEncryptionKeys = _messages.MessageField('SourceDiskEncryptionKey', 12, repeated=True)
+  sourceInstance = _messages.StringField(13)
+  sourceInstanceProperties = _messages.MessageField('SourceInstanceProperties', 14)
+  status = _messages.EnumField('StatusValueValuesEnum', 15)
+  storageLocations = _messages.StringField(16, repeated=True)
+  totalStorageBytes = _messages.IntegerField(17)
+
+
+class MachineImageList(_messages.Message):
+  r"""A list of machine images.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of MachineImage resources.
+    kind: [Output Only] The resource type, which is always
+      compute#machineImagesListResponse for machine image lists.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
+          by a failed operation.
+        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
+        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
+          has a type marked as deprecated
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
+          larger than image size.
+        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
+          resources has a type marked as experimental
+        EXTERNAL_API_WARNING: Warning that is present in an external api call
+        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
+          overridden. Deprecated unused field.
+        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
+          kernel, which is deprecated.
+        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
+          exceedingly large number of resources
+        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
+          assigned to an instance on the network.
+        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
+          forward.
+        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
+          an instance that does not exist.
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
+          refers to an instance that is not on the same network as the route.
+        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
+          status of RUNNING.
+        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
+          continue the process despite the mentioned error.
+        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
+        PARTIAL_SUCCESS: Success is reported, but some results may be missing
+          due to errors
+        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
+          requires a TOS they have not accepted.
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
+          in use.
+        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
+          could not be deleted because they were in use.
+        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
+          ignored.
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
+          group manager is valid as such, but its application does not make a
+          lot of sense, because it allows only single instance in instance
+          group.
+        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
+          present
+        UNREACHABLE: A given scope cannot be reached.
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      LARGE_DEPLOYMENT_WARNING = 8
+      MISSING_TYPE_DEPENDENCY = 9
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
+      NEXT_HOP_CANNOT_IP_FORWARD = 11
+      NEXT_HOP_INSTANCE_NOT_FOUND = 12
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
+      NEXT_HOP_NOT_RUNNING = 14
+      NOT_CRITICAL_ERROR = 15
+      NO_RESULTS_ON_PAGE = 16
+      PARTIAL_SUCCESS = 17
+      REQUIRED_TOS_AGREEMENT = 18
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
+      RESOURCE_NOT_DELETED = 20
+      SCHEMA_VALIDATION_IGNORED = 21
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
+      UNDECLARED_PROPERTIES = 23
+      UNREACHABLE = 24
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('MachineImage', 2, repeated=True)
+  kind = _messages.StringField(3, default='compute#machineImageList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class MachineType(_messages.Message):
@@ -49396,6 +49846,167 @@ class SSLHealthCheck(_messages.Message):
   response = _messages.StringField(6)
 
 
+class SavedAttachedDisk(_messages.Message):
+  r"""DEPRECATED: Please use compute#savedDisk instead. An instance-attached
+  disk resource.
+
+  Enums:
+    InterfaceValueValuesEnum: Specifies the disk interface to use for
+      attaching this disk, which is either SCSI or NVME.
+    ModeValueValuesEnum: The mode in which this disk is attached to the source
+      instance, either READ_WRITE or READ_ONLY.
+    StorageBytesStatusValueValuesEnum: [Output Only] An indicator whether
+      storageBytes is in a stable state or it is being adjusted as a result of
+      shared storage reallocation. This status can either be UPDATING, meaning
+      the size of the snapshot is being updated, or UP_TO_DATE, meaning the
+      size of the snapshot is up-to-date.
+    TypeValueValuesEnum: Specifies the type of the attached disk, either
+      SCRATCH or PERSISTENT.
+
+  Fields:
+    autoDelete: Specifies whether the disk will be auto-deleted when the
+      instance is deleted (but not when the disk is detached from the
+      instance).
+    boot: Indicates that this is a boot disk. The virtual machine will use the
+      first partition of the disk for its root filesystem.
+    deviceName: Specifies the name of the disk attached to the source
+      instance.
+    diskEncryptionKey: The encryption key for the disk.
+    diskSizeGb: The size of the disk in base-2 GB.
+    diskType: [Output Only] URL of the disk type resource. For example:
+      projects/project /zones/zone/diskTypes/pd-standard or pd-ssd
+    guestOsFeatures: A list of features to enable on the guest operating
+      system. Applicable only for bootable images. Read Enabling guest
+      operating system features to see a list of available options.
+    index: Specifies zero-based index of the disk that is attached to the
+      source instance.
+    interface: Specifies the disk interface to use for attaching this disk,
+      which is either SCSI or NVME.
+    kind: [Output Only] Type of the resource. Always compute#attachedDisk for
+      attached disks.
+    licenses: [Output Only] Any valid publicly visible licenses.
+    mode: The mode in which this disk is attached to the source instance,
+      either READ_WRITE or READ_ONLY.
+    source: Specifies a URL of the disk attached to the source instance.
+    storageBytes: [Output Only] A size of the storage used by the disk's
+      snapshot by this machine image.
+    storageBytesStatus: [Output Only] An indicator whether storageBytes is in
+      a stable state or it is being adjusted as a result of shared storage
+      reallocation. This status can either be UPDATING, meaning the size of
+      the snapshot is being updated, or UP_TO_DATE, meaning the size of the
+      snapshot is up-to-date.
+    type: Specifies the type of the attached disk, either SCRATCH or
+      PERSISTENT.
+  """
+
+  class InterfaceValueValuesEnum(_messages.Enum):
+    r"""Specifies the disk interface to use for attaching this disk, which is
+    either SCSI or NVME.
+
+    Values:
+      NVME: <no description>
+      SCSI: <no description>
+    """
+    NVME = 0
+    SCSI = 1
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""The mode in which this disk is attached to the source instance, either
+    READ_WRITE or READ_ONLY.
+
+    Values:
+      READ_ONLY: Attaches this disk in read-only mode. Multiple virtual
+        machines can use a disk in read-only mode at a time.
+      READ_WRITE: *[Default]* Attaches this disk in read-write mode. Only one
+        virtual machine at a time can be attached to a disk in read-write
+        mode.
+    """
+    READ_ONLY = 0
+    READ_WRITE = 1
+
+  class StorageBytesStatusValueValuesEnum(_messages.Enum):
+    r"""[Output Only] An indicator whether storageBytes is in a stable state
+    or it is being adjusted as a result of shared storage reallocation. This
+    status can either be UPDATING, meaning the size of the snapshot is being
+    updated, or UP_TO_DATE, meaning the size of the snapshot is up-to-date.
+
+    Values:
+      UPDATING: <no description>
+      UP_TO_DATE: <no description>
+    """
+    UPDATING = 0
+    UP_TO_DATE = 1
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Specifies the type of the attached disk, either SCRATCH or PERSISTENT.
+
+    Values:
+      PERSISTENT: <no description>
+      SCRATCH: <no description>
+    """
+    PERSISTENT = 0
+    SCRATCH = 1
+
+  autoDelete = _messages.BooleanField(1)
+  boot = _messages.BooleanField(2)
+  deviceName = _messages.StringField(3)
+  diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 4)
+  diskSizeGb = _messages.IntegerField(5)
+  diskType = _messages.StringField(6)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 7, repeated=True)
+  index = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  interface = _messages.EnumField('InterfaceValueValuesEnum', 9)
+  kind = _messages.StringField(10, default='compute#savedAttachedDisk')
+  licenses = _messages.StringField(11, repeated=True)
+  mode = _messages.EnumField('ModeValueValuesEnum', 12)
+  source = _messages.StringField(13)
+  storageBytes = _messages.IntegerField(14)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 15)
+  type = _messages.EnumField('TypeValueValuesEnum', 16)
+
+
+class SavedDisk(_messages.Message):
+  r"""An instance-attached disk resource.
+
+  Enums:
+    StorageBytesStatusValueValuesEnum: [Output Only] An indicator whether
+      storageBytes is in a stable state or it is being adjusted as a result of
+      shared storage reallocation. This status can either be UPDATING, meaning
+      the size of the snapshot is being updated, or UP_TO_DATE, meaning the
+      size of the snapshot is up-to-date.
+
+  Fields:
+    kind: [Output Only] Type of the resource. Always compute#savedDisk for
+      attached disks.
+    sourceDisk: Specifies a URL of the disk attached to the source instance.
+    storageBytes: [Output Only] Size of the individual disk snapshot used by
+      this machine image.
+    storageBytesStatus: [Output Only] An indicator whether storageBytes is in
+      a stable state or it is being adjusted as a result of shared storage
+      reallocation. This status can either be UPDATING, meaning the size of
+      the snapshot is being updated, or UP_TO_DATE, meaning the size of the
+      snapshot is up-to-date.
+  """
+
+  class StorageBytesStatusValueValuesEnum(_messages.Enum):
+    r"""[Output Only] An indicator whether storageBytes is in a stable state
+    or it is being adjusted as a result of shared storage reallocation. This
+    status can either be UPDATING, meaning the size of the snapshot is being
+    updated, or UP_TO_DATE, meaning the size of the snapshot is up-to-date.
+
+    Values:
+      UPDATING: <no description>
+      UP_TO_DATE: <no description>
+    """
+    UPDATING = 0
+    UP_TO_DATE = 1
+
+  kind = _messages.StringField(1, default='compute#savedDisk')
+  sourceDisk = _messages.StringField(2)
+  storageBytes = _messages.IntegerField(3)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 4)
+
+
 class ScalingScheduleStatus(_messages.Message):
   r"""A ScalingScheduleStatus object.
 
@@ -49890,9 +50501,19 @@ class SecurityPolicyRule(_messages.Message):
   the action to be taken when traffic matches this condition (allow or deny).
 
   Fields:
-    action: The Action to perform when the client connection triggers the
-      rule. Can currently be either "allow" or "deny()" where valid values for
-      status are 403, 404, and 502.
+    action: The Action to perform when the rule is matched. The following are
+      the valid actions: - allow: allow access to target. - deny(): deny
+      access to target, returns the HTTP response code specified (valid values
+      are 403, 404, and 502). - rate_based_ban: limit client traffic to the
+      configured threshold and ban the client if the traffic exceeds the
+      threshold. Configure parameters for this action in RateLimitOptions.
+      Requires rate_limit_options to be set. - redirect: redirect to a
+      different target. This can either be an internal reCAPTCHA redirect, or
+      an external URL-based redirect via a 302 response. Parameters for this
+      action can be configured via redirectOptions. - throttle: limit client
+      traffic to the configured threshold. Configure parameters for this
+      action in rateLimitOptions. Requires rate_limit_options to be set for
+      this.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     kind: [Output only] Type of the resource. Always
@@ -49904,6 +50525,8 @@ class SecurityPolicyRule(_messages.Message):
       priority must be a positive value between 0 and 2147483647. Rules are
       evaluated from highest to lowest priority where 0 is the highest
       priority and 2147483647 is the lowest priority.
+    rateLimitOptions: Must be specified if the action is "rate_based_ban" or
+      "throttle". Cannot be specified for any other actions.
   """
 
   action = _messages.StringField(1)
@@ -49912,6 +50535,7 @@ class SecurityPolicyRule(_messages.Message):
   match = _messages.MessageField('SecurityPolicyRuleMatcher', 4)
   preview = _messages.BooleanField(5)
   priority = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  rateLimitOptions = _messages.MessageField('SecurityPolicyRuleRateLimitOptions', 7)
 
 
 class SecurityPolicyRuleMatcher(_messages.Message):
@@ -49963,6 +50587,101 @@ class SecurityPolicyRuleMatcherConfig(_messages.Message):
   """
 
   srcIpRanges = _messages.StringField(1, repeated=True)
+
+
+class SecurityPolicyRuleRateLimitOptions(_messages.Message):
+  r"""A SecurityPolicyRuleRateLimitOptions object.
+
+  Enums:
+    EnforceOnKeyValueValuesEnum: Determines the key to enforce the
+      rate_limit_threshold on. Possible values are: - ALL: A single rate limit
+      threshold is applied to all the requests matching this rule. This is the
+      default value if this field 'enforce_on_key' is not configured. - IP:
+      The source IP address of the request is the key. Each IP has this limit
+      enforced separately. - HTTP_HEADER: The value of the HTTP header whose
+      name is configured under "enforce_on_key_name". The key value is
+      truncated to the first 128 bytes of the header value. If no such header
+      is present in the request, the key type defaults to ALL. - XFF_IP: The
+      first IP address (i.e. the originating client IP address) specified in
+      the list of IPs under X-Forwarded-For HTTP header. If no such header is
+      present or the value is not a valid IP, the key type defaults to ALL.
+
+  Fields:
+    banDurationSec: Can only be specified if the action for the rule is
+      "rate_based_ban". If specified, determines the time (in seconds) the
+      traffic will continue to be banned by the rate limit after the rate
+      falls below the threshold.
+    banThreshold: Can only be specified if the action for the rule is
+      "rate_based_ban". If specified, the key will be banned for the
+      configured 'ban_duration_sec' when the number of requests that exceed
+      the 'rate_limit_threshold' also exceed this 'ban_threshold'.
+    conformAction: Action to take for requests that are under the configured
+      rate limit threshold. Valid option is "allow" only.
+    enforceOnKey: Determines the key to enforce the rate_limit_threshold on.
+      Possible values are: - ALL: A single rate limit threshold is applied to
+      all the requests matching this rule. This is the default value if this
+      field 'enforce_on_key' is not configured. - IP: The source IP address of
+      the request is the key. Each IP has this limit enforced separately. -
+      HTTP_HEADER: The value of the HTTP header whose name is configured under
+      "enforce_on_key_name". The key value is truncated to the first 128 bytes
+      of the header value. If no such header is present in the request, the
+      key type defaults to ALL. - XFF_IP: The first IP address (i.e. the
+      originating client IP address) specified in the list of IPs under
+      X-Forwarded-For HTTP header. If no such header is present or the value
+      is not a valid IP, the key type defaults to ALL.
+    enforceOnKeyName: Rate limit key name applicable only for the following
+      key types: HTTP_HEADER -- Name of the HTTP header whose value is taken
+      as the key value.
+    exceedAction: When a request is denied, returns the HTTP response code
+      specified. Valid options are "deny()" where valid values for status are
+      403, 404, 429, and 502.
+    rateLimitThreshold: Threshold at which to begin ratelimiting.
+  """
+
+  class EnforceOnKeyValueValuesEnum(_messages.Enum):
+    r"""Determines the key to enforce the rate_limit_threshold on. Possible
+    values are: - ALL: A single rate limit threshold is applied to all the
+    requests matching this rule. This is the default value if this field
+    'enforce_on_key' is not configured. - IP: The source IP address of the
+    request is the key. Each IP has this limit enforced separately. -
+    HTTP_HEADER: The value of the HTTP header whose name is configured under
+    "enforce_on_key_name". The key value is truncated to the first 128 bytes
+    of the header value. If no such header is present in the request, the key
+    type defaults to ALL. - XFF_IP: The first IP address (i.e. the originating
+    client IP address) specified in the list of IPs under X-Forwarded-For HTTP
+    header. If no such header is present or the value is not a valid IP, the
+    key type defaults to ALL.
+
+    Values:
+      ALL: <no description>
+      HTTP_HEADER: <no description>
+      IP: <no description>
+      XFF_IP: <no description>
+    """
+    ALL = 0
+    HTTP_HEADER = 1
+    IP = 2
+    XFF_IP = 3
+
+  banDurationSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  banThreshold = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsThreshold', 2)
+  conformAction = _messages.StringField(3)
+  enforceOnKey = _messages.EnumField('EnforceOnKeyValueValuesEnum', 4)
+  enforceOnKeyName = _messages.StringField(5)
+  exceedAction = _messages.StringField(6)
+  rateLimitThreshold = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsThreshold', 7)
+
+
+class SecurityPolicyRuleRateLimitOptionsThreshold(_messages.Message):
+  r"""A SecurityPolicyRuleRateLimitOptionsThreshold object.
+
+  Fields:
+    count: Number of HTTP(S) requests for calculating the threshold.
+    intervalSec: Interval over which the threshold is computed.
+  """
+
+  count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  intervalSec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class SecuritySettings(_messages.Message):
@@ -51144,6 +51863,24 @@ class SnapshotList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
+class SourceDiskEncryptionKey(_messages.Message):
+  r"""A SourceDiskEncryptionKey object.
+
+  Fields:
+    diskEncryptionKey: The customer-supplied encryption key of the source
+      disk. Required if the source disk is protected by a customer-supplied
+      encryption key.
+    sourceDisk: URL of the disk attached to the source instance. This can be a
+      full or valid partial URL. For example, the following are valid values:
+      - https://www.googleapis.com/compute/v1/projects/project/zones/zone
+      /disks/disk - projects/project/zones/zone/disks/disk -
+      zones/zone/disks/disk
+  """
+
+  diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 1)
+  sourceDisk = _messages.StringField(2)
+
+
 class SourceInstanceParams(_messages.Message):
   r"""A specification of the parameters to use when creating the instance
   template from a source instance.
@@ -51156,6 +51893,96 @@ class SourceInstanceParams(_messages.Message):
   """
 
   diskConfigs = _messages.MessageField('DiskInstantiationConfig', 1, repeated=True)
+
+
+class SourceInstanceProperties(_messages.Message):
+  r"""DEPRECATED: Please use compute#instanceProperties instead. New
+  properties will not be added to this field.
+
+  Messages:
+    LabelsValue: Labels to apply to instances that are created from this
+      machine image.
+
+  Fields:
+    canIpForward: Enables instances created based on this machine image to
+      send packets with source IP addresses other than their own and receive
+      packets with destination IP addresses other than their own. If these
+      instances will be used as an IP gateway or it will be set as the next-
+      hop in a Route resource, specify true. If unsure, leave this set to
+      false. See the Enable IP forwarding documentation for more information.
+    deletionProtection: Whether the instance created from this machine image
+      should be protected against deletion.
+    description: An optional text description for the instances that are
+      created from this machine image.
+    disks: An array of disks that are associated with the instances that are
+      created from this machine image.
+    guestAccelerators: A list of guest accelerator cards' type and count to
+      use for instances created from this machine image.
+    labels: Labels to apply to instances that are created from this machine
+      image.
+    machineType: The machine type to use for instances that are created from
+      this machine image.
+    metadata: The metadata key/value pairs to assign to instances that are
+      created from this machine image. These pairs can consist of custom
+      metadata or predefined keys. See Project and instance metadata for more
+      information.
+    minCpuPlatform: Minimum cpu/platform to be used by instances created from
+      this machine image. The instance may be scheduled on the specified or
+      newer cpu/platform. Applicable values are the friendly names of CPU
+      platforms, such as minCpuPlatform: "Intel Haswell" or minCpuPlatform:
+      "Intel Sandy Bridge". For more information, read Specifying a Minimum
+      CPU Platform.
+    networkInterfaces: An array of network access configurations for this
+      interface.
+    scheduling: Specifies the scheduling options for the instances that are
+      created from this machine image.
+    serviceAccounts: A list of service accounts with specified scopes. Access
+      tokens for these service accounts are available to the instances that
+      are created from this machine image. Use metadata queries to obtain the
+      access tokens for these instances.
+    tags: A list of tags to apply to the instances that are created from this
+      machine image. The tags identify valid sources or targets for network
+      firewalls. The setTags method can modify this list of tags. Each tag
+      within the list must comply with RFC1035.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels to apply to instances that are created from this machine image.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  canIpForward = _messages.BooleanField(1)
+  deletionProtection = _messages.BooleanField(2)
+  description = _messages.StringField(3)
+  disks = _messages.MessageField('SavedAttachedDisk', 4, repeated=True)
+  guestAccelerators = _messages.MessageField('AcceleratorConfig', 5, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 6)
+  machineType = _messages.StringField(7)
+  metadata = _messages.MessageField('Metadata', 8)
+  minCpuPlatform = _messages.StringField(9)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 10, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 11)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 12, repeated=True)
+  tags = _messages.MessageField('Tags', 13)
 
 
 class SslCertificate(_messages.Message):

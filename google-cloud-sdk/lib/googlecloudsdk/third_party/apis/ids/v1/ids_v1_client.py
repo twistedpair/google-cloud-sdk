@@ -189,6 +189,33 @@ class IdsV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single Endpoint.
+
+      Args:
+        request: (IdsProjectsLocationsEndpointsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}',
+        http_method='PATCH',
+        method_id='ids.projects.locations.endpoints.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='endpoint',
+        request_type_name='IdsProjectsLocationsEndpointsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
@@ -417,7 +444,7 @@ class IdsV1(base_api.BaseApiClient):
         method_id='ids.projects.locations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'includeUnrevealedLocations', 'pageSize', 'pageToken'],
         relative_path='v1/{+name}/locations',
         request_field='',
         request_type_name='IdsProjectsLocationsListRequest',

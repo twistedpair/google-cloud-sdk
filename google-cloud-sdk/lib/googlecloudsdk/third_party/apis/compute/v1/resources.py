@@ -244,6 +244,13 @@ class Collections(enum.Enum):
       ['project', 'license'],
       True
   )
+  MACHINEIMAGES = (
+      'machineImages',
+      'projects/{project}/global/machineImages/{machineImage}',
+      {},
+      ['project', 'machineImage'],
+      True
+  )
   MACHINETYPES = (
       'machineTypes',
       'projects/{project}/zones/{zone}/machineTypes/{machineType}',

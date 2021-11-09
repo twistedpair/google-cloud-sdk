@@ -30551,9 +30551,8 @@ class HealthCheck(_messages.Message):
 
   Enums:
     TypeValueValuesEnum: Specifies the type of the healthCheck, either TCP,
-      SSL, HTTP, HTTPS or HTTP2. If not specified, the default is TCP. Exactly
-      one of the protocol-specific health check field must be specified, which
-      must match type field.
+      SSL, HTTP, HTTPS or HTTP2. Exactly one of the protocol-specific health
+      check field must be specified, which must match type field.
 
   Fields:
     checkIntervalSec: How often (in seconds) to send a health check. The
@@ -30588,18 +30587,16 @@ class HealthCheck(_messages.Message):
       default value is 5 seconds. It is invalid for timeoutSec to have greater
       value than checkIntervalSec.
     type: Specifies the type of the healthCheck, either TCP, SSL, HTTP, HTTPS
-      or HTTP2. If not specified, the default is TCP. Exactly one of the
-      protocol-specific health check field must be specified, which must match
-      type field.
+      or HTTP2. Exactly one of the protocol-specific health check field must
+      be specified, which must match type field.
     unhealthyThreshold: A so-far healthy instance will be marked unhealthy
       after this many consecutive failures. The default value is 2.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Specifies the type of the healthCheck, either TCP, SSL, HTTP, HTTPS or
-    HTTP2. If not specified, the default is TCP. Exactly one of the protocol-
-    specific health check field must be specified, which must match type
-    field.
+    HTTP2. Exactly one of the protocol-specific health check field must be
+    specified, which must match type field.
 
     Values:
       GRPC: <no description>
@@ -37130,8 +37127,11 @@ class InterconnectAttachment(_messages.Message):
     customerRouterIpAddress: [Output Only] IPv4 address + prefix length to be
       configured on the customer router subinterface for this interconnect
       attachment.
-    dataplaneVersion: [Output Only] Dataplane version for this
-      InterconnectAttachment.
+    dataplaneVersion: [Output only for types PARTNER and DEDICATED. Not
+      present for PARTNER_PROVIDER.] Dataplane version for this
+      InterconnectAttachment. This field is only present for Dataplane version
+      2 and higher. Absence of this field in the API output indicates that the
+      Dataplane is version 1.
     description: An optional description of this resource.
     edgeAvailabilityDomain: Desired availability domain for the attachment.
       Only available for type PARTNER, at creation time, and can take one of
@@ -39261,6 +39261,7 @@ class MachineImage(_messages.Message):
       Copy Service (VSS).
     id: [Output Only] A unique identifier for this machine image. The server
       defines this identifier.
+    instanceProperties: [Output Only] Properties of source instance
     kind: [Output Only] The resource type, which is always
       compute#machineImage for machine image.
     machineImageEncryptionKey: Encrypts the machine image using a customer-
@@ -39281,6 +39282,8 @@ class MachineImage(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     satisfiesPzs: [Output Only] Reserved for future use.
+    savedDisks: An array of Machine Image specific properties for disks
+      attached to the source instance
     selfLink: [Output Only] The URL for this machine image. The server defines
       this URL.
     sourceDiskEncryptionKeys: [Input Only] The customer-supplied encryption
@@ -39291,7 +39294,9 @@ class MachineImage(_messages.Message):
       the following are valid values: -
       https://www.googleapis.com/compute/v1/projects/project/zones/zone
       /instances/instance - projects/project/zones/zone/instances/instance
-    sourceInstanceProperties: [Output Only] Properties of source instance.
+    sourceInstanceProperties: [Output Only] DEPRECATED: Please use
+      instance_properties instead for source instance related properties. New
+      properties will not be added to this field.
     status: [Output Only] The status of the machine image. One of the
       following values: INVALID, CREATING, READY, DELETING, and UPLOADING.
     storageLocations: The regional or multi-regional Cloud Storage bucket
@@ -39321,17 +39326,19 @@ class MachineImage(_messages.Message):
   description = _messages.StringField(2)
   guestFlush = _messages.BooleanField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default='compute#machineImage')
-  machineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 6)
-  name = _messages.StringField(7)
-  satisfiesPzs = _messages.BooleanField(8)
-  selfLink = _messages.StringField(9)
-  sourceDiskEncryptionKeys = _messages.MessageField('SourceDiskEncryptionKey', 10, repeated=True)
-  sourceInstance = _messages.StringField(11)
-  sourceInstanceProperties = _messages.MessageField('SourceInstanceProperties', 12)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  storageLocations = _messages.StringField(14, repeated=True)
-  totalStorageBytes = _messages.IntegerField(15)
+  instanceProperties = _messages.MessageField('InstanceProperties', 5)
+  kind = _messages.StringField(6, default='compute#machineImage')
+  machineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 7)
+  name = _messages.StringField(8)
+  satisfiesPzs = _messages.BooleanField(9)
+  savedDisks = _messages.MessageField('SavedDisk', 10, repeated=True)
+  selfLink = _messages.StringField(11)
+  sourceDiskEncryptionKeys = _messages.MessageField('SourceDiskEncryptionKey', 12, repeated=True)
+  sourceInstance = _messages.StringField(13)
+  sourceInstanceProperties = _messages.MessageField('SourceInstanceProperties', 14)
+  status = _messages.EnumField('StatusValueValuesEnum', 15)
+  storageLocations = _messages.StringField(16, repeated=True)
+  totalStorageBytes = _messages.IntegerField(17)
 
 
 class MachineImageList(_messages.Message):
@@ -46058,11 +46065,19 @@ class PreservedState(_messages.Message):
   Messages:
     DisksValue: Preserved disks defined for this instance. This map is keyed
       with the device names of the disks.
+    ExternalIPsValue: Preserved external IPs defined for this instance. This
+      map is keyed with the name of the network interface.
+    InternalIPsValue: Preserved internal IPs defined for this instance. This
+      map is keyed with the name of the network interface.
     MetadataValue: Preserved metadata defined for this instance.
 
   Fields:
     disks: Preserved disks defined for this instance. This map is keyed with
       the device names of the disks.
+    externalIPs: Preserved external IPs defined for this instance. This map is
+      keyed with the name of the network interface.
+    internalIPs: Preserved internal IPs defined for this instance. This map is
+      keyed with the name of the network interface.
     metadata: Preserved metadata defined for this instance.
   """
 
@@ -46092,6 +46107,58 @@ class PreservedState(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExternalIPsValue(_messages.Message):
+    r"""Preserved external IPs defined for this instance. This map is keyed
+    with the name of the network interface.
+
+    Messages:
+      AdditionalProperty: An additional property for a ExternalIPsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ExternalIPsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExternalIPsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A PreservedStatePreservedNetworkIp attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('PreservedStatePreservedNetworkIp', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InternalIPsValue(_messages.Message):
+    r"""Preserved internal IPs defined for this instance. This map is keyed
+    with the name of the network interface.
+
+    Messages:
+      AdditionalProperty: An additional property for a InternalIPsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type InternalIPsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InternalIPsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A PreservedStatePreservedNetworkIp attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('PreservedStatePreservedNetworkIp', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
     r"""Preserved metadata defined for this instance.
 
@@ -46116,7 +46183,9 @@ class PreservedState(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   disks = _messages.MessageField('DisksValue', 1)
-  metadata = _messages.MessageField('MetadataValue', 2)
+  externalIPs = _messages.MessageField('ExternalIPsValue', 2)
+  internalIPs = _messages.MessageField('InternalIPsValue', 3)
+  metadata = _messages.MessageField('MetadataValue', 4)
 
 
 class PreservedStatePreservedDisk(_messages.Message):
@@ -46175,6 +46244,55 @@ class PreservedStatePreservedDisk(_messages.Message):
   autoDelete = _messages.EnumField('AutoDeleteValueValuesEnum', 1)
   mode = _messages.EnumField('ModeValueValuesEnum', 2)
   source = _messages.StringField(3)
+
+
+class PreservedStatePreservedNetworkIp(_messages.Message):
+  r"""A PreservedStatePreservedNetworkIp object.
+
+  Enums:
+    AutoDeleteValueValuesEnum: These stateful IPs will never be released
+      during autohealing, update or VM instance recreate operations. This flag
+      is used to configure if the IP reservation should be deleted after it is
+      no longer used by the group, e.g. when the given instance or the whole
+      group is deleted.
+
+  Fields:
+    autoDelete: These stateful IPs will never be released during autohealing,
+      update or VM instance recreate operations. This flag is used to
+      configure if the IP reservation should be deleted after it is no longer
+      used by the group, e.g. when the given instance or the whole group is
+      deleted.
+    ipAddress: Ip address representation
+  """
+
+  class AutoDeleteValueValuesEnum(_messages.Enum):
+    r"""These stateful IPs will never be released during autohealing, update
+    or VM instance recreate operations. This flag is used to configure if the
+    IP reservation should be deleted after it is no longer used by the group,
+    e.g. when the given instance or the whole group is deleted.
+
+    Values:
+      NEVER: <no description>
+      ON_PERMANENT_INSTANCE_DELETION: <no description>
+    """
+    NEVER = 0
+    ON_PERMANENT_INSTANCE_DELETION = 1
+
+  autoDelete = _messages.EnumField('AutoDeleteValueValuesEnum', 1)
+  ipAddress = _messages.MessageField('PreservedStatePreservedNetworkIpIpAddress', 2)
+
+
+class PreservedStatePreservedNetworkIpIpAddress(_messages.Message):
+  r"""A PreservedStatePreservedNetworkIpIpAddress object.
+
+  Fields:
+    address: The URL of the reservation for this IP address.
+    literal: An IPv4 internal network address to assign to the instance for
+      this network interface.
+  """
+
+  address = _messages.StringField(1)
+  literal = _messages.StringField(2)
 
 
 class Project(_messages.Message):
@@ -52498,7 +52616,8 @@ class SSLHealthCheck(_messages.Message):
 
 
 class SavedAttachedDisk(_messages.Message):
-  r"""An instance-attached disk resource.
+  r"""DEPRECATED: Please use compute#savedDisk instead. An instance-attached
+  disk resource.
 
   Enums:
     InterfaceValueValuesEnum: Specifies the disk interface to use for
@@ -52613,6 +52732,48 @@ class SavedAttachedDisk(_messages.Message):
   storageBytes = _messages.IntegerField(14)
   storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 15)
   type = _messages.EnumField('TypeValueValuesEnum', 16)
+
+
+class SavedDisk(_messages.Message):
+  r"""An instance-attached disk resource.
+
+  Enums:
+    StorageBytesStatusValueValuesEnum: [Output Only] An indicator whether
+      storageBytes is in a stable state or it is being adjusted as a result of
+      shared storage reallocation. This status can either be UPDATING, meaning
+      the size of the snapshot is being updated, or UP_TO_DATE, meaning the
+      size of the snapshot is up-to-date.
+
+  Fields:
+    kind: [Output Only] Type of the resource. Always compute#savedDisk for
+      attached disks.
+    sourceDisk: Specifies a URL of the disk attached to the source instance.
+    storageBytes: [Output Only] Size of the individual disk snapshot used by
+      this machine image.
+    storageBytesStatus: [Output Only] An indicator whether storageBytes is in
+      a stable state or it is being adjusted as a result of shared storage
+      reallocation. This status can either be UPDATING, meaning the size of
+      the snapshot is being updated, or UP_TO_DATE, meaning the size of the
+      snapshot is up-to-date.
+  """
+
+  class StorageBytesStatusValueValuesEnum(_messages.Enum):
+    r"""[Output Only] An indicator whether storageBytes is in a stable state
+    or it is being adjusted as a result of shared storage reallocation. This
+    status can either be UPDATING, meaning the size of the snapshot is being
+    updated, or UP_TO_DATE, meaning the size of the snapshot is up-to-date.
+
+    Values:
+      UPDATING: <no description>
+      UP_TO_DATE: <no description>
+    """
+    UPDATING = 0
+    UP_TO_DATE = 1
+
+  kind = _messages.StringField(1, default='compute#savedDisk')
+  sourceDisk = _messages.StringField(2)
+  storageBytes = _messages.IntegerField(3)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 4)
 
 
 class ScalingScheduleStatus(_messages.Message):
@@ -53252,9 +53413,19 @@ class SecurityPolicyRule(_messages.Message):
       field may only be specified when versioned_expr is set to FIREWALL.
 
   Fields:
-    action: The Action to perform when the client connection triggers the
-      rule. Can currently be either "allow" or "deny()" where valid values for
-      status are 403, 404, and 502.
+    action: The Action to perform when the rule is matched. The following are
+      the valid actions: - allow: allow access to target. - deny(): deny
+      access to target, returns the HTTP response code specified (valid values
+      are 403, 404, and 502). - rate_based_ban: limit client traffic to the
+      configured threshold and ban the client if the traffic exceeds the
+      threshold. Configure parameters for this action in RateLimitOptions.
+      Requires rate_limit_options to be set. - redirect: redirect to a
+      different target. This can either be an internal reCAPTCHA redirect, or
+      an external URL-based redirect via a 302 response. Parameters for this
+      action can be configured via redirectOptions. - throttle: limit client
+      traffic to the configured threshold. Configure parameters for this
+      action in rateLimitOptions. Requires rate_limit_options to be set for
+      this.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     direction: The direction in which this rule applies. This field may only
@@ -53427,19 +53598,17 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
 
   Enums:
     EnforceOnKeyValueValuesEnum: Determines the key to enforce the
-      rate_limit_threshold on. Possible values are: "ALL" -- A single rate
-      limit threshold is applied to all the requests matching this rule. This
-      is the default value if this field 'enforce_on_key' is not configured.
-      "ALL_IPS" -- This definition, equivalent to "ALL", has been depprecated.
-      "IP" -- The source IP address of the request is the key. Each IP has
-      this limit enforced separately. "HTTP_HEADER" -- The value of the HTTP
-      header whose name is configured under "enforce_on_key_name". The key
-      value is truncated to the first 128 bytes of the header value. If no
-      such header is present in the request, the key type defaults to "ALL".
-      "XFF_IP" -- The first IP address (i.e. the originating client IP
-      address) specified in the list of IPs under X-Forwarded-For HTTP header.
-      If no such header is present or the value is not a valid IP, the key
-      type defaults to "ALL".
+      rate_limit_threshold on. Possible values are: - ALL: A single rate limit
+      threshold is applied to all the requests matching this rule. This is the
+      default value if this field 'enforce_on_key' is not configured. - IP:
+      The source IP address of the request is the key. Each IP has this limit
+      enforced separately. - HTTP_HEADER: The value of the HTTP header whose
+      name is configured under "enforce_on_key_name". The key value is
+      truncated to the first 128 bytes of the header value. If no such header
+      is present in the request, the key type defaults to ALL. - XFF_IP: The
+      first IP address (i.e. the originating client IP address) specified in
+      the list of IPs under X-Forwarded-For HTTP header. If no such header is
+      present or the value is not a valid IP, the key type defaults to ALL.
 
   Fields:
     banDurationSec: Can only be specified if the action for the rule is
@@ -53453,19 +53622,17 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
     conformAction: Action to take for requests that are under the configured
       rate limit threshold. Valid option is "allow" only.
     enforceOnKey: Determines the key to enforce the rate_limit_threshold on.
-      Possible values are: "ALL" -- A single rate limit threshold is applied
-      to all the requests matching this rule. This is the default value if
-      this field 'enforce_on_key' is not configured. "ALL_IPS" -- This
-      definition, equivalent to "ALL", has been depprecated. "IP" -- The
-      source IP address of the request is the key. Each IP has this limit
-      enforced separately. "HTTP_HEADER" -- The value of the HTTP header whose
-      name is configured under "enforce_on_key_name". The key value is
-      truncated to the first 128 bytes of the header value. If no such header
-      is present in the request, the key type defaults to "ALL". "XFF_IP" --
-      The first IP address (i.e. the originating client IP address) specified
-      in the list of IPs under X-Forwarded-For HTTP header. If no such header
-      is present or the value is not a valid IP, the key type defaults to
-      "ALL".
+      Possible values are: - ALL: A single rate limit threshold is applied to
+      all the requests matching this rule. This is the default value if this
+      field 'enforce_on_key' is not configured. - IP: The source IP address of
+      the request is the key. Each IP has this limit enforced separately. -
+      HTTP_HEADER: The value of the HTTP header whose name is configured under
+      "enforce_on_key_name". The key value is truncated to the first 128 bytes
+      of the header value. If no such header is present in the request, the
+      key type defaults to ALL. - XFF_IP: The first IP address (i.e. the
+      originating client IP address) specified in the list of IPs under
+      X-Forwarded-For HTTP header. If no such header is present or the value
+      is not a valid IP, the key type defaults to ALL.
     enforceOnKeyName: Rate limit key name applicable only for the following
       key types: HTTP_HEADER -- Name of the HTTP header whose value is taken
       as the key value.
@@ -53477,18 +53644,17 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
 
   class EnforceOnKeyValueValuesEnum(_messages.Enum):
     r"""Determines the key to enforce the rate_limit_threshold on. Possible
-    values are: "ALL" -- A single rate limit threshold is applied to all the
+    values are: - ALL: A single rate limit threshold is applied to all the
     requests matching this rule. This is the default value if this field
-    'enforce_on_key' is not configured. "ALL_IPS" -- This definition,
-    equivalent to "ALL", has been depprecated. "IP" -- The source IP address
-    of the request is the key. Each IP has this limit enforced separately.
-    "HTTP_HEADER" -- The value of the HTTP header whose name is configured
-    under "enforce_on_key_name". The key value is truncated to the first 128
-    bytes of the header value. If no such header is present in the request,
-    the key type defaults to "ALL". "XFF_IP" -- The first IP address (i.e. the
-    originating client IP address) specified in the list of IPs under
-    X-Forwarded-For HTTP header. If no such header is present or the value is
-    not a valid IP, the key type defaults to "ALL".
+    'enforce_on_key' is not configured. - IP: The source IP address of the
+    request is the key. Each IP has this limit enforced separately. -
+    HTTP_HEADER: The value of the HTTP header whose name is configured under
+    "enforce_on_key_name". The key value is truncated to the first 128 bytes
+    of the header value. If no such header is present in the request, the key
+    type defaults to ALL. - XFF_IP: The first IP address (i.e. the originating
+    client IP address) specified in the list of IPs under X-Forwarded-For HTTP
+    header. If no such header is present or the value is not a valid IP, the
+    key type defaults to ALL.
 
     Values:
       ALL: <no description>
@@ -54830,7 +54996,8 @@ class SourceInstanceParams(_messages.Message):
 
 
 class SourceInstanceProperties(_messages.Message):
-  r"""A SourceInstanceProperties object.
+  r"""DEPRECATED: Please use compute#instanceProperties instead. New
+  properties will not be added to this field.
 
   Enums:
     PostKeyRevocationActionTypeValueValuesEnum: PostKeyRevocationActionType of
@@ -56098,11 +56265,23 @@ class StatefulPolicyPreservedState(_messages.Message):
     DisksValue: Disks created on the instances that will be preserved on
       instance delete, update, etc. This map is keyed with the device names of
       the disks.
+    ExternalIPsValue: External network IPs assigned to the instances that will
+      be preserved on instance delete, update, etc. This map is keyed with the
+      network interface name.
+    InternalIPsValue: Internal network IPs assigned to the instances that will
+      be preserved on instance delete, update, etc. This map is keyed with the
+      network interface name.
 
   Fields:
     disks: Disks created on the instances that will be preserved on instance
       delete, update, etc. This map is keyed with the device names of the
       disks.
+    externalIPs: External network IPs assigned to the instances that will be
+      preserved on instance delete, update, etc. This map is keyed with the
+      network interface name.
+    internalIPs: Internal network IPs assigned to the instances that will be
+      preserved on instance delete, update, etc. This map is keyed with the
+      network interface name.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -56130,7 +56309,63 @@ class StatefulPolicyPreservedState(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExternalIPsValue(_messages.Message):
+    r"""External network IPs assigned to the instances that will be preserved
+    on instance delete, update, etc. This map is keyed with the network
+    interface name.
+
+    Messages:
+      AdditionalProperty: An additional property for a ExternalIPsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ExternalIPsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExternalIPsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A StatefulPolicyPreservedStateNetworkIp attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('StatefulPolicyPreservedStateNetworkIp', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InternalIPsValue(_messages.Message):
+    r"""Internal network IPs assigned to the instances that will be preserved
+    on instance delete, update, etc. This map is keyed with the network
+    interface name.
+
+    Messages:
+      AdditionalProperty: An additional property for a InternalIPsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type InternalIPsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InternalIPsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A StatefulPolicyPreservedStateNetworkIp attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('StatefulPolicyPreservedStateNetworkIp', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   disks = _messages.MessageField('DisksValue', 1)
+  externalIPs = _messages.MessageField('ExternalIPsValue', 2)
+  internalIPs = _messages.MessageField('InternalIPsValue', 3)
 
 
 class StatefulPolicyPreservedStateDiskDevice(_messages.Message):
@@ -56157,6 +56392,40 @@ class StatefulPolicyPreservedStateDiskDevice(_messages.Message):
     disk should be deleted after it is no longer used by the group, e.g. when
     the given instance or the whole group is deleted. Note: disks attached in
     READ_ONLY mode cannot be auto-deleted.
+
+    Values:
+      NEVER: <no description>
+      ON_PERMANENT_INSTANCE_DELETION: <no description>
+    """
+    NEVER = 0
+    ON_PERMANENT_INSTANCE_DELETION = 1
+
+  autoDelete = _messages.EnumField('AutoDeleteValueValuesEnum', 1)
+
+
+class StatefulPolicyPreservedStateNetworkIp(_messages.Message):
+  r"""A StatefulPolicyPreservedStateNetworkIp object.
+
+  Enums:
+    AutoDeleteValueValuesEnum: These stateful IPs will never be released
+      during autohealing, update or VM instance recreate operations. This flag
+      is used to configure if the IP reservation should be deleted after it is
+      no longer used by the group, e.g. when the given instance or the whole
+      group is deleted.
+
+  Fields:
+    autoDelete: These stateful IPs will never be released during autohealing,
+      update or VM instance recreate operations. This flag is used to
+      configure if the IP reservation should be deleted after it is no longer
+      used by the group, e.g. when the given instance or the whole group is
+      deleted.
+  """
+
+  class AutoDeleteValueValuesEnum(_messages.Enum):
+    r"""These stateful IPs will never be released during autohealing, update
+    or VM instance recreate operations. This flag is used to configure if the
+    IP reservation should be deleted after it is no longer used by the group,
+    e.g. when the given instance or the whole group is deleted.
 
     Values:
       NEVER: <no description>

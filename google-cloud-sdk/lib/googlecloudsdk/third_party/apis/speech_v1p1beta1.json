@@ -238,7 +238,7 @@
           "type": "string"
         },
         "boost": {
-          "description": "Hint Boost. Overrides the boost set at the phrase set level. Positive value will increase the probability that a specific phrase will be recognized over other similar sounding phrases. The higher the boost, the higher the chance of false positive recognition as well. Negative boost values would correspond to anti-biasing. Anti-biasing is not enabled, so negative boost will simply be ignored. Though `boost` can accept a wide range of positive values, most use cases are best served with values between 0 and 20. We recommend using a binary search approach to finding the optimal value for your use case. Speech recognition will skip PhraseSets with a boost value of 0.",
+          "description": "Hint Boost. Overrides the boost set at the phrase set level. Positive value will increase the probability that a specific phrase will be recognized over other similar sounding phrases. The higher the boost, the higher the chance of false positive recognition as well. Negative boost will simply be ignored. Though `boost` can accept a wide range of positive values, most use cases are best served with values between 0 and 20. We recommend using a binary search approach to finding the optimal value for your use case. Speech recognition will skip PhraseSets with a boost value of 0.",
           "type": "number",
           "format": "float"
         }
@@ -368,7 +368,7 @@
             "Opus encoded audio frames in Ogg container ([OggOpus](https:\/\/wiki.xiph.org\/OggOpus)). `sample_rate_hertz` must be one of 8000, 12000, 16000, 24000, or 48000.",
             "Although the use of lossy encodings is not recommended, if a very low bitrate encoding is required, `OGG_OPUS` is highly preferred over Speex encoding. The [Speex](https:\/\/speex.org\/) encoding supported by Cloud Speech API has a header byte in each block, as in MIME type `audio\/x-speex-with-header-byte`. It is a variant of the RTP Speex encoding defined in [RFC 5574](https:\/\/tools.ietf.org\/html\/rfc5574). The stream is a sequence of blocks, one block per RTP packet. Each block starts with a byte containing the length of the block, in bytes, followed by one or more frames of Speex data, padded to an integral number of bytes (octets) as specified in RFC 5574. In other words, each RTP header is replaced with a single byte containing the block length. Only Speex wideband is supported. `sample_rate_hertz` must be 16000.",
             "MP3 audio. MP3 encoding is a Beta feature and only available in v1p1beta1. Support all standard MP3 bitrates (which range from 32-320 kbps). When using this encoding, `sample_rate_hertz` has to match the sample rate of the file being used.",
-            "Opus encoded audio frames in WebM container ([OggOpus](https:\/\/wiki.xiph.org\/OggOpus)). This is a Beta features and only available in v1p1beta1. `sample_rate_hertz` must be one of 8000, 12000, 16000, 24000, or 48000."
+            "Opus encoded audio frames in WebM container ([OggOpus](https:\/\/wiki.xiph.org\/OggOpus)). `sample_rate_hertz` must be one of 8000, 12000, 16000, 24000, or 48000."
           ],
           "enum": [
             "ENCODING_UNSPECIFIED",
@@ -418,7 +418,7 @@
           "type": "boolean"
         },
         "adaptation": {
-          "description": "Speech adaptation configuration improves the accuracy of speech recognition. When speech adaptation is set it supersedes the `speech_contexts` field. For more information, see the [speech adaptation](https:\/\/cloud.google.com\/speech-to-text\/docs\/adaptation) documentation.",
+          "description": "Speech adaptation configuration improves the accuracy of speech recognition. For more information, see the [speech adaptation](https:\/\/cloud.google.com\/speech-to-text\/docs\/adaptation) documentation. When speech adaptation is set it supersedes the `speech_contexts` field.",
           "$ref": "SpeechAdaptation"
         },
         "transcriptNormalization": {
@@ -751,6 +751,11 @@
           "description": "For multi-channel audio, this is the channel number corresponding to the recognized result for the audio from that channel. For audio_channel_count = N, its output values can range from '1' to 'N'.",
           "type": "integer",
           "format": "int32"
+        },
+        "resultEndTime": {
+          "description": "Time offset of the end of this result relative to the beginning of the audio.",
+          "type": "string",
+          "format": "google-duration"
         },
         "languageCode": {
           "description": "Output only. The [BCP-47](https:\/\/www.rfc-editor.org\/rfc\/bcp\/bcp47.txt) language tag of the language in this result. This language code was detected to have the most likelihood of being spoken in the audio.",

@@ -300,6 +300,10 @@
           "description": "A Cloud Storage data sink.",
           "$ref": "GcsData"
         },
+        "posixDataSink": {
+          "description": "A POSIX Filesystem data sink.",
+          "$ref": "PosixFilesystem"
+        },
         "gcsDataSource": {
           "description": "A Cloud Storage data source.",
           "$ref": "GcsData"
@@ -341,6 +345,17 @@
         },
         "path": {
           "description": "Root path to transfer objects. Must be an empty string or full path name that ends with a '\/'. This field is treated as an object prefix. As such, it should generally not begin with a '\/'. The root path value must meet [Object Name Requirements](\/storage\/docs\/naming#objectnames).",
+          "type": "string"
+        }
+      }
+    },
+    "PosixFilesystem": {
+      "id": "PosixFilesystem",
+      "description": "A POSIX filesystem resource.",
+      "type": "object",
+      "properties": {
+        "rootDirectory": {
+          "description": "Root directory path to the filesystem.",
           "type": "string"
         }
       }
@@ -390,17 +405,6 @@
       "properties": {
         "listUrl": {
           "description": "Required. The URL that points to the file that stores the object list entries. This file must allow public access. Currently, only URLs with HTTP and HTTPS schemes are supported.",
-          "type": "string"
-        }
-      }
-    },
-    "PosixFilesystem": {
-      "id": "PosixFilesystem",
-      "description": "A POSIX filesystem resource.",
-      "type": "object",
-      "properties": {
-        "rootDirectory": {
-          "description": "Root directory path to the filesystem.",
           "type": "string"
         }
       }

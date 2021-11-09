@@ -13,7 +13,6 @@
 # limitations under the License.
 
 application_endpoint:
-  api_field: connection.applicationEndpoint.host
   arg_name: application-endpoint
   help_text: |-
     Address of the remote application endpoint for the Beyondcorp Connection in form of <host>:<port>.

@@ -550,6 +550,72 @@ class GoogleDatastoreAdminV1CommonMetadata(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
+class GoogleDatastoreAdminV1DatastoreFirestoreMigrationMetadata(_messages.Message):
+  r"""Metadata for Datastore to Firestore migration operations. The
+  DatastoreFirestoreMigration operation is not started by the end-user via an
+  explicit "creation" method. This is an intentional deviation from the LRO
+  design pattern. This singleton resource can be accessed at:
+  "projects/{project_id}/datastore-firestore-migration"
+
+  Enums:
+    MigrationStateValueValuesEnum: The current state of migration from Cloud
+      Datastore to Cloud Firestore in Datastore mode.
+    MigrationStepValueValuesEnum: The current step of migration from Cloud
+      Datastore to Cloud Firestore in Datastore mode.
+
+  Fields:
+    migrationState: The current state of migration from Cloud Datastore to
+      Cloud Firestore in Datastore mode.
+    migrationStep: The current step of migration from Cloud Datastore to Cloud
+      Firestore in Datastore mode.
+  """
+
+  class MigrationStateValueValuesEnum(_messages.Enum):
+    r"""The current state of migration from Cloud Datastore to Cloud Firestore
+    in Datastore mode.
+
+    Values:
+      MIGRATION_STATE_UNSPECIFIED: Unspecified.
+      RUNNING: The migration is running.
+      PAUSED: The migration is paused.
+      COMPLETE: The migration is complete.
+    """
+    MIGRATION_STATE_UNSPECIFIED = 0
+    RUNNING = 1
+    PAUSED = 2
+    COMPLETE = 3
+
+  class MigrationStepValueValuesEnum(_messages.Enum):
+    r"""The current step of migration from Cloud Datastore to Cloud Firestore
+    in Datastore mode.
+
+    Values:
+      MIGRATION_STEP_UNSPECIFIED: Unspecified.
+      PREPARE: Pre-migration: the database is prepared for migration.
+      START: Start of migration.
+      APPLY_WRITES_SYNCHRONOUSLY: Writes are applied synchronously to at least
+        one replica.
+      COPY_AND_VERIFY: Data is copied to Cloud Firestore and then verified to
+        match the data in Cloud Datastore.
+      REDIRECT_EVENTUALLY_CONSISTENT_READS: Eventually-consistent reads are
+        redirected to Cloud Firestore.
+      REDIRECT_STRONGLY_CONSISTENT_READS: Strongly-consistent reads are
+        redirected to Cloud Firestore.
+      REDIRECT_WRITES: Writes are redirected to Cloud Firestore.
+    """
+    MIGRATION_STEP_UNSPECIFIED = 0
+    PREPARE = 1
+    START = 2
+    APPLY_WRITES_SYNCHRONOUSLY = 3
+    COPY_AND_VERIFY = 4
+    REDIRECT_EVENTUALLY_CONSISTENT_READS = 5
+    REDIRECT_STRONGLY_CONSISTENT_READS = 6
+    REDIRECT_WRITES = 7
+
+  migrationState = _messages.EnumField('MigrationStateValueValuesEnum', 1)
+  migrationStep = _messages.EnumField('MigrationStepValueValuesEnum', 2)
+
+
 class GoogleDatastoreAdminV1EntityFilter(_messages.Message):
   r"""Identifies a subset of entities in a project. This is specified as
   combinations of kinds and namespaces (either or both of which may be all, as

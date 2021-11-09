@@ -720,6 +720,13 @@
           "additionalProperties": {
             "$ref": "TranslateTextGlossaryConfig"
           }
+        },
+        "formatConversions": {
+          "description": "Optional.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

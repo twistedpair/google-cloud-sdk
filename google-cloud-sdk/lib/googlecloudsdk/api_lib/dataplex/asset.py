@@ -71,13 +71,7 @@ def GenerateAssetForCreateRequest(args):
   resource_spec_field = module.GoogleCloudDataplexV1AssetResourceSpec
   resource_spec = module.GoogleCloudDataplexV1AssetResourceSpec(
       name=args.resource_name,
-      type=resource_spec_field.TypeValueValuesEnum(args.resource_type),
-      creationPolicy=resource_spec_field.CreationPolicyValueValuesEnum(
-          args.creation_policy))
-  if args.deletion_policy:
-    setattr(
-        resource_spec, 'deletionPolicy',
-        resource_spec_field.DeletionPolicyValueValuesEnum(args.deletion_policy))
+      type=resource_spec_field.TypeValueValuesEnum(args.resource_type))
   request = module.GoogleCloudDataplexV1Asset(
       description=args.description,
       displayName=args.display_name,
@@ -92,17 +86,10 @@ def GenerateAssetForCreateRequest(args):
 def GenerateAssetForUpdateRequest(args):
   """Create Asset for Message Update Requests."""
   module = dataplex_api.GetMessageModule()
-  resource_spec = module.GoogleCloudDataplexV1AssetResourceSpec()
-  if args.deletion_policy:
-    setattr(
-        resource_spec, 'deletionPolicy',
-        module.GoogleCloudDataplexV1AssetResourceSpec
-        .DeletionPolicyValueValuesEnum(args.deletion_policy))
   return module.GoogleCloudDataplexV1Asset(
       description=args.description,
       displayName=args.display_name,
       labels=dataplex_api.CreateLabels(module.GoogleCloudDataplexV1Asset, args),
-      resourceSpec=resource_spec,
       discoverySpec=GenerateDiscoverySpec(args))
 
 
@@ -132,8 +119,6 @@ def GenerateUpdateMask(args):
     update_mask.append('discoverySpec.includePatterns')
   if args.IsSpecified('discovery_exclude_patterns'):
     update_mask.append('discoverySpec.excludePatterns')
-  if args.IsSpecified('deletion_policy'):
-    update_mask.append('resourceSpec.deletion_policy')
   if args.IsSpecified('discovery_schedule'):
     update_mask.append('discoverySpec.schedule')
   return update_mask

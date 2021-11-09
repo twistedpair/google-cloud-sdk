@@ -584,6 +584,16 @@ class Secret(_messages.Message):
   data.
 
   Messages:
+    AnnotationsValue: Optional. Custom metadata about the secret. Annotations
+      are distinct from various forms of labels. Labels can be used by server-
+      side policies, such as IAM conditions, and may have side effects.
+      Annotations exist to allow client tools to store their own state
+      information without requiring a database. Annotation keys must be
+      between 1 and 63 characters long, have a UTF-8 encoding of maximum 128
+      bytes, begin and end with an alphanumeric character ([a-z0-9A-Z]), and
+      may have dashes (-), underscores (_), dots (.), and alphanumerics in
+      between these symbols. The total size of annotation keys and values must
+      be less than 16KiB.
     LabelsValue: The labels assigned to this Secret. Label keys must be
       between 1 and 63 characters long, have a UTF-8 encoding of maximum 128
       bytes, and must conform to the following PCRE regular expression:
@@ -602,6 +612,16 @@ class Secret(_messages.Message):
       AccessSecretVersion.
 
   Fields:
+    annotations: Optional. Custom metadata about the secret. Annotations are
+      distinct from various forms of labels. Labels can be used by server-side
+      policies, such as IAM conditions, and may have side effects. Annotations
+      exist to allow client tools to store their own state information without
+      requiring a database. Annotation keys must be between 1 and 63
+      characters long, have a UTF-8 encoding of maximum 128 bytes, begin and
+      end with an alphanumeric character ([a-z0-9A-Z]), and may have dashes
+      (-), underscores (_), dots (.), and alphanumerics in between these
+      symbols. The total size of annotation keys and values must be less than
+      16KiB.
     createTime: Output only. The time at which the Secret was created.
     etag: Optional. Etag of the currently stored Secret.
     expireTime: Optional. Timestamp in UTC when the Secret is scheduled to
@@ -635,6 +655,39 @@ class Secret(_messages.Message):
       by Allias will only be supported on GetSecretVersion and
       AccessSecretVersion.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Custom metadata about the secret. Annotations are distinct
+    from various forms of labels. Labels can be used by server-side policies,
+    such as IAM conditions, and may have side effects. Annotations exist to
+    allow client tools to store their own state information without requiring
+    a database. Annotation keys must be between 1 and 63 characters long, have
+    a UTF-8 encoding of maximum 128 bytes, begin and end with an alphanumeric
+    character ([a-z0-9A-Z]), and may have dashes (-), underscores (_), dots
+    (.), and alphanumerics in between these symbols. The total size of
+    annotation keys and values must be less than 16KiB.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -698,16 +751,17 @@ class Secret(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  etag = _messages.StringField(2)
-  expireTime = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  replication = _messages.MessageField('Replication', 6)
-  rotation = _messages.MessageField('Rotation', 7)
-  topics = _messages.MessageField('Topic', 8, repeated=True)
-  ttl = _messages.StringField(9)
-  versionAliases = _messages.MessageField('VersionAliasesValue', 10)
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  expireTime = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  replication = _messages.MessageField('Replication', 7)
+  rotation = _messages.MessageField('Rotation', 8)
+  topics = _messages.MessageField('Topic', 9, repeated=True)
+  ttl = _messages.StringField(10)
+  versionAliases = _messages.MessageField('VersionAliasesValue', 11)
 
 
 class SecretPayload(_messages.Message):
@@ -716,19 +770,9 @@ class SecretPayload(_messages.Message):
 
   Fields:
     data: The secret data. Must be no larger than 64KiB.
-    dataCrc32c: Optional. If specified, SecretManagerService will verify the
-      integrity of the received data on SecretManagerService.AddSecretVersion
-      calls using the crc32c checksum and store it to include in future
-      SecretManagerService.AccessSecretVersion responses. If a checksum is not
-      provided in the SecretManagerService.AddSecretVersion request, the
-      SecretManagerService will generate and store one for you. The CRC32C
-      value is encoded as a Int64 for compatibility, and can be safely
-      downconverted to uint32 in languages that support this type.
-      https://cloud.google.com/apis/design/design_patterns#integer_types
   """
 
   data = _messages.BytesField(1)
-  dataCrc32c = _messages.IntegerField(2)
 
 
 class SecretVersion(_messages.Message):
@@ -738,9 +782,6 @@ class SecretVersion(_messages.Message):
     StateValueValuesEnum: Output only. The current state of the SecretVersion.
 
   Fields:
-    clientSpecifiedPayloadChecksum: Output only. True if payload checksum
-      specified in SecretPayload object has been received by
-      SecretManagerService on SecretManagerService.AddSecretVersion.
     createTime: Output only. The time at which the SecretVersion was created.
     destroyTime: Output only. The time this SecretVersion was destroyed. Only
       present if state is DESTROYED.
@@ -768,13 +809,12 @@ class SecretVersion(_messages.Message):
     DISABLED = 2
     DESTROYED = 3
 
-  clientSpecifiedPayloadChecksum = _messages.BooleanField(1)
-  createTime = _messages.StringField(2)
-  destroyTime = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  name = _messages.StringField(5)
-  replicationStatus = _messages.MessageField('ReplicationStatus', 6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
+  createTime = _messages.StringField(1)
+  destroyTime = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  name = _messages.StringField(4)
+  replicationStatus = _messages.MessageField('ReplicationStatus', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
 
 
 class SecretmanagerProjectsLocationsGetRequest(_messages.Message):

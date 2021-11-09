@@ -464,6 +464,10 @@
         "monitoringConfig": {
           "description": "Monitoring configuration for the cluster.",
           "$ref": "MonitoringConfig"
+        },
+        "workloadConfig": {
+          "description": "Enable\/Disable Workload Audit Configuration for the cluster.",
+          "$ref": "WorkloadConfig"
         }
       }
     },
@@ -1479,7 +1483,7 @@
           "$ref": "StandardRolloutPolicy"
         },
         "nodePoolSoakDuration": {
-          "description": "Time needed after draining entire blue pool. After this period, blue pool will be cleaned up. Default is 1 day.",
+          "description": "Time needed after draining entire blue pool. After this period, blue pool will be cleaned up.",
           "type": "string",
           "format": "google-duration"
         }
@@ -2760,6 +2764,29 @@
         }
       }
     },
+    "WorkloadConfig": {
+      "id": "WorkloadConfig",
+      "description": "WorkloadConfig defines the flags to enable or disable the workload configurations for the cluster.",
+      "type": "object",
+      "properties": {
+        "auditMode": {
+          "description": "Sets which mode the audit scanning should be for a cluster.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value meaning that no mode has been specified.",
+            "This disables WorkloafConfiguration on the cluster, meaning that nothing is surfaced.",
+            "Surfaces configurations that are not in line with the Pod Security Standard Baseline policy.",
+            "Surfaces configurations that are not in line with the Pod Security Standard Restricted policy."
+          ],
+          "enum": [
+            "MODE_UNSPECIFIED",
+            "DISABLED",
+            "BASELINE",
+            "RESTRICTED"
+          ]
+        }
+      }
+    },
     "CreateClusterRequest": {
       "id": "CreateClusterRequest",
       "description": "CreateClusterRequest creates a cluster.",
@@ -3253,6 +3280,10 @@
         "desiredIdentityServiceConfig": {
           "description": "The desired Identity Service component configuration.",
           "$ref": "IdentityServiceConfig"
+        },
+        "desiredWorkloadConfig": {
+          "description": "Enable\/Disable Workload Configuration for the cluster.",
+          "$ref": "WorkloadConfig"
         }
       }
     },

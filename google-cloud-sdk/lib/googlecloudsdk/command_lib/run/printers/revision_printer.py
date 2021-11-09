@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Revision-specific printer."""
 
 from __future__ import absolute_import
@@ -20,14 +19,17 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.run import container_resource
 from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.command_lib.run.printers import container_and_volume_printer_util as container_util
 from googlecloudsdk.command_lib.run.printers import k8s_object_printer_util as k8s_util
 from googlecloudsdk.core.resource import custom_printer_base as cp
 import six
 
-
 REVISION_PRINTER_FORMAT = 'revision'
+CPU_ALWAYS_ALLOCATED_MESSAGE = 'CPU is always allocated'
+CPU_THROTTLED_MESSAGE = 'CPU is only allocated during request processing'
+HTTP2_PORT_NAME = 'h2c'
 EXECUTION_ENV_VALS = {'gen1': 'First Generation', 'gen2': 'Second Generation'}
 
 
@@ -63,6 +65,32 @@ class RevisionPrinter(cp.CustomPrinterBase):
     return record.annotations.get(revision.MAX_SCALE_ANNOTATION, '')
 
   @staticmethod
+  def GetCMEK(record):
+    cmek_key = record.annotations.get(container_resource.CMEK_KEY_ANNOTATION)
+    if not cmek_key:
+      return ''
+    cmek_name = cmek_key.split('/')[-1]
+    return cmek_name
+
+  @staticmethod
+  def GetCpuAllocation(record):
+    cpu_throttled = record.annotations.get(
+        container_resource.CPU_THROTTLE_ANNOTATION)
+    if not cpu_throttled:
+      return ''
+    elif cpu_throttled.lower() == 'false':
+      return CPU_ALWAYS_ALLOCATED_MESSAGE
+    else:
+      return CPU_THROTTLED_MESSAGE
+
+  @staticmethod
+  def GetHttp2Enabled(record):
+    for port in record.container.ports:
+      if port.name == HTTP2_PORT_NAME:
+        return 'Enabled'
+    return ''
+
+  @staticmethod
   def GetExecutionEnv(record):
     execution_env_value = k8s_util.GetExecutionEnvironment(record)
     if execution_env_value in EXECUTION_ENV_VALS:
@@ -90,5 +118,8 @@ class RevisionPrinter(cp.CustomPrinterBase):
         ('SQL connections', k8s_util.GetCloudSqlInstances(record)),
         ('Timeout', RevisionPrinter.GetTimeout(record)),
         ('VPC connector', k8s_util.GetVpcConnector(record)),
+        ('CMEK', RevisionPrinter.GetCMEK(record)),
+        ('HTTP/2 Enabled', RevisionPrinter.GetHttp2Enabled(record)),
+        ('CPU Allocation', RevisionPrinter.GetCpuAllocation(record)),
         ('Execution Environment', RevisionPrinter.GetExecutionEnv(record)),
     ])

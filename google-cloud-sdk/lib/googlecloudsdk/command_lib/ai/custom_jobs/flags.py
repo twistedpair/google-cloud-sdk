@@ -79,6 +79,9 @@ _WORKER_POOL_SPEC_BETA = base.Argument(
             'python-module': str,
             'script': str,
             'local-package-path': str,
+            'requirements': arg_parsers.ArgList(custom_delim_char=';'),
+            'extra-dirs': arg_parsers.ArgList(custom_delim_char=';'),
+            'extra-packages': arg_parsers.ArgList(custom_delim_char=';'),
         }),
     metavar='WORKER_POOL_SPEC',
     help=textwrap.dedent("""\
@@ -111,8 +114,22 @@ _WORKER_POOL_SPEC_BETA = base.Argument(
         package.
       *local-package-path*:::The local path of a folder that contains training
         code.
-      *script*:::The relative path from the local package path to a file to
-        execute. It can be a Python file or an arbitrary Bash script.
+      *script*:::The relative path under the `local-package-path` to a file to
+        execute. It can be a Python file or an arbitrary bash script.
+      *requirements*:::Python dependencies to be installed from PyPI, separated
+        by ";". This is supposed to be used when some public packages are
+        required by your training application but not in the base images.
+        It has the same effect as editing a "requirements.txt" file under
+        `local-package-path`.
+      *extra-packages*:::Relative paths of local Python archives to be installed,
+        separated by ";". This is supposed to be used when some custom packages
+        are required by your training application but not in the base images.
+        Every path should be relative to the `local-package-path`.
+      *extra-dirs*:::Relative paths of the folders under `local-package-path` to
+       be copied into the container, separated by ";". If not specified, only
+       the parent directory that contains the main executable (`script` or
+       `python-module`) will be copied.
+
 
       ::::
       Note that some of these fields are used for different job creation methods
@@ -141,8 +158,9 @@ _WORKER_POOL_SPEC_BETA = base.Argument(
       --worker-pool-spec=machine-type=e2-standard-4,executor-image-uri=us-docker.pkg.dev/vertex-ai/training/tf-cpu.2-4:latest,python-module=trainer.task
 
       `local-package-path, executor-image-uri, python-module|script`::::
-      Specify these fields train using a pre-built container and Python code
-      from a local path.
+      Specify these fields, optionally with `requirements`, `extra-packages`, or
+      `extra-dirs`, to train using a pre-built container and Python code from a
+      local path.
       In this case, the `--python-package-uris` flag is disallowed.
 
       Example using `python-module`:
@@ -378,7 +396,7 @@ def AddLocalRunCustomJobFlags(parser):
       Local paths to Python archives used as training dependencies in the image
       container.
       These can be absolute or relative paths. However, they have to be under
-      the work_dir; Otherwise, this tool will not be able to acces it.
+      the work_dir; Otherwise, this tool will not be able to access it.
 
       Example:
       'dep1.tar.gz, ./downloads/dep2.whl'

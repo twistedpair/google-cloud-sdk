@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Config for Google Cloud Platform CLIs."""
+"""Config for Google Cloud CLIs."""
 
 from __future__ import absolute_import
 from __future__ import division

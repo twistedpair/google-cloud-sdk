@@ -4606,7 +4606,9 @@ class RuntimeConfig(_messages.Message):
       are used to configure workload execution.
 
   Fields:
-    containerImage: Optional. Container image to use for workload execution.
+    containerImage: Optional. Optional custom container image for the job
+      runtime environment. If not specified, a default container image will be
+      used.
     properties: Optional. A mapping of property names to values, which are
       used to configure workload execution.
     version: Optional. Version of the batch runtime.

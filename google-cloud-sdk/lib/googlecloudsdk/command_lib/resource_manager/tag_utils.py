@@ -21,12 +21,10 @@ from __future__ import unicode_literals
 import re
 
 from apitools.base.py.exceptions import HttpForbiddenError
-from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.resource_manager import tags
 from googlecloudsdk.api_lib.resource_manager.exceptions import ResourceManagerError
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.command_lib.projects import util as command_lib_util
 from googlecloudsdk.command_lib.resource_manager import endpoint_utils as endpoints
 from googlecloudsdk.core import exceptions as core_exceptions
 
@@ -210,36 +208,12 @@ def GetCanonicalResourceName(resource_name, location, release_track):
         1), gce_search.group(2)
     # call compute instance's describe api to get canonical resource name
     # use that instead of the instance name that's in the parent
-
-    if not project_identifier.isdigit():
-      # if we have a project id, translate it to project number by calling
-      # project's describe endpoint.
-      project_name = project_identifier
-      project_identifier = _GetProjectCanonicalName(project_name)
-      resource_name = resource_name.replace('projects/%s' % project_name,
-                                            'projects/%s' % project_identifier)
     if re.search('([a-z]([-a-z0-9]*[a-z0-9])?)', instance_identifier):
       resource_name = resource_name.replace(
           'instances/%s' % instance_identifier,
           'instances/%s' % _GetGceInstanceCanonicalName(
               project_identifier, instance_identifier, location, release_track))
   return resource_name
-
-
-def _GetProjectCanonicalName(project_identifier):
-  """Returns the correct canonical name for the given project.
-
-  Args:
-    project_identifier: project id
-
-  Returns:
-    projectNumber: returns the projectNumber
-  """
-  project_ref = command_lib_util.ParseProject(project_identifier)
-  # GetProject call requires the global CRM API endpoint.
-  with endpoints.CrmEndpointOverrides('global'):
-    response = projects_api.Get(project_ref)
-    return str(response.projectNumber)
 
 
 def _GetGceInstanceCanonicalName(project_identifier, instance_identifier,

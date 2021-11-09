@@ -298,7 +298,7 @@ class BlueGreenSettings(_messages.Message):
 
   Fields:
     nodePoolSoakDuration: Time needed after draining entire blue pool. After
-      this period, blue pool will be cleaned up. Default is 1 day.
+      this period, blue pool will be cleaned up.
     standardRolloutPolicy: Standard policy for the blue/green update.
   """
 
@@ -590,6 +590,8 @@ class Cluster(_messages.Message):
       identity.
     workloadCertificates: Configuration for issuance of mTLS keys and
       certificates to Kubernetes pods.
+    workloadConfig: Enable/Disable Workload Audit Configuration for the
+      cluster.
     workloadIdentityConfig: Configuration for the use of Kubernetes Service
       Accounts in GCP IAM policies.
     workloadMonitoringEnabledEap: Whether to send workload metrics from the
@@ -722,9 +724,10 @@ class Cluster(_messages.Message):
   verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 68)
   workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 69)
   workloadCertificates = _messages.MessageField('WorkloadCertificates', 70)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 71)
-  workloadMonitoringEnabledEap = _messages.BooleanField(72)
-  zone = _messages.StringField(73)
+  workloadConfig = _messages.MessageField('WorkloadConfig', 71)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 72)
+  workloadMonitoringEnabledEap = _messages.BooleanField(73)
+  zone = _messages.StringField(74)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -916,6 +919,8 @@ class ClusterUpdate(_messages.Message):
       workload identity.
     desiredWorkloadCertificates: Configuration for issuance of mTLS keys and
       certificates to Kubernetes pods.
+    desiredWorkloadConfig: Enable/Disable Workload Configuration for the
+      cluster.
     desiredWorkloadIdentityConfig: Configuration for Workload Identity.
     desiredWorkloadMonitoringEapConfig: Configuration for workload monitoring
       EAP.
@@ -999,8 +1004,9 @@ class ClusterUpdate(_messages.Message):
   desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 44)
   desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 45)
   desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 46)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 47)
-  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 48)
+  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 47)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 48)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 49)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -5266,6 +5272,38 @@ class WorkloadCertificates(_messages.Message):
   """
 
   enableCertificates = _messages.BooleanField(1)
+
+
+class WorkloadConfig(_messages.Message):
+  r"""WorkloadConfig defines the flags to enable or disable the workload
+  configurations for the cluster.
+
+  Enums:
+    AuditModeValueValuesEnum: Sets which mode the audit scanning should be for
+      a cluster.
+
+  Fields:
+    auditMode: Sets which mode the audit scanning should be for a cluster.
+  """
+
+  class AuditModeValueValuesEnum(_messages.Enum):
+    r"""Sets which mode the audit scanning should be for a cluster.
+
+    Values:
+      MODE_UNSPECIFIED: Default value meaning that no mode has been specified.
+      DISABLED: This disables WorkloafConfiguration on the cluster, meaning
+        that nothing is surfaced.
+      BASELINE: Surfaces configurations that are not in line with the Pod
+        Security Standard Baseline policy.
+      RESTRICTED: Surfaces configurations that are not in line with the Pod
+        Security Standard Restricted policy.
+    """
+    MODE_UNSPECIFIED = 0
+    DISABLED = 1
+    BASELINE = 2
+    RESTRICTED = 3
+
+  auditMode = _messages.EnumField('AuditModeValueValuesEnum', 1)
 
 
 class WorkloadIdentityConfig(_messages.Message):

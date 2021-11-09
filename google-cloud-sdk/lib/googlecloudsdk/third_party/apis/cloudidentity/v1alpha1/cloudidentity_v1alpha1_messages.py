@@ -99,23 +99,22 @@ class CertificateInfo(_messages.Message):
   r"""Stores information about a certificate.
 
   Enums:
-    CertificateValidationStateValueValuesEnum: Validation state of this
-      certificate.
+    ValidationStateValueValuesEnum: Validation state of this certificate.
 
   Fields:
-    certificateFingerprint: The encoded certificate fingerprint.
     certificateTemplate: The X.509 extension for CertificateTemplate.
-    certificateThumbprint: The certificate thumbprint.
-    certificateValidationState: Validation state of this certificate.
+    fingerprint: The encoded certificate fingerprint.
     issuer: The name of the issuer of this certificate.
     serialNumber: Serial number of the certificate, Example: "123456789".
     subject: The subject name of this certificate.
+    thumbprint: The certificate thumbprint.
+    validationState: Validation state of this certificate.
     validityExpirationTime: Certificate not valid after at and after this
       timestamp.
     validityStartTime: Certificate not valid before this timestamp.
   """
 
-  class CertificateValidationStateValueValuesEnum(_messages.Enum):
+  class ValidationStateValueValuesEnum(_messages.Enum):
     r"""Validation state of this certificate.
 
     Values:
@@ -127,13 +126,13 @@ class CertificateInfo(_messages.Message):
     VALIDATION_SUCCESSFUL = 1
     VALIDATION_FAILED = 2
 
-  certificateFingerprint = _messages.StringField(1)
-  certificateTemplate = _messages.MessageField('CertificateTemplate', 2)
-  certificateThumbprint = _messages.StringField(3)
-  certificateValidationState = _messages.EnumField('CertificateValidationStateValueValuesEnum', 4)
-  issuer = _messages.StringField(5)
-  serialNumber = _messages.StringField(6)
-  subject = _messages.StringField(7)
+  certificateTemplate = _messages.MessageField('CertificateTemplate', 1)
+  fingerprint = _messages.StringField(2)
+  issuer = _messages.StringField(3)
+  serialNumber = _messages.StringField(4)
+  subject = _messages.StringField(5)
+  thumbprint = _messages.StringField(6)
+  validationState = _messages.EnumField('ValidationStateValueValuesEnum', 7)
   validityExpirationTime = _messages.StringField(8)
   validityStartTime = _messages.StringField(9)
 

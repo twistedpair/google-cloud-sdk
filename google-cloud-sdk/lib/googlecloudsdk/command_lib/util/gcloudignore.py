@@ -48,7 +48,7 @@ from six.moves import map  # pylint: disable=redefined-builtin
 IGNORE_FILE_NAME = '.gcloudignore'
 GIT_FILES = ['.git', '.gitignore']
 DEFAULT_IGNORE_FILE = """\
-# This file specifies files that are *not* uploaded to Google Cloud Platform
+# This file specifies files that are *not* uploaded to Google Cloud
 # using gcloud. It follows the same syntax as .gitignore, with the addition of
 # "#!include" directives (which insert the entries of the given .gitignore-style
 # file at that point).

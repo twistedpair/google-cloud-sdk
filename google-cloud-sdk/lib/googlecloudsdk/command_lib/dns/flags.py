@@ -277,8 +277,8 @@ def GetReverseLookupArg():
       '--managed-reverse-lookup',
       action='store_true',
       default=None,
-      help='Whether this zone is a managed reverse lookup zone, required for '
-      'Cloud DNS to correctly resolve Non-RFC1918 PTR records.')
+      help='Specifies whether this zone is a managed reverse lookup zone, '
+      'required for Cloud DNS to correctly resolve Non-RFC1918 PTR records.')
 
 
 def GetServiceDirectoryArg():
@@ -587,3 +587,10 @@ def GetLocalDataResourceRecordSets():
 
 def GetResponsePolicyRuleBehavior():
   return base.Argument('--behavior', type=enumerate)
+
+
+def GetManagedZoneLoggingArg():
+  return base.Argument(
+      '--log-dns-queries',
+      action=arg_parsers.StoreTrueFalseAction,
+      help='Specifies whether to enable query logging. Defaults to False.')

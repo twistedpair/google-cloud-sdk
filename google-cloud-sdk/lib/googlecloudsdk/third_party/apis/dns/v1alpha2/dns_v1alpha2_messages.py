@@ -1117,6 +1117,7 @@ class ManagedZone(_messages.Message):
     LabelsValue: User labels.
 
   Fields:
+    cloudLoggingConfig: A ManagedZoneCloudLoggingConfig attribute.
     creationTime: The time that this resource was created on the server. This
       is in RFC3339 text format. Output only.
     description: A mutable string of at most 1024 characters associated with
@@ -1193,22 +1194,36 @@ class ManagedZone(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  creationTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  dnsName = _messages.StringField(3)
-  dnssecConfig = _messages.MessageField('ManagedZoneDnsSecConfig', 4)
-  forwardingConfig = _messages.MessageField('ManagedZoneForwardingConfig', 5)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default='dns#managedZone')
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  nameServerSet = _messages.StringField(10)
-  nameServers = _messages.StringField(11, repeated=True)
-  peeringConfig = _messages.MessageField('ManagedZonePeeringConfig', 12)
-  privateVisibilityConfig = _messages.MessageField('ManagedZonePrivateVisibilityConfig', 13)
-  reverseLookupConfig = _messages.MessageField('ManagedZoneReverseLookupConfig', 14)
-  serviceDirectoryConfig = _messages.MessageField('ManagedZoneServiceDirectoryConfig', 15)
-  visibility = _messages.EnumField('VisibilityValueValuesEnum', 16)
+  cloudLoggingConfig = _messages.MessageField('ManagedZoneCloudLoggingConfig', 1)
+  creationTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  dnsName = _messages.StringField(4)
+  dnssecConfig = _messages.MessageField('ManagedZoneDnsSecConfig', 5)
+  forwardingConfig = _messages.MessageField('ManagedZoneForwardingConfig', 6)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(8, default='dns#managedZone')
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  nameServerSet = _messages.StringField(11)
+  nameServers = _messages.StringField(12, repeated=True)
+  peeringConfig = _messages.MessageField('ManagedZonePeeringConfig', 13)
+  privateVisibilityConfig = _messages.MessageField('ManagedZonePrivateVisibilityConfig', 14)
+  reverseLookupConfig = _messages.MessageField('ManagedZoneReverseLookupConfig', 15)
+  serviceDirectoryConfig = _messages.MessageField('ManagedZoneServiceDirectoryConfig', 16)
+  visibility = _messages.EnumField('VisibilityValueValuesEnum', 17)
+
+
+class ManagedZoneCloudLoggingConfig(_messages.Message):
+  r"""Cloud Logging configurations for publicly visible zones.
+
+  Fields:
+    enableLogging: If set, enable query logging for this ManagedZone. False by
+      default, making logging opt-in.
+    kind: A string attribute.
+  """
+
+  enableLogging = _messages.BooleanField(1)
+  kind = _messages.StringField(2, default='dns#managedZoneCloudLoggingConfig')
 
 
 class ManagedZoneDnsSecConfig(_messages.Message):

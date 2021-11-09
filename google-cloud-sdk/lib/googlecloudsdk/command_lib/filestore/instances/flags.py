@@ -331,8 +331,8 @@ is required.
 unit is specified, GB is assumed. Acceptable instance capacities for each tier are as follows:
 * BASIC_HDD: 1TB-63.9TB in 1GB increments or its multiples.
 * BASIC_SSD: 2.5TB-63.9TB in 1GB increments or its multiples.
-* HIGH_SCALE_SSD: 60TB-320TB in 10TB increments or its multiples.
-* ENTERPRISE: 1TB-10TB in 256GiB increments or its multiples.
+* HIGH_SCALE_SSD: 10TiB-100TiB in 2.5TiB increments or its multiples.
+* ENTERPRISE: 1TiB-10TiB in 256GiB increments or its multiples.
 
 *name*::: The desired logical name of the volume.
 
@@ -376,7 +376,7 @@ is required.
 unit is specified, GB is assumed. Acceptable instance capacities for each tier are as follows:
 * BASIC_HDD: 0.5TB-63.9TB in 1GB increments or its multiples.
 * BASIC_SSD: 0.5TB-63.9TB in 1GB increments or its multiples.
-* HIGH_SCALE_SSD: 60TB-320TB in 10TB increments or its multiples.
+* HIGH_SCALE_SSD: 10TiB-100TiB in 2.5TiB increments or its multiples.
 
 *name*::: The desired logical name of the volume.
 

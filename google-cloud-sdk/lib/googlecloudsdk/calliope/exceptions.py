@@ -441,6 +441,8 @@ _KNOWN_ERRORS = {
         core_exceptions.NetworkIssueError,
     'socket.timeout':
         core_exceptions.NetworkIssueError,
+    'urllib3.exceptions.TimeoutError':
+        core_exceptions.NetworkIssueError,
     'builtins.ConnectionAbortedError':
         core_exceptions.NetworkIssueError,
     'builtins.ConnectionRefusedError':

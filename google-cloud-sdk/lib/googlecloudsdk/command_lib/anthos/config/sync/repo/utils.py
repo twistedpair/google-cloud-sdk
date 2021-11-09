@@ -19,10 +19,15 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import io
+import os
 
 from googlecloudsdk.api_lib.container import util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
+from googlecloudsdk.core.util import files
+
+_KUBECONFIGENV = 'KUBECONFIG'
+_DEFAULTKUBECONFIG = 'config_sync'
 
 
 def KubeconfigForMembership(project, membership):
@@ -175,8 +180,14 @@ def RunKubectl(args):
   cmd.extend(args)
   out = io.StringIO()
   err = io.StringIO()
+  env = _GetEnvs()
   returncode = execution_utils.Exec(
-      cmd, no_exit=True, out_func=out.write, err_func=err.write, in_str=None)
+      cmd,
+      no_exit=True,
+      out_func=out.write,
+      err_func=err.write,
+      in_str=None,
+      env=env)
 
   if returncode != 0 and not err.getvalue():
     err.write('kubectl exited with return code {}'.format(returncode))
@@ -199,10 +210,29 @@ def _RunGcloud(args):
   cmd.extend(args)
   out = io.StringIO()
   err = io.StringIO()
+  env = _GetEnvs()
   returncode = execution_utils.Exec(
-      cmd, no_exit=True, out_func=out.write, err_func=err.write, in_str=None)
+      cmd,
+      no_exit=True,
+      out_func=out.write,
+      err_func=err.write,
+      in_str=None,
+      env=env)
 
   if returncode != 0 and not err.getvalue():
     err.write('gcloud exited with return code {}'.format(returncode))
   return out.getvalue() if returncode == 0 else None, err.getvalue(
   ) if returncode != 0 else None
+
+
+def _GetEnvs():
+  """Get the environment variables that should be passed to kubectl/gcloud commands.
+
+  Returns:
+    The dictionary that includes the environment varialbes.
+  """
+  env = dict(os.environ)
+  if _KUBECONFIGENV not in env:
+    env[_KUBECONFIGENV] = files.ExpandHomeDir(
+        os.path.join('~', '.kube', _DEFAULTKUBECONFIG))
+  return env

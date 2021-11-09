@@ -19,6 +19,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import exceptions
 
 MEMBER_PARSE_ERROR = ('Error parsing member [{}]: member must be prefixed of '
@@ -52,3 +54,22 @@ def MemberProcessor(member):
   else:
     raise MemberParseError(
         MEMBER_PARSE_ERROR.format(member))
+
+
+def UpdateLabelsFlags():
+  """Defines flags for updating labels."""
+  remove_group = base.ArgumentGroup(mutex=True)
+  remove_group.AddArgument(labels_util.GetClearLabelsFlag())
+  remove_group.AddArgument(labels_util.GetRemoveLabelsFlag(''))
+  return [labels_util.GetUpdateLabelsFlag(''), remove_group]
+
+
+def AddFieldToUpdateMask(field, patch_request):
+  """Adds name of field to update mask."""
+  update_mask = patch_request.updateMask
+  if update_mask:
+    if update_mask.count(field) == 0:
+      patch_request.updateMask = update_mask + ',' + field
+  else:
+    patch_request.updateMask = field
+  return patch_request

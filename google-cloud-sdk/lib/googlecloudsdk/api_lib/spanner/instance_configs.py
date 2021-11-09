@@ -61,3 +61,50 @@ def Delete(config, etag=None, validate_only=False):
   req = msgs.SpannerProjectsInstanceConfigsDeleteRequest(
       name=ref.RelativeName(), etag=etag, validateOnly=validate_only)
   return client.projects_instanceConfigs.Delete(req)
+
+
+def Create(config,
+           display_name,
+           base_config,
+           replicas,
+           validate_only,
+           etag=None):
+  """Create instance configs in the project."""
+  client = apis.GetClientInstance('spanner', 'v1')
+  msgs = apis.GetMessagesModule('spanner', 'v1')
+  project_ref = resources.REGISTRY.Create(
+      'spanner.projects', projectsId=properties.VALUES.core.project.GetOrFail)
+  config_ref = resources.REGISTRY.Parse(
+      config,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection='spanner.projects.instanceConfigs')
+  replica_info = []
+  for replica in replicas:
+    # TODO(b/399093071): Change type to ReplicaInfo.TypeValueValuesEnum instead
+    # of str.
+    replica_type = msgs.ReplicaInfo.TypeValueValuesEnum.TYPE_UNSPECIFIED
+    if replica['type'] == 'READ_ONLY':
+      replica_type = msgs.ReplicaInfo.TypeValueValuesEnum.READ_ONLY
+    elif replica['type'] == 'READ_WRITE':
+      replica_type = msgs.ReplicaInfo.TypeValueValuesEnum.READ_WRITE
+    elif replica['type'] == 'WITNESS':
+      replica_type = msgs.ReplicaInfo.TypeValueValuesEnum.WITNESS
+
+    replica_info.append(
+        msgs.ReplicaInfo(location=replica['location'], type=replica_type))
+  # TODO(b/399093071): Implement --replicas-file option.
+
+  instance_config = msgs.InstanceConfig(
+      name=config_ref.RelativeName(),
+      displayName=display_name,
+      baseConfig=base_config,
+      replicas=replica_info)
+  if etag:
+    instance_config.etag = etag
+
+  req = msgs.SpannerProjectsInstanceConfigsCreateRequest(
+      parent=project_ref.RelativeName(),
+      instanceConfigId=config,
+      instanceConfig=instance_config,
+      validateOnly=validate_only)
+  return client.projects_instanceConfigs.Create(req)

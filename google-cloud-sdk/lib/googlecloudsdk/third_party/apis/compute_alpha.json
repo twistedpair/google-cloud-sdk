@@ -4,7 +4,7 @@
   "id": "compute:alpha",
   "name": "compute",
   "version": "alpha",
-  "revision": "20211025",
+  "revision": "20211103",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -1332,6 +1332,20 @@
         },
         "srcAddressGroups": {
           "description": "Address groups which should be matched against the traffic source. Maximum number of source address groups is 10.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "srcFqdns": {
+          "description": "Fully Qualified Domain Name (FQDN) which should be matched against traffic source. Maximum number of source fqdn allowed is 5000.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "destFqdns": {
+          "description": "Fully Qualified Domain Name (FQDN) which should be matched against traffic destination. Maximum number of destination fqdn allowed is 5000.",
           "type": "array",
           "items": {
             "type": "string"
@@ -2770,7 +2784,7 @@
           "$ref": "SecurityPolicyRuleMatcher"
         },
         "action": {
-          "description": "The Action to perform when the client connection triggers the rule. Can currently be either \"allow\" or \"deny()\" where valid values for status are 403, 404, and 502.",
+          "description": "The Action to perform when the rule is matched. The following are the valid actions: - allow: allow access to target. - deny(): deny access to target, returns the HTTP response code specified (valid values are 403, 404, and 502). - rate_based_ban: limit client traffic to the configured threshold and ban the client if the traffic exceeds the threshold. Configure parameters for this action in RateLimitOptions. Requires rate_limit_options to be set. - redirect: redirect to a different target. This can either be an internal reCAPTCHA redirect, or an external URL-based redirect via a 302 response. Parameters for this action can be configured via redirectOptions. - throttle: limit client traffic to the configured threshold. Configure parameters for this action in rateLimitOptions. Requires rate_limit_options to be set for this. ",
           "type": "string"
         },
         "preview": {
@@ -2952,7 +2966,7 @@
           "type": "string"
         },
         "enforceOnKey": {
-          "description": "Determines the key to enforce the rate_limit_threshold on. Possible values are: \"ALL\" -- A single rate limit threshold is applied to all the requests matching this rule. This is the default value if this field 'enforce_on_key' is not configured. \"ALL_IPS\" -- This definition, equivalent to \"ALL\", has been depprecated. \"IP\" -- The source IP address of the request is the key. Each IP has this limit enforced separately. \"HTTP_HEADER\" -- The value of the HTTP header whose name is configured under \"enforce_on_key_name\". The key value is truncated to the first 128 bytes of the header value. If no such header is present in the request, the key type defaults to \"ALL\". \"XFF_IP\" -- The first IP address (i.e. the originating client IP address) specified in the list of IPs under X-Forwarded-For HTTP header. If no such header is present or the value is not a valid IP, the key type defaults to \"ALL\".",
+          "description": "Determines the key to enforce the rate_limit_threshold on. Possible values are: - ALL: A single rate limit threshold is applied to all the requests matching this rule. This is the default value if this field 'enforce_on_key' is not configured. - IP: The source IP address of the request is the key. Each IP has this limit enforced separately. - HTTP_HEADER: The value of the HTTP header whose name is configured under \"enforce_on_key_name\". The key value is truncated to the first 128 bytes of the header value. If no such header is present in the request, the key type defaults to ALL. - XFF_IP: The first IP address (i.e. the originating client IP address) specified in the list of IPs under X-Forwarded-For HTTP header. If no such header is present or the value is not a valid IP, the key type defaults to ALL. ",
           "type": "string",
           "enumDescriptions": [
             "",
@@ -17666,7 +17680,7 @@
           "format": "int32"
         },
         "type": {
-          "description": "Specifies the type of the healthCheck, either TCP, SSL, HTTP, HTTPS or HTTP2. If not specified, the default is TCP. Exactly one of the protocol-specific health check field must be specified, which must match type field.",
+          "description": "Specifies the type of the healthCheck, either TCP, SSL, HTTP, HTTPS or HTTP2. Exactly one of the protocol-specific health check field must be specified, which must match type field.",
           "type": "string",
           "enumDescriptions": [
             "",
@@ -19757,7 +19771,7 @@
           }
         },
         "dataplaneVersion": {
-          "description": "[Output Only] Dataplane version for this InterconnectAttachment.",
+          "description": "[Output only for types PARTNER and DEDICATED. Not present for PARTNER_PROVIDER.] Dataplane version for this InterconnectAttachment. This field is only present for Dataplane version 2 and higher. Absence of this field in the API output indicates that the Dataplane is version 1.",
           "type": "integer",
           "format": "int32"
         },
@@ -21390,7 +21404,7 @@
           ]
         },
         "sourceInstanceProperties": {
-          "description": "[Output Only] Properties of source instance.",
+          "description": "[Output Only] DEPRECATED: Please use instance_properties instead for source instance related properties. New properties will not be added to this field.",
           "$ref": "SourceInstanceProperties"
         },
         "instanceProperties": {
@@ -21444,6 +21458,7 @@
     },
     "SourceInstanceProperties": {
       "id": "SourceInstanceProperties",
+      "description": "DEPRECATED: Please use compute#instanceProperties instead. New properties will not be added to this field.",
       "type": "object",
       "properties": {
         "description": {
@@ -21545,7 +21560,7 @@
     },
     "SavedAttachedDisk": {
       "id": "SavedAttachedDisk",
-      "description": "An instance-attached disk resource.",
+      "description": "DEPRECATED: Please use compute#savedDisk instead. An instance-attached disk resource.",
       "type": "object",
       "properties": {
         "type": {
@@ -24862,6 +24877,21 @@
             "type": "string"
           }
         },
+        "instanceConsumptionDatas": {
+          "description": "Instance data that shows consumed resources on the node.",
+          "type": "array",
+          "items": {
+            "$ref": "InstanceConsumptionData"
+          }
+        },
+        "consumedResources": {
+          "description": "Node resources that are reserved by all instances.",
+          "$ref": "InstanceConsumptionInfo"
+        },
+        "totalResources": {
+          "description": "Total amount of available resources on the node.",
+          "$ref": "InstanceConsumptionInfo"
+        },
         "cpuOvercommitType": {
           "description": "CPU overcommit.",
           "type": "string",
@@ -24916,6 +24946,46 @@
         },
         "diskCount": {
           "description": "Specifies the number of such disks.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "InstanceConsumptionData": {
+      "id": "InstanceConsumptionData",
+      "type": "object",
+      "properties": {
+        "instance": {
+          "description": "Server-defined URL for the instance.",
+          "type": "string"
+        },
+        "consumptionInfo": {
+          "description": "Resources consumed by the instance.",
+          "$ref": "InstanceConsumptionInfo"
+        }
+      }
+    },
+    "InstanceConsumptionInfo": {
+      "id": "InstanceConsumptionInfo",
+      "type": "object",
+      "properties": {
+        "minNodeCpus": {
+          "description": "The minimal guaranteed number of virtual CPUs that are reserved.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "guestCpus": {
+          "description": "The number of virtual CPUs that are available to the instance.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "memoryMb": {
+          "description": "The amount of physical memory available to the instance, defined in MiB.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "localSsdGb": {
+          "description": "The amount of local SSD storage available to the instance, defined in GiB.",
           "type": "integer",
           "format": "int32"
         }
@@ -66121,7 +66191,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified Project resource."
+          "description": "Returns the specified Project resource. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the `quotas` field). To exclude one or more fields, set your request's `fields` query parameter to only include the fields you need. For example, to only include the `id` and `selfLink` fields, add the query parameter `?fields=id,selfLink` to your request."
         },
         "setCommonInstanceMetadata": {
           "id": "compute.projects.setCommonInstanceMetadata",
@@ -66226,7 +66296,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "Moves an instance and its attached persistent disks from one zone to another."
+          "description": "Moves an instance and its attached persistent disks from one zone to another. *Note*: Moving VMs or disks by using this method might cause unexpected behavior. For more information, see the [known issue](\/compute\/docs\/troubleshooting\/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior)."
         },
         "moveDisk": {
           "id": "compute.projects.moveDisk",
@@ -67381,7 +67451,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Retrieves the list of region resources available to the specified project."
+          "description": "Retrieves the list of region resources available to the specified project. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the `items.quotas` field). To exclude one or more fields, set your request's `fields` query parameter to only include the fields you need. For example, to only include the `id` and `selfLink` fields, add the query parameter `?fields=id,selfLink` to your request."
         },
         "get": {
           "id": "compute.regions.get",
@@ -67416,7 +67486,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified Region resource. Gets a list of available regions by making a list() request."
+          "description": "Returns the specified Region resource. Gets a list of available regions by making a list() request. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the `quotas` field). To exclude one or more fields, set your request's `fields` query parameter to only include the fields you need. For example, to only include the `id` and `selfLink` fields, add the query parameter `?fields=id,selfLink` to your request."
         }
       }
     },

@@ -203,6 +203,14 @@ class NodePoolsClient(object):
       nodepool.version = args.node_version
       update_mask.append('version')
 
+    autoscaling = self._AddAwsNodePoolAutoscaling(nodepool)
+    if args.min_nodes is not None:
+      autoscaling.minNodeCount = args.min_nodes
+      update_mask.append('autoscaling.minNodeCount')
+    if args.max_nodes is not None:
+      autoscaling.maxNodeCount = args.max_nodes
+      update_mask.append('autoscaling.maxNodeCount')
+
     req.updateMask = ','.join(update_mask)
 
     return self.service.Patch(req)

@@ -291,6 +291,62 @@ class AppengineAppsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class AppengineProjectsLocationsGetRequest(_messages.Message):
+  r"""A AppengineProjectsLocationsGetRequest object.
+
+  Fields:
+    name: Resource name for the location.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AppengineProjectsLocationsListRequest(_messages.Message):
+  r"""A AppengineProjectsLocationsListRequest object.
+
+  Fields:
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like "displayName=tokyo", and is
+      documented in more detail in AIP-160 (https://google.aip.dev/160).
+    name: The resource that owns the locations collection, if applicable.
+    pageSize: The maximum number of results to return. If not set, the service
+      selects a default.
+    pageToken: A page token received from the next_page_token field in the
+      response. Send that page token to receive the subsequent page.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AppengineProjectsLocationsOperationsGetRequest(_messages.Message):
+  r"""A AppengineProjectsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AppengineProjectsLocationsOperationsListRequest(_messages.Message):
+  r"""A AppengineProjectsLocationsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
 class AuthorizedCertificate(_messages.Message):
   r"""An SSL certificate that a user has been authorized to administer. A user
   is authorized to administer any certificate that applies to one of their

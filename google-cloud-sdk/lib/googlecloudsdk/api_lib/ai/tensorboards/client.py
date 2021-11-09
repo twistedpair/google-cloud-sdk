@@ -19,10 +19,12 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.ai import util as api_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import common_args
 from googlecloudsdk.command_lib.ai import constants
 from googlecloudsdk.command_lib.ai import errors
+from googlecloudsdk.command_lib.ai import validation as common_validation
 from googlecloudsdk.command_lib.util.args import labels_util
 
 
@@ -43,34 +45,70 @@ class TensorboardsClient(object):
   def Create(self, location_ref, args):
     if self._version == constants.ALPHA_VERSION:
       return self.CreateAlpha(location_ref, args)
+    elif self._version == constants.GA_VERSION:
+      return self.CreateGa(location_ref, args)
     else:
       return self.CreateBeta(location_ref, args)
 
-  def CreateBeta(self, location_ref, args):
+  def CreateGa(self, location_ref, args):
     """Create a new Tensorboard."""
+    kms_key_name = common_validation.GetAndValidateKmsKey(args)
     labels = labels_util.ParseCreateArgs(
-        args, self.messages.GoogleCloudAiplatformV1beta1Tensorboard.LabelsValue)
+        args, self.messages.GoogleCloudAiplatformV1Tensorboard.LabelsValue)
+    tensorboard = self.messages.GoogleCloudAiplatformV1Tensorboard(
+        displayName=args.display_name,
+        description=args.description,
+        labels=labels)
+    if kms_key_name is not None:
+      tensorboard.encryptionSpec = api_util.GetMessage(
+          'EncryptionSpec', self._version)(
+              kmsKeyName=kms_key_name)
+
     request = self.messages.AiplatformProjectsLocationsTensorboardsCreateRequest(
         parent=location_ref.RelativeName(),
-        googleCloudAiplatformV1beta1Tensorboard=self.messages
-        .GoogleCloudAiplatformV1beta1Tensorboard(
-            displayName=args.display_name,
-            description=args.description,
-            labels=labels))
+        googleCloudAiplatformV1Tensorboard=tensorboard)
+
+    return self._service.Create(request)
+
+  def CreateBeta(self, location_ref, args):
+    """Create a new Tensorboard."""
+    kms_key_name = common_validation.GetAndValidateKmsKey(args)
+    labels = labels_util.ParseCreateArgs(
+        args, self.messages.GoogleCloudAiplatformV1beta1Tensorboard.LabelsValue)
+    tensorboard = self.messages.GoogleCloudAiplatformV1beta1Tensorboard(
+        displayName=args.display_name,
+        description=args.description,
+        labels=labels)
+    if kms_key_name is not None:
+      tensorboard.encryptionSpec = api_util.GetMessage(
+          'EncryptionSpec', self._version)(
+              kmsKeyName=kms_key_name)
+
+    request = self.messages.AiplatformProjectsLocationsTensorboardsCreateRequest(
+        parent=location_ref.RelativeName(),
+        googleCloudAiplatformV1beta1Tensorboard=tensorboard)
+
     return self._service.Create(request)
 
   def CreateAlpha(self, location_ref, args):
     """Create a new Tensorboard."""
+    kms_key_name = common_validation.GetAndValidateKmsKey(args)
     labels = labels_util.ParseCreateArgs(
         args,
         self.messages.GoogleCloudAiplatformV1alpha1Tensorboard.LabelsValue)
+    tensorboard = self.messages.GoogleCloudAiplatformV1alpha1Tensorboard(
+        displayName=args.display_name,
+        description=args.description,
+        labels=labels)
+
+    if kms_key_name is not None:
+      tensorboard.encryptionSpec = api_util.GetMessage(
+          'EncryptionSpec', self._version)(
+              kmsKeyName=kms_key_name)
+
     request = self.messages.AiplatformProjectsLocationsTensorboardsCreateRequest(
         parent=location_ref.RelativeName(),
-        googleCloudAiplatformV1alpha1Tensorboard=self.messages
-        .GoogleCloudAiplatformV1alpha1Tensorboard(
-            displayName=args.display_name,
-            description=args.description,
-            labels=labels))
+        googleCloudAiplatformV1alpha1Tensorboard=tensorboard)
     return self._service.Create(request)
 
   def Get(self, tensorboard_ref):
@@ -100,6 +138,9 @@ class TensorboardsClient(object):
     if self._version == constants.ALPHA_VERSION:
       tensorboard = self.messages.GoogleCloudAiplatformV1alpha1Tensorboard()
       labels_value = self.messages.GoogleCloudAiplatformV1alpha1Tensorboard.LabelsValue
+    elif self._version == constants.GA_VERSION:
+      tensorboard = self.messages.GoogleCloudAiplatformV1Tensorboard()
+      labels_value = self.messages.GoogleCloudAiplatformV1Tensorboard.LabelsValue
     else:
       tensorboard = self.messages.GoogleCloudAiplatformV1beta1Tensorboard()
       labels_value = self.messages.GoogleCloudAiplatformV1beta1Tensorboard.LabelsValue
@@ -131,6 +172,11 @@ class TensorboardsClient(object):
       req = self.messages.AiplatformProjectsLocationsTensorboardsPatchRequest(
           name=tensorboard_ref.RelativeName(),
           googleCloudAiplatformV1alpha1Tensorboard=tensorboard,
+          updateMask=','.join(update_mask))
+    elif self._version == constants.GA_VERSION:
+      req = self.messages.AiplatformProjectsLocationsTensorboardsPatchRequest(
+          name=tensorboard_ref.RelativeName(),
+          googleCloudAiplatformV1Tensorboard=tensorboard,
           updateMask=','.join(update_mask))
     else:
       req = self.messages.AiplatformProjectsLocationsTensorboardsPatchRequest(

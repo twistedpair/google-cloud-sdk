@@ -252,12 +252,11 @@ usage: gcloud            [optional flags] <group | command>
   group is one of        auth | components | config | dns | sql
   command is one of      init | interactive | su | version
 
-Google Cloud Platform CLI/API.
+Google Cloud CLI/API.
 
 optional flags:
   -h, --help             Print this help message and exit.
-  --project PROJECT      Google Cloud Platform project to use for this
-                         invocation.
+  --project PROJECT      Google Cloud project to use for this invocation.
   --quiet, -q            Disable all interactive prompts when running gcloud
                          commands.  If input is required, defaults will be used,
                          or an error will be raised.

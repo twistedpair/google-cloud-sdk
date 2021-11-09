@@ -15,7 +15,7 @@
 """Manage parsing resource arguments for the cloud platform.
 
 The Parse() function and Registry.Parse() method are to be used whenever a
-Google Cloud Platform API resource is indicated in a command-line argument.
+Google Cloud API resource is indicated in a command-line argument.
 URLs, bare names with hints, and any other acceptable spelling for a resource
 will be accepted, and a consistent python object will be returned for use in
 code.

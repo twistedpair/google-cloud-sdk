@@ -598,7 +598,7 @@
       "type": "object",
       "properties": {
         "provenance": {
-          "description": "Required. The actual provenance for the build.",
+          "description": "The actual provenance for the build.",
           "$ref": "BuildProvenance"
         },
         "provenanceBytes": {
@@ -606,8 +606,12 @@
           "type": "string"
         },
         "intotoProvenance": {
-          "description": "In-toto Provenance representation as defined in spec.",
+          "description": "Deprecated. See InTotoStatement for the replacement. In-toto Provenance representation as defined in spec.",
           "$ref": "InTotoProvenance"
+        },
+        "intotoStatement": {
+          "description": "In-toto Statement representation as defined in spec. The intoto_statement can contain any type of provenance. The serialized payload of the statement can be stored and signed in the Occurrence's envelope.",
+          "$ref": "InTotoStatement"
         }
       }
     },
@@ -1066,6 +1070,181 @@
         }
       }
     },
+    "InTotoStatement": {
+      "id": "InTotoStatement",
+      "description": "Spec defined at https:\/\/github.com\/in-toto\/attestation\/tree\/main\/spec#statement The serialized InTotoStatement will be stored as Envelope.payload. Envelope.payloadType is always \"application\/vnd.in-toto+json\".",
+      "type": "object",
+      "properties": {
+        "_type": {
+          "description": "Always \"https:\/\/in-toto.io\/Statement\/v0.1\".",
+          "type": "string"
+        },
+        "subject": {
+          "type": "array",
+          "items": {
+            "$ref": "Subject"
+          }
+        },
+        "predicateType": {
+          "description": "\"https:\/\/slsa.dev\/provenance\/v0.1\" for SlsaProvenance.",
+          "type": "string"
+        },
+        "provenance": {
+          "$ref": "InTotoProvenance"
+        },
+        "slsaProvenance": {
+          "$ref": "SlsaProvenance"
+        }
+      }
+    },
+    "Subject": {
+      "id": "Subject",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "digest": {
+          "description": "\"\": \"\" Algorithms can be e.g. sha256, sha512 See https:\/\/github.com\/in-toto\/attestation\/blob\/main\/spec\/field_types.md#DigestSet",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "SlsaProvenance": {
+      "id": "SlsaProvenance",
+      "type": "object",
+      "properties": {
+        "builder": {
+          "description": "required",
+          "$ref": "SlsaBuilder"
+        },
+        "recipe": {
+          "description": "Identifies the configuration used for the build. When combined with materials, this SHOULD fully describe the build, such that re-running this recipe results in bit-for-bit identical output (if the build is reproducible). required",
+          "$ref": "SlsaRecipe"
+        },
+        "metadata": {
+          "$ref": "SlsaMetadata"
+        },
+        "materials": {
+          "description": "The collection of artifacts that influenced the build including sources, dependencies, build tools, base images, and so on. This is considered to be incomplete unless metadata.completeness.materials is true. Unset or null is equivalent to empty.",
+          "type": "array",
+          "items": {
+            "$ref": "Material"
+          }
+        }
+      }
+    },
+    "SlsaBuilder": {
+      "id": "SlsaBuilder",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "SlsaRecipe": {
+      "id": "SlsaRecipe",
+      "description": "Steps taken to build the artifact. For a TaskRun, typically each container corresponds to one step in the recipe.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "URI indicating what type of recipe was performed. It determines the meaning of recipe.entryPoint, recipe.arguments, recipe.environment, and materials.",
+          "type": "string"
+        },
+        "definedInMaterial": {
+          "description": "Index in materials containing the recipe steps that are not implied by recipe.type. For example, if the recipe type were \"make\", then this would point to the source containing the Makefile, not the make program itself. Set to -1 if the recipe doesn't come from a material, as zero is default unset value for int64.",
+          "type": "string",
+          "format": "int64"
+        },
+        "entryPoint": {
+          "description": "String identifying the entry point into the build. This is often a path to a configuration file and\/or a target label within that file. The syntax and meaning are defined by recipe.type. For example, if the recipe type were \"make\", then this would reference the directory in which to run make as well as which target to use.",
+          "type": "string"
+        },
+        "arguments": {
+          "description": "Collection of all external inputs that influenced the build on top of recipe.definedInMaterial and recipe.entryPoint. For example, if the recipe type were \"make\", then this might be the flags passed to make aside from the target, which is captured in recipe.entryPoint. Depending on the recipe Type, the structure may be different.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "environment": {
+          "description": "Any other builder-controlled inputs necessary for correctly evaluating the recipe. Usually only needed for reproducing the build but not evaluated as part of policy. Depending on the recipe Type, the structure may be different.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "SlsaMetadata": {
+      "id": "SlsaMetadata",
+      "description": "Other properties of the build.",
+      "type": "object",
+      "properties": {
+        "buildInvocationId": {
+          "description": "Identifies the particular build invocation, which can be useful for finding associated logs or other ad-hoc analysis. The value SHOULD be globally unique, per in-toto Provenance spec.",
+          "type": "string"
+        },
+        "buildStartedOn": {
+          "description": "The timestamp of when the build started.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "buildFinishedOn": {
+          "description": "The timestamp of when the build completed.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "completeness": {
+          "description": "Indicates that the builder claims certain fields in this message to be complete.",
+          "$ref": "SlsaCompleteness"
+        },
+        "reproducible": {
+          "description": "If true, the builder claims that running the recipe on materials will produce bit-for-bit identical output.",
+          "type": "boolean"
+        }
+      }
+    },
+    "SlsaCompleteness": {
+      "id": "SlsaCompleteness",
+      "description": "Indicates that the builder claims certain fields in this message to be complete.",
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "description": "If true, the builder claims that recipe.arguments is complete, meaning that all external inputs are properly captured in the recipe.",
+          "type": "boolean"
+        },
+        "environment": {
+          "description": "If true, the builder claims that recipe.environment is claimed to be complete.",
+          "type": "boolean"
+        },
+        "materials": {
+          "description": "If true, the builder claims that materials are complete, usually through some controls to prevent network access. Sometimes called \"hermetic\".",
+          "type": "boolean"
+        }
+      }
+    },
+    "Material": {
+      "id": "Material",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "type": "string"
+        },
+        "digest": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "ImageOccurrence": {
       "id": "ImageOccurrence",
       "description": "Details of the derived image portion of the DockerImage relationship. This image would be produced from a Dockerfile with FROM .",
@@ -1484,6 +1663,7 @@
     },
     "DSSEAttestationOccurrence": {
       "id": "DSSEAttestationOccurrence",
+      "description": "Deprecated. Prefer to use a regular Occurrence, and populate the Envelope at the top level of the Occurrence.",
       "type": "object",
       "properties": {
         "envelope": {
@@ -1525,46 +1705,6 @@
         },
         "keyid": {
           "type": "string"
-        }
-      }
-    },
-    "InTotoStatement": {
-      "id": "InTotoStatement",
-      "description": "Spec defined at https:\/\/github.com\/in-toto\/attestation\/tree\/main\/spec#statement The serialized InTotoStatement will be stored as Envelope.payload. Envelope.payloadType is always \"application\/vnd.in-toto+json\".",
-      "type": "object",
-      "properties": {
-        "type": {
-          "description": "Always \"https:\/\/in-toto.io\/Statement\/v0.1\".",
-          "type": "string"
-        },
-        "subject": {
-          "type": "array",
-          "items": {
-            "$ref": "Subject"
-          }
-        },
-        "predicateType": {
-          "description": "\"https:\/\/in-toto.io\/Provenance\/v0.1\" for InTotoProvenance.",
-          "type": "string"
-        },
-        "provenance": {
-          "$ref": "InTotoProvenance"
-        }
-      }
-    },
-    "Subject": {
-      "id": "Subject",
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "digest": {
-          "description": "\"\": \"\"",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
         }
       }
     },

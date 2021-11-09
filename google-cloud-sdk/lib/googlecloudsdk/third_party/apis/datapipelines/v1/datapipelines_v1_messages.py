@@ -644,6 +644,11 @@ class GoogleCloudDatapipelinesV1Pipeline(_messages.Message):
       affects the scheduling of the pipeline and the type of metrics to show
       for the pipeline.
 
+  Messages:
+    PipelineSourcesValue: Immutable. The sources of the pipeline (for example,
+      Dataplex). The keys and values are set by the corresponding sources
+      during pipeline creation.
+
   Fields:
     createTime: Output only. Immutable. The timestamp when the pipeline was
       initially created. Set by the Data Pipelines service.
@@ -666,6 +671,9 @@ class GoogleCloudDatapipelinesV1Pipeline(_messages.Message):
       regions](https://cloud.google.com/about/locations#region). *
       `PIPELINE_ID` is the ID of the pipeline. Must be unique for the selected
       project and location.
+    pipelineSources: Immutable. The sources of the pipeline (for example,
+      Dataplex). The keys and values are set by the corresponding sources
+      during pipeline creation.
     scheduleInfo: Internal scheduling information for a pipeline. If this
       information is provided, periodic jobs will be created per the schedule.
       If not, users are responsible for creating jobs externally.
@@ -728,16 +736,44 @@ class GoogleCloudDatapipelinesV1Pipeline(_messages.Message):
     PIPELINE_TYPE_BATCH = 1
     PIPELINE_TYPE_STREAMING = 2
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PipelineSourcesValue(_messages.Message):
+    r"""Immutable. The sources of the pipeline (for example, Dataplex). The
+    keys and values are set by the corresponding sources during pipeline
+    creation.
+
+    Messages:
+      AdditionalProperty: An additional property for a PipelineSourcesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type PipelineSourcesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PipelineSourcesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   displayName = _messages.StringField(2)
   jobCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   lastUpdateTime = _messages.StringField(4)
   name = _messages.StringField(5)
-  scheduleInfo = _messages.MessageField('GoogleCloudDatapipelinesV1ScheduleSpec', 6)
-  schedulerServiceAccountEmail = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  type = _messages.EnumField('TypeValueValuesEnum', 9)
-  workload = _messages.MessageField('GoogleCloudDatapipelinesV1Workload', 10)
+  pipelineSources = _messages.MessageField('PipelineSourcesValue', 6)
+  scheduleInfo = _messages.MessageField('GoogleCloudDatapipelinesV1ScheduleSpec', 7)
+  schedulerServiceAccountEmail = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  type = _messages.EnumField('TypeValueValuesEnum', 10)
+  workload = _messages.MessageField('GoogleCloudDatapipelinesV1Workload', 11)
 
 
 class GoogleCloudDatapipelinesV1RunPipelineRequest(_messages.Message):

@@ -1078,15 +1078,15 @@
       "description": "Stores information about a certificate.",
       "type": "object",
       "properties": {
-        "certificateFingerprint": {
+        "fingerprint": {
           "description": "The encoded certificate fingerprint.",
           "type": "string"
         },
-        "certificateThumbprint": {
+        "thumbprint": {
           "description": "The certificate thumbprint.",
           "type": "string"
         },
-        "certificateValidationState": {
+        "validationState": {
           "description": "Validation state of this certificate.",
           "type": "string",
           "enumDescriptions": [

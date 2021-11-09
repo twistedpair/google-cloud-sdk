@@ -28,7 +28,12 @@ def CreateMuteConfigReqHook(ref, args, req):
   """Generates a mute config."""
   del ref
   req.parent = _ValidateAndGetParent(args)
-  req.muteConfigId = _ValidateAndGetMuteConfigId(args)
+  if req.parent is not None:
+    req.muteConfigId = _ValidateAndGetMuteConfigId(args)
+  else:
+    mute_config = _ValidateAndGetMuteConfigFullResourceName(args)
+    req.muteConfigId = _GetMuteConfigIdFromFullResourceName(mute_config)
+    req.parent = _GetParentFromFullResourceName(mute_config)
   args.filter = ""
   return req
 
@@ -37,8 +42,12 @@ def DeleteMuteConfigReqHook(ref, args, req):
   """Deletes a mute config."""
   del ref
   parent = _ValidateAndGetParent(args)
-  mute_config_id = _ValidateAndGetMuteConfigId(args)
-  req.name = parent + "/muteConfigs/" + mute_config_id
+  if parent is not None:
+    mute_config_id = _ValidateAndGetMuteConfigId(args)
+    req.name = parent + "/muteConfigs/" + mute_config_id
+  else:
+    mute_config = _ValidateAndGetMuteConfigFullResourceName(args)
+    req.name = mute_config
   return req
 
 
@@ -46,8 +55,12 @@ def GetMuteConfigReqHook(ref, args, req):
   """Gets a mute config."""
   del ref
   parent = _ValidateAndGetParent(args)
-  mute_config_id = _ValidateAndGetMuteConfigId(args)
-  req.name = parent + "/muteConfigs/" + mute_config_id
+  if parent is not None:
+    mute_config_id = _ValidateAndGetMuteConfigId(args)
+    req.name = parent + "/muteConfigs/" + mute_config_id
+  else:
+    mute_config = _ValidateAndGetMuteConfigFullResourceName(args)
+    req.name = mute_config
   return req
 
 
@@ -62,8 +75,12 @@ def UpdateMuteConfigReqHook(ref, args, req):
   """Updates a mute config."""
   del ref
   parent = _ValidateAndGetParent(args)
-  mute_config_id = _ValidateAndGetMuteConfigId(args)
-  req.name = parent + "/muteConfigs/" + mute_config_id
+  if parent is not None:
+    mute_config_id = _ValidateAndGetMuteConfigId(args)
+    req.name = parent + "/muteConfigs/" + mute_config_id
+  else:
+    mute_config = _ValidateAndGetMuteConfigFullResourceName(args)
+    req.name = mute_config
   req.updateMask = CleanUpUserInput(req.updateMask)
   args.filter = ""
   return req
@@ -115,7 +132,7 @@ def _ValidateAndGetParent(args):
 
 def _ValidateAndGetMuteConfigId(args):
   """Validate muteConfigId."""
-  mute_config_id = args.mute_config_id
+  mute_config_id = args.mute_config
   pattern = re.compile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$")
   if not pattern.match(mute_config_id):
     raise InvalidSCCInputError(
@@ -123,3 +140,28 @@ def _ValidateAndGetMuteConfigId(args):
     )
   else:
     return mute_config_id
+
+
+def _ValidateAndGetMuteConfigFullResourceName(args):
+  """Validates muteConfig full resource name."""
+  mute_config = args.mute_config
+  resource_pattern = re.compile(
+      "(organizations|projects|folders)/.*/muteConfigs/[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"
+  )
+  if not resource_pattern.match(mute_config):
+    raise InvalidSCCInputError(
+        "Mute config must match the full resource name, or `--organization=`, `--folder=` or `--project=` must be provided."
+    )
+  return mute_config
+
+
+def _GetMuteConfigIdFromFullResourceName(mute_config):
+  """Gets muteConfig id from the full resource name."""
+  mute_config_components = mute_config.split("/")
+  return mute_config_components[len(mute_config_components) - 1]
+
+
+def _GetParentFromFullResourceName(mute_config):
+  """Gets parent from the full resource name."""
+  mute_config_components = mute_config.split("/")
+  return mute_config_components[0] + "/" + mute_config_components[1]

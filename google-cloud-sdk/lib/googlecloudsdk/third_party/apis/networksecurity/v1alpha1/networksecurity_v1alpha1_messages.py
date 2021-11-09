@@ -128,7 +128,8 @@ class AuthorizationPolicy(_messages.Message):
     Values:
       ACTION_UNSPECIFIED: Default value.
       ALLOW: Grant access.
-      DENY: Deny access.
+      DENY: Deny access. Deny rules should be avoided unless they are used to
+        provide a default "deny all" fallback.
     """
     ACTION_UNSPECIFIED = 0
     ALLOW = 1
@@ -254,13 +255,16 @@ class Destination(_messages.Message):
   r"""Specification of traffic destination attributes.
 
   Fields:
-    hosts: Required. List of host names to match. Matched against HOST header
-      in http requests. At least one host should match. Each host can be an
-      exact match, or a prefix match (example "mydomain.*") or a suffix match
-      (example // *.myorg.com") or a presence(any) match "*".
+    hosts: Required. List of host names to match. Matched against the
+      ":authority" header in http requests. At least one host should match.
+      Each host can be an exact match, or a prefix match (example
+      "mydomain.*") or a suffix match (example // *.myorg.com") or a
+      presence(any) match "*".
     httpHeaderMatch: Optional. Match against key:value pair in http header.
       Provides a flexible match based on HTTP headers, for potentially
-      advanced use cases. At least one header should match.
+      advanced use cases. At least one header should match. Avoid using header
+      matches to make authorization decisions unless there is a strong
+      guarantee that requests arrive through a trusted client or proxy.
     methods: Optional. A list of HTTP methods to match. At least one method
       should match. Should not be set for gRPC services.
     ports: Required. List of destination ports to match. At least one port
@@ -1835,11 +1839,15 @@ class Source(_messages.Message):
   Fields:
     ipBlocks: Optional. List of CIDR ranges to match based on source IP
       address. At least one IP block should match. Single IP (e.g., "1.2.3.4")
-      and CIDR (e.g., "1.2.3.0/24") are supported.
+      and CIDR (e.g., "1.2.3.0/24") are supported. Authorization based on
+      source IP alone should be avoided. The IP addresses of any load
+      balancers or proxies should be considered untrusted.
     principals: Optional. List of peer identities to match for authorization.
       At least one principal should match. Each peer can be an exact match, or
       a prefix match (example, "namespace/*") or a suffix match (example, //
-      */service-account") or a presence match "*".
+      */service-account") or a presence match "*". Authorization based on the
+      principal name without certificate validation (configured by
+      ServerTlsPolicy resource) is considered insecure.
   """
 
   ipBlocks = _messages.StringField(1, repeated=True)

@@ -36,6 +36,35 @@ import six
 COLLECTION = 'accesscontextmanager.accessPolicies.accessLevels'
 
 
+_INVALID_FORMAT_ERROR = """
+Invalid format: {}
+
+The valid fields for the YAML objects in this file type are [{}].
+
+For an access level condition file, an example of the YAML-formatted list of conditions will look like:
+
+ - ipSubnetworks:
+   - 162.222.181.197/24
+   - 2001:db8::/48
+ - members:
+   - user:user@example.com
+
+For access levels file, an example of the YAML-formatted list of access levels will look like:
+
+ - name: accessPolicies/my_policy/accessLevels/my_level
+   title: My Level
+   description: Level for foo.
+   basic:
+     combiningFunction: AND
+     conditions:
+     - ipSubnetworks:
+       - 192.168.100.14/24
+       - 2001:db8::/48
+     - members:
+       - user1:user1@example.com
+"""
+
+
 class ParseResponseError(exceptions.Error):
 
   def __init__(self, reason):
@@ -54,32 +83,9 @@ class InvalidFormatError(ParseError):
 
   def __init__(self, path, reason, message_class):
     valid_fields = [f.name for f in message_class.all_fields()]
-    super(InvalidFormatError, self).__init__(
-        path,
-        ('Invalid format: {}\n\n'
-         'The valid fields for the YAML objects in this file type are '
-         '[{}].\n'
-         'For an access level condition file, an example of the '
-         'YAML-formatted list of conditions will look like:\n\n'
-         ' - ipSubnetworks:\n'
-         '   - 162.222.181.197/24\n'
-         '   - 2001:db8::/48\n'
-         ' - members:\n'
-         '   - user:user@example.com\n\n'
-         'For access levels file, an example of the YAML-formatted list '
-         'of access levels will look like:\n\n'
-         ' - name: accessPolicies/my_policy/accessLevels/my_level\n'
-         '   title: My Level\n'
-         '   description: Level for foo.\n'
-         '   basic:\n'
-         '     combiningFunction: AND\n'
-         '     conditions:\n'
-         '     - ipSubnetworks:\n'
-         '       - 192.168.100.14/24\n'
-         '       - 2001:db8::/48\n'
-         '     - members\n'
-         '       - user1:user1@example.com').format(reason,
-                                                    ', '.join(valid_fields)))
+    super(InvalidFormatError,
+          self).__init__(path, (_INVALID_FORMAT_ERROR).format(
+              reason, ', '.join(valid_fields)))
 
 
 def _LoadData(path):

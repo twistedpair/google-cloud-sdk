@@ -235,13 +235,13 @@ class CloudresourcemanagerFoldersSearchRequest(_messages.Message):
       displayName, state and parent, where the operators `=` (`:`) `NOT`,
       `AND` and `OR` can be used along with the suffix wildcard symbol `*`.
       The `displayName` field in a query expression should use escaped quotes
-      for values that include whitespace to prevent unexpected behavior. |
+      for values that include whitespace to prevent unexpected behavior. ``` |
       Field | Description |
       |-------------------------|----------------------------------------| |
       displayName | Filters by displayName. | | parent | Filters by parent
       (for example: folders/123). | | state, lifecycleState | Filters by
-      state. | Some example queries are: * Query `displayName=Test*` returns
-      Folder resources whose display name starts with "Test". * Query
+      state. | ``` Some example queries are: * Query `displayName=Test*`
+      returns Folder resources whose display name starts with "Test". * Query
       `state=ACTIVE` returns Folder resources with `state` set to `ACTIVE`. *
       Query `parent=folders/123` returns Folder resources that have
       `folders/123` as a parent resource. * Query `parent=folders/123 AND
@@ -454,11 +454,11 @@ class CloudresourcemanagerOrganizationsSearchRequest(_messages.Message):
     pageToken: Optional. A pagination token returned from a previous call to
       `SearchOrganizations` that indicates from where listing should continue.
     query: Optional. An optional query string used to filter the Organizations
-      to return in the response. Query rules are case-insensitive. | Field |
-      Description |
+      to return in the response. Query rules are case-insensitive. ``` | Field
+      | Description |
       |------------------|--------------------------------------------| |
       directoryCustomerId, owner.directoryCustomerId | Filters by directory
-      customer id. | | domain | Filters by domain. | Organizations may be
+      customer id. | | domain | Filters by domain. | ``` Organizations may be
       queried by `directoryCustomerId` or by `domain`, where the domain is a G
       Suite domain, for example: * Query `directorycustomerid:123456789`
       returns Organization resources with `owner.directory_customer_id` equal
@@ -602,8 +602,8 @@ class CloudresourcemanagerProjectsSearchRequest(_messages.Message):
     query: Optional. A query string for searching for projects that the caller
       has `resourcemanager.projects.get` permission to. If multiple fields are
       included in the query, the it will return results that match any of the
-      fields. Some eligible fields are: | Field | Description | |-------------
-      ------------|----------------------------------------------| |
+      fields. Some eligible fields are: ``` | Field | Description | |---------
+      ----------------|----------------------------------------------| |
       displayName, name | Filters by displayName. | | parent | Project's
       parent (for example: folders/123, organizations/*). Prefer parent field
       over parent.type and parent.id.| | parent.type | Parent's type: `folder`
@@ -611,16 +611,16 @@ class CloudresourcemanagerProjectsSearchRequest(_messages.Message):
       | | id, projectId | Filters by projectId. | | state, lifecycleState |
       Filters by state. | | labels | Filters by label name or value. | |
       labels.\ (where *key* is the name of a label) | Filters by label name.|
-      Search expressions are case insensitive. Some examples queries: | Query
-      | Description | |------------------|------------------------------------
-      -----------------| | name:how* | The project's name starts with "how". |
-      | name:Howl | The project's name is `Howl` or `howl`. | | name:HOWL |
-      Equivalent to above. | | NAME:howl | Equivalent to above. | |
-      labels.color:* | The project has the label `color`. | | labels.color:red
-      | The project's label `color` has the value `red`. | | labels.color:red
-      labels.size:big | The project's label `color` has the value `red` and
-      its label `size` has the value `big`.| If no query is specified, the
-      call will return projects for which the user has the
+      ``` Search expressions are case insensitive. Some examples queries: ```
+      | Query | Description | |------------------|----------------------------
+      -------------------------| | name:how* | The project's name starts with
+      "how". | | name:Howl | The project's name is `Howl` or `howl`. | |
+      name:HOWL | Equivalent to above. | | NAME:howl | Equivalent to above. |
+      | labels.color:* | The project has the label `color`. | |
+      labels.color:red | The project's label `color` has the value `red`. | |
+      labels.color:red labels.size:big | The project's label `color` has the
+      value `red` and its label `size` has the value `big`.| ``` If no query
+      is specified, the call will return projects for which the user has the
       `resourcemanager.projects.get` permission.
   """
 
@@ -950,6 +950,65 @@ class CloudresourcemanagerTagValuesSetIamPolicyRequest(_messages.Message):
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
+class CloudresourcemanagerTagValuesTagHoldsCreateRequest(_messages.Message):
+  r"""A CloudresourcemanagerTagValuesTagHoldsCreateRequest object.
+
+  Fields:
+    parent: Required. The resource name of the TagHold's parent TagValue. Must
+      be of the form: `tagValues/{tag-value-id}`.
+    tagHold: A TagHold resource to be passed as the request body.
+    validateOnly: Optional. Set to true to perform the validations necessary
+      for creating the resource, but not actually perform the action.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  tagHold = _messages.MessageField('TagHold', 2)
+  validateOnly = _messages.BooleanField(3)
+
+
+class CloudresourcemanagerTagValuesTagHoldsDeleteRequest(_messages.Message):
+  r"""A CloudresourcemanagerTagValuesTagHoldsDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the TagHold to delete. Must be of the
+      form: `tagValues/{tag-value-id}/tagHolds/{tag-hold-id}`.
+    validateOnly: Optional. Set to true to perform the validations necessary
+      for deleting the resource, but not actually perform the action.
+  """
+
+  name = _messages.StringField(1, required=True)
+  validateOnly = _messages.BooleanField(2)
+
+
+class CloudresourcemanagerTagValuesTagHoldsListRequest(_messages.Message):
+  r"""A CloudresourcemanagerTagValuesTagHoldsListRequest object.
+
+  Fields:
+    filter: Optional. Criteria used to select a subset of TagHolds parented by
+      the TagValue to return. This field follows the syntax defined by
+      aip.dev/160; the `holder` and `origin` fields are supported for
+      filtering. Currently only `AND` syntax is supported. Some example
+      queries are: * `holder =
+      //compute.googleapis.com/compute/projects/myproject/regions/us-
+      east-1/instanceGroupManagers/instance-group` * `origin = 35678234` *
+      `holder =
+      //compute.googleapis.com/compute/projects/myproject/regions/us-
+      east-1/instanceGroupManagers/instance-group AND origin = 35678234`
+    pageSize: Optional. The maximum number of TagHolds to return in the
+      response. The server allows a maximum of 300 TagHolds to return. If
+      unspecified, the server will use 100 as the default.
+    pageToken: Optional. A pagination token returned from a previous call to
+      `ListTagHolds` that indicates where this listing should continue from.
+    parent: Required. The resource name of the parent TagValue. Must be of the
+      form: `tagValues/{tag-value-id}`.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
 class CloudresourcemanagerTagValuesTestIamPermissionsRequest(_messages.Message):
   r"""A CloudresourcemanagerTagValuesTestIamPermissionsRequest object.
 
@@ -1016,8 +1075,8 @@ class DeleteFolderMetadata(_messages.Message):
 
 
 class DeleteOrganizationMetadata(_messages.Message):
-  r"""LINT.IfChange A status object which is used as the `metadata` field for
-  the operation returned by DeleteOrganization.
+  r"""A status object which is used as the `metadata` field for the operation
+  returned by DeleteOrganization.
   """
 
 
@@ -1349,6 +1408,24 @@ class ListTagBindingsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   tagBindings = _messages.MessageField('TagBinding', 2, repeated=True)
+
+
+class ListTagHoldsResponse(_messages.Message):
+  r"""The ListTagHolds response.
+
+  Fields:
+    nextPageToken: Pagination token. If the result set is too large to fit in
+      a single response, this token is returned. It encodes the position of
+      the current result cursor. Feeding this value into a new list request
+      with the `page_token` parameter gives the next page of the results. When
+      `next_page_token` is not filled in, there is no next page and the list
+      returned is the last page in the result set. Pagination tokens have a
+      limited lifetime.
+    tagHolds: A possibly paginated list of TagHolds.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  tagHolds = _messages.MessageField('TagHold', 2, repeated=True)
 
 
 class ListTagKeysResponse(_messages.Message):
@@ -1999,6 +2076,38 @@ class TagBinding(_messages.Message):
   tagValue = _messages.StringField(3)
 
 
+class TagHold(_messages.Message):
+  r"""A TagHold represents the use of a TagValue that is not captured by
+  TagBindings. If a TagValue has any TagHolds, deletion will be blocked. This
+  resource is intended to be created in the same cloud location as the
+  `holder`.
+
+  Fields:
+    createTime: Output only. The time this TagHold was created.
+    helpLink: Optional. A URL where an end user can learn more about removing
+      this hold. E.g. `https://cloud.google.com/resource-
+      manager/docs/tags/tags-creating-and-managing`
+    holder: Required. The name of the resource where the TagValue is being
+      used. Must be less than 200 characters. E.g.
+      `//compute.googleapis.com/compute/projects/myproject/regions/us-
+      east-1/instanceGroupManagers/instance-group`
+    name: Output only. The resource name of a TagHold. This is a String of the
+      form: `tagValues/{tag-value-id}/tagHolds/{tag-hold-id}` (e.g.
+      `tagValues/123/tagHolds/456`). This resource name is generated by the
+      server.
+    origin: Optional. An optional string representing the origin of this
+      request. This field should include human-understandable information to
+      distinguish origins from each other. Must be less than 200 characters.
+      E.g. `migs-35678234`
+  """
+
+  createTime = _messages.StringField(1)
+  helpLink = _messages.StringField(2)
+  holder = _messages.StringField(3)
+  name = _messages.StringField(4)
+  origin = _messages.StringField(5)
+
+
 class TagKey(_messages.Message):
   r"""A TagKey, used to group a set of TagValues.
 
@@ -2172,8 +2281,8 @@ class UndeleteFolderRequest(_messages.Message):
 
 
 class UndeleteOrganizationMetadata(_messages.Message):
-  r"""LINT.IfChange A status object which is used as the `metadata` field for
-  the Operation returned by UndeleteOrganization.
+  r"""A status object which is used as the `metadata` field for the Operation
+  returned by UndeleteOrganization.
   """
 
 

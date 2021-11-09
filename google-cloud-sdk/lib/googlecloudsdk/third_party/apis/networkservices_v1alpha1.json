@@ -1532,6 +1532,89 @@
         }
       }
     },
+    "ListGatewaysResponse": {
+      "id": "ListGatewaysResponse",
+      "description": "Response returned by the ListGateways method.",
+      "type": "object",
+      "properties": {
+        "gateways": {
+          "description": "List of Gateway resources.",
+          "type": "array",
+          "items": {
+            "$ref": "Gateway"
+          }
+        },
+        "nextPageToken": {
+          "description": "If there might be more results than those appearing in this response, then `next_page_token` is included. To get the next set of results, call this method again using the value of `next_page_token` as `page_token`.",
+          "type": "string"
+        }
+      }
+    },
+    "Gateway": {
+      "id": "Gateway",
+      "description": "Gateway represents the configuration for a proxy, typically a load balancer. It captures the ip:port over which the services are exposed by the proxy, along with any policy configurations. Routes have reference to to Gateways to dictate how requests should be routed by this Gateway.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Name of the Gateway resource. It matches pattern `projects\/*\/locations\/global\/gateways\/`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The timestamp when the resource was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The timestamp when the resource was updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Optional. Set of label tags associated with the Gateway resource.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "Optional. A free-text description of the resource. Max length 1024 characters.",
+          "type": "string"
+        },
+        "type": {
+          "description": "Required. Immutable. The type of the customer managed gateway.",
+          "type": "string",
+          "enumDescriptions": [
+            "The type of the customer managed gateway is unspecified.",
+            "The type of the customer managed gateway is TrafficDirector Open Mesh."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "OPEN_MESH"
+          ]
+        },
+        "addresses": {
+          "description": "Required. One or more addresses with ports in format of \":\" that the Gateway must receive traffic on. The proxy binds to the ports specified. IP address can be anything that is allowed by the underlying infrastructure (auto-allocation, static IP, BYOIP).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "scope": {
+          "description": "Required. Immutable. Scope determines how configuration across multiple Gateway instances are merged. The configuration for multiple Gateway instances with the same scope will be merged as presented as a single coniguration to the proxy\/load balancer. Max length 64 characters. Scope should start with a letter and can only have letters, numbers, hyphens.",
+          "type": "string"
+        },
+        "serverTlsPolicy": {
+          "description": "Optional. A fully-qualified ServerTLSPolicy URL reference. Specifies how TLS traffic is terminated. If empty, TLS termination is disabled.",
+          "type": "string"
+        },
+        "authorizationPolicy": {
+          "description": "Optional. A fully-qualified AuthorizationPolicy URL reference. Specifies how traffic is authorized. If empty, authorization checks are disabled.",
+          "type": "string"
+        }
+      }
+    },
     "ListGrpcRoutesResponse": {
       "id": "ListGrpcRoutesResponse",
       "description": "Response returned by the ListGrpcRoutes method.",
@@ -1583,7 +1666,7 @@
           "type": "string"
         },
         "hostnames": {
-          "description": "Required. Service hostnames with an optional port for which this route describes traffic. Format: [:] These strings may be literals or patterns. In the case of a pattern string, '*' (asterisk) matches any string conforming to the regex ([a-z0-9-.]*). In that case, '*' must be the first character and must be followed in the pattern by either the character '-' (dash) or the character '.' (dot). A single route object may not have multiple GrpcRoute objects associated with it that have the same hostname pattern. If an attempt is made to associate a GrpcRoute with a duplicated hostname, that configuration will be rejected. For example, while it is acceptable for GrpcRoutes for the hostnames \"*.foo.bar.com\" and \"*.bar.com\" to be associated with the same GrpcRoute, it is not possible to associate two GrpcRoutes both with \"*.bar.com\" or both with \"bar.com\". In the case that multiple GrpcRoutes match the hostname, the most specific match will be selected. For example, \"foo.bar.baz.com\" will take precedence over \"*.bar.baz.com\" and \"*.bar.baz.com\" will take precedence over \"*.baz.com\". If a port is specified, then gRPC clients must use the channel URI with the port to match this rule (i.e. \"xds:\/\/service:123\"), otherwise they must supply the URI without a port (i.e. \"xds:\/\/service\"). At the moment, only exact match of hostnames is supported.",
+          "description": "Required. If a port is specified, then gRPC clients must use the channel URI with the port to match this rule (i.e. \"xds:\/\/\/service:123\"), otherwise they must supply the URI without a port (i.e. \"xds:\/\/\/service\").",
           "type": "array",
           "items": {
             "type": "string"
@@ -1763,7 +1846,7 @@
           "type": "string"
         },
         "weight": {
-          "description": "Optional. Specifies the proportion of requests forwarded to the backend referenced by the serviceName field. The sum of the weights of all Destinations must be 100. If no Destinations provide a weight, then traffic will be split evenly among all of them. Specifying weights for some but not all Destinations is unsupported.",
+          "description": "Optional. If weights are unspecified for all services, then, traffic is distributed in equal proportions to all of them.",
           "type": "integer",
           "format": "int32"
         }
@@ -2019,7 +2102,7 @@
           "format": "google-datetime"
         },
         "hostnames": {
-          "description": "Required. Hostnames define a set of hosts that should match against the HTTP host header to select a HttpRoute to process the request. Hostname is the fully qualified domain name of a network host, as defined by RFC 3986. Wildcard hosts are supported in prefix form or suffix form.",
+          "description": "Required. Hostnames define a set of hosts that should match against the HTTP host header to select a HttpRoute to process the request. Hostname is the fully qualified domain name of a network host, as defined by RFC 1123 with the exception that ip addresses are not allowed. Wildcard hosts are supported as \"*\" (no prefix or suffix allowed).",
           "type": "array",
           "items": {
             "type": "string"
@@ -2243,7 +2326,6 @@
           "type": "string"
         },
         "weight": {
-          "description": "Specifies the proportion of requests forwareded to the backend referenced by the service_name field. This is computed as: weight\/Sum(weights in destinations) Weights in all destinations should sum up to 100.",
           "type": "integer",
           "format": "int32"
         }
@@ -2609,7 +2691,7 @@
           "type": "string"
         },
         "weight": {
-          "description": "Optional. Specifies the proportion of requests forwareded to the backend referenced by the service_name field. This is computed as: weight\/Sum(weights in destinations) Weights in all destinations should sum up to 100.",
+          "description": "Optional. If weights are unspecified for all services, then, traffic is distributed in equal proportions to all of them.",
           "type": "integer",
           "format": "int32"
         }
@@ -4645,6 +4727,250 @@
                 }
               }
             },
+            "gateways": {
+              "methods": {
+                "list": {
+                  "id": "networkservices.projects.locations.gateways.list",
+                  "path": "v1alpha1/{+parent}/gateways",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The project and location from which the Gateways should be listed, specified in the format `projects\/*\/locations\/global`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Maximum number of Gateways to return per call.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The value returned by the last `ListGatewaysResponse` Indicates that this is a continuation of a prior `ListGateways` call, and that the system should return the next page of data.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListGatewaysResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists Gateways in a given project and location."
+                },
+                "get": {
+                  "id": "networkservices.projects.locations.gateways.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the Gateway to get. Must be in the format `projects\/*\/locations\/global\/gateways\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gateways\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Gateway"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single Gateway."
+                },
+                "create": {
+                  "id": "networkservices.projects.locations.gateways.create",
+                  "path": "v1alpha1/{+parent}/gateways",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource of the Gateway. Must be in the format `projects\/*\/locations\/global`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "gatewayId": {
+                      "description": "Required. Short name of the Gateway resource to be created.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Gateway"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new Gateway in a given project and location."
+                },
+                "patch": {
+                  "id": "networkservices.projects.locations.gateways.patch",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the Gateway resource. It matches pattern `projects\/*\/locations\/global\/gateways\/`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gateways\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Optional. Field mask is used to specify the fields to be overwritten in the Gateway resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Gateway"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the parameters of a single Gateway."
+                },
+                "delete": {
+                  "id": "networkservices.projects.locations.gateways.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the Gateway to delete. Must be in the format `projects\/*\/locations\/global\/gateways\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gateways\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single Gateway."
+                },
+                "setIamPolicy": {
+                  "id": "networkservices.projects.locations.gateways.setIamPolicy",
+                  "path": "v1alpha1/{+resource}:setIamPolicy",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}:setIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gateways\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "SetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                },
+                "getIamPolicy": {
+                  "id": "networkservices.projects.locations.gateways.getIamPolicy",
+                  "path": "v1alpha1/{+resource}:getIamPolicy",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}:getIamPolicy",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gateways\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "options.requestedPolicyVersion": {
+                      "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                },
+                "testIamPermissions": {
+                  "id": "networkservices.projects.locations.gateways.testIamPermissions",
+                  "path": "v1alpha1/{+resource}:testIamPermissions",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}:testIamPermissions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gateways\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "TestIamPermissionsRequest"
+                  },
+                  "response": {
+                    "$ref": "TestIamPermissionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+            },
             "grpcRoutes": {
               "methods": {
                 "list": {
@@ -6179,97 +6505,6 @@
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/endpointConfigSelectors\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "request": {
-                    "$ref": "TestIamPermissionsRequest"
-                  },
-                  "response": {
-                    "$ref": "TestIamPermissionsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
-                }
-              }
-            },
-            "gateways": {
-              "methods": {
-                "setIamPolicy": {
-                  "id": "networkservices.projects.locations.gateways.setIamPolicy",
-                  "path": "v1alpha1/{+resource}:setIamPolicy",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}:setIamPolicy",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gateways\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "request": {
-                    "$ref": "SetIamPolicyRequest"
-                  },
-                  "response": {
-                    "$ref": "Policy"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
-                },
-                "getIamPolicy": {
-                  "id": "networkservices.projects.locations.gateways.getIamPolicy",
-                  "path": "v1alpha1/{+resource}:getIamPolicy",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}:getIamPolicy",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gateways\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "options.requestedPolicyVersion": {
-                      "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "response": {
-                    "$ref": "Policy"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
-                },
-                "testIamPermissions": {
-                  "id": "networkservices.projects.locations.gateways.testIamPermissions",
-                  "path": "v1alpha1/{+resource}:testIamPermissions",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}:testIamPermissions",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gateways\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"

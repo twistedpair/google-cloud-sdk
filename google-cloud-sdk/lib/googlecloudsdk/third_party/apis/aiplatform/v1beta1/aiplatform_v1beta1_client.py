@@ -4095,6 +4095,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def MutateDeployedIndex(self, request, global_params=None):
+      r"""Update an existing DeployedIndex under an IndexEndpoint.
+
+      Args:
+        request: (AiplatformProjectsLocationsIndexEndpointsMutateDeployedIndexRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('MutateDeployedIndex')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MutateDeployedIndex.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/indexEndpoints/{indexEndpointsId}:mutateDeployedIndex',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.indexEndpoints.mutateDeployedIndex',
+        ordered_params=['indexEndpoint'],
+        path_params=['indexEndpoint'],
+        query_params=[],
+        relative_path='v1beta1/{+indexEndpoint}:mutateDeployedIndex',
+        request_field='googleCloudAiplatformV1beta1DeployedIndex',
+        request_type_name='AiplatformProjectsLocationsIndexEndpointsMutateDeployedIndexRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates an IndexEndpoint.
 

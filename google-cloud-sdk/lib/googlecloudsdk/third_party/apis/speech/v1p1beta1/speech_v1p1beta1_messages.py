@@ -331,12 +331,11 @@ class Phrase(_messages.Message):
       Positive value will increase the probability that a specific phrase will
       be recognized over other similar sounding phrases. The higher the boost,
       the higher the chance of false positive recognition as well. Negative
-      boost values would correspond to anti-biasing. Anti-biasing is not
-      enabled, so negative boost will simply be ignored. Though `boost` can
-      accept a wide range of positive values, most use cases are best served
-      with values between 0 and 20. We recommend using a binary search
-      approach to finding the optimal value for your use case. Speech
-      recognition will skip PhraseSets with a boost value of 0.
+      boost will simply be ignored. Though `boost` can accept a wide range of
+      positive values, most use cases are best served with values between 0
+      and 20. We recommend using a binary search approach to finding the
+      optimal value for your use case. Speech recognition will skip PhraseSets
+      with a boost value of 0.
     value: The phrase itself.
   """
 
@@ -403,10 +402,10 @@ class RecognitionConfig(_messages.Message):
 
   Fields:
     adaptation: Speech adaptation configuration improves the accuracy of
-      speech recognition. When speech adaptation is set it supersedes the
-      `speech_contexts` field. For more information, see the [speech
+      speech recognition. For more information, see the [speech
       adaptation](https://cloud.google.com/speech-to-text/docs/adaptation)
-      documentation.
+      documentation. When speech adaptation is set it supersedes the
+      `speech_contexts` field.
     alternativeLanguageCodes: A list of up to 3 additional
       [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tags,
       listing possible alternative languages of the supplied audio. See
@@ -564,9 +563,8 @@ class RecognitionConfig(_messages.Message):
         kbps). When using this encoding, `sample_rate_hertz` has to match the
         sample rate of the file being used.
       WEBM_OPUS: Opus encoded audio frames in WebM container
-        ([OggOpus](https://wiki.xiph.org/OggOpus)). This is a Beta features
-        and only available in v1p1beta1. `sample_rate_hertz` must be one of
-        8000, 12000, 16000, 24000, or 48000.
+        ([OggOpus](https://wiki.xiph.org/OggOpus)). `sample_rate_hertz` must
+        be one of 8000, 12000, 16000, 24000, or 48000.
     """
     ENCODING_UNSPECIFIED = 0
     LINEAR16 = 1
@@ -1069,11 +1067,14 @@ class SpeechRecognitionResult(_messages.Message):
       editor.org/rfc/bcp/bcp47.txt) language tag of the language in this
       result. This language code was detected to have the most likelihood of
       being spoken in the audio.
+    resultEndTime: Time offset of the end of this result relative to the
+      beginning of the audio.
   """
 
   alternatives = _messages.MessageField('SpeechRecognitionAlternative', 1, repeated=True)
   channelTag = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   languageCode = _messages.StringField(3)
+  resultEndTime = _messages.StringField(4)
 
 
 class StandardQueryParameters(_messages.Message):

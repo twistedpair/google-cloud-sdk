@@ -1596,6 +1596,23 @@ class AiplatformProjectsLocationsIndexEndpointsListRequest(_messages.Message):
   readMask = _messages.StringField(5)
 
 
+class AiplatformProjectsLocationsIndexEndpointsMutateDeployedIndexRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsIndexEndpointsMutateDeployedIndexRequest
+  object.
+
+  Fields:
+    googleCloudAiplatformV1alpha1DeployedIndex: A
+      GoogleCloudAiplatformV1alpha1DeployedIndex resource to be passed as the
+      request body.
+    indexEndpoint: Required. The name of the IndexEndpoint resource into which
+      to deploy an Index. Format: `projects/{project}/locations/{location}/ind
+      exEndpoints/{index_endpoint}`
+  """
+
+  googleCloudAiplatformV1alpha1DeployedIndex = _messages.MessageField('GoogleCloudAiplatformV1alpha1DeployedIndex', 1)
+  indexEndpoint = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsIndexEndpointsOperationsCancelRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsIndexEndpointsOperationsCancelRequest
   object.
@@ -3030,16 +3047,17 @@ class AiplatformProjectsLocationsPipelineJobsListRequest(_messages.Message):
       comparisons. * `display_name`: Supports `=`, `!=` comparisons, and `:`
       wildcard. * `pipeline_job_user_id`: Supports `=`, `!=` comparisons, and
       `:` wildcard. for example, can check if pipeline's display_name contains
-      *step* by doing display_name:\"*step*\" * `create_time`: Supports `=`,
-      `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339
-      format. * `update_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=`
-      comparisons. Values must be in RFC 3339 format. * `end_time`: Supports
-      `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC
-      3339 format. * `labels`: Supports key-value equality and key presence.
-      Filter expressions can be combined together using logical operators
-      (`AND` & `OR`). For example: `pipeline_name="test" AND
-      create_time>"2020-05-18T13:30:00Z"`. The syntax to define filter
-      expression is based on https://google.aip.dev/160. Examples: *
+      *step* by doing display_name:\"*step*\" * `state`: Supports `=` and `!=`
+      comparisons. * `create_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and
+      `>=` comparisons. Values must be in RFC 3339 format. * `update_time`:
+      Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be
+      in RFC 3339 format. * `end_time`: Supports `=`, `!=`, `<`, `>`, `<=`,
+      and `>=` comparisons. Values must be in RFC 3339 format. * `labels`:
+      Supports key-value equality and key presence. Filter expressions can be
+      combined together using logical operators (`AND` & `OR`). For example:
+      `pipeline_name="test" AND create_time>"2020-05-18T13:30:00Z"`. The
+      syntax to define filter expression is based on
+      https://google.aip.dev/160. Examples: *
       `create_time>"2021-05-18T00:00:00Z" OR
       update_time>"2020-05-18T00:00:00Z"` PipelineJobs created or updated
       after 2020-05-18 00:00:00 UTC. * `labels.env = "prod"` PipelineJobs with
@@ -4709,21 +4727,6 @@ class GoogleCloudAiplatformInternalAutoscalingMetricSpec(_messages.Message):
   target = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
-class GoogleCloudAiplatformInternalBatchConfig(_messages.Message):
-  r"""Configurations describing how to construct labeling tasks from collected
-  prediction results.
-
-  Fields:
-    batchCount: A new labeling task will be generated once batch_count number
-      of data items are collected.
-    pendingDuration: A new labeling task will be generated once the oldest
-      collected data item is pending for longer than pending_duration.
-  """
-
-  batchCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pendingDuration = _messages.StringField(2)
-
-
 class GoogleCloudAiplatformInternalBatchCreateFeaturesOperationMetadata(_messages.Message):
   r"""Details of operations that perform batch create Features.
 
@@ -6134,12 +6137,11 @@ class GoogleCloudAiplatformInternalHumanInTheLoop(_messages.Message):
   Fields:
     autoAssignConfig: Auto task assignment configuration of this human in the
       loop.
-    batchConfig: Batching configuration of this human in the loop
-      configuration.
     completedDataItemsCount: Output only. Number of labeled data items from
       this human in the loop configuration.
     completedDataLabelingJobsCount: Output only. Number of completed data
-      labeling jobs from this human in the loop configuration.
+      labeling jobs from this human in the loop configuration. Only meant for
+      non-streaming use case.
     createTime: Output only. Timestamp when this configuration was created.
     dataLabelingJobInputsSchemaUri: Required. Points to a YAML file stored on
       Google Cloud Storage describing the configuration for a specific type of
@@ -6180,8 +6182,6 @@ class GoogleCloudAiplatformInternalHumanInTheLoop(_messages.Message):
     name: Output only. The resource name of the human in the loop
       configuration.
     outputPath: Cloud Storage path the labeling answer will be written to.
-    pendingDataItemsCount: Output only. Number of data items that are
-      collected but not yet sent to human review.
     pipeliningConfig: The pipelining labeling and expert audit config. If this
       feature is enabled, one document may be labeled by multiple human
       labelers sequentially. It also supports the expert audit or QA labeling
@@ -6191,7 +6191,8 @@ class GoogleCloudAiplatformInternalHumanInTheLoop(_messages.Message):
       the current running data labeling jobs from this human in the loop
       configuration.
     runningDataLabelingJobsCount: Output only. Number of currently running
-      data labeling jobs from this human in the loop configuration.
+      data labeling jobs from this human in the loop configuration. Only meant
+      for non-streaming use case.
     specialistPool: Resource names of the specialist pools used in this
       configuration.
     state: State of the human in the loop feature.
@@ -6262,30 +6263,28 @@ class GoogleCloudAiplatformInternalHumanInTheLoop(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   autoAssignConfig = _messages.MessageField('GoogleCloudAiplatformInternalAutoAssignConfig', 1)
-  batchConfig = _messages.MessageField('GoogleCloudAiplatformInternalBatchConfig', 2)
-  completedDataItemsCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  completedDataLabelingJobsCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  createTime = _messages.StringField(5)
-  dataLabelingJobInputsSchemaUri = _messages.StringField(6)
-  dataLabelingJobParameters = _messages.MessageField('extra_types.JsonValue', 7)
-  deIdConfig = _messages.MessageField('GoogleCloudAiplatformInternalDeIdentificationConfig', 8)
-  displayName = _messages.StringField(9)
-  documentCriteria = _messages.MessageField('GoogleCloudAiplatformInternalDocumentCriteria', 10)
-  documentMetadata = _messages.MessageField('GoogleCloudAiplatformInternalDocumentMetadata', 11)
-  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformInternalEncryptionSpec', 12)
-  googleSpecialistRegion = _messages.EnumField('GoogleSpecialistRegionValueValuesEnum', 13)
-  instructionUri = _messages.StringField(14)
-  labels = _messages.MessageField('LabelsValue', 15)
-  name = _messages.StringField(16)
-  outputPath = _messages.StringField(17)
-  pendingDataItemsCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  pipeliningConfig = _messages.MessageField('GoogleCloudAiplatformInternalPipeliningAndAuditConfig', 19)
-  replicaCount = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  runningDataItemsCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
-  runningDataLabelingJobsCount = _messages.IntegerField(22, variant=_messages.Variant.INT32)
-  specialistPool = _messages.StringField(23, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 24)
-  updateTime = _messages.StringField(25)
+  completedDataItemsCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  completedDataLabelingJobsCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  createTime = _messages.StringField(4)
+  dataLabelingJobInputsSchemaUri = _messages.StringField(5)
+  dataLabelingJobParameters = _messages.MessageField('extra_types.JsonValue', 6)
+  deIdConfig = _messages.MessageField('GoogleCloudAiplatformInternalDeIdentificationConfig', 7)
+  displayName = _messages.StringField(8)
+  documentCriteria = _messages.MessageField('GoogleCloudAiplatformInternalDocumentCriteria', 9)
+  documentMetadata = _messages.MessageField('GoogleCloudAiplatformInternalDocumentMetadata', 10)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformInternalEncryptionSpec', 11)
+  googleSpecialistRegion = _messages.EnumField('GoogleSpecialistRegionValueValuesEnum', 12)
+  instructionUri = _messages.StringField(13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  name = _messages.StringField(15)
+  outputPath = _messages.StringField(16)
+  pipeliningConfig = _messages.MessageField('GoogleCloudAiplatformInternalPipeliningAndAuditConfig', 17)
+  replicaCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  runningDataItemsCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  runningDataLabelingJobsCount = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  specialistPool = _messages.StringField(21, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  updateTime = _messages.StringField(23)
 
 
 class GoogleCloudAiplatformInternalHumanInTheLoopRandomSampling(_messages.Message):
@@ -10697,6 +10696,16 @@ class GoogleCloudAiplatformV1CreateSpecialistPoolOperationMetadata(_messages.Mes
 
   Fields:
     genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1CreateTensorboardOperationMetadata(_messages.Message):
+  r"""Details of operations that perform create Tensorboard.
+
+  Fields:
+    genericMetadata: Operation metadata for Tensorboard.
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
@@ -15421,6 +15430,16 @@ class GoogleCloudAiplatformV1UpdateSpecialistPoolOperationMetadata(_messages.Mes
   specialistPool = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformV1UpdateTensorboardOperationMetadata(_messages.Message):
+  r"""Details of operations that perform update Tensorboard.
+
+  Fields:
+    genericMetadata: Operation metadata for Tensorboard.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+
+
 class GoogleCloudAiplatformV1UploadModelOperationMetadata(_messages.Message):
   r"""Details of ModelService.UploadModel operation.
 
@@ -19248,6 +19267,8 @@ class GoogleCloudAiplatformV1alpha1InputDataConfig(_messages.Message):
     fractionSplit: Split based on fractions defining the size of each set.
     predefinedSplit: Supported only for tabular Datasets. Split based on a
       predefined key.
+    stratifiedSplit: Supported only for tabular Datasets. Split based on the
+      distribution of the specified column.
     timestampSplit: Supported only for tabular Datasets. Split based on the
       timestamp of the input data pieces.
   """
@@ -19257,7 +19278,8 @@ class GoogleCloudAiplatformV1alpha1InputDataConfig(_messages.Message):
   filterSplit = _messages.MessageField('GoogleCloudAiplatformV1alpha1FilterSplit', 3)
   fractionSplit = _messages.MessageField('GoogleCloudAiplatformV1alpha1FractionSplit', 4)
   predefinedSplit = _messages.MessageField('GoogleCloudAiplatformV1alpha1PredefinedSplit', 5)
-  timestampSplit = _messages.MessageField('GoogleCloudAiplatformV1alpha1TimestampSplit', 6)
+  stratifiedSplit = _messages.MessageField('GoogleCloudAiplatformV1alpha1StratifiedSplit', 6)
+  timestampSplit = _messages.MessageField('GoogleCloudAiplatformV1alpha1TimestampSplit', 7)
 
 
 class GoogleCloudAiplatformV1alpha1Int64Array(_messages.Message):
@@ -20472,9 +20494,9 @@ class GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringJob(_messages.Messag
       and can be consist of any UTF-8 characters. Display name of a
       ModelDeploymentMonitoringJob.
     enableMonitoringPipelineLogs: If true, the scheduled monitoring pipeline
-      status logs are sent to Google Cloud Logging. Please note the logs incur
-      cost, which are subject to [Cloud Logging
-      pricing](https://cloud.google.com/logging#pricing).
+      logs are sent to Google Cloud Logging, including pipeline status and
+      anomalies detected. Please note the logs incur cost, which are subject
+      to [Cloud Logging pricing](https://cloud.google.com/logging#pricing).
     encryptionSpec: Customer-managed encryption key spec for a
       ModelDeploymentMonitoringJob. If set, this ModelDeploymentMonitoringJob
       and all sub-resources of this ModelDeploymentMonitoringJob will be
@@ -22620,6 +22642,38 @@ class GoogleCloudAiplatformV1alpha1SpecialistPool(_messages.Message):
 
 class GoogleCloudAiplatformV1alpha1StopTrialRequest(_messages.Message):
   r"""Request message for VizierService.StopTrial."""
+
+
+class GoogleCloudAiplatformV1alpha1StratifiedSplit(_messages.Message):
+  r"""Assigns input data to the training, validation, and test sets so that
+  the distribution of values found in the categorical column (as specified by
+  the `key` field) is mirrored within each split. The fraction values
+  determine the relative sizes of the splits. For example, if the specified
+  column has three values, with 50% of the rows having value "A", 25% value
+  "B", and 25% value "C", and the split fractions are specified as 80/10/10,
+  then the training set will constitute 80% of the training data, with about
+  50% of the training set rows having the value "A" for the specified column,
+  about 25% having the value "B", and about 25% having the value "C". Only the
+  top 500 occurring values are used; any values not in the top 500 values are
+  randomly assigned to a split. If less than three rows contain a specific
+  value, those rows are randomly assigned. Supported only for tabular
+  Datasets.
+
+  Fields:
+    key: Required. The key is a name of one of the Dataset's data columns. The
+      key provided must be for a categorical column.
+    testFraction: The fraction of the input data that is to be used to
+      evaluate the Model.
+    trainingFraction: The fraction of the input data that is to be used to
+      train the Model.
+    validationFraction: The fraction of the input data that is to be used to
+      validate the Model.
+  """
+
+  key = _messages.StringField(1)
+  testFraction = _messages.FloatField(2)
+  trainingFraction = _messages.FloatField(3)
+  validationFraction = _messages.FloatField(4)
 
 
 class GoogleCloudAiplatformV1alpha1StreamingReadFeatureValuesRequest(_messages.Message):

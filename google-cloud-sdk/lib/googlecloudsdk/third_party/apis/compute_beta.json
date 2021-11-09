@@ -4,7 +4,7 @@
   "id": "compute:beta",
   "name": "compute",
   "version": "beta",
-  "revision": "20211025",
+  "revision": "20211103",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -2578,7 +2578,7 @@
           "$ref": "SecurityPolicyRuleMatcher"
         },
         "action": {
-          "description": "The Action to perform when the client connection triggers the rule. Can currently be either \"allow\" or \"deny()\" where valid values for status are 403, 404, and 502.",
+          "description": "The Action to perform when the rule is matched. The following are the valid actions: - allow: allow access to target. - deny(): deny access to target, returns the HTTP response code specified (valid values are 403, 404, and 502). - rate_based_ban: limit client traffic to the configured threshold and ban the client if the traffic exceeds the threshold. Configure parameters for this action in RateLimitOptions. Requires rate_limit_options to be set. - redirect: redirect to a different target. This can either be an internal reCAPTCHA redirect, or an external URL-based redirect via a 302 response. Parameters for this action can be configured via redirectOptions. - throttle: limit client traffic to the configured threshold. Configure parameters for this action in rateLimitOptions. Requires rate_limit_options to be set for this. ",
           "type": "string"
         },
         "preview": {
@@ -2732,7 +2732,7 @@
           "type": "string"
         },
         "enforceOnKey": {
-          "description": "Determines the key to enforce the rate_limit_threshold on. Possible values are: \"ALL\" -- A single rate limit threshold is applied to all the requests matching this rule. This is the default value if this field 'enforce_on_key' is not configured. \"ALL_IPS\" -- This definition, equivalent to \"ALL\", has been depprecated. \"IP\" -- The source IP address of the request is the key. Each IP has this limit enforced separately. \"HTTP_HEADER\" -- The value of the HTTP header whose name is configured under \"enforce_on_key_name\". The key value is truncated to the first 128 bytes of the header value. If no such header is present in the request, the key type defaults to \"ALL\". \"XFF_IP\" -- The first IP address (i.e. the originating client IP address) specified in the list of IPs under X-Forwarded-For HTTP header. If no such header is present or the value is not a valid IP, the key type defaults to \"ALL\".",
+          "description": "Determines the key to enforce the rate_limit_threshold on. Possible values are: - ALL: A single rate limit threshold is applied to all the requests matching this rule. This is the default value if this field 'enforce_on_key' is not configured. - IP: The source IP address of the request is the key. Each IP has this limit enforced separately. - HTTP_HEADER: The value of the HTTP header whose name is configured under \"enforce_on_key_name\". The key value is truncated to the first 128 bytes of the header value. If no such header is present in the request, the key type defaults to ALL. - XFF_IP: The first IP address (i.e. the originating client IP address) specified in the list of IPs under X-Forwarded-For HTTP header. If no such header is present or the value is not a valid IP, the key type defaults to ALL. ",
           "type": "string",
           "enumDescriptions": [
             "",
@@ -8128,6 +8128,20 @@
           "additionalProperties": {
             "$ref": "StatefulPolicyPreservedStateDiskDevice"
           }
+        },
+        "internalIPs": {
+          "description": "Internal network IPs assigned to the instances that will be preserved on instance delete, update, etc. This map is keyed with the network interface name.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "StatefulPolicyPreservedStateNetworkIp"
+          }
+        },
+        "externalIPs": {
+          "description": "External network IPs assigned to the instances that will be preserved on instance delete, update, etc. This map is keyed with the network interface name.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "StatefulPolicyPreservedStateNetworkIp"
+          }
         }
       }
     },
@@ -8137,6 +8151,24 @@
       "properties": {
         "autoDelete": {
           "description": "These stateful disks will never be deleted during autohealing, update or VM instance recreate operations. This flag is used to configure if the disk should be deleted after it is no longer used by the group, e.g. when the given instance or the whole group is deleted. Note: disks attached in READ_ONLY mode cannot be auto-deleted.",
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            ""
+          ],
+          "enum": [
+            "NEVER",
+            "ON_PERMANENT_INSTANCE_DELETION"
+          ]
+        }
+      }
+    },
+    "StatefulPolicyPreservedStateNetworkIp": {
+      "id": "StatefulPolicyPreservedStateNetworkIp",
+      "type": "object",
+      "properties": {
+        "autoDelete": {
+          "description": "These stateful IPs will never be released during autohealing, update or VM instance recreate operations. This flag is used to configure if the IP reservation should be deleted after it is no longer used by the group, e.g. when the given instance or the whole group is deleted.",
           "type": "string",
           "enumDescriptions": [
             "",
@@ -8610,6 +8642,20 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "internalIPs": {
+          "description": "Preserved internal IPs defined for this instance. This map is keyed with the name of the network interface.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "PreservedStatePreservedNetworkIp"
+          }
+        },
+        "externalIPs": {
+          "description": "Preserved external IPs defined for this instance. This map is keyed with the name of the network interface.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "PreservedStatePreservedNetworkIp"
+          }
         }
       }
     },
@@ -8644,6 +8690,42 @@
             "NEVER",
             "ON_PERMANENT_INSTANCE_DELETION"
           ]
+        }
+      }
+    },
+    "PreservedStatePreservedNetworkIp": {
+      "id": "PreservedStatePreservedNetworkIp",
+      "type": "object",
+      "properties": {
+        "autoDelete": {
+          "description": "These stateful IPs will never be released during autohealing, update or VM instance recreate operations. This flag is used to configure if the IP reservation should be deleted after it is no longer used by the group, e.g. when the given instance or the whole group is deleted.",
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            ""
+          ],
+          "enum": [
+            "NEVER",
+            "ON_PERMANENT_INSTANCE_DELETION"
+          ]
+        },
+        "ipAddress": {
+          "description": "Ip address representation",
+          "$ref": "PreservedStatePreservedNetworkIpIpAddress"
+        }
+      }
+    },
+    "PreservedStatePreservedNetworkIpIpAddress": {
+      "id": "PreservedStatePreservedNetworkIpIpAddress",
+      "type": "object",
+      "properties": {
+        "literal": {
+          "description": "An IPv4 internal network address to assign to the instance for this network interface.",
+          "type": "string"
+        },
+        "address": {
+          "description": "The URL of the reservation for this IP address.",
+          "type": "string"
         }
       }
     },
@@ -14932,7 +15014,7 @@
           "format": "int32"
         },
         "type": {
-          "description": "Specifies the type of the healthCheck, either TCP, SSL, HTTP, HTTPS or HTTP2. If not specified, the default is TCP. Exactly one of the protocol-specific health check field must be specified, which must match type field.",
+          "description": "Specifies the type of the healthCheck, either TCP, SSL, HTTP, HTTPS or HTTP2. Exactly one of the protocol-specific health check field must be specified, which must match type field.",
           "type": "string",
           "enumDescriptions": [
             "",
@@ -16431,7 +16513,7 @@
           }
         },
         "dataplaneVersion": {
-          "description": "[Output Only] Dataplane version for this InterconnectAttachment.",
+          "description": "[Output only for types PARTNER and DEDICATED. Not present for PARTNER_PROVIDER.] Dataplane version for this InterconnectAttachment. This field is only present for Dataplane version 2 and higher. Absence of this field in the API output indicates that the Dataplane is version 1.",
           "type": "integer",
           "format": "int32"
         },
@@ -17902,8 +17984,19 @@
           ]
         },
         "sourceInstanceProperties": {
-          "description": "[Output Only] Properties of source instance.",
+          "description": "[Output Only] DEPRECATED: Please use instance_properties instead for source instance related properties. New properties will not be added to this field.",
           "$ref": "SourceInstanceProperties"
+        },
+        "instanceProperties": {
+          "description": "[Output Only] Properties of source instance",
+          "$ref": "InstanceProperties"
+        },
+        "savedDisks": {
+          "description": "An array of Machine Image specific properties for disks attached to the source instance",
+          "type": "array",
+          "items": {
+            "$ref": "SavedDisk"
+          }
         },
         "storageLocations": {
           "description": "The regional or multi-regional Cloud Storage bucket location where the machine image is stored.",
@@ -17945,6 +18038,7 @@
     },
     "SourceInstanceProperties": {
       "id": "SourceInstanceProperties",
+      "description": "DEPRECATED: Please use compute#instanceProperties instead. New properties will not be added to this field.",
       "type": "object",
       "properties": {
         "description": {
@@ -18032,7 +18126,7 @@
     },
     "SavedAttachedDisk": {
       "id": "SavedAttachedDisk",
-      "description": "An instance-attached disk resource.",
+      "description": "DEPRECATED: Please use compute#savedDisk instead. An instance-attached disk resource.",
       "type": "object",
       "properties": {
         "type": {
@@ -18139,6 +18233,39 @@
         "kind": {
           "description": "[Output Only] Type of the resource. Always compute#attachedDisk for attached disks.",
           "default": "compute#savedAttachedDisk",
+          "type": "string"
+        }
+      }
+    },
+    "SavedDisk": {
+      "id": "SavedDisk",
+      "description": "An instance-attached disk resource.",
+      "type": "object",
+      "properties": {
+        "sourceDisk": {
+          "description": "Specifies a URL of the disk attached to the source instance.",
+          "type": "string"
+        },
+        "storageBytes": {
+          "description": "[Output Only] Size of the individual disk snapshot used by this machine image.",
+          "type": "string",
+          "format": "int64"
+        },
+        "storageBytesStatus": {
+          "description": "[Output Only] An indicator whether storageBytes is in a stable state or it is being adjusted as a result of shared storage reallocation. This status can either be UPDATING, meaning the size of the snapshot is being updated, or UP_TO_DATE, meaning the size of the snapshot is up-to-date.",
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            ""
+          ],
+          "enum": [
+            "UPDATING",
+            "UP_TO_DATE"
+          ]
+        },
+        "kind": {
+          "description": "[Output Only] Type of the resource. Always compute#savedDisk for attached disks.",
+          "default": "compute#savedDisk",
           "type": "string"
         }
       }
@@ -56641,7 +56768,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified Project resource."
+          "description": "Returns the specified Project resource. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the `quotas` field). To exclude one or more fields, set your request's `fields` query parameter to only include the fields you need. For example, to only include the `id` and `selfLink` fields, add the query parameter `?fields=id,selfLink` to your request."
         },
         "setCommonInstanceMetadata": {
           "id": "compute.projects.setCommonInstanceMetadata",
@@ -56746,7 +56873,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "Moves an instance and its attached persistent disks from one zone to another."
+          "description": "Moves an instance and its attached persistent disks from one zone to another. *Note*: Moving VMs or disks by using this method might cause unexpected behavior. For more information, see the [known issue](\/compute\/docs\/troubleshooting\/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior)."
         },
         "moveDisk": {
           "id": "compute.projects.moveDisk",
@@ -57867,7 +57994,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Retrieves the list of region resources available to the specified project."
+          "description": "Retrieves the list of region resources available to the specified project. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the `items.quotas` field). To exclude one or more fields, set your request's `fields` query parameter to only include the fields you need. For example, to only include the `id` and `selfLink` fields, add the query parameter `?fields=id,selfLink` to your request."
         },
         "get": {
           "id": "compute.regions.get",
@@ -57902,7 +58029,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Returns the specified Region resource. Gets a list of available regions by making a list() request."
+          "description": "Returns the specified Region resource. Gets a list of available regions by making a list() request. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the `quotas` field). To exclude one or more fields, set your request's `fields` query parameter to only include the fields you need. For example, to only include the `id` and `selfLink` fields, add the query parameter `?fields=id,selfLink` to your request."
         }
       }
     },

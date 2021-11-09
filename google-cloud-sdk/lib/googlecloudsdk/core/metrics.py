@@ -216,6 +216,14 @@ class _GoogleAnalyticsMetricsReporter(object):
 
     self._ga_events = []
 
+  @property
+  def event_params(self):
+    return self._ga_event_params
+
+  @property
+  def timing_params(self):
+    return self._ga_timing_params
+
   def Record(self,
              event,
              flag_names=None,
@@ -244,7 +252,7 @@ class _GoogleAnalyticsMetricsReporter(object):
       params.append(('cd8', error))
     if error_extra_info_json is not None:
       params.append(('cd9', error_extra_info_json))
-    params.extend(self._ga_event_params)
+    params.extend(self.event_params)
     data = six.moves.urllib.parse.urlencode(params)
     self._ga_events.append(data)
 
@@ -263,7 +271,7 @@ class _GoogleAnalyticsMetricsReporter(object):
           ('utt', timing[1])
       ]
       timing_event.extend(event_params)
-      timing_event.extend(self._ga_timing_params)
+      timing_event.extend(self.timing_params)
       ga_timing_events.append(six.moves.urllib.parse.urlencode(timing_event))
     return ga_timing_events
 
@@ -289,7 +297,7 @@ class _ClearcutMetricsReporter(object):
         'zwieback_cookie': common_params.client_id,
     }
 
-    self._clearcut_concord_event_metadata = [
+    event_metadata = [
         ('release_channel', common_params.release_channel),
         ('install_type', common_params.install_type),
         ('environment', common_params.metrics_environment),
@@ -300,6 +308,10 @@ class _ClearcutMetricsReporter(object):
         ('term', common_params.term_identifier),
     ]
 
+    self._clearcut_concord_event_metadata = [{
+        'key': param[0], 'value': six.text_type(param[1])
+    } for param in event_metadata]
+
     cloud_sdk_version = config.CLOUD_SDK_VERSION
     self._clearcut_concord_event_params = {
         'release_version': cloud_sdk_version,
@@ -308,6 +320,18 @@ class _ClearcutMetricsReporter(object):
     }
 
     self._clearcut_concord_timed_events = []
+
+  @property
+  def event_metadata(self):
+    return self._clearcut_concord_event_metadata
+
+  @property
+  def event_params(self):
+    return self._clearcut_concord_event_params
+
+  @property
+  def request_params(self):
+    return self._clearcut_request_params
 
   def Record(self,
              event,
@@ -325,12 +349,12 @@ class _ClearcutMetricsReporter(object):
         of extra info that we want to log with the error. This enables us to
         write queries that can understand the keys and values in this dict.
     """
-    concord_event = dict(self._clearcut_concord_event_params)
+    concord_event = dict(self.event_params)
     concord_event['event_type'] = event.category
     concord_event['event_name'] = event.action
 
     concord_event[_CLEARCUT_EVENT_METADATA_KEY] = list(
-        self._clearcut_concord_event_metadata)
+        self.event_metadata)
 
     event_metadata = []
 
@@ -378,7 +402,7 @@ class _ClearcutMetricsReporter(object):
 
   def ToHTTPBeacon(self, timer):
     """Collect the required clearcut HTTP beacon."""
-    clearcut_request = dict(self._clearcut_request_params)
+    clearcut_request = dict(self.request_params)
     clearcut_request['request_time_ms'] = GetTimeMillis()
 
     event_latency, sub_event_latencies = self.Timings(timer)

@@ -85,11 +85,10 @@ def GenerateContext(kind, project_id, location, cluster_id):
       cluster_id=cluster_id)
 
 
-def GenerateAuthProviderCmdArgs(track, kind, cluster_id, location):
+def GenerateAuthProviderCmdArgs(kind, cluster_id, location):
   """Generates command arguments for kubeconfig's authorization provider.
 
   Args:
-    track: str, command track to use.
     kind: str, kind of the cluster e.g. aws, azure.
     cluster_id: str, ID of the cluster.
     location: str, Google location of the cluster.
@@ -97,10 +96,9 @@ def GenerateAuthProviderCmdArgs(track, kind, cluster_id, location):
   Returns:
     The command arguments for kubeconfig's authorization provider.
   """
-  template = ('{track} container {kind} clusters print-access-token '
+  template = ('container {kind} clusters print-access-token '
               '{cluster_id} --location={location}')
-  return template.format(
-      track=track, kind=kind, cluster_id=cluster_id, location=location)
+  return template.format(kind=kind, cluster_id=cluster_id, location=location)
 
 
 def GenerateKubeconfig(cluster, context, cmd_path, cmd_args, private_ep=False):

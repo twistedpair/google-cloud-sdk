@@ -323,22 +323,22 @@ class GoogleCloudRecommenderV1beta1MarkRecommendationClaimedRequest(_messages.Me
   Messages:
     StateMetadataValue: State properties to include with this state.
       Overwrites any existing `state_metadata`. Keys must match the regex
-      /^a-z0-9{0,62}$/. Values must match the regex
-      /^[a-zA-Z0-9_./-]{0,255}$/.
+      `/^a-z0-9{0,62}$/`. Values must match the regex
+      `/^[a-zA-Z0-9_./-]{0,255}$/`.
 
   Fields:
     etag: Required. Fingerprint of the Recommendation. Provides optimistic
       locking.
     stateMetadata: State properties to include with this state. Overwrites any
-      existing `state_metadata`. Keys must match the regex /^a-z0-9{0,62}$/.
-      Values must match the regex /^[a-zA-Z0-9_./-]{0,255}$/.
+      existing `state_metadata`. Keys must match the regex `/^a-z0-9{0,62}$/`.
+      Values must match the regex `/^[a-zA-Z0-9_./-]{0,255}$/`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class StateMetadataValue(_messages.Message):
     r"""State properties to include with this state. Overwrites any existing
-    `state_metadata`. Keys must match the regex /^a-z0-9{0,62}$/. Values must
-    match the regex /^[a-zA-Z0-9_./-]{0,255}$/.
+    `state_metadata`. Keys must match the regex `/^a-z0-9{0,62}$/`. Values
+    must match the regex `/^[a-zA-Z0-9_./-]{0,255}$/`.
 
     Messages:
       AdditionalProperty: An additional property for a StateMetadataValue
@@ -371,22 +371,22 @@ class GoogleCloudRecommenderV1beta1MarkRecommendationFailedRequest(_messages.Mes
   Messages:
     StateMetadataValue: State properties to include with this state.
       Overwrites any existing `state_metadata`. Keys must match the regex
-      /^a-z0-9{0,62}$/. Values must match the regex
-      /^[a-zA-Z0-9_./-]{0,255}$/.
+      `/^a-z0-9{0,62}$/`. Values must match the regex
+      `/^[a-zA-Z0-9_./-]{0,255}$/`.
 
   Fields:
     etag: Required. Fingerprint of the Recommendation. Provides optimistic
       locking.
     stateMetadata: State properties to include with this state. Overwrites any
-      existing `state_metadata`. Keys must match the regex /^a-z0-9{0,62}$/.
-      Values must match the regex /^[a-zA-Z0-9_./-]{0,255}$/.
+      existing `state_metadata`. Keys must match the regex `/^a-z0-9{0,62}$/`.
+      Values must match the regex `/^[a-zA-Z0-9_./-]{0,255}$/`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class StateMetadataValue(_messages.Message):
     r"""State properties to include with this state. Overwrites any existing
-    `state_metadata`. Keys must match the regex /^a-z0-9{0,62}$/. Values must
-    match the regex /^[a-zA-Z0-9_./-]{0,255}$/.
+    `state_metadata`. Keys must match the regex `/^a-z0-9{0,62}$/`. Values
+    must match the regex `/^[a-zA-Z0-9_./-]{0,255}$/`.
 
     Messages:
       AdditionalProperty: An additional property for a StateMetadataValue
@@ -419,22 +419,22 @@ class GoogleCloudRecommenderV1beta1MarkRecommendationSucceededRequest(_messages.
   Messages:
     StateMetadataValue: State properties to include with this state.
       Overwrites any existing `state_metadata`. Keys must match the regex
-      /^a-z0-9{0,62}$/. Values must match the regex
-      /^[a-zA-Z0-9_./-]{0,255}$/.
+      `/^a-z0-9{0,62}$/`. Values must match the regex
+      `/^[a-zA-Z0-9_./-]{0,255}$/`.
 
   Fields:
     etag: Required. Fingerprint of the Recommendation. Provides optimistic
       locking.
     stateMetadata: State properties to include with this state. Overwrites any
-      existing `state_metadata`. Keys must match the regex /^a-z0-9{0,62}$/.
-      Values must match the regex /^[a-zA-Z0-9_./-]{0,255}$/.
+      existing `state_metadata`. Keys must match the regex `/^a-z0-9{0,62}$/`.
+      Values must match the regex `/^[a-zA-Z0-9_./-]{0,255}$/`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class StateMetadataValue(_messages.Message):
     r"""State properties to include with this state. Overwrites any existing
-    `state_metadata`. Keys must match the regex /^a-z0-9{0,62}$/. Values must
-    match the regex /^[a-zA-Z0-9_./-]{0,255}$/.
+    `state_metadata`. Keys must match the regex `/^a-z0-9{0,62}$/`. Values
+    must match the regex `/^[a-zA-Z0-9_./-]{0,255}$/`.
 
     Messages:
       AdditionalProperty: An additional property for a StateMetadataValue
@@ -474,11 +474,11 @@ class GoogleCloudRecommenderV1beta1Operation(_messages.Message):
       elements or nested array elements in order to narrow down to a single
       unique element that is being tested/modified. This is intended to be an
       exact match per filter. To perform advanced matching, use
-      path_value_matchers. * Example: { "/versions/*/name" : "it-123"
-      "/versions/*/targetSize/percent": 20 } * Example: { "/bindings/*/role":
-      "roles/owner" "/bindings/*/condition" : null } * Example: {
-      "/bindings/*/role": "roles/owner" "/bindings/*/members/*" :
-      ["x@example.com", "y@example.com"] } When both path_filters and
+      path_value_matchers. * Example: ``` { "/versions/*/name" : "it-123"
+      "/versions/*/targetSize/percent": 20 } ``` * Example: ``` {
+      "/bindings/*/role": "roles/owner" "/bindings/*/condition" : null } ``` *
+      Example: ``` { "/bindings/*/role": "roles/owner" "/bindings/*/members/*"
+      : ["x@example.com", "y@example.com"] } ``` When both path_filters and
       path_value_matchers are set, an implicit AND must be performed.
     PathValueMatchersValue: Similar to path_filters, this contains set of
       filters to apply if `path` field refers to array elements. This is meant
@@ -497,11 +497,11 @@ class GoogleCloudRecommenderV1beta1Operation(_messages.Message):
       nested array elements in order to narrow down to a single unique element
       that is being tested/modified. This is intended to be an exact match per
       filter. To perform advanced matching, use path_value_matchers. *
-      Example: { "/versions/*/name" : "it-123"
-      "/versions/*/targetSize/percent": 20 } * Example: { "/bindings/*/role":
-      "roles/owner" "/bindings/*/condition" : null } * Example: {
-      "/bindings/*/role": "roles/owner" "/bindings/*/members/*" :
-      ["x@example.com", "y@example.com"] } When both path_filters and
+      Example: ``` { "/versions/*/name" : "it-123"
+      "/versions/*/targetSize/percent": 20 } ``` * Example: ``` {
+      "/bindings/*/role": "roles/owner" "/bindings/*/condition" : null } ``` *
+      Example: ``` { "/bindings/*/role": "roles/owner" "/bindings/*/members/*"
+      : ["x@example.com", "y@example.com"] } ``` When both path_filters and
       path_value_matchers are set, an implicit AND must be performed.
     pathValueMatchers: Similar to path_filters, this contains set of filters
       to apply if `path` field refers to array elements. This is meant to
@@ -535,12 +535,12 @@ class GoogleCloudRecommenderV1beta1Operation(_messages.Message):
     r"""Set of filters to apply if `path` refers to array elements or nested
     array elements in order to narrow down to a single unique element that is
     being tested/modified. This is intended to be an exact match per filter.
-    To perform advanced matching, use path_value_matchers. * Example: {
-    "/versions/*/name" : "it-123" "/versions/*/targetSize/percent": 20 } *
-    Example: { "/bindings/*/role": "roles/owner" "/bindings/*/condition" :
-    null } * Example: { "/bindings/*/role": "roles/owner"
-    "/bindings/*/members/*" : ["x@example.com", "y@example.com"] } When both
-    path_filters and path_value_matchers are set, an implicit AND must be
+    To perform advanced matching, use path_value_matchers. * Example: ``` {
+    "/versions/*/name" : "it-123" "/versions/*/targetSize/percent": 20 } ``` *
+    Example: ``` { "/bindings/*/role": "roles/owner" "/bindings/*/condition" :
+    null } ``` * Example: ``` { "/bindings/*/role": "roles/owner"
+    "/bindings/*/members/*" : ["x@example.com", "y@example.com"] } ``` When
+    both path_filters and path_value_matchers are set, an implicit AND must be
     performed.
 
     Messages:
@@ -651,6 +651,10 @@ class GoogleCloudRecommenderV1beta1Recommendation(_messages.Message):
       "google.iam.policy.Recommender", recommender_subtype can be one of
       "REMOVE_ROLE"/"REPLACE_ROLE"
     stateInfo: Information for state. Contains state and metadata.
+    xorGroupId: Corresponds to a mutually exclusive group ID within a
+      recommender. A non-empty ID indicates that the recommendation belongs to
+      a mutually exclusive group. This means that only one recommendation
+      within the group is suggested to be applied.
   """
 
   class PriorityValueValuesEnum(_messages.Enum):
@@ -680,6 +684,7 @@ class GoogleCloudRecommenderV1beta1Recommendation(_messages.Message):
   priority = _messages.EnumField('PriorityValueValuesEnum', 9)
   recommenderSubtype = _messages.StringField(10)
   stateInfo = _messages.MessageField('GoogleCloudRecommenderV1beta1RecommendationStateInfo', 11)
+  xorGroupId = _messages.StringField(12)
 
 
 class GoogleCloudRecommenderV1beta1RecommendationContent(_messages.Message):

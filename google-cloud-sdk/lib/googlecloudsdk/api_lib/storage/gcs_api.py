@@ -41,6 +41,7 @@ from googlecloudsdk.api_lib.storage import gcs_upload
 # Applies pickling patches:
 from googlecloudsdk.api_lib.storage import patch_gcs_messages
 # pylint: enable=unused-import
+from googlecloudsdk.api_lib.storage import retry_util
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions as calliope_errors
 from googlecloudsdk.command_lib.storage import encryption_util
@@ -105,7 +106,7 @@ def get_download_serialization_data(object_resource, progress):
     JSON string for use with Apitools.
   """
   serialization_dict = {
-      'auto_transfer': 'False',  # Apitools JSON API feature not used.
+      'auto_transfer': False,  # Apitools JSON API feature not used.
       'progress': progress,
       'total_size': object_resource.size,
       'url': object_resource.metadata.mediaLink,  # HTTP download link.
@@ -167,6 +168,10 @@ class _StorageStreamResponseHandler(requests.ResponseHandler):
       data = source_stream.read(self._chunk_size)
       if data:
         self._stream.write(data)
+
+        for hash_object in self._digesters.values():
+          hash_object.update(data)
+
         self._processed_bytes += len(data)
         bytes_since_last_progress_callback += len(data)
         if (self._progress_callback and bytes_since_last_progress_callback >=
@@ -180,8 +185,6 @@ class _StorageStreamResponseHandler(requests.ResponseHandler):
           # Make a last progress callback call to update the final size.
           self._progress_callback(self._processed_bytes)
         break
-      for hash_object in self._digesters.values():
-        hash_object.update(data)
 
 
 class GcsApi(cloud_api.CloudApi):
@@ -662,10 +665,6 @@ class GcsApi(cloud_api.CloudApi):
     Returns:
       Encoding string for object if requested. Otherwise, None.
     """
-    # Fresh download.
-    if not serialization_data:
-      self.client.objects.Get(apitools_request, download=apitools_download)
-
     # TODO(b/161453101): Optimize handling of gzip-encoded downloads.
     additional_headers = {}
     if do_not_decompress:
@@ -700,7 +699,8 @@ class GcsApi(cloud_api.CloudApi):
                                  end_byte=None):
     """Wraps _download_object to make it retriable."""
     # Hack because nonlocal keyword causes Python 2 syntax error.
-    progress_state = {'last_byte_processed': start_byte}
+    progress_state = {'start_byte': start_byte}
+    retry_util.set_retry_func(apitools_download)
 
     def _should_retry_resumable_download(exc_type, exc_value, exc_traceback,
                                          state):
@@ -709,14 +709,15 @@ class GcsApi(cloud_api.CloudApi):
         if exc_value.status < 500 and exc_value.status != 429:
           # Not server error or too many requests error.
           return False
-      elif not isinstance(converted_error, core_exceptions.NetworkIssueError):
+      elif not (isinstance(converted_error, core_exceptions.NetworkIssueError)
+                or isinstance(converted_error, cloud_errors.RetryableApiError)):
         # Not known transient network error.
         return False
 
       start_byte = download_stream.tell()
-      if start_byte > progress_state['last_byte_processed']:
+      if start_byte > progress_state['start_byte']:
         # We've made progress, so allow a fresh set of retries.
-        progress_state['last_byte_processed'] = start_byte
+        progress_state['start_byte'] = start_byte
         state.retrial = 0
       log.debug('Retrying download from byte {} after exception: {}.'
                 ' Trace: {}'.format(start_byte, exc_type, exc_traceback))
@@ -733,7 +734,7 @@ class GcsApi(cloud_api.CloudApi):
           do_not_decompress=do_not_decompress,
           generation=generation,
           serialization_data=serialization_data,
-          start_byte=start_byte,
+          start_byte=progress_state['start_byte'],
           end_byte=end_byte)
 
     # Convert seconds to miliseconds by multiplying by 1000.
@@ -764,23 +765,13 @@ class GcsApi(cloud_api.CloudApi):
     generation = (
         int(cloud_resource.generation) if cloud_resource.generation else None)
 
-    if start_byte and download_strategy == cloud_api.DownloadStrategy.RESUMABLE:
-      # Resuming download.
-      serialization_data = get_download_serialization_data(
-          cloud_resource, start_byte)
-      apitools_download = apitools_transfer.Download.FromData(
-          download_stream,
-          serialization_data,
-          num_retries=properties.VALUES.storage.max_retries.GetInt(),
-          client=self.client)
-    else:
-      # New download.
-      serialization_data = None
-      apitools_download = apitools_transfer.Download.FromStream(
-          download_stream,
-          auto_transfer=False,
-          total_size=cloud_resource.size,
-          num_retries=properties.VALUES.storage.max_retries.GetInt())
+    serialization_data = get_download_serialization_data(
+        cloud_resource, start_byte)
+    apitools_download = apitools_transfer.Download.FromData(
+        download_stream,
+        serialization_data,
+        num_retries=properties.VALUES.storage.max_retries.GetInt(),
+        client=self.client)
 
     self._stream_response_handler.update_destination_info(
         stream=download_stream,
