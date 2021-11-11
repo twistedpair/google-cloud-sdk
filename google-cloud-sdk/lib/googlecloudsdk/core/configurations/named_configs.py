@@ -361,8 +361,8 @@ class Configuration(object):
 
     if not os.path.exists(self.file_path):
       raise NamedConfigError(
-          'Cannot set property in configuration [{0}], it does not exist.'
-          .format(self.name))
+          'Cannot set property in configuration [{0}], file [{1}] does not exist.'
+          .format(self.name, self.file_path))
 
     properties_file.PersistProperty(self.file_path, section, name, value)
     if self.is_active:
