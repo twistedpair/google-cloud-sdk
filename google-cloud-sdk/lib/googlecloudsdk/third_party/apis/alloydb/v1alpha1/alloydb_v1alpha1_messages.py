@@ -21,7 +21,6 @@ class AlloydbProjectsLocationsBackupsCreateRequest(_messages.Message):
     backupId: Required. Id of the requesting object If auto-generating Id
       server-side, remove this field and backup_id from the method_signature
       of Create RPC
-    clusterName: Required. The resource name of the cluster to backup.
     parent: Required. Value for parent.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -40,10 +39,9 @@ class AlloydbProjectsLocationsBackupsCreateRequest(_messages.Message):
 
   backup = _messages.MessageField('Backup', 1)
   backupId = _messages.StringField(2)
-  clusterName = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
-  requestId = _messages.StringField(5)
-  validateOnly = _messages.BooleanField(6)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
 
 
 class AlloydbProjectsLocationsBackupsDeleteRequest(_messages.Message):
@@ -209,6 +207,41 @@ class AlloydbProjectsLocationsClustersGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class AlloydbProjectsLocationsClustersImportRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsClustersImportRequest object.
+
+  Fields:
+    backupSource_backupName: Required. The name of the backup resource with
+      the format: * projects/{project}/locations/{region}/backups/{backup_id}
+    cluster: A Cluster resource to be passed as the request body.
+    clusterId: Required. Id of the requesting object If auto-generating Id
+      server-side, remove this field and cluster_id from the method_signature
+      of Create RPC
+    parent: Required. The name of the parent resource. For the required
+      format, see the comment on the Cluster.name field.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, the backend validates the request, but
+      doesn't actually execute it.
+  """
+
+  backupSource_backupName = _messages.StringField(1)
+  cluster = _messages.MessageField('Cluster', 2)
+  clusterId = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
 
 
 class AlloydbProjectsLocationsClustersInstancesCreateRequest(_messages.Message):
@@ -539,6 +572,7 @@ class Backup(_messages.Message):
     LabelsValue: Labels as key value pairs
 
   Fields:
+    clusterName: Required. The backup source cluster.
     createTime: Output only. Create time stamp
     description: Optional. User-provided description of the backup.
     labels: Labels as key value pairs
@@ -604,13 +638,14 @@ class Backup(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  type = _messages.EnumField('TypeValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
+  clusterName = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -621,9 +656,9 @@ class Cluster(_messages.Message):
   r"""Message describing Cluster object NEXT_ID: 10
 
   Enums:
-    DatabaseVersionValueValuesEnum: The database engine major version.
-      Specified by customer at creation time. This field cannot be changed
-      after cluster creation.
+    DatabaseVersionValueValuesEnum: Output only. The database engine major
+      version. This is an output-only field and it's populated at the Cluster
+      creation time. This field cannot be changed after cluster creation.
     StateValueValuesEnum: Output only. The current serving state of the
       cluster.
 
@@ -632,11 +667,13 @@ class Cluster(_messages.Message):
 
   Fields:
     createTime: Output only. Create time stamp
-    databaseVersion: The database engine major version. Specified by customer
-      at creation time. This field cannot be changed after cluster creation.
+    databaseVersion: Output only. The database engine major version. This is
+      an output-only field and it's populated at the Cluster creation time.
+      This field cannot be changed after cluster creation.
     initialUser: Input only. Initial user to setup during cluster creation.
-      Required. We intend to deprecate this post private preview, once we have
-      separate User resources.
+      Required. If used in `ImportCluster` this is ignored. We intend to
+      deprecate this post private preview, once we have separate User
+      resources.
     labels: Labels as key value pairs
     name: Output only. The name of the cluster resource with the format: *
       projects/{project}/locations/{region}/clusters/{cluster_id} where the
@@ -655,8 +692,9 @@ class Cluster(_messages.Message):
   """
 
   class DatabaseVersionValueValuesEnum(_messages.Enum):
-    r"""The database engine major version. Specified by customer at creation
-    time. This field cannot be changed after cluster creation.
+    r"""Output only. The database engine major version. This is an output-only
+    field and it's populated at the Cluster creation time. This field cannot
+    be changed after cluster creation.
 
     Values:
       DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
@@ -670,7 +708,7 @@ class Cluster(_messages.Message):
 
     Values:
       STATE_UNSPECIFIED: The state of the cluster is unknown.
-      ACTIVE: The cluster is active and running.
+      READY: The cluster is active and running.
       STOPPED: The cluster is stopped. All instances in the cluster are
         stopped. Customers can start a stopped cluster at any point and all
         their instances will come back to life with same names and IP
@@ -682,7 +720,7 @@ class Cluster(_messages.Message):
       FAILED: The creation of the cluster failed.
     """
     STATE_UNSPECIFIED = 0
-    ACTIVE = 1
+    READY = 1
     STOPPED = 2
     EMPTY = 3
     CREATING = 4
@@ -845,7 +883,7 @@ class Instance(_messages.Message):
 
     Values:
       STATE_UNSPECIFIED: The state of the instance is unknown.
-      ACTIVE: The instance is active and running.
+      READY: The instance is active and running.
       STOPPED: The instance is stopped. Instance name and IP resources are
         preserved.
       CREATING: The instance is being created.
@@ -857,7 +895,7 @@ class Instance(_messages.Message):
         restart, update or delete these instances.
     """
     STATE_UNSPECIFIED = 0
-    ACTIVE = 1
+    READY = 1
     STOPPED = 2
     CREATING = 3
     DELETING = 4

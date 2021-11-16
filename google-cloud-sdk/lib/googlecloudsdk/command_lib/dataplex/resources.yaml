@@ -96,3 +96,49 @@ job:
     attribute_name: job
     help: |
       The job_id of the Job running a particular Task in Dataplex.
+
+environment:
+  name: environment
+  collection: dataplex.projects.locations.lakes.environments
+  request_id_field: environmentID
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - *lake
+  - &environment
+    parameter_name: environmentsId
+    attribute_name: environment
+    help: |
+      The environment_id of a particular Environment in Dataplex.
+
+session:
+  name: session
+  collection: dataplex.projects.locations.lakes.environments.sessions
+  request_id_field: sessionID
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - *lake
+  - *environment
+  - &session
+    parameter_name: sessionsId
+    attribute_name: session
+    help: |
+      The session_id of a particular Session of an Environment in Dataplex.
+
+content:
+  name: content
+  collection: dataplex.projects.locations.lakes.content
+  request_id_field: contentId
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - *lake
+  - &content
+    parameter_name: contentId
+    attribute_name: content
+    help: |
+      The content_id for the Content Resource of the Dataplex service.

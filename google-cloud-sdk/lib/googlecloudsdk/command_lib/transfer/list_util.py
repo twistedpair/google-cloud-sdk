@@ -12,27 +12,32 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Utils for Transfer list commands."""
+"""Utils for transfer list commands."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.calliope import base
+import sys
+
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.core import log
 
 # Backend default.
 _TRANSFER_LIST_PAGE_SIZE = 256
 
 
-def customize_built_in_list_flags(parser):
-  """Inheriting from ListCommand adds flags Transfer needs to modify."""
-  base.FILTER_FLAG.RemoveFromParser(parser)
-  base.SORT_BY_FLAG.RemoveFromParser(parser)
-  base.URI_FLAG.RemoveFromParser(parser)
-
-  # Default transfer backend page size.
-  base.PAGE_SIZE_FLAG.SetDefault(parser, _TRANSFER_LIST_PAGE_SIZE)
+def add_common_list_flags(parser):
+  """Inheriting from ListCommand adds flags transfer needs to modify."""
+  parser.add_argument(
+      '--limit',
+      type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
+      help='Return the first items from the API up to this limit.')
+  parser.add_argument(
+      '--page-size',
+      type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
+      default=_TRANSFER_LIST_PAGE_SIZE,
+      help='Retrieve batches of this many items from the API.')
 
 
 def print_transfer_resources_iterator(resource_iterator,

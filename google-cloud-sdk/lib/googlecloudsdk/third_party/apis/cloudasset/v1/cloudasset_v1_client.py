@@ -42,6 +42,7 @@ class CloudassetV1(base_api.BaseApiClient):
     self.assets = self.AssetsService(self)
     self.feeds = self.FeedsService(self)
     self.operations = self.OperationsService(self)
+    self.savedQueries = self.SavedQueriesService(self)
     self.v1 = self.V1Service(self)
 
   class AssetsService(base_api.BaseApiService):
@@ -263,6 +264,151 @@ class CloudassetV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class SavedQueriesService(base_api.BaseApiService):
+    """Service class for the savedQueries resource."""
+
+    _NAME = 'savedQueries'
+
+    def __init__(self, client):
+      super(CloudassetV1.SavedQueriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a saved query in a parent project/folder/organization.
+
+      Args:
+        request: (CloudassetSavedQueriesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SavedQuery) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/{v1Id}/{v1Id1}/savedQueries',
+        http_method='POST',
+        method_id='cloudasset.savedQueries.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['savedQueryId'],
+        relative_path='v1/{+parent}/savedQueries',
+        request_field='savedQuery',
+        request_type_name='CloudassetSavedQueriesCreateRequest',
+        response_type_name='SavedQuery',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a saved query.
+
+      Args:
+        request: (CloudassetSavedQueriesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/{v1Id}/{v1Id1}/savedQueries/{savedQueriesId}',
+        http_method='DELETE',
+        method_id='cloudasset.savedQueries.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='CloudassetSavedQueriesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details about a saved query.
+
+      Args:
+        request: (CloudassetSavedQueriesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SavedQuery) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/{v1Id}/{v1Id1}/savedQueries/{savedQueriesId}',
+        http_method='GET',
+        method_id='cloudasset.savedQueries.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='CloudassetSavedQueriesGetRequest',
+        response_type_name='SavedQuery',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all saved queries in a parent project/folder/organization.
+
+      Args:
+        request: (CloudassetSavedQueriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSavedQueriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/{v1Id}/{v1Id1}/savedQueries',
+        http_method='GET',
+        method_id='cloudasset.savedQueries.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/savedQueries',
+        request_field='',
+        request_type_name='CloudassetSavedQueriesListRequest',
+        response_type_name='ListSavedQueriesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a saved query.
+
+      Args:
+        request: (CloudassetSavedQueriesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SavedQuery) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/{v1Id}/{v1Id1}/savedQueries/{savedQueriesId}',
+        http_method='PATCH',
+        method_id='cloudasset.savedQueries.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='savedQuery',
+        request_type_name='CloudassetSavedQueriesPatchRequest',
+        response_type_name='SavedQuery',
+        supports_download=False,
+    )
+
   class V1Service(base_api.BaseApiService):
     """Service class for the v1 resource."""
 
@@ -292,7 +438,7 @@ class CloudassetV1(base_api.BaseApiClient):
         method_id='cloudasset.analyzeIamPolicy',
         ordered_params=['scope'],
         path_params=['scope'],
-        query_params=['analysisQuery_accessSelector_permissions', 'analysisQuery_accessSelector_roles', 'analysisQuery_conditionContext_accessTime', 'analysisQuery_identitySelector_identity', 'analysisQuery_options_analyzeServiceAccountImpersonation', 'analysisQuery_options_expandGroups', 'analysisQuery_options_expandResources', 'analysisQuery_options_expandRoles', 'analysisQuery_options_outputGroupEdges', 'analysisQuery_options_outputResourceEdges', 'analysisQuery_resourceSelector_fullResourceName', 'executionTimeout'],
+        query_params=['analysisQuery_accessSelector_permissions', 'analysisQuery_accessSelector_roles', 'analysisQuery_conditionContext_accessTime', 'analysisQuery_identitySelector_identity', 'analysisQuery_options_analyzeServiceAccountImpersonation', 'analysisQuery_options_expandGroups', 'analysisQuery_options_expandResources', 'analysisQuery_options_expandRoles', 'analysisQuery_options_outputGroupEdges', 'analysisQuery_options_outputResourceEdges', 'analysisQuery_resourceSelector_fullResourceName', 'executionTimeout', 'savedAnalysisQuery'],
         relative_path='v1/{+scope}:analyzeIamPolicy',
         request_field='',
         request_type_name='CloudassetAnalyzeIamPolicyRequest',

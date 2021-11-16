@@ -24,7 +24,6 @@ from googlecloudsdk.command_lib.util.declarative.clients import kcc_client
 from googlecloudsdk.command_lib.util.resource_map import base
 from googlecloudsdk.command_lib.util.resource_map import resource_map_update_util
 from googlecloudsdk.command_lib.util.resource_map.declarative import declarative_map
-from googlecloudsdk.core import yaml
 
 
 class KrmToApitoolsResourceNameError(base.ResourceMapError):
@@ -102,8 +101,7 @@ def generate_cc_update_map():
   Returns:
     Update map containing the config connector support metadata.
   """
-  config_connector_data = yaml.load(
-      kcc_client.KccClient().ListResources(output_format='yaml'))
+  config_connector_data = kcc_client.KccClient().ListResources()
   apitools_resource_map = build_collection_map()
   update_map = {}
   unmatched_resources = set()
@@ -133,13 +131,15 @@ def generate_cc_update_map():
 
     bulk_support = resource_spec['SupportsBulkExport']
     single_export_support = resource_spec['SupportsExport']
+    iam_support = resource_spec['SupportsIAM']
 
     if apitools_api_name not in update_map:
       update_map[apitools_api_name] = {}
     if apitools_collection_name not in update_map[apitools_api_name]:
       update_map[apitools_api_name][apitools_collection_name] = {
           'support_bulk_export': False,
-          'support_single_export': False
+          'support_single_export': False,
+          'support_iam': False
       }
 
     update_map[apitools_api_name][apitools_collection_name][
@@ -148,12 +148,12 @@ def generate_cc_update_map():
         'krm_group'] = krm_group
     update_map[apitools_api_name][apitools_collection_name][
         'asset_inventory_type'] = asset_inventory_type
-    if bulk_support:
-      update_map[apitools_api_name][apitools_collection_name][
-          'support_bulk_export'] = True
-    if single_export_support:
-      update_map[apitools_api_name][apitools_collection_name][
-          'support_single_export'] = True
+    update_map[apitools_api_name][apitools_collection_name][
+        'support_bulk_export'] = bool(bulk_support)
+    update_map[apitools_api_name][apitools_collection_name][
+        'support_single_export'] = bool(single_export_support)
+    update_map[apitools_api_name][apitools_collection_name][
+        'support_iam'] = bool(iam_support)
 
   if unmatched_resources:
     raise KrmToApitoolsResourceNameError(

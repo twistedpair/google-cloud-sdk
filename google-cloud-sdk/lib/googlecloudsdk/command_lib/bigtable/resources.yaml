@@ -64,3 +64,14 @@ operation:
     attribute_name: operation
     help: The name of the Cloud Bigtable operation.
   disable_auto_completers: false
+
+app_profile:
+  name: app-profile
+  collection: bigtableadmin.projects.instances.appProfiles
+  attributes:
+  - *project
+  - *instance
+  - &appProfile
+    parameter_name: appProfilesId
+    attribute_name: app_profile
+    help: The name of the Cloud Bigtable app profile.

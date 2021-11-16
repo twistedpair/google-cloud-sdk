@@ -63,7 +63,7 @@ class AdmissionRule(_messages.Message):
       EVALUATION_MODE_UNSPECIFIED: Do not use.
       ALWAYS_ALLOW: This rule allows all all pod creations.
       REQUIRE_ATTESTATION: This rule allows a pod creation if all the
-        attestors listed in 'require_attestations_by' have valid attestations
+        attestors listed in `require_attestations_by` have valid attestations
         for all of the images in the pod spec.
       ALWAYS_DENY: This rule denies all pod creations.
     """
@@ -85,10 +85,10 @@ class AdmissionWhitelistPattern(_messages.Message):
     namePattern: An image name pattern to allowlist, in the form
       `registry/path/to/image`. This supports a trailing `*` as a wildcard,
       but this is allowed only in text after the `registry/` part. `*`
-      wildcard does not match `/`, i.e., gcr.io/nginx* matches
-      gcr.io/nginx@latest, but it does not match gcr.io/nginx/image. This also
-      supports a trailing `**` wildcard which matches subdirectories, i.e.,
-      gcr.io/nginx** matches gcr.io/nginx/image.
+      wildcard does not match `/`, i.e., `gcr.io/nginx*` matches
+      `gcr.io/nginx@latest`, but it does not match `gcr.io/nginx/image`. This
+      also supports a trailing `**` wildcard which matches subdirectories,
+      i.e., `gcr.io/nginx**` matches `gcr.io/nginx/image`.
   """
 
   namePattern = _messages.StringField(1)
@@ -184,12 +184,16 @@ class BinaryauthorizationProjectsAttestorsAttestationsGetIamPolicyRequest(_messa
   object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -263,12 +267,16 @@ class BinaryauthorizationProjectsAttestorsGetIamPolicyRequest(_messages.Message)
   r"""A BinaryauthorizationProjectsAttestorsGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -362,12 +370,16 @@ class BinaryauthorizationProjectsContinuousValidationConfigGetIamPolicyRequest(_
   object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -438,12 +450,16 @@ class BinaryauthorizationProjectsPolicyGetIamPolicyRequest(_messages.Message):
   r"""A BinaryauthorizationProjectsPolicyGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -553,21 +569,7 @@ class ContinuousValidationConfig(_messages.Message):
   various policies. There is at most one config per project (a singleton
   resource).
 
-  Messages:
-    ClusterSafeguardConfigsValue: Optional. Per-cluster Safeguard config.
-      Cluster spec format: `location.clusterId`. There can be at most one
-      admission rule per cluster spec. A `location` is either a compute zone
-      (e.g. us-central1-a) or a region (e.g. us-central1). For `clusterId`
-      syntax restrictions see https://cloud.google.com/container-
-      engine/reference/rest/v1/projects.zones.clusters.
-
   Fields:
-    clusterSafeguardConfigs: Optional. Per-cluster Safeguard config. Cluster
-      spec format: `location.clusterId`. There can be at most one admission
-      rule per cluster spec. A `location` is either a compute zone (e.g. us-
-      central1-a) or a region (e.g. us-central1). For `clusterId` syntax
-      restrictions see https://cloud.google.com/container-
-      engine/reference/rest/v1/projects.zones.clusters.
     enforcementPolicyConfig: The continuous validation config for enforcement
       policy.
     name: Output only. The resource name, in the format
@@ -576,41 +578,9 @@ class ContinuousValidationConfig(_messages.Message):
     updateTime: Output only. Time when the config was last updated.
   """
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ClusterSafeguardConfigsValue(_messages.Message):
-    r"""Optional. Per-cluster Safeguard config. Cluster spec format:
-    `location.clusterId`. There can be at most one admission rule per cluster
-    spec. A `location` is either a compute zone (e.g. us-central1-a) or a
-    region (e.g. us-central1). For `clusterId` syntax restrictions see
-    https://cloud.google.com/container-
-    engine/reference/rest/v1/projects.zones.clusters.
-
-    Messages:
-      AdditionalProperty: An additional property for a
-        ClusterSafeguardConfigsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type
-        ClusterSafeguardConfigsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ClusterSafeguardConfigsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A SafeguardConfig attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('SafeguardConfig', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  clusterSafeguardConfigs = _messages.MessageField('ClusterSafeguardConfigsValue', 1)
-  enforcementPolicyConfig = _messages.MessageField('EnforcementPolicyConfig', 2)
-  name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
+  enforcementPolicyConfig = _messages.MessageField('EnforcementPolicyConfig', 1)
+  name = _messages.StringField(2)
+  updateTime = _messages.StringField(3)
 
 
 class Empty(_messages.Message):
@@ -858,14 +828,14 @@ class Policy(_messages.Message):
       engine/reference/rest/v1/projects.zones.clusters.
     IstioServiceIdentityAdmissionRulesValue: Optional. Per-istio-service-
       identity admission rules. Istio service identity spec format:
-      spiffe:///ns//sa/ or /ns//sa/ e.g. spiffe://example.com/ns/test-
-      ns/sa/default
+      `spiffe:///ns//sa/` or `/ns//sa/` e.g. `spiffe://example.com/ns/test-
+      ns/sa/default`
     KubernetesNamespaceAdmissionRulesValue: Optional. Per-kubernetes-namespace
-      admission rules. K8s namespace spec format: [a-z.-]+, e.g. 'some-
-      namespace'
+      admission rules. K8s namespace spec format: `[a-z.-]+`, e.g. `some-
+      namespace`
     KubernetesServiceAccountAdmissionRulesValue: Optional. Per-kubernetes-
       service-account admission rules. Service account spec format:
-      `namespace:serviceaccount`. e.g. 'test-ns:default'
+      `namespace:serviceaccount`. e.g. `test-ns:default`
 
   Fields:
     admissionWhitelistPatterns: Optional. Admission policy allowlisting. A
@@ -888,14 +858,14 @@ class Policy(_messages.Message):
       admission policy. This setting has no effect when specified inside a
       global admission policy.
     istioServiceIdentityAdmissionRules: Optional. Per-istio-service-identity
-      admission rules. Istio service identity spec format: spiffe:///ns//sa/
-      or /ns//sa/ e.g. spiffe://example.com/ns/test-ns/sa/default
+      admission rules. Istio service identity spec format: `spiffe:///ns//sa/`
+      or `/ns//sa/` e.g. `spiffe://example.com/ns/test-ns/sa/default`
     kubernetesNamespaceAdmissionRules: Optional. Per-kubernetes-namespace
-      admission rules. K8s namespace spec format: [a-z.-]+, e.g. 'some-
-      namespace'
+      admission rules. K8s namespace spec format: `[a-z.-]+`, e.g. `some-
+      namespace`
     kubernetesServiceAccountAdmissionRules: Optional. Per-kubernetes-service-
       account admission rules. Service account spec format:
-      `namespace:serviceaccount`. e.g. 'test-ns:default'
+      `namespace:serviceaccount`. e.g. `test-ns:default`
     name: Output only. The resource name, in the format `projects/*/policy`.
       There is at most one policy per project.
     updateTime: Output only. Time when the policy was last updated.
@@ -951,8 +921,8 @@ class Policy(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class IstioServiceIdentityAdmissionRulesValue(_messages.Message):
     r"""Optional. Per-istio-service-identity admission rules. Istio service
-    identity spec format: spiffe:///ns//sa/ or /ns//sa/ e.g.
-    spiffe://example.com/ns/test-ns/sa/default
+    identity spec format: `spiffe:///ns//sa/` or `/ns//sa/` e.g.
+    `spiffe://example.com/ns/test-ns/sa/default`
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -980,7 +950,7 @@ class Policy(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class KubernetesNamespaceAdmissionRulesValue(_messages.Message):
     r"""Optional. Per-kubernetes-namespace admission rules. K8s namespace spec
-    format: [a-z.-]+, e.g. 'some-namespace'
+    format: `[a-z.-]+`, e.g. `some-namespace`
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -1008,7 +978,7 @@ class Policy(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class KubernetesServiceAccountAdmissionRulesValue(_messages.Message):
     r"""Optional. Per-kubernetes-service-account admission rules. Service
-    account spec format: `namespace:serviceaccount`. e.g. 'test-ns:default'
+    account spec format: `namespace:serviceaccount`. e.g. `test-ns:default`
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -1043,19 +1013,6 @@ class Policy(_messages.Message):
   kubernetesServiceAccountAdmissionRules = _messages.MessageField('KubernetesServiceAccountAdmissionRulesValue', 8)
   name = _messages.StringField(9)
   updateTime = _messages.StringField(10)
-
-
-class SafeguardConfig(_messages.Message):
-  r"""Safeguard config. It includes all safeguard types. We plan to grow the
-  types of Safeguards we support. Currently supported: - Trusted Directory
-  Safeguard
-
-  Fields:
-    trustedDirectorySafeguard: Optional. Trusted directory safeguard,
-      optional.
-  """
-
-  trustedDirectorySafeguard = _messages.MessageField('TrustedDirectorySafeguard', 1)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -1201,41 +1158,6 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
-
-
-class TrustedDirectoryPattern(_messages.Message):
-  r"""A trusted directory pattern exempts images when their directory matches
-  the pattern.
-
-  Fields:
-    dirPattern: A directory url pattern to allow. The pattern is in the form
-      "registry/path/to/directory". Additionally, * can be used in three ways
-      as wildcards: 1. leading * to match varying prefixes (useful for
-      location prefixes); 2. trailing * after registry/ to match varying
-      endings; 3. trailing ** after registry/ to match "/" as well. For
-      example: -- gcr.io/my-project/my-repo is valid to match a single
-      directory -- *-docker.pkg.dev/my-project/my-repo is valid to match
-      varying prefixes -- gcr.io/my-project/* will match all direct
-      directories in my-project -- gcr.io/my-project/** would match all
-      directories in my-project -- gcr.i* is not allowed since the registry is
-      not completely specified -- **-docker.pkg.dev is not allowed since
-      leading * cannot match "/"
-  """
-
-  dirPattern = _messages.StringField(1)
-
-
-class TrustedDirectorySafeguard(_messages.Message):
-  r"""A trusted directory safeguard, when enabled, will alert on images that
-  do not come from the set of user-configured trusted diretories.
-
-  Fields:
-    enabled: Required. Whether the safeguard is enabled.
-    trustedDirPatterns: Optional. List of trusted directory patterns.
-  """
-
-  enabled = _messages.BooleanField(1)
-  trustedDirPatterns = _messages.MessageField('TrustedDirectoryPattern', 2, repeated=True)
 
 
 class UserOwnedDrydockNote(_messages.Message):

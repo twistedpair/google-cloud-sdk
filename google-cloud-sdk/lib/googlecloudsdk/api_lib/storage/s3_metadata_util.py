@@ -18,9 +18,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import base64
+import binascii
+import re
+
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import s3_resource_reference
+from googlecloudsdk.core import log
 
 _GCS_TO_S3_PREDEFINED_ACL_TRANSLATION_DICT = {
     'authenticatedRead': 'authenticated-read',
@@ -30,6 +35,8 @@ _GCS_TO_S3_PREDEFINED_ACL_TRANSLATION_DICT = {
     'publicRead': 'public-read',
     'publicReadWrite': 'public-read-write'
 }
+# Determines whether an etag is a valid MD5.
+MD5_REGEX = re.compile(r'^[a-fA-F0-9]{32}$')
 
 
 def translate_predefined_acl_string_to_s3(predefined_acl_string):
@@ -70,6 +77,34 @@ def _get_object_url_from_s3_response(object_dict,
       generation=object_dict.get('VersionId'))
 
 
+def _get_etag(object_dict):
+  """Returns the cleaned-up etag value, if present."""
+  if 'ETag' in object_dict:
+    etag = object_dict.get('ETag')
+  elif 'CopyObjectResult' in object_dict:
+    etag = object_dict['CopyObjectResult'].get('ETag')
+  else:
+    etag = None
+
+  # The S3 API returns etag wrapped in quotes in some cases.
+  if etag and etag.startswith('"') and etag.endswith('"'):
+    return etag.strip('"')
+
+  return etag
+
+
+def _get_md5_hash_from_etag(etag, object_url):
+  """Returns base64 encoded MD5 hash, if etag is valid MD5."""
+  if etag and MD5_REGEX.match(etag):
+    encoded_bytes = base64.b64encode(binascii.unhexlify(etag))
+    return encoded_bytes.decode(encoding='utf-8')
+  else:
+    log.warning('Non-MD5 etag ("%s") present for object: %s.'
+                ' Data integrity checks are not possible.',
+                etag, object_url)
+  return None
+
+
 def get_object_resource_from_s3_response(object_dict,
                                          bucket_name,
                                          object_name=None):
@@ -86,22 +121,18 @@ def get_object_resource_from_s3_response(object_dict,
   object_url = _get_object_url_from_s3_response(
       object_dict, bucket_name, object_name or object_dict['Key'])
 
-  if 'ETag' in object_dict:
-    etag = object_dict.get('ETag')
-  elif 'CopyObjectResult' in object_dict:
-    etag = object_dict['CopyObjectResult'].get('ETag')
-  else:
-    etag = None
-
   if 'Size' in object_dict:
     size = object_dict.get('Size')
   else:
     size = object_dict.get('ContentLength')
 
+  etag = _get_etag(object_dict)
+
   return s3_resource_reference.S3ObjectResource(
       object_url,
       content_type=object_dict.get('ContentType'),
       etag=etag,
+      md5_hash=_get_md5_hash_from_etag(etag, object_url),
       metadata=object_dict,
       size=size)
 

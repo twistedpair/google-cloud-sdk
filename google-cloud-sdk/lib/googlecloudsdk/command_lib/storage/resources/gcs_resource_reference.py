@@ -336,21 +336,21 @@ def _get_full_object_metadata_string(resource):
 
   if resource.metadata.crc32c is not None:
     optional_crc32c_line = resource_util.get_padded_metadata_key_value_line(
-        'Hash (crc32c)', resource.metadata.crc32c)
+        'Hash (CRC32C)', resource.metadata.crc32c)
   else:
     if resource.metadata.customerEncryption:
       optional_crc32c_line = resource_util.get_padded_metadata_key_value_line(
-          'Hash (crc32c)', 'encrypted')
+          'Hash (CRC32C)', 'Underlying data encrypted')
     else:
       optional_crc32c_line = ''
 
   if resource.metadata.md5Hash is not None:
     optional_md5_line = resource_util.get_padded_metadata_key_value_line(
-        'Hash (md5)', resource.metadata.md5Hash)
+        'Hash (MD5)', resource.metadata.md5Hash)
   else:
     if resource.metadata.customerEncryption is not None:
       optional_md5_line = resource_util.get_padded_metadata_key_value_line(
-          'Hash (md5)', 'encrypted')
+          'Hash (MD5)', 'Underlying data encrypted')
     else:
       optional_md5_line = ''
 

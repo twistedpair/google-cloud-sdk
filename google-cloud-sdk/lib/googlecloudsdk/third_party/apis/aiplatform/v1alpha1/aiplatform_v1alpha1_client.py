@@ -6814,7 +6814,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
     )
 
     def Suggest(self, request, global_params=None):
-      r"""Adds one or more Trials to a Study, with parameter values suggested by Vertex Vizier. Returns a long-running operation associated with the generation of Trial suggestions. When this long-running operation succeeds, it will contain a SuggestTrialsResponse.
+      r"""Adds one or more Trials to a Study, with parameter values suggested by Vertex AI Vizier. Returns a long-running operation associated with the generation of Trial suggestions. When this long-running operation succeeds, it will contain a SuggestTrialsResponse.
 
       Args:
         request: (AiplatformProjectsLocationsStudiesTrialsSuggestRequest) input message

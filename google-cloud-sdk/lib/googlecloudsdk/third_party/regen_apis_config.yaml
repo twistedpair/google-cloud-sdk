@@ -500,6 +500,8 @@ apis:
           path: projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/actions/{actionsId}
         projects.locations.lakes.zones.assets.actions:
           path: projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/assets/{assetsId}/actions/{actionsId}
+        projects.locations.lakes.environments.sessions:
+          path: projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/environments/{environmentId}/sessions/{sessionId}
   dataproc:
     v1:
       discovery_doc: dataproc_v1.json
@@ -736,6 +738,8 @@ apis:
       resources:
         iamPolicies:
           path: iamPolicies
+        locations.workforcePools.subjects:
+          path: locations/{locationsId}/workforcePools/{workforcePoolsId}/subjects/{subjectsId}
     v2alpha:
       discovery_doc: iam_v2alpha.json
     v2beta:
@@ -783,9 +787,6 @@ apis:
     v1alpha1:
       discovery_doc: krmapihosting_v1alpha1.json
       default: true
-  labelmanager:
-    v1alpha1:
-      discovery_doc: labelmanager_v1alpha1.json
   language:
     v1beta2:
       discovery_doc: language_v1beta2.json
@@ -1112,6 +1113,8 @@ apis:
   transcoder:
     v1beta1:
       discovery_doc: transcoder_v1beta1.json
+    v1:
+      discovery_doc: transcoder_v1.json
       default: true
   tpu:
     v1alpha1:

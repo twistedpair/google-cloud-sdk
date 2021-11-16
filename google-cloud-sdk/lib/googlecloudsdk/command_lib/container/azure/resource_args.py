@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Shared resource flags for Cloud IoT commands."""
+"""Shared resource flags for `gcloud container azure` commands."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -61,12 +61,12 @@ def GetOperationResource(op):
 
 def AzureClusterAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='cluster', help_text='Azure cluster of the {resource}.')
+      name='cluster', help_text='cluster of the {resource}.')
 
 
 def AzureNodePoolAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='nodepool', help_text='Azure node pool of the {resource}.')
+      name='nodepool', help_text='node pool of the {resource}.')
 
 
 def AzureClientAttributeConfig():
@@ -167,7 +167,7 @@ def AddAzureClusterResourceArg(parser, verb, positional=True):
   concept_parsers.ConceptParser.ForResource(
       name,
       GetAzureClusterResourceSpec(),
-      'Azure cluster {}.'.format(verb),
+      'cluster {}.'.format(verb),
       required=True).AddToParser(parser)
 
 
@@ -183,7 +183,7 @@ def AddAzureNodePoolResourceArg(parser, verb, positional=True):
   concept_parsers.ConceptParser.ForResource(
       name,
       GetAzureNodePoolResourceSpec(),
-      'Azure node pool {}.'.format(verb),
+      'node pool {}.'.format(verb),
       required=True).AddToParser(parser)
 
 
@@ -227,7 +227,7 @@ def AddOperationResourceArg(parser, verb):
   concept_parsers.ConceptParser.ForResource(
       'operation_id',
       GetOperationResourceSpec(),
-      'Azure operation {}.'.format(verb),
+      'operation {}.'.format(verb),
       required=True).AddToParser(parser)
 
 

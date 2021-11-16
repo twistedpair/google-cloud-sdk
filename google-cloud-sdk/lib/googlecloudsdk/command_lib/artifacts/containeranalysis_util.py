@@ -292,6 +292,7 @@ def _CreateFilterFromImagesDescribeArgs(image, args):
       filter_kinds.append('DEPLOYMENT')
     if args.show_provenance:
       filter_kinds.append('DSSE_ATTESTATION')
+      filter_kinds.append('BUILD')
 
     # args include none of the occurrence types, there's no need to call the
     # containeranalysis API.

@@ -235,7 +235,9 @@ class CloudFunction(_messages.Message):
       _key}`. If specified, you must also provide an artifact registry
       repository using the `docker_repository` field that was created with the
       same KMS crypto key. The following service accounts need to be granted
-      Cloud KMS crypto key encrypter/decrypter roles on the key. 1. Google
+      the role 'Cloud KMS CryptoKey Encrypter/Decrypter
+      (roles/cloudkms.cryptoKeyEncrypterDecrypter)' on the
+      Key/KeyRing/Project/Organization (least access preferred). 1. Google
       Cloud Functions service account (service-{project_number}@gcf-admin-
       robot.iam.gserviceaccount.com) - Required to protect the function's
       image. 2. Google Storage service account (service-{project_number}@gs-
@@ -600,12 +602,16 @@ class CloudfunctionsProjectsLocationsFunctionsGetIamPolicyRequest(_messages.Mess
   r"""A CloudfunctionsProjectsLocationsFunctionsGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -824,7 +830,27 @@ class GenerateDownloadUrlResponse(_messages.Message):
 
 
 class GenerateUploadUrlRequest(_messages.Message):
-  r"""Request of `GenerateSourceUploadUrl` method."""
+  r"""Request of `GenerateSourceUploadUrl` method.
+
+  Fields:
+    kmsKeyName: Resource name of a KMS crypto key (managed by the user) used
+      to encrypt/decrypt function source code objects in staging Cloud Storage
+      buckets. When you generate an upload url and upload your source code, it
+      gets copied to a staging Cloud Storage bucket in an internal regional
+      project. The source code is then copied to a versioned directory in the
+      sources bucket in the consumer project during the function deployment.
+      It must match the pattern `projects/{project}/locations/{location}/keyRi
+      ngs/{key_ring}/cryptoKeys/{crypto_key}`. The Google Cloud Functions
+      service account (service-{project_number}@gcf-admin-
+      robot.iam.gserviceaccount.com) must be granted the role 'Cloud KMS
+      CryptoKey Encrypter/Decrypter
+      (roles/cloudkms.cryptoKeyEncrypterDecrypter)' on the
+      Key/KeyRing/Project/Organization (least access preferred). GCF will
+      delegate access to the Google Storage service account in the internal
+      project.
+  """
+
+  kmsKeyName = _messages.StringField(1)
 
 
 class GenerateUploadUrlResponse(_messages.Message):

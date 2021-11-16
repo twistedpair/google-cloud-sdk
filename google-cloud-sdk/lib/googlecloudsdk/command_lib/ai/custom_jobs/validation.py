@@ -53,159 +53,140 @@ def _ValidateWorkerPoolSpecArgs(worker_pool_specs, version):
     version: str, the API version this command will interact with, either GA or
       BETA.
   """
-  is_local_package_defined = _ValidateFirstWorkerPoolSpec(
-      worker_pool_specs[0], version=version)
-
-  if len(worker_pool_specs) > 1:
-    _ValidateRestWorkerPoolSpecs(worker_pool_specs[1:], version,
-                                 is_local_package_defined)
-
-
-def _ValidateFirstWorkerPoolSpec(spec, version):
-  """Validates the argument value specified in the first `--worker-pool-spec` flags.
-
-  Args:
-    spec: dict, the specification of the first worker pool.
-    version: str, the API version this command will interact with, either GA or
-      BETA.
-
-  Returns:
-    A boolean value whether a local package will be used for all worker pools.
-  """
-  if not spec:
+  if not worker_pool_specs[0]:
     raise exceptions.InvalidArgumentException(
         '--worker-pool-spec',
         'Empty value is not allowed for the first `--worker-pool-spec` flag.')
 
-  _ValidateHardwareInSingleWorkerPool(spec, version)
+  _ValidateHardwareInWorkerPoolSpecArgs(worker_pool_specs, version)
+  _ValidateSoftwareInWorkerPoolSpecArgs(worker_pool_specs)
 
-  if version == constants.GA_VERSION:
-    _ValidateNonLocalSoftwareInSingleWorkerPool(spec)
+
+def _ValidateHardwareInWorkerPoolSpecArgs(worker_pool_specs, api_version):
+  """Validates the hardware related fields specified in `--worker-pool-spec` flags.
+
+  Args:
+    worker_pool_specs: List[dict], a list of worker pool specs specified in
+      command line.
+    api_version: str, the API version this command will interact with, either GA
+      or BETA.
+  """
+  for spec in worker_pool_specs:
+    if spec:
+      if 'machine-type' not in spec:
+        raise exceptions.InvalidArgumentException(
+            '--worker-pool-spec',
+            'Key [machine-type] required in dict arg but not provided.')
+
+      if 'accelerator-count' in spec and 'accelerator-type' not in spec:
+        raise exceptions.InvalidArgumentException(
+            '--worker-pool-spec',
+            'Key [accelerator-type] required as [accelerator-count] is specified.'
+        )
+
+      accelerator_type = spec.get('accelerator-type', None)
+      if accelerator_type:
+        type_enum = api_util.GetMessage(
+            'MachineSpec', api_version).AcceleratorTypeValueValuesEnum
+        valid_types = [
+            type for type in type_enum.names() if type.startswith('NVIDIA')
+        ]
+        if accelerator_type not in valid_types:
+          raise exceptions.InvalidArgumentException(
+              '--worker-pool-spec',
+              ('Found invalid value of [accelerator-type]: {actual}. '
+               'Available values are [{expected}].').format(
+                   actual=accelerator_type,
+                   expected=', '.join(v for v in sorted(valid_types))))
+
+
+def _ValidateSoftwareInWorkerPoolSpecArgs(worker_pool_specs):
+  """Validates the software fields specified in all `--worker-pool-spec` flags."""
+  has_local_package = _ValidateSoftwareInFirstWorkerPoolSpec(
+      worker_pool_specs[0])
+
+  if len(worker_pool_specs) > 1:
+    _ValidateSoftwareInRestWorkerPoolSpecs(worker_pool_specs[1:],
+                                           has_local_package)
+
+
+def _ValidateSoftwareInFirstWorkerPoolSpec(spec):
+  """Validates the software related fields specified in the first `--worker-pool-spec` flags.
+
+  Args:
+    spec: dict, the specification of the first worker pool.
+
+  Returns:
+    A boolean value whether a local package will be used.
+  """
+  if 'local-package-path' in spec:
+    _ValidateWorkerPoolSoftwareWithLocalPackage(spec)
+    return True
   else:
-    _ValidateSoftwareInSingleWorkerPool(spec)
+    _ValidateWorkerPoolSoftwareWithoutLocalPackages(spec)
+    return False
 
-  return 'local-package-path' in spec
 
-
-def _ValidateRestWorkerPoolSpecs(specs,
-                                 version,
-                                 is_local_package_already_specified=False):
+def _ValidateSoftwareInRestWorkerPoolSpecs(specs,
+                                           is_local_package_specified=False):
   """Validates the argument values specified in all but the first `--worker-pool-spec` flags.
 
   Args:
     specs: List[dict], the list all but the first worker pool specs specified in
       command line.
-    version: str, the API version this command will interact with, either GA or
-      BETA.
-    is_local_package_already_specified: bool, whether local package is specified
+    is_local_package_specified: bool, whether local package is specified
       in the first worker pool.
   """
   for spec in specs:
     if spec:
-      _ValidateHardwareInSingleWorkerPool(spec, version)
-
-      local_package_only_fields = {'script', 'local-package-path'
-                                  }.intersection(spec.keys())
-      if local_package_only_fields:
-        raise exceptions.InvalidArgumentException(
-            '--worker-pool-spec',
-            'Keys [{}] are only allowed in the first `--worker-pool-spec` flag.'
-            .format(', '.join(local_package_only_fields)))
-
-      if is_local_package_already_specified:
+      if is_local_package_specified:
+        # No more software allowed
         software_fields = {
-            'executor-image-uri', 'container-image-uri', 'python-module'
-        }.intersection(spec.keys())
-        if software_fields:
+            'executor-image-uri',
+            'container-image-uri',
+            'python-module',
+            'script',
+            'requirements',
+            'extra-packages',
+            'extra-dirs',
+        }
+        _RaiseErrorIfUnexpectedKeys(
+            unexpected_keys=software_fields.intersection(spec.keys()),
+            reason=('A local package has been specified in the first '
+                    '`--worker-pool-spec` flag and to be used for all workers, '
+                    'do not specify these keys elsewhere.'))
+      else:
+        if 'local-package-path' in spec:
           raise exceptions.InvalidArgumentException(
               '--worker-pool-spec',
-              ('Since a local package is specified in the first '
-               '`--worker-pool-spec` flag, keys [{}] are not allowed in others.'
-              ).format(', '.join(software_fields)))
-      else:
-        _ValidateNonLocalSoftwareInSingleWorkerPool(spec)
+              ('Key [local-package-path] is only allowed in the first '
+               '`--worker-pool-spec` flag.'))
+        _ValidateWorkerPoolSoftwareWithoutLocalPackages(spec)
 
 
-def _ValidateHardwareInSingleWorkerPool(spec, api_version):
-  """Validates the hardware specified in a single `--worker-pool-spec` flag."""
-  if 'machine-type' not in spec:
+def _ValidateWorkerPoolSoftwareWithLocalPackage(spec):
+  """Validate the software in a single `--worker-pool-spec` when `local-package-path` is specified."""
+  assert 'local-package-path' in spec
+  _RaiseErrorIfNotExists(
+      spec['local-package-path'], flag_name='--worker-pool-spec')
+
+  if 'executor-image-uri' not in spec:
     raise exceptions.InvalidArgumentException(
         '--worker-pool-spec',
-        'Key [machine-type] required in dict arg but not provided.')
+        'Key [executor-image-uri] is required when `local-package-path` is specified.'
+    )
 
-  if 'accelerator-count' in spec and 'accelerator-type' not in spec:
+  if ('python-module' in spec) + ('script' in spec) != 1:
     raise exceptions.InvalidArgumentException(
         '--worker-pool-spec',
-        'Key [accelerator-type] required as [accelerator-count] is specified.')
-
-  accelerator_type = spec.get('accelerator-type', None)
-  if accelerator_type:
-    type_enum = api_util.GetMessage('MachineSpec',
-                                    api_version).AcceleratorTypeValueValuesEnum
-    valid_types = [
-        type for type in type_enum.names() if type.startswith('NVIDIA')
-    ]
-    if accelerator_type not in valid_types:
-      raise exceptions.InvalidArgumentException(
-          '--worker-pool-spec',
-          ('Found invalid value of [accelerator-type]: {actual}. '
-           'Available values are [{expected}].').format(
-               actual=accelerator_type,
-               expected=', '.join(v for v in sorted(valid_types))))
+        'Exactly one of keys [python-module, script] is required '
+        'when `local-package-path` is specified.')
 
 
-def _ValidateSoftwareInSingleWorkerPool(spec):
-  """Validates the software specified in a single `--worker-pool-spec`.
+def _ValidateWorkerPoolSoftwareWithoutLocalPackages(spec):
+  """Validate the software in a single `--worker-pool-spec` when `local-package-path` is not specified."""
 
-  Args:
-    spec: dict, the specification of the first worker pool.
-  """
-  _ValidateHardwareInSingleWorkerPool(spec, constants.BETA_VERSION)
-
-  has_executor_image = 'executor-image-uri' in spec
-  has_container_image = 'container-image-uri' in spec
-
-  if has_executor_image == has_container_image:
-    raise exceptions.InvalidArgumentException(
-        '--worker-pool-spec',
-        ('Exactly one of keys [executor-image-uri, container-image-uri] '
-         'is required.'))
-
-  if has_container_image:
-    disallowed_keys = set([
-        'python-module',
-        'script',
-        'local-package-path',
-        'requirements',
-        'extra-dirs',
-        'extra-packages',
-    ]).intersection(spec.keys())
-    if disallowed_keys:
-      raise exceptions.InvalidArgumentException(
-          '--worker-pool-spec',
-          'Keys [{}] are not allowed together with key [container-image-uri].'
-          .format(', '.join(sorted(disallowed_keys))))
-
-  if has_executor_image:
-    if ('python-module' in spec) == ('script' in spec):
-      raise exceptions.InvalidArgumentException(
-          '--worker-pool-spec',
-          'Exactly one of keys [python-module, script] is required.')
-    if ('script' in spec) and ('local-package-path' not in spec):
-      raise exceptions.InvalidArgumentException(
-          '--worker-pool-spec',
-          ('Missing required key [local-package-path], '
-           'key [script] is only allowed together with it.'))
-
-
-def _ValidateNonLocalSoftwareInSingleWorkerPool(spec):
-  """Validate the software specified in a single `--worker-pool-spec`.
-
-  Different from the above one, this method does not allow any local package.
-
-  Args:
-    spec: dict, the specification of the first worker pool.
-  """
+  assert 'local-package-path' not in spec
 
   has_executor_image = 'executor-image-uri' in spec
   has_container_image = 'container-image-uri' in spec
@@ -226,6 +207,25 @@ def _ValidateNonLocalSoftwareInSingleWorkerPool(spec):
   if has_executor_image and not has_python_module:
     raise exceptions.InvalidArgumentException(
         '--worker-pool-spec', 'Key [python-module] is required.')
+
+  local_package_only_keys = {
+      'script',
+      'requirements',
+      'extra-packages',
+      'extra-dirs',
+  }
+  unexpected_keys = local_package_only_keys.intersection(spec.keys())
+  _RaiseErrorIfUnexpectedKeys(
+      unexpected_keys,
+      reason='Only allow to specify together with `local-package-path` in the first `--worker-pool-spec` flag'
+  )
+
+
+def _RaiseErrorIfUnexpectedKeys(unexpected_keys, reason):
+  if unexpected_keys:
+    raise exceptions.InvalidArgumentException(
+        '--worker-pool-spec', 'Keys [{keys}] are not allowed: {reason}.'.format(
+            keys=', '.join(sorted(unexpected_keys)), reason=reason))
 
 
 def _ValidateWorkerPoolSpecsFromConfig(job_spec):
@@ -284,30 +284,32 @@ def _ValidBuildArgsOfLocalRun(args):
     args.script = local_util.ModuleToPath(args.python_module)
     arg_name = '--python-module'
 
-  script_path = os.path.normpath(os.path.join(args.work_dir, args.script))
+  script_path = os.path.normpath(
+      os.path.join(args.local_package_path, args.script))
   if not os.path.exists(script_path) or not os.path.isfile(script_path):
     raise exceptions.InvalidArgumentException(
-        arg_name,
-        r"File '{}' is not found under the working directory: '{}'.".format(
-            args.script, args.work_dir))
+        arg_name, r"File '{}' is not found under the package: '{}'.".format(
+            args.script, args.local_package_path))
 
   # Validate extra custom packages specified:
   for package in (args.extra_packages or []):
-    package_path = os.path.normpath(os.path.join(args.work_dir, package))
+    package_path = os.path.normpath(
+        os.path.join(args.local_package_path, package))
     if not os.path.exists(package_path) or not os.path.isfile(package_path):
       raise exceptions.InvalidArgumentException(
           '--extra-packages',
-          r"Package file '{}' is not found under the working directory: '{}'."
-          .format(package, args.work_dir))
+          r"Package file '{}' is not found under the package: '{}'.".format(
+              package, args.local_package_path))
 
   # Validate extra directories specified:
   for directory in (args.extra_dirs or []):
-    dir_path = os.path.normpath(os.path.join(args.work_dir, directory))
+    dir_path = os.path.normpath(
+        os.path.join(args.local_package_path, directory))
     if not os.path.exists(dir_path) or not os.path.isdir(dir_path):
       raise exceptions.InvalidArgumentException(
           '--extra-dirs',
-          r"Directory '{}' is not found under the working directory: '{}'."
-          .format(directory, args.work_dir))
+          r"Directory '{}' is not found under the package: '{}'.".format(
+              directory, args.local_package_path))
 
   # Validate output image uri is in valid format
   if args.output_image_uri:
@@ -326,18 +328,30 @@ def _ValidBuildArgsOfLocalRun(args):
 
 def ValidateLocalRunArgs(args):
   """Validates the arguments specified in `local-run` command and normalize them."""
-  args_local_package_pach = args.local_package_path or args.work_dir
+  args_local_package_pach = args.local_package_path
   if args_local_package_pach:
     work_dir = os.path.abspath(files.ExpandHomeDir(args_local_package_pach))
     if not os.path.exists(work_dir) or not os.path.isdir(work_dir):
       raise exceptions.InvalidArgumentException(
-          '--local_package_path',
+          '--local-package-path',
           r"Directory '{}' is not found.".format(work_dir))
   else:
     work_dir = files.GetCWD()
   args.local_package_path = work_dir
-  args.work_dir = work_dir
 
   _ValidBuildArgsOfLocalRun(args)
 
   return args
+
+
+def _RaiseErrorIfNotExists(local_package_path, flag_name):
+  """Validate the local package is valid.
+
+  Args:
+    local_package_path: str, path of the local directory to check.
+    flag_name: str, indicates in which flag the path is specified.
+  """
+  work_dir = os.path.abspath(files.ExpandHomeDir(local_package_path))
+  if not os.path.exists(work_dir) or not os.path.isdir(work_dir):
+    raise exceptions.InvalidArgumentException(
+        flag_name, r"Directory '{}' is not found.".format(work_dir))

@@ -219,7 +219,6 @@ class CaPool(_messages.Message):
     LabelsValue: Optional. Labels with user-defined metadata.
 
   Fields:
-    createTime: Output only. The time at which this CaPool was created.
     issuancePolicy: Optional. The IssuancePolicy to control how Certificates
       will be issued from this CaPool.
     labels: Optional. Labels with user-defined metadata.
@@ -228,7 +227,6 @@ class CaPool(_messages.Message):
     publishingOptions: Optional. The PublishingOptions to follow when issuing
       Certificates from any CertificateAuthority in this CaPool.
     tier: Required. Immutable. The Tier of this CaPool.
-    updateTime: Output only. The time at which this CaPool was last updated.
   """
 
   class TierValueValuesEnum(_messages.Enum):
@@ -267,13 +265,11 @@ class CaPool(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  issuancePolicy = _messages.MessageField('IssuancePolicy', 2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  publishingOptions = _messages.MessageField('PublishingOptions', 5)
-  tier = _messages.EnumField('TierValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
+  issuancePolicy = _messages.MessageField('IssuancePolicy', 1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  publishingOptions = _messages.MessageField('PublishingOptions', 4)
+  tier = _messages.EnumField('TierValueValuesEnum', 5)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -1656,12 +1652,16 @@ class PrivatecaProjectsLocationsCaPoolsCertificateAuthoritiesCertificateRevocati
   cationListsGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -2152,12 +2152,16 @@ class PrivatecaProjectsLocationsCaPoolsGetIamPolicyRequest(_messages.Message):
   r"""A PrivatecaProjectsLocationsCaPoolsGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -2317,12 +2321,16 @@ class PrivatecaProjectsLocationsCertificateTemplatesGetIamPolicyRequest(_message
   object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.

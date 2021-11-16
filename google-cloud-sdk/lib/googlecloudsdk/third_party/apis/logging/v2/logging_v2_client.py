@@ -979,6 +979,60 @@ class LoggingV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def GetCmekSettings(self, request, global_params=None):
+      r"""Gets the Logging CMEK settings for the given resource.Note: CMEK for the Log Router can be configured for Google Cloud projects, folders, organizations and billing accounts. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+
+      Args:
+        request: (LoggingBillingAccountsGetCmekSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CmekSettings) The response message.
+      """
+      config = self.GetMethodConfig('GetCmekSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetCmekSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/billingAccounts/{billingAccountsId}/cmekSettings',
+        http_method='GET',
+        method_id='logging.billingAccounts.getCmekSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}/cmekSettings',
+        request_field='',
+        request_type_name='LoggingBillingAccountsGetCmekSettingsRequest',
+        response_type_name='CmekSettings',
+        supports_download=False,
+    )
+
+    def GetSettings(self, request, global_params=None):
+      r"""Gets the Log Router CMEK settings for the given resource.Note: CMEK for the Log Router can be configured for Google Cloud projects, folders, organizations and billing accounts. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+
+      Args:
+        request: (LoggingBillingAccountsGetSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Settings) The response message.
+      """
+      config = self.GetMethodConfig('GetSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/billingAccounts/{billingAccountsId}/settings',
+        http_method='GET',
+        method_id='logging.billingAccounts.getSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingBillingAccountsGetSettingsRequest',
+        response_type_name='Settings',
+        supports_download=False,
+    )
+
   class EntriesService(base_api.BaseApiService):
     """Service class for the entries resource."""
 
@@ -2126,6 +2180,60 @@ class LoggingV2(base_api.BaseApiClient):
       super(LoggingV2.FoldersService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def GetCmekSettings(self, request, global_params=None):
+      r"""Gets the Logging CMEK settings for the given resource.Note: CMEK for the Log Router can be configured for Google Cloud projects, folders, organizations and billing accounts. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+
+      Args:
+        request: (LoggingFoldersGetCmekSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CmekSettings) The response message.
+      """
+      config = self.GetMethodConfig('GetCmekSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetCmekSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/cmekSettings',
+        http_method='GET',
+        method_id='logging.folders.getCmekSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}/cmekSettings',
+        request_field='',
+        request_type_name='LoggingFoldersGetCmekSettingsRequest',
+        response_type_name='CmekSettings',
+        supports_download=False,
+    )
+
+    def GetSettings(self, request, global_params=None):
+      r"""Gets the Log Router CMEK settings for the given resource.Note: CMEK for the Log Router can be configured for Google Cloud projects, folders, organizations and billing accounts. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+
+      Args:
+        request: (LoggingFoldersGetSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Settings) The response message.
+      """
+      config = self.GetMethodConfig('GetSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/settings',
+        http_method='GET',
+        method_id='logging.folders.getSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingFoldersGetSettingsRequest',
+        response_type_name='Settings',
+        supports_download=False,
+    )
 
   class LocationsBucketsViewsService(base_api.BaseApiService):
     """Service class for the locations_buckets_views resource."""
@@ -3563,7 +3671,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def GetCmekSettings(self, request, global_params=None):
-      r"""Gets the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Logs Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Gets the Logging CMEK settings for the given resource.Note: CMEK for the Log Router can be configured for Google Cloud projects, folders, organizations and billing accounts. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
 
       Args:
         request: (LoggingOrganizationsGetCmekSettingsRequest) input message
@@ -3590,7 +3698,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def GetSettings(self, request, global_params=None):
-      r"""Gets the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Logs Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Gets the Log Router CMEK settings for the given resource.Note: CMEK for the Log Router can be configured for Google Cloud projects, folders, organizations and billing accounts. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
 
       Args:
         request: (LoggingOrganizationsGetSettingsRequest) input message
@@ -3609,7 +3717,7 @@ class LoggingV2(base_api.BaseApiClient):
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
-        relative_path='v2/{+name}/settings',
+        relative_path='v2/{+name}',
         request_field='',
         request_type_name='LoggingOrganizationsGetSettingsRequest',
         response_type_name='Settings',
@@ -3617,7 +3725,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def UpdateCmekSettings(self, request, global_params=None):
-      r"""Updates the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.UpdateCmekSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled.See Enabling CMEK for Logs Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Updates the Log Router CMEK settings for the given resource.Note: CMEK for the Log Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.UpdateCmekSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
 
       Args:
         request: (LoggingOrganizationsUpdateCmekSettingsRequest) input message
@@ -3644,7 +3752,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def UpdateSettings(self, request, global_params=None):
-      r"""Updates the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.UpdateSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled.See Enabling CMEK for Logs Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Updates the Log Router CMEK settings for the given resource.Note: CMEK for the Log Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.UpdateSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
 
       Args:
         request: (LoggingOrganizationsUpdateSettingsRequest) input message
@@ -3663,7 +3771,7 @@ class LoggingV2(base_api.BaseApiClient):
         ordered_params=['name'],
         path_params=['name'],
         query_params=['updateMask'],
-        relative_path='v2/{+name}/settings',
+        relative_path='v2/{+name}',
         request_field='settings',
         request_type_name='LoggingOrganizationsUpdateSettingsRequest',
         response_type_name='Settings',
@@ -4678,6 +4786,60 @@ class LoggingV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def GetCmekSettings(self, request, global_params=None):
+      r"""Gets the Logging CMEK settings for the given resource.Note: CMEK for the Log Router can be configured for Google Cloud projects, folders, organizations and billing accounts. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+
+      Args:
+        request: (LoggingProjectsGetCmekSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CmekSettings) The response message.
+      """
+      config = self.GetMethodConfig('GetCmekSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetCmekSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/cmekSettings',
+        http_method='GET',
+        method_id='logging.projects.getCmekSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}/cmekSettings',
+        request_field='',
+        request_type_name='LoggingProjectsGetCmekSettingsRequest',
+        response_type_name='CmekSettings',
+        supports_download=False,
+    )
+
+    def GetSettings(self, request, global_params=None):
+      r"""Gets the Log Router CMEK settings for the given resource.Note: CMEK for the Log Router can be configured for Google Cloud projects, folders, organizations and billing accounts. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+
+      Args:
+        request: (LoggingProjectsGetSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Settings) The response message.
+      """
+      config = self.GetMethodConfig('GetSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/settings',
+        http_method='GET',
+        method_id='logging.projects.getSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingProjectsGetSettingsRequest',
+        response_type_name='Settings',
+        supports_download=False,
+    )
+
   class SinksService(base_api.BaseApiService):
     """Service class for the sinks resource."""
 
@@ -4834,7 +4996,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def GetCmekSettings(self, request, global_params=None):
-      r"""Gets the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Logs Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Gets the Logging CMEK settings for the given resource.Note: CMEK for the Log Router can be configured for Google Cloud projects, folders, organizations and billing accounts. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
 
       Args:
         request: (LoggingGetCmekSettingsRequest) input message
@@ -4861,7 +5023,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def GetSettings(self, request, global_params=None):
-      r"""Gets the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Logs Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Gets the Log Router CMEK settings for the given resource.Note: CMEK for the Log Router can be configured for Google Cloud projects, folders, organizations and billing accounts. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
 
       Args:
         request: (LoggingGetSettingsRequest) input message
@@ -4880,7 +5042,7 @@ class LoggingV2(base_api.BaseApiClient):
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
-        relative_path='v2/{+name}/settings',
+        relative_path='v2/{+name}',
         request_field='',
         request_type_name='LoggingGetSettingsRequest',
         response_type_name='Settings',
@@ -4888,7 +5050,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def UpdateCmekSettings(self, request, global_params=None):
-      r"""Updates the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.UpdateCmekSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled.See Enabling CMEK for Logs Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Updates the Log Router CMEK settings for the given resource.Note: CMEK for the Log Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.UpdateCmekSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
 
       Args:
         request: (LoggingUpdateCmekSettingsRequest) input message
@@ -4915,7 +5077,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def UpdateSettings(self, request, global_params=None):
-      r"""Updates the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.UpdateSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled.See Enabling CMEK for Logs Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Updates the Log Router CMEK settings for the given resource.Note: CMEK for the Log Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.UpdateSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
 
       Args:
         request: (LoggingUpdateSettingsRequest) input message
@@ -4934,7 +5096,7 @@ class LoggingV2(base_api.BaseApiClient):
         ordered_params=['name'],
         path_params=['name'],
         query_params=['updateMask'],
-        relative_path='v2/{+name}/settings',
+        relative_path='v2/{+name}',
         request_field='settings',
         request_type_name='LoggingUpdateSettingsRequest',
         response_type_name='Settings',

@@ -1002,6 +1002,200 @@
       "properties": {
       }
     },
+    "StreamObject": {
+      "id": "StreamObject",
+      "description": "A specific stream object (e.g a specific DB table).",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The object's name.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The creation time of the object.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The last update time of the object.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "displayName": {
+          "description": "Required. Display name.",
+          "type": "string"
+        },
+        "errors": {
+          "description": "Output only. Active errors on the object.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "Error"
+          }
+        },
+        "backfillJob": {
+          "description": "The latest backfill job that was initiated for the stream object.",
+          "$ref": "BackfillJob"
+        },
+        "sourceObject": {
+          "description": "The object identifier in the data source.",
+          "$ref": "SourceObjectIdentifier"
+        }
+      }
+    },
+    "BackfillJob": {
+      "id": "BackfillJob",
+      "description": "Represents a backfill job on a specific stream object.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Backfill job state.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value.",
+            "Backfill job was never started for the stream object (stream has backfill strategy defined as manual or object was explicitly excluded from automatic backfill).",
+            "Backfill job will start pending available resources.",
+            "Backfill job is running.",
+            "Backfill job stopped (next job run will start from beginning).",
+            "Backfill job failed (due to an error).",
+            "Backfill completed successfully.",
+            "Backfill job failed since the table structure is currently unsupported for backfill."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "NOT_STARTED",
+            "PENDING",
+            "ACTIVE",
+            "STOPPED",
+            "FAILED",
+            "COMPLETED",
+            "UNSUPPORTED"
+          ]
+        },
+        "trigger": {
+          "description": "Backfill job's triggering reason.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value.",
+            "Object backfill job was triggered automatically according to the stream's backfill strategy.",
+            "Object backfill job was triggered manually using the dedicated API."
+          ],
+          "enum": [
+            "TRIGGER_UNSPECIFIED",
+            "AUTOMATIC",
+            "MANUAL"
+          ]
+        },
+        "lastStartTime": {
+          "description": "Output only. Backfill job's start time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "lastEndTime": {
+          "description": "Output only. Backfill job's end time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "errors": {
+          "description": "Output only. Errors which caused the backfill job to fail.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "Error"
+          }
+        }
+      }
+    },
+    "SourceObjectIdentifier": {
+      "id": "SourceObjectIdentifier",
+      "description": "Represents an identifier of an object in the data source.",
+      "type": "object",
+      "properties": {
+        "oracleIdentifier": {
+          "description": "Oracle data source object identifier.",
+          "$ref": "OracleObjectIdentifier"
+        },
+        "mysqlIdentifier": {
+          "description": "Mysql data source object identifier.",
+          "$ref": "MysqlObjectIdentifier"
+        }
+      }
+    },
+    "OracleObjectIdentifier": {
+      "id": "OracleObjectIdentifier",
+      "description": "Oracle data source object identifier.",
+      "type": "object",
+      "properties": {
+        "schema": {
+          "description": "The schema name.",
+          "type": "string"
+        },
+        "table": {
+          "description": "The table name.",
+          "type": "string"
+        }
+      }
+    },
+    "MysqlObjectIdentifier": {
+      "id": "MysqlObjectIdentifier",
+      "description": "Mysql data source object identifier.",
+      "type": "object",
+      "properties": {
+        "database": {
+          "description": "The database name.",
+          "type": "string"
+        },
+        "table": {
+          "description": "The table name.",
+          "type": "string"
+        }
+      }
+    },
+    "ListStreamObjectsResponse": {
+      "id": "ListStreamObjectsResponse",
+      "description": "Response containing the objects for a stream.",
+      "type": "object",
+      "properties": {
+        "streamObjects": {
+          "description": "List of stream objects.",
+          "type": "array",
+          "items": {
+            "$ref": "StreamObject"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page.",
+          "type": "string"
+        }
+      }
+    },
+    "StartBackfillJobResponse": {
+      "id": "StartBackfillJobResponse",
+      "description": "Response for manually initiating a backfill job for a specific stream object.",
+      "type": "object",
+      "properties": {
+        "object": {
+          "description": "The stream object resource a backfill job was started for.",
+          "$ref": "StreamObject"
+        }
+      }
+    },
+    "StopBackfillJobResponse": {
+      "id": "StopBackfillJobResponse",
+      "description": "Response for manually stop a backfill job for a specific stream object.",
+      "type": "object",
+      "properties": {
+        "object": {
+          "description": "The stream object resource the backfill job was stopped for.",
+          "$ref": "StreamObject"
+        }
+      }
+    },
     "FetchStaticIpsResponse": {
       "id": "FetchStaticIpsResponse",
       "description": "Response message for a 'FetchStaticIps' response.",
@@ -2071,6 +2265,124 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Use this method to fetch any errors associated with a stream."
+                }
+              }
+              ,
+              "resources": {
+                "objects": {
+                  "methods": {
+                    "get": {
+                      "id": "datastream.projects.locations.streams.objects.get",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/streams/{streamsId}/objects/{objectsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the stream object resource to get.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/streams\/[^\/]+\/objects\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "StreamObject"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Use this method to get details about a stream object."
+                    },
+                    "list": {
+                      "id": "datastream.projects.locations.streams.objects.list",
+                      "path": "v1alpha1/{+parent}/objects",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/streams/{streamsId}/objects",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent stream that owns the collection of objects.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/streams\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Maximum number of objects to return. Default is 50. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "Page token received from a previous `ListStreamObjectsRequest` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListStreamObjectsRequest` must match the call that provided the page token.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListStreamObjectsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Use this method to list the objects of a specific stream."
+                    },
+                    "startBackfillJob": {
+                      "id": "datastream.projects.locations.streams.objects.startBackfillJob",
+                      "path": "v1alpha1/{+object}:startBackfillJob",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/streams/{streamsId}/objects/{objectsId}:startBackfillJob",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "object": {
+                          "description": "Required. The name of the stream object resource to start a backfill job for.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/streams\/[^\/]+\/objects\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "object"
+                      ],
+                      "response": {
+                        "$ref": "StartBackfillJobResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Starts backfill job for the specified stream object."
+                    },
+                    "stopBackfillJob": {
+                      "id": "datastream.projects.locations.streams.objects.stopBackfillJob",
+                      "path": "v1alpha1/{+object}:stopBackfillJob",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/streams/{streamsId}/objects/{objectsId}:stopBackfillJob",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "object": {
+                          "description": "Required. The name of the stream object resource to stop the backfill job for.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/streams\/[^\/]+\/objects\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "object"
+                      ],
+                      "response": {
+                        "$ref": "StopBackfillJobResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Stops the backfill job for the specified stream object."
+                    }
+                  }
                 }
               }
             },

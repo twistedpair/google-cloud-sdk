@@ -48,36 +48,5 @@ def _time_zone_offset_init_args(self):
   # pylint: enable=protected-access
 
 
-messages.util.TimeZoneOffset.__getinitargs__ = _time_zone_offset_init_args
-
-
-def _field_list_extend(self, sequence):
-  """Implements apitools.base.protorpclite.FieldList.extend.
-
-  A breaking change to list unpickling in Python 3.7 affects subclasses of list
-  (like FieldList):
-  https://github.com/python/cpython/commit/f89fdc29937139b55dd68587759cadb8468d0190#diff-6a8bf1993db0eae81c2ee98e38eeb1ac4d9342b8b5c090f33417a064e6678562R5823
-
-  The result of this change is that FieldList.__setstate__ is called after
-  FieldList.extend in Python 3.7+, meaning the __field attribute is not set
-  when FieldList.extend is first called, raising an AttributeError.
-
-  Args:
-    self (FieldList): an instance of FieldList.
-    sequence (Iterable): All items in sequence are added to FieldList.
-
-  Returns:
-    None. It's unclear why apitools returns the result of list.extend, since
-    that function modifies the list in-place and returns None. Returning it for
-    consistency.
-  """
-  try:
-    # pylint: disable=protected-access
-    self.__field.validate(sequence)
-    # pylint: enable=protected-access
-  except AttributeError:
-    pass
-  return list.extend(self, sequence)
-
-
-messages.FieldList.extend = _field_list_extend
+def patch():
+  messages.util.TimeZoneOffset.__getinitargs__ = _time_zone_offset_init_args

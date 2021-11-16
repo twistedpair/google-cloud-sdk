@@ -66,7 +66,7 @@ def GetSession(timeout='unset',
        credentials.
 
   Raises:
-    c_store.Error: If an error loading the credentials occurs.
+    creds_exceptions.Error: If an error loading the credentials occurs.
   """
   session = requests.GetSession(
       timeout=timeout,

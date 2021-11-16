@@ -53,7 +53,7 @@ def GenerateIdToken():
   account = None
 
   # oauth2client.client.OAuth2Credentials |
-  # core.credentials.google_auth_credentials.UserCredWithReauth
+  # core.credentials.google_auth_credentials.Credentials
   cred = store.Load(
       # if account is None, implicitly retrieves properties.VALUES.core.account
       account,

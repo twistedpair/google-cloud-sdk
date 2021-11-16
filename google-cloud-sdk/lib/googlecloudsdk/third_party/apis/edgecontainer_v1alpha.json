@@ -315,6 +315,20 @@
           "items": {
             "type": "string"
           }
+        },
+        "clusterIpv6CidrBlocks": {
+          "description": "Immutable. If specified, dual stack mode is enabled and all pods in the cluster are assigned an IPv6 address from these blocks alongside from an IPv4 address. Only a single block is supported. This field cannot be changed after creation.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "servicesIpv6CidrBlocks": {
+          "description": "Immutable. If specified, dual stack mode is enabled and all services in the cluster are assigned an IPv6 address from these blocks alongside from an IPv4 address. Only a single block is supported. This field cannot be changed after creation.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

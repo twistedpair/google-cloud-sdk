@@ -103,21 +103,16 @@ def ListRepos(project_id, status, namespace, membership, selector, targets):
 
   if targets == 'all' or targets == 'config-controller':
     # list the repos from Config Controller cluster
-    cluster = ''
+    clusters = []
     try:
-      cluster = utils.ListConfigControllerClusters(project_id)
+      clusters = utils.ListConfigControllerClusters(project_id)
     except exceptions.Error as err:
       log.error(err)
-    if cluster:
-      switched = True
-      try:
-        utils.KubeconfigForCluster(project_id, 'us-central1', cluster)
-      except exceptions.Error as err:
-        log.error(err)
-        switched = False
-      if switched:
+    if clusters:
+      for cluster in clusters:
         try:
-          _AppendReposFromCluster(cluster, repo_cross_clusters,
+          utils.KubeconfigForCluster(project_id, cluster[1], cluster[0])
+          _AppendReposFromCluster(cluster[0], repo_cross_clusters,
                                   'Config Controller', namespace, selector_map)
         except exceptions.Error as err:
           log.error(err)
@@ -134,10 +129,6 @@ def ListRepos(project_id, status, namespace, membership, selector, targets):
         continue
       try:
         utils.KubeconfigForMembership(project_id, member)
-      except exceptions.Error as err:
-        log.error(err)
-        continue
-      try:
         _AppendReposFromCluster(member, repo_cross_clusters, 'Membership',
                                 namespace, selector_map)
       except exceptions.Error as err:
@@ -383,8 +374,16 @@ def _AppendReposFromCluster(membership, repos_cross_clusters, cluster_type,
         else:
           all_repos += obj['items']
   if errors:
-    raise exceptions.Error(
-        'Error getting RootSync,RepoSync CRs: {}'.format(errors))
+    if errors[0].startswith('error: the server doesn\'t have a resource type'):
+      raise exceptions.Error(
+          'Error getting RootSync,RepoSync,Resourcegroup CRs: {}\n{}'.format(
+              errors,
+              'Make sure you have setup Connect Gateway for ' + membership +
+              ' https://cloud.google.com/anthos/multicluster-management/gateway/setup'
+          ))
+    else:
+      raise exceptions.Error(
+          'Error getting RootSync,RepoSync CRs: {}'.format(errors))
 
   count = 0
   for repo in all_repos:
@@ -425,8 +424,15 @@ def _AppendReposAndResourceGroups(membership, repos_cross_clusters,
   repos, err = utils.RunKubectl(
       ['get', 'rootsync,reposync,resourcegroup', '-o', 'json'] + params)
   if err:
-    raise exceptions.Error(
-        'Error getting RootSync,RepoSync,Resourcegroup CRs: {}'.format(err))
+    if err.startswith('error: the server doesn\'t have a resource type'):
+      raise exceptions.Error(
+          'Error getting RootSync,RepoSync,Resourcegroup CRs: {}\n{}'.format(
+              err, 'Make sure you have setup Connect Gateway ' + membership +
+              ' https://cloud.google.com/anthos/multicluster-management/gateway/setup'
+          ))
+    else:
+      raise exceptions.Error(
+          'Error getting RootSync,RepoSync,Resourcegroup CRs: {}'.format(err))
 
   if not repos:
     return
@@ -565,21 +571,16 @@ def DescribeRepo(project, name, namespace, source, managed_resources):
 
   repo_cross_clusters = RawRepos()
   # Get repos from the Config Controller cluster
-  cluster = ''
+  clusters = []
   try:
-    cluster = utils.ListConfigControllerClusters(project)
+    clusters = utils.ListConfigControllerClusters(project)
   except exceptions.Error as err:
     log.error(err)
-  if cluster:
-    switched = True
-    try:
-      utils.KubeconfigForCluster(project, 'us-central1', cluster)
-    except exceptions.Error as err:
-      log.error(err)
-      switched = False
-    if switched:
+  if clusters:
+    for cluster in clusters:
       try:
-        _AppendReposAndResourceGroups(cluster, repo_cross_clusters,
+        utils.KubeconfigForCluster(project, cluster[1], cluster[0])
+        _AppendReposAndResourceGroups(cluster[0], repo_cross_clusters,
                                       'Config Controller', name, namespace,
                                       source)
       except exceptions.Error as err:
@@ -593,10 +594,6 @@ def DescribeRepo(project, name, namespace, source, managed_resources):
   for membership in memberships:
     try:
       utils.KubeconfigForMembership(project, membership)
-    except exceptions.Error as err:
-      log.error(err)
-      continue
-    try:
       _AppendReposAndResourceGroups(membership, repo_cross_clusters,
                                     'Membership', name, namespace, source)
     except exceptions.Error as err:

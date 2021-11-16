@@ -192,7 +192,8 @@ def UpdateDockerCredentials(server, refresh=True):
     refresh: Whether to force a token refresh on the active credential.
 
   Raises:
-    store.Error: There was an error loading the credentials.
+    core.credentials.exceptions.Error: There was an error loading the
+      credentials.
   """
 
   if refresh:

@@ -92,6 +92,18 @@ mesh:
     attribute_name: mesh
     help: Id of the mesh.
 
+gateway:
+  name: gateway
+  collection: networkservices.projects.locations.gateways
+  request_id_field: gatewayId
+  attributes:
+  - *project
+  - *location
+  - &gateway
+    parameter_name: gatewaysId
+    attribute_name: gateway
+    help: Id of the gateway.
+
 httpRoute:
   name: http route
   collection: networkservices.projects.locations.httpRoutes

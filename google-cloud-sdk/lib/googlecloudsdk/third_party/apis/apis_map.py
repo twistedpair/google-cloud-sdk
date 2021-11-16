@@ -1528,16 +1528,6 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
-    'labelmanager': {
-        'v1alpha1':
-            APIDef(
-                class_path='googlecloudsdk.third_party.apis.labelmanager.v1alpha1',
-                client_classpath='labelmanager_v1alpha1_client.LabelmanagerV1alpha1',
-                messages_modulepath='labelmanager_v1alpha1_messages',
-                default_version=True,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
-    },
     'language': {
         'v1':
             APIDef(
@@ -2377,12 +2367,20 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'transcoder': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.transcoder.v1',
+                client_classpath='transcoder_v1_client.TranscoderV1',
+                messages_modulepath='transcoder_v1_messages',
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1beta1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.transcoder.v1beta1',
                 client_classpath='transcoder_v1beta1_client.TranscoderV1beta1',
                 messages_modulepath='transcoder_v1beta1_messages',
-                default_version=True,
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },

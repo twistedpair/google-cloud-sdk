@@ -889,8 +889,7 @@ class EndpointPolicy(_messages.Message):
       AuthorizationPolicy resource that applies authorization policies to the
       inbound traffic at the matched endpoints. Refer to Authorization. If
       this field is not specified, authorization is disabled(no authz checks)
-      for this endpoint. Applicable only when EndpointPolicyType is
-      SIDECAR_PROXY.
+      for this endpoint.
     clientTlsPolicy: Optional. A URL referring to a ClientTlsPolicy resource.
       ClientTlsPolicy can be set to specify the authentication for traffic
       from the proxy to the actual endpoints. More specifically, it is applied
@@ -1413,12 +1412,16 @@ class NetworkservicesProjectsLocationsEdgeCacheKeysetsGetIamPolicyRequest(_messa
   object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -1547,12 +1550,16 @@ class NetworkservicesProjectsLocationsEdgeCacheOriginsGetIamPolicyRequest(_messa
   object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -1681,12 +1688,16 @@ class NetworkservicesProjectsLocationsEdgeCacheServicesGetIamPolicyRequest(_mess
   object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -1833,12 +1844,16 @@ class NetworkservicesProjectsLocationsEndpointPoliciesGetIamPolicyRequest(_messa
   object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -2525,6 +2540,27 @@ class Timeout(_messages.Message):
   r"""The timeout configuration for this origin.
 
   Fields:
+    connectTimeout: Optional. The maximum duration to wait for a single origin
+      connection to be established, including DNS lookup, TLS handshake and
+      TCP/QUIC connection establishment. Defaults to 5 seconds. The timeout
+      must be a value between 1s and 15s. The connectTimeout capped by the
+      deadline set by the request's maxAttemptsTimeout. The last connection
+      attempt may have a smaller connectTimeout in order to adhere to the
+      overall maxAttemptsTimeout.
+    maxAttemptsTimeout: Optional. The maximum time across all connection
+      attempts to all origins, including failover origins, before returning an
+      error to the client. A HTTP 504 will be returned if the timeout is
+      reached before a response is returned. Defaults to 15 seconds. The
+      timeout must be a value between 1s and 30s. If a failoverOrigin is
+      specified, the maxAttemptsTimeout of the first configured origin sets
+      the deadline for all connection attempts across all failoverOrigins.
+    readTimeout: Optional. The maximum duration to wait between reads of a
+      single HTTP connection/stream. Defaults to 15 seconds. The timeout must
+      be a value between 1s and 30s. The readTimeout is capped by the
+      responseTimeout. All reads of the HTTP connection/stream must be
+      completed by the deadline set by the responseTimeout. If the response
+      headers have already been written to the connection, the response will
+      be truncated and logged.
     responseTimeout: Optional. The maximum duration to wait for the last byte
       of a response to arrive when reading from the HTTP connection/stream.
       Defaults to 30 seconds. The timeout must be a value between 1s and 120s.
@@ -2537,7 +2573,10 @@ class Timeout(_messages.Message):
       connection, the response will be truncated and logged.
   """
 
-  responseTimeout = _messages.StringField(1)
+  connectTimeout = _messages.StringField(1)
+  maxAttemptsTimeout = _messages.StringField(2)
+  readTimeout = _messages.StringField(3)
+  responseTimeout = _messages.StringField(4)
 
 
 class TrafficPortSelector(_messages.Message):

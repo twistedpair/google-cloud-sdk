@@ -123,7 +123,7 @@ def GetSharedSettingFlag(custom_name=None):
   """
   return base.Argument(
       custom_name if custom_name else '--share-setting',
-      choices=['local', 'projects'],
+      choices=['local', 'projects', 'folders'],
       help=help_text)
 
 
@@ -131,13 +131,13 @@ def GetShareWithFlag(custom_name=None):
   """Gets the --share-with flag."""
   help_text = """\
   If this reservation is shared (--share-setting is not local), provide a list
-  of all of the specific projects that this reservation is shared with. List
-  must contain project IDs or project numbers.
+  of all of the specific projects or folders that this reservation is shared
+  with. List must contain project IDs or project numbers or folder IDs.
   """
   return base.Argument(
       custom_name if custom_name else '--share-with',
       type=arg_parsers.ArgList(min_length=1),
-      metavar='PROJECT',
+      metavar='SHARE_WITH',
       help=help_text)
 
 

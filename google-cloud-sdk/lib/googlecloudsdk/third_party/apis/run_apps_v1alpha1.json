@@ -290,39 +290,10 @@
       "description": "Message for the Application Config Next tag: 6",
       "type": "object",
       "properties": {
-        "router": {
-          "description": "Repeated set of Router configurations.",
-          "type": "array",
-          "items": {
-            "$ref": "Router"
-          }
-        },
-        "cloudsql": {
-          "description": "Repeated set of CloudSql configurations.",
-          "type": "array",
-          "items": {
-            "$ref": "CloudSql"
-          }
-        },
-        "service": {
-          "description": "Repeated set of Cloud Run service configurations.",
-          "type": "array",
-          "items": {
-            "$ref": "CloudRunService"
-          }
-        },
-        "redis": {
-          "description": "Repeated set of Redis configurations.",
-          "type": "array",
-          "items": {
-            "$ref": "Redis"
-          }
-        },
-        "vpc": {
-          "description": "Repeated set of VPC configurations.",
-          "type": "array",
-          "items": {
-            "$ref": "VPC"
+        "resources": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "ResourceConfig"
           }
         },
         "config": {
@@ -332,28 +303,51 @@
         }
       }
     },
-    "Router": {
-      "id": "Router",
+    "ResourceConfig": {
+      "id": "ResourceConfig",
+      "description": "Message for the Resource configuration.",
+      "type": "object",
+      "properties": {
+        "router": {
+          "description": "Router configuration.",
+          "$ref": "RouterConfig"
+        },
+        "cloudsql": {
+          "description": "CloudSql configuration.",
+          "$ref": "CloudSqlConfig"
+        },
+        "service": {
+          "description": "Cloud Run service configuration.",
+          "$ref": "CloudRunServiceConfig"
+        },
+        "redis": {
+          "description": "Redis configuration.",
+          "$ref": "RedisConfig"
+        },
+        "vpc": {
+          "description": "VPC configuration.",
+          "$ref": "VPCConfig"
+        }
+      }
+    },
+    "RouterConfig": {
+      "id": "RouterConfig",
       "description": "Message for a Router resource.",
       "type": "object",
       "properties": {
-        "name": {
-          "description": "The name of the router resource.",
-          "type": "string"
-        },
         "domain": {
           "description": "Domain name to associate with the router.",
           "type": "string"
         },
         "default-route": {
           "description": "The default route config. The URL paths field is not required for this route config.",
-          "$ref": "RouteConfig"
+          "$ref": "Route"
         },
         "routes": {
-          "description": "A list of route configurations to associate with the router. Each RouteConfig must include a paths configuration.",
+          "description": "A list of route configurations to associate with the router. Each Route configuration must include a paths configuration.",
           "type": "array",
           "items": {
-            "$ref": "RouteConfig"
+            "$ref": "Route"
           }
         },
         "dns-zone": {
@@ -362,8 +356,8 @@
         }
       }
     },
-    "RouteConfig": {
-      "id": "RouteConfig",
+    "Route": {
+      "id": "Route",
       "description": "Message for a single routeable resource within a Router.",
       "type": "object",
       "properties": {
@@ -384,15 +378,11 @@
         }
       }
     },
-    "CloudSql": {
-      "id": "CloudSql",
+    "CloudSqlConfig": {
+      "id": "CloudSqlConfig",
       "description": "Message for a Cloud SQL resource.",
       "type": "object",
       "properties": {
-        "name": {
-          "description": "Required. Unique name for the Cloud SQL database.",
-          "type": "string"
-        },
         "version": {
           "description": "The database version. e.g. \"MYSQL_8_0\". The version must match one of the values at https:\/\/cloud.google.com\/sql\/docs\/mysql\/admin-api\/rest\/v1beta4\/SqlDatabaseVersion.",
           "type": "string"
@@ -431,25 +421,21 @@
         }
       }
     },
-    "CloudRunService": {
-      "id": "CloudRunService",
+    "CloudRunServiceConfig": {
+      "id": "CloudRunServiceConfig",
       "description": "Message for Cloud Run service configs.",
       "type": "object",
       "properties": {
-        "name": {
-          "description": "Name of the service.",
-          "type": "string"
-        },
-        "image": {
-          "description": "The container image to deploy the service with.",
-          "type": "string"
-        },
         "resources": {
           "description": "Bindings to other resources.",
           "type": "array",
           "items": {
             "$ref": "ServiceResourceBindingConfig"
           }
+        },
+        "image": {
+          "description": "The container image to deploy the service with.",
+          "type": "string"
         }
       }
     },
@@ -471,15 +457,11 @@
         }
       }
     },
-    "Redis": {
-      "id": "Redis",
+    "RedisConfig": {
+      "id": "RedisConfig",
       "description": "Message for Redis configs.",
       "type": "object",
       "properties": {
-        "name": {
-          "description": "Name of the resource.",
-          "type": "string"
-        },
         "instance": {
           "description": "Configs for the Redis instance.",
           "$ref": "RedisInstanceConfig"
@@ -513,15 +495,11 @@
         }
       }
     },
-    "VPC": {
-      "id": "VPC",
+    "VPCConfig": {
+      "id": "VPCConfig",
       "description": "Message for VPC configs.",
       "type": "object",
       "properties": {
-        "name": {
-          "description": "The name of the VPC resource.",
-          "type": "string"
-        },
         "network": {
           "description": "Network is an existing network name. If omitted, a new network will be created for the application.",
           "type": "string"
@@ -1468,7 +1446,7 @@
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
-                      "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                      "description": "Optional. The maximum policy version that will be used to format the policy. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset. The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"

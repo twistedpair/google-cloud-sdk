@@ -173,6 +173,23 @@ class Artifacts(_messages.Message):
   objects = _messages.MessageField('ArtifactObjects', 2)
 
 
+class BatchCreateBitbucketServerConnectedRepositoriesResponseMetadata(_messages.Message):
+  r"""Metadata for `BatchCreateBitbucketServerConnectedRepositories`
+  operation.
+
+  Fields:
+    completeTime: Time the operation was completed.
+    config: The name of the `BitbucketServerConfig` that added connected
+      repositories. Format: `projects/{project}/locations/{location}/bitbucket
+      ServerConfigs/{config}`
+    createTime: Time the operation was created.
+  """
+
+  completeTime = _messages.StringField(1)
+  config = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+
+
 class BitbucketServerConfig(_messages.Message):
   r"""BitbucketServerConfig represents the configuration for a Bitbucket
   Server.
@@ -856,6 +873,11 @@ class BuildTrigger(_messages.Message):
       explicitly set the type of event to which this BuildTrigger should
       respond. This field is optional but will be validated against the rest
       of the configuration if it is set.
+    IncludeBuildLogsValueValuesEnum: Optional. If set to
+      INCLUDE_BUILD_LOGS_WITH_STATUS, log url will be shown on GitHub page
+      when build status is final. Setting this field to
+      INCLUDE_BUILD_LOGS_WITH_STATUS for non GitHub triggers results in
+      INVALID_ARGUMENT error.
 
   Messages:
     SubstitutionsValue: Substitutions for Build resource. The keys must match
@@ -897,6 +919,10 @@ class BuildTrigger(_messages.Message):
       ignored_files is not empty, then we ignore any files that match any of
       the ignored_file globs. If the change has no files that are outside of
       the ignored_files globs, then we do not trigger a build.
+    includeBuildLogs: Optional. If set to INCLUDE_BUILD_LOGS_WITH_STATUS, log
+      url will be shown on GitHub page when build status is final. Setting
+      this field to INCLUDE_BUILD_LOGS_WITH_STATUS for non GitHub triggers
+      results in INVALID_ARGUMENT error.
     includedFiles: If any of the files altered in the commit pass the
       ignored_files filter and included_files is empty, then as far as this
       filter is concerned, we should trigger the build. If any of the files
@@ -954,6 +980,19 @@ class BuildTrigger(_messages.Message):
     PUBSUB = 3
     MANUAL = 4
 
+  class IncludeBuildLogsValueValuesEnum(_messages.Enum):
+    r"""Optional. If set to INCLUDE_BUILD_LOGS_WITH_STATUS, log url will be
+    shown on GitHub page when build status is final. Setting this field to
+    INCLUDE_BUILD_LOGS_WITH_STATUS for non GitHub triggers results in
+    INVALID_ARGUMENT error.
+
+    Values:
+      INCLUDE_BUILD_LOGS_UNSPECIFIED: Build logs will not be shown on GitHub.
+      INCLUDE_BUILD_LOGS_WITH_STATUS: Build logs will be shown on GitHub.
+    """
+    INCLUDE_BUILD_LOGS_UNSPECIFIED = 0
+    INCLUDE_BUILD_LOGS_WITH_STATUS = 1
+
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SubstitutionsValue(_messages.Message):
     r"""Substitutions for Build resource. The keys must match the following
@@ -995,16 +1034,17 @@ class BuildTrigger(_messages.Message):
   github = _messages.MessageField('GitHubEventsConfig', 13)
   id = _messages.StringField(14)
   ignoredFiles = _messages.StringField(15, repeated=True)
-  includedFiles = _messages.StringField(16, repeated=True)
-  name = _messages.StringField(17)
-  pubsubConfig = _messages.MessageField('PubsubConfig', 18)
-  resourceName = _messages.StringField(19)
-  serviceAccount = _messages.StringField(20)
-  sourceToBuild = _messages.MessageField('GitRepoSource', 21)
-  substitutions = _messages.MessageField('SubstitutionsValue', 22)
-  tags = _messages.StringField(23, repeated=True)
-  triggerTemplate = _messages.MessageField('RepoSource', 24)
-  webhookConfig = _messages.MessageField('WebhookConfig', 25)
+  includeBuildLogs = _messages.EnumField('IncludeBuildLogsValueValuesEnum', 16)
+  includedFiles = _messages.StringField(17, repeated=True)
+  name = _messages.StringField(18)
+  pubsubConfig = _messages.MessageField('PubsubConfig', 19)
+  resourceName = _messages.StringField(20)
+  serviceAccount = _messages.StringField(21)
+  sourceToBuild = _messages.MessageField('GitRepoSource', 22)
+  substitutions = _messages.MessageField('SubstitutionsValue', 23)
+  tags = _messages.StringField(24, repeated=True)
+  triggerTemplate = _messages.MessageField('RepoSource', 25)
+  webhookConfig = _messages.MessageField('WebhookConfig', 26)
 
 
 class BuiltImage(_messages.Message):

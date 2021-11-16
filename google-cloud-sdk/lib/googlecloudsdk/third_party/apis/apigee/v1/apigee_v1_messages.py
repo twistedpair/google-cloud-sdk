@@ -1849,12 +1849,16 @@ class ApigeeOrganizationsEnvironmentsGetIamPolicyRequest(_messages.Message):
   r"""A ApigeeOrganizationsEnvironmentsGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -2087,39 +2091,42 @@ class ApigeeOrganizationsEnvironmentsOptimizedStatsGetRequest(_messages.Message)
   r"""A ApigeeOrganizationsEnvironmentsOptimizedStatsGetRequest object.
 
   Fields:
-    accuracy: Legacy field: not used anymore.
-    aggTable: If customers want to query custom aggregate tables, then this
-      parameter can be used to specify the table name. If this parameter is
-      skipped, then Edge Query will try to retrieve the data from fact tables
-      which will be expensive.
-    filter: Enables drill-down on specific dimension values.
-    limit: This parameter is used to limit the number of result items. Default
-      and the max value is 14400.
-    name: Required. The resource name for which the interactive query will be
-      executed. Must be of the form `organizations/{organization_id}/environme
-      nts/{environment_id/optimizedStats/{dimensions}` Dimensions let you view
-      metrics in meaningful groupings. E.g. apiproxy, target_host. The value
-      of dimensions should be comma separated list as shown below `organizatio
-      ns/{org}/environments/{env}/optimizedStats/apiproxy,request_verb`
-    offset: Use offset with limit to enable pagination of results. For
-      example, to display results 11-20, set limit to '10' and offset to '10'.
-    realtime: Legacy field: not used anymore.
-    select: Required. The select parameter contains a comma separated list of
-      metrics. E.g. sum(message_count),sum(error_count)
-    sonar: This parameter routes the query to api monitoring service for last
-      hour.
-    sort: This parameter specifies if the sort order should be ascending or
-      descending Supported values are DESC and ASC.
-    sortby: Comma separated list of columns to sort the final result.
+    accuracy: No longer used by Apigee. Supported for backwards compatibility.
+    aggTable: Table name used to query custom aggregate tables. If this
+      parameter is skipped, then Apigee will try to retrieve the data from
+      fact tables which will be expensive.
+    filter: Filter that enables you to drill-down on specific dimension
+      values.
+    limit: Maximum number of result items to return. The default and maximum
+      value that can be returned is 14400.
+    name: Required. Resource name for which the interactive query will be
+      executed. Use the following format in your request:
+      `organizations/{org}/environments/{env}/optimizedStats/{dimensions}`
+      Dimensions let you view metrics in meaningful groupings, such as
+      `apiproxy`, `target_host`. The value of `dimensions` should be a comma-
+      separated list as shown below: `organizations/{org}/environments/{env}/o
+      ptimizedStats/apiproxy,request_verb`
+    offset: Offset value. Use `offset` with `limit` to enable pagination of
+      results. For example, to display results 11-20, set limit to `10` and
+      offset to `10`.
+    realtime: No longer used by Apigee. Supported for backwards compatibility.
+    select: Required. Comma-separated list of metrics. For example:
+      `sum(message_count),sum(error_count)`
+    sonar: Routes the query to API Monitoring for the last hour.
+    sort: Flag that specifies whether the sort order should be ascending or
+      descending. Valid values include `DESC` and `ASC`.
+    sortby: Comma-separated list of columns to sort the final result.
     timeRange: Required. Time interval for the interactive query. Time range
-      is specified as start~end E.g. 04/15/2017 00:00~05/15/2017 23:59
-    timeUnit: A value of second, minute, hour, day, week, month. Time Unit
-      specifies the granularity of metrics returned.
-    topk: Take 'top k' results from results, for example, to return the top 5
-      results 'topk=5'.
-    tsAscending: Lists timestamps in ascending order if set to true. Recommend
-      setting this value to true if you are using sortby with sort=DESC.
-    tzo: This parameters contains the timezone offset value.
+      is specified in GMT as `start~end`. For example: `04/15/2017
+      00:00~05/15/2017 23:59`
+    timeUnit: Granularity of metrics returned. Valid values include: `second`,
+      `minute`, `hour`, `day`, `week`, or `month`.
+    topk: Top number of results to return. For example, to return the top 5
+      results, set `topk=5`.
+    tsAscending: Flag that specifies whether to list timestamps in ascending
+      (`true`) or descending (`false`) order. Apigee recommends setting this
+      value to `true` if you are using `sortby` with `sort=DESC`.
+    tzo: Timezone offset value.
   """
 
   accuracy = _messages.StringField(1)
@@ -2505,40 +2512,42 @@ class ApigeeOrganizationsEnvironmentsStatsGetRequest(_messages.Message):
   r"""A ApigeeOrganizationsEnvironmentsStatsGetRequest object.
 
   Fields:
-    accuracy: Legacy field: not used anymore. This field is present to support
-      UI calls which still use this parameter.
-    aggTable: If customers want to query custom aggregate tables, then this
-      parameter can be used to specify the table name. If this parameter is
-      skipped, then Edge Query will try to retrieve the data from fact tables
-      which will be expensive.
-    filter: Enables drill-down on specific dimension values
-    limit: This parameter is used to limit the number of result items. Default
-      and the max value is 14400.
-    name: Required. The resource name for which the interactive query will be
-      executed. Must be of the form `organizations/{organization_id}/environme
-      nts/{environment_id/stats/{dimensions}` Dimensions let you view metrics
-      in meaningful groupings. E.g. apiproxy, target_host. The value of
-      dimensions should be comma separated list as shown below
+    accuracy: No longer used by Apigee. Supported for backwards compatibility.
+    aggTable: Table name used to query custom aggregate tables. If this
+      parameter is skipped, then Apigee will try to retrieve the data from
+      fact tables which will be expensive.
+    filter: Filter that enables you to drill down on specific dimension
+      values.
+    limit: Maximum number of result items to return. The default and maximum
+      value that can be returned is 14400.
+    name: Required. Resource name for which the interactive query will be
+      executed. Use the following format in your request:
+      `organizations/{org}/environments/{env}/stats/{dimensions}` Dimensions
+      let you view metrics in meaningful groupings, such as `apiproxy` or
+      `target_host`. The value of dimensions should be a comma-separated list,
+      as shown below:
       `organizations/{org}/environments/{env}/stats/apiproxy,request_verb`
-    offset: Use offset with limit to enable pagination of results. For
-      example, to display results 11-20, set limit to '10' and offset to '10'.
-    realtime: Legacy field: not used anymore.
-    select: The select parameter contains a comma separated list of metrics.
-      E.g. sum(message_count),sum(error_count)
-    sonar: This parameter routes the query to api monitoring service for last
-      hour.
-    sort: This parameter specifies if the sort order should be ascending or
-      descending Supported values are DESC and ASC.
-    sortby: Comma separated list of columns to sort the final result.
+    offset: Offset value. Use `offset` with `limit` to enable pagination of
+      results. For example, to display results 11-20, set limit to `10` and
+      offset to `10`.
+    realtime: No longer used by Apigee. Supported for backwards compatibility.
+    select: Comma-separated list of metrics. For example:
+      `sum(message_count),sum(error_count)`
+    sonar: Routes the query to API Monitoring for the last hour.
+    sort: Flag that specifies whether the sort order should be ascending or
+      descending. Valid values include: `DESC` and `ASC`.
+    sortby: Comma-separated list of columns to sort the final result.
     timeRange: Time interval for the interactive query. Time range is
-      specified as start~end E.g. 04/15/2017 00:00~05/15/2017 23:59
-    timeUnit: A value of second, minute, hour, day, week, month. Time Unit
-      specifies the granularity of metrics returned.
-    topk: Take 'top k' results from results, for example, to return the top 5
-      results 'topk=5'.
-    tsAscending: Lists timestamps in ascending order if set to true. Recommend
-      setting this value to true if you are using sortby with sort=DESC.
-    tzo: This parameters contains the timezone offset value.
+      specified in GMT as `start~end`. For example: `04/15/2017
+      00:00~05/15/2017 23:59`
+    timeUnit: Granularity of metrics returned. Valid values include: `second`,
+      `minute`, `hour`, `day`, `week`, or` month`.
+    topk: Top number of results to return. For example, to return the top 5
+      results, set `topk=5`.
+    tsAscending: Flag that specifies whether to list timestamps in ascending
+      (`true`) or descending (`false`) order. Apigee recommends that you set
+      this value to `true` if you are using `sortby` with `sort=DESC`.
+    tzo: Timezone offset value.
   """
 
   accuracy = _messages.StringField(1)
@@ -3011,35 +3020,38 @@ class ApigeeOrganizationsHostStatsGetRequest(_messages.Message):
   r"""A ApigeeOrganizationsHostStatsGetRequest object.
 
   Fields:
-    accuracy: Legacy field: not used anymore.
-    envgroupHostname: Required. The hostname for which the interactive query
-      will be executed.
-    filter: Enables drill-down on specific dimension values.
-    limit: This parameter is used to limit the number of result items. Default
-      and the max value is 14400.
-    name: Required. The resource name for which the interactive query will be
-      executed. Must be of the form
-      `organizations/{organization_id}/hostStats/{dimensions}`. Dimensions let
-      you view metrics in meaningful groupings. E.g. apiproxy, target_host.
-      The value of dimensions should be comma separated list as shown below
+    accuracy: No longer used by Apigee. Supported for backwards compatibility.
+    envgroupHostname: Required. Hostname for which the interactive query will
+      be executed.
+    filter: Flag that enables drill-down on specific dimension values.
+    limit: Maximum number of result items to return. The default and maximum
+      value that can be returned is 14400.
+    name: Required. Resource name for which the interactive query will be
+      executed. Use the following format in your request:
+      `organizations/{org}/hostStats/{dimensions}` Dimensions let you view
+      metrics in meaningful groupings, such as `apiproxy`, `target_host`. The
+      value of dimensions should be a comma-separated list as shown below
       `organizations/{org}/hostStats/apiproxy,request_verb`
-    offset: Use offset with limit to enable pagination of results. For
-      example, to display results 11-20, set limit to '10' and offset to '10'.
-    realtime: Legacy field: not used anymore.
-    select: The select parameter contains a comma separated list of metrics.
-      E.g. sum(message_count),sum(error_count)
-    sort: This parameter specifies if the sort order should be ascending or
-      descending Supported values are DESC and ASC.
-    sortby: Comma separated list of columns to sort the final result.
+    offset: Offset value. Use `offset` with `limit` to enable pagination of
+      results. For example, to display results 11-20, set limit to `10` and
+      offset to `10`.
+    realtime: No longer used by Apigee. Supported for backwards compatibility.
+    select: Comma-separated list of metrics. For example:
+      `sum(message_count),sum(error_count)`
+    sort: Flag that specifies if the sort order should be ascending or
+      descending. Valid values are `DESC` and `ASC`.
+    sortby: Comma-separated list of columns to sort the final result.
     timeRange: Time interval for the interactive query. Time range is
-      specified as start~end E.g. 04/15/2017 00:00~05/15/2017 23:59
-    timeUnit: A value of second, minute, hour, day, week, month. Time Unit
-      specifies the granularity of metrics returned.
-    topk: Take 'top k' results from results, for example, to return the top 5
-      results 'topk=5'.
-    tsAscending: Lists timestamps in ascending order if set to true. Recommend
-      setting this value to true if you are using sortby with sort=DESC.
-    tzo: This parameters contains the timezone offset value.
+      specified in GMT as `start~end`. For example: `04/15/2017
+      00:00~05/15/2017 23:59`
+    timeUnit: Granularity of metrics returned. Valid values include: `second`,
+      `minute`, `hour`, `day`, `week`, or `month`.
+    topk: Top number of results to return. For example, to return the top 5
+      results, set `topk=5`.
+    tsAscending: Flag that specifies whether to list timestamps in ascending
+      (`true`) or descending (`false`) order. Apigee recommends that you set
+      this value to `true` if you are using `sortby` with `sort=DESC`.
+    tzo: Timezone offset value.
   """
 
   accuracy = _messages.StringField(1)
@@ -3384,36 +3396,40 @@ class ApigeeOrganizationsOptimizedHostStatsGetRequest(_messages.Message):
   r"""A ApigeeOrganizationsOptimizedHostStatsGetRequest object.
 
   Fields:
-    accuracy: Legacy field: not used anymore.
-    envgroupHostname: Required. The hostname for which the interactive query
-      will be executed.
-    filter: Enables drill-down on specific dimension values.
-    limit: This parameter is used to limit the number of result items. Default
-      and the max value is 14400.
-    name: Required. The resource name for which the interactive query will be
-      executed. Must be of the form
-      `organizations/{organization_id}/optimizedHostStats/{dimensions}`.
-      Dimensions let you view metrics in meaningful groupings. E.g. apiproxy,
-      target_host. The value of dimensions should be comma separated list as
-      shown below
+    accuracy: No longer used by Apigee. Supported for backwards compatibility.
+    envgroupHostname: Required. Hostname for which the interactive query will
+      be executed.
+    filter: Filter that enables you to drill-down on specific dimension
+      values.
+    limit: Maximum number of result items to return. The default and maximum
+      value that can be returned is 14400.
+    name: Required. Resource name for which the interactive query will be
+      executed. Use the following format in your request:
+      `organizations/{organization_id}/optimizedHostStats/{dimensions}`
+      Dimensions let you view metrics in meaningful groupings, such as
+      `apiproxy`, `target_host`. The value of dimensions should be a comma-
+      separated list as shown below:
       `organizations/{org}/optimizedHostStats/apiproxy,request_verb`
-    offset: Use offset with limit to enable pagination of results. For
-      example, to display results 11-20, set limit to '10' and offset to '10'.
-    realtime: Legacy field: not used anymore.
-    select: Required. The select parameter contains a comma separated list of
-      metrics. E.g. sum(message_count),sum(error_count)
-    sort: This parameter specifies if the sort order should be ascending or
-      descending Supported values are DESC and ASC.
-    sortby: Comma separated list of columns to sort the final result.
+    offset: Offset value. Use `offset` with `limit` to enable pagination of
+      results. For example, to display results 11-20, set limit to `10` and
+      offset to `10`.
+    realtime: No longer used by Apigee. Supported for backwards compatibility.
+    select: Required. Comma-separated list of metrics. For example:
+      `sum(message_count),sum(error_count)`
+    sort: Flag that specifies whether the sort order should be ascending or
+      descending. Valid values include `DESC` and `ASC`.
+    sortby: Comma-separated list of columns used to sort the final result.
     timeRange: Required. Time interval for the interactive query. Time range
-      is specified as start~end. E.g 04/15/2017 00:00~05/15/2017 23:59.
-    timeUnit: A value of second, minute, hour, day, week, month. Time Unit
-      specifies the granularity of metrics returned.
-    topk: Take 'top k' results from results, for example, to return the top 5
-      results 'topk=5'.
-    tsAscending: Lists timestamps in ascending order if set to true. Recommend
-      setting this value to true if you are using sortby with sort=DESC.
-    tzo: This parameters contains the timezone offset value.
+      is specified in GMT as `start~end`. For example: `04/15/2017
+      00:00~05/15/2017 23:59`.
+    timeUnit: Granularity of metrics returned. Valid values include: `second`,
+      `minute`, `hour`, `day`, `week`, or `month`.
+    topk: Top number of results to return. For example, to return the top 5
+      results, set `topk=5`.
+    tsAscending: Flag that specifies whether to list timestamps in ascending
+      (`true`) or descending (`false`) order. Apigee recommends that you set
+      this value to `true` if you are using `sortby` with `sort=DESC`.
+    tzo: Timezone offset value.
   """
 
   accuracy = _messages.StringField(1)
@@ -4099,6 +4115,11 @@ class GoogleCloudApigeeV1ApiProduct(_messages.Message):
       combination of graphQL name and operation type for a particular proxy
       request. If graphQL name is not set, this would imply quota will be
       applied on all graphQL requests matching the operation type.
+    grpcOperationGroup: Configuration used to group Apigee proxies with gRPC
+      services and method names. This grouping allows us to set quota for a
+      particular gRPC proxy and method name for a particular gRPC proxy
+      request. If a method name is not set, this implies quota and
+      authorization are applied to all gRPC methods implemented by that proxy.
     lastModifiedAt: Response only. Modified time of this environment as
       milliseconds since epoch.
     name: Internal name of the API product. Characters you can use in the name
@@ -4141,14 +4162,15 @@ class GoogleCloudApigeeV1ApiProduct(_messages.Message):
   displayName = _messages.StringField(6)
   environments = _messages.StringField(7, repeated=True)
   graphqlOperationGroup = _messages.MessageField('GoogleCloudApigeeV1GraphQLOperationGroup', 8)
-  lastModifiedAt = _messages.IntegerField(9)
-  name = _messages.StringField(10)
-  operationGroup = _messages.MessageField('GoogleCloudApigeeV1OperationGroup', 11)
-  proxies = _messages.StringField(12, repeated=True)
-  quota = _messages.StringField(13)
-  quotaInterval = _messages.StringField(14)
-  quotaTimeUnit = _messages.StringField(15)
-  scopes = _messages.StringField(16, repeated=True)
+  grpcOperationGroup = _messages.MessageField('GoogleCloudApigeeV1GrpcOperationGroup', 9)
+  lastModifiedAt = _messages.IntegerField(10)
+  name = _messages.StringField(11)
+  operationGroup = _messages.MessageField('GoogleCloudApigeeV1OperationGroup', 12)
+  proxies = _messages.StringField(13, repeated=True)
+  quota = _messages.StringField(14)
+  quotaInterval = _messages.StringField(15)
+  quotaTimeUnit = _messages.StringField(16)
+  scopes = _messages.StringField(17, repeated=True)
 
 
 class GoogleCloudApigeeV1ApiProductRef(_messages.Message):
@@ -5506,11 +5528,11 @@ class GoogleCloudApigeeV1DeveloperSubscription(_messages.Message):
 
 
 class GoogleCloudApigeeV1DimensionMetric(_messages.Message):
-  r"""This message type encapsulates a metric grouped by dimension.
+  r"""Encapsulates a metric grouped by dimension.
 
   Fields:
-    metrics: This field contains a list of metrics.
-    name: This field contains the name of the dimension.
+    metrics: List of metrics.
+    name: Name of the dimension.
   """
 
   metrics = _messages.MessageField('GoogleCloudApigeeV1Metric', 1, repeated=True)
@@ -6040,6 +6062,42 @@ class GoogleCloudApigeeV1GraphQLOperationGroup(_messages.Message):
 
   operationConfigType = _messages.StringField(1)
   operationConfigs = _messages.MessageField('GoogleCloudApigeeV1GraphQLOperationConfig', 2, repeated=True)
+
+
+class GoogleCloudApigeeV1GrpcOperationConfig(_messages.Message):
+  r"""Binds the resources in a proxy or remote service with the gRPC operation
+  and its associated quota enforcement.
+
+  Fields:
+    apiSource: Required. Name of the API proxy with which the gRPC operation
+      and quota are associated.
+    attributes: Custom attributes associated with the operation.
+    methods: List of unqualified gRPC method names for the proxy to which
+      quota will be applied. If this field is empty, the Quota will apply to
+      all operations on the gRPC service defined on the proxy. Example: Given
+      a proxy that is configured to serve com.petstore.PetService, the methods
+      com.petstore.PetService.ListPets and com.petstore.PetService.GetPet
+      would be specified here as simply ["ListPets", "GetPet"].
+    quota: Quota parameters to be enforced for the methods and API source
+      combination. If none are specified, quota enforcement will not be done.
+  """
+
+  apiSource = _messages.StringField(1)
+  attributes = _messages.MessageField('GoogleCloudApigeeV1Attribute', 2, repeated=True)
+  methods = _messages.StringField(3, repeated=True)
+  quota = _messages.MessageField('GoogleCloudApigeeV1Quota', 4)
+
+
+class GoogleCloudApigeeV1GrpcOperationGroup(_messages.Message):
+  r"""List of gRPC operation configuration details associated with Apigee API
+  proxies.
+
+  Fields:
+    operationConfigs: Required. List of operation configurations for either
+      Apigee API proxies that are associated with this API product.
+  """
+
+  operationConfigs = _messages.MessageField('GoogleCloudApigeeV1GrpcOperationConfig', 1, repeated=True)
 
 
 class GoogleCloudApigeeV1IngressConfig(_messages.Message):
@@ -6677,16 +6735,15 @@ class GoogleCloudApigeeV1ListTraceConfigOverridesResponse(_messages.Message):
 
 
 class GoogleCloudApigeeV1Metadata(_messages.Message):
-  r"""This message type encapsulates additional information about query
-  execution.
+  r"""Encapsulates additional information about query execution.
 
   Fields:
     errors: List of error messages as strings.
     notices: List of additional information such as data source, if result was
-      truncated etc. E.g "notices": [ "Source:Postgres", "PG
+      truncated. For example: ``` "notices": [ "Source:Postgres", "PG
       Host:uappg0rw.e2e.apigeeks.net", "query served
       by:4b64601e-40de-4eb1-bfb9-eeee7ac929ed", "Table used:
-      edge.api.uapgroup2.agg_api" ]
+      edge.api.uapgroup2.agg_api" ]```
   """
 
   errors = _messages.StringField(1, repeated=True)
@@ -6694,15 +6751,16 @@ class GoogleCloudApigeeV1Metadata(_messages.Message):
 
 
 class GoogleCloudApigeeV1Metric(_messages.Message):
-  r"""This message type encapsulates the metric data point. Example: { "name":
+  r"""Encapsulates the metric data point. For example: ```{ "name":
   "sum(message_count)", "values" : [ { "timestamp": 1549004400000, "value":
-  "39.0" }, { "timestamp" : 1548997200000, "value" : "0.0" } ] } or { "name":
-  "sum(message_count)", "values" : ["39.0"] }
+  "39.0" }, { "timestamp" : 1548997200000, "value" : "0.0" } ] }``` or ```{
+  "name": "sum(message_count)", "values" : ["39.0"] }```
 
   Fields:
-    name: This field contains the metric name.
-    values: List of metric values. Possible value format: "values":["39.0"] or
-      "values":[ { "value": "39.0", "timestamp": 1232434354} ]
+    name: Metric name.
+    values: List of metric values. Possible value formats include:
+      `"values":["39.0"]` or `"values":[ { "value": "39.0", "timestamp":
+      1232434354} ]`
   """
 
   name = _messages.StringField(1)
@@ -6946,26 +7004,26 @@ class GoogleCloudApigeeV1OptimizedStats(_messages.Message):
   r"""A GoogleCloudApigeeV1OptimizedStats object.
 
   Fields:
-    Response: This field wraps the stats response for Js Optimized Scenario
-      with a Response key. E.g. { "Response": { "TimeUnit": [], "metaData": {
-      "errors": [], "notices": [ "Source:Postgres", "Table used:
+    Response: Wraps the `stats` response for JavaScript Optimized Scenario
+      with a response key. For example: ```{ "Response": { "TimeUnit": [],
+      "metaData": { "errors": [], "notices": [ "Source:Postgres", "Table used:
       edge.api.aaxgroup001.agg_api", "PG
       Host:ruappg08-ro.production.apigeeks.net", "query served
       by:80c4ebca-6a10-4a2e-8faf-c60c1ee306ca" ] }, "resultTruncated": false,
       "stats": { "data": [ { "identifier": { "names": [ "apiproxy" ],
       "values": [ "sirjee" ] }, "metric": [ { "env": "prod", "name":
       "sum(message_count)", "values": [ 36.0 ] }, { "env": "prod", "name":
-      "sum(is_error)", "values": [ 36.0 ] } ] } ] } } }
+      "sum(is_error)", "values": [ 36.0 ] } ] } ] } } }```
   """
 
   Response = _messages.MessageField('GoogleCloudApigeeV1OptimizedStatsResponse', 1)
 
 
 class GoogleCloudApigeeV1OptimizedStatsNode(_messages.Message):
-  r"""This message type encapsulates a data node as represented below: {
-  "identifier": { "names": [ "apiproxy" ], "values": [ "sirjee" ] }, "metric":
-  [ { "env": "prod", "name": "sum(message_count)", "values": [ 36.0 ] } ] } OR
-  { "env": "prod", "name": "sum(message_count)", "values": [ 36.0 ] }
+  r"""Encapsulates a data node as represented below: ``` { "identifier": {
+  "names": [ "apiproxy" ], "values": [ "sirjee" ] }, "metric": [ { "env":
+  "prod", "name": "sum(message_count)", "values": [ 36.0 ] } ] }``` or ``` {
+  "env": "prod", "name": "sum(message_count)", "values": [ 36.0 ] }```
   Depending on whether a dimension is present in the query or not the data
   node type can be a simple metric value or dimension identifier with list of
   metrics.
@@ -6978,17 +7036,15 @@ class GoogleCloudApigeeV1OptimizedStatsNode(_messages.Message):
 
 
 class GoogleCloudApigeeV1OptimizedStatsResponse(_messages.Message):
-  r"""This message type encapsulates a response format for Js Optimized
-  Scenario.
+  r"""Encapsulates a response format for JavaScript Optimized Scenario.
 
   Fields:
-    TimeUnit: This field contains a list of time unit values. Time unit refers
-      to an epoch timestamp value.
-    metaData: This field contains metadata information about the query
-      executed
-    resultTruncated: This ia a boolean field to indicate if the results were
+    TimeUnit: List of time unit values. Time unit refers to an epoch timestamp
+      value.
+    metaData: Metadata information about the query executed.
+    resultTruncated: Boolean flag that indicates whether the results were
       truncated based on the limit parameter.
-    stats: This field contains a stats results.
+    stats: `stats` results.
   """
 
   TimeUnit = _messages.IntegerField(1, repeated=True)
@@ -8394,13 +8450,12 @@ class GoogleCloudApigeeV1SharedFlowRevision(_messages.Message):
 
 
 class GoogleCloudApigeeV1Stats(_messages.Message):
-  r"""This message type encapsulates a stats response.
+  r"""Encapsulates a `stats` response.
 
   Fields:
-    environments: This field contains a list of query results on environment
-      level.
-    hosts: This field contains a list of query results grouped by host.
-    metaData: This field contains the metadata information.
+    environments: List of query results on the environment level.
+    hosts: List of query results grouped by host.
+    metaData: Metadata information.
   """
 
   environments = _messages.MessageField('GoogleCloudApigeeV1StatsEnvironmentStats', 1, repeated=True)
@@ -8409,24 +8464,23 @@ class GoogleCloudApigeeV1Stats(_messages.Message):
 
 
 class GoogleCloudApigeeV1StatsEnvironmentStats(_messages.Message):
-  r"""This message type encapsulates the environment wrapper: "environments":
-  [ { "metrics": [ { "name": "sum(message_count)", "values": [ "2.52056245E8"
-  ] } ], "name": "prod" } ]
+  r"""Encapsulates the environment wrapper: ``` "environments": [ { "metrics":
+  [ { "name": "sum(message_count)", "values": [ "2.52056245E8" ] } ], "name":
+  "prod" } ]```
 
   Fields:
-    dimensions: This field contains the list of metrics grouped under
-      dimensions.
+    dimensions: List of metrics grouped under dimensions.
     metrics: In the final response, only one of the following fields will be
       present based on the dimensions provided. If no dimensions are provided,
-      then only a top level metrics is provided. If dimensions are included,
-      then there will be a top level dimensions field under environments which
-      will contain metrics values and the dimension name. Example:
+      then only top-level metrics is provided. If dimensions are included,
+      then there will be a top-level dimensions field under environments which
+      will contain metrics values and the dimension name. Example: ```
       "environments": [ { "dimensions": [ { "metrics": [ { "name":
       "sum(message_count)", "values": [ "2.14049521E8" ] } ], "name":
-      "nit_proxy" } ], "name": "prod" } ] OR "environments": [ { "metrics": [
-      { "name": "sum(message_count)", "values": [ "2.19026331E8" ] } ],
-      "name": "prod" } ] This field contains the list of metric values.
-    name: A string attribute.
+      "nit_proxy" } ], "name": "prod" } ]``` or ```"environments": [ {
+      "metrics": [ { "name": "sum(message_count)", "values": [ "2.19026331E8"
+      ] } ], "name": "prod" } ]``` List of metric values.
+    name: Name of the environment.
   """
 
   dimensions = _messages.MessageField('GoogleCloudApigeeV1DimensionMetric', 1, repeated=True)
@@ -8435,24 +8489,23 @@ class GoogleCloudApigeeV1StatsEnvironmentStats(_messages.Message):
 
 
 class GoogleCloudApigeeV1StatsHostStats(_messages.Message):
-  r"""This message type encapsulates the hostname wrapper: "hosts": [ {
-  "metrics": [ { "name": "sum(message_count)", "values": [ "2.52056245E8" ] }
-  ], "name": "example.com" } ]
+  r"""Encapsulates the hostname wrapper: ``` "hosts": [ { "metrics": [ {
+  "name": "sum(message_count)", "values": [ "2.52056245E8" ] } ], "name":
+  "example.com" } ]```
 
   Fields:
-    dimensions: This field contains the list of metrics grouped under
-      dimensions.
+    dimensions: List of metrics grouped under dimensions.
     metrics: In the final response, only one of the following fields will be
       present based on the dimensions provided. If no dimensions are provided,
-      then only a top level metrics is provided. If dimensions are included,
-      then there will be a top level dimensions field under hostnames which
-      will contain metrics values and the dimension name. Example: "hosts": [
-      { "dimensions": [ { "metrics": [ { "name": "sum(message_count)",
-      "values": [ "2.14049521E8" ] } ], "name": "nit_proxy" } ], "name":
-      "example.com" } ] OR "hosts": [ { "metrics": [ { "name":
-      "sum(message_count)", "values": [ "2.19026331E8" ] } ], "name":
-      "example.com" } ] This field contains the list of metric values.
-    name: This field contains the hostname used in query.
+      then only the top-level metrics are provided. If dimensions are
+      included, then there will be a top-level dimensions field under
+      hostnames which will contain metrics values and the dimension name.
+      Example: ``` "hosts": [ { "dimensions": [ { "metrics": [ { "name":
+      "sum(message_count)", "values": [ "2.14049521E8" ] } ], "name":
+      "nit_proxy" } ], "name": "example.com" } ]``` OR ```"hosts": [ {
+      "metrics": [ { "name": "sum(message_count)", "values": [ "2.19026331E8"
+      ] } ], "name": "example.com" } ]``` List of metric values.
+    name: Hostname used in query.
   """
 
   dimensions = _messages.MessageField('GoogleCloudApigeeV1DimensionMetric', 1, repeated=True)

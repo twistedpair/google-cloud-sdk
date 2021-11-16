@@ -787,14 +787,16 @@
             "A resource creation operation.",
             "A resource deletion operation.",
             "A resource update operation.",
-            "A resource check operation."
+            "A resource check operation.",
+            "Stores the state of the resource operation."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
             "CREATE",
             "DELETE",
             "UPDATE",
-            "CHECK"
+            "CHECK",
+            "STORE_STATE"
           ]
         },
         "resource": {

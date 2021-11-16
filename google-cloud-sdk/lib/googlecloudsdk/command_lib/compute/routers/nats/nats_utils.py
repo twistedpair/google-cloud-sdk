@@ -48,8 +48,6 @@ def FindNatOrRaise(router, nat_name):
 
 def CreateNatMessage(args,
                      compute_holder,
-                     with_rules=False,
-                     with_tcp_time_wait_timeout=False,
                      with_dynamic_port_allocation=False):
   """Creates a NAT message from the specified arguments."""
   params = {'name': args.name}
@@ -65,8 +63,7 @@ def CreateNatMessage(args,
   params['icmpIdleTimeoutSec'] = args.icmp_idle_timeout
   params['tcpEstablishedIdleTimeoutSec'] = args.tcp_established_idle_timeout
   params['tcpTransitoryIdleTimeoutSec'] = args.tcp_transitory_idle_timeout
-  if with_tcp_time_wait_timeout:
-    params['tcpTimeWaitTimeoutSec'] = args.tcp_time_wait_timeout
+  params['tcpTimeWaitTimeoutSec'] = args.tcp_time_wait_timeout
   params['minPortsPerVm'] = args.min_ports_per_vm
   if with_dynamic_port_allocation:
     params['maxPortsPerVm'] = args.max_ports_per_vm
@@ -85,7 +82,7 @@ def CreateNatMessage(args,
     params['enableEndpointIndependentMapping'] = (
         args.enable_endpoint_independent_mapping)
 
-  if with_rules and args.rules:
+  if args.rules:
     params['rules'] = _ParseRulesFromYamlFile(args.rules, compute_holder)
 
   return compute_holder.client.messages.RouterNat(**params)
@@ -94,8 +91,6 @@ def CreateNatMessage(args,
 def UpdateNatMessage(nat,
                      args,
                      compute_holder,
-                     with_rules=False,
-                     with_tcp_time_wait_timeout=False,
                      with_dynamic_port_allocation=False):
   """Updates a NAT message with the specified arguments."""
   if (args.subnet_option in [
@@ -144,11 +139,10 @@ def UpdateNatMessage(nat,
   elif args.clear_tcp_transitory_idle_timeout:
     nat.tcpTransitoryIdleTimeoutSec = None
 
-  if with_tcp_time_wait_timeout:
-    if args.tcp_time_wait_timeout is not None:
-      nat.tcpTimeWaitTimeoutSec = args.tcp_time_wait_timeout
-    elif args.clear_tcp_time_wait_timeout:
-      nat.tcpTimeWaitTimeoutSec = None
+  if args.tcp_time_wait_timeout is not None:
+    nat.tcpTimeWaitTimeoutSec = args.tcp_time_wait_timeout
+  elif args.clear_tcp_time_wait_timeout:
+    nat.tcpTimeWaitTimeoutSec = None
 
   if args.min_ports_per_vm is not None:
     nat.minPortsPerVm = args.min_ports_per_vm
@@ -176,7 +170,7 @@ def UpdateNatMessage(nat,
     nat.enableEndpointIndependentMapping = (
         args.enable_endpoint_independent_mapping)
 
-  if with_rules and args.rules:
+  if args.rules:
     nat.rules = _ParseRulesFromYamlFile(args.rules, compute_holder)
 
   return nat

@@ -44155,8 +44155,8 @@ class PublicDelegatedPrefix(_messages.Message):
       DELETING: The public delegated prefix is being deprovsioned.
       INITIALIZING: The public delegated prefix is being initialized and
         addresses cannot be created yet.
-      READY_TO_ANNOUNCE: The public delegated prefix is a live migration
-        prefix and is active.
+      READY_TO_ANNOUNCE: The public delegated prefix is currently withdrawn
+        but ready to be announced.
     """
     ANNOUNCED = 0
     DELETING = 1
@@ -50604,7 +50604,11 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       is present in the request, the key type defaults to ALL. - XFF_IP: The
       first IP address (i.e. the originating client IP address) specified in
       the list of IPs under X-Forwarded-For HTTP header. If no such header is
-      present or the value is not a valid IP, the key type defaults to ALL.
+      present or the value is not a valid IP, the key type defaults to ALL. -
+      HTTP_COOKIE: The value of the HTTP cookie whose name is configured under
+      "enforce_on_key_name". The key value is truncated to the first 128 bytes
+      of the cookie value. If no such cookie is present in the request, the
+      key type defaults to ALL.
 
   Fields:
     banDurationSec: Can only be specified if the action for the rule is
@@ -50628,10 +50632,15 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       key type defaults to ALL. - XFF_IP: The first IP address (i.e. the
       originating client IP address) specified in the list of IPs under
       X-Forwarded-For HTTP header. If no such header is present or the value
-      is not a valid IP, the key type defaults to ALL.
+      is not a valid IP, the key type defaults to ALL. - HTTP_COOKIE: The
+      value of the HTTP cookie whose name is configured under
+      "enforce_on_key_name". The key value is truncated to the first 128 bytes
+      of the cookie value. If no such cookie is present in the request, the
+      key type defaults to ALL.
     enforceOnKeyName: Rate limit key name applicable only for the following
       key types: HTTP_HEADER -- Name of the HTTP header whose value is taken
-      as the key value.
+      as the key value. HTTP_COOKIE -- Name of the HTTP cookie whose value is
+      taken as the key value.
     exceedAction: When a request is denied, returns the HTTP response code
       specified. Valid options are "deny()" where valid values for status are
       403, 404, 429, and 502.
@@ -50650,18 +50659,23 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
     type defaults to ALL. - XFF_IP: The first IP address (i.e. the originating
     client IP address) specified in the list of IPs under X-Forwarded-For HTTP
     header. If no such header is present or the value is not a valid IP, the
-    key type defaults to ALL.
+    key type defaults to ALL. - HTTP_COOKIE: The value of the HTTP cookie
+    whose name is configured under "enforce_on_key_name". The key value is
+    truncated to the first 128 bytes of the cookie value. If no such cookie is
+    present in the request, the key type defaults to ALL.
 
     Values:
       ALL: <no description>
+      HTTP_COOKIE: <no description>
       HTTP_HEADER: <no description>
       IP: <no description>
       XFF_IP: <no description>
     """
     ALL = 0
-    HTTP_HEADER = 1
-    IP = 2
-    XFF_IP = 3
+    HTTP_COOKIE = 1
+    HTTP_HEADER = 2
+    IP = 3
+    XFF_IP = 4
 
   banDurationSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   banThreshold = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsThreshold', 2)

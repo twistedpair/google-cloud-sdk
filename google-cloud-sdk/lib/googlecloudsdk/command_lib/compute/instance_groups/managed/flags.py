@@ -140,9 +140,14 @@ def AddMinimalActionArg(parser, choices_with_none=True, default=None):
       '--minimal-action',
       choices=choices,
       default=default,
-      help='Perform at least this action on each instance while updating. '
-           'If the update requires a more disruptive action, then the more '
-           'disruptive action is performed.')
+      help="""Use this flag to minimize disruption as much as possible or to
+        apply a more disruptive action than is strictly necessary.
+        The MIG performs at least this action on each instance while
+        updating. If the update requires a more disruptive action than
+        the one specified here, then the more disruptive action is
+        performed. If you omit this flag, the update uses the
+        ``minimal-action'' value from the MIG\'s update policy, unless it
+        is not set in which case the default is ``replace''.""")
 
 
 def AddMostDisruptiveActionArg(parser, choices_with_none=True, default=None):
@@ -152,9 +157,14 @@ def AddMostDisruptiveActionArg(parser, choices_with_none=True, default=None):
       '--most-disruptive-allowed-action',
       choices=choices,
       default=default,
-      help='Perform at most this action on each instance while updating. '
-           'If the update requires a more disruptive action than the one '
-           'specified here, then the update fails and no changes are made.')
+      help="""Use this flag to prevent an update if it requires more disruption
+        than you can afford. At most, the MIG performs the specified
+        action on each instance while updating. If the update requires
+        a more disruptive action than the one specified here, then
+        the update fails and no changes are made. If you omit this flag,
+        the update uses the ``most-disruptive-allowed-action'' value from
+        the MIG\'s update policy, unless it is not set in which case
+        the default is ``replace''.""")
 
 
 def AddUpdateInstancesArgs(parser):

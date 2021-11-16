@@ -884,14 +884,16 @@
             "A resource creation operation.",
             "A resource deletion operation.",
             "A resource update operation.",
-            "A resource check operation."
+            "A resource check operation.",
+            "Stores the state of the resource operation."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
             "CREATE",
             "DELETE",
             "UPDATE",
-            "CHECK"
+            "CHECK",
+            "STORE_STATE"
           ]
         },
         "resource": {
@@ -955,6 +957,24 @@
             "type": "string"
           }
         }
+      }
+    },
+    "StoreEnvironmentStateResponse": {
+      "id": "StoreEnvironmentStateResponse",
+      "description": "Store environment state response.",
+      "type": "object",
+      "properties": {
+        "snapshotLocation": {
+          "description": "The fully-resolved Cloud Storage location of the created snapshot, e.g.: \"gs:\/\/my-bucket\/snapshots\/project_id\/location\/environment_uuid\/timestamp\". This field is populated only if the snapshot creation was successful.",
+          "type": "string"
+        }
+      }
+    },
+    "LoadEnvironmentStateResponse": {
+      "id": "LoadEnvironmentStateResponse",
+      "description": "Load environment state response.",
+      "type": "object",
+      "properties": {
       }
     }
   },

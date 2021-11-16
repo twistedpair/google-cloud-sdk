@@ -5,6 +5,97 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 365.0.0 (2021-11-16)
+
+### Breaking Changes
+
+*   **(AI)** Removed `--base-image` flag of `gcloud beta ai custom-jobs local-run`. Use `--executor-image-uri` flag instead.
+*   **(AI)** Removed `--work-dir` flag of `gcloud beta ai custom-jobs local-run`. Use `--local-package-path` flag instead.
+*   **(Anthos Multi-Cloud)** Removed `--service-load-balancer-subnet-ids` flag of `gcloud container aws clusters create`.
+
+
+### Cloud SDK
+
+* Updated Windows PuTTY executables to version 0.76.
+
+### AI
+
+* Promoted `gcloud ai custom-jobs local-run` to GA.
+* Promoted 'local-package-path', 'script', 'requirements', 'extra-packages' and 'extra-dir' fields in `--worker-pool-spec` flag of `gcloud ai custom-jobs create` to GA, to support automatically building custom training image from a local package.
+* Modified `--region` flag of `gcloud ai endpoints` to include new online
+  prediction regions.
+* Modified `--region` flag of `gcloud ai models` to include new online
+  prediction regions.
+
+### Cloud Build
+
+* Deprecated `--no-external-ip` in `gcloud builds worker-pools create`. `--no-external-ip` will be removed in an upcoming release.
+  Please use `--no-public-egress` so that workers in the worker pool are created without an external IP address.
+* Deprecated `--no-external-ip` in `gcloud builds worker-pools update`. `--no-external-ip` will be removed in an upcoming release.
+  Please use `--no-public-egress` so that workers in the worker pool are created without an external IP address or `--public-egress` so that workers in the worker pool are created with an external IP address.
+* Removed`--no-external-ip` flag in `gcloud beta builds worker-pools create`.
+  Please use `--no-public-egress` so that workers in the worker pool are created without an external IP address.
+* Removed `--no-external-ip` flag in `gcloud beta builds worker-pools update`.
+  Please use `--no-public-egress` so that workers in the worker pool are created without an external IP address or `--public-egress` so that workers in the worker pool are created with an external IP address.
+
+### Cloud Deploy
+
+* Added `--skaffold-version` flag.
+
+### Cloud Functions
+
+* Promoted `--kms-key`, `--docker-registry`, '--clear-kms-key' and '--clear-docker-registry' flags of `gcloud functions deploy` to beta.
+
+### Cloud Healthcare
+
+*   Promoted `--write-disposition` flag of `gcloud healthcare dicom-stores export bq` to GA.
+
+### Cloud IDS
+
+* Promoted `gcloud ids endpoints` to GA.
+  * Create, delete and inspect Cloud IDS endpoints in your project.
+
+### Cloud SQL
+
+* Added PostgreSQL 14 to database versions.
+
+### Cloud Storage
+
+* Updated gsutil component to 5.5.
+
+### Compute Engine
+
+* Promoted `gcloud compute routers nats rules` command group to GA.
+* Promoted `--rules` flag of `gcloud compute routers nats create` and `gcloud compute routers nats update` to GA.
+* Promoted `--tcp-time-wait-timeout` flag of `gcloud compute routers nats create` and `gcloud compute routers nats update` to GA.
+* Promoted `--clear-tcp-time-wait-timeout` flag of `gcloud compute routers nats update` to GA.
+* Added `--minimal-action` and `--most-disruptive-allowed-action` flags to `gcloud compute instance-groups managed rolling-action start-update`.
+* Promoted `--edge-security-policy` flag of `gcloud compute backend-services update` and `gcloud compute backend-buckets update` commands to GA.
+* Promoted `--type` flag of `gcloud compute security-policies create` command to GA.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.66.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Dataproc Metastore
+
+*   Added `--network-config-from-file` and `--consumer-subnetworks` flag to
+    `gcloud beta metastore services create` to specify the subnetworks
+    from which the Dataproc Metastore service can be accessed.
+
+### Kpt
+
+* Updated kpt from v1.0.0-beta.6 to v1.0.0-beta.7.
+  * Added support for ARM-based machines.
+  * Added support for selecting resources for function execution.
+  * Added support for depends-on annotation for actuation.
+  * Added support for apply-time mutations for actuation.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 364.0.0 (2021-11-09)
 
 ### Cloud SDK

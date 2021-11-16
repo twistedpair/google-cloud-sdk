@@ -205,7 +205,7 @@ class FileUrl(StorageUrl):
 class PosixFileSystemUrl(StorageUrl):
   """URL class representing local and external POSIX file systems.
 
-  *Intended for Transfer component.*
+  *Intended for transfer component.*
 
   This class is different from FileUrl in many ways:
   1) It supports only POSIX file systems (not Windows).
@@ -213,8 +213,8 @@ class PosixFileSystemUrl(StorageUrl):
   3) It cannot run checks on the address of the URL like "exists" or "is_pipe"
      because the URL may point to a different machine.
   4) The class is intended for use in "agent transfers". This is when a
-     Data Transfer customer installs agents on one machine or multiple and uses
-     the agent software to upload and download files on the machine(s).
+     Transfer Service customer installs agents on one machine or multiple and
+     uses the agent software to upload and download files on the machine(s).
 
   We implement this class in the "storage" component for convenience and
   because the "storage" and "transfer" products are tightly coupled.

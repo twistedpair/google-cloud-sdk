@@ -1019,7 +1019,6 @@ class _SectionApiEndpointOverrides(_Section):
     self.iap = self._Add('iap', command='gcloud iap')
     self.ids = self._Add('ids', command='gcloud ids')
     self.kubernetespolicy = self._Add('kubernetespolicy', hidden=True)
-    self.labelmanager = self._Add('labelmanager', command='gcloud labelmanager')
     self.language = self._Add('language', command='gcloud ml language')
     self.lifesciences = self._Add('lifesciences', command='gcloud lifesciences')
     self.logging = self._Add('logging', command='gcloud logging')

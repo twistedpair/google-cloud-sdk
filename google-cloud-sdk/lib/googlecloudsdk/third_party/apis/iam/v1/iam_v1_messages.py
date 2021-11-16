@@ -458,12 +458,16 @@ class GetPolicyOptions(_messages.Message):
   r"""Encapsulates settings provided to GetIamPolicy.
 
   Fields:
-    requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    requestedPolicyVersion: Optional. The maximum policy version that will be
+      used to format the policy. Valid values are 0, 1, and 3. Requests
+      specifying an invalid value will be rejected. Requests for policies with
+      any conditional role bindings must specify version 3. Policies with no
+      conditional role bindings may specify any valid value or leave the field
+      unset. The policy in the response might use the policy version that you
+      specified, or it might use a lower policy version. For example, if you
+      specify version 3, but the policy has no conditional role bindings, the
+      response uses version 1. To learn which resources support conditions in
+      their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
   """
@@ -738,6 +742,33 @@ class IamLocationsWorkforcePoolsSetIamPolicyRequest(_messages.Message):
 
   resource = _messages.StringField(1, required=True)
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class IamLocationsWorkforcePoolsSubjectsDeleteRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsSubjectsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the WorkforcePoolSubject to delete. Format: `l
+      ocations/{location}/workforcePools/{workforce_pool_id}/subjects/{subject
+      _id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamLocationsWorkforcePoolsSubjectsUndeleteRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsSubjectsUndeleteRequest object.
+
+  Fields:
+    name: Required. The name of the WorkforcePoolSubject to undelete. Format:
+      `locations/{location}/workforcePools/{workforce_pool_id}/subjects/{subje
+      ct_id}`
+    undeleteWorkforcePoolSubjectRequest: A UndeleteWorkforcePoolSubjectRequest
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  undeleteWorkforcePoolSubjectRequest = _messages.MessageField('UndeleteWorkforcePoolSubjectRequest', 2)
 
 
 class IamLocationsWorkforcePoolsTestIamPermissionsRequest(_messages.Message):
@@ -1439,12 +1470,16 @@ class IamProjectsServiceAccountsGetIamPolicyRequest(_messages.Message):
   r"""A IamProjectsServiceAccountsGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -3058,6 +3093,10 @@ class UndeleteWorkforcePoolProviderRequest(_messages.Message):
 
 class UndeleteWorkforcePoolRequest(_messages.Message):
   r"""Request message for UndeleteWorkforcePool."""
+
+
+class UndeleteWorkforcePoolSubjectRequest(_messages.Message):
+  r"""Request message for UndeleteWorkforcePoolSubject."""
 
 
 class UndeleteWorkloadIdentityPoolProviderRequest(_messages.Message):

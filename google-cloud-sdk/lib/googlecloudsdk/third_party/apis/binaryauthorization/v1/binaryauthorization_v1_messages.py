@@ -63,7 +63,7 @@ class AdmissionRule(_messages.Message):
       EVALUATION_MODE_UNSPECIFIED: Do not use.
       ALWAYS_ALLOW: This rule allows all all pod creations.
       REQUIRE_ATTESTATION: This rule allows a pod creation if all the
-        attestors listed in 'require_attestations_by' have valid attestations
+        attestors listed in `require_attestations_by` have valid attestations
         for all of the images in the pod spec.
       ALWAYS_DENY: This rule denies all pod creations.
     """
@@ -206,12 +206,16 @@ class BinaryauthorizationProjectsAttestorsGetIamPolicyRequest(_messages.Message)
   r"""A BinaryauthorizationProjectsAttestorsGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -314,12 +318,16 @@ class BinaryauthorizationProjectsPolicyGetIamPolicyRequest(_messages.Message):
   r"""A BinaryauthorizationProjectsPolicyGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -659,14 +667,14 @@ class Policy(_messages.Message):
       engine/reference/rest/v1/projects.zones.clusters.
     IstioServiceIdentityAdmissionRulesValue: Optional. Per-istio-service-
       identity admission rules. Istio service identity spec format:
-      spiffe:///ns//sa/ or /ns//sa/ e.g. spiffe://example.com/ns/test-
-      ns/sa/default
+      `spiffe:///ns//sa/` or `/ns//sa/` e.g. `spiffe://example.com/ns/test-
+      ns/sa/default`
     KubernetesNamespaceAdmissionRulesValue: Optional. Per-kubernetes-namespace
-      admission rules. K8s namespace spec format: [a-z.-]+, e.g. 'some-
-      namespace'
+      admission rules. K8s namespace spec format: `[a-z.-]+`, e.g. `some-
+      namespace`
     KubernetesServiceAccountAdmissionRulesValue: Optional. Per-kubernetes-
       service-account admission rules. Service account spec format:
-      `namespace:serviceaccount`. e.g. 'test-ns:default'
+      `namespace:serviceaccount`. e.g. `test-ns:default`
 
   Fields:
     admissionWhitelistPatterns: Optional. Admission policy allowlisting. A
@@ -689,14 +697,14 @@ class Policy(_messages.Message):
       admission policy. This setting has no effect when specified inside a
       global admission policy.
     istioServiceIdentityAdmissionRules: Optional. Per-istio-service-identity
-      admission rules. Istio service identity spec format: spiffe:///ns//sa/
-      or /ns//sa/ e.g. spiffe://example.com/ns/test-ns/sa/default
+      admission rules. Istio service identity spec format: `spiffe:///ns//sa/`
+      or `/ns//sa/` e.g. `spiffe://example.com/ns/test-ns/sa/default`
     kubernetesNamespaceAdmissionRules: Optional. Per-kubernetes-namespace
-      admission rules. K8s namespace spec format: [a-z.-]+, e.g. 'some-
-      namespace'
+      admission rules. K8s namespace spec format: `[a-z.-]+`, e.g. `some-
+      namespace`
     kubernetesServiceAccountAdmissionRules: Optional. Per-kubernetes-service-
       account admission rules. Service account spec format:
-      `namespace:serviceaccount`. e.g. 'test-ns:default'
+      `namespace:serviceaccount`. e.g. `test-ns:default`
     name: Output only. The resource name, in the format `projects/*/policy`.
       There is at most one policy per project.
     updateTime: Output only. Time when the policy was last updated.
@@ -752,8 +760,8 @@ class Policy(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class IstioServiceIdentityAdmissionRulesValue(_messages.Message):
     r"""Optional. Per-istio-service-identity admission rules. Istio service
-    identity spec format: spiffe:///ns//sa/ or /ns//sa/ e.g.
-    spiffe://example.com/ns/test-ns/sa/default
+    identity spec format: `spiffe:///ns//sa/` or `/ns//sa/` e.g.
+    `spiffe://example.com/ns/test-ns/sa/default`
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -781,7 +789,7 @@ class Policy(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class KubernetesNamespaceAdmissionRulesValue(_messages.Message):
     r"""Optional. Per-kubernetes-namespace admission rules. K8s namespace spec
-    format: [a-z.-]+, e.g. 'some-namespace'
+    format: `[a-z.-]+`, e.g. `some-namespace`
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -809,7 +817,7 @@ class Policy(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class KubernetesServiceAccountAdmissionRulesValue(_messages.Message):
     r"""Optional. Per-kubernetes-service-account admission rules. Service
-    account spec format: `namespace:serviceaccount`. e.g. 'test-ns:default'
+    account spec format: `namespace:serviceaccount`. e.g. `test-ns:default`
 
     Messages:
       AdditionalProperty: An additional property for a

@@ -175,6 +175,25 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class Consumer(_messages.Message):
+  r"""Contains information of the customer's network configurations.
+
+  Fields:
+    endpointUri: Output only. The URI of the endpoint used to access the
+      metastore service.
+    subnetwork: The subnetwork of the customer project from which an IP
+      address is reserved and used as the Dataproc Metastore service's
+      endpoint. It is accessible to hosts in the subnet and to all hosts in a
+      subnet in the same region and same network. There must be at least one
+      IP address available in the subnet's primary range. The subnet is
+      specified in the following form:`projects/{project_number}/regions/{regi
+      on_id}/subnetworks/{subnetwork_id}
+  """
+
+  endpointUri = _messages.StringField(1)
+  subnetwork = _messages.StringField(2)
+
+
 class DataCatalogConfig(_messages.Message):
   r"""Specifies how metastore metadata should be integrated with the Data
   Catalog service.
@@ -947,14 +966,17 @@ class MetastoreProjectsLocationsServicesBackupsGetIamPolicyRequest(_messages.Mes
   r"""A MetastoreProjectsLocationsServicesBackupsGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned.Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected.Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.To learn
-      which resources support conditions in their IAM policies, see the IAM
-      documentation (https://cloud.google.com/iam/help/conditions/resource-
-      policies).
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy.Valid values are 0, 1, and 3. Requests
+      specifying an invalid value will be rejected.Requests for policies with
+      any conditional role bindings must specify version 3. Policies with no
+      conditional role bindings may specify any valid value or leave the field
+      unset.The policy in the response might use the policy version that you
+      specified, or it might use a lower policy version. For example, if you
+      specify version 3, but the policy has no conditional role bindings, the
+      response uses version 1.To learn which resources support conditions in
+      their IAM policies, see the IAM documentation
+      (https://cloud.google.com/iam/help/conditions/resource-policies).
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -1109,14 +1131,17 @@ class MetastoreProjectsLocationsServicesGetIamPolicyRequest(_messages.Message):
   r"""A MetastoreProjectsLocationsServicesGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned.Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected.Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.To learn
-      which resources support conditions in their IAM policies, see the IAM
-      documentation (https://cloud.google.com/iam/help/conditions/resource-
-      policies).
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy.Valid values are 0, 1, and 3. Requests
+      specifying an invalid value will be rejected.Requests for policies with
+      any conditional role bindings must specify version 3. Policies with no
+      conditional role bindings may specify any valid value or leave the field
+      unset.The policy in the response might use the policy version that you
+      specified, or it might use a lower policy version. For example, if you
+      specify version 3, but the policy has no conditional role bindings, the
+      response uses version 1.To learn which resources support conditions in
+      their IAM policies, see the IAM documentation
+      (https://cloud.google.com/iam/help/conditions/resource-policies).
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -1344,6 +1369,17 @@ class MetastoreProjectsLocationsServicesTestIamPermissionsRequest(_messages.Mess
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class NetworkConfig(_messages.Message):
+  r"""Network configuration for the Dataproc Metastore service.
+
+  Fields:
+    consumers: Immutable. The consumer-side network configuration for the
+      Dataproc Metastore instance.
+  """
+
+  consumers = _messages.MessageField('Consumer', 1, repeated=True)
 
 
 class Operation(_messages.Message):
@@ -1704,6 +1740,8 @@ class Service(_messages.Message):
     network: Immutable. The relative resource name of the VPC network on which
       the instance can be accessed. It is specified in the following
       form:projects/{project_number}/global/networks/{network_id}.
+    networkConfig: Immutable. The configuration specifying the network
+      settings for the Dataproc Metastore service.
     port: The TCP port at which the metastore service is reached. Default:
       9083.
     releaseChannel: Immutable. The release channel of the service. If
@@ -1812,13 +1850,14 @@ class Service(_messages.Message):
   metadataManagementActivity = _messages.MessageField('MetadataManagementActivity', 9)
   name = _messages.StringField(10)
   network = _messages.StringField(11)
-  port = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  stateMessage = _messages.StringField(15)
-  tier = _messages.EnumField('TierValueValuesEnum', 16)
-  uid = _messages.StringField(17)
-  updateTime = _messages.StringField(18)
+  networkConfig = _messages.MessageField('NetworkConfig', 12)
+  port = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  stateMessage = _messages.StringField(16)
+  tier = _messages.EnumField('TierValueValuesEnum', 17)
+  uid = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
 
 
 class SetIamPolicyRequest(_messages.Message):

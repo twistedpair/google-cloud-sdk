@@ -28,14 +28,14 @@ from googlecloudsdk.api_lib.storage import errors
 from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.api_lib.storage import s3_metadata_util
 from googlecloudsdk.command_lib.storage import errors as command_errors
-from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.resources import s3_resource_reference
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import retry
 from googlecloudsdk.core.util import scaled_integer
+import s3transfer
 
 
 # S3 does not allow upload of size > 5 GiB for put_object.
@@ -338,37 +338,65 @@ class S3Api(cloud_api.CloudApi):
 
     # TODO(b/161900052): Implement resumable copies.
 
-  def _get_content_encoding(self, resource):
-    """Returns the ContentEncoding for the resource.
+  def _download_object(self, cloud_resource, download_stream, digesters,
+                       progress_callback, start_byte):
+    get_object_args = {
+        'Bucket': cloud_resource.bucket,
+        'Key': cloud_resource.name,
+        'Range': 'bytes={}-'.format(start_byte),
+    }
+    if cloud_resource.generation is not None:
+      get_object_args['VersionId'] = str(cloud_resource.generation)
+    response = self.client.get_object(**get_object_args)
+    processed_bytes = start_byte
+    for chunk in response['Body'].iter_chunks(
+        scaled_integer.ParseInteger(
+            properties.VALUES.storage.download_chunk_size.Get())):
+      download_stream.write(chunk)
 
-    Returns the ContentEncoding if it is already present in the resource object.
-    If it is not present, it makes an API call to fetch the object's metadata.
-    This might happen if the resource was not created using the head_object
-    call, for example, in case of S3Api.list_objects call which is used by the
-    WildCardIterator if a wildcard is present.
+      for hash_object in digesters.values():
+        hash_object.update(chunk)
 
-    Args:
-      resource (resource_reference.ObjectResource): Resource representing an
-        existing object.
+      processed_bytes += len(chunk)
+      if progress_callback:
+        progress_callback(processed_bytes)
+    return response.get('ContentEncoding')
 
-    Returns:
-      A string representing the ContentEncoding for the S3 Object.
-    """
-    if resource.metadata:
-      content_encoding = resource.metadata.get('ContentEncoding')
-    else:
-      content_encoding = None
+  def _download_object_resumable(self, cloud_resource, download_stream,
+                                 digesters, progress_callback, start_byte):
+    progress_state = {'start_byte': start_byte}
 
-    if content_encoding is not None:
-      return content_encoding
+    def _call_download_object():
+      # We use this inner function instead of passing _download_object
+      # directly because the Retryer function is not able to use the
+      # updated args values.
+      return self._download_object(
+          cloud_resource, download_stream, digesters, progress_callback,
+          progress_state['start_byte'])
 
-    complete_resource = self.get_object_metadata(
-        resource.bucket,
-        resource.name,
-        request_config=request_config_factory.get_request_config(
-            storage_url.CloudUrl(scheme=storage_url.ProviderPrefix.S3)),
-        generation=resource.generation)
-    return complete_resource.metadata.get('ContentEncoding')
+    def _should_retry_resumable_download(exc_type, exc_value, exc_traceback,
+                                         state):
+      for retryable_error_type in s3transfer.utils.S3_RETRYABLE_DOWNLOAD_ERRORS:
+        if isinstance(exc_value, retryable_error_type):
+          start_byte = download_stream.tell()
+          if start_byte > progress_state['start_byte']:
+            progress_state['start_byte'] = start_byte
+            state.retrial = 0
+          log.debug('Retrying download from byte {} after exception: {}.'
+                    ' Trace: {}'.format(start_byte, exc_type, exc_traceback))
+          return True
+      return False
+
+    retryer = retry.Retryer(
+        max_retrials=properties.VALUES.storage.max_retries.GetInt(),
+        wait_ceiling_ms=properties.VALUES.storage.max_retry_delay.GetInt() *
+        1000,
+        exponential_sleep_multiplier=(
+            properties.VALUES.storage.exponential_sleep_multiplier.GetInt()))
+    return retryer.RetryOnException(
+        _call_download_object,
+        sleep_ms=properties.VALUES.storage.base_retry_delay.GetInt() * 1000,
+        should_retry_if=_should_retry_resumable_download)
 
   @_catch_client_error_raise_s3_api_error()
   def download_object(self,
@@ -383,44 +411,21 @@ class S3Api(cloud_api.CloudApi):
                       end_byte=None):
     """See super class."""
     del request_config
-    extra_args = {}
-    if cloud_resource.generation:
-      extra_args['VersionId'] = cloud_resource.generation
+    if digesters is not None:
+      digesters_dict = digesters
+    else:
+      digesters_dict = {}
 
     if download_strategy == cloud_api.DownloadStrategy.RESUMABLE:
-      response = self.client.get_object(
-          Bucket=cloud_resource.bucket,
-          Key=cloud_resource.name,
-          Range='bytes={}-'.format(start_byte),
-      )
-      processed_bytes = start_byte
-      for chunk in response['Body'].iter_chunks(
-          scaled_integer.ParseInteger(
-              properties.VALUES.storage.download_chunk_size.Get())):
-        download_stream.write(chunk)
-        processed_bytes += len(chunk)
-        if progress_callback:
-          progress_callback(processed_bytes)
+      content_encoding = self._download_object_resumable(
+          cloud_resource, download_stream, digesters_dict, progress_callback,
+          start_byte)
     else:
-      # TODO(b/172480278) Conditionally call get_object for smaller object.
-      self.client.download_fileobj(
-          cloud_resource.bucket,
-          cloud_resource.name,
-          download_stream,
-          Callback=progress_callback,
-          ExtraArgs=extra_args)
+      content_encoding = self._download_object(
+          cloud_resource, download_stream, digesters_dict, progress_callback,
+          start_byte)
 
-    # Download callback doesn't give us streaming data, so we have to
-    # read whole downloaded file to update digests.
-    if digesters:
-      with files.BinaryFileReader(
-          download_stream.name) as completed_download_stream:
-        completed_download_stream.seek(0)
-        for hash_algorithm in digesters:
-          digesters[hash_algorithm] = hash_util.get_hash_from_file_stream(
-              completed_download_stream, hash_algorithm)
-
-    return self._get_content_encoding(cloud_resource)
+    return content_encoding
 
   @_catch_client_error_raise_s3_api_error()
   def delete_object(self, object_url, request_config):
@@ -555,20 +560,23 @@ class S3Api(cloud_api.CloudApi):
       # validate with user-provided MD5 hashes. Hence we use the put_object API
       # method if MD5 validation is requested.
       if request_config.size > MAX_PUT_OBJECT_SIZE:
-        raise errors.S3ApiError(
-            'Cannot upload to destination: {url} because MD5 validation can'
-            ' only be performed for file size <= {maxsize} Bytes. Current file'
-            ' size is {filesize} Bytes. You can remove the MD5 validation'
-            ' requirement to complete the upload'.format(
-                url=destination_resource.storage_url.url_string,
-                maxsize=MAX_PUT_OBJECT_SIZE,
-                filesize=request_config.size))
+        log.debug('The MD5 hash %s will be ignored', request_config.md5_hash)
+        log.warning(
+            'S3 does not support MD5 validation for the entire object if'
+            ' size > %d bytes. File size: %d',
+            MAX_PUT_OBJECT_SIZE,
+            request_config.size)
 
-      return self._upload_using_put_object(source_stream, destination_resource,
-                                           extra_args)
-    else:
-      # We default to calling the upload_fileobj method provided by boto3 which
-      # is a managed-transfer utility that can perform mulitpart uploads
-      # automatically. It can be used for non-seekable source_streams as well.
-      return self._upload_using_managed_transfer_utility(
-          source_stream, destination_resource, extra_args)
+        # ContentMD5 might get populated for extra_args during request_config
+        # translation. Remove it since upload_fileobj
+        # does not accept ContentMD5.
+        extra_args.pop('ContentMD5')
+      else:
+        return self._upload_using_put_object(
+            source_stream, destination_resource, extra_args)
+
+    # We default to calling the upload_fileobj method provided by boto3 which
+    # is a managed-transfer utility that can perform multipart uploads
+    # automatically. It can be used for non-seekable source_streams as well.
+    return self._upload_using_managed_transfer_utility(
+        source_stream, destination_resource, extra_args)

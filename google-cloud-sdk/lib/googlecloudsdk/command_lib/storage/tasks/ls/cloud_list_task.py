@@ -311,12 +311,13 @@ class CloudListTask(task.Task):
     """Prints ResourceWrapper objects in list with custom row formatting."""
     object_count = total_bytes = 0
     for i, resource_wrapper in enumerate(resource_wrappers):
-      if i == 0 and resource_wrapper and str(resource_wrapper)[0] == '\n':
+      resource_wrapper_string = str(resource_wrapper)
+      if i == 0 and resource_wrapper and resource_wrapper_string[0] == '\n':
         # First print should not begin with a line break, which can happen
         # for headers.
-        print(str(resource_wrapper)[1:])
+        print(resource_wrapper_string[1:])
       else:
-        print(str(resource_wrapper))
+        print(resource_wrapper_string)
 
       if isinstance(resource_wrapper.resource,
                     resource_reference.ObjectResource):

@@ -55,4 +55,33 @@ def AddDiscoveryArgs(parser):
       help="""[Cron schedule](https://en.wikipedia.org/wiki/Cron) for running
                 discovery jobs periodically. Discovery jobs must be scheduled at
                 least 30 minutes apart.""")
+  discovery_prefix = discovery_spec.add_group(help='Describe data formats.')
+  csv_option = discovery_prefix.add_group(
+      help='Describe CSV and similar semi-structured data formats.')
+  csv_option.add_argument(
+      '--csv-header-rows',
+      type=int,
+      help='The number of rows to interpret as header rows that should be skipped when reading data rows.'
+  )
+  csv_option.add_argument(
+      '--csv-delimiter',
+      help='The delimiter being used to separate values. This defaults to \',\'.'
+  )
+  csv_option.add_argument(
+      '--csv-encoding',
+      help='The character encoding of the data. The default is UTF-8.')
+  csv_option.add_argument(
+      '--csv-disable-type-inference',
+      action=arg_parsers.StoreTrueFalseAction,
+      help='Whether to disable the inference of data type for CSV data. If true, all columns will be registered as strings.'
+  )
+  json_option = discovery_prefix.add_group(help='Describe JSON data format.')
+  json_option.add_argument(
+      '--json-encoding',
+      help='The character encoding of the data. The default is UTF-8.')
+  json_option.add_argument(
+      '--json-disable-type-inference',
+      action=arg_parsers.StoreTrueFalseAction,
+      help=' Whether to disable the inference of data type for Json data. If true, all columns will be registered as their primitive types (strings, number or boolean).'
+  )
   return discovery_spec

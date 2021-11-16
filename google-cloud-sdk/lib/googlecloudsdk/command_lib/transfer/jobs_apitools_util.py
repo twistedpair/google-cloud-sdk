@@ -123,13 +123,22 @@ def _create_or_modify_transfer_spec(job, args, messages):
     job.transferSpec = messages.TransferSpec()
 
   if args.destination:
+    # Clear any existing destination to make space for new one.
+    job.transferSpec.posixDataSink = None
+    job.transferSpec.gcsDataSink = None
+
     destination_url = storage_url.storage_url_from_string(args.destination)
-    job.transferSpec.gcsDataSink = messages.GcsData(
-        bucketName=destination_url.bucket_name,
-        path=destination_url.object_name,
-    )
+    if destination_url.scheme is storage_url.ProviderPrefix.GCS:
+      job.transferSpec.gcsDataSink = messages.GcsData(
+          bucketName=destination_url.bucket_name,
+          path=destination_url.object_name,
+      )
+    elif destination_url.scheme is storage_url.ProviderPrefix.POSIX:
+      job.transferSpec.posixDataSink = messages.PosixFilesystem(
+          rootDirectory=destination_url.object_name)
+
   if args.source:
-    # Clear any existing data source to make space for new one.
+    # Clear any existing source to make space for new one.
     job.transferSpec.httpDataSource = None
     job.transferSpec.posixDataSource = None
     job.transferSpec.gcsDataSource = None
@@ -144,8 +153,7 @@ def _create_or_modify_transfer_spec(job, args, messages):
         source_url = None
       else:
         raise
-
-    if source_url:
+    else:
       if source_url.scheme is storage_url.ProviderPrefix.POSIX:
         job.transferSpec.posixDataSource = messages.PosixFilesystem(
             rootDirectory=source_url.object_name)
@@ -166,6 +174,13 @@ def _create_or_modify_transfer_spec(job, args, messages):
                 path=source_url.object_name,
                 storageAccount=source_url.account,
             ))
+
+  if args.destination_agent_pool:
+    job.transferSpec.sinkAgentPoolName = name_util.add_agent_pool_prefix(
+        args.destination_agent_pool)
+  if args.source_agent_pool:
+    job.transferSpec.sourceAgentPoolName = name_util.add_agent_pool_prefix(
+        args.source_agent_pool)
 
   _create_or_modify_creds(job.transferSpec, args, messages)
   _create_or_modify_object_conditions(job.transferSpec, args, messages)

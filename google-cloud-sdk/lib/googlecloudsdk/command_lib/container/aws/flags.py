@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Helpers for flags in commands working with GKE Multi-cloud for AWS."""
+"""Helpers for flags in commands working with Anthos Multi-Cloud on AWS."""
 
 from __future__ import absolute_import
 from __future__ import division

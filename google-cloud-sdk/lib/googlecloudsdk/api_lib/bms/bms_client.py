@@ -69,6 +69,7 @@ class BmsClient(object):
     self.service = self._client.projects_locations_instances
     self.volumes_service = self._client.projects_locations_volumes
     self.snapshot_schedule_policies_service = self._client.projects_locations_snapshotSchedulePolicies
+    self.snapshots_service = self._client.projects_locations_volumes_snapshots
     self.networks_service = self._client.projects_locations_networks
     self.locations_service = self._client.projects_locations
     self.luns_service = self._client.projects_locations_volumes_luns
@@ -221,6 +222,60 @@ class BmsClient(object):
         name=resource.RelativeName())
     return self.snapshot_schedule_policies_service.Get(request)
 
+  def CreateSnapshotSchedulePolicy(self,
+                                   policy_resource,
+                                   description,
+                                   schedules):
+    """Sends request to create a new Snapshot Schedule Policy."""
+    policy_id = policy_resource.Name()
+    parent = policy_resource.Parent().RelativeName()
+    schedule_msgs = self._ParseSnapshotSchedules(schedules)
+    policy_msg = self.messages.SnapshotSchedulePolicy(
+        description=description, schedules=schedule_msgs)
+    request = self.messages.BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesCreateRequest(
+        parent=parent,
+        snapshotSchedulePolicyId=policy_id,
+        snapshotSchedulePolicy=policy_msg)
+    return self.snapshot_schedule_policies_service.Create(request)
+
+  def UpdateSnapshotSchedulePolicy(self,
+                                   policy_resource,
+                                   description,
+                                   schedules):
+    """Sends request to update an existing SnapshotSchedulePolicy."""
+    updated_fields = []
+    if description:
+      updated_fields.append('description')
+
+    schedule_msgs = self._ParseSnapshotSchedules(schedules)
+    if schedule_msgs:
+      updated_fields.append('schedules')
+
+    update_mask = ','.join(updated_fields)
+    policy_msg = self.messages.SnapshotSchedulePolicy(
+        description=description, schedules=schedule_msgs)
+    request = self.messages.BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesPatchRequest(
+        name=policy_resource.RelativeName(),
+        snapshotSchedulePolicy=policy_msg,
+        updateMask=update_mask)
+    return self.snapshot_schedule_policies_service.Patch(request)
+
+  def _ParseSnapshotSchedules(self, schedules):
+    """Parses schedule ArgDict dicts into a list of Schedule messages."""
+    schedule_msgs = []
+    if schedules:
+      for schedule_arg in schedules:
+        schedule_msgs.append(self.messages.Schedule(
+            crontabSpec=schedule_arg['crontab_spec'],
+            retentionCount=schedule_arg['retention_count'],
+            prefix=schedule_arg['prefix']))
+    return schedule_msgs
+
+  def DeleteSnapshotSchedulePolicy(self, resource):
+    request = self.messages.BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesDeleteRequest(
+        name=resource.RelativeName())
+    return self.snapshot_schedule_policies_service.Delete(request)
+
   def ListVolumes(self,
                   location_resource,
                   limit=None,
@@ -235,6 +290,35 @@ class BmsClient(object):
         batch_size_attribute='pageSize',
         batch_size=page_size,
         field='volumes')
+
+  def UpdateVolume(self,
+                   volume_resource,
+                   snapshot_schedule_policy_resource,
+                   remove_snapshot_schedule_policy,
+                   snapshot_auto_delete):
+    """Update an existing volume resource."""
+    updated_fields = []
+    policy_name = None
+    if snapshot_schedule_policy_resource:
+      updated_fields.append('snapshotSchedulePolicy')
+      policy_name = snapshot_schedule_policy_resource.RelativeName()
+    elif remove_snapshot_schedule_policy:
+      updated_fields.append('snapshotSchedulePolicy')
+
+    if snapshot_auto_delete:
+      updated_fields.append('snapshotAutoDeleteBehavior')
+
+    volume_msg = self.messages.Volume(
+        name=volume_resource.RelativeName(),
+        snapshotAutoDeleteBehavior=snapshot_auto_delete,
+        snapshotSchedulePolicy=policy_name)
+
+    request = self.messages.BaremetalsolutionProjectsLocationsVolumesPatchRequest(
+        name=volume_resource.RelativeName(),
+        volume=volume_msg,
+        updateMask=','.join(updated_fields))
+
+    return self.volumes_service.Patch(request)
 
   def GetVolume(self, resource):
     request = self.messages.BaremetalsolutionProjectsLocationsVolumesGetRequest(
@@ -304,3 +388,48 @@ class BmsClient(object):
                .BaremetalsolutionProjectsLocationsVolumesLunsGetRequest(
                    name=resource.RelativeName()))
     return self.luns_service.Get(request)
+
+  def ListSnapshotsForVolume(self,
+                             volume_resource,
+                             limit=None,
+                             page_size=None):
+    parent = volume_resource.RelativeName()
+    request = (self.messages
+               .BaremetalsolutionProjectsLocationsVolumesSnapshotsListRequest(
+                   parent=parent))
+    return list_pager.YieldFromList(
+        self.snapshots_service,
+        request,
+        limit=limit,
+        batch_size_attribute='pageSize',
+        batch_size=page_size,
+        field='volumeSnapshots')
+
+  def GetVolumeSnapshot(self, resource):
+    request = (self.messages
+               .BaremetalsolutionProjectsLocationsVolumesSnapshotsGetRequest(
+                   name=resource.RelativeName()))
+    return self.snapshots_service.Get(request)
+
+  def CreateVolumeSnapshot(self, resource, description):
+    request = (self.messages
+               .BaremetalsolutionProjectsLocationsVolumesSnapshotsCreateRequest(
+                   parent=resource.RelativeName(),
+                   volumeSnapshot=self.messages.VolumeSnapshot(
+                       description=description)))
+    return self.snapshots_service.Create(request)
+
+  def DeleteVolumeSnapshot(self, resource):
+    request = (self.messages
+               .BaremetalsolutionProjectsLocationsVolumesSnapshotsDeleteRequest(
+                   name=resource.RelativeName()))
+    return self.snapshots_service.Delete(request)
+
+  def RestoreVolumeSnapshot(self, volume_resource, snapshot_name):
+    snapshot_resource_name = '%s/snapshots/%s' % (
+        volume_resource.RelativeName(), snapshot_name)
+    request = (
+        self.messages
+        .BaremetalsolutionProjectsLocationsVolumesSnapshotsRestoreVolumeSnapshotRequest(  # pylint: disable=line-too-long
+            volumeSnapshot=snapshot_resource_name))
+    return self.snapshots_service.RestoreVolumeSnapshot(request)

@@ -1007,7 +1007,11 @@ class CreateNodePoolOptions(object):
                pod_ipv4_range=None,
                create_pod_ipv4_range=None,
                enable_private_nodes=None,
-               threads_per_core=None):
+               threads_per_core=None,
+               enable_blue_green_update=None,
+               enable_rolling_update=None,
+               node_pool_soak_duration=None,
+               standard_rollout_policy=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -1059,6 +1063,10 @@ class CreateNodePoolOptions(object):
     self.create_pod_ipv4_range = create_pod_ipv4_range
     self.enable_private_nodes = enable_private_nodes
     self.threads_per_core = threads_per_core
+    self.enable_blue_green_update = enable_blue_green_update
+    self.enable_rolling_update = enable_rolling_update
+    self.node_pool_soak_duration = node_pool_soak_duration
+    self.standard_rollout_policy = standard_rollout_policy
 
 
 class UpdateNodePoolOptions(object):
@@ -1083,7 +1091,11 @@ class UpdateNodePoolOptions(object):
                enable_private_nodes=None,
                enable_gcfs=None,
                gvnic=None,
-               enable_image_streaming=None):
+               enable_image_streaming=None,
+               enable_blue_green_update=None,
+               enable_rolling_update=None,
+               node_pool_soak_duration=None,
+               standard_rollout_policy=None):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.enable_autoscaling = enable_autoscaling
@@ -1103,6 +1115,10 @@ class UpdateNodePoolOptions(object):
     self.enable_gcfs = enable_gcfs
     self.gvnic = gvnic
     self.enable_image_streaming = enable_image_streaming
+    self.enable_blue_green_update = enable_blue_green_update
+    self.enable_rolling_update = enable_rolling_update
+    self.node_pool_soak_duration = node_pool_soak_duration
+    self.standard_rollout_policy = standard_rollout_policy
 
   def IsAutoscalingUpdate(self):
     return (self.enable_autoscaling is not None or self.max_nodes is not None or
@@ -1123,7 +1139,11 @@ class UpdateNodePoolOptions(object):
             self.node_labels is not None or self.node_taints is not None or
             self.tags is not None or self.enable_private_nodes is not None or
             self.enable_gcfs is not None or self.gvnic is not None or
-            self.enable_image_streaming is not None)
+            self.enable_image_streaming is not None or
+            self.enable_rolling_update is not None or
+            self.enable_blue_green_update is not None or
+            self.node_pool_soak_duration is not None or
+            self.standard_rollout_policy is not None)
 
 
 class APIAdapter(object):
@@ -2912,11 +2932,14 @@ class APIAdapter(object):
       pool.maxPodsConstraint = self.messages.MaxPodsConstraint(
           maxPodsPerNode=options.max_pods_per_node)
 
-    if (options.max_surge_upgrade is not None or
-        options.max_unavailable_upgrade is not None):
+    if (options.enable_rolling_update or options.enable_blue_green_update or
+        options.max_surge_upgrade is not None or
+        options.max_unavailable_upgrade is not None or
+        options.standard_rollout_policy is not None or
+        options.node_pool_soak_duration is not None):
       pool.upgradeSettings = self.messages.UpgradeSettings()
-      pool.upgradeSettings.maxSurge = options.max_surge_upgrade
-      pool.upgradeSettings.maxUnavailable = options.max_unavailable_upgrade
+      pool.upgradeSettings = self.UpdateUpgradeSettings(
+          None, options, pool=pool)
 
     if options.node_locations is not None:
       pool.locations = sorted(options.node_locations)
@@ -3010,9 +3033,47 @@ class APIAdapter(object):
       autoscaling.minNodeCount = options.min_nodes
     return autoscaling
 
-  def UpdateUpgradeSettings(self, node_pool_ref, options):
+  def UpdateBlueGreenSettings(self, upgrade_settings, options):
+    """Update blue green settings field in upgrade_settings."""
+    blue_green_settings = upgrade_settings.blueGreenSettings or self.messages.BlueGreenSettings(
+    )
+    if options.node_pool_soak_duration is not None:
+      blue_green_settings.nodePoolSoakDuration = options.node_pool_soak_duration
+
+    if options.standard_rollout_policy is not None:
+      standard_rollout_policy = blue_green_settings.standardRolloutPolicy or self.messages.StandardRolloutPolicy(
+      )
+
+      if 'batch-node-count' in options.standard_rollout_policy and 'batch-percent' in options.standard_rollout_policy:
+        raise util.Error(
+            'StandardRolloutPolicy must contain only one of: batch-node-count, batch-percent'
+        )
+
+      standard_rollout_policy.batchPercentage = standard_rollout_policy.batchNodeCount = None
+      if 'batch-node-count' in options.standard_rollout_policy:
+        standard_rollout_policy.batchNodeCount = options.standard_rollout_policy[
+            'batch-node-count']
+      elif 'batch-percent' in options.standard_rollout_policy:
+        standard_rollout_policy.batchPercentage = options.standard_rollout_policy[
+            'batch-percent']
+
+      if 'batch-soak-duration' in options.standard_rollout_policy:
+        standard_rollout_policy.batchSoakDuration = options.standard_rollout_policy[
+            'batch-soak-duration']
+      blue_green_settings.standardRolloutPolicy = standard_rollout_policy
+
+    return blue_green_settings
+
+  def UpdateUpgradeSettings(self, node_pool_ref, options, pool=None):
     """Updates node pool's upgrade setting."""
-    pool = self.GetNodePool(node_pool_ref)
+    if pool is None:
+      pool = self.GetNodePool(node_pool_ref)
+
+    if options.enable_rolling_update and options.enable_blue_green_update:
+      raise util.Error(
+          'UpgradeSettings must contain only one of: --enable-rolling-update, --enable-blue-green-update'
+      )
+
     upgrade_settings = pool.upgradeSettings
     if upgrade_settings is None:
       upgrade_settings = self.messages.UpgradeSettings()
@@ -3020,6 +3081,13 @@ class APIAdapter(object):
       upgrade_settings.maxSurge = options.max_surge_upgrade
     if options.max_unavailable_upgrade is not None:
       upgrade_settings.maxUnavailable = options.max_unavailable_upgrade
+    if options.enable_rolling_update:
+      upgrade_settings.strategy = self.messages.UpgradeSettings.StrategyValueValuesEnum.ROLLING
+    if options.enable_blue_green_update:
+      upgrade_settings.strategy = self.messages.UpgradeSettings.StrategyValueValuesEnum.BLUE_GREEN
+    if options.standard_rollout_policy is not None or options.node_pool_soak_duration is not None:
+      upgrade_settings.blueGreenSettings = self.UpdateBlueGreenSettings(
+          upgrade_settings, options)
     return upgrade_settings
 
   def UpdateNodePoolRequest(self, node_pool_ref, options):
@@ -3047,8 +3115,11 @@ class APIAdapter(object):
                                             self.messages)
     elif options.node_locations is not None:
       update_request.locations = sorted(options.node_locations)
-    elif (options.max_surge_upgrade is not None or
-          options.max_unavailable_upgrade is not None):
+    elif (options.enable_blue_green_update or options.enable_rolling_update or
+          options.max_surge_upgrade is not None or
+          options.max_unavailable_upgrade is not None or
+          options.standard_rollout_policy is not None or
+          options.node_pool_soak_duration is not None):
       update_request.upgradeSettings = self.UpdateUpgradeSettings(
           node_pool_ref, options)
     elif options.system_config_from_file is not None:
@@ -3160,6 +3231,14 @@ class APIAdapter(object):
                 node_pool_ref.projectId, node_pool_ref.zone,
                 node_pool_ref.clusterId, node_pool_ref.nodePoolId)))
     return self.ParseOperation(operation.name, node_pool_ref.zone)
+
+  def CompleteNodePoolUpgrade(self, node_pool_ref):
+    req = self.messages.ContainerProjectsLocationsClustersNodePoolsCompleteUpgradeRequest(
+        name=ProjectLocationClusterNodePool(
+            node_pool_ref.projectId, node_pool_ref.zone,
+            node_pool_ref.clusterId, node_pool_ref.nodePoolId))
+    return self.client.projects_locations_clusters_nodePools.CompleteUpgrade(
+        req)
 
   def CancelOperation(self, op_ref):
     req = self.messages.CancelOperationRequest(

@@ -36,8 +36,8 @@ _BETA_API_VERSION = 'v1beta1'
 
 RELEASE_TRACK_TO_API_VERSION = {
     base.ReleaseTrack.GA: _GA_API_VERSION,
-    base.ReleaseTrack.BETA: _BETA_API_VERSION,
-    base.ReleaseTrack.ALPHA: _BETA_API_VERSION,
+    base.ReleaseTrack.BETA: _GA_API_VERSION,
+    base.ReleaseTrack.ALPHA: _GA_API_VERSION,
 }
 
 REGIONAL_WORKERPOOL_NAME_MATCHER = r'projects/.*/locations/.*/workerPools/.*'

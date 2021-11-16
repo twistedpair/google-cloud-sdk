@@ -126,6 +126,43 @@ class ArtifactregistryProjectsLocationsRepositoriesAptartifactsUploadRequest(_me
   parent = _messages.StringField(2, required=True)
 
 
+class ArtifactregistryProjectsLocationsRepositoriesCreateRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesCreateRequest object.
+
+  Fields:
+    googleDevtoolsArtifactregistryV1alpha1Repository: A
+      GoogleDevtoolsArtifactregistryV1alpha1Repository resource to be passed
+      as the request body.
+    parent: The name of the parent resource where the repository will be
+      created.
+    repositoryId: The repository id to use for this repository.
+  """
+
+  googleDevtoolsArtifactregistryV1alpha1Repository = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1Repository', 1)
+  parent = _messages.StringField(2, required=True)
+  repositoryId = _messages.StringField(3)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesDeleteRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesDeleteRequest object.
+
+  Fields:
+    name: The name of the repository to delete.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesGetRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesGetRequest object.
+
+  Fields:
+    name: The name of the repository to retrieve.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ArtifactregistryProjectsLocationsRepositoriesGooGetArtifactsImportRequest(_messages.Message):
   r"""A
   ArtifactregistryProjectsLocationsRepositoriesGooGetArtifactsImportRequest
@@ -158,6 +195,41 @@ class ArtifactregistryProjectsLocationsRepositoriesGoogetartifactsUploadRequest(
 
   googleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactRequest = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactRequest', 1)
   parent = _messages.StringField(2, required=True)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesListRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of repositories to return. Maximum page size
+      is 10,000.
+    pageToken: The next_page_token value returned from a previous list
+      request, if any.
+    parent: The name of the parent resource whose repositories will be listed.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesPatchRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesPatchRequest object.
+
+  Fields:
+    googleDevtoolsArtifactregistryV1alpha1Repository: A
+      GoogleDevtoolsArtifactregistryV1alpha1Repository resource to be passed
+      as the request body.
+    name: The name of the repository, for example: "projects/p1/locations/us-
+      central1/repositories/repo1".
+    updateMask: The update mask applies to the resource. For the `FieldMask`
+      definition, see https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask
+  """
+
+  googleDevtoolsArtifactregistryV1alpha1Repository = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1Repository', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class ArtifactregistryProjectsLocationsRepositoriesYumArtifactsImportRequest(_messages.Message):
@@ -426,6 +498,19 @@ class GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsResponse(_messages
   yumArtifacts = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1YumArtifact', 2, repeated=True)
 
 
+class GoogleDevtoolsArtifactregistryV1alpha1ListRepositoriesResponse(_messages.Message):
+  r"""The response from listing repositories.
+
+  Fields:
+    nextPageToken: The token to retrieve the next page of repositories, or
+      empty if there are no more repositories to return.
+    repositories: The repositories returned.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  repositories = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1Repository', 2, repeated=True)
+
+
 class GoogleDevtoolsArtifactregistryV1alpha1Repository(_messages.Message):
   r"""A Repository for storing artifacts with a specific format.
 
@@ -473,7 +558,6 @@ class GoogleDevtoolsArtifactregistryV1alpha1Repository(_messages.Message):
       DOCKER: Docker package format.
       MAVEN: Maven package format.
       NPM: NPM package format.
-      PYPI: PyPI package format.
       APT: APT package format.
       YUM: YUM package format.
       PYTHON: Python package format.
@@ -482,10 +566,9 @@ class GoogleDevtoolsArtifactregistryV1alpha1Repository(_messages.Message):
     DOCKER = 1
     MAVEN = 2
     NPM = 3
-    PYPI = 4
-    APT = 5
-    YUM = 6
-    PYTHON = 7
+    APT = 4
+    YUM = 5
+    PYTHON = 6
 
   class ModeValueValuesEnum(_messages.Enum):
     r"""The mode of the repository.
@@ -677,7 +760,7 @@ class GoogleDevtoolsArtifactregistryV1alpha1YumArtifact(_messages.Message):
 
     Values:
       PACKAGE_TYPE_UNSPECIFIED: Package type is not specified.
-      BINARY: Binary package (.rpm). .rpm
+      BINARY: Binary package (.rpm).
       SOURCE: Source package (.srpm).
     """
     PACKAGE_TYPE_UNSPECIFIED = 0

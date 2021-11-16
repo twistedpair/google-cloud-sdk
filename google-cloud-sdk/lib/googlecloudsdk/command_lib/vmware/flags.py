@@ -27,16 +27,17 @@ from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
 def AddPrivatecloudArgToParser(parser, positional=False):
   """Sets up an argument for the privatecloud resource."""
-  name = '--privatecloud'
+  name = '--private-cloud'
   if positional:
-    name = 'privatecloud'
-  privatecloud_data = yaml_data.ResourceYAMLData.FromPath('vmware.privatecloud')
+    name = 'private_cloud'
+  privatecloud_data = yaml_data.ResourceYAMLData.FromPath(
+      'vmware.private_cloud')
   resource_spec = concepts.ResourceSpec.FromYaml(privatecloud_data.GetData())
   presentation_spec = presentation_specs.ResourcePresentationSpec(
       name=name,
       concept_spec=resource_spec,
       required=True,
-      group_help='privatecloud.'
+      group_help='private_cloud.'
       )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
@@ -62,7 +63,7 @@ def AddClusterArgToParser(parser, positional=False):
     name = '--cluster'
   cluster_data = yaml_data.ResourceYAMLData.FromPath('vmware.cluster')
   resource_spec = concepts.ResourceSpec.FromYaml(cluster_data.GetData())
-  flag_name_overrides = {'location': '', 'privatecloud': ''}
+  flag_name_overrides = {'location': '', 'private-cloud': ''}
 
   if positional:
     flag_name_overrides = None
@@ -110,19 +111,19 @@ def AddNodeTypeArgToParser(parser, positional=False):
   """Parses node type flag."""
 
   if positional:
-    name = 'nodetype'
+    name = 'node_type'
     flag_name_overrides = None
   else:
     name = '--node-type'
     flag_name_overrides = {'location': ''}
 
-  location_data = yaml_data.ResourceYAMLData.FromPath('vmware.nodetype')
+  location_data = yaml_data.ResourceYAMLData.FromPath('vmware.node_type')
   resource_spec = concepts.ResourceSpec.FromYaml(location_data.GetData())
   presentation_spec = presentation_specs.ResourcePresentationSpec(
       name=name,
       concept_spec=resource_spec,
       required=True,
-      group_help='nodetype.',
+      group_help='node_type.',
       flag_name_overrides=flag_name_overrides)
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 

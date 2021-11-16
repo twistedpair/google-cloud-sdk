@@ -30,6 +30,67 @@ class BackfillAllStrategy(_messages.Message):
   oracleExcludedObjects = _messages.MessageField('OracleRdbms', 2)
 
 
+class BackfillJob(_messages.Message):
+  r"""Represents a backfill job on a specific stream object.
+
+  Enums:
+    StateValueValuesEnum: Backfill job state.
+    TriggerValueValuesEnum: Backfill job's triggering reason.
+
+  Fields:
+    errors: Output only. Errors which caused the backfill job to fail.
+    lastEndTime: Output only. Backfill job's end time.
+    lastStartTime: Output only. Backfill job's start time.
+    state: Backfill job state.
+    trigger: Backfill job's triggering reason.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Backfill job state.
+
+    Values:
+      STATE_UNSPECIFIED: Default value.
+      NOT_STARTED: Backfill job was never started for the stream object
+        (stream has backfill strategy defined as manual or object was
+        explicitly excluded from automatic backfill).
+      PENDING: Backfill job will start pending available resources.
+      ACTIVE: Backfill job is running.
+      STOPPED: Backfill job stopped (next job run will start from beginning).
+      FAILED: Backfill job failed (due to an error).
+      COMPLETED: Backfill completed successfully.
+      UNSUPPORTED: Backfill job failed since the table structure is currently
+        unsupported for backfill.
+    """
+    STATE_UNSPECIFIED = 0
+    NOT_STARTED = 1
+    PENDING = 2
+    ACTIVE = 3
+    STOPPED = 4
+    FAILED = 5
+    COMPLETED = 6
+    UNSUPPORTED = 7
+
+  class TriggerValueValuesEnum(_messages.Enum):
+    r"""Backfill job's triggering reason.
+
+    Values:
+      TRIGGER_UNSPECIFIED: Default value.
+      AUTOMATIC: Object backfill job was triggered automatically according to
+        the stream's backfill strategy.
+      MANUAL: Object backfill job was triggered manually using the dedicated
+        API.
+    """
+    TRIGGER_UNSPECIFIED = 0
+    AUTOMATIC = 1
+    MANUAL = 2
+
+  errors = _messages.MessageField('Error', 1, repeated=True)
+  lastEndTime = _messages.StringField(2)
+  lastStartTime = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  trigger = _messages.EnumField('TriggerValueValuesEnum', 5)
+
+
 class BackfillNoneStrategy(_messages.Message):
   r"""Backfill strategy to disable automatic backfill for the Stream's
   objects.
@@ -598,6 +659,58 @@ class DatastreamProjectsLocationsStreamsListRequest(_messages.Message):
   parent = _messages.StringField(5, required=True)
 
 
+class DatastreamProjectsLocationsStreamsObjectsGetRequest(_messages.Message):
+  r"""A DatastreamProjectsLocationsStreamsObjectsGetRequest object.
+
+  Fields:
+    name: Required. The name of the stream object resource to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DatastreamProjectsLocationsStreamsObjectsListRequest(_messages.Message):
+  r"""A DatastreamProjectsLocationsStreamsObjectsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of objects to return. Default is 50. The maximum
+      value is 1000; values above 1000 will be coerced to 1000.
+    pageToken: Page token received from a previous `ListStreamObjectsRequest`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListStreamObjectsRequest` must match the
+      call that provided the page token.
+    parent: Required. The parent stream that owns the collection of objects.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DatastreamProjectsLocationsStreamsObjectsStartBackfillJobRequest(_messages.Message):
+  r"""A DatastreamProjectsLocationsStreamsObjectsStartBackfillJobRequest
+  object.
+
+  Fields:
+    object: Required. The name of the stream object resource to start a
+      backfill job for.
+  """
+
+  object = _messages.StringField(1, required=True)
+
+
+class DatastreamProjectsLocationsStreamsObjectsStopBackfillJobRequest(_messages.Message):
+  r"""A DatastreamProjectsLocationsStreamsObjectsStopBackfillJobRequest
+  object.
+
+  Fields:
+    object: Required. The name of the stream object resource to stop the
+      backfill job for.
+  """
+
+  object = _messages.StringField(1, required=True)
+
+
 class DatastreamProjectsLocationsStreamsPatchRequest(_messages.Message):
   r"""A DatastreamProjectsLocationsStreamsPatchRequest object.
 
@@ -944,6 +1057,19 @@ class ListRoutesResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListStreamObjectsResponse(_messages.Message):
+  r"""Response containing the objects for a stream.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page.
+    streamObjects: List of stream objects.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  streamObjects = _messages.MessageField('StreamObject', 2, repeated=True)
+
+
 class ListStreamsResponse(_messages.Message):
   r"""A ListStreamsResponse object.
 
@@ -1072,6 +1198,18 @@ class MysqlDatabase(_messages.Message):
 
   databaseName = _messages.StringField(1)
   mysqlTables = _messages.MessageField('MysqlTable', 2, repeated=True)
+
+
+class MysqlObjectIdentifier(_messages.Message):
+  r"""Mysql data source object identifier.
+
+  Fields:
+    database: The database name.
+    table: The table name.
+  """
+
+  database = _messages.StringField(1)
+  table = _messages.StringField(2)
 
 
 class MysqlProfile(_messages.Message):
@@ -1323,6 +1461,18 @@ class OracleColumn(_messages.Message):
   scale = _messages.IntegerField(9, variant=_messages.Variant.INT32)
 
 
+class OracleObjectIdentifier(_messages.Message):
+  r"""Oracle data source object identifier.
+
+  Fields:
+    schema: The schema name.
+    table: The table name.
+  """
+
+  schema = _messages.StringField(1)
+  table = _messages.StringField(2)
+
+
 class OracleProfile(_messages.Message):
   r"""Oracle database profile.
 
@@ -1571,6 +1721,18 @@ class SourceConfig(_messages.Message):
   sourceConnectionProfileName = _messages.StringField(3)
 
 
+class SourceObjectIdentifier(_messages.Message):
+  r"""Represents an identifier of an object in the data source.
+
+  Fields:
+    mysqlIdentifier: Mysql data source object identifier.
+    oracleIdentifier: Oracle data source object identifier.
+  """
+
+  mysqlIdentifier = _messages.MessageField('MysqlObjectIdentifier', 1)
+  oracleIdentifier = _messages.MessageField('OracleObjectIdentifier', 2)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -1634,6 +1796,17 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class StartBackfillJobResponse(_messages.Message):
+  r"""Response for manually initiating a backfill job for a specific stream
+  object.
+
+  Fields:
+    object: The stream object resource a backfill job was started for.
+  """
+
+  object = _messages.MessageField('StreamObject', 1)
+
+
 class StaticServiceIpConnectivity(_messages.Message):
   r"""Static IP address connectivity."""
 
@@ -1687,6 +1860,16 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class StopBackfillJobResponse(_messages.Message):
+  r"""Response for manually stop a backfill job for a specific stream object.
+
+  Fields:
+    object: The stream object resource the backfill job was stopped for.
+  """
+
+  object = _messages.MessageField('StreamObject', 1)
 
 
 class Stream(_messages.Message):
@@ -1780,6 +1963,29 @@ class Stream(_messages.Message):
   sourceConfig = _messages.MessageField('SourceConfig', 10)
   state = _messages.EnumField('StateValueValuesEnum', 11)
   updateTime = _messages.StringField(12)
+
+
+class StreamObject(_messages.Message):
+  r"""A specific stream object (e.g a specific DB table).
+
+  Fields:
+    backfillJob: The latest backfill job that was initiated for the stream
+      object.
+    createTime: Output only. The creation time of the object.
+    displayName: Required. Display name.
+    errors: Output only. Active errors on the object.
+    name: Output only. The object's name.
+    sourceObject: The object identifier in the data source.
+    updateTime: Output only. The last update time of the object.
+  """
+
+  backfillJob = _messages.MessageField('BackfillJob', 1)
+  createTime = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  errors = _messages.MessageField('Error', 4, repeated=True)
+  name = _messages.StringField(5)
+  sourceObject = _messages.MessageField('SourceObjectIdentifier', 6)
+  updateTime = _messages.StringField(7)
 
 
 class Validation(_messages.Message):

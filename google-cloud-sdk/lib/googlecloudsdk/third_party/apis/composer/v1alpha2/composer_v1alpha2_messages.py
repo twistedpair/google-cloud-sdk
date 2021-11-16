@@ -340,22 +340,6 @@ class ComposerProjectsLocationsEnvironmentsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
-class ComposerProjectsLocationsEnvironmentsLoadEnvironmentStateRequest(_messages.Message):
-  r"""A ComposerProjectsLocationsEnvironmentsLoadEnvironmentStateRequest
-  object.
-
-  Fields:
-    environment: The resource name of the target environment in the form:
-      "projects/{projectId}/locations/{locationId}/environments/{environmentId
-      }"
-    loadEnvironmentStateRequest: A LoadEnvironmentStateRequest resource to be
-      passed as the request body.
-  """
-
-  environment = _messages.StringField(1, required=True)
-  loadEnvironmentStateRequest = _messages.MessageField('LoadEnvironmentStateRequest', 2)
-
-
 class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
   r"""A ComposerProjectsLocationsEnvironmentsPatchRequest object.
 
@@ -481,22 +465,6 @@ class ComposerProjectsLocationsEnvironmentsRestartWebServerRequest(_messages.Mes
 
   name = _messages.StringField(1, required=True)
   restartWebServerRequest = _messages.MessageField('RestartWebServerRequest', 2)
-
-
-class ComposerProjectsLocationsEnvironmentsStoreEnvironmentStateRequest(_messages.Message):
-  r"""A ComposerProjectsLocationsEnvironmentsStoreEnvironmentStateRequest
-  object.
-
-  Fields:
-    environment: The resource name of the source environment in the form:
-      "projects/{projectId}/locations/{locationId}/environments/{environmentId
-      }"
-    storeEnvironmentStateRequest: A StoreEnvironmentStateRequest resource to
-      be passed as the request body.
-  """
-
-  environment = _messages.StringField(1, required=True)
-  storeEnvironmentStateRequest = _messages.MessageField('StoreEnvironmentStateRequest', 2)
 
 
 class ComposerProjectsLocationsImageVersionsListRequest(_messages.Message):
@@ -1103,21 +1071,6 @@ class ListTasksResponse(_messages.Message):
   tasks = _messages.MessageField('Task', 2, repeated=True)
 
 
-class LoadEnvironmentStateRequest(_messages.Message):
-  r"""Load environment state request.
-
-  Fields:
-    skipPypiPackagesInstallation: Whether or not to skip installing Pypi
-      packages when loading the environment's state.
-    snapshotLocation: A Cloud Storage location of a snapshot to load, e.g.:
-      "gs://my-
-      bucket/snapshots/project_id/location/environment_uuid/timestamp".
-  """
-
-  skipPypiPackagesInstallation = _messages.BooleanField(1)
-  snapshotLocation = _messages.StringField(2)
-
-
 class LoadEnvironmentStateResponse(_messages.Message):
   r"""Load environment state response."""
 
@@ -1403,12 +1356,14 @@ class OperationMetadata(_messages.Message):
       DELETE: A resource deletion operation.
       UPDATE: A resource update operation.
       CHECK: A resource check operation.
+      STORE_STATE: Stores the state of the resource operation.
     """
     TYPE_UNSPECIFIED = 0
     CREATE = 1
     DELETE = 2
     UPDATE = 3
     CHECK = 4
+    STORE_STATE = 5
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current operation state.
@@ -1873,17 +1828,6 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
-
-
-class StoreEnvironmentStateRequest(_messages.Message):
-  r"""Store environment state request.
-
-  Fields:
-    snapshotLocation: Location in a Cloud Storage where the snapshot of the
-      state is going to be stored, e.g.: "gs://my-bucket/snapshots".
-  """
-
-  snapshotLocation = _messages.StringField(1)
 
 
 class StoreEnvironmentStateResponse(_messages.Message):

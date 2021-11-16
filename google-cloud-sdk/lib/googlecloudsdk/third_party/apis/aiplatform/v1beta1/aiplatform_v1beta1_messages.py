@@ -955,6 +955,10 @@ class AiplatformProjectsLocationsEndpointsCreateRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsEndpointsCreateRequest object.
 
   Fields:
+    endpointId: Immutable. The ID to use for endpoint, which will become the
+      final component of the endpoint resource name. If not provided, Vertex
+      AI will generate a value for this ID. This value should be 1-10
+      characters, and valid characters are /[0-9]/.
     googleCloudAiplatformV1beta1Endpoint: A
       GoogleCloudAiplatformV1beta1Endpoint resource to be passed as the
       request body.
@@ -962,8 +966,9 @@ class AiplatformProjectsLocationsEndpointsCreateRequest(_messages.Message):
       in. Format: `projects/{project}/locations/{location}`
   """
 
-  googleCloudAiplatformV1beta1Endpoint = _messages.MessageField('GoogleCloudAiplatformV1beta1Endpoint', 1)
-  parent = _messages.StringField(2, required=True)
+  endpointId = _messages.StringField(1)
+  googleCloudAiplatformV1beta1Endpoint = _messages.MessageField('GoogleCloudAiplatformV1beta1Endpoint', 2)
+  parent = _messages.StringField(3, required=True)
 
 
 class AiplatformProjectsLocationsEndpointsDeleteRequest(_messages.Message):
@@ -1898,6 +1903,31 @@ class AiplatformProjectsLocationsFeaturestoresSearchFeaturesRequest(_messages.Me
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   query = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsGetIamPolicyRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
 
 
 class AiplatformProjectsLocationsGetRequest(_messages.Message):
@@ -3951,6 +3981,21 @@ class AiplatformProjectsLocationsPipelineJobsOperationsWaitRequest(_messages.Mes
   timeout = _messages.StringField(2)
 
 
+class AiplatformProjectsLocationsSetIamPolicyRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsSetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsSpecialistPoolsCreateRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsSpecialistPoolsCreateRequest object.
 
@@ -5224,6 +5269,22 @@ class AiplatformProjectsLocationsTensorboardsPatchRequest(_messages.Message):
   googleCloudAiplatformV1beta1Tensorboard = _messages.MessageField('GoogleCloudAiplatformV1beta1Tensorboard', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class AiplatformProjectsLocationsTestIamPermissionsRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTestIamPermissionsRequest object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class AiplatformProjectsLocationsTrainingPipelinesCancelRequest(_messages.Message):
@@ -6981,9 +7042,9 @@ class GoogleCloudAiplatformInternalHumanInTheLoop(_messages.Message):
       specialists are used by default; otherwise, users need to specify the
       Google specialist region here. If users select to use customized
       specialists, the Google specialist region here will be ignored.
-    instructionUri: Required. The Google Cloud Storage location of the
-      instruction pdf. This pdf is shared with labelers, and provides detailed
-      description on how to label DataItems in Datasets.
+    instructionUri: The Google Cloud Storage location of the instruction pdf.
+      This pdf is shared with labelers, and provides detailed description on
+      how to label DataItems in Datasets.
     labels: The labels with user-defined metadata to organize your human in
       the loop configuration. Label keys and values can be no longer than 64
       characters (Unicode codepoints), can only contain lowercase letters,
@@ -9707,7 +9768,7 @@ class GoogleCloudAiplatformUiModelMonitoringObjectiveConfig(_messages.Message):
   r"""Next ID: 6
 
   Fields:
-    explanationConfig: The config for integrated with Explainable AI.
+    explanationConfig: The config for integrating with Vertex Explainable AI.
     predictionDriftDetectionConfig: The config for drift of prediction data.
     trainingDataset: Training dataset for models. This field has to be set
       only if TrainingPredictionSkewDetectionConfig is specified.
@@ -9722,14 +9783,14 @@ class GoogleCloudAiplatformUiModelMonitoringObjectiveConfig(_messages.Message):
 
 
 class GoogleCloudAiplatformUiModelMonitoringObjectiveConfigExplanationConfig(_messages.Message):
-  r"""The config for integrated with Explainable AI. Only applicable if the
-  Model has explanation_spec populated.
+  r"""The config for integrating with Vertex Explainable AI. Only applicable
+  if the Model has explanation_spec populated.
 
   Fields:
-    enableFeatureAttributes: If want to analyze the Explainable AI feature
-      attribute scores or not. If set to true, Vertex AI will log the feature
-      attributions from explain response and do the skew/drift detection for
-      them.
+    enableFeatureAttributes: If want to analyze the Vertex Explainable AI
+      feature attribute scores or not. If set to true, Vertex AI will log the
+      feature attributions from explain response and do the skew/drift
+      detection for them.
     explanationBaseline: Predictions generated by the BatchPredictionJob using
       baseline dataset.
   """
@@ -11023,12 +11084,12 @@ class GoogleCloudAiplatformUiTrial(_messages.Message):
   Fields:
     clientId: Output only. The identifier of the client that originally
       requested this Trial. Each client is identified by a unique client_id.
-      When a client asks for a suggestion, Vizier will assign it a Trial. The
-      client should evaluate the Trial, complete it, and report back to
-      Vizier. If suggestion is asked again by same client_id before the Trial
-      is completed, the same Trial will be returned. Multiple clients with
-      different client_ids can ask for suggestions simultaneously, each of
-      them will get their own Trial.
+      When a client asks for a suggestion, Vertex AI Vizier will assign it a
+      Trial. The client should evaluate the Trial, complete it, and report
+      back to Vertex AI Vizier. If suggestion is asked again by same client_id
+      before the Trial is completed, the same Trial will be returned. Multiple
+      clients with different client_ids can ask for suggestions
+      simultaneously, each of them will get their own Trial.
     customJob: Output only. The CustomJob name linked to the Trial. It's set
       for a HyperparameterTuningJob's Trial.
     endTime: Output only. Time when the Trial's status changed to `SUCCEEDED`
@@ -15671,8 +15732,8 @@ class GoogleCloudAiplatformV1StudySpec(_messages.Message):
     MeasurementSelectionTypeValueValuesEnum: Describe which measurement
       selection type will be used
     ObservationNoiseValueValuesEnum: The observation noise level of the study.
-      Currently only supported by the Vizier service. Not supported by
-      HyperparamterTuningJob or TrainingPipeline.
+      Currently only supported by the Vertex AI Vizier service. Not supported
+      by HyperparamterTuningJob or TrainingPipeline.
 
   Fields:
     algorithm: The search algorithm specified for the Study.
@@ -15684,8 +15745,8 @@ class GoogleCloudAiplatformV1StudySpec(_messages.Message):
       median rule.
     metrics: Required. Metric specs for the Study.
     observationNoise: The observation noise level of the study. Currently only
-      supported by the Vizier service. Not supported by HyperparamterTuningJob
-      or TrainingPipeline.
+      supported by the Vertex AI Vizier service. Not supported by
+      HyperparamterTuningJob or TrainingPipeline.
     parameters: Required. The set of parameters to tune.
   """
 
@@ -15695,7 +15756,7 @@ class GoogleCloudAiplatformV1StudySpec(_messages.Message):
     Values:
       ALGORITHM_UNSPECIFIED: The default algorithm used by Vertex AI for
         [hyperparameter tuning](https://cloud.google.com/vertex-
-        ai/docs/training/hyperparameter-tuning-overview) and [Vertex
+        ai/docs/training/hyperparameter-tuning-overview) and [Vertex AI
         Vizier](https://cloud.google.com/vertex-ai/docs/vizier).
       GRID_SEARCH: Simple grid search within the feasible space. To use grid
         search, all parameters must be `INTEGER`, `CATEGORICAL`, or
@@ -15721,7 +15782,7 @@ class GoogleCloudAiplatformV1StudySpec(_messages.Message):
 
   class ObservationNoiseValueValuesEnum(_messages.Enum):
     r"""The observation noise level of the study. Currently only supported by
-    the Vizier service. Not supported by HyperparamterTuningJob or
+    the Vertex AI Vizier service. Not supported by HyperparamterTuningJob or
     TrainingPipeline.
 
     Values:
@@ -15951,8 +16012,9 @@ class GoogleCloudAiplatformV1StudySpecParameterSpecDoubleValueSpec(_messages.Mes
   Fields:
     defaultValue: A default value for a `DOUBLE` parameter that is assumed to
       be a relatively good starting point. Unset value signals that there is
-      no offered starting point. Currently only supported by the Vizier
-      service. Not supported by HyperparamterTuningJob or TrainingPipeline.
+      no offered starting point. Currently only supported by the Vertex AI
+      Vizier service. Not supported by HyperparamterTuningJob or
+      TrainingPipeline.
     maxValue: Required. Inclusive maximum value of the parameter.
     minValue: Required. Inclusive minimum value of the parameter.
   """
@@ -15968,8 +16030,9 @@ class GoogleCloudAiplatformV1StudySpecParameterSpecIntegerValueSpec(_messages.Me
   Fields:
     defaultValue: A default value for an `INTEGER` parameter that is assumed
       to be a relatively good starting point. Unset value signals that there
-      is no offered starting point. Currently only supported by the Vizier
-      service. Not supported by HyperparamterTuningJob or TrainingPipeline.
+      is no offered starting point. Currently only supported by the Vertex AI
+      Vizier service. Not supported by HyperparamterTuningJob or
+      TrainingPipeline.
     maxValue: Required. Inclusive maximum value of the parameter.
     minValue: Required. Inclusive minimum value of the parameter.
   """
@@ -16050,12 +16113,12 @@ class GoogleCloudAiplatformV1Trial(_messages.Message):
   Fields:
     clientId: Output only. The identifier of the client that originally
       requested this Trial. Each client is identified by a unique client_id.
-      When a client asks for a suggestion, Vizier will assign it a Trial. The
-      client should evaluate the Trial, complete it, and report back to
-      Vizier. If suggestion is asked again by same client_id before the Trial
-      is completed, the same Trial will be returned. Multiple clients with
-      different client_ids can ask for suggestions simultaneously, each of
-      them will get their own Trial.
+      When a client asks for a suggestion, Vertex AI Vizier will assign it a
+      Trial. The client should evaluate the Trial, complete it, and report
+      back to Vertex AI Vizier. If suggestion is asked again by same client_id
+      before the Trial is completed, the same Trial will be returned. Multiple
+      clients with different client_ids can ask for suggestions
+      simultaneously, each of them will get their own Trial.
     customJob: Output only. The CustomJob name linked to the Trial. It's set
       for a HyperparameterTuningJob's Trial.
     endTime: Output only. Time when the Trial's status changed to `SUCCEEDED`
@@ -18050,12 +18113,12 @@ class GoogleCloudAiplatformV1alpha1Trial(_messages.Message):
   Fields:
     clientId: Output only. The identifier of the client that originally
       requested this Trial. Each client is identified by a unique client_id.
-      When a client asks for a suggestion, Vizier will assign it a Trial. The
-      client should evaluate the Trial, complete it, and report back to
-      Vizier. If suggestion is asked again by same client_id before the Trial
-      is completed, the same Trial will be returned. Multiple clients with
-      different client_ids can ask for suggestions simultaneously, each of
-      them will get their own Trial.
+      When a client asks for a suggestion, Vertex AI Vizier will assign it a
+      Trial. The client should evaluate the Trial, complete it, and report
+      back to Vertex AI Vizier. If suggestion is asked again by same client_id
+      before the Trial is completed, the same Trial will be returned. Multiple
+      clients with different client_ids can ask for suggestions
+      simultaneously, each of them will get their own Trial.
     endTime: Output only. Time when the Trial's status changed to `SUCCEEDED`
       or `INFEASIBLE`.
     finalMeasurement: Output only. The final measurement containing the
@@ -18470,7 +18533,7 @@ class GoogleCloudAiplatformV1beta1Artifact(_messages.Message):
   Enums:
     StateValueValuesEnum: The state of this Artifact. This is a property of
       the Artifact, and does not imply or capture any ongoing process. This
-      property is managed by clients (such as Vertex Pipelines), and the
+      property is managed by clients (such as Vertex AI Pipelines), and the
       system does not prescribe or check the validity of state transitions.
 
   Messages:
@@ -18509,8 +18572,8 @@ class GoogleCloudAiplatformV1beta1Artifact(_messages.Message):
       schemas within the local metadata store.
     state: The state of this Artifact. This is a property of the Artifact, and
       does not imply or capture any ongoing process. This property is managed
-      by clients (such as Vertex Pipelines), and the system does not prescribe
-      or check the validity of state transitions.
+      by clients (such as Vertex AI Pipelines), and the system does not
+      prescribe or check the validity of state transitions.
     updateTime: Output only. Timestamp when this Artifact was last updated.
     uri: The uniform resource identifier of the artifact file. May be empty if
       there is no actual artifact file.
@@ -18519,13 +18582,13 @@ class GoogleCloudAiplatformV1beta1Artifact(_messages.Message):
   class StateValueValuesEnum(_messages.Enum):
     r"""The state of this Artifact. This is a property of the Artifact, and
     does not imply or capture any ongoing process. This property is managed by
-    clients (such as Vertex Pipelines), and the system does not prescribe or
-    check the validity of state transitions.
+    clients (such as Vertex AI Pipelines), and the system does not prescribe
+    or check the validity of state transitions.
 
     Values:
       STATE_UNSPECIFIED: Unspecified state for the Artifact.
-      PENDING: A state used by systems like Vertex Pipelines to indicate that
-        the underlying data item represented by this Artifact is being
+      PENDING: A state used by systems like Vertex AI Pipelines to indicate
+        that the underlying data item represented by this Artifact is being
         created.
       LIVE: A state indicating that the Artifact should exist, unless
         something external to the system deletes it.
@@ -20993,8 +21056,8 @@ class GoogleCloudAiplatformV1beta1Execution(_messages.Message):
   Enums:
     StateValueValuesEnum: The state of this Execution. This is a property of
       the Execution, and does not imply or capture any ongoing process. This
-      property is managed by clients (such as Vertex Pipelines) and the system
-      does not prescribe or check the validity of state transitions.
+      property is managed by clients (such as Vertex AI Pipelines) and the
+      system does not prescribe or check the validity of state transitions.
 
   Messages:
     LabelsValue: The labels with user-defined metadata to organize your
@@ -21032,7 +21095,7 @@ class GoogleCloudAiplatformV1beta1Execution(_messages.Message):
       schemas within the local metadata store.
     state: The state of this Execution. This is a property of the Execution,
       and does not imply or capture any ongoing process. This property is
-      managed by clients (such as Vertex Pipelines) and the system does not
+      managed by clients (such as Vertex AI Pipelines) and the system does not
       prescribe or check the validity of state transitions.
     updateTime: Output only. Timestamp when this Execution was last updated.
   """
@@ -21040,7 +21103,7 @@ class GoogleCloudAiplatformV1beta1Execution(_messages.Message):
   class StateValueValuesEnum(_messages.Enum):
     r"""The state of this Execution. This is a property of the Execution, and
     does not imply or capture any ongoing process. This property is managed by
-    clients (such as Vertex Pipelines) and the system does not prescribe or
+    clients (such as Vertex AI Pipelines) and the system does not prescribe or
     check the validity of state transitions.
 
     Values:
@@ -22240,9 +22303,9 @@ class GoogleCloudAiplatformV1beta1FeatureValueMetadata(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1Featurestore(_messages.Message):
-  r"""Vertex Feature Store provides a centralized repository for organizing,
-  storing, and serving ML features. The Featurestore is a top-level container
-  for your features and their values.
+  r"""Vertex AI Feature Store provides a centralized repository for
+  organizing, storing, and serving ML features. The Featurestore is a top-
+  level container for your features and their values.
 
   Enums:
     StateValueValuesEnum: Output only. State of the featurestore.
@@ -24787,7 +24850,7 @@ class GoogleCloudAiplatformV1beta1ModelExportFormat(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfig(_messages.Message):
-  r"""Next ID: 2
+  r"""Next ID: 3
 
   Fields:
     emailAlertConfig: Email alert config.
@@ -24810,7 +24873,7 @@ class GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfig(_messages.Messa
   r"""Next ID: 6
 
   Fields:
-    explanationConfig: The config for integrated with Explainable AI.
+    explanationConfig: The config for integrating with Vertex Explainable AI.
     predictionDriftDetectionConfig: The config for drift of prediction data.
     trainingDataset: Training dataset for models. This field has to be set
       only if TrainingPredictionSkewDetectionConfig is specified.
@@ -24825,14 +24888,14 @@ class GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfig(_messages.Messa
 
 
 class GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfig(_messages.Message):
-  r"""The config for integrated with Explainable AI. Only applicable if the
-  Model has explanation_spec populated.
+  r"""The config for integrating with Vertex Explainable AI. Only applicable
+  if the Model has explanation_spec populated.
 
   Fields:
-    enableFeatureAttributes: If want to analyze the Explainable AI feature
-      attribute scores or not. If set to true, Vertex AI will log the feature
-      attributions from explain response and do the skew/drift detection for
-      them.
+    enableFeatureAttributes: If want to analyze the Vertex Explainable AI
+      feature attribute scores or not. If set to true, Vertex AI will log the
+      feature attributions from explain response and do the skew/drift
+      detection for them.
     explanationBaseline: Predictions generated by the BatchPredictionJob using
       baseline dataset.
   """
@@ -25404,10 +25467,15 @@ class GoogleCloudAiplatformV1beta1PipelineJobRuntimeConfig(_messages.Message):
   Messages:
     ParameterValuesValue: The runtime parameters of the PipelineJob. The
       parameters will be passed into PipelineJob.pipeline_spec to replace the
-      placeholders at runtime.
-    ParametersValue: Deprecated. Use [RuntimeConfig.parameter_values] instead.
+      placeholders at runtime. This field is used by pipelines built using
+      `PipelineJob.pipeline_spec.schema_version` 2.1.0, such as pipelines
+      built using Kubeflow Pipelines SDK 1.9 or higher and the v2 DSL.
+    ParametersValue: Deprecated. Use RuntimeConfig.parameter_values instead.
       The runtime parameters of the PipelineJob. The parameters will be passed
       into PipelineJob.pipeline_spec to replace the placeholders at runtime.
+      This field is used by pipelines built using
+      `PipelineJob.pipeline_spec.schema_version` 2.0.0 or lower, such as
+      pipelines built using Kubeflow Pipelines SDK 1.8 or lower.
 
   Fields:
     gcsOutputDirectory: Required. A path in a Cloud Storage bucket, which will
@@ -25419,17 +25487,24 @@ class GoogleCloudAiplatformV1beta1PipelineJobRuntimeConfig(_messages.Message):
       `storage.objects.create` permissions for this bucket.
     parameterValues: The runtime parameters of the PipelineJob. The parameters
       will be passed into PipelineJob.pipeline_spec to replace the
-      placeholders at runtime.
-    parameters: Deprecated. Use [RuntimeConfig.parameter_values] instead. The
+      placeholders at runtime. This field is used by pipelines built using
+      `PipelineJob.pipeline_spec.schema_version` 2.1.0, such as pipelines
+      built using Kubeflow Pipelines SDK 1.9 or higher and the v2 DSL.
+    parameters: Deprecated. Use RuntimeConfig.parameter_values instead. The
       runtime parameters of the PipelineJob. The parameters will be passed
       into PipelineJob.pipeline_spec to replace the placeholders at runtime.
+      This field is used by pipelines built using
+      `PipelineJob.pipeline_spec.schema_version` 2.0.0 or lower, such as
+      pipelines built using Kubeflow Pipelines SDK 1.8 or lower.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParameterValuesValue(_messages.Message):
     r"""The runtime parameters of the PipelineJob. The parameters will be
     passed into PipelineJob.pipeline_spec to replace the placeholders at
-    runtime.
+    runtime. This field is used by pipelines built using
+    `PipelineJob.pipeline_spec.schema_version` 2.1.0, such as pipelines built
+    using Kubeflow Pipelines SDK 1.9 or higher and the v2 DSL.
 
     Messages:
       AdditionalProperty: An additional property for a ParameterValuesValue
@@ -25454,9 +25529,12 @@ class GoogleCloudAiplatformV1beta1PipelineJobRuntimeConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParametersValue(_messages.Message):
-    r"""Deprecated. Use [RuntimeConfig.parameter_values] instead. The runtime
+    r"""Deprecated. Use RuntimeConfig.parameter_values instead. The runtime
     parameters of the PipelineJob. The parameters will be passed into
-    PipelineJob.pipeline_spec to replace the placeholders at runtime.
+    PipelineJob.pipeline_spec to replace the placeholders at runtime. This
+    field is used by pipelines built using
+    `PipelineJob.pipeline_spec.schema_version` 2.0.0 or lower, such as
+    pipelines built using Kubeflow Pipelines SDK 1.8 or lower.
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.
@@ -28950,8 +29028,8 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
     MeasurementSelectionTypeValueValuesEnum: Describe which measurement
       selection type will be used
     ObservationNoiseValueValuesEnum: The observation noise level of the study.
-      Currently only supported by the Vizier service. Not supported by
-      HyperparamterTuningJob or TrainingPipeline.
+      Currently only supported by the Vertex AI Vizier service. Not supported
+      by HyperparamterTuningJob or TrainingPipeline.
 
   Fields:
     algorithm: The search algorithm specified for the Study.
@@ -28965,8 +29043,8 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
       median rule.
     metrics: Required. Metric specs for the Study.
     observationNoise: The observation noise level of the study. Currently only
-      supported by the Vizier service. Not supported by HyperparamterTuningJob
-      or TrainingPipeline.
+      supported by the Vertex AI Vizier service. Not supported by
+      HyperparamterTuningJob or TrainingPipeline.
     parameters: Required. The set of parameters to tune.
   """
 
@@ -28976,7 +29054,7 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
     Values:
       ALGORITHM_UNSPECIFIED: The default algorithm used by Vertex AI for
         [hyperparameter tuning](https://cloud.google.com/vertex-
-        ai/docs/training/hyperparameter-tuning-overview) and [Vertex
+        ai/docs/training/hyperparameter-tuning-overview) and [Vertex AI
         Vizier](https://cloud.google.com/vertex-ai/docs/vizier).
       GRID_SEARCH: Simple grid search within the feasible space. To use grid
         search, all parameters must be `INTEGER`, `CATEGORICAL`, or
@@ -29002,7 +29080,7 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
 
   class ObservationNoiseValueValuesEnum(_messages.Enum):
     r"""The observation noise level of the study. Currently only supported by
-    the Vizier service. Not supported by HyperparamterTuningJob or
+    the Vertex AI Vizier service. Not supported by HyperparamterTuningJob or
     TrainingPipeline.
 
     Values:
@@ -29270,8 +29348,9 @@ class GoogleCloudAiplatformV1beta1StudySpecParameterSpecDoubleValueSpec(_message
   Fields:
     defaultValue: A default value for a `DOUBLE` parameter that is assumed to
       be a relatively good starting point. Unset value signals that there is
-      no offered starting point. Currently only supported by the Vizier
-      service. Not supported by HyperparamterTuningJob or TrainingPipeline.
+      no offered starting point. Currently only supported by the Vertex AI
+      Vizier service. Not supported by HyperparamterTuningJob or
+      TrainingPipeline.
     maxValue: Required. Inclusive maximum value of the parameter.
     minValue: Required. Inclusive minimum value of the parameter.
   """
@@ -29287,8 +29366,9 @@ class GoogleCloudAiplatformV1beta1StudySpecParameterSpecIntegerValueSpec(_messag
   Fields:
     defaultValue: A default value for an `INTEGER` parameter that is assumed
       to be a relatively good starting point. Unset value signals that there
-      is no offered starting point. Currently only supported by the Vizier
-      service. Not supported by HyperparamterTuningJob or TrainingPipeline.
+      is no offered starting point. Currently only supported by the Vertex AI
+      Vizier service. Not supported by HyperparamterTuningJob or
+      TrainingPipeline.
     maxValue: Required. Inclusive maximum value of the parameter.
     minValue: Required. Inclusive minimum value of the parameter.
   """
@@ -30041,12 +30121,12 @@ class GoogleCloudAiplatformV1beta1Trial(_messages.Message):
   Fields:
     clientId: Output only. The identifier of the client that originally
       requested this Trial. Each client is identified by a unique client_id.
-      When a client asks for a suggestion, Vizier will assign it a Trial. The
-      client should evaluate the Trial, complete it, and report back to
-      Vizier. If suggestion is asked again by same client_id before the Trial
-      is completed, the same Trial will be returned. Multiple clients with
-      different client_ids can ask for suggestions simultaneously, each of
-      them will get their own Trial.
+      When a client asks for a suggestion, Vertex AI Vizier will assign it a
+      Trial. The client should evaluate the Trial, complete it, and report
+      back to Vertex AI Vizier. If suggestion is asked again by same client_id
+      before the Trial is completed, the same Trial will be returned. Multiple
+      clients with different client_ids can ask for suggestions
+      simultaneously, each of them will get their own Trial.
     customJob: Output only. The CustomJob name linked to the Trial. It's set
       for a HyperparameterTuningJob's Trial.
     endTime: Output only. Time when the Trial's status changed to `SUCCEEDED`
@@ -30557,6 +30637,171 @@ class GoogleCloudLocationLocation(_messages.Message):
   name = _messages.StringField(5)
 
 
+class GoogleIamV1Binding(_messages.Message):
+  r"""Associates `members`, or principals, with a `role`.
+
+  Fields:
+    condition: The condition that is associated with this binding. If the
+      condition evaluates to `true`, then this binding applies to the current
+      request. If the condition evaluates to `false`, then this binding does
+      not apply to the current request. However, a different role binding
+      might grant the same role to one or more of the principals in this
+      binding. To learn which resources support conditions in their IAM
+      policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    members: Specifies the principals requesting access for a Cloud Platform
+      resource. `members` can have the following values: * `allUsers`: A
+      special identifier that represents anyone who is on the internet; with
+      or without a Google account. * `allAuthenticatedUsers`: A special
+      identifier that represents anyone who is authenticated with a Google
+      account or a service account. * `user:{emailid}`: An email address that
+      represents a specific Google account. For example, `alice@example.com` .
+      * `serviceAccount:{emailid}`: An email address that represents a service
+      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      `group:{emailid}`: An email address that represents a Google group. For
+      example, `admins@example.com`. *
+      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
+      identifier) representing a user that has been recently deleted. For
+      example, `alice@example.com?uid=123456789012345678901`. If the user is
+      recovered, this value reverts to `user:{emailid}` and the recovered user
+      retains the role in the binding. *
+      `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
+      (plus unique identifier) representing a service account that has been
+      recently deleted. For example, `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the
+      service account is undeleted, this value reverts to
+      `serviceAccount:{emailid}` and the undeleted service account retains the
+      role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique identifier) representing a Google group that
+      has been recently deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If the group is
+      recovered, this value reverts to `group:{emailid}` and the recovered
+      group retains the role in the binding. * `domain:{domain}`: The G Suite
+      domain (primary) that represents all the users of that domain. For
+      example, `google.com` or `example.com`.
+    role: Role that is assigned to the list of `members`, or principals. For
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+  """
+
+  condition = _messages.MessageField('GoogleTypeExpr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
+
+
+class GoogleIamV1Policy(_messages.Message):
+  r"""An Identity and Access Management (IAM) policy, which specifies access
+  controls for Google Cloud resources. A `Policy` is a collection of
+  `bindings`. A `binding` binds one or more `members`, or principals, to a
+  single `role`. Principals can be user accounts, service accounts, Google
+  groups, and domains (such as G Suite). A `role` is a named list of
+  permissions; each `role` can be an IAM predefined role or a user-created
+  custom role. For some types of Google Cloud resources, a `binding` can also
+  specify a `condition`, which is a logical expression that allows access to a
+  resource only if the expression evaluates to `true`. A condition can add
+  constraints based on attributes of the request, the resource, or both. To
+  learn which resources support conditions in their IAM policies, see the [IAM
+  documentation](https://cloud.google.com/iam/help/conditions/resource-
+  policies). **JSON example:** { "bindings": [ { "role":
+  "roles/resourcemanager.organizationAdmin", "members": [
+  "user:mike@example.com", "group:admins@example.com", "domain:google.com",
+  "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
+  "roles/resourcemanager.organizationViewer", "members": [
+  "user:eve@example.com" ], "condition": { "title": "expirable access",
+  "description": "Does not grant access after Sep 2020", "expression":
+  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
+  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
+  user:mike@example.com - group:admins@example.com - domain:google.com -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
+  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
+  role: roles/resourcemanager.organizationViewer condition: title: expirable
+  access description: Does not grant access after Sep 2020 expression:
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
+  version: 3 For a description of IAM and its features, see the [IAM
+  documentation](https://cloud.google.com/iam/docs/).
+
+  Fields:
+    bindings: Associates a list of `members`, or principals, with a `role`.
+      Optionally, may specify a `condition` that determines how and when the
+      `bindings` are applied. Each of the `bindings` must contain at least one
+      principal. The `bindings` in a `Policy` can refer to up to 1,500
+      principals; up to 250 of these principals can be Google groups. Each
+      occurrence of a principal counts towards these limits. For example, if
+      the `bindings` grant 50 different roles to `user:alice@example.com`, and
+      not to any other principal, then you can add another 1,450 principals to
+      the `bindings` in the `Policy`.
+    etag: `etag` is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a policy from overwriting each other. It
+      is strongly suggested that systems make use of the `etag` in the read-
+      modify-write cycle to perform policy updates in order to avoid race
+      conditions: An `etag` is returned in the response to `getIamPolicy`, and
+      systems are expected to put that etag in the request to `setIamPolicy`
+      to ensure that their change will be applied to the same version of the
+      policy. **Important:** If you use IAM Conditions, you must include the
+      `etag` field whenever you call `setIamPolicy`. If you omit this field,
+      then IAM allows you to overwrite a version `3` policy with a version `1`
+      policy, and all of the conditions in the version `3` policy are lost.
+    version: Specifies the format of the policy. Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected. Any
+      operation that affects conditional role bindings must specify version
+      `3`. This requirement applies to the following operations: * Getting a
+      policy that includes a conditional role binding * Adding a conditional
+      role binding to a policy * Changing a conditional role binding in a
+      policy * Removing any role binding, with or without a condition, from a
+      policy that includes conditions **Important:** If you use IAM
+      Conditions, you must include the `etag` field whenever you call
+      `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
+      a version `3` policy with a version `1` policy, and all of the
+      conditions in the version `3` policy are lost. If a policy does not
+      include any conditions, operations on that policy may specify any valid
+      version or leave the field unset. To learn which resources support
+      conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+  """
+
+  bindings = _messages.MessageField('GoogleIamV1Binding', 1, repeated=True)
+  etag = _messages.BytesField(2)
+  version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class GoogleIamV1SetIamPolicyRequest(_messages.Message):
+  r"""Request message for `SetIamPolicy` method.
+
+  Fields:
+    policy: REQUIRED: The complete policy to be applied to the `resource`. The
+      size of the policy is limited to a few 10s of KB. An empty policy is a
+      valid policy but certain Cloud Platform services (such as Projects)
+      might reject them.
+  """
+
+  policy = _messages.MessageField('GoogleIamV1Policy', 1)
+
+
+class GoogleIamV1TestIamPermissionsRequest(_messages.Message):
+  r"""Request message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: The set of permissions to check for the `resource`.
+      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
+class GoogleIamV1TestIamPermissionsResponse(_messages.Message):
+  r"""Response message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: A subset of `TestPermissionsRequest.permissions` that the
+      caller is allowed.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
 class GoogleLongrunningListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 
@@ -30808,6 +31053,42 @@ class GoogleTypeColor(_messages.Message):
   blue = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   green = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
   red = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+
+
+class GoogleTypeExpr(_messages.Message):
+  r"""Represents a textual expression in the Common Expression Language (CEL)
+  syntax. CEL is a C-like expression language. The syntax and semantics of CEL
+  are documented at https://github.com/google/cel-spec. Example (Comparison):
+  title: "Summary size limit" description: "Determines if a summary is less
+  than 100 chars" expression: "document.summary.size() < 100" Example
+  (Equality): title: "Requestor is owner" description: "Determines if
+  requestor is the document owner" expression: "document.owner ==
+  request.auth.claims.email" Example (Logic): title: "Public documents"
+  description: "Determine whether the document should be publicly visible"
+  expression: "document.type != 'private' && document.type != 'internal'"
+  Example (Data Manipulation): title: "Notification string" description:
+  "Create a notification string with a timestamp." expression: "'New message
+  received at ' + string(document.create_time)" The exact variables and
+  functions that may be referenced within an expression are determined by the
+  service that evaluates it. See the service documentation for additional
+  information.
+
+  Fields:
+    description: Optional. Description of the expression. This is a longer
+      text which describes the expression, e.g. when hovered over it in a UI.
+    expression: Textual representation of an expression in Common Expression
+      Language syntax.
+    location: Optional. String indicating the location of the expression for
+      error reporting, e.g. a file name and a position in the file.
+    title: Optional. Title for the expression, i.e. a short string describing
+      its purpose. This can be used e.g. in UIs which allow to enter the
+      expression.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  location = _messages.StringField(3)
+  title = _messages.StringField(4)
 
 
 class GoogleTypeMoney(_messages.Message):

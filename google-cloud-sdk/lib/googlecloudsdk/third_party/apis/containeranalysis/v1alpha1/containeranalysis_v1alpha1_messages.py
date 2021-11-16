@@ -2752,12 +2752,16 @@ class GetPolicyOptions(_messages.Message):
   r"""Encapsulates settings provided to GetIamPolicy.
 
   Fields:
-    requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    requestedPolicyVersion: Optional. The maximum policy version that will be
+      used to format the policy. Valid values are 0, 1, and 3. Requests
+      specifying an invalid value will be rejected. Requests for policies with
+      any conditional role bindings must specify version 3. Policies with no
+      conditional role bindings may specify any valid value or leave the field
+      unset. The policy in the response might use the policy version that you
+      specified, or it might use a lower policy version. For example, if you
+      specify version 3, but the policy has no conditional role bindings, the
+      response uses version 1. To learn which resources support conditions in
+      their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
   """
@@ -2991,16 +2995,18 @@ class InTotoStatement(_messages.Message):
   "application/vnd.in-toto+json".
 
   Fields:
-    predicateType: "https://in-toto.io/Provenance/v0.1" for InTotoProvenance.
-    provenance: A InTotoProvenance attribute.
-    subject: A Subject attribute.
-    type: Always "https://in-toto.io/Statement/v0.1".
+    _type: Always "https://in-toto.io/Statement/v0.1".
+    predicateType: "https://slsa.dev/provenance/v0.1" for SlsaProvenance.
+    provenance: provenance is a predicate of type intotoprovenance
+    slsaProvenance: slsa_provenance is a predicate of type slsaProvenance
+    subject: subject is the subjects of the intoto statement
   """
 
-  predicateType = _messages.StringField(1)
-  provenance = _messages.MessageField('InTotoProvenance', 2)
-  subject = _messages.MessageField('Subject', 3, repeated=True)
-  type = _messages.StringField(4)
+  _type = _messages.StringField(1)
+  predicateType = _messages.StringField(2)
+  provenance = _messages.MessageField('InTotoProvenance', 3)
+  slsaProvenance = _messages.MessageField('SlsaProvenance', 4)
+  subject = _messages.MessageField('Subject', 5, repeated=True)
 
 
 class Installation(_messages.Message):
@@ -3157,6 +3163,48 @@ class Location(_messages.Message):
   cpeUri = _messages.StringField(1)
   path = _messages.StringField(2)
   version = _messages.MessageField('Version', 3)
+
+
+class Material(_messages.Message):
+  r"""Material is a material used in the generation of the provenance
+
+  Messages:
+    DigestValue: digest is a map from a hash algorithm (e.g. sha256) to the
+      value in the material
+
+  Fields:
+    digest: digest is a map from a hash algorithm (e.g. sha256) to the value
+      in the material
+    uri: uri is the uri of the material
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DigestValue(_messages.Message):
+    r"""digest is a map from a hash algorithm (e.g. sha256) to the value in
+    the material
+
+    Messages:
+      AdditionalProperty: An additional property for a DigestValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DigestValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DigestValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  digest = _messages.MessageField('DigestValue', 1)
+  uri = _messages.StringField(2)
 
 
 class Metadata(_messages.Message):
@@ -4324,6 +4372,185 @@ class SeverityCount(_messages.Message):
   severity = _messages.EnumField('SeverityValueValuesEnum', 2)
 
 
+class SlsaBuilder(_messages.Message):
+  r"""SlsaBuilder encapsulates the identity of the builder of this provenance.
+
+  Fields:
+    id: id is the id of the slsa provenance builder
+  """
+
+  id = _messages.StringField(1)
+
+
+class SlsaCompleteness(_messages.Message):
+  r"""Indicates that the builder claims certain fields in this message to be
+  complete.
+
+  Fields:
+    arguments: If true, the builder claims that recipe.arguments is complete,
+      meaning that all external inputs are properly captured in the recipe.
+    environment: If true, the builder claims that recipe.environment is
+      claimed to be complete.
+    materials: If true, the builder claims that materials are complete,
+      usually through some controls to prevent network access. Sometimes
+      called "hermetic".
+  """
+
+  arguments = _messages.BooleanField(1)
+  environment = _messages.BooleanField(2)
+  materials = _messages.BooleanField(3)
+
+
+class SlsaMetadata(_messages.Message):
+  r"""Other properties of the build.
+
+  Fields:
+    buildFinishedOn: The timestamp of when the build completed.
+    buildInvocationId: Identifies the particular build invocation, which can
+      be useful for finding associated logs or other ad-hoc analysis. The
+      value SHOULD be globally unique, per in-toto Provenance spec.
+    buildStartedOn: The timestamp of when the build started.
+    completeness: Indicates that the builder claims certain fields in this
+      message to be complete.
+    reproducible: If true, the builder claims that running the recipe on
+      materials will produce bit-for-bit identical output.
+  """
+
+  buildFinishedOn = _messages.StringField(1)
+  buildInvocationId = _messages.StringField(2)
+  buildStartedOn = _messages.StringField(3)
+  completeness = _messages.MessageField('SlsaCompleteness', 4)
+  reproducible = _messages.BooleanField(5)
+
+
+class SlsaProvenance(_messages.Message):
+  r"""SlsaProvenance is the slsa provenance as defined by the slsa spec.
+
+  Fields:
+    builder: builder is the builder of this provenance
+    materials: The collection of artifacts that influenced the build including
+      sources, dependencies, build tools, base images, and so on. This is
+      considered to be incomplete unless metadata.completeness.materials is
+      true. Unset or null is equivalent to empty.
+    metadata: metadata is the metadata of the provenance
+    recipe: Identifies the configuration used for the build. When combined
+      with materials, this SHOULD fully describe the build, such that re-
+      running this recipe results in bit-for-bit identical output (if the
+      build is reproducible).
+  """
+
+  builder = _messages.MessageField('SlsaBuilder', 1)
+  materials = _messages.MessageField('Material', 2, repeated=True)
+  metadata = _messages.MessageField('SlsaMetadata', 3)
+  recipe = _messages.MessageField('SlsaRecipe', 4)
+
+
+class SlsaRecipe(_messages.Message):
+  r"""Steps taken to build the artifact. For a TaskRun, typically each
+  container corresponds to one step in the recipe.
+
+  Messages:
+    ArgumentsValue: Collection of all external inputs that influenced the
+      build on top of recipe.definedInMaterial and recipe.entryPoint. For
+      example, if the recipe type were "make", then this might be the flags
+      passed to make aside from the target, which is captured in
+      recipe.entryPoint. Depending on the recipe Type, the structure may be
+      different.
+    EnvironmentValue: Any other builder-controlled inputs necessary for
+      correctly evaluating the recipe. Usually only needed for reproducing the
+      build but not evaluated as part of policy. Depending on the recipe Type,
+      the structure may be different.
+
+  Fields:
+    arguments: Collection of all external inputs that influenced the build on
+      top of recipe.definedInMaterial and recipe.entryPoint. For example, if
+      the recipe type were "make", then this might be the flags passed to make
+      aside from the target, which is captured in recipe.entryPoint. Depending
+      on the recipe Type, the structure may be different.
+    definedInMaterial: Index in materials containing the recipe steps that are
+      not implied by recipe.type. For example, if the recipe type were "make",
+      then this would point to the source containing the Makefile, not the
+      make program itself. Set to -1 if the recipe doesn't come from a
+      material, as zero is default unset value for int64.
+    entryPoint: String identifying the entry point into the build. This is
+      often a path to a configuration file and/or a target label within that
+      file. The syntax and meaning are defined by recipe.type. For example, if
+      the recipe type were "make", then this would reference the directory in
+      which to run make as well as which target to use.
+    environment: Any other builder-controlled inputs necessary for correctly
+      evaluating the recipe. Usually only needed for reproducing the build but
+      not evaluated as part of policy. Depending on the recipe Type, the
+      structure may be different.
+    type: URI indicating what type of recipe was performed. It determines the
+      meaning of recipe.entryPoint, recipe.arguments, recipe.environment, and
+      materials.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ArgumentsValue(_messages.Message):
+    r"""Collection of all external inputs that influenced the build on top of
+    recipe.definedInMaterial and recipe.entryPoint. For example, if the recipe
+    type were "make", then this might be the flags passed to make aside from
+    the target, which is captured in recipe.entryPoint. Depending on the
+    recipe Type, the structure may be different.
+
+    Messages:
+      AdditionalProperty: An additional property for a ArgumentsValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ArgumentsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class EnvironmentValue(_messages.Message):
+    r"""Any other builder-controlled inputs necessary for correctly evaluating
+    the recipe. Usually only needed for reproducing the build but not
+    evaluated as part of policy. Depending on the recipe Type, the structure
+    may be different.
+
+    Messages:
+      AdditionalProperty: An additional property for a EnvironmentValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EnvironmentValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  arguments = _messages.MessageField('ArgumentsValue', 1)
+  definedInMaterial = _messages.IntegerField(2)
+  entryPoint = _messages.StringField(3)
+  environment = _messages.MessageField('EnvironmentValue', 4)
+  type = _messages.StringField(5)
+
+
 class Source(_messages.Message):
   r"""Source describes the location of the source used for the build.
 
@@ -4524,19 +4751,25 @@ class StorageSource(_messages.Message):
 
 
 class Subject(_messages.Message):
-  r"""A Subject object.
+  r"""Subject refers to the subject of the intoto statement
 
   Messages:
-    DigestValue: "": ""
+    DigestValue: "": "" Algorithms can be e.g. sha256, sha512 See
+      https://github.com/in-
+      toto/attestation/blob/main/spec/field_types.md#DigestSet
 
   Fields:
-    digest: "": ""
-    name: A string attribute.
+    digest: "": "" Algorithms can be e.g. sha256, sha512 See
+      https://github.com/in-
+      toto/attestation/blob/main/spec/field_types.md#DigestSet
+    name: name is the name of the Subject used here
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DigestValue(_messages.Message):
-    r""""": ""
+    r""""": "" Algorithms can be e.g. sha256, sha512 See
+    https://github.com/in-
+    toto/attestation/blob/main/spec/field_types.md#DigestSet
 
     Messages:
       AdditionalProperty: An additional property for a DigestValue object.

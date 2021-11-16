@@ -2501,6 +2501,8 @@ Addons
 (https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.locations.clusters#Cluster.AddonsConfig)
 are additional Kubernetes cluster components. Addons specified by this flag will
 be enabled. The others will be disabled. Default addons: {0}.
+The Istio addon is deprecated and will be removed in an upcoming release.
+For more information and migration, see https://cloud.google.com/istio/docs/istio-on-gke/migrate-to-anthos-service-mesh.
 """.format(', '.join(api_adapter.DEFAULT_ADDONS)))
 
 
@@ -2654,6 +2656,13 @@ Examples:
       type=arg_parsers.ArgDict(spec={
           'auth': (lambda x: x.upper()),
       }),
+      action=actions.DeprecationAction(
+          '--istio-config',
+          warn="""\
+The `--istio-config` flag is deprecated and will be removed in an upcoming
+release. For more information and migration, see
+https://cloud.google.com/istio/docs/istio-on-gke/migrate-to-anthos-service-mesh.
+"""),
       help=help_text,
       hidden=suppressed)
 
@@ -3459,6 +3468,114 @@ Must be used in conjunction with '--max-surge-upgrade'.
       default=None,
       help=max_unavailable_upgrade_help,
       hidden=False)
+
+
+def AddRespectPodDisruptionBudgetFlag(parser, hidden=True):
+  """Adds --respect-pdb flag to the parser."""
+
+  respect_pdb_help = """\
+Indicates whether node pool rollbacks should respect pod disruption budgets.
+"""
+
+  parser.add_argument(
+      '--respect-pdb', type=bool, help=respect_pdb_help, hidden=hidden)
+
+
+def AddEnableRollingUpdateFlag(parser, hidden=True):
+  """Adds --enable-rolling-update flag to the parser."""
+
+  enable_rolling_update_help = """\
+Changes node pool update strategy to Rolling Update.
+"""
+
+  parser.add_argument(
+      '--enable-rolling-update',
+      action='store_true',
+      help=enable_rolling_update_help,
+      hidden=hidden)
+
+
+def AddEnableBlueGreenUpdateFlag(parser, hidden=True):
+  """Adds --enable-blue-green-update flag to the parser."""
+
+  blue_green_update_help = """\
+Changes node pool update strategy to Blue Green Update.
+"""
+
+  parser.add_argument(
+      '--enable-blue-green-update',
+      action='store_true',
+      help=blue_green_update_help,
+      hidden=hidden)
+
+
+def AddNodePoolSoakDurationFlag(parser, for_node_pool=False, hidden=True):
+  """Adds --node-pool-soak-duration flag to the parser."""
+
+  node_pool_soak_duration_help = """\
+Time in seconds to be spent waiting during Blue Green Update before
+deleting the Blue pool and completing the update.
+
+"""
+
+  if for_node_pool:
+    node_pool_soak_duration_help += """\
+  $ {command} node-pool-1 --cluster=example-cluster\
+  --node-pool-soak-duration=600s
+"""
+  else:
+    node_pool_soak_duration_help += """\
+  $ {command} example-cluster\
+  --node-pool-soak-duration=600s
+"""
+
+  parser.add_argument(
+      '--node-pool-soak-duration',
+      type=str,
+      help=node_pool_soak_duration_help,
+      hidden=hidden)
+
+
+def AddStandardRolloutPolicyFlag(parser, for_node_pool=False, hidden=True):
+  """Adds --standard-rollout-policy flag to the parser."""
+
+  standard_rollout_policy_help = """\
+Standard rollout policy options for Blue Green Update.
+
+Batch sizes are specfied by one of, batch-node-count or batch-percent.
+The duration between batches is specified by batch-soak-duration.
+
+"""
+
+  if for_node_pool:
+    standard_rollout_policy_help += """\
+  $ {command} node-pool-1 --cluster=example-cluster\
+  --standard-rollout-policy=batch-node-count=3,batch-soak-duration=60s
+
+  $ {command} node-pool-1 --cluster=example-cluster\
+  --standard-rollout-policy=batch-percent=3,batch-soak-duration=60s
+"""
+  else:
+    standard_rollout_policy_help += """\
+  $ {command} example-cluster\
+  --standard-rollout-policy=batch-node-count=3,batch-soak-duration=60s
+
+  $ {command} example-cluster\
+  --standard-rollout-policy=batch-percent=3,batch-soak-duration=60s
+"""
+
+  spec = {
+      'batch-node-count': int,
+      'batch-percent': float,
+      'batch-soak-duration': str,
+  }
+
+  parser.add_argument(
+      '--standard-rollout-policy',
+      help=standard_rollout_policy_help,
+      hidden=hidden,
+      metavar='batch-node-count=BATCH_NODE_COUNT,batch-percent=BATCH_NODE_PERCENTAGE,batch-soak-duration=BATCH_SOAK_DURATION',
+      type=arg_parsers.ArgDict(spec=spec))
 
 
 def AddLinuxSysctlFlags(parser, for_node_pool=False):

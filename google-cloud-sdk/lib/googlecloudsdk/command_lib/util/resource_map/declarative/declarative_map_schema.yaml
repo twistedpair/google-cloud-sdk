@@ -11,6 +11,19 @@ definitions:
         type: boolean
       support_bulk_export:
         type: boolean
+      support_iam:
+        type: boolean
+      home_directory:
+        type: string
+      resource_spec_name:
+        type: string
+      full_resource_spec_path:
+        type: string
+      resource_attribute_renames:
+        type: object
+        additionalProperties: true
+      surface_spec_resource_name:
+        type: string
       krm_kind:
         type: string
       krm_group:
@@ -32,6 +45,19 @@ definitions:
         type: boolean
       support_bulk_export:
         type: boolean
+      support_iam:
+        type: boolean
+      home_directory:
+        type: string
+      resource_spec_name:
+        type: string
+      full_resource_spec_path:
+        type: string
+      resource_attribute_renames:
+        type: object
+        additionalProperties: true
+      surface_spec_resource_name:
+        type: string
       krm_kind:
         type: string
       krm_group:

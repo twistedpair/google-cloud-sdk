@@ -34,6 +34,7 @@ from googlecloudsdk.core import requests as core_requests
 from googlecloudsdk.core import transport
 from googlecloudsdk.core import url_opener
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.credentials import exceptions as creds_exceptions
 from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import http_encoding
@@ -122,7 +123,7 @@ def MakeRequest(url, command_path):
     try:
       creds = store.LoadFreshCredential(use_google_auth=True)
       creds.apply(headers)
-    except store.Error as e:
+    except creds_exceptions.Error as e:
       # If we fail here, it is because there are no active credentials or the
       # credentials are bad.
       raise AuthenticationError(
@@ -208,7 +209,7 @@ def MakeRequestViaRequests(url, command_path):
     try:
       creds = store.LoadFreshCredential(use_google_auth=True)
       creds.apply(headers)
-    except store.Error as e:
+    except creds_exceptions.Error as e:
       # If we fail here, it is because there are no active credentials or the
       # credentials are bad.
       raise AuthenticationError(

@@ -116,13 +116,23 @@ class ClusterNetworking(_messages.Message):
     clusterIpv4CidrBlocks: Required. All pods in the cluster are assigned an
       RFC1918 IPv4 address from these blocks. Only a single block is
       supported. This field cannot be changed after creation.
+    clusterIpv6CidrBlocks: Immutable. If specified, dual stack mode is enabled
+      and all pods in the cluster are assigned an IPv6 address from these
+      blocks alongside from an IPv4 address. Only a single block is supported.
+      This field cannot be changed after creation.
     servicesIpv4CidrBlocks: Required. All services in the cluster are assigned
       an RFC1918 IPv4 address from these blocks. Only a single block is
+      supported. This field cannot be changed after creation.
+    servicesIpv6CidrBlocks: Immutable. If specified, dual stack mode is
+      enabled and all services in the cluster are assigned an IPv6 address
+      from these blocks alongside from an IPv4 address. Only a single block is
       supported. This field cannot be changed after creation.
   """
 
   clusterIpv4CidrBlocks = _messages.StringField(1, repeated=True)
-  servicesIpv4CidrBlocks = _messages.StringField(2, repeated=True)
+  clusterIpv6CidrBlocks = _messages.StringField(2, repeated=True)
+  servicesIpv4CidrBlocks = _messages.StringField(3, repeated=True)
+  servicesIpv6CidrBlocks = _messages.StringField(4, repeated=True)
 
 
 class ClusterUser(_messages.Message):

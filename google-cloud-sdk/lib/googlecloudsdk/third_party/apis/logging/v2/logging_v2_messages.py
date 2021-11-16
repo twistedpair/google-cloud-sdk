@@ -114,9 +114,9 @@ class CancelOperationRequest(_messages.Message):
 class CmekSettings(_messages.Message):
   r"""Describes the customer-managed encryption key (CMEK) settings associated
   with a project, folder, organization, billing account, or flexible
-  resource.Note: CMEK for the Logs Router can currently only be configured for
+  resource.Note: CMEK for the Log Router can currently only be configured for
   Google Cloud organizations. Once configured, it applies to all projects and
-  folders in the Google Cloud organization.See Enabling CMEK for Logs Router
+  folders in the Google Cloud organization.See Enabling CMEK for Log Router
   (https://cloud.google.com/logging/docs/routing/managed-encryption) for more
   information.
 
@@ -124,7 +124,7 @@ class CmekSettings(_messages.Message):
     kmsKeyName: The resource name for the configured Cloud KMS key.KMS key
       name format: "projects/[PROJECT_ID]/locations/[LOCATION]/keyRings/[KEYRI
       NG]/cryptoKeys/[KEY]" For example:"projects/my-project/locations/us-
-      central1/keyRings/my-ring/cryptoKeys/my-key"To enable CMEK for the Logs
+      central1/keyRings/my-ring/cryptoKeys/my-key"To enable CMEK for the Log
       Router, set this field to a valid kms_key_name for which the associated
       service account has the required cloudkms.cryptoKeyEncrypterDecrypter
       roles assigned for the key.The Cloud KMS key used by the Log Router can
@@ -133,19 +133,19 @@ class CmekSettings(_messages.Message):
       operations that are in progress will be completed with the key that was
       in use when they started. Decryption operations will be completed using
       the key that was used at the time of encryption unless access to that
-      key has been revoked.To disable CMEK for the Logs Router, set this field
-      to an empty string.See Enabling CMEK for Logs Router
+      key has been revoked.To disable CMEK for the Log Router, set this field
+      to an empty string.See Enabling CMEK for Log Router
       (https://cloud.google.com/logging/docs/routing/managed-encryption) for
       more information.
     name: Output only. The resource name of the CMEK settings.
     serviceAccountId: Output only. The service account that will be used by
-      the Logs Router to access your Cloud KMS key.Before enabling CMEK for
-      Logs Router, you must first assign the
-      cloudkms.cryptoKeyEncrypterDecrypter role to the service account that
-      the Logs Router will use to access your Cloud KMS key. Use
-      GetCmekSettings to obtain the service account ID.See Enabling CMEK for
-      Logs Router (https://cloud.google.com/logging/docs/routing/managed-
-      encryption) for more information.
+      the Log Router to access your Cloud KMS key.Before enabling CMEK for Log
+      Router, you must first assign the cloudkms.cryptoKeyEncrypterDecrypter
+      role to the service account that the Log Router will use to access your
+      Cloud KMS key. Use GetCmekSettings to obtain the service account ID.See
+      Enabling CMEK for Log Router
+      (https://cloud.google.com/logging/docs/routing/managed-encryption) for
+      more information.
   """
 
   kmsKeyName = _messages.StringField(1)
@@ -1593,6 +1593,42 @@ class LoggingBillingAccountsExclusionsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class LoggingBillingAccountsGetCmekSettingsRequest(_messages.Message):
+  r"""A LoggingBillingAccountsGetCmekSettingsRequest object.
+
+  Fields:
+    name: Required. The resource for which to retrieve CMEK settings.
+      "projects/[PROJECT_ID]/cmekSettings"
+      "organizations/[ORGANIZATION_ID]/cmekSettings"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/cmekSettings"
+      "folders/[FOLDER_ID]/cmekSettings" For
+      example:"organizations/12345/cmekSettings"Note: CMEK for the Log Router
+      can be configured for Google Cloud projects, folders, organizations and
+      billing accounts. Once configured for an organization, it applies to all
+      projects and folders in the Google Cloud organization.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingBillingAccountsGetSettingsRequest(_messages.Message):
+  r"""A LoggingBillingAccountsGetSettingsRequest object.
+
+  Fields:
+    name: Required. The resource for which to retrieve CMEK settings.
+      "projects/[PROJECT_ID]/Settings"
+      "organizations/[ORGANIZATION_ID]/Settings"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/Settings"
+      "folders/[FOLDER_ID]/Settings" For
+      example:"organizations/12345/Settings"Note: CMEK for the Log Router can
+      currently only be configured for Google Cloud organizations. Once
+      configured, it applies to all projects and folders in the Google Cloud
+      organization.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class LoggingBillingAccountsLocationsBucketsCreateRequest(_messages.Message):
   r"""A LoggingBillingAccountsLocationsBucketsCreateRequest object.
 
@@ -2222,6 +2258,42 @@ class LoggingFoldersExclusionsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class LoggingFoldersGetCmekSettingsRequest(_messages.Message):
+  r"""A LoggingFoldersGetCmekSettingsRequest object.
+
+  Fields:
+    name: Required. The resource for which to retrieve CMEK settings.
+      "projects/[PROJECT_ID]/cmekSettings"
+      "organizations/[ORGANIZATION_ID]/cmekSettings"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/cmekSettings"
+      "folders/[FOLDER_ID]/cmekSettings" For
+      example:"organizations/12345/cmekSettings"Note: CMEK for the Log Router
+      can be configured for Google Cloud projects, folders, organizations and
+      billing accounts. Once configured for an organization, it applies to all
+      projects and folders in the Google Cloud organization.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingFoldersGetSettingsRequest(_messages.Message):
+  r"""A LoggingFoldersGetSettingsRequest object.
+
+  Fields:
+    name: Required. The resource for which to retrieve CMEK settings.
+      "projects/[PROJECT_ID]/Settings"
+      "organizations/[ORGANIZATION_ID]/Settings"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/Settings"
+      "folders/[FOLDER_ID]/Settings" For
+      example:"organizations/12345/Settings"Note: CMEK for the Log Router can
+      currently only be configured for Google Cloud organizations. Once
+      configured, it applies to all projects and folders in the Google Cloud
+      organization.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class LoggingFoldersLocationsBucketsCreateRequest(_messages.Message):
   r"""A LoggingFoldersLocationsBucketsCreateRequest object.
 
@@ -2709,10 +2781,10 @@ class LoggingGetCmekSettingsRequest(_messages.Message):
       "organizations/[ORGANIZATION_ID]/cmekSettings"
       "billingAccounts/[BILLING_ACCOUNT_ID]/cmekSettings"
       "folders/[FOLDER_ID]/cmekSettings" For
-      example:"organizations/12345/cmekSettings"Note: CMEK for the Logs Router
-      can currently only be configured for Google Cloud organizations. Once
-      configured, it applies to all projects and folders in the Google Cloud
-      organization.
+      example:"organizations/12345/cmekSettings"Note: CMEK for the Log Router
+      can be configured for Google Cloud projects, folders, organizations and
+      billing accounts. Once configured for an organization, it applies to all
+      projects and folders in the Google Cloud organization.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2727,7 +2799,7 @@ class LoggingGetSettingsRequest(_messages.Message):
       "organizations/[ORGANIZATION_ID]/Settings"
       "billingAccounts/[BILLING_ACCOUNT_ID]/Settings"
       "folders/[FOLDER_ID]/Settings" For
-      example:"organizations/12345/Settings"Note: CMEK for the Logs Router can
+      example:"organizations/12345/Settings"Note: CMEK for the Log Router can
       currently only be configured for Google Cloud organizations. Once
       configured, it applies to all projects and folders in the Google Cloud
       organization.
@@ -3174,10 +3246,10 @@ class LoggingOrganizationsGetCmekSettingsRequest(_messages.Message):
       "organizations/[ORGANIZATION_ID]/cmekSettings"
       "billingAccounts/[BILLING_ACCOUNT_ID]/cmekSettings"
       "folders/[FOLDER_ID]/cmekSettings" For
-      example:"organizations/12345/cmekSettings"Note: CMEK for the Logs Router
-      can currently only be configured for Google Cloud organizations. Once
-      configured, it applies to all projects and folders in the Google Cloud
-      organization.
+      example:"organizations/12345/cmekSettings"Note: CMEK for the Log Router
+      can be configured for Google Cloud projects, folders, organizations and
+      billing accounts. Once configured for an organization, it applies to all
+      projects and folders in the Google Cloud organization.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3192,7 +3264,7 @@ class LoggingOrganizationsGetSettingsRequest(_messages.Message):
       "organizations/[ORGANIZATION_ID]/Settings"
       "billingAccounts/[BILLING_ACCOUNT_ID]/Settings"
       "folders/[FOLDER_ID]/Settings" For
-      example:"organizations/12345/Settings"Note: CMEK for the Logs Router can
+      example:"organizations/12345/Settings"Note: CMEK for the Log Router can
       currently only be configured for Google Cloud organizations. Once
       configured, it applies to all projects and folders in the Google Cloud
       organization.
@@ -3689,7 +3761,7 @@ class LoggingOrganizationsUpdateCmekSettingsRequest(_messages.Message):
       "organizations/[ORGANIZATION_ID]/cmekSettings"
       "billingAccounts/[BILLING_ACCOUNT_ID]/cmekSettings"
       "folders/[FOLDER_ID]/cmekSettings" For
-      example:"organizations/12345/cmekSettings"Note: CMEK for the Logs Router
+      example:"organizations/12345/cmekSettings"Note: CMEK for the Log Router
       can currently only be configured for Google Cloud organizations. Once
       configured, it applies to all projects and folders in the Google Cloud
       organization.
@@ -3713,7 +3785,7 @@ class LoggingOrganizationsUpdateSettingsRequest(_messages.Message):
       "organizations/[ORGANIZATION_ID]/Settings"
       "billingAccounts/[BILLING_ACCOUNT_ID]/Settings"
       "folders/[FOLDER_ID]/Settings" For
-      example:"organizations/12345/Settings"Note: CMEK for the Logs Router can
+      example:"organizations/12345/Settings"Note: CMEK for the Log Router can
       currently only be configured for Google Cloud organizations. Once
       configured, it applies to all projects and folders in the Google Cloud
       organization.
@@ -3817,6 +3889,42 @@ class LoggingProjectsExclusionsPatchRequest(_messages.Message):
   logExclusion = _messages.MessageField('LogExclusion', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class LoggingProjectsGetCmekSettingsRequest(_messages.Message):
+  r"""A LoggingProjectsGetCmekSettingsRequest object.
+
+  Fields:
+    name: Required. The resource for which to retrieve CMEK settings.
+      "projects/[PROJECT_ID]/cmekSettings"
+      "organizations/[ORGANIZATION_ID]/cmekSettings"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/cmekSettings"
+      "folders/[FOLDER_ID]/cmekSettings" For
+      example:"organizations/12345/cmekSettings"Note: CMEK for the Log Router
+      can be configured for Google Cloud projects, folders, organizations and
+      billing accounts. Once configured for an organization, it applies to all
+      projects and folders in the Google Cloud organization.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingProjectsGetSettingsRequest(_messages.Message):
+  r"""A LoggingProjectsGetSettingsRequest object.
+
+  Fields:
+    name: Required. The resource for which to retrieve CMEK settings.
+      "projects/[PROJECT_ID]/Settings"
+      "organizations/[ORGANIZATION_ID]/Settings"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/Settings"
+      "folders/[FOLDER_ID]/Settings" For
+      example:"organizations/12345/Settings"Note: CMEK for the Log Router can
+      currently only be configured for Google Cloud organizations. Once
+      configured, it applies to all projects and folders in the Google Cloud
+      organization.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class LoggingProjectsLocationsBucketsCreateRequest(_messages.Message):
@@ -4496,7 +4604,7 @@ class LoggingUpdateCmekSettingsRequest(_messages.Message):
       "organizations/[ORGANIZATION_ID]/cmekSettings"
       "billingAccounts/[BILLING_ACCOUNT_ID]/cmekSettings"
       "folders/[FOLDER_ID]/cmekSettings" For
-      example:"organizations/12345/cmekSettings"Note: CMEK for the Logs Router
+      example:"organizations/12345/cmekSettings"Note: CMEK for the Log Router
       can currently only be configured for Google Cloud organizations. Once
       configured, it applies to all projects and folders in the Google Cloud
       organization.
@@ -4520,7 +4628,7 @@ class LoggingUpdateSettingsRequest(_messages.Message):
       "organizations/[ORGANIZATION_ID]/Settings"
       "billingAccounts/[BILLING_ACCOUNT_ID]/Settings"
       "folders/[FOLDER_ID]/Settings" For
-      example:"organizations/12345/Settings"Note: CMEK for the Logs Router can
+      example:"organizations/12345/Settings"Note: CMEK for the Log Router can
       currently only be configured for Google Cloud organizations. Once
       configured, it applies to all projects and folders in the Google Cloud
       organization.
@@ -5353,7 +5461,7 @@ class Settings(_messages.Message):
       key.KMS key name format: "projects/[PROJECT_ID]/locations/[LOCATION]/key
       Rings/[KEYRING]/cryptoKeys/[KEY]" For example:"projects/my-
       project/locations/us-central1/keyRings/my-ring/cryptoKeys/my-key"To
-      enable CMEK for the Logs Router, set this field to a valid kms_key_name
+      enable CMEK for the Log Router, set this field to a valid kms_key_name
       for which the associated service account has the required
       roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key.The
       Cloud KMS key used by the Log Router can be updated by changing the
@@ -5361,16 +5469,16 @@ class Settings(_messages.Message):
       progress will be completed with the key that was in use when they
       started. Decryption operations will be completed using the key that was
       used at the time of encryption unless access to that key has been
-      revoked.To disable CMEK for the Logs Router, set this field to an empty
-      string.See Enabling CMEK for Logs Router
+      revoked.To disable CMEK for the Log Router, set this field to an empty
+      string.See Enabling CMEK for Log Router
       (https://cloud.google.com/logging/docs/routing/managed-encryption) for
       more information.
     kmsServiceAccountId: Output only. The service account that will be used by
-      the Logs Router to access your Cloud KMS key.Before enabling CMEK for
-      Logs Router, you must first assign the role
+      the Log Router to access your Cloud KMS key.Before enabling CMEK for Log
+      Router, you must first assign the role
       roles/cloudkms.cryptoKeyEncrypterDecrypter to the service account that
-      the Logs Router will use to access your Cloud KMS key. Use GetSettings
-      to obtain the service account ID.See Enabling CMEK for Logs Router
+      the Log Router will use to access your Cloud KMS key. Use GetSettings to
+      obtain the service account ID.See Enabling CMEK for Log Router
       (https://cloud.google.com/logging/docs/routing/managed-encryption) for
       more information.
     name: Output only. The resource name of the CMEK settings.

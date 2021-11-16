@@ -36,6 +36,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_attr_os
+from googlecloudsdk.core.credentials import exceptions as creds_exceptions
 
 import six
 
@@ -386,13 +387,6 @@ class BadFileException(ToolException):
   """BadFileException is for problems reading or writing a file."""
 
 
-# pylint: disable=g-import-not-at-top, Delay the import of this because
-# importing store is relatively expensive.
-def _GetTokenRefreshError(exc):
-  from googlecloudsdk.core.credentials import store
-  return store.TokenRefreshError(exc)
-
-
 # In general, lower level libraries should be catching exceptions and re-raising
 # exceptions that extend core.Error so nice error messages come out. There are
 # some error classes that want to be handled as recoverable errors, but cannot
@@ -434,7 +428,7 @@ _KNOWN_ERRORS = {
     'http.client.IncompleteRead':
         core_exceptions.NetworkIssueError,
     'oauth2client.client.AccessTokenRefreshError':
-        _GetTokenRefreshError,
+        creds_exceptions.TokenRefreshError,
     'ssl.SSLError':
         core_exceptions.NetworkIssueError,
     'socket.error':

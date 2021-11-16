@@ -373,7 +373,7 @@
           ]
         },
         "kmsKeyName": {
-          "description": "Resource name of a KMS crypto key (managed by the user) used to encrypt\/decrypt function resources. It must match the pattern `projects\/{project}\/locations\/{location}\/keyRings\/{key_ring}\/cryptoKeys\/{crypto_key}`. If specified, you must also provide an artifact registry repository using the `docker_repository` field that was created with the same KMS crypto key. The following service accounts need to be granted Cloud KMS crypto key encrypter\/decrypter roles on the key. 1. Google Cloud Functions service account (service-{project_number}@gcf-admin-robot.iam.gserviceaccount.com) - Required to protect the function's image. 2. Google Storage service account (service-{project_number}@gs-project-accounts.iam.gserviceaccount.com) - Required to protect the function's source code. If this service account does not exist, deploying a function without a KMS key or retrieving the service agent name provisions it. For more information, see https:\/\/cloud.google.com\/storage\/docs\/projects#service-agents and https:\/\/cloud.google.com\/storage\/docs\/getting-service-agent#gsutil. Google Cloud Functions delegates access to service agents to protect function resources in internal projects that are not accessible by the end user.",
+          "description": "Resource name of a KMS crypto key (managed by the user) used to encrypt\/decrypt function resources. It must match the pattern `projects\/{project}\/locations\/{location}\/keyRings\/{key_ring}\/cryptoKeys\/{crypto_key}`. If specified, you must also provide an artifact registry repository using the `docker_repository` field that was created with the same KMS crypto key. The following service accounts need to be granted the role 'Cloud KMS CryptoKey Encrypter\/Decrypter (roles\/cloudkms.cryptoKeyEncrypterDecrypter)' on the Key\/KeyRing\/Project\/Organization (least access preferred). 1. Google Cloud Functions service account (service-{project_number}@gcf-admin-robot.iam.gserviceaccount.com) - Required to protect the function's image. 2. Google Storage service account (service-{project_number}@gs-project-accounts.iam.gserviceaccount.com) - Required to protect the function's source code. If this service account does not exist, deploying a function without a KMS key or retrieving the service agent name provisions it. For more information, see https:\/\/cloud.google.com\/storage\/docs\/projects#service-agents and https:\/\/cloud.google.com\/storage\/docs\/getting-service-agent#gsutil. Google Cloud Functions delegates access to service agents to protect function resources in internal projects that are not accessible by the end user.",
           "type": "string"
         },
         "buildWorkerPool": {
@@ -610,6 +610,10 @@
       "description": "Request of `GenerateSourceUploadUrl` method.",
       "type": "object",
       "properties": {
+        "kmsKeyName": {
+          "description": "Resource name of a KMS crypto key (managed by the user) used to encrypt\/decrypt function source code objects in staging Cloud Storage buckets. When you generate an upload url and upload your source code, it gets copied to a staging Cloud Storage bucket in an internal regional project. The source code is then copied to a versioned directory in the sources bucket in the consumer project during the function deployment. It must match the pattern `projects\/{project}\/locations\/{location}\/keyRings\/{key_ring}\/cryptoKeys\/{crypto_key}`. The Google Cloud Functions service account (service-{project_number}@gcf-admin-robot.iam.gserviceaccount.com) must be granted the role 'Cloud KMS CryptoKey Encrypter\/Decrypter (roles\/cloudkms.cryptoKeyEncrypterDecrypter)' on the Key\/KeyRing\/Project\/Organization (least access preferred). GCF will delegate access to the Google Storage service account in the internal project.",
+          "type": "string"
+        }
       }
     },
     "GenerateUploadUrlResponse": {
@@ -1610,7 +1614,7 @@
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
-                      "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                      "description": "Optional. The maximum policy version that will be used to format the policy. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset. The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"

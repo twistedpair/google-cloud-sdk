@@ -100,8 +100,26 @@ def GenerateDiscoverySpec(args):
       enabled=args.discovery_enabled,
       includePatterns=args.discovery_include_patterns,
       excludePatterns=args.discovery_exclude_patterns,
-      schedule=args.discovery_schedule)
+      schedule=args.discovery_schedule,
+      csvOptions=GenerateCsvOptions(args),
+      jsonOptions=GenerateJsonOptions(args))
   return discovery_spec
+
+
+def GenerateCsvOptions(args):
+  return dataplex_api.GetMessageModule(
+  ).GoogleCloudDataplexV1AssetDiscoverySpecCsvOptions(
+      delimiter=args.csv_delimiter,
+      disableTypeInference=args.csv_disable_type_inference,
+      encoding=args.csv_encoding,
+      headerRows=args.csv_header_rows)
+
+
+def GenerateJsonOptions(args):
+  return dataplex_api.GetMessageModule(
+  ).GoogleCloudDataplexV1AssetDiscoverySpecJsonOptions(
+      encoding=args.json_encoding,
+      disableTypeInference=args.json_disable_type_inference)
 
 
 def GenerateUpdateMask(args):
@@ -121,6 +139,18 @@ def GenerateUpdateMask(args):
     update_mask.append('discoverySpec.excludePatterns')
   if args.IsSpecified('discovery_schedule'):
     update_mask.append('discoverySpec.schedule')
+  if args.IsSpecified('csv_header_rows'):
+    update_mask.append('discoverySpec.csvOptions.headerRows')
+  if args.IsSpecified('csv_delimiter'):
+    update_mask.append('discoverySpec.csvOptions.delimiter')
+  if args.IsSpecified('csv_encoding'):
+    update_mask.append('discoverySpec.csvOptions.encoding')
+  if args.IsSpecified('csv_disable_type_inference'):
+    update_mask.append('discoverySpec.csvOptions.disableTypeInference')
+  if args.IsSpecified('json_encoding'):
+    update_mask.append('discoverySpec.jsonOptions.encoding')
+  if args.IsSpecified('json_disable_type_inference'):
+    update_mask.append('discoverySpec.jsonOptions.disableTypeInference')
   return update_mask
 
 

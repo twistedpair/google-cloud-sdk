@@ -397,6 +397,7 @@ class ConnectSettings(_messages.Message):
       MYSQL_8_0_27: The database major version is MySQL 8.0 and the minor
         version is 27.
       POSTGRES_13: The database version is PostgreSQL 13.
+      POSTGRES_14: The database version is PostgreSQL 14.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -422,10 +423,11 @@ class ConnectSettings(_messages.Message):
     MYSQL_8_0_26 = 15
     MYSQL_8_0_27 = 16
     POSTGRES_13 = 17
-    SQLSERVER_2019_STANDARD = 18
-    SQLSERVER_2019_ENTERPRISE = 19
-    SQLSERVER_2019_EXPRESS = 20
-    SQLSERVER_2019_WEB = 21
+    POSTGRES_14 = 18
+    SQLSERVER_2019_STANDARD = 19
+    SQLSERVER_2019_ENTERPRISE = 20
+    SQLSERVER_2019_EXPRESS = 21
+    SQLSERVER_2019_WEB = 22
 
   backendType = _messages.EnumField('BackendTypeValueValuesEnum', 1)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
@@ -627,6 +629,7 @@ class DatabaseInstance(_messages.Message):
       MYSQL_8_0_27: The database major version is MySQL 8.0 and the minor
         version is 27.
       POSTGRES_13: The database version is PostgreSQL 13.
+      POSTGRES_14: The database version is PostgreSQL 14.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -652,10 +655,11 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0_26 = 15
     MYSQL_8_0_27 = 16
     POSTGRES_13 = 17
-    SQLSERVER_2019_STANDARD = 18
-    SQLSERVER_2019_ENTERPRISE = 19
-    SQLSERVER_2019_EXPRESS = 20
-    SQLSERVER_2019_WEB = 21
+    POSTGRES_14 = 18
+    SQLSERVER_2019_STANDARD = 19
+    SQLSERVER_2019_ENTERPRISE = 20
+    SQLSERVER_2019_EXPRESS = 21
+    SQLSERVER_2019_WEB = 22
 
   class InstalledVersionValueValuesEnum(_messages.Enum):
     r"""installed_version stores the current fully resolved database version
@@ -685,6 +689,7 @@ class DatabaseInstance(_messages.Message):
       MYSQL_8_0_27: The database major version is MySQL 8.0 and the minor
         version is 27.
       POSTGRES_13: The database version is PostgreSQL 13.
+      POSTGRES_14: The database version is PostgreSQL 14.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -710,10 +715,11 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0_26 = 15
     MYSQL_8_0_27 = 16
     POSTGRES_13 = 17
-    SQLSERVER_2019_STANDARD = 18
-    SQLSERVER_2019_ENTERPRISE = 19
-    SQLSERVER_2019_EXPRESS = 20
-    SQLSERVER_2019_WEB = 21
+    POSTGRES_14 = 18
+    SQLSERVER_2019_STANDARD = 19
+    SQLSERVER_2019_ENTERPRISE = 20
+    SQLSERVER_2019_EXPRESS = 21
+    SQLSERVER_2019_WEB = 22
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type.
@@ -745,7 +751,7 @@ class DatabaseInstance(_messages.Message):
       MAINTENANCE: The instance is down for maintenance.
       FAILED: The creation of the instance failed or a fatal error occurred
         during maintenance.
-      ONLINE_MAINTENANCE: Deprecated - This is an internal state, b/197569332
+      ONLINE_MAINTENANCE: Deprecated
     """
     SQL_INSTANCE_STATE_UNSPECIFIED = 0
     RUNNABLE = 1
@@ -1137,6 +1143,7 @@ class Flag(_messages.Message):
       MYSQL_8_0_27: The database major version is MySQL 8.0 and the minor
         version is 27.
       POSTGRES_13: The database version is PostgreSQL 13.
+      POSTGRES_14: The database version is PostgreSQL 14.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -1162,10 +1169,11 @@ class Flag(_messages.Message):
     MYSQL_8_0_26 = 15
     MYSQL_8_0_27 = 16
     POSTGRES_13 = 17
-    SQLSERVER_2019_STANDARD = 18
-    SQLSERVER_2019_ENTERPRISE = 19
-    SQLSERVER_2019_EXPRESS = 20
-    SQLSERVER_2019_WEB = 21
+    POSTGRES_14 = 18
+    SQLSERVER_2019_STANDARD = 19
+    SQLSERVER_2019_ENTERPRISE = 20
+    SQLSERVER_2019_EXPRESS = 21
+    SQLSERVER_2019_WEB = 22
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the flag. Flags are typed to being **BOOLEAN**,
@@ -1518,8 +1526,7 @@ class IpConfiguration(_messages.Message):
       set, the instance ip will be created in the allocated range. The range
       name must comply with [RFC 1035](https://tools.ietf.org/html/rfc1035).
       Specifically, the name must be 1-63 characters long and match the
-      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?.` Reserved for future
-      use.
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?.`
     authorizedNetworks: The list of external networks that are allowed to
       connect to the instance using the IP. In 'CIDR' notation, also known as
       'slash' notation (for example: **192.168.100.0/24**).
@@ -2151,6 +2158,8 @@ class Settings(_messages.Message):
       instance to be located as near as possible to either an App Engine app
       or Compute Engine zone for better performance. App Engine co-location
       was only applicable to First Generation instances.
+    maintenanceVersion: The current software version the instance is running
+      on.
     maintenanceWindow: The maintenance window for this instance. This
       specifies when the instance can be restarted for maintenance purposes.
     passwordValidationPolicy: The local user password validation policy of the
@@ -2304,16 +2313,17 @@ class Settings(_messages.Message):
   ipConfiguration = _messages.MessageField('IpConfiguration', 15)
   kind = _messages.StringField(16)
   locationPreference = _messages.MessageField('LocationPreference', 17)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 18)
-  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 19)
-  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 20)
-  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 21)
-  settingsVersion = _messages.IntegerField(22)
-  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 23)
-  storageAutoResize = _messages.BooleanField(24)
-  storageAutoResizeLimit = _messages.IntegerField(25)
-  tier = _messages.StringField(26)
-  userLabels = _messages.MessageField('UserLabelsValue', 27)
+  maintenanceVersion = _messages.StringField(18)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 19)
+  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 20)
+  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 21)
+  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 22)
+  settingsVersion = _messages.IntegerField(23)
+  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 24)
+  storageAutoResize = _messages.BooleanField(25)
+  storageAutoResizeLimit = _messages.IntegerField(26)
+  tier = _messages.StringField(27)
+  userLabels = _messages.MessageField('UserLabelsValue', 28)
 
 
 class SqlActiveDirectoryConfig(_messages.Message):
@@ -3516,10 +3526,11 @@ class User(_messages.Message):
   Fields:
     etag: This field is deprecated and will be removed from a future version
       of the API.
-    host: The host name from which the user can connect. For *insert*
-      operations, host defaults to an empty string. For *update* operations,
-      host is specified as part of the request URL. The host name cannot be
-      updated after insertion.
+    host: Optional. The host name from which the user can connect. For
+      **insert** operations, host defaults to an empty string. For **update**
+      operations, host is specified as part of the request URL. The host name
+      cannot be updated after insertion. For a MySQL instance, it's required;
+      for a PostgreSQL or SQL Server instance, it's optional.
     iamEmail: The full email for an IAM user. For normal database users, this
       will not be filled. Only applicable to MySQL database users.
     instance: The name of the Cloud SQL instance. This does not include the
@@ -3527,7 +3538,7 @@ class User(_messages.Message):
       the URL.
     kind: This is always *sql#user*.
     name: The name of the user in the Cloud SQL instance. Can be omitted for
-      *update* since it is already specified in the URL.
+      **update** since it is already specified in the URL.
     password: The password for the user.
     passwordPolicy: User level password validation policy.
     project: The project ID of the project containing the Cloud SQL database.

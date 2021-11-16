@@ -65,7 +65,8 @@ def Http(timeout='unset',
        google-auth credentials.
 
   Raises:
-    c_store.Error: If an error loading the credentials occurs.
+    core.credentials.exceptions.Error: If an error loading the credentials
+      occurs.
   """
   http_client = http.Http(timeout=timeout, response_encoding=response_encoding,
                           ca_certs=ca_certs)

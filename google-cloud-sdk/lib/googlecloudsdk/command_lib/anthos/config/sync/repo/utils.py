@@ -116,7 +116,7 @@ def ListConfigControllerClusters(project):
     project: project that the Config Controller is in.
 
   Returns:
-    The Config Controller cluster name.
+    The list of (cluster, region) for Config Controllers.
 
   Raises:
     Error: The error occured when it failed to list clusters.
@@ -124,17 +124,19 @@ def ListConfigControllerClusters(project):
   # TODO(b/202418506) Check if there is any library
   # function to list the clusters.
   args = [
-      'container', 'clusters', 'list', '--region', 'us-central1', '--project',
-      project, '--filter', 'name:krmapihost', '--format', 'table(name)'
+      'container', 'clusters', 'list', '--project', project, '--filter',
+      'name:krmapihost', '--format', 'table(name,location)'
   ]
   output, err = _RunGcloud(args)
   if err:
     raise exceptions.Error('Error listing clusters: {}'.format(err))
 
-  for cluster in output.replace('\n', ' ').split():
-    if cluster.startswith('krmapihost'):
-      return cluster
-  return ''
+  clusters = []
+  for cluster in output.split('\n'):
+    c = _ParseClusterLocation(cluster)
+    if c:
+      clusters.append(c)
+  return clusters
 
 
 def ListMemberships(project):
@@ -236,3 +238,26 @@ def _GetEnvs():
     env[_KUBECONFIGENV] = files.ExpandHomeDir(
         os.path.join('~', '.kube', _DEFAULTKUBECONFIG))
   return env
+
+
+def _ParseClusterLocation(cluster_and_location):
+  """Get the cluster and location for the Config Controller cluster.
+
+  Args:
+    cluster_and_location: The one line string that contains the Config
+      Controller resource name and its location.
+
+  Returns:
+    The tuple of cluster and region.
+  """
+  if not cluster_and_location or cluster_and_location.startswith('NAME'):
+    return None
+  cluster = ''
+  region = ''
+  strings = cluster_and_location.split(' ')
+  for s in strings:
+    if s.startswith('krmapihost'):
+      cluster = s
+    elif s:
+      region = s
+  return (cluster, region)

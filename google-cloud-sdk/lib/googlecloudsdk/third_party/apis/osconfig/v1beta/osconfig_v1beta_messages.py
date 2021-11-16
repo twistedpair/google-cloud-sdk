@@ -1431,11 +1431,11 @@ class RecurringSchedule(_messages.Message):
 
     Values:
       FREQUENCY_UNSPECIFIED: Invalid. A frequency must be specified.
-      WEEKLY: Indicates that the frequency should be expressed in terms of
-        weeks.
-      MONTHLY: Indicates that the frequency should be expressed in terms of
-        months.
-      DAILY: Indicates that the recurrence frequency should be expressed in
+      WEEKLY: Indicates that the frequency of recurrence should be expressed
+        in terms of weeks.
+      MONTHLY: Indicates that the frequency of recurrence should be expressed
+        in terms of months.
+      DAILY: Indicates that the frequency of recurrence should be expressed in
         terms of days.
     """
     FREQUENCY_UNSPECIFIED = 0
@@ -1880,6 +1880,14 @@ class WeekDayOfMonth(_messages.Message):
 
   Fields:
     dayOfWeek: Required. A day of the week.
+    dayOffset: Optional. Represents the number of days before or after the
+      given week day of month that the patch deployment is scheduled for. For
+      example if `week_ordinal` and `day_of_week` values point to the second
+      day of the month and this `day_offset` value is set to `3`, the patch
+      deployment takes place three days after the second Tuesday of the month.
+      If this value is negative, for example -5, the patches are deployed five
+      days before before the second Tuesday of the month. Allowed values are
+      in range [-30, 30].
     weekOrdinal: Required. Week number in a month. 1-4 indicates the 1st to
       4th week of the month. -1 indicates the last week of the month.
   """
@@ -1907,7 +1915,8 @@ class WeekDayOfMonth(_messages.Message):
     SUNDAY = 7
 
   dayOfWeek = _messages.EnumField('DayOfWeekValueValuesEnum', 1)
-  weekOrdinal = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  dayOffset = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  weekOrdinal = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class WeeklySchedule(_messages.Message):

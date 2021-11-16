@@ -201,6 +201,25 @@ def ArgsForClusterRef(parser,
       a cluster.
       """)
   parser.add_argument(
+      '--main-local-ssd-interface',
+      hidden=True,
+      help="""\
+      Interface to use while attaching local SSDs to main node(s) in a cluster.
+      """)
+  parser.add_argument(
+      '--worker-local-ssd-interface',
+      hidden=True,
+      help="""\
+      Interface to use while attaching local SSDs to each worker in a cluster.
+      """)
+  parser.add_argument(
+      '--secondary-worker-local-ssd-interface',
+      hidden=True,
+      help="""\
+      Interface to use while attaching local SSDs to each secondary worker
+      in a cluster.
+      """)
+  parser.add_argument(
       '--initialization-actions',
       type=arg_parsers.ArgList(min_length=1),
       metavar='CLOUD_STORAGE_URI',
@@ -789,7 +808,8 @@ def GetClusterConfig(args,
           accelerators=master_accelerators,
           diskConfig=GetDiskConfig(dataproc, args.master_boot_disk_type,
                                    master_boot_disk_size_gb,
-                                   args.num_master_local_ssds),
+                                   args.num_master_local_ssds,
+                                   args.main_local_ssd_interface),
           minCpuPlatform=args.master_min_cpu_platform),
       workerConfig=dataproc.messages.InstanceGroupConfig(
           numInstances=args.num_workers,
@@ -801,6 +821,7 @@ def GetClusterConfig(args,
               args.worker_boot_disk_type,
               worker_boot_disk_size_gb,
               args.num_worker_local_ssds,
+              args.worker_local_ssd_interface,
           ),
           minCpuPlatform=args.worker_min_cpu_platform),
       initializationActions=init_actions,
@@ -926,6 +947,7 @@ def GetClusterConfig(args,
                 secondary_worker_boot_disk_type,
                 secondary_worker_boot_disk_size_gb,
                 num_secondary_worker_local_ssds,
+                args.secondary_worker_local_ssd_interface,
             ),
             minCpuPlatform=args.worker_min_cpu_platform,
             preemptibility=_GetInstanceGroupPreemptibility(
@@ -993,7 +1015,8 @@ def _GetPrivateIpv6GoogleAccess(dataproc, private_ipv6_google_access_type):
       private_ipv6_google_access_type)
 
 
-def GetDiskConfig(dataproc, boot_disk_type, boot_disk_size, num_local_ssds):
+def GetDiskConfig(dataproc, boot_disk_type, boot_disk_size, num_local_ssds,
+                  local_ssd_interface):
   """Get dataproc cluster disk configuration.
 
   Args:
@@ -1001,6 +1024,7 @@ def GetDiskConfig(dataproc, boot_disk_type, boot_disk_size, num_local_ssds):
     boot_disk_type: Type of the boot disk
     boot_disk_size: Size of the boot disk
     num_local_ssds: Number of the Local SSDs
+    local_ssd_interface: Interface used to attach local SSDs
 
   Returns:
     disk_config: Dataproc cluster disk configuration
@@ -1009,7 +1033,8 @@ def GetDiskConfig(dataproc, boot_disk_type, boot_disk_size, num_local_ssds):
   return dataproc.messages.DiskConfig(
       bootDiskType=boot_disk_type,
       bootDiskSizeGb=boot_disk_size,
-      numLocalSsds=num_local_ssds)
+      numLocalSsds=num_local_ssds,
+      localSsdInterface=local_ssd_interface)
 
 
 def CreateCluster(dataproc,

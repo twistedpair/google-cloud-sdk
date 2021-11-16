@@ -28,6 +28,7 @@ import os
 import sys
 import threading
 
+from googlecloudsdk.api_lib.storage import patch_gcs_messages
 from googlecloudsdk.command_lib import crash_handling
 from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import errors
@@ -41,6 +42,10 @@ from googlecloudsdk.core.credentials import creds_context_managers
 from googlecloudsdk.core.util import platforms
 
 from six.moves import queue
+
+
+# TODO(b/171296237): Remove this when fixes are submitted in apitools.
+patch_gcs_messages.patch()
 
 
 if sys.version_info.major == 2:
@@ -70,6 +75,8 @@ else:
 _TASK_QUEUE_LOCK = threading.Lock()
 
 
+# TODO(b/203819260): Check if this lock can be removed on Windows, since message
+# patches are applied above.
 @contextlib.contextmanager
 def _task_queue_lock():
   """Context manager which acquires a lock when queue.get is unsafe.

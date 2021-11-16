@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 
@@ -88,39 +89,43 @@ Size of the disk attached to the worker.
 If not given, Cloud Build will use a standard disk size.
 """)
 
-  worker_flags.add_argument(
-      '--no-external-ip',
-      hidden=release_track == base.ReleaseTrack.GA,
-      action='store_true',
-      help="""\
-If set, workers in the worker pool are created without an external IP address.
-
-If the worker pool is within a VPC Service Control perimeter, use this flag.
-""")
-
   if release_track == base.ReleaseTrack.GA:
-    if update:
-      egress_flags = flags.add_mutually_exclusive_group()
-      egress_flags.add_argument(
-          '--no-public-egress',
-          action='store_true',
-          help="""\
+    worker_flags.add_argument(
+        '--no-external-ip',
+        hidden=release_track == base.ReleaseTrack.GA,
+        action=actions.DeprecationAction(
+            '--no-external-ip',
+            warn='The `--no-external-ip` option is deprecated; use `--no-public-egress` and/or `--public-egress instead`.',
+            removed=False,
+            action='store_true'),
+        help="""\
+  If set, workers in the worker pool are created without an external IP address.
+
+  If the worker pool is within a VPC Service Control perimeter, use this flag.
+  """)
+
+  if update:
+    egress_flags = flags.add_mutually_exclusive_group()
+    egress_flags.add_argument(
+        '--no-public-egress',
+        action='store_true',
+        help="""\
 If set, workers in the worker pool are created without an external IP address.
 
 If the worker pool is within a VPC Service Control perimeter, use this flag.
-    """)
-
-      egress_flags.add_argument(
-          '--public-egress',
-          action='store_true',
-          help="""\
-If set, workers in the worker pool are created with an external IP address.
   """)
-    else:
-      flags.add_argument(
-          '--no-public-egress',
-          action='store_true',
-          help="""\
+
+    egress_flags.add_argument(
+        '--public-egress',
+        action='store_true',
+        help="""\
+If set, workers in the worker pool are created with an external IP address.
+""")
+  else:
+    flags.add_argument(
+        '--no-public-egress',
+        action='store_true',
+        help="""\
 If set, workers in the worker pool are created without an external IP address.
 
 If the worker pool is within a VPC Service Control perimeter, use this flag.

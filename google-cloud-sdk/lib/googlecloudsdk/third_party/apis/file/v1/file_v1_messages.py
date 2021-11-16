@@ -67,6 +67,8 @@ class Backup(_messages.Message):
         performance backed by SSD.
       HIGH_SCALE_SSD: HIGH_SCALE instances offer expanded capacity and
         performance scaling capabilities.
+      ENTERPRISE: ENTERPRISE instances offer the features and availability
+        needed for mission-critical workloads.
     """
     TIER_UNSPECIFIED = 0
     STANDARD = 1
@@ -74,6 +76,7 @@ class Backup(_messages.Message):
     BASIC_HDD = 3
     BASIC_SSD = 4
     HIGH_SCALE_SSD = 5
+    ENTERPRISE = 6
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The backup state.
@@ -319,11 +322,15 @@ class FileProjectsLocationsInstancesDeleteRequest(_messages.Message):
   r"""A FileProjectsLocationsInstancesDeleteRequest object.
 
   Fields:
+    force: If set to true, all snapshots of the instance will also be deleted.
+      (Otherwise, the request will only work if the instance has no
+      snapshots.)
     name: Required. The instance resource name, in the format
       `projects/{project_id}/locations/{location}/instances/{instance_id}`
   """
 
-  name = _messages.StringField(1, required=True)
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class FileProjectsLocationsInstancesGetRequest(_messages.Message):
@@ -390,6 +397,88 @@ class FileProjectsLocationsInstancesRestoreRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   restoreInstanceRequest = _messages.MessageField('RestoreInstanceRequest', 2)
+
+
+class FileProjectsLocationsInstancesSnapshotsCreateRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesSnapshotsCreateRequest object.
+
+  Fields:
+    parent: Required. The Filestore Instance to create the snapshots of, in
+      the format
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`
+    snapshot: A Snapshot resource to be passed as the request body.
+    snapshotId: Required. The ID to use for the snapshot. The ID must be
+      unique within the specified instance. This value must start with a
+      lowercase letter followed by up to 62 lowercase letters, numbers, or
+      hyphens, and cannot end with a hyphen.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  snapshot = _messages.MessageField('Snapshot', 2)
+  snapshotId = _messages.StringField(3)
+
+
+class FileProjectsLocationsInstancesSnapshotsDeleteRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesSnapshotsDeleteRequest object.
+
+  Fields:
+    name: Required. The snapshot resource name, in the format `projects/{proje
+      ct_id}/locations/{location}/instances/{instance_id}/snapshots/{snapshot_
+      id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class FileProjectsLocationsInstancesSnapshotsGetRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesSnapshotsGetRequest object.
+
+  Fields:
+    name: Required. The snapshot resource name, in the format `projects/{proje
+      ct_id}/locations/{location}/instances/{instance_id}/snapshots/{snapshot_
+      id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class FileProjectsLocationsInstancesSnapshotsListRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesSnapshotsListRequest object.
+
+  Fields:
+    filter: List filter.
+    orderBy: Sort results. Supported values are "name", "name desc" or ""
+      (unsorted).
+    pageSize: The maximum number of items to return.
+    pageToken: The next_page_token value to use if there are additional
+      results to retrieve for this list request.
+    parent: Required. The instance for which to retrieve snapshot information,
+      in the format
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class FileProjectsLocationsInstancesSnapshotsPatchRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesSnapshotsPatchRequest object.
+
+  Fields:
+    name: Output only. The resource name of the snapshot, in the format `proje
+      cts/{project_id}/locations/{location_id}/instances/{instance_id}/snapsho
+      ts/{snapshot_id}`.
+    snapshot: A Snapshot resource to be passed as the request body.
+    updateMask: Required. Mask of fields to update. At least one path must be
+      supplied in this field.
+  """
+
+  name = _messages.StringField(1, required=True)
+  snapshot = _messages.MessageField('Snapshot', 2)
+  updateMask = _messages.StringField(3)
 
 
 class FileProjectsLocationsListRequest(_messages.Message):
@@ -977,6 +1066,7 @@ class Instance(_messages.Message):
 
   Enums:
     StateValueValuesEnum: Output only. The instance state.
+    SuspensionReasonsValueListEntryValuesEnum:
     TierValueValuesEnum: The service tier of the instance.
 
   Messages:
@@ -989,6 +1079,7 @@ class Instance(_messages.Message):
       simultaneous updates from overwriting each other.
     fileShares: File system shares on the instance. For this version, only a
       single file share is supported.
+    kmsKeyName: KMS key name used for data encryption.
     labels: Resource labels to represent user provided metadata.
     name: Output only. The resource name of the instance, in the format
       `projects/{project}/locations/{location}/instances/{instance}`.
@@ -998,6 +1089,8 @@ class Instance(_messages.Message):
     state: Output only. The instance state.
     statusMessage: Output only. Additional information about the instance
       state, if available.
+    suspensionReasons: Output only. field indicates all the reasons the
+      instance is in "SUSPENDED" state.
     tier: The service tier of the instance.
   """
 
@@ -1016,6 +1109,8 @@ class Instance(_messages.Message):
         `Instance` resource.
       RESTORING: The instance is restoring a backup to an existing file share
         and may be unusable during this time.
+      SUSPENDED: The instance is suspended. You can get further details from
+        the `suspension_reasons` field of the `Instance` resource.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -1024,6 +1119,18 @@ class Instance(_messages.Message):
     DELETING = 4
     ERROR = 5
     RESTORING = 6
+    SUSPENDED = 7
+
+  class SuspensionReasonsValueListEntryValuesEnum(_messages.Enum):
+    r"""SuspensionReasonsValueListEntryValuesEnum enum type.
+
+    Values:
+      SUSPENSION_REASON_UNSPECIFIED: Not set.
+      KMS_KEY_ISSUE: The KMS key used by the instance is either revoked or
+        denied access to.
+    """
+    SUSPENSION_REASON_UNSPECIFIED = 0
+    KMS_KEY_ISSUE = 1
 
   class TierValueValuesEnum(_messages.Enum):
     r"""The service tier of the instance.
@@ -1040,6 +1147,8 @@ class Instance(_messages.Message):
         performance backed by SSD.
       HIGH_SCALE_SSD: HIGH_SCALE instances offer expanded capacity and
         performance scaling capabilities.
+      ENTERPRISE: ENTERPRISE instances offer the features and availability
+        needed for mission-critical workloads.
     """
     TIER_UNSPECIFIED = 0
     STANDARD = 1
@@ -1047,6 +1156,7 @@ class Instance(_messages.Message):
     BASIC_HDD = 3
     BASIC_SSD = 4
     HIGH_SCALE_SSD = 5
+    ENTERPRISE = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1076,13 +1186,15 @@ class Instance(_messages.Message):
   description = _messages.StringField(2)
   etag = _messages.StringField(3)
   fileShares = _messages.MessageField('FileShareConfig', 4, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  networks = _messages.MessageField('NetworkConfig', 7, repeated=True)
-  satisfiesPzs = _messages.BooleanField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  statusMessage = _messages.StringField(10)
-  tier = _messages.EnumField('TierValueValuesEnum', 11)
+  kmsKeyName = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  networks = _messages.MessageField('NetworkConfig', 8, repeated=True)
+  satisfiesPzs = _messages.BooleanField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  statusMessage = _messages.StringField(11)
+  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 12, repeated=True)
+  tier = _messages.EnumField('TierValueValuesEnum', 13)
 
 
 class ListBackupsResponse(_messages.Message):
@@ -1149,6 +1261,19 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListSnapshotsResponse(_messages.Message):
+  r"""ListSnapshotsResponse is the result of ListSnapshotsRequest.
+
+  Fields:
+    nextPageToken: The token you can use to retrieve the next page of results.
+      Not returned if there are no more results in the list.
+    snapshots: A list of snapshots in the project for the specified instance.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  snapshots = _messages.MessageField('Snapshot', 2, repeated=True)
 
 
 class Location(_messages.Message):
@@ -1325,9 +1450,13 @@ class NetworkConfig(_messages.Message):
   r"""Network configuration for the instance.
 
   Enums:
+    ConnectModeValueValuesEnum: The network connect mode of the Filestore
+      instance. If not provided, the connect mode defaults to DIRECT_PEERING.
     ModesValueListEntryValuesEnum:
 
   Fields:
+    connectMode: The network connect mode of the Filestore instance. If not
+      provided, the connect mode defaults to DIRECT_PEERING.
     ipAddresses: Output only. IPv4 addresses in the format
       `{octet1}.{octet2}.{octet3}.{octet4}` or IPv6 addresses in the format `{
       block1}:{block2}:{block3}:{block4}:{block5}:{block6}:{block7}:{block8}`.
@@ -1336,13 +1465,37 @@ class NetworkConfig(_messages.Message):
     network: The name of the Google Compute Engine [VPC
       network](https://cloud.google.com/vpc/docs/vpc) to which the instance is
       connected.
-    reservedIpRange: A /29 CIDR block in one of the [internal IP address range
-      s](https://www.arin.net/reference/research/statistics/address_filters/)
-      that identifies the range of IP addresses reserved for this instance.
-      For example, 10.0.0.0/29 or 192.168.0.0/29. The range you specify can't
-      overlap with either existing subnets or assigned IP address ranges for
-      other Cloud Filestore instances in the selected VPC network.
+    reservedIpRange: Optional, reserved_ip_range can have one of the following
+      two types of values. * CIDR range value when using DIRECT_PEERING
+      connect mode. * [Allocated IP address
+      range](https://cloud.google.com/compute/docs/ip-addresses/reserve-
+      static-internal-ip-address) when using PRIVATE_SERVICE_ACCESS connect
+      mode. When the name of an allocated IP address range is specified, it
+      must be one of the ranges associated with the private service access
+      connection. When specified as a direct CIDR value, it must be a /29 CIDR
+      block for Basic tier or a /24 CIDR block for High Scale or Enterprise
+      tier in one of the [internal IP address ranges](https://www.arin.net/ref
+      erence/research/statistics/address_filters/) that identifies the range
+      of IP addresses reserved for this instance. For example, 10.0.0.0/29 or
+      192.168.0.0/24. The range you specify can't overlap with either existing
+      subnets or assigned IP address ranges for other Cloud Filestore
+      instances in the selected VPC network.
   """
+
+  class ConnectModeValueValuesEnum(_messages.Enum):
+    r"""The network connect mode of the Filestore instance. If not provided,
+    the connect mode defaults to DIRECT_PEERING.
+
+    Values:
+      CONNECT_MODE_UNSPECIFIED: Not set.
+      DIRECT_PEERING: Connect via direct peering to the Filestore service.
+      PRIVATE_SERVICE_ACCESS: Connect to your Filestore instance using Private
+        Service Access. Private services access provides an IP address range
+        for multiple Google Cloud services, including Filestore.
+    """
+    CONNECT_MODE_UNSPECIFIED = 0
+    DIRECT_PEERING = 1
+    PRIVATE_SERVICE_ACCESS = 2
 
   class ModesValueListEntryValuesEnum(_messages.Enum):
     r"""ModesValueListEntryValuesEnum enum type.
@@ -1354,10 +1507,11 @@ class NetworkConfig(_messages.Message):
     ADDRESS_MODE_UNSPECIFIED = 0
     MODE_IPV4 = 1
 
-  ipAddresses = _messages.StringField(1, repeated=True)
-  modes = _messages.EnumField('ModesValueListEntryValuesEnum', 2, repeated=True)
-  network = _messages.StringField(3)
-  reservedIpRange = _messages.StringField(4)
+  connectMode = _messages.EnumField('ConnectModeValueValuesEnum', 1)
+  ipAddresses = _messages.StringField(2, repeated=True)
+  modes = _messages.EnumField('ModesValueListEntryValuesEnum', 3, repeated=True)
+  network = _messages.StringField(4)
+  reservedIpRange = _messages.StringField(5)
 
 
 class NfsExportOptions(_messages.Message):
@@ -1618,6 +1772,74 @@ class Schedule(_messages.Message):
   day = _messages.EnumField('DayValueValuesEnum', 1)
   duration = _messages.StringField(2)
   startTime = _messages.MessageField('TimeOfDay', 3)
+
+
+class Snapshot(_messages.Message):
+  r"""A Filestore snapshot.
+
+  Enums:
+    StateValueValuesEnum: Output only. The snapshot state.
+
+  Messages:
+    LabelsValue: Resource labels to represent user provided metadata.
+
+  Fields:
+    createTime: Output only. The time when the snapshot was created.
+    description: A description of the snapshot with 2048 characters or less.
+      Requests with longer descriptions will be rejected.
+    filesystemUsedBytes: Output only. The amount of bytes needed to allocate a
+      full copy of the snapshot content
+    labels: Resource labels to represent user provided metadata.
+    name: Output only. The resource name of the snapshot, in the format `proje
+      cts/{project_id}/locations/{location_id}/instances/{instance_id}/snapsho
+      ts/{snapshot_id}`.
+    state: Output only. The snapshot state.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The snapshot state.
+
+    Values:
+      STATE_UNSPECIFIED: State not set.
+      CREATING: Snapshot is being created.
+      READY: Snapshot is available for use.
+      DELETING: Snapshot is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    DELETING = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Resource labels to represent user provided metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  filesystemUsedBytes = _messages.IntegerField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
 
 
 class StandardQueryParameters(_messages.Message):

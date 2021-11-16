@@ -94,6 +94,14 @@ def setup_parser(parser, is_update=False):
         '--clear-source-creds-file',
         action='store_true',
         help='Remove the source creds file from the transfer job.')
+    job_information.add_argument(
+        '--clear-source-agent-pool',
+        action='store_true',
+        help='Remove the source agent pool from the transfer job.')
+    job_information.add_argument(
+        '--clear-destination-agent-pool',
+        action='store_true',
+        help='Remove the destination agent pool from the transfer job.')
   else:
     job_information.add_argument(
         '--name',
@@ -115,6 +123,14 @@ def setup_parser(parser, is_update=False):
       'rest/v1/TransferSpec#AwsAccessKey\n'
       'Azure: http://cloud/storage-transfer/docs/reference/rest/'
       'v1/TransferSpec#AzureCredentials')
+  job_information.add_argument(
+      '--source-agent-pool',
+      help='If using a POSIX filesystem source, specify the ID of the agent'
+      ' pool associated with source filesystem.')
+  job_information.add_argument(
+      '--destination-agent-pool',
+      help='If using a POSIX filesystem destination, specify the ID of the'
+      ' agent pool associated with destination filesystem.')
 
   schedule = parser.add_group(
       help=("SCHEDULE\n\nA job's schedule determines when and how often the job"

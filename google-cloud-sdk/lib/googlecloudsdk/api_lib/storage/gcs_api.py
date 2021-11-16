@@ -37,10 +37,7 @@ from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors as cloud_errors
 from googlecloudsdk.api_lib.storage import gcs_metadata_util
 from googlecloudsdk.api_lib.storage import gcs_upload
-# pylint: disable=unused-import
-# Applies pickling patches:
 from googlecloudsdk.api_lib.storage import patch_gcs_messages
-# pylint: enable=unused-import
 from googlecloudsdk.api_lib.storage import retry_util
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions as calliope_errors
@@ -58,6 +55,10 @@ from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import retry
 from googlecloudsdk.core.util import scaled_integer
 import oauth2client
+
+
+# TODO(b/171296237): Remove this when fixes are submitted in apitools.
+patch_gcs_messages.patch()
 
 
 # Call the progress callback every PROGRESS_CALLBACK_THRESHOLD bytes to
@@ -193,7 +194,8 @@ class GcsApi(cloud_api.CloudApi):
   capabilities = {
       cloud_api.Capability.COMPOSE_OBJECTS,
       cloud_api.Capability.RESUMABLE_UPLOAD,
-      cloud_api.Capability.SLICED_DOWNLOAD
+      cloud_api.Capability.SLICED_DOWNLOAD,
+      cloud_api.Capability.ENCRYPTION,
   }
 
   def __init__(self):

@@ -123,6 +123,23 @@ class Artifacts(_messages.Message):
   objects = _messages.MessageField('ArtifactObjects', 2)
 
 
+class BatchCreateBitbucketServerConnectedRepositoriesResponseMetadata(_messages.Message):
+  r"""Metadata for `BatchCreateBitbucketServerConnectedRepositories`
+  operation.
+
+  Fields:
+    completeTime: Time the operation was completed.
+    config: The name of the `BitbucketServerConfig` that added connected
+      repositories. Format: `projects/{project}/locations/{location}/bitbucket
+      ServerConfigs/{config}`
+    createTime: Time the operation was created.
+  """
+
+  completeTime = _messages.StringField(1)
+  config = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+
+
 class Build(_messages.Message):
   r"""A build resource in the Cloud Build API. At a high level, a `Build`
   describes where to find source code, how to build it (for example, the

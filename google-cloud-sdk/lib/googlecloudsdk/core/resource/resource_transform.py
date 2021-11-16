@@ -1416,6 +1416,31 @@ def TransformRegex(r, expression, does_match=None, nomatch=''):
 
   return nomatch
 
+
+def TransformTrailOff(r, character_limit, undefined=''):
+  """Returns r if less than limit, else abbreviated r followed by ellipsis.
+
+  Args:
+    r: A string.
+    character_limit: An int. Max length of return string. Must be greater than 3
+      because ellipsis (3 chars) is appended to abridged strings.
+    undefined: A string. Return if r or character_limit is invalid.
+
+  Returns:
+    r if below character_limit or invalid character_limit
+      (non-int or not greater than 3), else abridged r.
+  """
+  try:
+    character_limit_int = int(character_limit)
+  except (AttributeError, TypeError, ValueError):
+    return undefined
+
+  if character_limit_int <= 3:
+    return undefined
+  if len(r) < character_limit_int:
+    return r
+  return r[:character_limit_int - 3] + '...'
+
 # The builtin transforms.
 _BUILTIN_TRANSFORMS = {
     'always': TransformAlways,
@@ -1455,6 +1480,7 @@ _BUILTIN_TRANSFORMS = {
     'split': TransformSplit,
     'sub': TransformSub,
     'synthesize': TransformSynthesize,
+    'trailoff': TransformTrailOff,
     'upper': TransformUpper,
     'uri': TransformUri,
     'yesno': TransformYesNo,

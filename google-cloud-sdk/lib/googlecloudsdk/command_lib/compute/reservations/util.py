@@ -91,8 +91,8 @@ def MakeShareSettingsWithArgs(messages,
             '--share_with',
             'The scope this reservation is to be shared with must not be '
             'specified with share setting local.')
-      return messages.ShareSettings(shareType=messages.ShareSettings
-                                    .ShareTypeValueValuesEnum.LOCAL)
+      return messages.ShareSettings(
+          shareType=messages.ShareSettings.ShareTypeValueValuesEnum.LOCAL)
     if setting_configs == 'projects':
       if not args.IsSpecified(share_with):
         raise exceptions.InvalidArgumentException(
@@ -104,6 +104,18 @@ def MakeShareSettingsWithArgs(messages,
           .SPECIFIC_PROJECTS,
           projectMap=MakeProjectMapFromProjectList(
               messages, getattr(args, share_with, None)))
+    if setting_configs == 'folders':
+      if not args.IsSpecified(share_with):
+        raise exceptions.InvalidArgumentException(
+            '--share_with',
+            'The folders this reservation is to be shared with must be '
+            'specified.')
+      return messages.ShareSettings(
+          shareType=messages.ShareSettings.ShareTypeValueValuesEnum
+          .DIRECT_PROJECTS_UNDER_SPECIFIC_FOLDERS,
+          folderMap=MakeFolderMapFromFolderList(messages,
+                                                getattr(args, share_with,
+                                                        None)))
   else:
     if args.IsKnownAndSpecified(share_with):
       raise exceptions.InvalidArgumentException(
@@ -124,8 +136,8 @@ def MakeShareSettingsWithDict(messages, dictionary, setting_configs):
             '--share_with',
             'The scope this reservation is to be shared with must not be '
             'specified with share setting local.')
-      return messages.ShareSettings(shareType=messages.ShareSettings
-                                    .ShareTypeValueValuesEnum.LOCAL)
+      return messages.ShareSettings(
+          shareType=messages.ShareSettings.ShareTypeValueValuesEnum.LOCAL)
     if setting_configs == 'projects':
       if 'share_with' not in dictionary.keys():
         raise exceptions.InvalidArgumentException(
@@ -136,6 +148,17 @@ def MakeShareSettingsWithDict(messages, dictionary, setting_configs):
           shareType=messages.ShareSettings.ShareTypeValueValuesEnum
           .SPECIFIC_PROJECTS,
           projectMap=MakeProjectMapFromProjectList(
+              messages, dictionary.get('share_with', None)))
+    if setting_configs == 'folders':
+      if 'share_with' not in dictionary.keys():
+        raise exceptions.InvalidArgumentException(
+            '--share_with',
+            'The folders this reservation is to be shared with must be '
+            'specified.')
+      return messages.ShareSettings(
+          shareType=messages.ShareSettings.ShareTypeValueValuesEnum
+          .DIRECT_PROJECTS_UNDER_SPECIFIC_FOLDERS,
+          folderMap=MakeFolderMapFromFolderList(
               messages, dictionary.get('share_with', None)))
   else:
     if 'share_with' in dictionary.keys():
@@ -196,4 +219,15 @@ def MakeProjectMapFromProjectList(messages, projects):
             key=project,
             value=messages.ShareSettingsProjectConfig(projectId=project)))
   return messages.ShareSettings.ProjectMapValue(
+      additionalProperties=additional_properties)
+
+
+def MakeFolderMapFromFolderList(messages, folders):
+  additional_properties = []
+  for folder in folders:
+    additional_properties.append(
+        messages.ShareSettings.FolderMapValue.AdditionalProperty(
+            key=folder,
+            value=messages.ShareSettingsFolderConfig(folderId=folder)))
+  return messages.ShareSettings.FolderMapValue(
       additionalProperties=additional_properties)

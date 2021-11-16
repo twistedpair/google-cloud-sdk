@@ -1063,7 +1063,7 @@ def FromJsonGoogleAuth(json_value):
     from googlecloudsdk.core.credentials import google_auth_credentials as c_google_auth
     # pylint: enable=g-import-not-at-top
 
-    cred = c_google_auth.UserCredWithReauth.from_authorized_user_info(
+    cred = c_google_auth.Credentials.from_authorized_user_info(
         json_key, scopes=json_key.get('scopes'))
     # token_uri is hard-coded in google-auth library, replace it.
     cred._token_uri = json_key['token_uri']  # pylint: disable=protected-access

@@ -199,9 +199,6 @@ class GoogleCloudRecaptchaenterpriseV1Event(_messages.Message):
     expectedAction: Optional. The expected action for this type of event. This
       should be the same action provided at token generation time on client-
       side platforms already integrated with recaptcha enterprise.
-    hashedAccountId: Optional. Optional unique stable hashed user identifier
-      for the request. The identifier should ideally be hashed using sha256
-      with stable secret.
     siteKey: Optional. The site key that was used to invoke reCAPTCHA on your
       site and generate the token.
     token: Optional. The user response token provided by the reCAPTCHA client-
@@ -213,11 +210,10 @@ class GoogleCloudRecaptchaenterpriseV1Event(_messages.Message):
   """
 
   expectedAction = _messages.StringField(1)
-  hashedAccountId = _messages.BytesField(2)
-  siteKey = _messages.StringField(3)
-  token = _messages.StringField(4)
-  userAgent = _messages.StringField(5)
-  userIpAddress = _messages.StringField(6)
+  siteKey = _messages.StringField(2)
+  token = _messages.StringField(3)
+  userAgent = _messages.StringField(4)
+  userIpAddress = _messages.StringField(5)
 
 
 class GoogleCloudRecaptchaenterpriseV1IOSKeySettings(_messages.Message):

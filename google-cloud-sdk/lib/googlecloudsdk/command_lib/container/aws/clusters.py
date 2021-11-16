@@ -158,8 +158,9 @@ class Client(object):
     net.vpcId = args.vpc_id
     net.podAddressCidrBlocks.append(args.pod_address_cidr_blocks)
     net.serviceAddressCidrBlocks.append(args.service_address_cidr_blocks)
-    net.serviceLoadBalancerSubnetIds.extend(
-        args.service_load_balancer_subnet_ids)
+    if self.track == base.ReleaseTrack.ALPHA and args.service_load_balancer_subnet_ids is not None:
+      net.serviceLoadBalancerSubnetIds.extend(
+          args.service_load_balancer_subnet_ids)
 
     if args.tags:
       tag_type = type(cp).TagsValue.AdditionalProperty

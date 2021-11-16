@@ -76,7 +76,7 @@ class AlloydbV1alpha1(base_api.BaseApiClient):
         method_id='alloydb.projects.locations.backups.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['backupId', 'clusterName', 'requestId', 'validateOnly'],
+        query_params=['backupId', 'requestId', 'validateOnly'],
         relative_path='v1alpha1/{+parent}/backups',
         request_field='backup',
         request_type_name='AlloydbProjectsLocationsBackupsCreateRequest',
@@ -479,6 +479,33 @@ class AlloydbV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AlloydbProjectsLocationsClustersGetRequest',
         response_type_name='Cluster',
+        supports_download=False,
+    )
+
+    def Import(self, request, global_params=None):
+      r"""Creates a new Cluster in a given project and location, with a volume restored from the provided backup ID.
+
+      Args:
+        request: (AlloydbProjectsLocationsClustersImportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Import')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Import.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters:import',
+        http_method='POST',
+        method_id='alloydb.projects.locations.clusters.import',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['backupSource_backupName', 'clusterId', 'requestId', 'validateOnly'],
+        relative_path='v1alpha1/{+parent}/clusters:import',
+        request_field='cluster',
+        request_type_name='AlloydbProjectsLocationsClustersImportRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

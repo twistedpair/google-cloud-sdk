@@ -81,6 +81,14 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  LOCATIONS_WORKFORCEPOOLS_SUBJECTS = (
+      'locations.workforcePools.subjects',
+      'locations/{locationsId}/workforcePools/{workforcePoolsId}/subjects/'
+      '{subjectsId}',
+      {},
+      ['locationsId', 'workforcePoolsId', 'subjectsId'],
+      True
+  )
   ORGANIZATIONS = (
       'organizations',
       'organizations/{organizationsId}',

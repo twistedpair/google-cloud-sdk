@@ -104,6 +104,29 @@ def PatchApplication(client, app_ref, application, update_mask=None):
           name=app_ref.RelativeName()))
 
 
+def CreateDeployment(client, app_ref, deployment, validate_only=False):
+  """Calls ApplicationDeployementCreate API of RunApps.
+
+  Args:
+    client: GAPIC API client, the api client to use.
+    app_ref: googlecloudsdk.core.resources.Resource, the resource reference of
+      the application the deployment belongs to
+    deployment: run_apps.v1alpha1.Deployment, the deployment object
+    validate_only: bool, whether to only validate the deployment
+
+  Returns:
+    run_apps.v1alpha1.Operation, the LRO of this request.
+  """
+  return client.projects_locations_applications_deployments.Create(
+      client.MESSAGES_MODULE
+      .RunAppsProjectsLocationsApplicationsDeploymentsCreateRequest(
+          parent=app_ref.RelativeName(),
+          deployment=deployment,
+          deploymentId=deployment.name,
+          validateOnly=validate_only)
+      )
+
+
 def WaitForOperation(client, operation, message):
   """Wait for an operation to complete.
 

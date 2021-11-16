@@ -842,6 +842,23 @@ class ListMetricsScopesByMonitoredProjectResponse(_messages.Message):
   metricsScopes = _messages.MessageField('MetricsScope', 1, repeated=True)
 
 
+class LogsPanel(_messages.Message):
+  r"""A widget that displays a stream of log.
+
+  Fields:
+    filter: A filter that chooses which log entries to return. See Advanced
+      Logs Queries (https://cloud.google.com/logging/docs/view/advanced-
+      queries). Only log entries that match the filter are returned. An empty
+      filter matches all log entries.
+    resourceNames: The names of logging resources to collect logs for. Does
+      not implicitly include the current host project. Currently only projects
+      are supported. There must be at least one resource_name.
+  """
+
+  filter = _messages.StringField(1)
+  resourceNames = _messages.StringField(2, repeated=True)
+
+
 class MetricsScope(_messages.Message):
   r"""Represents a Metrics Scope
   (https://cloud.google.com/monitoring/settings#concept-scope) in Cloud
@@ -2045,6 +2062,7 @@ class Widget(_messages.Message):
   Fields:
     alertChart: A chart of alert policy data.
     blank: A blank space.
+    logsPanel: A widget that shows a stream of logs.
     scorecard: A scorecard summarizing time series data.
     text: A raw string or markdown displaying textual content.
     timeSeriesTable: A widget that displays time series data in a tabular
@@ -2055,11 +2073,12 @@ class Widget(_messages.Message):
 
   alertChart = _messages.MessageField('AlertChart', 1)
   blank = _messages.MessageField('Empty', 2)
-  scorecard = _messages.MessageField('Scorecard', 3)
-  text = _messages.MessageField('Text', 4)
-  timeSeriesTable = _messages.MessageField('TimeSeriesTable', 5)
-  title = _messages.StringField(6)
-  xyChart = _messages.MessageField('XyChart', 7)
+  logsPanel = _messages.MessageField('LogsPanel', 3)
+  scorecard = _messages.MessageField('Scorecard', 4)
+  text = _messages.MessageField('Text', 5)
+  timeSeriesTable = _messages.MessageField('TimeSeriesTable', 6)
+  title = _messages.StringField(7)
+  xyChart = _messages.MessageField('XyChart', 8)
 
 
 class XyChart(_messages.Message):

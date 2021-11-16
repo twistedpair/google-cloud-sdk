@@ -29,6 +29,7 @@ import os
 import threading
 
 from googlecloudsdk.api_lib.storage import api_factory
+from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import progress_callbacks
@@ -36,6 +37,8 @@ from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.command_lib.storage.tasks.cp import upload_util
+from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 
 
 _MAX_ALLOWED_READ_SIZE = 100 * 1024 * 1024  # 100 MiB
@@ -275,8 +278,8 @@ class _ReadableStream:
       self._progress_callback(self._position)
 
 
-class QueuingStream:
-  """Interface to a bidirectional buffer to read and write simultaneously.
+class BufferController:
+  """Manages a  bidirectional buffer to read and write simultaneously.
 
   Attributes:
     buffer_queue (collections.deque): The underlying queue that acts like a
@@ -295,14 +298,19 @@ class QueuingStream:
       termination of the operation.
   """
 
-  def __init__(self, object_size=None, progress_callback=None):
-    """Intializes QueuingStream.
+  def __init__(self, source_resource, user_request_args=None,
+               progress_callback=None):
+    """Initializes BufferController.
 
     Args:
-      object_size (int): The size of the source object.
+      source_resource (resource_reference.ObjectResource): Must
+        contain the full object path of existing object.
+      user_request_args (UserRequestArgs|None): Values for RequestConfig.
       progress_callback (progress_callbacks.FilesAndBytesProgressCallback):
         Accepts processed bytes and submits progress info for aggregation.
     """
+    self._source_resource = source_resource
+    self._user_request_args = user_request_args
     self.buffer_queue = collections.deque()
     self.buffer_condition = threading.Condition()
     self.shutdown_event = threading.Event()
@@ -313,10 +321,63 @@ class QueuingStream:
         self.buffer_queue,
         self.buffer_condition,
         self.shutdown_event,
-        object_size,
+        self._source_resource.size,
         progress_callback=progress_callback,
     )
+    self._download_thread = None
     self.exception_raised = None
+
+  def _run_download(self, start_byte):
+    """Performs the download operation."""
+    request_config = request_config_factory.get_request_config(
+        self._source_resource.storage_url,
+        user_request_args=self._user_request_args)
+
+    client = api_factory.get_api(self._source_resource.storage_url.scheme)
+    try:
+      client.download_object(
+          self._source_resource,
+          self.writable_stream,
+          request_config,
+          start_byte=start_byte,
+          download_strategy=cloud_api.DownloadStrategy.ONE_SHOT)
+    except _AbruptShutdownError:
+      # Shutdown caused by interruption from another thread.
+      pass
+    except Exception as e:  # pylint: disable=broad-except
+      # The stack trace of the exception raised in the thread is not visible
+      # in the caller thread. Hence we catch any exception so that we can
+      # re-raise them from the parent thread.
+      self.shutdown(e)
+
+  def start_download_thread(self, start_byte=0):
+    self._download_thread = threading.Thread(target=self._run_download,
+                                             args=(start_byte,))
+    self._download_thread.start()
+
+  def wait_for_download_thread_to_terminate(self):
+    if self._download_thread is not None:
+      self._download_thread.join()
+
+  def restart_download(self, start_byte):
+    """Restarts the download_thread.
+
+    Args:
+      start_byte (int): The start byte for the new download call.
+    """
+    # Signal the download to end.
+    self.shutdown_event.set()
+    with self.buffer_condition:
+      self.buffer_condition.notify_all()
+
+    self.wait_for_download_thread_to_terminate()
+
+    # Clear all the data in the underlying buffer.
+    self.buffer_queue.clear()
+
+    # Reset the shutdown signal.
+    self.shutdown_event.clear()
+    self.start_download_thread(start_byte)
 
   def shutdown(self, error):
     """Sets the shutdown event and stores the error to re-raise later.
@@ -366,24 +427,22 @@ class DaisyChainCopyTask(task.Task):
     self.parallel_processing_key = (
         self._destination_resource.storage_url.url_string)
 
-  def _run_download(self, daisy_chain_stream):
-    """Performs the download operation."""
-    request_config = request_config_factory.get_request_config(
-        self._source_resource.storage_url,
-        user_request_args=self._user_request_args)
+  def _get_md5_hash(self):
+    """Returns the MD5 Hash if present and hash validation is requested."""
+    if (properties.VALUES.storage.check_hashes.Get() ==
+        properties.CheckHashes.NEVER.value):
+      return None
 
-    client = api_factory.get_api(self._source_resource.storage_url.scheme)
-    try:
-      client.download_object(self._source_resource,
-                             daisy_chain_stream.writable_stream, request_config)
-    except _AbruptShutdownError:
-      # Shutdown caused by interuption from another thread.
-      pass
-    except Exception as e:  # pylint: disable=broad-except
-      # The stack trace of the exception raised in the thread is not visible
-      # in the caller thread. Hence we catch any exception so that we can
-      # re-raise them from the parent thread.
-      daisy_chain_stream.shutdown(e)
+    if self._source_resource.md5_hash is None:
+      # For composite uploads, MD5 hash might be missing.
+      # TODO(b/191975989) Add support for crc32c once -D option is implemented.
+      # Composite uploads will have crc32c information, which we should
+      # pass to the request.
+      log.warning(
+          'Found no hashes to validate object downloaded from %s and'
+          ' uploaded to %s. Integrity cannot be assured without hashes.',
+          self._source_resource, self._destination_resource)
+    return self._source_resource.md5_hash
 
   def execute(self, task_status_queue=None):
     """Copies file by downloading and uploading in parallel."""
@@ -399,14 +458,13 @@ class DaisyChainCopyTask(task.Task):
         process_id=os.getpid(),
         thread_id=threading.get_ident(),
     )
-    daisy_chain_stream = QueuingStream(self._source_resource.size,
-                                       progress_callback)
+    buffer_controller = BufferController(self._source_resource,
+                                         self._user_request_args,
+                                         progress_callback)
 
     # Perform download in a separate thread so that upload can be performed
     # simultaneously.
-    download_thread = threading.Thread(
-        target=self._run_download, args=(daisy_chain_stream,))
-    download_thread.start()
+    buffer_controller.start_download_thread()
 
     content_type = (
         self._source_resource.content_type or
@@ -417,6 +475,7 @@ class DaisyChainCopyTask(task.Task):
     request_config = request_config_factory.get_request_config(
         self._destination_resource.storage_url,
         content_type=content_type,
+        md5_hash=self._get_md5_hash(),
         size=self._source_resource.size,
         user_request_args=self._user_request_args)
 
@@ -425,7 +484,7 @@ class DaisyChainCopyTask(task.Task):
           api=destination_client,
           object_length=self._source_resource.size)
       destination_client.upload_object(
-          daisy_chain_stream.readable_stream,
+          buffer_controller.readable_stream,
           self._destination_resource,
           request_config,
           upload_strategy=upload_strategy)
@@ -437,9 +496,9 @@ class DaisyChainCopyTask(task.Task):
       # For all the other errors raised during upload, we want to to make
       # sure that the download thread is terminated before we re-reaise.
       # Hence we catch any exception and store it to be re-raised later.
-      daisy_chain_stream.shutdown(e)
+      buffer_controller.shutdown(e)
 
-    download_thread.join()
-    daisy_chain_stream.readable_stream.close()
-    if daisy_chain_stream.exception_raised:
-      raise daisy_chain_stream.exception_raised
+    buffer_controller.wait_for_download_thread_to_terminate()
+    buffer_controller.readable_stream.close()
+    if buffer_controller.exception_raised:
+      raise buffer_controller.exception_raised

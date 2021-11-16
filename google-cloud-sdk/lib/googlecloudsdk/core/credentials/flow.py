@@ -476,8 +476,10 @@ class InstalledAppFlow(google_auth_flow.InstalledAppFlow):
     # OAuth 2.0 should only occur over https.
     authorization_response = self.app.last_request_uri.replace(
         'http:', 'https:')
+    # TODO (b/204953716): Remove verify=None
     self.fetch_token(
-        authorization_response=authorization_response, include_client_id=True)
+        authorization_response=authorization_response, include_client_id=True,
+        verify=None)
 
     return self.credentials
 
@@ -509,8 +511,8 @@ class InstalledAppFlow(google_auth_flow.InstalledAppFlow):
     auth_url, _ = self.authorization_url(**kwargs)
 
     code = PromptForAuthCode(authorization_prompt_message, auth_url)
-
-    self.fetch_token(code=code, include_client_id=True)
+    # TODO (b/204953716): Remove verify=None
+    self.fetch_token(code=code, include_client_id=True, verify=None)
 
     return self.credentials
 

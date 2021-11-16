@@ -218,6 +218,15 @@ def _get_full_object_metadata_string(resource):
   else:
     optional_component_count_line = ''
 
+  if resource.md5_hash is not None:
+    optional_md5_line = resource_util.get_padded_metadata_key_value_line(
+        'Hash (MD5)', resource.md5_hash)
+  elif 'SSECustomerAlgorithm' in resource.metadata:
+    optional_md5_line = resource_util.get_padded_metadata_key_value_line(
+        'Hash (MD5)', 'Underlying data encrypted')
+  else:
+    optional_md5_line = ''
+
   if 'SSECustomerAlgorithm' in resource.metadata:
     optional_encryption_algorithm_line = (
         resource_util.get_padded_metadata_key_value_line(
@@ -242,6 +251,7 @@ def _get_full_object_metadata_string(resource):
       '{content_length_line}'
       '{content_type_line}'
       '{optional_component_count_line}'
+      '{optional_md5_line}'
       '{optional_encryption_algorithm_line}'
       '{etag_line}'
       '{optional_generation_line}'
@@ -259,6 +269,7 @@ def _get_full_object_metadata_string(resource):
           content_type_line=resource_util.get_padded_metadata_key_value_line(
               'Content-Type', resource.metadata.get('ContentType')),
           optional_component_count_line=optional_component_count_line,
+          optional_md5_line=optional_md5_line,
           optional_encryption_algorithm_line=optional_encryption_algorithm_line,
           etag_line=resource_util.get_padded_metadata_key_value_line(
               'ETag', resource.etag),
@@ -291,9 +302,6 @@ class S3ObjectResource(resource_reference.ObjectResource):
                metageneration=None,
                size=None):
     """Initializes resource. Args are a subset of attributes."""
-    # The S3 API returns etag wrapped in quotes in some cases.
-    if etag and etag.startswith('"') and etag.endswith('"'):
-      etag = etag[1:-1]
     super(S3ObjectResource, self).__init__(
         storage_url_object,
         content_type=content_type,

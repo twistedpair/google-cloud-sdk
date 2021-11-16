@@ -460,6 +460,14 @@
       "description": "The result of replaying a single access tuple against a simulated state.",
       "type": "object",
       "properties": {
+        "diff": {
+          "description": "The difference between the principal's access under the current (baseline) policies and the principal's access under the proposed (simulated) policies. This field is only included for access tuples that were successfully replayed and had different results under the current policies and the proposed policies.",
+          "$ref": "GoogleCloudPolicysimulatorV1ReplayDiff"
+        },
+        "error": {
+          "description": "The error that caused the access tuple replay to fail. This field is only included for access tuples that were not replayed successfully.",
+          "$ref": "GoogleRpcStatus"
+        },
         "name": {
           "description": "The resource name of the `ReplayResult`, in the following format: `{projects|folders|organizations}\/{resource-id}\/locations\/global\/replays\/{replay-id}\/results\/{replay-result-id}`, where `{resource-id}` is the ID of the project, folder, or organization that owns the Replay. Example: `projects\/my-example-project\/locations\/global\/replays\/506a5f7f-38ce-4d7d-8e03-479ce1833c36\/results\/1234`",
           "type": "string"
@@ -475,33 +483,6 @@
         "lastSeenDate": {
           "description": "The latest date this access tuple was seen in the logs.",
           "$ref": "GoogleTypeDate"
-        },
-        "diff": {
-          "description": "The difference between the principal's access under the current (baseline) policies and the principal's access under the proposed (simulated) policies. This field is only included for access tuples that were successfully replayed and had different results under the current policies and the proposed policies.",
-          "$ref": "GoogleCloudPolicysimulatorV1ReplayDiff"
-        },
-        "error": {
-          "description": "The error that caused the access tuple replay to fail. This field is only included for access tuples that were not replayed successfully.",
-          "$ref": "GoogleRpcStatus"
-        }
-      }
-    },
-    "GoogleCloudPolicysimulatorV1AccessTuple": {
-      "id": "GoogleCloudPolicysimulatorV1AccessTuple",
-      "description": "Information about the principal, resource, and permission to check.",
-      "type": "object",
-      "properties": {
-        "principal": {
-          "description": "Required. The principal whose access you want to check, in the form of the email address that represents that principal. For example, `alice@example.com` or `my-service-account@my-project.iam.gserviceaccount.com`. The principal must be a Google Account or a service account. Other types of principals are not supported.",
-          "type": "string"
-        },
-        "fullResourceName": {
-          "description": "Required. The full resource name that identifies the resource. For example, `\/\/compute.googleapis.com\/projects\/my-project\/zones\/us-central1-a\/instances\/my-instance`. For examples of full resource names for Google Cloud services, see https:\/\/cloud.google.com\/iam\/help\/troubleshooter\/full-resource-names.",
-          "type": "string"
-        },
-        "permission": {
-          "description": "Required. The IAM permission to check for the specified principal and resource. For a complete list of IAM permissions, see https:\/\/cloud.google.com\/iam\/help\/permissions\/reference. For a complete list of predefined IAM roles and the permissions in each role, see https:\/\/cloud.google.com\/iam\/help\/roles\/reference.",
-          "type": "string"
         }
       }
     },
@@ -766,6 +747,25 @@
             "NORMAL",
             "HIGH"
           ]
+        }
+      }
+    },
+    "GoogleCloudPolicysimulatorV1AccessTuple": {
+      "id": "GoogleCloudPolicysimulatorV1AccessTuple",
+      "description": "Information about the principal, resource, and permission to check.",
+      "type": "object",
+      "properties": {
+        "principal": {
+          "description": "Required. The principal whose access you want to check, in the form of the email address that represents that principal. For example, `alice@example.com` or `my-service-account@my-project.iam.gserviceaccount.com`. The principal must be a Google Account or a service account. Other types of principals are not supported.",
+          "type": "string"
+        },
+        "fullResourceName": {
+          "description": "Required. The full resource name that identifies the resource. For example, `\/\/compute.googleapis.com\/projects\/my-project\/zones\/us-central1-a\/instances\/my-instance`. For examples of full resource names for Google Cloud services, see https:\/\/cloud.google.com\/iam\/help\/troubleshooter\/full-resource-names.",
+          "type": "string"
+        },
+        "permission": {
+          "description": "Required. The IAM permission to check for the specified principal and resource. For a complete list of IAM permissions, see https:\/\/cloud.google.com\/iam\/help\/permissions\/reference. For a complete list of predefined IAM roles and the permissions in each role, see https:\/\/cloud.google.com\/iam\/help\/roles\/reference.",
+          "type": "string"
         }
       }
     },

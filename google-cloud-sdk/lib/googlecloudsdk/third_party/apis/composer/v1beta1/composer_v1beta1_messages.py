@@ -762,6 +762,10 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class LoadEnvironmentStateResponse(_messages.Message):
+  r"""Load environment state response."""
+
+
 class MaintenanceWindow(_messages.Message):
   r"""The configuration settings for Cloud Composer maintenance window. The
   following example: ``` { "startTime":"2019-08-01T01:00:00Z"
@@ -1043,12 +1047,14 @@ class OperationMetadata(_messages.Message):
       DELETE: A resource deletion operation.
       UPDATE: A resource update operation.
       CHECK: A resource check operation.
+      STORE_STATE: Stores the state of the resource operation.
     """
     TYPE_UNSPECIFIED = 0
     CREATE = 1
     DELETE = 2
     UPDATE = 3
     CHECK = 4
+    STORE_STATE = 5
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current operation state.
@@ -1479,6 +1485,19 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class StoreEnvironmentStateResponse(_messages.Message):
+  r"""Store environment state response.
+
+  Fields:
+    snapshotLocation: The fully-resolved Cloud Storage location of the created
+      snapshot, e.g.: "gs://my-
+      bucket/snapshots/project_id/location/environment_uuid/timestamp". This
+      field is populated only if the snapshot creation was successful.
+  """
+
+  snapshotLocation = _messages.StringField(1)
 
 
 class WebServerConfig(_messages.Message):

@@ -35,7 +35,6 @@ from google.auth import external_account as google_auth_external_account
 import google.auth.compute_engine as google_auth_gce
 from googlecloudsdk.core import config
 from googlecloudsdk.core import context_aware
-from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -43,6 +42,7 @@ from googlecloudsdk.core import requests
 from googlecloudsdk.core import transport
 from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.credentials import creds as c_creds
+from googlecloudsdk.core.credentials import exceptions as creds_exceptions
 from googlecloudsdk.core.credentials import gce as c_gce
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import times
@@ -66,41 +66,13 @@ _GRANT_TYPE = 'urn:ietf:params:oauth:grant-type:jwt-bearer'
 
 _CREDENTIALS_EXPIRY_WINDOW = '300s'
 
-AUTH_LOGIN_COMMAND = 'gcloud auth login'
-ADC_LOGIN_COMMAND = 'gcloud auth application-default login'
 
-
-class Error(exceptions.Error):
+class Error(creds_exceptions.Error):
   """Exceptions for the credentials module."""
 
 
 class NoImpersonationAccountError(Error):
   """Exception when there is no account to impersonate."""
-
-
-class AuthenticationException(Error):
-  """Exceptions that tell the users to re-login."""
-
-  def __init__(self, message, for_adc=False, should_relogin=True):
-    if should_relogin:
-      login_command = ADC_LOGIN_COMMAND if for_adc else AUTH_LOGIN_COMMAND
-      message = textwrap.dedent("""\
-        {message}
-        Please run:
-
-          $ {login_command}
-
-        to obtain new credentials.""".format(
-            message=message, login_command=login_command))
-    if not for_adc:
-      switch_account_msg = textwrap.dedent("""\
-      If you have already logged in with a different account:
-
-          $ gcloud config set account ACCOUNT
-
-      to select an already authenticated account to use.""")
-      message = '\n\n'.join([message, switch_account_msg])
-    super(AuthenticationException, self).__init__(message)
 
 
 class PrintTokenAuthenticationException(Error):
@@ -128,82 +100,6 @@ class NoCredentialsForAccountException(PrintTokenAuthenticationException):
     super(NoCredentialsForAccountException, self).__init__(
         'Your current active account [{account}] does not have any'
         ' valid credentials'.format(account=account))
-
-
-class NoActiveAccountException(AuthenticationException):
-  """Exception for when there are no valid active credentials."""
-
-  def __init__(self, active_config_path=None):
-    if active_config_path:
-      if not os.path.exists(active_config_path):
-        log.warning('Could not open the configuration file: [%s].',
-                    active_config_path)
-    super(NoActiveAccountException, self).__init__(
-        'You do not currently have an active account selected.')
-
-
-class TokenRefreshError(AuthenticationException):
-  """An exception raised when the auth tokens fail to refresh."""
-
-  def __init__(self, error, for_adc=False, should_relogin=True):
-    message = ('There was a problem refreshing your current auth tokens: {0}'
-               .format(error))
-    super(TokenRefreshError, self).__init__(
-        message, for_adc=for_adc, should_relogin=should_relogin)
-
-
-class TokenRefreshDeniedByCAAError(TokenRefreshError):
-  """Raises when token refresh is denied by context aware access policies."""
-
-  def __init__(self, error, for_adc=False):
-    compiled_msg = '{}\n\n{}'.format(
-        error, context_aware.CONTEXT_AWARE_ACCESS_HELP_MSG)
-
-    super(TokenRefreshDeniedByCAAError, self).__init__(
-        compiled_msg, for_adc=for_adc, should_relogin=False)
-
-
-class ReauthenticationException(Error):
-  """Exceptions that tells the user to retry his command or run auth login."""
-
-  def __init__(self, message, for_adc=False):
-    login_command = ADC_LOGIN_COMMAND if for_adc else AUTH_LOGIN_COMMAND
-    super(ReauthenticationException, self).__init__(
-        textwrap.dedent("""\
-        {message}
-        Please retry your command or run:
-
-          $ {login_command}
-
-        to obtain new credentials.""".format(
-            message=message, login_command=login_command)))
-
-
-class TokenRefreshReauthError(ReauthenticationException):
-  """An exception raised when the auth tokens fail to refresh due to reauth."""
-
-  def __init__(self, error, for_adc=False):
-    message = ('There was a problem reauthenticating while refreshing your '
-               'current auth tokens: {0}').format(error)
-    super(TokenRefreshReauthError, self).__init__(message, for_adc=for_adc)
-
-
-class WebLoginRequiredReauthError(Error):
-  """An exception raised when login through browser is required for reauth.
-
-  This applies to SAML users who set password as their reauth method today.
-  Since SAML uers do not have knowledge of their Google password, we require
-  web login and allow users to be authenticated by their IDP.
-  """
-
-  def __init__(self, for_adc=False):
-    login_command = ADC_LOGIN_COMMAND if for_adc else AUTH_LOGIN_COMMAND
-    super(WebLoginRequiredReauthError, self).__init__(textwrap.dedent("""\
-        Please run:
-
-          $ {login_command}
-
-        to complete reauthentication.""".format(login_command=login_command)))
 
 
 class InvalidCredentialFileException(Error):
@@ -772,7 +668,7 @@ def _Load(account, scopes, prevent_refresh, use_google_auth=True):
       account = properties.VALUES.core.account.Get()
 
     if not account:
-      raise NoActiveAccountException(
+      raise creds_exceptions.NoActiveAccountException(
           named_configs.ActiveConfig(False).file_path)
 
     cred = STATIC_CREDENTIAL_PROVIDERS.GetCredentials(account, use_google_auth)
@@ -872,12 +768,12 @@ def _Refresh(credentials,
 
   except (client.AccessTokenRefreshError, httplib2.ServerNotFoundError) as e:
     if context_aware.IsContextAwareAccessDeniedError(e):
-      raise TokenRefreshDeniedByCAAError(e)
-    raise TokenRefreshError(six.text_type(e))
+      raise creds_exceptions.TokenRefreshDeniedByCAAError(e)
+    raise creds_exceptions.TokenRefreshError(six.text_type(e))
   except reauth_errors.ReauthSamlLoginRequiredError:
-    raise WebLoginRequiredReauthError()
+    raise creds_exceptions.WebLoginRequiredReauthError()
   except reauth_errors.ReauthError as e:
-    raise TokenRefreshReauthError(str(e))
+    raise creds_exceptions.TokenRefreshReauthError(str(e))
 
 
 @contextlib.contextmanager
@@ -891,14 +787,14 @@ def HandleGoogleAuthCredentialsRefreshError(for_adc=False):
   try:
     yield
   except reauth_errors.ReauthSamlLoginRequiredError:
-    raise WebLoginRequiredReauthError(for_adc=for_adc)
+    raise creds_exceptions.WebLoginRequiredReauthError(for_adc=for_adc)
   except (reauth_errors.ReauthError,
           c_google_auth.ReauthRequiredError) as e:
-    raise TokenRefreshReauthError(str(e), for_adc=for_adc)
+    raise creds_exceptions.TokenRefreshReauthError(str(e), for_adc=for_adc)
   except google_auth_exceptions.RefreshError as e:
     if context_aware.IsContextAwareAccessDeniedError(e):
-      raise TokenRefreshDeniedByCAAError(e)
-    raise TokenRefreshError(six.text_type(e), for_adc=for_adc)
+      raise creds_exceptions.TokenRefreshDeniedByCAAError(e)
+    raise creds_exceptions.TokenRefreshError(six.text_type(e), for_adc=for_adc)
 
 
 def _RefreshGoogleAuth(credentials,
@@ -1126,7 +1022,7 @@ def Store(credentials, account=None, scopes=None):
   if not account:
     account = properties.VALUES.core.account.Get()
   if not account:
-    raise NoActiveAccountException()
+    raise creds_exceptions.NoActiveAccountException()
 
   store = c_creds.GetCredentialStore()
   store.Store(account, credentials)
@@ -1188,7 +1084,7 @@ def Revoke(account=None):
   if not account:
     account = properties.VALUES.core.account.Get()
   if not account:
-    raise NoActiveAccountException()
+    raise creds_exceptions.NoActiveAccountException()
 
   if account in c_gce.Metadata().Accounts():
     raise RevokeError('Cannot revoke GCE-provided credentials.')

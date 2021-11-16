@@ -48,10 +48,23 @@ class AnalyzeIamPolicyLongrunningRequest(_messages.Message):
     analysisQuery: Required. The request query.
     outputConfig: Required. Output configuration indicating where the results
       will be output to.
+    savedAnalysisQuery: Optional. The name of a saved query, which must be in
+      the format of: * projects/project_number/savedQueries/saved_query_id *
+      folders/folder_number/savedQueries/saved_query_id *
+      organizations/organization_number/savedQueries/saved_query_id If both
+      `analysis_query` and `saved_analysis_query` are provided, they will be
+      merged together with the `saved_analysis_query` as base and the
+      `analysis_query` as overrides. For more details of the merge behavior,
+      please refer to the [MergeFrom](https://developers.google.com/protocol-b
+      uffers/docs/reference/cpp/google.protobuf.message#Message.MergeFrom.deta
+      ils) doc. Note that you cannot override primitive fields with default
+      value, such as 0 or empty string, etc., because we use proto3, which
+      doesn't support field presence yet.
   """
 
   analysisQuery = _messages.MessageField('IamPolicyAnalysisQuery', 1)
   outputConfig = _messages.MessageField('IamPolicyAnalysisOutputConfig', 2)
+  savedAnalysisQuery = _messages.StringField(3)
 
 
 class AnalyzeIamPolicyLongrunningResponse(_messages.Message):
@@ -473,6 +486,18 @@ class CloudassetAnalyzeIamPolicyRequest(_messages.Message):
       result. Otherwise, your query's execution will continue until the RPC
       deadline. If it's not finished until then, you will get a
       DEADLINE_EXCEEDED error. Default is empty.
+    savedAnalysisQuery: Optional. The name of a saved query, which must be in
+      the format of: * projects/project_number/savedQueries/saved_query_id *
+      folders/folder_number/savedQueries/saved_query_id *
+      organizations/organization_number/savedQueries/saved_query_id If both
+      `analysis_query` and `saved_analysis_query` are provided, they will be
+      merged together with the `saved_analysis_query` as base and the
+      `analysis_query` as overrides. For more details of the merge behavior,
+      please refer to the [MergeFrom](https://developers.google.com/protocol-b
+      uffers/docs/reference/cpp/google.protobuf.message#Message.MergeFrom.deta
+      ils) page. Note that you cannot override primitive fields with default
+      value, such as 0 or empty string, etc., because we use proto3, which
+      doesn't support field presence yet.
     scope: Required. The relative name of the root asset. Only resources and
       IAM policies within the scope will be analyzed. This can only be an
       organization number (such as "organizations/123"), a folder number (such
@@ -498,7 +523,8 @@ class CloudassetAnalyzeIamPolicyRequest(_messages.Message):
   analysisQuery_options_outputResourceEdges = _messages.BooleanField(10)
   analysisQuery_resourceSelector_fullResourceName = _messages.StringField(11)
   executionTimeout = _messages.StringField(12)
-  scope = _messages.StringField(13, required=True)
+  savedAnalysisQuery = _messages.StringField(13)
+  scope = _messages.StringField(14, required=True)
 
 
 class CloudassetAnalyzeMoveRequest(_messages.Message):
@@ -803,6 +829,102 @@ class CloudassetQueryAssetsRequest(_messages.Message):
 
   parent = _messages.StringField(1, required=True)
   queryAssetsRequest = _messages.MessageField('QueryAssetsRequest', 2)
+
+
+class CloudassetSavedQueriesCreateRequest(_messages.Message):
+  r"""A CloudassetSavedQueriesCreateRequest object.
+
+  Fields:
+    parent: Required. The name of the project/folder/organization where this
+      saved_query should be created in. It can only be an organization number
+      (such as "organizations/123"), a folder number (such as "folders/123"),
+      a project ID (such as "projects/my-project-id")", or a project number
+      (such as "projects/12345").
+    savedQuery: A SavedQuery resource to be passed as the request body.
+    savedQueryId: Required. The ID to use for the saved query, which must be
+      unique in the specified parent. It will become the final component of
+      the saved query's resource name. This value should be 4-63 characters,
+      and valid characters are /a-z-/. Notice that this field is required in
+      the saved query creation, and the `name` field of the `saved_query` will
+      be ignored.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  savedQuery = _messages.MessageField('SavedQuery', 2)
+  savedQueryId = _messages.StringField(3)
+
+
+class CloudassetSavedQueriesDeleteRequest(_messages.Message):
+  r"""A CloudassetSavedQueriesDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the saved query to delete. It must be in the
+      format of: * projects/project_number/savedQueries/saved_query_id *
+      folders/folder_number/savedQueries/saved_query_id *
+      organizations/organization_number/savedQueries/saved_query_id
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudassetSavedQueriesGetRequest(_messages.Message):
+  r"""A CloudassetSavedQueriesGetRequest object.
+
+  Fields:
+    name: Required. The name of the saved query and it must be in the format
+      of: * projects/project_number/savedQueries/saved_query_id *
+      folders/folder_number/savedQueries/saved_query_id *
+      organizations/organization_number/savedQueries/saved_query_id
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudassetSavedQueriesListRequest(_messages.Message):
+  r"""A CloudassetSavedQueriesListRequest object.
+
+  Fields:
+    filter: Optional. The expression to filter resources. The expression is a
+      list of zero or more restrictions combined via logical operators `AND`
+      and `OR`. When `AND` and `OR` are both used in the expression,
+      parentheses must be appropriately used to group the combinations. The
+      expression may also contain regular expressions. See
+      https://google.aip.dev/160 for more information on the grammar.
+    pageSize: Optional. The maximum number of saved queries to return per
+      page. The service may return fewer than this value. If unspecified, at
+      most 50 will be returned. The maximum value is 1000; values above 1000
+      will be coerced to 1000.
+    pageToken: Optional. A page token, received from a previous
+      `ListSavedQueries` call. Provide this to retrieve the subsequent page.
+      When paginating, all other parameters provided to `ListSavedQueries`
+      must match the call that provided the page token.
+    parent: Required. The parent project/folder/organization whose
+      savedQueries are to be listed. It can only be using
+      project/folder/organization number (such as "folders/12345")", or a
+      project ID (such as "projects/my-project-id").
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class CloudassetSavedQueriesPatchRequest(_messages.Message):
+  r"""A CloudassetSavedQueriesPatchRequest object.
+
+  Fields:
+    name: The resource name of the saved query. The format must be: *
+      projects/project_number/savedQueries/saved_query_id *
+      folders/folder_number/savedQueries/saved_query_id *
+      organizations/organization_number/savedQueries/saved_query_id
+    savedQuery: A SavedQuery resource to be passed as the request body.
+    updateMask: Required. The list of fields to update.
+  """
+
+  name = _messages.StringField(1, required=True)
+  savedQuery = _messages.MessageField('SavedQuery', 2)
+  updateMask = _messages.StringField(3)
 
 
 class CloudassetSearchAllIamPoliciesRequest(_messages.Message):
@@ -3022,6 +3144,19 @@ class ListFeedsResponse(_messages.Message):
   feeds = _messages.MessageField('Feed', 1, repeated=True)
 
 
+class ListSavedQueriesResponse(_messages.Message):
+  r"""Response of listing saved queries.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    savedQueries: A list of savedQueries.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  savedQueries = _messages.MessageField('SavedQuery', 2, repeated=True)
+
+
 class MoveAnalysis(_messages.Message):
   r"""A message to group the analysis information.
 
@@ -3447,8 +3582,9 @@ class QueryAssetsResponse(_messages.Message):
 
   Fields:
     done: The query response, which can be either an `error` or a valid
-      `response`. If `done` == `false`, neither `error` nor `response` is set.
-      If `done` == `true`, exactly one of `error` or `response` is set.
+      `response`. If `done` == `false`, neither `error` nor `query_result` is
+      set. If `done` == `true`, exactly one of `error` or `query_result` is
+      set.
     error: Error status.
     jobReference: Reference to a query job.
     queryResult: Result of the query.
@@ -3458,6 +3594,18 @@ class QueryAssetsResponse(_messages.Message):
   error = _messages.MessageField('Status', 2)
   jobReference = _messages.StringField(3)
   queryResult = _messages.MessageField('QueryResult', 4)
+
+
+class QueryContent(_messages.Message):
+  r"""The query content.
+
+  Fields:
+    iamPolicyAnalysisQuery: An IAM Policy Analysis query, which could be used
+      in the AssetService.AnalyzeIamPolicy rpc or the
+      AssetService.AnalyzeIamPolicyLongrunning rpc.
+  """
+
+  iamPolicyAnalysisQuery = _messages.MessageField('IamPolicyAnalysisQuery', 1)
 
 
 class QueryResult(_messages.Message):
@@ -3971,6 +4119,69 @@ class ResourceSelector(_messages.Message):
   """
 
   fullResourceName = _messages.StringField(1)
+
+
+class SavedQuery(_messages.Message):
+  r"""A saved query which can be shared with others or used later.
+
+  Messages:
+    LabelsValue: Labels applied on the resource. This value should not contain
+      more than 10 entries. The key and value of each entry must be non-empty
+      and fewer than 64 characters.
+
+  Fields:
+    content: The query content.
+    createTime: Output only. The create time of this saved query.
+    creator: Output only. The account's email address who has created this
+      saved query.
+    description: The description of this saved query. This value should be
+      fewer than 255 characters.
+    labels: Labels applied on the resource. This value should not contain more
+      than 10 entries. The key and value of each entry must be non-empty and
+      fewer than 64 characters.
+    lastUpdateTime: Output only. The last update time of this saved query.
+    lastUpdater: Output only. The account's email address who has updated this
+      saved query most recently.
+    name: The resource name of the saved query. The format must be: *
+      projects/project_number/savedQueries/saved_query_id *
+      folders/folder_number/savedQueries/saved_query_id *
+      organizations/organization_number/savedQueries/saved_query_id
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels applied on the resource. This value should not contain more
+    than 10 entries. The key and value of each entry must be non-empty and
+    fewer than 64 characters.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  content = _messages.MessageField('QueryContent', 1)
+  createTime = _messages.StringField(2)
+  creator = _messages.StringField(3)
+  description = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  lastUpdateTime = _messages.StringField(6)
+  lastUpdater = _messages.StringField(7)
+  name = _messages.StringField(8)
 
 
 class SearchAllIamPoliciesResponse(_messages.Message):

@@ -79,21 +79,18 @@ def AddNatNameArg(parser, operation_type='operate on', plural=False):
 
 def AddCommonNatArgs(parser,
                      for_create=False,
-                     with_rules=False,
-                     with_tcp_time_wait_timeout=False,
                      with_dynamic_port_allocation=False):
   """Adds common arguments for creating and updating NATs."""
   _AddIpAllocationArgs(parser, for_create)
   _AddSubnetworkArgs(parser, for_create)
-  _AddTimeoutsArgs(parser, for_create, with_tcp_time_wait_timeout)
+  _AddTimeoutsArgs(parser, for_create)
   _AddMinPortsPerVmArg(parser, for_create, with_dynamic_port_allocation)
   _AddLoggingArgs(parser)
   _AddEndpointIndependentMappingArg(parser)
   if not for_create:
     _AddDrainNatIpsArgument(parser)
 
-  if with_rules:
-    _AddRulesArg(parser)
+  _AddRulesArg(parser)
 
   if with_dynamic_port_allocation:
     _AddDynamicPortAllocationArgs(parser, for_create)
@@ -166,41 +163,44 @@ def _AddSubnetworkArgs(parser, for_create=False):
 
 
 def _AddTimeoutsArgs(parser,
-                     for_create=False,
-                     with_tcp_time_wait_timeout=False):
+                     for_create=False):
   """Adds arguments to specify connection timeouts."""
   _AddClearableArgument(
       parser, for_create, 'udp-idle-timeout', arg_parsers.Duration(),
       textwrap.dedent("""\
-         Timeout for UDP connections. See $ gcloud topic datetimes for
+         Timeout for UDP connections. See
+         https://cloud.google.com/sdk/gcloud/reference/topic/datetimes for
          information on duration formats."""),
       'Clear timeout for UDP connections')
   _AddClearableArgument(
       parser, for_create, 'icmp-idle-timeout', arg_parsers.Duration(),
       textwrap.dedent("""\
-         Timeout for ICMP connections. See $ gcloud topic datetimes for
+         Timeout for ICMP connections. See
+         https://cloud.google.com/sdk/gcloud/reference/topic/datetimes for
          information on duration formats."""),
       'Clear timeout for ICMP connections')
   _AddClearableArgument(
       parser, for_create, 'tcp-established-idle-timeout',
       arg_parsers.Duration(),
       textwrap.dedent("""\
-         Timeout for TCP established connections. See $ gcloud topic datetimes
-         for information on duration formats."""),
+         Timeout for TCP established connections. See
+         https://cloud.google.com/sdk/gcloud/reference/topic/datetimes for
+         information on duration formats."""),
       'Clear timeout for TCP established connections')
   _AddClearableArgument(
       parser, for_create, 'tcp-transitory-idle-timeout', arg_parsers.Duration(),
       textwrap.dedent("""\
-         Timeout for TCP transitory connections. See $ gcloud topic datetimes
-         for information on duration formats."""),
+         Timeout for TCP transitory connections. See
+         https://cloud.google.com/sdk/gcloud/reference/topic/datetimes for
+         information on duration formats."""),
       'Clear timeout for TCP transitory connections')
-  if with_tcp_time_wait_timeout:
-    _AddClearableArgument(
-        parser, for_create, 'tcp-time-wait-timeout', arg_parsers.Duration(),
-        textwrap.dedent("""\
-          Timeout for TCP connections in the TIME_WAIT state. See $ gcloud topic
-          datetimes for information on duration formats."""),
-        'Clear timeout for TCP connections in the TIME_WAIT state')
+  _AddClearableArgument(
+      parser, for_create, 'tcp-time-wait-timeout', arg_parsers.Duration(),
+      textwrap.dedent("""\
+         Timeout for TCP connections in the TIME_WAIT state. See
+         https://cloud.google.com/sdk/gcloud/reference/topic/datetimes for
+         information on duration formats."""),
+      'Clear timeout for TCP connections in the TIME_WAIT state')
 
 
 def _AddMinPortsPerVmArg(parser,

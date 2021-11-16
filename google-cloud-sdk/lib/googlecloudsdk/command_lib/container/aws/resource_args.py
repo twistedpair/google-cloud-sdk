@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Shared resource flags for GKE Multi-cloud for AWS commands."""
+"""Shared resource flags for `gcloud container aws` commands."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -32,12 +32,12 @@ def GetOperationResource(op):
 
 def AwsClusterAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='cluster', help_text='AWS cluster of the {resource}.')
+      name='cluster', help_text='cluster of the {resource}.')
 
 
 def AwsNodePoolAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='node_pool', help_text='AWS node pool of the {resource}.')
+      name='node_pool', help_text='node pool of the {resource}.')
 
 
 def LocationAttributeConfig():
@@ -99,7 +99,7 @@ def AddAwsClusterResourceArg(parser, verb, positional=True):
   concept_parsers.ConceptParser.ForResource(
       name,
       GetAwsClusterResourceSpec(),
-      'AWS cluster {}.'.format(verb),
+      'cluster {}.'.format(verb),
       required=True).AddToParser(parser)
 
 
@@ -115,7 +115,7 @@ def AddAwsNodePoolResourceArg(parser, verb, positional=True):
   concept_parsers.ConceptParser.ForResource(
       name,
       GetAwsNodePoolResourceSpec(),
-      'AWS node pool {}.'.format(verb),
+      'node pool {}.'.format(verb),
       required=True).AddToParser(parser)
 
 
@@ -143,7 +143,7 @@ def AddOperationResourceArg(parser, verb):
   concept_parsers.ConceptParser.ForResource(
       'operation_id',
       GetOperationResourceSpec(),
-      'AWS operation {}.'.format(verb),
+      'operation {}.'.format(verb),
       required=True).AddToParser(parser)
 
 

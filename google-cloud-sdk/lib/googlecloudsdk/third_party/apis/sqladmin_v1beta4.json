@@ -838,6 +838,7 @@
               "The database major version is MySQL 8.0 and the minor version is 26.",
               "The database major version is MySQL 8.0 and the minor version is 27.",
               "The database version is PostgreSQL 13.",
+              "The database version is PostgreSQL 14.",
               "The database version is SQL Server 2019 Standard.",
               "The database version is SQL Server 2019 Enterprise.",
               "The database version is SQL Server 2019 Express.",
@@ -862,6 +863,7 @@
               "MYSQL_8_0_26",
               "MYSQL_8_0_27",
               "POSTGRES_13",
+              "POSTGRES_14",
               "SQLSERVER_2019_STANDARD",
               "SQLSERVER_2019_ENTERPRISE",
               "SQLSERVER_2019_EXPRESS",
@@ -1114,7 +1116,7 @@
             "The instance is being created.",
             "The instance is down for maintenance.",
             "The creation of the instance failed or a fatal error occurred during maintenance.",
-            "Deprecated - This is an internal state, b\/197569332"
+            "Deprecated"
           ],
           "enum": [
             "SQL_INSTANCE_STATE_UNSPECIFIED",
@@ -1149,6 +1151,7 @@
             "The database major version is MySQL 8.0 and the minor version is 26.",
             "The database major version is MySQL 8.0 and the minor version is 27.",
             "The database version is PostgreSQL 13.",
+            "The database version is PostgreSQL 14.",
             "The database version is SQL Server 2019 Standard.",
             "The database version is SQL Server 2019 Enterprise.",
             "The database version is SQL Server 2019 Express.",
@@ -1173,6 +1176,7 @@
             "MYSQL_8_0_26",
             "MYSQL_8_0_27",
             "POSTGRES_13",
+            "POSTGRES_14",
             "SQLSERVER_2019_STANDARD",
             "SQLSERVER_2019_ENTERPRISE",
             "SQLSERVER_2019_EXPRESS",
@@ -1372,6 +1376,7 @@
             "The database major version is MySQL 8.0 and the minor version is 26.",
             "The database major version is MySQL 8.0 and the minor version is 27.",
             "The database version is PostgreSQL 13.",
+            "The database version is PostgreSQL 14.",
             "The database version is SQL Server 2019 Standard.",
             "The database version is SQL Server 2019 Enterprise.",
             "The database version is SQL Server 2019 Express.",
@@ -1396,6 +1401,7 @@
             "MYSQL_8_0_26",
             "MYSQL_8_0_27",
             "POSTGRES_13",
+            "POSTGRES_14",
             "SQLSERVER_2019_STANDARD",
             "SQLSERVER_2019_ENTERPRISE",
             "SQLSERVER_2019_EXPRESS",
@@ -1600,6 +1606,10 @@
         "instanceVersion": {
           "description": "The current software version the instance is running on.",
           "type": "string"
+        },
+        "maintenanceVersion": {
+          "description": "The current software version the instance is running on.",
+          "type": "string"
         }
       }
     },
@@ -1632,7 +1642,7 @@
           "type": "string"
         },
         "allocatedIpRange": {
-          "description": "The name of the allocated ip range for the private ip CloudSQL instance. For example: \"google-managed-services-default\". If set, the instance ip will be created in the allocated range. The range name must comply with [RFC 1035](https:\/\/tools.ietf.org\/html\/rfc1035). Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?.` Reserved for future use.",
+          "description": "The name of the allocated ip range for the private ip CloudSQL instance. For example: \"google-managed-services-default\". If set, the instance ip will be created in the allocated range. The range name must comply with [RFC 1035](https:\/\/tools.ietf.org\/html\/rfc1035). Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?.`",
           "type": "string"
         }
       }
@@ -2733,6 +2743,7 @@
             "The database major version is MySQL 8.0 and the minor version is 26.",
             "The database major version is MySQL 8.0 and the minor version is 27.",
             "The database version is PostgreSQL 13.",
+            "The database version is PostgreSQL 14.",
             "The database version is SQL Server 2019 Standard.",
             "The database version is SQL Server 2019 Enterprise.",
             "The database version is SQL Server 2019 Express.",
@@ -2757,6 +2768,7 @@
             "MYSQL_8_0_26",
             "MYSQL_8_0_27",
             "POSTGRES_13",
+            "POSTGRES_14",
             "SQLSERVER_2019_STANDARD",
             "SQLSERVER_2019_ENTERPRISE",
             "SQLSERVER_2019_EXPRESS",
@@ -2885,11 +2897,11 @@
           "type": "string"
         },
         "name": {
-          "description": "The name of the user in the Cloud SQL instance. Can be omitted for *update* since it is already specified in the URL.",
+          "description": "The name of the user in the Cloud SQL instance. Can be omitted for **update** since it is already specified in the URL.",
           "type": "string"
         },
         "host": {
-          "description": "The host name from which the user can connect. For *insert* operations, host defaults to an empty string. For *update* operations, host is specified as part of the request URL. The host name cannot be updated after insertion.",
+          "description": "Optional. The host name from which the user can connect. For **insert** operations, host defaults to an empty string. For **update** operations, host is specified as part of the request URL. The host name cannot be updated after insertion. For a MySQL instance, it's required; for a PostgreSQL or SQL Server instance, it's optional.",
           "type": "string"
         },
         "instance": {

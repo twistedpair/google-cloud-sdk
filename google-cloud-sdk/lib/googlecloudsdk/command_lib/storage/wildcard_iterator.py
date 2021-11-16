@@ -208,6 +208,23 @@ class CloudWildcardIterator(WildcardIterator):
               bucket_resource.storage_url.bucket_name):
             yield obj_resource
 
+  def _decrypt_resource_if_necessary(self, resource):
+    should_decrypt_resource = (
+        cloud_api.Capability.ENCRYPTION in self._client.capabilities and
+        self._fields_scope != cloud_api.FieldsScope.SHORT and
+        isinstance(resource, resource_reference.ObjectResource) and
+        resource.decryption_key_hash
+    )
+
+    if not should_decrypt_resource:
+      return resource
+
+    request_config = request_config_factory.get_request_config(
+        resource.storage_url,
+        decryption_key_hash=resource.decryption_key_hash)
+    return self._client.get_object_metadata(
+        resource.bucket, resource.name, request_config)
+
   def _fetch_objects(self, bucket_name):
     """Fetch all objects for the given bucket that match the URL."""
     needs_further_expansion = (
@@ -215,15 +232,15 @@ class CloudWildcardIterator(WildcardIterator):
     if not needs_further_expansion:
       try:
         # Assume that the url represents a single object.
-        return [
-            self._client.get_object_metadata(
-                bucket_name,
-                self._url.object_name,
-                # TODO(b/197754758): add user request args from surface.
-                request_config_factory.get_request_config(self._url),
-                self._url.generation,
-                self._fields_scope)
-        ]
+        resource = self._client.get_object_metadata(
+            bucket_name,
+            self._url.object_name,
+            # TODO(b/197754758): add user request args from surface.
+            request_config_factory.get_request_config(self._url),
+            self._url.generation,
+            self._fields_scope)
+
+        return [self._decrypt_resource_if_necessary(resource)]
       except api_errors.NotFoundError:
         # Object does not exist. Could be a prefix.
         pass
@@ -292,7 +309,8 @@ class CloudWildcardIterator(WildcardIterator):
           if (not resource_path.endswith(self._url.delimiter) and
               original_object_name.endswith(self._url.delimiter)):
             continue
-          yield resource
+
+          yield self._decrypt_resource_if_necessary(resource)
 
     if error:
       raise error

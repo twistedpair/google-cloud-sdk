@@ -180,34 +180,30 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
-class CloudRunService(_messages.Message):
+class CloudRunServiceConfig(_messages.Message):
   r"""Message for Cloud Run service configs.
 
   Fields:
     image: The container image to deploy the service with.
-    name: Name of the service.
     resources: Bindings to other resources.
   """
 
   image = _messages.StringField(1)
-  name = _messages.StringField(2)
-  resources = _messages.MessageField('ServiceResourceBindingConfig', 3, repeated=True)
+  resources = _messages.MessageField('ServiceResourceBindingConfig', 2, repeated=True)
 
 
-class CloudSql(_messages.Message):
+class CloudSqlConfig(_messages.Message):
   r"""Message for a Cloud SQL resource.
 
   Fields:
-    name: Required. Unique name for the Cloud SQL database.
     settings: Settings for the Cloud SQL instance.
     version: The database version. e.g. "MYSQL_8_0". The version must match
       one of the values at https://cloud.google.com/sql/docs/mysql/admin-
       api/rest/v1beta4/SqlDatabaseVersion.
   """
 
-  name = _messages.StringField(1)
-  settings = _messages.MessageField('CloudSqlSettings', 2)
-  version = _messages.StringField(3)
+  settings = _messages.MessageField('CloudSqlSettings', 1)
+  version = _messages.StringField(2)
 
 
 class CloudSqlSettings(_messages.Message):
@@ -247,23 +243,42 @@ class CloudStorage(_messages.Message):
 class Config(_messages.Message):
   r"""Message for the Application Config Next tag: 6
 
+  Messages:
+    ResourcesValue: A ResourcesValue object.
+
   Fields:
-    cloudsql: Repeated set of CloudSql configurations.
     config: A byte array encapsulating the contents of the application config.
       This can be of any type of supported config (Simple SAF Yaml, multi-file
       in-app config, etc.)
-    redis: Repeated set of Redis configurations.
-    router: Repeated set of Router configurations.
-    service: Repeated set of Cloud Run service configurations.
-    vpc: Repeated set of VPC configurations.
+    resources: A ResourcesValue attribute.
   """
 
-  cloudsql = _messages.MessageField('CloudSql', 1, repeated=True)
-  config = _messages.BytesField(2)
-  redis = _messages.MessageField('Redis', 3, repeated=True)
-  router = _messages.MessageField('Router', 4, repeated=True)
-  service = _messages.MessageField('CloudRunService', 5, repeated=True)
-  vpc = _messages.MessageField('VPC', 6, repeated=True)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourcesValue(_messages.Message):
+    r"""A ResourcesValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResourcesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ResourcesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourcesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ResourceConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ResourceConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  config = _messages.BytesField(1)
+  resources = _messages.MessageField('ResourcesValue', 2)
 
 
 class Deployment(_messages.Message):
@@ -810,16 +825,14 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
-class Redis(_messages.Message):
+class RedisConfig(_messages.Message):
   r"""Message for Redis configs.
 
   Fields:
     instance: Configs for the Redis instance.
-    name: Name of the resource.
   """
 
   instance = _messages.MessageField('RedisInstanceConfig', 1)
-  name = _messages.StringField(2)
 
 
 class RedisInstanceConfig(_messages.Message):
@@ -894,6 +907,24 @@ class Render(_messages.Message):
   outputLocation = _messages.MessageField('Target', 2)
 
 
+class ResourceConfig(_messages.Message):
+  r"""Message for the Resource configuration.
+
+  Fields:
+    cloudsql: CloudSql configuration.
+    redis: Redis configuration.
+    router: Router configuration.
+    service: Cloud Run service configuration.
+    vpc: VPC configuration.
+  """
+
+  cloudsql = _messages.MessageField('CloudSqlConfig', 1)
+  redis = _messages.MessageField('RedisConfig', 2)
+  router = _messages.MessageField('RouterConfig', 3)
+  service = _messages.MessageField('CloudRunServiceConfig', 4)
+  vpc = _messages.MessageField('VPCConfig', 5)
+
+
 class ResourceStatus(_messages.Message):
   r"""Status for a resource.
 
@@ -927,7 +958,7 @@ class ResourceStatus(_messages.Message):
   type = _messages.StringField(5)
 
 
-class RouteConfig(_messages.Message):
+class Route(_messages.Message):
   r"""Message for a single routeable resource within a Router.
 
   Fields:
@@ -944,7 +975,7 @@ class RouteConfig(_messages.Message):
   ref = _messages.StringField(3)
 
 
-class Router(_messages.Message):
+class RouterConfig(_messages.Message):
   r"""Message for a Router resource.
 
   Fields:
@@ -954,16 +985,14 @@ class Router(_messages.Message):
       used for bring-your-own-DNSZone case. If empty, a new managed DNS zone
       shall be created.
     domain: Domain name to associate with the router.
-    name: The name of the router resource.
     routes: A list of route configurations to associate with the router. Each
-      RouteConfig must include a paths configuration.
+      Route configuration must include a paths configuration.
   """
 
-  default_route = _messages.MessageField('RouteConfig', 1)
+  default_route = _messages.MessageField('Route', 1)
   dns_zone = _messages.StringField(2)
   domain = _messages.StringField(3)
-  name = _messages.StringField(4)
-  routes = _messages.MessageField('RouteConfig', 5, repeated=True)
+  routes = _messages.MessageField('Route', 4, repeated=True)
 
 
 class RunAppsProjectsLocationsApplicationsCreateRequest(_messages.Message):
@@ -1080,12 +1109,16 @@ class RunAppsProjectsLocationsApplicationsGetIamPolicyRequest(_messages.Message)
   r"""A RunAppsProjectsLocationsApplicationsGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -1507,17 +1540,15 @@ class TypedName(_messages.Message):
   type = _messages.StringField(2)
 
 
-class VPC(_messages.Message):
+class VPCConfig(_messages.Message):
   r"""Message for VPC configs.
 
   Fields:
-    name: The name of the VPC resource.
     network: Network is an existing network name. If omitted, a new network
       will be created for the application.
   """
 
-  name = _messages.StringField(1)
-  network = _messages.StringField(2)
+  network = _messages.StringField(1)
 
 
 encoding.AddCustomJsonFieldMapping(
@@ -1533,9 +1564,9 @@ encoding.AddCustomJsonFieldMapping(
 encoding.AddCustomJsonFieldMapping(
     RedisInstanceConfig, 'redis_parameters', 'redis-parameters')
 encoding.AddCustomJsonFieldMapping(
-    Router, 'default_route', 'default-route')
+    RouterConfig, 'default_route', 'default-route')
 encoding.AddCustomJsonFieldMapping(
-    Router, 'dns_zone', 'dns-zone')
+    RouterConfig, 'dns_zone', 'dns-zone')
 encoding.AddCustomJsonFieldMapping(
     ServiceResourceBindingConfig, 'binding_config', 'binding-config')
 encoding.AddCustomJsonFieldMapping(

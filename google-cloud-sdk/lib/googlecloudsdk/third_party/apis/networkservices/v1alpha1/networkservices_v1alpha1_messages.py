@@ -814,8 +814,7 @@ class EndpointPolicy(_messages.Message):
       AuthorizationPolicy resource that applies authorization policies to the
       inbound traffic at the matched endpoints. Refer to Authorization. If
       this field is not specified, authorization is disabled(no authz checks)
-      for this endpoint. Applicable only when EndpointPolicyType is
-      SIDECAR_PROXY.
+      for this endpoint.
     clientTlsPolicy: Optional. A URL referring to a ClientTlsPolicy resource.
       ClientTlsPolicy can be set to specify the authentication for traffic
       from the proxy to the actual endpoints. More specifically, it is applied
@@ -1044,6 +1043,10 @@ class GrpcRoute(_messages.Message):
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
+    gateways: Optional. Gateways defines a list of gateways this GrpcRoute is
+      attached to, as one of the routing rules to route the requests served by
+      the gateway. Each gateway reference should match the pattern:
+      `projects/*/locations/global/gateways/`
     hostnames: Required. If a port is specified, then gRPC clients must use
       the channel URI with the port to match this rule (i.e.
       "xds:///service:123"), otherwise they must supply the URI without a port
@@ -1092,13 +1095,14 @@ class GrpcRoute(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  hostnames = _messages.StringField(3, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 4)
-  meshes = _messages.StringField(5, repeated=True)
-  name = _messages.StringField(6)
-  routers = _messages.StringField(7, repeated=True)
-  rules = _messages.MessageField('GrpcRouteRouteRule', 8, repeated=True)
-  updateTime = _messages.StringField(9)
+  gateways = _messages.StringField(3, repeated=True)
+  hostnames = _messages.StringField(4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  meshes = _messages.StringField(6, repeated=True)
+  name = _messages.StringField(7)
+  routers = _messages.StringField(8, repeated=True)
+  rules = _messages.MessageField('GrpcRouteRouteRule', 9, repeated=True)
+  updateTime = _messages.StringField(10)
 
 
 class GrpcRouteDestination(_messages.Message):
@@ -1646,16 +1650,26 @@ class HttpRoute(_messages.Message):
   r"""HttpRoute is the resource defining how HTTP traffic should be routed by
   a Router resource.
 
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the HttpRoute
+      resource.
+
   Fields:
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
+    gateways: Optional. Gateways defines a list of gateways this HttpRoute is
+      attached to, as one of the routing rules to route the requests served by
+      the gateway. Each gateway reference should match the pattern:
+      `projects/*/locations/global/gateways/`
     hostnames: Required. Hostnames define a set of hosts that should match
       against the HTTP host header to select a HttpRoute to process the
       request. Hostname is the fully qualified domain name of a network host,
       as defined by RFC 1123 with the exception that ip addresses are not
       allowed. Wildcard hosts are supported as "*" (no prefix or suffix
       allowed).
+    labels: Optional. Set of label tags associated with the HttpRoute
+      resource.
     meshes: Optional. Meshes defines a list of meshes this HttpRoute is
       attached to, as one of the routing rules to route the requests served by
       the mesh. Each mesh reference should match the pattern:
@@ -1671,14 +1685,40 @@ class HttpRoute(_messages.Message):
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the HttpRoute resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  hostnames = _messages.StringField(3, repeated=True)
-  meshes = _messages.StringField(4, repeated=True)
-  name = _messages.StringField(5)
-  routers = _messages.StringField(6, repeated=True)
-  rules = _messages.MessageField('HttpRouteRouteRule', 7, repeated=True)
-  updateTime = _messages.StringField(8)
+  gateways = _messages.StringField(3, repeated=True)
+  hostnames = _messages.StringField(4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  meshes = _messages.StringField(6, repeated=True)
+  name = _messages.StringField(7)
+  routers = _messages.StringField(8, repeated=True)
+  rules = _messages.MessageField('HttpRouteRouteRule', 9, repeated=True)
+  updateTime = _messages.StringField(10)
 
 
 class HttpRouteCorsPolicy(_messages.Message):
@@ -2716,12 +2756,16 @@ class NetworkservicesProjectsLocationsEdgeCacheKeysetsGetIamPolicyRequest(_messa
   object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -2850,12 +2894,16 @@ class NetworkservicesProjectsLocationsEdgeCacheOriginsGetIamPolicyRequest(_messa
   object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -2984,12 +3032,16 @@ class NetworkservicesProjectsLocationsEdgeCacheServicesGetIamPolicyRequest(_mess
   object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -3109,12 +3161,16 @@ class NetworkservicesProjectsLocationsEndpointConfigSelectorsGetIamPolicyRequest
   object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -3192,12 +3248,16 @@ class NetworkservicesProjectsLocationsEndpointPoliciesGetIamPolicyRequest(_messa
   object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -3321,12 +3381,16 @@ class NetworkservicesProjectsLocationsGatewaysGetIamPolicyRequest(_messages.Mess
   r"""A NetworkservicesProjectsLocationsGatewaysGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -3456,12 +3520,16 @@ class NetworkservicesProjectsLocationsGrpcRoutesGetIamPolicyRequest(_messages.Me
   r"""A NetworkservicesProjectsLocationsGrpcRoutesGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -3582,12 +3650,16 @@ class NetworkservicesProjectsLocationsHttpFiltersGetIamPolicyRequest(_messages.M
   r"""A NetworkservicesProjectsLocationsHttpFiltersGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -3707,12 +3779,16 @@ class NetworkservicesProjectsLocationsHttpRoutesGetIamPolicyRequest(_messages.Me
   r"""A NetworkservicesProjectsLocationsHttpRoutesGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -3852,12 +3928,16 @@ class NetworkservicesProjectsLocationsMeshesGetIamPolicyRequest(_messages.Messag
   r"""A NetworkservicesProjectsLocationsMeshesGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -3983,12 +4063,16 @@ class NetworkservicesProjectsLocationsObservabilityPoliciesGetIamPolicyRequest(_
   object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -4165,12 +4249,16 @@ class NetworkservicesProjectsLocationsRoutersGetIamPolicyRequest(_messages.Messa
   r"""A NetworkservicesProjectsLocationsRoutersGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -4293,12 +4381,16 @@ class NetworkservicesProjectsLocationsServiceBindingsGetIamPolicyRequest(_messag
   object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -4422,12 +4514,16 @@ class NetworkservicesProjectsLocationsTcpRoutesGetIamPolicyRequest(_messages.Mes
   r"""A NetworkservicesProjectsLocationsTcpRoutesGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -5160,6 +5256,10 @@ class ServiceBinding(_messages.Message):
   r"""ServiceBinding is the resource that defines a Service Directory Service
   to be used in a BackendService resource.
 
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the
+      ServiceBinding resource.
+
   Fields:
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
@@ -5168,6 +5268,8 @@ class ServiceBinding(_messages.Message):
       Binding. The syntax is described in http://cloud/service-directory/docs/
       reference/rpc/google.cloud.servicedirectory.v1#google.cloud.servicedirec
       tory.v1.ResolveServiceRequest
+    labels: Optional. Set of label tags associated with the ServiceBinding
+      resource.
     name: Required. Name of the ServiceBinding resource. It matches pattern
       `projects/*/locations/global/serviceBindings/service_binding_name>`.
     service: Required. The full service directory service name of the format
@@ -5175,12 +5277,38 @@ class ServiceBinding(_messages.Message):
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the ServiceBinding
+    resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   endpointFilter = _messages.StringField(3)
-  name = _messages.StringField(4)
-  service = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  service = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class ServiceGraph(_messages.Message):
@@ -5332,10 +5460,19 @@ class TcpRoute(_messages.Message):
   r"""TcpRoute is the resource defining how TCP traffic should be routed by a
   Router resource.
 
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the TcpRoute
+      resource.
+
   Fields:
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
+    gateways: Optional. Gateways defines a list of gateways this TcpRoute is
+      attached to, as one of the routing rules to route the requests served by
+      the gateway. Each gateway reference should match the pattern:
+      `projects/*/locations/global/gateways/`
+    labels: Optional. Set of label tags associated with the TcpRoute resource.
     meshes: Optional. Meshes defines a list of meshes this TcpRoute is
       attached to, as one of the routing rules to route the requests served by
       the mesh. Each mesh reference should match the pattern:
@@ -5353,13 +5490,39 @@ class TcpRoute(_messages.Message):
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the TcpRoute resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  meshes = _messages.StringField(3, repeated=True)
-  name = _messages.StringField(4)
-  routers = _messages.StringField(5, repeated=True)
-  rules = _messages.MessageField('TcpRouteRouteRule', 6, repeated=True)
-  updateTime = _messages.StringField(7)
+  gateways = _messages.StringField(3, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 4)
+  meshes = _messages.StringField(5, repeated=True)
+  name = _messages.StringField(6)
+  routers = _messages.StringField(7, repeated=True)
+  rules = _messages.MessageField('TcpRouteRouteRule', 8, repeated=True)
+  updateTime = _messages.StringField(9)
 
 
 class TcpRouteRouteAction(_messages.Message):
@@ -5454,6 +5617,27 @@ class Timeout(_messages.Message):
   r"""The timeout configuration for this origin.
 
   Fields:
+    connectTimeout: Optional. The maximum duration to wait for a single origin
+      connection to be established, including DNS lookup, TLS handshake and
+      TCP/QUIC connection establishment. Defaults to 5 seconds. The timeout
+      must be a value between 1s and 15s. The connectTimeout capped by the
+      deadline set by the request's maxAttemptsTimeout. The last connection
+      attempt may have a smaller connectTimeout in order to adhere to the
+      overall maxAttemptsTimeout.
+    maxAttemptsTimeout: Optional. The maximum time across all connection
+      attempts to all origins, including failover origins, before returning an
+      error to the client. A HTTP 504 will be returned if the timeout is
+      reached before a response is returned. Defaults to 15 seconds. The
+      timeout must be a value between 1s and 30s. If a failoverOrigin is
+      specified, the maxAttemptsTimeout of the first configured origin sets
+      the deadline for all connection attempts across all failoverOrigins.
+    readTimeout: Optional. The maximum duration to wait between reads of a
+      single HTTP connection/stream. Defaults to 15 seconds. The timeout must
+      be a value between 1s and 30s. The readTimeout is capped by the
+      responseTimeout. All reads of the HTTP connection/stream must be
+      completed by the deadline set by the responseTimeout. If the response
+      headers have already been written to the connection, the response will
+      be truncated and logged.
     responseTimeout: Optional. The maximum duration to wait for the last byte
       of a response to arrive when reading from the HTTP connection/stream.
       Defaults to 30 seconds. The timeout must be a value between 1s and 120s.
@@ -5466,7 +5650,10 @@ class Timeout(_messages.Message):
       connection, the response will be truncated and logged.
   """
 
-  responseTimeout = _messages.StringField(1)
+  connectTimeout = _messages.StringField(1)
+  maxAttemptsTimeout = _messages.StringField(2)
+  readTimeout = _messages.StringField(3)
+  responseTimeout = _messages.StringField(4)
 
 
 class TrafficPortSelector(_messages.Message):

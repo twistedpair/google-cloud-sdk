@@ -325,7 +325,7 @@
           ],
           "enum": [
             "STATE_UNSPECIFIED",
-            "ACTIVE",
+            "READY",
             "STOPPED",
             "EMPTY",
             "CREATING",
@@ -334,7 +334,8 @@
           ]
         },
         "databaseVersion": {
-          "description": "The database engine major version. Specified by customer at creation time. This field cannot be changed after cluster creation.",
+          "description": "Output only. The database engine major version. This is an output-only field and it's populated at the Cluster creation time. This field cannot be changed after cluster creation.",
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "This is an unknown database version.",
@@ -350,7 +351,7 @@
           "type": "string"
         },
         "initialUser": {
-          "description": "Input only. Initial user to setup during cluster creation. Required. We intend to deprecate this post private preview, once we have separate User resources.",
+          "description": "Input only. Initial user to setup during cluster creation. Required. If used in `ImportCluster` this is ignored. We intend to deprecate this post private preview, once we have separate User resources.",
           "$ref": "UserPassword"
         }
       }
@@ -452,7 +453,7 @@
           ],
           "enum": [
             "STATE_UNSPECIFIED",
-            "ACTIVE",
+            "READY",
             "STOPPED",
             "CREATING",
             "DELETING",
@@ -659,6 +660,10 @@
         },
         "description": {
           "description": "Optional. User-provided description of the backup.",
+          "type": "string"
+        },
+        "clusterName": {
+          "description": "Required. The backup source cluster.",
           "type": "string"
         }
       }
@@ -1214,6 +1219,54 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a single Cluster."
+                },
+                "import": {
+                  "id": "alloydb.projects.locations.clusters.import",
+                  "path": "v1alpha1/{+parent}/clusters:import",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters:import",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The name of the parent resource. For the required format, see the comment on the Cluster.name field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "clusterId": {
+                      "description": "Required. Id of the requesting object If auto-generating Id server-side, remove this field and cluster_id from the method_signature of Create RPC",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "backupSource.backupName": {
+                      "description": "Required. The name of the backup resource with the format: * projects\/{project}\/locations\/{region}\/backups\/{backup_id}",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "validateOnly": {
+                      "description": "Optional. If set, the backend validates the request, but doesn't actually execute it.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Cluster"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new Cluster in a given project and location, with a volume restored from the provided backup ID."
                 }
               }
               ,
@@ -1573,11 +1626,6 @@
                       "description": "Optional. If set, the backend validates the request, but doesn't actually execute it.",
                       "location": "query",
                       "type": "boolean"
-                    },
-                    "clusterName": {
-                      "description": "Required. The resource name of the cluster to backup.",
-                      "location": "query",
-                      "type": "string"
                     }
                   },
                   "parameterOrder": [

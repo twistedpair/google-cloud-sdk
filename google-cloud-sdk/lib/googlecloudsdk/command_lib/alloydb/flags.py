@@ -68,6 +68,26 @@ def AddAvailabilityType(parser):
       help='Specifies level of availability.')
 
 
+def AddBackup(parser, positional=True):
+  """Adds a positional backup argument to parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+    positional: whether or not --backup is positional.
+  """
+  if positional:
+    parser.add_argument(
+        'backup',
+        type=str,
+        help='AlloyDB backup ID')
+  else:
+    parser.add_argument(
+        '--backup',
+        required=True,
+        type=str,
+        help='AlloyDB backup ID')
+
+
 def AddCluster(parser, positional=True):
   """Adds a positional cluster argument to parser.
 

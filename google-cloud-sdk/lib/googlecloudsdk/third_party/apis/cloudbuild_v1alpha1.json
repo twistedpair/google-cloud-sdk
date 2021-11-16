@@ -1469,6 +1469,27 @@
         }
       }
     },
+    "BatchCreateBitbucketServerConnectedRepositoriesResponseMetadata": {
+      "id": "BatchCreateBitbucketServerConnectedRepositoriesResponseMetadata",
+      "description": "Metadata for `BatchCreateBitbucketServerConnectedRepositories` operation.",
+      "type": "object",
+      "properties": {
+        "config": {
+          "description": "The name of the `BitbucketServerConfig` that added connected repositories. Format: `projects\/{project}\/locations\/{location}\/bitbucketServerConfigs\/{config}`",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Time the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "completeTime": {
+          "description": "Time the operation was completed.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
     "HTTPDelivery": {
       "id": "HTTPDelivery",
       "description": "HTTPDelivery is the delivery configuration for an HTTP notification.",

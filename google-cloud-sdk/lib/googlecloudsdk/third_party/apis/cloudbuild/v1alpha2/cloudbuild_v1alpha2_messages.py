@@ -137,6 +137,23 @@ class Artifacts(_messages.Message):
   objects = _messages.MessageField('ArtifactObjects', 2)
 
 
+class BatchCreateBitbucketServerConnectedRepositoriesResponseMetadata(_messages.Message):
+  r"""Metadata for `BatchCreateBitbucketServerConnectedRepositories`
+  operation.
+
+  Fields:
+    completeTime: Time the operation was completed.
+    config: The name of the `BitbucketServerConfig` that added connected
+      repositories. Format: `projects/{project}/locations/{location}/bitbucket
+      ServerConfigs/{config}`
+    createTime: Time the operation was created.
+  """
+
+  completeTime = _messages.StringField(1)
+  config = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+
+
 class Build(_messages.Message):
   r"""A build resource in the Cloud Build API. At a high level, a `Build`
   describes where to find source code, how to build it (for example, the
@@ -995,6 +1012,23 @@ class Hash(_messages.Message):
   value = _messages.BytesField(2)
 
 
+class HybridWorkerConfig(_messages.Message):
+  r"""These settings can be applied to a user's build operations. Next ID: 4
+
+  Fields:
+    diskSizeGb: The disk size (in GB) which is requested for the build
+      container. Defaults to 10 GB.
+    memoryGb: The memory (in GB) which is requested for the build container.
+      Defaults to 4 GB.
+    vcpuCount: The number of vCPUs which are requested for the build
+      container. Defaults to 1.
+  """
+
+  diskSizeGb = _messages.IntegerField(1)
+  memoryGb = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  vcpuCount = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
 class InlineSecret(_messages.Message):
   r"""Pairs a set of secret environment variables mapped to encrypted values
   with the Cloud KMS key to use to decrypt the value.
@@ -1338,13 +1372,15 @@ class PoolOption(_messages.Message):
   private-pool) for more information.
 
   Fields:
+    hybridPoolOption: Configuration for a Hybrid Worker Pool.
     name: The `WorkerPool` resource to execute the build on. You must have
       `cloudbuild.workerpools.use` on the project hosting the WorkerPool.
       Format
       projects/{project}/locations/{location}/workerPools/{workerPoolId}
   """
 
-  name = _messages.StringField(1)
+  hybridPoolOption = _messages.MessageField('HybridWorkerConfig', 1)
+  name = _messages.StringField(2)
 
 
 class ProcessAppManifestCallbackOperationMetadata(_messages.Message):

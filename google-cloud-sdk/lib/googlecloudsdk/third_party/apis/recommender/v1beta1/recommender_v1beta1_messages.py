@@ -248,6 +248,121 @@ class GoogleCloudRecommenderV1beta1InsightStateInfo(_messages.Message):
   stateMetadata = _messages.MessageField('StateMetadataValue', 2)
 
 
+class GoogleCloudRecommenderV1beta1InsightTypeConfig(_messages.Message):
+  r"""Configuration for an InsightType.
+
+  Messages:
+    AnnotationsValue: Allows clients to store small amounts of arbitrary data.
+      Annotations must follow the Kubernetes syntax. The total size of all
+      keys and values combined is limited to 256k. Key can have 2 segments:
+      prefix (optional) and name (required), separated by a slash (/). Prefix
+      must be a DNS subdomain. Name must be 63 characters or less, begin and
+      end with alphanumerics, with dashes (-), underscores (_), dots (.), and
+      alphanumerics between.
+
+  Fields:
+    annotations: Allows clients to store small amounts of arbitrary data.
+      Annotations must follow the Kubernetes syntax. The total size of all
+      keys and values combined is limited to 256k. Key can have 2 segments:
+      prefix (optional) and name (required), separated by a slash (/). Prefix
+      must be a DNS subdomain. Name must be 63 characters or less, begin and
+      end with alphanumerics, with dashes (-), underscores (_), dots (.), and
+      alphanumerics between.
+    displayName: A user-settable field to provide a human-readable name to be
+      used in user interfaces.
+    etag: Fingerprint of the InsightTypeConfig. Provides optimistic locking
+      when updating.
+    insightTypeGenerationConfig: InsightTypeGenerationConfig which configures
+      the generation of insights for this insight type.
+    name: Name of insight type config. Eg, projects/[PROJECT_NUMBER]/locations
+      /[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]/config
+    revisionId: Output only. Immutable. The revision ID of the config. A new
+      revision is committed whenever the config is changed in any way. The
+      format is an 8-character hexadecimal string.
+    updateTime: Last time when the config was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Allows clients to store small amounts of arbitrary data. Annotations
+    must follow the Kubernetes syntax. The total size of all keys and values
+    combined is limited to 256k. Key can have 2 segments: prefix (optional)
+    and name (required), separated by a slash (/). Prefix must be a DNS
+    subdomain. Name must be 63 characters or less, begin and end with
+    alphanumerics, with dashes (-), underscores (_), dots (.), and
+    alphanumerics between.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  displayName = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  insightTypeGenerationConfig = _messages.MessageField('GoogleCloudRecommenderV1beta1InsightTypeGenerationConfig', 4)
+  name = _messages.StringField(5)
+  revisionId = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
+
+
+class GoogleCloudRecommenderV1beta1InsightTypeGenerationConfig(_messages.Message):
+  r"""A configuration to customize the generation of insights. Eg, customizing
+  the lookback period considered when generating a insight.
+
+  Messages:
+    ParamsValue: Parameters for this InsightTypeGenerationConfig. These
+      configs can be used by or are applied to all subtypes.
+
+  Fields:
+    params: Parameters for this InsightTypeGenerationConfig. These configs can
+      be used by or are applied to all subtypes.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParamsValue(_messages.Message):
+    r"""Parameters for this InsightTypeGenerationConfig. These configs can be
+    used by or are applied to all subtypes.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParamsValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParamsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  params = _messages.MessageField('ParamsValue', 1)
+
+
 class GoogleCloudRecommenderV1beta1ListInsightsResponse(_messages.Message):
   r"""Response to the `ListInsights` method.
 
@@ -814,6 +929,121 @@ class GoogleCloudRecommenderV1beta1RecommendationStateInfo(_messages.Message):
   stateMetadata = _messages.MessageField('StateMetadataValue', 2)
 
 
+class GoogleCloudRecommenderV1beta1RecommenderConfig(_messages.Message):
+  r"""Configuration for a Recommender.
+
+  Messages:
+    AnnotationsValue: Allows clients to store small amounts of arbitrary data.
+      Annotations must follow the Kubernetes syntax. The total size of all
+      keys and values combined is limited to 256k. Key can have 2 segments:
+      prefix (optional) and name (required), separated by a slash (/). Prefix
+      must be a DNS subdomain. Name must be 63 characters or less, begin and
+      end with alphanumerics, with dashes (-), underscores (_), dots (.), and
+      alphanumerics between.
+
+  Fields:
+    annotations: Allows clients to store small amounts of arbitrary data.
+      Annotations must follow the Kubernetes syntax. The total size of all
+      keys and values combined is limited to 256k. Key can have 2 segments:
+      prefix (optional) and name (required), separated by a slash (/). Prefix
+      must be a DNS subdomain. Name must be 63 characters or less, begin and
+      end with alphanumerics, with dashes (-), underscores (_), dots (.), and
+      alphanumerics between.
+    displayName: A user-settable field to provide a human-readable name to be
+      used in user interfaces.
+    etag: Fingerprint of the RecommenderConfig. Provides optimistic locking
+      when updating.
+    name: Name of recommender config. Eg, projects/[PROJECT_NUMBER]/locations/
+      [LOCATION]/recommenders/[RECOMMENDER_ID]/config
+    recommenderGenerationConfig: RecommenderGenerationConfig which configures
+      the Generation of recommendations for this recommender.
+    revisionId: Output only. Immutable. The revision ID of the config. A new
+      revision is committed whenever the config is changed in any way. The
+      format is an 8-character hexadecimal string.
+    updateTime: Last time when the config was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Allows clients to store small amounts of arbitrary data. Annotations
+    must follow the Kubernetes syntax. The total size of all keys and values
+    combined is limited to 256k. Key can have 2 segments: prefix (optional)
+    and name (required), separated by a slash (/). Prefix must be a DNS
+    subdomain. Name must be 63 characters or less, begin and end with
+    alphanumerics, with dashes (-), underscores (_), dots (.), and
+    alphanumerics between.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  displayName = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  name = _messages.StringField(4)
+  recommenderGenerationConfig = _messages.MessageField('GoogleCloudRecommenderV1beta1RecommenderGenerationConfig', 5)
+  revisionId = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
+
+
+class GoogleCloudRecommenderV1beta1RecommenderGenerationConfig(_messages.Message):
+  r"""A Configuration to customize the generation of recommendations. Eg,
+  customizing the lookback period considered when generating a recommendation.
+
+  Messages:
+    ParamsValue: Parameters for this RecommenderGenerationConfig. These
+      configs can be used by or are applied to all subtypes.
+
+  Fields:
+    params: Parameters for this RecommenderGenerationConfig. These configs can
+      be used by or are applied to all subtypes.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParamsValue(_messages.Message):
+    r"""Parameters for this RecommenderGenerationConfig. These configs can be
+    used by or are applied to all subtypes.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParamsValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParamsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  params = _messages.MessageField('ParamsValue', 1)
+
+
 class GoogleCloudRecommenderV1beta1SecurityProjection(_messages.Message):
   r"""Contains various ways of describing the impact on Security.
 
@@ -1207,6 +1437,39 @@ class RecommenderFoldersLocationsRecommendersRecommendationsMarkSucceededRequest
   name = _messages.StringField(2, required=True)
 
 
+class RecommenderOrganizationsLocationsInsightTypesConfigRequest(_messages.Message):
+  r"""A RecommenderOrganizationsLocationsInsightTypesConfigRequest object.
+
+  Fields:
+    googleCloudRecommenderV1beta1InsightTypeConfig: A
+      GoogleCloudRecommenderV1beta1InsightTypeConfig resource to be passed as
+      the request body.
+    name: Name of insight type config. Eg, projects/[PROJECT_NUMBER]/locations
+      /[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]/config
+    updateMask: The list of fields to be updated.
+    validateOnly: If true, validate the request and preview the change, but do
+      not actually update it.
+  """
+
+  googleCloudRecommenderV1beta1InsightTypeConfig = _messages.MessageField('GoogleCloudRecommenderV1beta1InsightTypeConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
+class RecommenderOrganizationsLocationsInsightTypesGetConfigRequest(_messages.Message):
+  r"""A RecommenderOrganizationsLocationsInsightTypesGetConfigRequest object.
+
+  Fields:
+    name: Required. Name of the InsightTypeConfig to get. Acceptable formats:
+      * `projects/[PROJECT_NUMBER]/locations/global/recommenders/[INSIGHT_TYPE
+      _ID]/config` * `projects/[PROJECT_ID]/locations/global/recommenders/[INS
+      IGHT_TYPE_ID]/config`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class RecommenderOrganizationsLocationsInsightTypesInsightsGetRequest(_messages.Message):
   r"""A RecommenderOrganizationsLocationsInsightTypesInsightsGetRequest
   object.
@@ -1270,6 +1533,39 @@ class RecommenderOrganizationsLocationsInsightTypesInsightsMarkAcceptedRequest(_
 
   googleCloudRecommenderV1beta1MarkInsightAcceptedRequest = _messages.MessageField('GoogleCloudRecommenderV1beta1MarkInsightAcceptedRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class RecommenderOrganizationsLocationsRecommendersConfigRequest(_messages.Message):
+  r"""A RecommenderOrganizationsLocationsRecommendersConfigRequest object.
+
+  Fields:
+    googleCloudRecommenderV1beta1RecommenderConfig: A
+      GoogleCloudRecommenderV1beta1RecommenderConfig resource to be passed as
+      the request body.
+    name: Name of recommender config. Eg, projects/[PROJECT_NUMBER]/locations/
+      [LOCATION]/recommenders/[RECOMMENDER_ID]/config
+    updateMask: The list of fields to be updated.
+    validateOnly: If true, validate the request and preview the change, but do
+      not actually update it.
+  """
+
+  googleCloudRecommenderV1beta1RecommenderConfig = _messages.MessageField('GoogleCloudRecommenderV1beta1RecommenderConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
+class RecommenderOrganizationsLocationsRecommendersGetConfigRequest(_messages.Message):
+  r"""A RecommenderOrganizationsLocationsRecommendersGetConfigRequest object.
+
+  Fields:
+    name: Required. Name of the Recommendation Config to get. Acceptable
+      formats: * `projects/[PROJECT_NUMBER]/locations/global/recommenders/[REC
+      OMMENDER_ID]/config` * `projects/[PROJECT_ID]/locations/global/recommend
+      ers/[RECOMMENDER_ID]/config`
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class RecommenderOrganizationsLocationsRecommendersRecommendationsGetRequest(_messages.Message):
@@ -1367,6 +1663,19 @@ class RecommenderOrganizationsLocationsRecommendersRecommendationsMarkSucceededR
   name = _messages.StringField(2, required=True)
 
 
+class RecommenderProjectsLocationsInsightTypesGetConfigRequest(_messages.Message):
+  r"""A RecommenderProjectsLocationsInsightTypesGetConfigRequest object.
+
+  Fields:
+    name: Required. Name of the InsightTypeConfig to get. Acceptable formats:
+      * `projects/[PROJECT_NUMBER]/locations/global/recommenders/[INSIGHT_TYPE
+      _ID]/config` * `projects/[PROJECT_ID]/locations/global/recommenders/[INS
+      IGHT_TYPE_ID]/config`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class RecommenderProjectsLocationsInsightTypesInsightsGetRequest(_messages.Message):
   r"""A RecommenderProjectsLocationsInsightTypesInsightsGetRequest object.
 
@@ -1427,6 +1736,39 @@ class RecommenderProjectsLocationsInsightTypesInsightsMarkAcceptedRequest(_messa
 
   googleCloudRecommenderV1beta1MarkInsightAcceptedRequest = _messages.MessageField('GoogleCloudRecommenderV1beta1MarkInsightAcceptedRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class RecommenderProjectsLocationsInsightTypesUpdateConfigRequest(_messages.Message):
+  r"""A RecommenderProjectsLocationsInsightTypesUpdateConfigRequest object.
+
+  Fields:
+    googleCloudRecommenderV1beta1InsightTypeConfig: A
+      GoogleCloudRecommenderV1beta1InsightTypeConfig resource to be passed as
+      the request body.
+    name: Name of insight type config. Eg, projects/[PROJECT_NUMBER]/locations
+      /[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]/config
+    updateMask: The list of fields to be updated.
+    validateOnly: If true, validate the request and preview the change, but do
+      not actually update it.
+  """
+
+  googleCloudRecommenderV1beta1InsightTypeConfig = _messages.MessageField('GoogleCloudRecommenderV1beta1InsightTypeConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
+class RecommenderProjectsLocationsRecommendersGetConfigRequest(_messages.Message):
+  r"""A RecommenderProjectsLocationsRecommendersGetConfigRequest object.
+
+  Fields:
+    name: Required. Name of the Recommendation Config to get. Acceptable
+      formats: * `projects/[PROJECT_NUMBER]/locations/global/recommenders/[REC
+      OMMENDER_ID]/config` * `projects/[PROJECT_ID]/locations/global/recommend
+      ers/[RECOMMENDER_ID]/config`
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class RecommenderProjectsLocationsRecommendersRecommendationsGetRequest(_messages.Message):
@@ -1524,6 +1866,26 @@ class RecommenderProjectsLocationsRecommendersRecommendationsMarkSucceededReques
 
   googleCloudRecommenderV1beta1MarkRecommendationSucceededRequest = _messages.MessageField('GoogleCloudRecommenderV1beta1MarkRecommendationSucceededRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class RecommenderProjectsLocationsRecommendersUpdateConfigRequest(_messages.Message):
+  r"""A RecommenderProjectsLocationsRecommendersUpdateConfigRequest object.
+
+  Fields:
+    googleCloudRecommenderV1beta1RecommenderConfig: A
+      GoogleCloudRecommenderV1beta1RecommenderConfig resource to be passed as
+      the request body.
+    name: Name of recommender config. Eg, projects/[PROJECT_NUMBER]/locations/
+      [LOCATION]/recommenders/[RECOMMENDER_ID]/config
+    updateMask: The list of fields to be updated.
+    validateOnly: If true, validate the request and preview the change, but do
+      not actually update it.
+  """
+
+  googleCloudRecommenderV1beta1RecommenderConfig = _messages.MessageField('GoogleCloudRecommenderV1beta1RecommenderConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
 
 
 class StandardQueryParameters(_messages.Message):

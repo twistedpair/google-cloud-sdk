@@ -2450,7 +2450,6 @@ class ExecutionConfig(_messages.Message):
     networkUri: Optional. Network URI to connect workload to.
     performanceTier: Optional. Performance tier for workload execution.
     serviceAccount: Optional. Service account that used to execute workload.
-    serviceAccountScopes: Optional. Scopes for the workload service account.
     subnetworkUri: Optional. Subnetwork URI to connect workload to.
   """
 
@@ -2473,8 +2472,7 @@ class ExecutionConfig(_messages.Message):
   networkUri = _messages.StringField(3)
   performanceTier = _messages.EnumField('PerformanceTierValueValuesEnum', 4)
   serviceAccount = _messages.StringField(5)
-  serviceAccountScopes = _messages.StringField(6, repeated=True)
-  subnetworkUri = _messages.StringField(7)
+  subnetworkUri = _messages.StringField(6)
 
 
 class Expr(_messages.Message):
@@ -2675,14 +2673,17 @@ class GetPolicyOptions(_messages.Message):
   r"""Encapsulates settings provided to GetIamPolicy.
 
   Fields:
-    requestedPolicyVersion: Optional. The policy format version to be
-      returned.Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected.Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.To learn
-      which resources support conditions in their IAM policies, see the IAM
-      documentation (https://cloud.google.com/iam/help/conditions/resource-
-      policies).
+    requestedPolicyVersion: Optional. The maximum policy version that will be
+      used to format the policy.Valid values are 0, 1, and 3. Requests
+      specifying an invalid value will be rejected.Requests for policies with
+      any conditional role bindings must specify version 3. Policies with no
+      conditional role bindings may specify any valid value or leave the field
+      unset.The policy in the response might use the policy version that you
+      specified, or it might use a lower policy version. For example, if you
+      specify version 3, but the policy has no conditional role bindings, the
+      response uses version 1.To learn which resources support conditions in
+      their IAM policies, see the IAM documentation
+      (https://cloud.google.com/iam/help/conditions/resource-policies).
   """
 
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)

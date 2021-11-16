@@ -75,7 +75,6 @@ def AddArguments(parser):
   """Adds arguments related to RuntimeConfig message to the given parser."""
   parser.add_argument(
       '--container-image',
-      hidden=True,  # Not supported yet.
       help=('Container image to use for batch job execution. '
             'IMAGE name should follow the docker image naming format: '
             '{hostname}/{repository}:{version}.'))
@@ -88,5 +87,4 @@ def AddArguments(parser):
 
   parser.add_argument(
       '--version',
-      hidden=True,  # Not supported yet.
       help='Batch runtime version.')

@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Factory class for BatchesCreateRequest message."""
 
 from __future__ import absolute_import
@@ -99,26 +98,26 @@ def AddArguments(parser, api_version):
   """
   flags.AddProjectsLocationsResourceArg(parser, api_version)
 
-  batch_id_pattern = re.compile(r'^[a-zA-Z0-9-]{4,63}$')
+  batch_id_pattern = re.compile(r'^[a-z0-9][-a-z0-9]{2,61}[a-z0-9]$')
   parser.add_argument(
       '--batch',
-      type=arg_parsers.CustomFunctionValidator(
-          batch_id_pattern.match,
-          ('Only letters (a-z, A-Z), numbers (0-9), underscore (_) and hyphens '
-           '(-) are allowed. The length must not exceed 40 characters.')),
-      help=('The ID of the batch job to submit. '
-            'The ID must contain only letters (a-z, A-Z), numbers (0-9) and '
-            'hyphens (-). The length of the name must be 4-63 characters. '
-            'If this argument is not provided, a random generated UUID '
-            'will be used.'))
+      type=arg_parsers.CustomFunctionValidator(batch_id_pattern.match, (
+          'Only lowercase letters (a-z), numbers (0-9), and '
+          'hyphens (-) are allowed. The length must be between 4 and 63 characters.'
+      )),
+      help=(
+          'The ID of the batch job to submit. '
+          'The ID must contain only lowercase letters (a-z), numbers (0-9) and '
+          'hyphens (-). The length of the name must be between 4 and 63 characters. '
+          'If this argument is not provided, a random generated UUID '
+          'will be used.'))
 
   request_id_pattern = re.compile(r'^[a-zA-Z0-9_-]{1,40}$')
   parser.add_argument(
       '--request-id',
-      type=arg_parsers.CustomFunctionValidator(
-          request_id_pattern.match,
-          ('Only letters (a-z, A-Z), numbers (0-9) and hyphens '
-           '(-) are allowed. The length must be 4 to 63 characters.')),
+      type=arg_parsers.CustomFunctionValidator(request_id_pattern.match, (
+          'Only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens '
+          '(-) are allowed. The length must not exceed 40 characters.')),
       help=('A unique ID that identifies the request. If the service '
             'receives two batch create requests with the same request_id, '
             'the second request is ignored and the operation that '

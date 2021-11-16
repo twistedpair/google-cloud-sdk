@@ -113,58 +113,6 @@
     }
   },
   "schemas": {
-    "ListLocationsResponse": {
-      "id": "ListLocationsResponse",
-      "description": "The response message for Locations.ListLocations.",
-      "type": "object",
-      "properties": {
-        "locations": {
-          "description": "A list of locations that matches the specified filter in the request.",
-          "type": "array",
-          "items": {
-            "$ref": "Location"
-          }
-        },
-        "nextPageToken": {
-          "description": "The standard List next-page token.",
-          "type": "string"
-        }
-      }
-    },
-    "Location": {
-      "id": "Location",
-      "description": "A resource that represents Google Cloud Platform location.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
-          "type": "string"
-        },
-        "locationId": {
-          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
-          "type": "string"
-        },
-        "displayName": {
-          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
-          "type": "string"
-        },
-        "labels": {
-          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "metadata": {
-          "description": "Service-specific metadata. For example the available capacity at the given location.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        }
-      }
-    },
     "Operation": {
       "id": "Operation",
       "description": "This resource represents a long-running operation that is the result of a network API call.",
@@ -368,6 +316,175 @@
         }
       }
     },
+    "GoogleDevtoolsArtifactregistryV1alpha1ListRepositoriesResponse": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ListRepositoriesResponse",
+      "description": "The response from listing repositories.",
+      "type": "object",
+      "properties": {
+        "repositories": {
+          "description": "The repositories returned.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1Repository"
+          }
+        },
+        "nextPageToken": {
+          "description": "The token to retrieve the next page of repositories, or empty if there are no more repositories to return.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1Repository": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1Repository",
+      "description": "A Repository for storing artifacts with a specific format.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the repository, for example: \"projects\/p1\/locations\/us-central1\/repositories\/repo1\".",
+          "type": "string"
+        },
+        "format": {
+          "description": "The format of packages that are stored in the repository.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified package format.",
+            "Docker package format.",
+            "Maven package format.",
+            "NPM package format.",
+            "APT package format.",
+            "YUM package format.",
+            "Python package format."
+          ],
+          "enum": [
+            "FORMAT_UNSPECIFIED",
+            "DOCKER",
+            "MAVEN",
+            "NPM",
+            "APT",
+            "YUM",
+            "PYTHON"
+          ]
+        },
+        "description": {
+          "description": "The user-provided description of the repository.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Labels with user-defined metadata. This field may contain up to 64 entries. Label keys and values may be no longer than 63 characters. Label keys must begin with a lowercase letter and may only contain lowercase letters, numeric characters, underscores, and dashes.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "createTime": {
+          "description": "The time when the repository was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "The time when the repository was last updated.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "kmsKeyName": {
+          "description": "The Cloud KMS resource name of the customer managed encryption key that\u2019s used to encrypt the contents of the Repository. Has the form: `projects\/my-project\/locations\/my-region\/keyRings\/my-kr\/cryptoKeys\/my-key`. This value may not be changed after the Repository has been created.",
+          "type": "string"
+        },
+        "mode": {
+          "description": "The mode of the repository.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified mode.",
+            "A standard repository storing artifacts.",
+            "A virtual repository to serve artifacts from one or more sources."
+          ],
+          "enum": [
+            "MODE_UNSPECIFIED",
+            "STANDARD_REPOSITORY",
+            "VIRTUAL_REPOSITORY"
+          ]
+        },
+        "upstreamPolicies": {
+          "description": "Policies that configure the upstream artifacts distributed by the Virtual Repository. Upstream policies cannot be set on a standard repository.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1UpstreamPolicy"
+          }
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1UpstreamPolicy": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1UpstreamPolicy",
+      "description": "Artifact policy configuration for the repository contents.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The user-provided ID of the upstream policy.",
+          "type": "string"
+        },
+        "repository": {
+          "description": "A reference to the repository resource, for example: \"projects\/p1\/locations\/us-central1\/repository\/repo1\".",
+          "type": "string"
+        },
+        "priority": {
+          "description": "Entries with a greater priority value take precedence in the pull order.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ListLocationsResponse": {
+      "id": "ListLocationsResponse",
+      "description": "The response message for Locations.ListLocations.",
+      "type": "object",
+      "properties": {
+        "locations": {
+          "description": "A list of locations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Location"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Location": {
+      "id": "Location",
+      "description": "A resource that represents Google Cloud Platform location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "type": "string"
+        },
+        "locationId": {
+          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "metadata": {
+          "description": "Service-specific metadata. For example the available capacity at the given location.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
     "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsResponse": {
       "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsResponse",
       "description": "The response message from importing artifacts.",
@@ -552,7 +669,7 @@
           "type": "string",
           "enumDescriptions": [
             "Package type is not specified.",
-            "Binary package (.rpm). .rpm",
+            "Binary package (.rpm).",
             "Source package (.srpm)."
           ],
           "enum": [
@@ -622,107 +739,6 @@
           "items": {
             "$ref": "GoogleDevtoolsArtifactregistryV1alpha1YumArtifact"
           }
-        }
-      }
-    },
-    "GoogleDevtoolsArtifactregistryV1alpha1Repository": {
-      "id": "GoogleDevtoolsArtifactregistryV1alpha1Repository",
-      "description": "A Repository for storing artifacts with a specific format.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The name of the repository, for example: \"projects\/p1\/locations\/us-central1\/repositories\/repo1\".",
-          "type": "string"
-        },
-        "format": {
-          "description": "The format of packages that are stored in the repository.",
-          "type": "string",
-          "enumDescriptions": [
-            "Unspecified package format.",
-            "Docker package format.",
-            "Maven package format.",
-            "NPM package format.",
-            "PyPI package format.",
-            "APT package format.",
-            "YUM package format.",
-            "Python package format."
-          ],
-          "enum": [
-            "FORMAT_UNSPECIFIED",
-            "DOCKER",
-            "MAVEN",
-            "NPM",
-            "PYPI",
-            "APT",
-            "YUM",
-            "PYTHON"
-          ]
-        },
-        "description": {
-          "description": "The user-provided description of the repository.",
-          "type": "string"
-        },
-        "labels": {
-          "description": "Labels with user-defined metadata. This field may contain up to 64 entries. Label keys and values may be no longer than 63 characters. Label keys must begin with a lowercase letter and may only contain lowercase letters, numeric characters, underscores, and dashes.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "createTime": {
-          "description": "The time when the repository was created.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "The time when the repository was last updated.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "kmsKeyName": {
-          "description": "The Cloud KMS resource name of the customer managed encryption key that\u2019s used to encrypt the contents of the Repository. Has the form: `projects\/my-project\/locations\/my-region\/keyRings\/my-kr\/cryptoKeys\/my-key`. This value may not be changed after the Repository has been created.",
-          "type": "string"
-        },
-        "mode": {
-          "description": "The mode of the repository.",
-          "type": "string",
-          "enumDescriptions": [
-            "Unspecified mode.",
-            "A standard repository storing artifacts.",
-            "A virtual repository to serve artifacts from one or more sources."
-          ],
-          "enum": [
-            "MODE_UNSPECIFIED",
-            "STANDARD_REPOSITORY",
-            "VIRTUAL_REPOSITORY"
-          ]
-        },
-        "upstreamPolicies": {
-          "description": "Policies that configure the upstream artifacts distributed by the Virtual Repository. Upstream policies cannot be set on a standard repository.",
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1UpstreamPolicy"
-          }
-        }
-      }
-    },
-    "GoogleDevtoolsArtifactregistryV1alpha1UpstreamPolicy": {
-      "id": "GoogleDevtoolsArtifactregistryV1alpha1UpstreamPolicy",
-      "description": "Artifact policy configuration for the repository contents.",
-      "type": "object",
-      "properties": {
-        "id": {
-          "description": "The user-provided ID of the upstream policy.",
-          "type": "string"
-        },
-        "repository": {
-          "description": "A reference to the repository resource, for example: \"projects\/p1\/locations\/us-central1\/repository\/repo1\".",
-          "type": "string"
-        },
-        "priority": {
-          "description": "Entries with a greater priority value take precedence in the pull order.",
-          "type": "integer",
-          "format": "int32"
         }
       }
     },
@@ -1118,6 +1134,164 @@
               }
             },
             "repositories": {
+              "methods": {
+                "list": {
+                  "id": "artifactregistry.projects.locations.repositories.list",
+                  "path": "v1alpha1/{+parent}/repositories",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "The name of the parent resource whose repositories will be listed.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of repositories to return. Maximum page size is 10,000.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The next_page_token value returned from a previous list request, if any.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ListRepositoriesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only"
+                  ],
+                  "description": "Lists repositories."
+                },
+                "get": {
+                  "id": "artifactregistry.projects.locations.repositories.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the repository to retrieve.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleDevtoolsArtifactregistryV1alpha1Repository"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only"
+                  ],
+                  "description": "Gets a repository."
+                },
+                "create": {
+                  "id": "artifactregistry.projects.locations.repositories.create",
+                  "path": "v1alpha1/{+parent}/repositories",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "The name of the parent resource where the repository will be created.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "repositoryId": {
+                      "description": "The repository id to use for this repository.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "GoogleDevtoolsArtifactregistryV1alpha1Repository"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a repository. The returned Operation will finish once the repository has been created. Its response will be the created Repository."
+                },
+                "patch": {
+                  "id": "artifactregistry.projects.locations.repositories.patch",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the repository, for example: \"projects\/p1\/locations\/us-central1\/repositories\/repo1\".",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "The update mask applies to the resource. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleDevtoolsArtifactregistryV1alpha1Repository"
+                  },
+                  "response": {
+                    "$ref": "GoogleDevtoolsArtifactregistryV1alpha1Repository"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates a repository."
+                },
+                "delete": {
+                  "id": "artifactregistry.projects.locations.repositories.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the repository to delete.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a repository and all of its contents. The returned Operation will finish once the repository has been deleted. It will not have any Operation metadata and will return a google.protobuf.Empty response."
+                }
+              }
+              ,
               "resources": {
                 "aptArtifacts": {
                   "methods": {

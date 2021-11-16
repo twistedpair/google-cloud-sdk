@@ -27,6 +27,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import transport
 from googlecloudsdk.core.credentials import creds as core_creds
+from googlecloudsdk.core.credentials import exceptions as creds_exceptions
 from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.util import files
 
@@ -112,7 +113,7 @@ class CredentialWrappingMixin(object):
       An authorized http client with exception handling.
 
     Raises:
-      c_store.Error: If an error loading the credentials occurs.
+      creds_exceptions.Error: If an error loading the credentials occurs.
     """
 
     # Wrappers for IAM header injection.
@@ -184,11 +185,11 @@ def _HandleAuthError(e):
     e: The exception that was caught.
 
   Raises:
-    store.TokenRefreshError: If an auth error occurs.
+    creds_exceptions.TokenRefreshError: If an auth error occurs.
   """
   msg = six.text_type(e)
   log.debug('Exception caught during HTTP request: %s', msg,
             exc_info=True)
   if context_aware.IsContextAwareAccessDeniedError(e):
-    raise store.TokenRefreshDeniedByCAAError(msg)
-  raise store.TokenRefreshError(msg)
+    raise creds_exceptions.TokenRefreshDeniedByCAAError(msg)
+  raise creds_exceptions.TokenRefreshError(msg)

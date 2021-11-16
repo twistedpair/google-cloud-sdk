@@ -35,7 +35,6 @@ import requests
 from six.moves import http_client
 from six.moves import urllib
 import socks
-import urllib3
 
 
 class NetworkDiagnostic(diagnostic_base.Diagnostic):
@@ -102,10 +101,6 @@ class ReachabilityChecker(check_base.Checker):
       if fail:
         failures.append(fail)
 
-    fail = CheckRequests()
-    if fail:
-      failures.append(fail)
-
     if failures:
       fail_message = ConstructMessageFromFailures(failures, first_run)
       result = check_base.Result(passed=False, message=fail_message,
@@ -137,17 +132,6 @@ def CheckURLRequests(url):
     msg = 'requests cannot reach {0}:\n{1}\n'.format(
         url, err)
     return check_base.Failure(message=msg, exception=err)
-
-
-def CheckRequests():
-  urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-  s = requests.Session()
-  s.verify = False
-  try:
-    s.request('GET', 'https://expired.badssl.com')
-  except Exception as e:  # pylint: disable=broad-except
-    msg = 'Issue detected: {}'.format(e)
-    return check_base.Failure(message=msg, exception=e)
 
 
 def ConstructMessageFromFailures(failures, first_run):

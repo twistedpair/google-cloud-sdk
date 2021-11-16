@@ -305,13 +305,17 @@ class ConfigManagementConfigSync(_messages.Message):
       ConfigSync resources will be managed depends on the presence of git
       field.
     git: Git repo configuration for the cluster.
+    preventDrift: Set to true to enable the Config Sync admission webhook to
+      prevent drifts. If set to `false`, disables the Config Sync admission
+      webhook and does not prevent drifts.
     sourceFormat: Specifies whether the Config Sync Repo is in "hierarchical"
       or "unstructured" mode.
   """
 
   enabled = _messages.BooleanField(1)
   git = _messages.MessageField('ConfigManagementGitConfig', 2)
-  sourceFormat = _messages.StringField(3)
+  preventDrift = _messages.BooleanField(3)
+  sourceFormat = _messages.StringField(4)
 
 
 class ConfigManagementConfigSyncDeploymentState(_messages.Message):
@@ -1351,12 +1355,16 @@ class GkehubProjectsLocationsFeaturesGetIamPolicyRequest(_messages.Message):
   r"""A GkehubProjectsLocationsFeaturesGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -1709,12 +1717,16 @@ class GkehubProjectsLocationsMembershipsGetIamPolicyRequest(_messages.Message):
   r"""A GkehubProjectsLocationsMembershipsGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -3062,37 +3074,32 @@ class ServiceMeshAnalysisMessageBase(_messages.Message):
 
 
 class ServiceMeshControlPlaneManagement(_messages.Message):
-  r"""Status of control plane management
+  r"""Status of control plane management.
 
   Enums:
-    StateValueValuesEnum: State of control plane management
+    StateValueValuesEnum: LifecycleState of control plane management.
 
   Fields:
-    details: Explanation of state
-    state: State of control plane management
+    details: Explanation of state.
+    state: LifecycleState of control plane management.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""State of control plane management
+    r"""LifecycleState of control plane management.
 
     Values:
-      STATE_UNSPECIFIED: Unspecified
-      DISABLED: DISABLED means that automatic control plane management is not
-        enabled.
-      FAILED_PRECONDITION: FAILED_PRECONDITION means that automatic control
-        plane management cannot proceed because of some characteristic of the
-        member cluster.
-      PROVISIONING: PROVISIONING means at least one control plane component
-        has not completed provisioning, and none has failed.
-      ACTIVE: ACTIVE means that all control plane components are ready for
-        use.
-      STALLED: STALLED means that some control plane component could not be
-        provisioned.
-      NEEDS_ATTENTION: NEEDS_ATTENTION means that all control plane components
-        are ready, but some user intervention is required. (For example that
-        the user should migrate workloads to a new control plane revision.)
+      LIFECYCLE_STATE_UNSPECIFIED: Unspecified
+      DISABLED: DISABLED means that the component is not enabled.
+      FAILED_PRECONDITION: FAILED_PRECONDITION means that provisioning cannot
+        proceed because of some characteristic of the member cluster.
+      PROVISIONING: PROVISIONING means that provisioning is in progress.
+      ACTIVE: ACTIVE means that the component is ready for use.
+      STALLED: STALLED means that provisioning could not be done.
+      NEEDS_ATTENTION: NEEDS_ATTENTION means that the component is ready, but
+        some user intervention is required. (For example that the user should
+        migrate workloads to a new control plane revision.)
     """
-    STATE_UNSPECIFIED = 0
+    LIFECYCLE_STATE_UNSPECIFIED = 0
     DISABLED = 1
     FAILED_PRECONDITION = 2
     PROVISIONING = 3
@@ -3102,6 +3109,98 @@ class ServiceMeshControlPlaneManagement(_messages.Message):
 
   details = _messages.MessageField('ServiceMeshStatusDetails', 1, repeated=True)
   state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
+class ServiceMeshControlPlaneRevision(_messages.Message):
+  r"""Status of a control plane revision that is intended to be available for
+  use in the cluster.
+
+  Enums:
+    ChannelValueValuesEnum: Release Channel the managed control plane revision
+      is subscribed to.
+    StateValueValuesEnum: State of the control plane revision.
+      LIFECYCLE_STATE_UNSPECIFIED, FAILED_PRECONDITION, PROVISIONING, ACTIVE,
+      and STALLED are applicable here.
+    TypeValueValuesEnum: Type of the control plane revision.
+
+  Fields:
+    channel: Release Channel the managed control plane revision is subscribed
+      to.
+    details: Explanation of the state.
+    owner: Owner of the control plane revision.
+    revision: Unique name of the control plane revision.
+    state: State of the control plane revision. LIFECYCLE_STATE_UNSPECIFIED,
+      FAILED_PRECONDITION, PROVISIONING, ACTIVE, and STALLED are applicable
+      here.
+    type: Type of the control plane revision.
+    version: Static version of the control plane revision.
+  """
+
+  class ChannelValueValuesEnum(_messages.Enum):
+    r"""Release Channel the managed control plane revision is subscribed to.
+
+    Values:
+      CHANNEL_UNSPECIFIED: Unspecified
+      RAPID: RAPID channel is offered on an early access basis for customers
+        who want to test new releases.
+      REGULAR: REGULAR channel is intended for production users who want to
+        take advantage of new features.
+      STABLE: STABLE channel includes versions that are known to be stable and
+        reliable in production.
+    """
+    CHANNEL_UNSPECIFIED = 0
+    RAPID = 1
+    REGULAR = 2
+    STABLE = 3
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of the control plane revision. LIFECYCLE_STATE_UNSPECIFIED,
+    FAILED_PRECONDITION, PROVISIONING, ACTIVE, and STALLED are applicable
+    here.
+
+    Values:
+      LIFECYCLE_STATE_UNSPECIFIED: Unspecified
+      DISABLED: DISABLED means that the component is not enabled.
+      FAILED_PRECONDITION: FAILED_PRECONDITION means that provisioning cannot
+        proceed because of some characteristic of the member cluster.
+      PROVISIONING: PROVISIONING means that provisioning is in progress.
+      ACTIVE: ACTIVE means that the component is ready for use.
+      STALLED: STALLED means that provisioning could not be done.
+      NEEDS_ATTENTION: NEEDS_ATTENTION means that the component is ready, but
+        some user intervention is required. (For example that the user should
+        migrate workloads to a new control plane revision.)
+    """
+    LIFECYCLE_STATE_UNSPECIFIED = 0
+    DISABLED = 1
+    FAILED_PRECONDITION = 2
+    PROVISIONING = 3
+    ACTIVE = 4
+    STALLED = 5
+    NEEDS_ATTENTION = 6
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of the control plane revision.
+
+    Values:
+      CONTROL_PLANE_REVISION_TYPE_UNSPECIFIED: Unspecified.
+      UNMANAGED: User-installed in-cluster control plane revision.
+      MANAGED_SERVICE: Google-managed service running outside the cluster.
+        Note: Google-managed control planes are independent per-cluster,
+        regardless of whether the revision name is the same or not.
+      MANAGED_INSTALL: Google-managed in-cluster control plane revision.
+    """
+    CONTROL_PLANE_REVISION_TYPE_UNSPECIFIED = 0
+    UNMANAGED = 1
+    MANAGED_SERVICE = 2
+    MANAGED_INSTALL = 3
+
+  channel = _messages.EnumField('ChannelValueValuesEnum', 1)
+  details = _messages.MessageField('ServiceMeshStatusDetails', 2, repeated=True)
+  owner = _messages.StringField(3)
+  revision = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  version = _messages.StringField(7)
 
 
 class ServiceMeshFeatureState(_messages.Message):
@@ -3152,10 +3251,13 @@ class ServiceMeshMembershipState(_messages.Message):
   Fields:
     analysisMessages: Output only. Results of running Service Mesh analyzers.
     controlPlaneManagement: Output only. Status of control plane management
+    controlPlaneRevisions: Output only. State of all control plane revisions
+      that are available in the cluster.
   """
 
   analysisMessages = _messages.MessageField('ServiceMeshAnalysisMessage', 1, repeated=True)
   controlPlaneManagement = _messages.MessageField('ServiceMeshControlPlaneManagement', 2)
+  controlPlaneRevisions = _messages.MessageField('ServiceMeshControlPlaneRevision', 3, repeated=True)
 
 
 class ServiceMeshStatusDetails(_messages.Message):

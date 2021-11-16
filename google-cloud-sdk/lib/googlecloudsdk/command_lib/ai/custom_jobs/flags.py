@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 import argparse
 import textwrap
 
-from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
@@ -35,6 +34,7 @@ _DISPLAY_NAME = base.Argument(
     '--display-name',
     required=True,
     help=('Display name of the custom job to create.'))
+
 _PYTHON_PACKAGE_URIS = base.Argument(
     '--python-package-uris',
     metavar='PYTHON_PACKAGE_URIS',
@@ -65,7 +65,7 @@ _CUSTOM_JOB_CONFIG = base.Argument(
             command:
             - start"""))
 
-_WORKER_POOL_SPEC_BETA = base.Argument(
+_WORKER_POOL_SPEC = base.Argument(
     '--worker-pool-spec',
     action='append',
     type=arg_parsers.ArgDict(
@@ -170,55 +170,6 @@ _WORKER_POOL_SPEC_BETA = base.Argument(
       --worker-pool-spec=machine-type=e2-standard-4,replica-count=1,executor-image-uri=us-docker.pkg.dev/vertex-ai/training/tf-cpu.2-4:latest,script=my_run.sh,local-package-path=/usr/jeff/application
       """))
 
-_WORKER_POOL_SPEC_GA = base.Argument(
-    '--worker-pool-spec',
-    action='append',
-    type=arg_parsers.ArgDict(
-        spec={
-            'replica-count': int,
-            'machine-type': str,
-            'accelerator-type': str,
-            'accelerator-count': int,
-            'container-image-uri': str,
-            'executor-image-uri': str,
-            'python-module': str,
-        }),
-    metavar='WORKER_POOL_SPEC',
-    help=textwrap.dedent("""\
-      Define the worker pool configuration used by the custom job. You can
-      specify multiple worker pool specs in order to create a custom job with
-      multiple worker pools.
-
-      The spec can contain the following fields:
-
-      *machine-type*:::(Required): The type of the machine.
-        see https://cloud.google.com/vertex-ai/docs/training/configure-compute#machine-types
-        for supported types. This is corresponding to the
-        `machineSpec.machineType` field in `WorkerPoolSpec` API message.
-      *replica-count*:::The number of worker replicas to use for this worker
-        pool, by default the value is 1. This is corresponding to the
-        `replicaCount` field in `WorkerPoolSpec` API message.
-      *accelerator-type*:::The type of GPUs.
-        see https://cloud.google.com/vertex-ai/docs/training/configure-compute#specifying_gpus
-        for more requirements. This is corresponding to the
-        `machineSpec.acceleratorType` field in `WorkerPoolSpec` API message.
-      *accelerator-count*:::The number of GPUs for each VM in the worker pool to
-        use, by default the value if 1. This is corresponding to the
-        `machineSpec.acceleratorCount` field in `WorkerPoolSpec` API message.
-      *container-image-uri*:::The URI of a container image to be directly run on
-        each worker replica. This is corresponding to the
-        `containerSpec.imageUri` field in `WorkerPoolSpec` API message.
-      *executor-image-uri*:::The URI of a container image that will run the
-        provided package. This is corresponding to the
-        `pythonPackageSpec.executorImageUri` field in `WorkerPoolSpec` API message.
-      *python-module*:::The Python module name to run within the provided
-        package. This is corresponding to the
-        `pythonPackageSpec.pythonModule` field in `WorkerPoolSpec` API message.
-
-      For example:
-      `--worker-pool-spec=replica-count=1,machine-type=n1-highmem-2,container-image-uri=gcr.io/ucaip-test/ucaip-training-test`
-      """))
-
 _CUSTOM_JOB_COMMAND = base.Argument(
     '--command',
     type=arg_parsers.ArgList(),
@@ -236,7 +187,7 @@ _CUSTOM_JOB_ARGS = base.Argument(
     help='Comma-separated arguments passed to containers or python tasks.')
 
 
-def AddCreateCustomJobFlags(parser, version):
+def AddCreateCustomJobFlags(parser):
   """Adds flags related to create a custom job."""
   shared_flags.AddRegionResourceArg(
       parser,
@@ -256,10 +207,7 @@ def AddCreateCustomJobFlags(parser, version):
   worker_pool_spec_group = base.ArgumentGroup(
       help='Worker pool specification.', required=True)
   worker_pool_spec_group.AddArgument(_CUSTOM_JOB_CONFIG)
-  if version == constants.GA_VERSION:
-    worker_pool_spec_group.AddArgument(_WORKER_POOL_SPEC_GA)
-  else:
-    worker_pool_spec_group.AddArgument(_WORKER_POOL_SPEC_BETA)
+  worker_pool_spec_group.AddArgument(_WORKER_POOL_SPEC)
   worker_pool_spec_group.AddToParser(parser)
 
 
@@ -312,17 +260,9 @@ def AddLocalRunCustomJobFlags(parser):
 
   # Flags for working directory.
   parser.add_argument(
-      '--work-dir',
-      metavar='WORK_DIR',
-      hidden=True,
-      action=actions.DeprecationAction(
-          '--work-dir',
-          warn='The {flag_name} option is deprecated; use --local-package-path instead.',
-          removed=False),
-      help='Alias of --local-package-path')
-  parser.add_argument(
       '--local-package-path',
       metavar='LOCAL_PATH',
+      suggestion_aliases=['--work-dir'],
       help=textwrap.dedent("""
       local path of the directory where the python-module or script exists.
       If not specified, it use the directory where you run the this command.
@@ -352,25 +292,17 @@ def AddLocalRunCustomJobFlags(parser):
       """))
 
   # Flags for base container image
-  image_group = parser.add_mutually_exclusive_group(required=True)
-  image_group.add_argument(
+  parser.add_argument(
       '--executor-image-uri',
       metavar='IMAGE_URI',
+      required=True,
+      suggestion_aliases=['--base-image'],
       help=textwrap.dedent("""
       URI or ID of the container image in either the Container Registry or local
       that will run the application.
       See https://cloud.google.com/vertex-ai/docs/training/pre-built-containers
       for available pre-built container images provided by Vertex AI for training.
       """))
-  image_group.add_argument(
-      '--base-image',
-      metavar='BASE_IMAGE',
-      hidden=True,
-      action=actions.DeprecationAction(
-          '--base-image',
-          warn='The {flag_name} option is deprecated; use --executor-image-uri instead.',
-          removed=False),
-      help='Alias of --executor-image-uri')
 
   # Flags for extra requirements.
   parser.add_argument(

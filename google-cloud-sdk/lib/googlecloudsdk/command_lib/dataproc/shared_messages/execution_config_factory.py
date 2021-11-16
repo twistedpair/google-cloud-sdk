@@ -81,11 +81,6 @@ class ExecutionConfigFactory(object):
     if args.service_account:
       kwargs['serviceAccount'] = args.service_account
 
-    if args.scopes:
-      # Repeated string field.
-      # args.scopes should be parsed as a list of string.
-      kwargs['serviceAccountScopes'] = args.scopes
-
     if args.kms_key:
       kwargs['kmsKey'] = args.kms_key
 
@@ -112,13 +107,6 @@ def AddArguments(parser):
   parser.add_argument(
       '--service-account',
       help='The IAM service account to be used for a batch job.')
-
-  parser.add_argument(
-      '--scopes',
-      type=arg_parsers.ArgList(),
-      metavar='SCOPES',
-      default=[],
-      help='IAM service account scope.')
 
   network_group = parser.add_mutually_exclusive_group()
   network_group.add_argument(

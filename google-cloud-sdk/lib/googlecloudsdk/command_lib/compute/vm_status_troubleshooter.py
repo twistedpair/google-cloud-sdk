@@ -22,12 +22,16 @@ import datetime
 from apitools.base.py import encoding
 
 from google.protobuf import timestamp_pb2
+
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.compute import ssh_troubleshooter
+from googlecloudsdk.command_lib.compute import ssh_troubleshooter_utils
 from googlecloudsdk.core import log
 
 _API_MONITORING_CLIENT_NAME = 'monitoring'
 _API_MONITORING_VERSION_V3 = 'v3'
+_API_COMPUTE_CLIENT_NAME = 'compute'
+_API_CLIENT_VERSION_V1 = 'v1'
 
 _CUSTOM_JSON_FIELD_MAPPINGS = {
     'interval_startTime': 'interval.startTime',
@@ -46,6 +50,21 @@ FILTER_TEMPLATE = (
     'metric.label.instance_name = "{instance_name}"')
 
 CPU_THRESHOLD = 0.99
+
+DISK_ERROR_PATTERN = [
+    'No usable temporary directory found in',
+    'No space left on device',
+]
+
+DISK_MESSAGE = (
+    'The VM may need additional disk space. Resize and then restart the VM, '
+    'or run a startup script to free up space.\n'
+    'Help for resizing a boot disk: '
+    'https://cloud.google.com/sdk/gcloud/reference/compute/disks/resize\n'
+    'Help for running a startup script: '
+    'https://cloud.google.com/compute/docs/startupscript\n'
+    'Help for additional troubleshooting of full disks: '
+    'https://cloud.google.com/compute/docs/troubleshooting/troubleshooting-disk-full-resize#filesystem')  # pylint: disable=line-too-long
 
 
 class VMStatusTroubleshooter(ssh_troubleshooter.SshTroubleshooter):
@@ -67,6 +86,10 @@ class VMStatusTroubleshooter(ssh_troubleshooter.SshTroubleshooter):
                                                     _API_MONITORING_VERSION_V3)
     self.monitoring_message = apis.GetMessagesModule(
         _API_MONITORING_CLIENT_NAME, _API_MONITORING_VERSION_V3)
+    self.compute_client = apis.GetClientInstance(_API_COMPUTE_CLIENT_NAME,
+                                                 _API_CLIENT_VERSION_V1)
+    self.compute_message = apis.GetMessagesModule(_API_COMPUTE_CLIENT_NAME,
+                                                  _API_CLIENT_VERSION_V1)
     self.issues = {}
 
   def check_prerequisite(self):
@@ -78,7 +101,8 @@ class VMStatusTroubleshooter(ssh_troubleshooter.SshTroubleshooter):
   def troubleshoot(self):
     log.status.Print('---- Checking VM status ----')
     self._CheckCpuStatus()
-    log.status.Print('VM status: {0} issue(s) found.'.format(
+    self._CheckDiskStatus()
+    log.status.Print('VM status: {0} issue(s) found.\n'.format(
         len(self.issues)))
     # Prompt appropriate messages to user.
     for message in self.issues.values():
@@ -101,6 +125,14 @@ class VMStatusTroubleshooter(ssh_troubleshooter.SshTroubleshooter):
           point.value.doubleValue for point in points) / len(points)
       if cpu_utilizatian > CPU_THRESHOLD:
         self.issues['cpu'] = CPU_MESSAGE
+
+  def _CheckDiskStatus(self):
+    sc_log = ssh_troubleshooter_utils.GetSerialConsoleLog(
+        self.compute_client, self.compute_message, self.instance.name,
+        self.project.name, self.zone)
+    if ssh_troubleshooter_utils.SearchPatternErrorInLog(DISK_ERROR_PATTERN,
+                                                        sc_log):
+      self.issues['disk'] = DISK_MESSAGE
 
   def _CreateTimeSeriesListRequest(self, metrics_type):
     """Create a MonitoringProjectsTimeSeriesListRequest.

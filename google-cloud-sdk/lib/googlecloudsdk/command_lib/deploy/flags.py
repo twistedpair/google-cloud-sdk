@@ -185,3 +185,9 @@ def AddLabelsFlag(parser, resource_type):
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(),
       help=help_text)
+
+
+def AddSkaffoldVersion(parser):
+  """Adds skaffold version flag."""
+  parser.add_argument(
+      '--skaffold-version', help='Version of the Skaffold binary.')

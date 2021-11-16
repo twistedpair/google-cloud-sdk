@@ -223,7 +223,8 @@ def ConstructCustomJobSpec(aiplatform_client,
     job_spec.network = network
   if service_account is not None:
     job_spec.serviceAccount = service_account
-  if enable_web_access is not None:
+
+  if enable_web_access:
     job_spec.enableWebAccess = enable_web_access
 
   if worker_pool_specs:

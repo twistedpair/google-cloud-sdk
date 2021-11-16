@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import xml.etree.cElementTree as element_tree
 
+from googlecloudsdk.command_lib.metastore import parsers
 from googlecloudsdk.core import properties
 
 
@@ -42,20 +43,37 @@ def LoadHiveMetatsoreConfigsFromXmlFile(file_arg):
   return hive_metastore_configs
 
 
+def GenerateNetworkConfigFromSubnetList(unused_ref, args, req):
+  """Generates the NetworkConfig message from the list of subnetworks.
+
+  Args:
+    args: The request arguments.
+    req: A request with `service` field.
+
+  Returns:
+    A request with network configuration field if `consumer-subnetworks` is
+    present in the arguments.
+  """
+  if args.consumer_subnetworks:
+    req.service.networkConfig = {
+        'consumers': [{
+            'subnetwork': parsers.ParseSubnetwork(s, args.location)
+        } for s in args.consumer_subnetworks]
+    }
+  return req
+
+
 def _GenerateAdditionalProperties(values_dict):
   """Format values_dict into additionalProperties-style dict."""
-  return {
-      'additionalProperties': [
-          {'key': key, 'value': value} for key, value
-          in sorted(values_dict.items())
-      ]}
+  props = [{'key': k, 'value': v} for k, v in sorted(values_dict.items())]
+  return {'additionalProperties': props}
 
 
 def _GenerateUpdateMask(args):
   """Constructs updateMask for patch requests.
 
   Args:
-    args: The parsed args namespace from CLI
+    args: The parsed args namespace from CLI.
 
   Returns:
     String containing update mask for patch request.
@@ -118,9 +136,9 @@ def SetServiceRequestUpdateHiveMetastoreConfigs(unused_job_ref, args,
   """Modify the Service update request to update, remove, or clear Hive metastore configurations.
 
   Args:
-    unused_ref: A resource ref to the parsed Service resource
-    args: The parsed args namespace from CLI
-    update_service_req: Created Update request for the API call
+    unused_ref: A resource ref to the parsed Service resource.
+    args: The parsed args namespace from CLI.
+    update_service_req: Created Update request for the API call.
 
   Returns:
     Modified request for the API call.

@@ -4078,7 +4078,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""This api is similar to GetStats except that the response is less verbose. In the current scheme, a query parameter _optimized instructs Edge Analytics to change the response but since this behavior is not possible with protocol buffer and since this parameter is predominantly used by Edge UI, we are introducing a separate api.
+      r"""Similar to GetStats except that the response is less verbose.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsOptimizedStatsGetRequest) input message
@@ -4806,7 +4806,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Retrieve metrics grouped by dimensions. The types of metrics you can retrieve include traffic, message counts, API call latency, response size, and cache hits and counts. Dimensions let you view metrics in meaningful groups. The stats api does accept dimensions as path params. The dimensions are optional in which case the metrics are computed on the entire data for the given timerange.
+      r"""Retrieve metrics grouped by dimensions. The types of metrics you can retrieve include traffic, message counts, API call latency, response size, and cache hits and counts. Dimensions let you view metrics in meaningful groups. You can optionally pass dimensions as path parameters to the `stats` API. If dimensions are not specified, the metrics are computed on the entire set of data for the given time range.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsStatsGetRequest) input message
@@ -5821,7 +5821,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Retrieve metrics grouped by dimensions in host level. The types of metrics you can retrieve include traffic, message counts, API call latency, response size, and cache hits and counts. Dimensions let you view metrics in meaningful groups. The stats api does accept dimensions as path params. The dimensions are optional in which case the metrics are computed on the entire data for the given timerange.
+      r"""Retrieve metrics grouped by dimensions in host level. The types of metrics you can retrieve include traffic, message counts, API call latency, response size, and cache hits and counts. Dimensions let you view metrics in meaningful groups. You can optionally pass dimensions as path parameters to the `stats` API. If dimensions are not specified, the metrics are computed on the entire set of data for the given time range.
 
       Args:
         request: (ApigeeOrganizationsHostStatsGetRequest) input message
@@ -6522,7 +6522,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""This api is similar to GetHostStats except that the response is less verbose.
+      r"""Similar to GetHostStats except that the response is less verbose.
 
       Args:
         request: (ApigeeOrganizationsOptimizedHostStatsGetRequest) input message

@@ -274,6 +274,10 @@
         "timeSeriesTable": {
           "description": "A widget that displays time series data in a tabular format.",
           "$ref": "TimeSeriesTable"
+        },
+        "logsPanel": {
+          "description": "A widget that shows a stream of logs.",
+          "$ref": "LogsPanel"
         }
       }
     },
@@ -897,6 +901,24 @@
       "properties": {
         "shownColumns": {
           "description": "Optional. Columns to display in the table. Leave empty to display all available columns. Note: This field is for future features and is not currently used.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "LogsPanel": {
+      "id": "LogsPanel",
+      "description": "A widget that displays a stream of log.",
+      "type": "object",
+      "properties": {
+        "filter": {
+          "description": "A filter that chooses which log entries to return. See Advanced Logs Queries (https:\/\/cloud.google.com\/logging\/docs\/view\/advanced-queries). Only log entries that match the filter are returned. An empty filter matches all log entries.",
+          "type": "string"
+        },
+        "resourceNames": {
+          "description": "The names of logging resources to collect logs for. Does not implicitly include the current host project. Currently only projects are supported. There must be at least one resource_name.",
           "type": "array",
           "items": {
             "type": "string"

@@ -195,7 +195,8 @@ def _ApplyCMEKArgsToFunction(function_ref, function, args, release_track):
       key is configured.
   """
   updated_fields = []
-  if release_track == calliope_base.ReleaseTrack.ALPHA:
+  if (release_track == calliope_base.ReleaseTrack.ALPHA or
+      release_track == calliope_base.ReleaseTrack.BETA):
     if args.IsSpecified('kms_key') or args.IsSpecified('clear_kms_key'):
       old_kms_key = function.kmsKeyName
       function.kmsKeyName = (None if args.clear_kms_key else args.kms_key)

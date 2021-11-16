@@ -20,8 +20,11 @@ from __future__ import unicode_literals
 
 import base64
 
+
 from googlecloudsdk.api_lib.container import kubeconfig as kubeconfig_util
+from googlecloudsdk.api_lib.container import util
 from googlecloudsdk.command_lib.container.gkemulticloud import errors
+from googlecloudsdk.command_lib.container.hub import connect_gateway_util
 from googlecloudsdk.command_lib.container.hub import gwkubeconfig_util
 from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.core import log
@@ -31,7 +34,7 @@ from googlecloudsdk.core.util import semver
 
 
 COMMAND_DESCRIPTION = """
-Fetch credentials for a running cluster on {kind}.
+Fetch credentials for a running Anthos cluster on {kind}.
 
 This command updates a kubeconfig file with appropriate credentials and
 endpoint information to point kubectl at a specific cluster on {kind}.
@@ -66,7 +69,7 @@ $ {command} my-cluster --location=us-west1
 
 
 def GenerateContext(kind, project_id, location, cluster_id):
-  """Generates a kubeconfig context for an Anthos Multi-cloud cluster.
+  """Generates a kubeconfig context for an Anthos Multi-Cloud cluster.
 
   Args:
     kind: str, kind of the cluster e.g. aws, azure.
@@ -122,8 +125,10 @@ def GenerateKubeconfig(cluster, context, cmd_path, cmd_args, private_ep=False):
   # Only default to use Connect Gateway for 1.21+.
   version = _GetSemver(cluster)
   if private_ep or version < semver.SemVer('1.21.0'):
+    _CheckPreqs(private_endpoint=True)
     _PrivateVPCKubeconfig(kubeconfig, cluster, context, cmd_path, cmd_args)
   else:
+    _CheckPreqs()
     _ConnectGatewayKubeconfig(kubeconfig, cluster, context, cmd_path)
 
   kubeconfig.SetCurrentContext(context)
@@ -131,6 +136,15 @@ def GenerateKubeconfig(cluster, context, cmd_path, cmd_args, private_ep=False):
   log.status.Print(
       'A new kubeconfig entry "{}" has been generated and set as the '
       'current context.'.format(context))
+
+
+def _CheckPreqs(private_endpoint=False):
+  """Checks the prerequisites to run get-credentials commands."""
+  util.CheckKubectlInstalled()
+  if not private_endpoint:
+    project_id = properties.VALUES.core.project.GetOrFail()
+    connect_gateway_util.CheckGatewayApiEnablement(project_id,
+                                                   _GetConnectGatewayEndpoint())
 
 
 def _ConnectGatewayKubeconfig(kubeconfig, cluster, context, cmd_path):

@@ -27,6 +27,45 @@ from googlecloudsdk.core.util import debug_output
 DEFAULT_CONTENT_TYPE = 'application/octet-stream'
 
 
+class UserBucketArgs:
+  """Contains user flag values affecting cloud bucket settings."""
+
+  def __init__(self,
+               default_encryption_key=None,
+               default_storage_class=None,
+               location=None,
+               retention_period=None,
+               uniform_bucket_level_access=None,
+               versioning=None,
+               web_error_page=None,
+               web_main_page_suffix=None):
+    """Initializes class, binding flag values to it."""
+    self.default_encryption_key = default_encryption_key
+    self.default_storage_class = default_storage_class
+    self.location = location
+    self.retention_period = retention_period
+    self.uniform_bucket_level_access = uniform_bucket_level_access
+    self.versioning = versioning
+    self.web_error_page = web_error_page
+    self.web_main_page_suffix = web_main_page_suffix
+
+  def __eq__(self, other):
+    if not isinstance(other, type(self)):
+      return NotImplemented
+    return (self.default_encryption_key == other.default_encryption_key and
+            self.default_storage_class == other.default_storage_class and
+            self.location == other.location and
+            self.retention_period == other.retention_period and
+            self.uniform_bucket_level_access
+            == other.uniform_bucket_level_access and
+            self.versioning == other.versioning and
+            self.web_error_page == other.web_error_page and
+            self.web_main_page_suffix == other.web_main_page_suffix)
+
+  def __repr__(self):
+    return debug_output.generic_repr(self)
+
+
 class UserRequestArgs:
   """Class contains user flags and should be passed to RequestConfig factory.
 

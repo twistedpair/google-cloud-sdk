@@ -8016,11 +8016,14 @@ class GoogleCloudDialogflowV2AutomatedAgentConfig(_messages.Message):
     agent: Required. ID of the Dialogflow agent environment to use. This
       project needs to either be the same project as the conversation or you
       need to grant `service-@gcp-sa-dialogflow.iam.gserviceaccount.com` the
-      `Dialogflow API Service Agent` role in this project. Format:
-      `projects//locations//agent/environments/`. If environment is not
-      specified, the default `draft` environment is used. Refer to [DetectInte
-      ntRequest](/dialogflow/docs/reference/rpc/google.cloud.dialogflow.v2#goo
-      gle.cloud.dialogflow.v2.DetectIntentRequest) for more details.
+      `Dialogflow API Service Agent` role in this project. - For ES agents,
+      use format: `projects//locations//agent/environments/`. If environment
+      is not specified, the default `draft` environment is used. Refer to [Det
+      ectIntentRequest](/dialogflow/docs/reference/rpc/google.cloud.dialogflow
+      .v2#google.cloud.dialogflow.v2.DetectIntentRequest) for more details. -
+      For CX agents, use format `projects//locations//agents//environments/`.
+      If environment is not specified, the default `draft` environment is
+      used.
   """
 
   agent = _messages.StringField(1)
@@ -8479,9 +8482,11 @@ class GoogleCloudDialogflowV2ConversationProfile(_messages.Message):
     humanAgentHandoffConfig: Configuration for connecting to a live agent.
       Currently, this feature is not general available, please contact Google
       to get access.
-    languageCode: Language which represents the conversationProfile. If
-      unspecified, the default language code en-us applies. Users need to
-      create a ConversationProfile for each language they want to support.
+    languageCode: Language code for the conversation profile. If not
+      specified, the language is en-US. Language at ConversationProfile should
+      be set for all non en-US languages. This should be a
+      [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag.
+      Example: "en-US".
     loggingConfig: Configuration for logging conversation lifecycle events.
     name: The unique identifier of this conversation profile. Format:
       `projects//locations//conversationProfiles/`.
@@ -8489,7 +8494,12 @@ class GoogleCloudDialogflowV2ConversationProfile(_messages.Message):
       message events. Event will be sent in format of ConversationEvent
     notificationConfig: Configuration for publishing conversation lifecycle
       events.
+    securitySettings: Name of the CX SecuritySettings reference for the agent.
+      Format: `projects//locations//securitySettings/`.
     sttConfig: Settings for speech transcription.
+    timeZone: The time zone of this conversational profile from the [time zone
+      database](https://www.iana.org/time-zones), e.g., America/New_York,
+      Europe/Paris. Defaults to America/New_York.
     updateTime: Output only. Update time of the conversation profile.
   """
 
@@ -8503,8 +8513,10 @@ class GoogleCloudDialogflowV2ConversationProfile(_messages.Message):
   name = _messages.StringField(8)
   newMessageEventNotificationConfig = _messages.MessageField('GoogleCloudDialogflowV2NotificationConfig', 9)
   notificationConfig = _messages.MessageField('GoogleCloudDialogflowV2NotificationConfig', 10)
-  sttConfig = _messages.MessageField('GoogleCloudDialogflowV2SpeechToTextConfig', 11)
-  updateTime = _messages.StringField(12)
+  securitySettings = _messages.StringField(11)
+  sttConfig = _messages.MessageField('GoogleCloudDialogflowV2SpeechToTextConfig', 12)
+  timeZone = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class GoogleCloudDialogflowV2DetectIntentRequest(_messages.Message):
@@ -9278,7 +9290,8 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionQueryConfig(_mes
       there is no recommended value. Tune this value by starting from a very
       low value and slowly increasing until you have desired results. If this
       field is not set, it defaults to 0.0, which means that all suggestions
-      are returned. Supported features: ARTICLE_SUGGESTION.
+      are returned. Supported features: ARTICLE_SUGGESTION, FAQ, SMART_REPLY,
+      SMART_COMPOSE.
     contextFilterSettings: Determines how recent conversation context is
       filtered when generating suggestions. If unspecified, no messages will
       be dropped.
@@ -10750,9 +10763,9 @@ class GoogleCloudDialogflowV2NotificationConfig(_messages.Message):
     r"""Format of message.
 
     Values:
-      MESSAGE_FORMAT_UNSPECIFIED: If it is unspeified, PROTO will be used.
-      PROTO: Pubsub message will be serialized proto.
-      JSON: Pubsub message will be json.
+      MESSAGE_FORMAT_UNSPECIFIED: If it is unspecified, PROTO will be used.
+      PROTO: Pub/Sub message will be serialized proto.
+      JSON: Pub/Sub message will be json.
     """
     MESSAGE_FORMAT_UNSPECIFIED = 0
     PROTO = 1

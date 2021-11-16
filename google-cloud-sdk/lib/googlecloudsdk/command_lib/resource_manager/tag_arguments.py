@@ -91,7 +91,7 @@ def AddPurposeDataArgToParser(parser):
       type=arg_parsers.ArgDict(
           spec={"network": str},
           max_length=1,
-          ),
+      ),
       help=("Purpose data of the TagKey that can only be set on creation. "
             "This data is validated by the policy system that corresponds"
             " to the purpose."))

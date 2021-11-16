@@ -588,23 +588,12 @@ def PasswordPolicy(sql_messages,
       password_policy_reuse_interval is not None,
       password_policy_disallow_username_substring is not None,
       password_policy_password_change_interval is not None,
-      clear_password_policy is not None,
   ])
-  if not should_generate_policy:
+  if not should_generate_policy or clear_password_policy:
     return None
 
   # Config exists, generate password policy.
   password_policy = sql_messages.PasswordValidationPolicy()
-
-  # Clear password policy is to replace existing policy with an empty one.
-  if clear_password_policy:
-    # TODO(b/202780321): Use clear fields instead.
-    password_policy.minLength = 0
-    password_policy.complexity = sql_messages.PasswordValidationPolicy.ComplexityValueValuesEnum.COMPLEXITY_UNSPECIFIED
-    password_policy.reuseInterval = 0
-    password_policy.disallowUsernameSubstring = False
-    password_policy.passwordChangeInterval = '0s'
-    return password_policy
 
   if password_policy_min_length is not None:
     password_policy.minLength = password_policy_min_length

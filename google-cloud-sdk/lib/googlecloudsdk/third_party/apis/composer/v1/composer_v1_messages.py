@@ -886,12 +886,14 @@ class OperationMetadata(_messages.Message):
       DELETE: A resource deletion operation.
       UPDATE: A resource update operation.
       CHECK: A resource check operation.
+      STORE_STATE: Stores the state of the resource operation.
     """
     TYPE_UNSPECIFIED = 0
     CREATE = 1
     DELETE = 2
     UPDATE = 3
     CHECK = 4
+    STORE_STATE = 5
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current operation state.

@@ -355,6 +355,141 @@ class ArtifactregistryV1alpha1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Creates a repository. The returned Operation will finish once the repository has been created. Its response will be the created Repository.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories',
+        http_method='POST',
+        method_id='artifactregistry.projects.locations.repositories.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['repositoryId'],
+        relative_path='v1alpha1/{+parent}/repositories',
+        request_field='googleDevtoolsArtifactregistryV1alpha1Repository',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a repository and all of its contents. The returned Operation will finish once the repository has been deleted. It will not have any Operation metadata and will return a google.protobuf.Empty response.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}',
+        http_method='DELETE',
+        method_id='artifactregistry.projects.locations.repositories.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a repository.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleDevtoolsArtifactregistryV1alpha1Repository) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.repositories.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesGetRequest',
+        response_type_name='GoogleDevtoolsArtifactregistryV1alpha1Repository',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists repositories.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleDevtoolsArtifactregistryV1alpha1ListRepositoriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.repositories.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/repositories',
+        request_field='',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesListRequest',
+        response_type_name='GoogleDevtoolsArtifactregistryV1alpha1ListRepositoriesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a repository.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleDevtoolsArtifactregistryV1alpha1Repository) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}',
+        http_method='PATCH',
+        method_id='artifactregistry.projects.locations.repositories.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='googleDevtoolsArtifactregistryV1alpha1Repository',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesPatchRequest',
+        response_type_name='GoogleDevtoolsArtifactregistryV1alpha1Repository',
+        supports_download=False,
+    )
+
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 

@@ -231,13 +231,23 @@ class ClusterNetworking(_messages.Message):
     clusterIpv4CidrBlocks: Required. All pods in the cluster are assigned an
       RFC1918 IPv4 address from these blocks. Only a single block is
       supported. This field cannot be changed after creation.
+    clusterIpv6CidrBlocks: Immutable. If specified, dual stack mode is enabled
+      and all pods in the cluster are assigned an IPv6 address from these
+      blocks alongside from an IPv4 address. Only a single block is supported.
+      This field cannot be changed after creation.
     servicesIpv4CidrBlocks: Required. All services in the cluster are assigned
       an RFC1918 IPv4 address from these blocks. Only a single block is
+      supported. This field cannot be changed after creation.
+    servicesIpv6CidrBlocks: Immutable. If specified, dual stack mode is
+      enabled and all services in the cluster are assigned an IPv6 address
+      from these blocks alongside from an IPv4 address. Only a single block is
       supported. This field cannot be changed after creation.
   """
 
   clusterIpv4CidrBlocks = _messages.StringField(1, repeated=True)
-  servicesIpv4CidrBlocks = _messages.StringField(2, repeated=True)
+  clusterIpv6CidrBlocks = _messages.StringField(2, repeated=True)
+  servicesIpv4CidrBlocks = _messages.StringField(3, repeated=True)
+  servicesIpv6CidrBlocks = _messages.StringField(4, repeated=True)
 
 
 class ClusterUser(_messages.Message):
@@ -377,12 +387,16 @@ class KubernetesedgeProjectsLocationsClustersGetIamPolicyRequest(_messages.Messa
   r"""A KubernetesedgeProjectsLocationsClustersGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -595,12 +609,16 @@ class KubernetesedgeProjectsLocationsMachinesGetIamPolicyRequest(_messages.Messa
   r"""A KubernetesedgeProjectsLocationsMachinesGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -675,12 +693,16 @@ class KubernetesedgeProjectsLocationsNodePoolsGetIamPolicyRequest(_messages.Mess
   r"""A KubernetesedgeProjectsLocationsNodePoolsGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -776,12 +798,16 @@ class KubernetesedgeProjectsLocationsSitesGetIamPolicyRequest(_messages.Message)
   r"""A KubernetesedgeProjectsLocationsSitesGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.

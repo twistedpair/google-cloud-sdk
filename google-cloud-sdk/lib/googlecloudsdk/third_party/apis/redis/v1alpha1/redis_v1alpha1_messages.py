@@ -177,7 +177,8 @@ class Instance(_messages.Message):
     ConnectModeValueValuesEnum: Optional. The network connect mode of the
       Redis instance. If not provided, the connect mode defaults to
       DIRECT_PEERING.
-    ReadReplicasModeValueValuesEnum: Optional. Read replica mode.
+    ReadReplicasModeValueValuesEnum: Optional. Read replica mode. Can only be
+      specified when trying to create the instance.
     StateValueValuesEnum: Output only. The current state of this instance.
     TierValueValuesEnum: Required. The service tier of the instance.
     TransitEncryptionModeValueValuesEnum: Optional. The TLS mode of the Redis
@@ -249,7 +250,8 @@ class Instance(_messages.Message):
       some lag behind the primary. Write requests must target 'host'.
     readEndpointPort: Output only. The port number of the exposed readonly
       redis endpoint. Standard tier only. Write requests should target 'port'.
-    readReplicasMode: Optional. Read replica mode.
+    readReplicasMode: Optional. Read replica mode. Can only be specified when
+      trying to create the instance.
     redisConfigs: Optional. Redis configuration parameters, according to
       http://redis.io/topics/config. Currently, the only supported parameters
       are: Redis version 3.2 and newer: * maxmemory-policy * notify-keyspace-
@@ -261,9 +263,11 @@ class Instance(_messages.Message):
       are: * `REDIS_3_2` for Redis 3.2 compatibility * `REDIS_4_0` for Redis
       4.0 compatibility (default) * `REDIS_5_0` for Redis 5.0 compatibility *
       `REDIS_6_X` for Redis 6.x compatibility
-    replicaCount: Optional. The number of replica nodes. Valid range for
-      standard tier is [1-5] and defaults to 2. Valid value for basic tier is
-      0 and defaults to 0.
+    replicaCount: Optional. The number of replica nodes. The valid range for
+      the Standard Tier with read replicas enabled is [1-5] and defaults to 2.
+      If read replicas are not enabled for a Standard Tier instance, the only
+      valid value is 1 and the default is 1. The valid value for basic tier is
+      0 and the default is also 0.
     reservedIpRange: Optional. For DIRECT_PEERING mode, the CIDR range of
       internal addresses that are reserved for this instance. Range must be
       unique and non-overlapping with existing subnets in an authorized
@@ -306,15 +310,17 @@ class Instance(_messages.Message):
     PRIVATE_SERVICE_ACCESS = 2
 
   class ReadReplicasModeValueValuesEnum(_messages.Enum):
-    r"""Optional. Read replica mode.
+    r"""Optional. Read replica mode. Can only be specified when trying to
+    create the instance.
 
     Values:
       READ_REPLICAS_MODE_UNSPECIFIED: If not set, Memorystore Redis backend
-        will pick the mode based on other fields in the request.
+        will default to READ_REPLICAS_DISABLED.
       READ_REPLICAS_DISABLED: If disabled, read endpoint will not be provided
         and the instance cannot scale up or down the number of replicas.
       READ_REPLICAS_ENABLED: If enabled, read endpoint will be provided and
-        the instance can scale up and down the number of replicas.
+        the instance can scale up and down the number of replicas. Not valid
+        for basic tier.
     """
     READ_REPLICAS_MODE_UNSPECIFIED = 0
     READ_REPLICAS_DISABLED = 1

@@ -451,11 +451,11 @@ def _KillProcIfRunning(proc):
     if code is None or proc.poll() is None:
       proc.terminate()
     try:
-      if not proc.stdin.closed:
+      if proc.stdin and not proc.stdin.closed:
         proc.stdin.close()
-      if not proc.stdout.closed:
+      if proc.stdout and not proc.stdout.closed:
         proc.stdout.close()
-      if not proc.stderr.closed:
+      if proc.stderr and not proc.stderr.closed:
         proc.stderr.close()
     except OSError:
       pass  # Clean Up
@@ -545,7 +545,7 @@ def ExecWithStreamingOutput(args,
             std_err_future.Get()
         except Exception as e:
           _KillProcIfRunning(p)
-          raise  OutputStreamProcessingException(e)
+          raise OutputStreamProcessingException(e)
 
       except OSError as err:
         if err.errno == errno.EACCES:

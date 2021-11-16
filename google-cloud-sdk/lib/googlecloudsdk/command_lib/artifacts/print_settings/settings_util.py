@@ -36,6 +36,7 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import creds
+from googlecloudsdk.core.credentials import exceptions as creds_exceptions
 from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
@@ -157,7 +158,7 @@ def _GetServiceAccountCreds(args):
 
   account = properties.VALUES.core.account.Get()
   if not account:
-    raise store.NoActiveAccountException()
+    raise creds_exceptions.NoActiveAccountException()
   cred = store.Load(account, prevent_refresh=True, use_google_auth=True)
   if not cred:
     raise store.NoCredentialsForAccountException(account)

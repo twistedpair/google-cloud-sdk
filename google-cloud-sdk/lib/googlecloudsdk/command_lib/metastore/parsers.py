@@ -46,6 +46,25 @@ def ParseNetwork(network):
       }, collection='compute.networks').RelativeName()
 
 
+def ParseSubnetwork(subnetwork, location=None):
+  """Parses a subnetwork name using configuration properties for fallback.
+
+  Args:
+    subnetwork: str, the subnetwork's ID, fully-qualified URL, or relative name
+    location: str, the location ID
+
+  Returns:
+    str: the relative name of the network resource
+  """
+  return resources.REGISTRY.Parse(
+      subnetwork,
+      params={
+          'project': GetProject,
+          'region': _GetConfigLocationProperty if location is None else location
+      },
+      collection='compute.subnetworks').RelativeName()
+
+
 def ParseSecretManagerSecretVersion(secret_manager_version):
   """Parses a secret manager secret version name using configuration properties for fallback.
 
@@ -73,3 +92,8 @@ def ParseCloudKmsKey(cloud_kms_key):
       cloud_kms_key,
       collection='cloudkms.projects.locations.keyRings.cryptoKeys'
   ).RelativeName()
+
+
+def _GetConfigLocationProperty():
+  """Returns the value of the metastore/location config property."""
+  return properties.VALUES.metastore.location.GetOrFail()

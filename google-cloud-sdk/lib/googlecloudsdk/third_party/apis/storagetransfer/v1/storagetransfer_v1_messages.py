@@ -523,8 +523,8 @@ class ObjectConditions(_messages.Message):
   modification time" refers to the time of the last change to the object's
   content or metadata - specifically, this is the `updated` property of Cloud
   Storage objects, the `LastModified` field of S3 objects, and the `Last-
-  Modified` header of Azure blobs. Transfers that use PosixFilesystem and have
-  a Cloud Storage source don't support `ObjectConditions`.
+  Modified` header of Azure blobs. Transfers with a PosixFilesystem source or
+  destination don't support `ObjectConditions`.
 
   Fields:
     excludePrefixes: If you specify `exclude_prefixes`, Storage Transfer
@@ -1389,6 +1389,10 @@ class TransferSpec(_messages.Message):
       objects in a data sink.
     posixDataSink: A POSIX Filesystem data sink.
     posixDataSource: A POSIX Filesystem data source.
+    sinkAgentPoolName: Specifies the agent pool name associated with the posix
+      data sink. When unspecified, the default name is used.
+    sourceAgentPoolName: Specifies the agent pool name associated with the
+      posix data source. When unspecified, the default name is used.
     transferOptions: If the option delete_objects_unique_in_sink is `true` and
       time-based object conditions such as 'last modification time' are
       specified, the request fails with an INVALID_ARGUMENT error.
@@ -1402,7 +1406,9 @@ class TransferSpec(_messages.Message):
   objectConditions = _messages.MessageField('ObjectConditions', 6)
   posixDataSink = _messages.MessageField('PosixFilesystem', 7)
   posixDataSource = _messages.MessageField('PosixFilesystem', 8)
-  transferOptions = _messages.MessageField('TransferOptions', 9)
+  sinkAgentPoolName = _messages.StringField(9)
+  sourceAgentPoolName = _messages.StringField(10)
+  transferOptions = _messages.MessageField('TransferOptions', 11)
 
 
 class UpdateTransferJobRequest(_messages.Message):

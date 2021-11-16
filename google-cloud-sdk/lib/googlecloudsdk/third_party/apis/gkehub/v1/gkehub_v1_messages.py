@@ -220,13 +220,17 @@ class ConfigManagementConfigSync(_messages.Message):
       ConfigSync resources will be managed depends on the presence of git
       field.
     git: Git repo configuration for the cluster.
+    preventDrift: Set to true to enable the Config Sync admission webhook to
+      prevent drifts. If set to `false`, disables the Config Sync admission
+      webhook and does not prevent drifts.
     sourceFormat: Specifies whether the Config Sync Repo is in "hierarchical"
       or "unstructured" mode.
   """
 
   enabled = _messages.BooleanField(1)
   git = _messages.MessageField('ConfigManagementGitConfig', 2)
-  sourceFormat = _messages.StringField(3)
+  preventDrift = _messages.BooleanField(3)
+  sourceFormat = _messages.StringField(4)
 
 
 class ConfigManagementConfigSyncDeploymentState(_messages.Message):
@@ -470,7 +474,9 @@ class ConfigManagementGitConfig(_messages.Message):
     policyDir: The path within the Git repository that represents the top
       level of the repo to sync. Default: the root directory of the
       repository.
-    secretType: Type of secret configured for access to the Git repo.
+    secretType: Type of secret configured for access to the Git repo. Must be
+      one of ssh, cookiefile, gcenode, token, gcpserviceaccount or none. The
+      validation of this is case-sensitive. Required.
     syncBranch: The branch of the repository to sync from. Default: master.
     syncRepo: The URL of the Git repository to use as the source of truth.
     syncRev: Git revision (tag or hash) to check out. Default HEAD.
@@ -1175,12 +1181,16 @@ class GkehubProjectsLocationsFeaturesGetIamPolicyRequest(_messages.Message):
   r"""A GkehubProjectsLocationsFeaturesGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -1414,12 +1424,16 @@ class GkehubProjectsLocationsMembershipsGetIamPolicyRequest(_messages.Message):
   r"""A GkehubProjectsLocationsMembershipsGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.

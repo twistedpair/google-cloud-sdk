@@ -94,3 +94,16 @@ lun:
     attribute_name: lun
     help: Bare Metal Solution volume LUN.
   disable_auto_completers: false
+
+snapshot:
+  name: snapshot
+  collection: baremetalsolution.projects.locations.volumes.snapshots
+  attributes:
+  - *project
+  - *region
+  - *volume
+  - &snapshot
+    parameter_name: snapshotsId
+    attribute_name: snapshot
+    help: Bare Metal Solution volume snapshot.
+  disable_auto_completers: false

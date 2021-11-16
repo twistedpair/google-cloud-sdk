@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Utils for manipulating Transfer resource names."""
+"""Utils for manipulating transfer resource names."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -22,9 +22,9 @@ import re
 
 from googlecloudsdk.core import properties
 
-_JOBS_PREFIX_REGEX = r'^transferJobs/'
-_OPERATIONS_PREFIX_REGEX = r'^transferOperations/'
-_AGENT_POOLS_PREFIX_REGEX = r'^projects\/.+\/agentPools\/.+'
+_JOBS_PREFIX_REGEX = r'^transferJobs/.+'
+_OPERATIONS_PREFIX_REGEX = r'^transferOperations/.+'
+_AGENT_POOLS_PREFIX_REGEX = r'^projects\/(.+)\/agentPools\/(.+)'
 
 _JOBS_PREFIX_STRING = 'transferJobs/'
 _OPERATIONS_PREFIX_STRING = 'transferOperations/'
@@ -80,13 +80,32 @@ def add_agent_pool_prefix(agent_pool_string_or_list):
   return result
 
 
-def remove_job_prefix(operation_string):
-  if operation_string.startswith(_JOBS_PREFIX_STRING):
-    return operation_string[len(_JOBS_PREFIX_STRING):]
-  return operation_string
+def remove_job_prefix(job_string):
+  """Removes prefix from transfer job if necessary."""
+  if job_string.startswith(_JOBS_PREFIX_STRING):
+    return job_string[len(_JOBS_PREFIX_STRING):]
+  return job_string
 
 
 def remove_operation_prefix(operation_string):
+  """Removes prefix from transfer operation if necessary."""
   if operation_string.startswith(_OPERATIONS_PREFIX_STRING):
     return operation_string[len(_OPERATIONS_PREFIX_STRING):]
   return operation_string
+
+
+def remove_agent_pool_prefix(agent_pool_string):
+  """Removes prefix from transfer agent pool if necessary."""
+  prefix_search_result = re.search(_AGENT_POOLS_PREFIX_REGEX, agent_pool_string)
+  if prefix_search_result:
+    return prefix_search_result.group(2)
+  return agent_pool_string
+
+
+def get_agent_pool_project_from_string(agent_pool_string):
+  prefix_search_result = re.search(_AGENT_POOLS_PREFIX_REGEX, agent_pool_string)
+  if prefix_search_result:
+    return prefix_search_result.group(1)
+  raise ValueError(
+      'Full agent pool prefix required to extract project from string'
+      ' (e.g. "projects/[project ID]/agentPools/[pool name]).')

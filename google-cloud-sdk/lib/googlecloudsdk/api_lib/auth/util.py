@@ -123,7 +123,7 @@ def DoInstalledAppBrowserFlowGoogleAuth(launch_browser,
   google_auth_flow = c_flow.CreateGoogleAuthFlow(scopes, client_id_file)
   try:
     user_creds = c_flow.RunGoogleAuthFlow(google_auth_flow, launch_browser)
-    return c_google_auth.UserCredWithReauth.FromGoogleAuthUserCredentials(
+    return c_google_auth.Credentials.FromGoogleAuthUserCredentials(
         user_creds)
   except c_flow.Error as e:
     if context_aware.IsContextAwareAccessDeniedError(e):

@@ -102,13 +102,13 @@ def LoadBuildArtifactFile(path):
 
 
 def CreateReleaseConfig(source, gcs_source_staging_dir, ignore_file, images,
-                        build_artifacts, description):
+                        build_artifacts, description, skaffold_version):
   """Returns a build config."""
   messages = client_util.GetMessagesModule(client_util.GetClientInstance())
   release_config = messages.Release()
   release_config.description = description
   release_config = _SetSource(release_config, source, gcs_source_staging_dir,
-                              ignore_file)
+                              ignore_file, skaffold_version)
   release_config = _SetImages(messages, release_config, images, build_artifacts)
 
   return release_config
@@ -118,6 +118,7 @@ def _SetSource(release_config,
                source,
                gcs_source_staging_dir,
                ignore_file,
+               skaffold_version,
                hide_logs=False):
   """Set the source for the release config."""
   safe_project_id = staging_bucket_util.GetSafeProject()
@@ -205,6 +206,10 @@ def _SetSource(release_config,
       staged_source_obj = gcs_client.CopyFileToGCS(source, gcs_source_staging)
       release_config.skaffoldConfigUri = 'gs://{bucket}/{object}'.format(
           bucket=staged_source_obj.bucket, object=staged_source_obj.name)
+
+  if skaffold_version:
+    release_config.skaffoldVersion = skaffold_version
+
   return release_config
 
 

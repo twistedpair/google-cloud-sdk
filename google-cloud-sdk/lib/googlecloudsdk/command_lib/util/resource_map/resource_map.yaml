@@ -19,16 +19,19 @@ accessapproval:
     - v1
 accesscontextmanager:
   accessPolicies:
+    home_directory: access_context_manager.policies
     supported_apis:
     - v1
     - v1alpha
     - v1beta
   accessPolicies.accessLevels:
+    home_directory: access_context_manager.levels
     supported_apis:
     - v1
     - v1alpha
     - v1beta
   accessPolicies.servicePerimeters:
+    home_directory: access_context_manager.perimeters
     supported_apis:
     - v1
     - v1alpha
@@ -749,6 +752,7 @@ artifactregistry:
     - v1beta1
     - v1beta2
   projects.locations.repositories:
+    home_directory: artifacts.repositories
     supported_apis:
     - v1beta1
     - v1beta2
@@ -800,9 +804,11 @@ baremetalsolution:
     - v2
 bigquery:
   datasets:
+    home_directory: bq.datasets
     supported_apis:
     - v2
   jobs:
+    home_directory: bq.jobs
     supported_apis:
     - v2
   projects:
@@ -812,6 +818,7 @@ bigquery:
     supported_apis:
     - v2
   tables:
+    home_directory: bq.tables
     supported_apis:
     - v2
 bigquerydatatransfer:
@@ -847,9 +854,11 @@ bigtableadmin:
     supported_apis:
     - v2
   projects.instances:
+    home_directory: bigtable.instances
     supported_apis:
     - v2
   projects.instances.appProfiles:
+    home_directory: bigtable.app_profiles
     supported_apis:
     - v2
   projects.instances.clusters:
@@ -859,6 +868,7 @@ bigtableadmin:
     supported_apis:
     - v2
   projects.instances.tables:
+    home_directory: bigtable.instances.tables
     supported_apis:
     - v2
   projects.locations:
@@ -991,6 +1001,7 @@ cloudbuild:
     - v1
     - v1beta1
   projects.triggers:
+    home_directory: builds.triggers
     supported_apis:
     - v1
   projects.workerPools:
@@ -1115,6 +1126,7 @@ cloudidentity:
     - v1
     - v1beta1
   groups:
+    home_directory: identity.groups
     supported_apis:
     - v1
     - v1alpha1
@@ -1151,9 +1163,11 @@ cloudkms:
     supported_apis:
     - v1
   projects.locations.keyRings:
+    home_directory: kms.keyrings
     supported_apis:
     - v1
   projects.locations.keyRings.cryptoKeys:
+    home_directory: kms.keys
     supported_apis:
     - v1
   projects.locations.keyRings.cryptoKeys.cryptoKeyVersions:
@@ -1164,12 +1178,14 @@ cloudkms:
     - v1
 cloudresourcemanager:
   folders:
+    home_directory: resource_manager.folder
     supported_apis:
     - v2
     - v2alpha1
     - v2beta1
     - v3
   liens:
+    home_directory: resource_manager.liens
     supported_apis:
     - v1
     - v3
@@ -1293,6 +1309,7 @@ compute:
     - beta
     - v1
   addresses:
+    home_directory: compute.addresses
     supported_apis:
     - alpha
     - beta
@@ -1303,11 +1320,13 @@ compute:
     - beta
     - v1
   backendBuckets:
+    home_directory: compute.backend_buckets
     supported_apis:
     - alpha
     - beta
     - v1
   backendServices:
+    home_directory: compute.backend_services
     supported_apis:
     - alpha
     - beta
@@ -1318,11 +1337,13 @@ compute:
     - beta
     - v1
   disks:
+    home_directory: compute.disks
     supported_apis:
     - alpha
     - beta
     - v1
   externalVpnGateways:
+    home_directory: compute.external_vpn_gateways
     supported_apis:
     - alpha
     - beta
@@ -1333,11 +1354,13 @@ compute:
     - beta
     - v1
   firewalls:
+    home_directory: compute.firewall_rules
     supported_apis:
     - alpha
     - beta
     - v1
   forwardingRules:
+    home_directory: compute.forwarding_rules
     supported_apis:
     - alpha
     - beta
@@ -1376,16 +1399,19 @@ compute:
     - beta
     - v1
   healthChecks:
+    home_directory: compute.health_checks
     supported_apis:
     - alpha
     - beta
     - v1
   httpHealthChecks:
+    home_directory: compute.http_health_checks
     supported_apis:
     - alpha
     - beta
     - v1
   httpsHealthChecks:
+    home_directory: compute.https_health_checks
     supported_apis:
     - alpha
     - beta
@@ -1396,6 +1422,7 @@ compute:
     - beta
     - v1
   images:
+    home_directory: compute.images
     supported_apis:
     - alpha
     - beta
@@ -1406,31 +1433,37 @@ compute:
     - beta
     - v1
   instanceGroups:
+    home_directory: compute.instance_groups
     supported_apis:
     - alpha
     - beta
     - v1
   instanceTemplates:
+    home_directory: compute.instance_templates
     supported_apis:
     - alpha
     - beta
     - v1
   instances:
+    home_directory: compute.instances
     supported_apis:
     - alpha
     - beta
     - v1
   interconnectAttachments:
+    home_directory: compute.interconnects.attachments
     supported_apis:
     - alpha
     - beta
     - v1
   interconnectLocations:
+    home_directory: compute.interconnects.locations
     supported_apis:
     - alpha
     - beta
     - v1
   interconnects:
+    home_directory: compute.interconnects
     supported_apis:
     - alpha
     - beta
@@ -1458,6 +1491,7 @@ compute:
     supported_apis:
     - alpha
   networkEndpointGroups:
+    home_directory: compute.network_endpoint_groups
     supported_apis:
     - alpha
     - beta
@@ -1466,6 +1500,7 @@ compute:
     supported_apis:
     - alpha
   networks:
+    home_directory: compute.networks
     supported_apis:
     - alpha
     - beta
@@ -1476,11 +1511,13 @@ compute:
     - beta
     - v1
   nodeGroups:
+    home_directory: compute.sole_tenancy.node_groups
     supported_apis:
     - alpha
     - beta
     - v1
   nodeTemplates:
+    home_directory: compute.sole_tenancy.node_templates
     supported_apis:
     - alpha
     - beta
@@ -1619,26 +1656,31 @@ compute:
     - beta
     - v1
   reservations:
+    home_directory: compute.reservations
     supported_apis:
     - alpha
     - beta
     - v1
   resourcePolicies:
+    home_directory: compute.resource_policies
     supported_apis:
     - alpha
     - beta
     - v1
   routers:
+    home_directory: compute.routers
     supported_apis:
     - alpha
     - beta
     - v1
   routes:
+    home_directory: compute.routes
     supported_apis:
     - alpha
     - beta
     - v1
   securityPolicies:
+    home_directory: compute.security_policies
     supported_apis:
     - alpha
     - beta
@@ -1654,76 +1696,91 @@ compute:
     - beta
     - v1
   snapshots:
+    home_directory: compute.snapshots
     supported_apis:
     - alpha
     - beta
     - v1
   sslCertificates:
+    home_directory: compute.ssl_certificates
     supported_apis:
     - alpha
     - beta
     - v1
   sslPolicies:
+    home_directory: compute.ssl_policies
     supported_apis:
     - alpha
     - beta
     - v1
   subnetworks:
+    home_directory: compute.networks.subnets
     supported_apis:
     - alpha
     - beta
     - v1
   targetGrpcProxies:
+    home_directory: compute.target_grpc_proxies
     supported_apis:
     - alpha
     - beta
     - v1
   targetHttpProxies:
+    home_directory: compute.target_http_proxies
     supported_apis:
     - alpha
     - beta
     - v1
   targetHttpsProxies:
+    home_directory: compute.target_https_proxies
     supported_apis:
     - alpha
     - beta
     - v1
   targetInstances:
+    home_directory: compute.target_instances
     supported_apis:
     - alpha
     - beta
     - v1
   targetPools:
+    home_directory: compute.target_pools
     supported_apis:
     - alpha
     - beta
     - v1
   targetSslProxies:
+    home_directory: compute.target_ssl_proxies
     supported_apis:
     - alpha
     - beta
     - v1
   targetTcpProxies:
+    home_directory: compute.target_tcp_proxies
     supported_apis:
     - alpha
     - beta
     - v1
   targetVpnGateways:
+    home_directory: compute.target_vpn_gateways
     supported_apis:
     - alpha
     - beta
     - v1
   urlMaps:
+    home_directory: compute.url_maps
     supported_apis:
     - alpha
     - beta
     - v1
   vpnGateways:
+    home_directory: compute.vpn_gateways
     supported_apis:
     - alpha
     - beta
     - v1
   vpnTunnels:
+    home_directory: compute.vpn_tunnels
     supported_apis:
     - alpha
     - beta
@@ -1772,11 +1829,13 @@ container:
     - v1alpha1
     - v1beta1
   projects.locations.clusters:
+    home_directory: container.clusters
     supported_apis:
     - v1
     - v1alpha1
     - v1beta1
   projects.locations.clusters.nodePools:
+    home_directory: container.node_pools
     supported_apis:
     - v1
     - v1alpha1
@@ -1905,6 +1964,7 @@ dataflow:
     supported_apis:
     - v1b3
   projects.jobs:
+    home_directory: dataflow.jobs
     supported_apis:
     - v1b3
   projects.locations:
@@ -2296,11 +2356,13 @@ dns:
     - v1alpha2
     - v1beta2
   managedZones:
+    home_directory: dns.managed_zones
     supported_apis:
     - v1
     - v1alpha2
     - v1beta2
   policies:
+    home_directory: dns.policies
     supported_apis:
     - v1
     - v1alpha2
@@ -2311,6 +2373,7 @@ dns:
     - v1alpha2
     - v1beta2
   resourceRecordSets:
+    home_directory: dns.record_sets
     supported_apis:
     - v1
     - v1alpha2
@@ -2509,6 +2572,7 @@ firestore:
     - v1
     - v1beta1
   projects.databases.indexes:
+    home_directory: firestore.indexes
     supported_apis:
     - v1beta1
   projects.databases.operations:
@@ -2789,15 +2853,18 @@ iam:
     supported_apis:
     - v1
   projects.serviceAccounts:
+    home_directory: iam.service_accounts
     supported_apis:
     - v1
   projects.serviceAccounts.identityBindings:
     supported_apis:
     - v1
   projects.serviceAccounts.keys:
+    home_directory: iam.service_accounts.keys
     supported_apis:
     - v1
   roles:
+    home_directory: iam.roles
     supported_apis:
     - v1
 iamcredentials:
@@ -2879,16 +2946,6 @@ kubernetesedge:
     supported_apis:
     - v1alpha1
   projects.locations.vpnConnections:
-    supported_apis:
-    - v1alpha1
-labelmanager:
-  labelKeys:
-    supported_apis:
-    - v1alpha1
-  labelValues:
-    supported_apis:
-    - v1alpha1
-  operations:
     supported_apis:
     - v1alpha1
 language:
@@ -3013,6 +3070,7 @@ logging:
     supported_apis:
     - v2
   sinks:
+    home_directory: logging.sinks
     supported_apis:
     - v2
 managedidentities:
@@ -3096,6 +3154,7 @@ memcache:
     - v1
     - v1beta2
   projects.locations.instances:
+    home_directory: memcache.instances
     supported_apis:
     - v1
     - v1beta2
@@ -3174,6 +3233,7 @@ monitoring:
     - v1
     - v3
   projects.alertPolicies:
+    home_directory: monitoring.policies
     supported_apis:
     - v3
   projects.alertPolicies.conditions:
@@ -3195,6 +3255,7 @@ monitoring:
     supported_apis:
     - v3
   projects.notificationChannels:
+    home_directory: monitoring.channels
     supported_apis:
     - v3
   projects.uptimeCheckConfigs:
@@ -3582,9 +3643,11 @@ pubsub:
     supported_apis:
     - v1
   projects.subscriptions:
+    home_directory: pubsub.subscriptions
     supported_apis:
     - v1
   projects.topics:
+    home_directory: pubsub.topics
     supported_apis:
     - v1
 pubsublite:
@@ -3761,6 +3824,7 @@ redis:
     - v1alpha1
     - v1beta1
   projects.locations.instances:
+    home_directory: redis.instances
     supported_apis:
     - v1
     - v1alpha1
@@ -3907,9 +3971,11 @@ secretmanager:
     supported_apis:
     - v1
   projects.secrets:
+    home_directory: secrets
     supported_apis:
     - v1
   projects.secrets.versions:
+    home_directory: secrets.versions
     supported_apis:
     - v1
 securitycenter:
@@ -4020,6 +4086,7 @@ serviceusage:
     - v1alpha
     - v1beta1
   services:
+    home_directory: services
     supported_apis:
     - v1
     - v1beta1
@@ -4065,6 +4132,7 @@ sourcerepo:
     supported_apis:
     - v1
   projects.repos:
+    home_directory: source.repos
     supported_apis:
     - v1
 spanner:
@@ -4075,6 +4143,7 @@ spanner:
     supported_apis:
     - v1
   projects.instances:
+    home_directory: spanner.instances
     supported_apis:
     - v1
   projects.instances.backups:
@@ -4084,6 +4153,7 @@ spanner:
     supported_apis:
     - v1
   projects.instances.databases:
+    home_directory: spanner.databases
     supported_apis:
     - v1
   projects.instances.databases.operations:
@@ -4124,9 +4194,11 @@ sqladmin:
     supported_apis:
     - v1beta4
   databases:
+    home_directory: sql.databases
     supported_apis:
     - v1beta4
   instances:
+    home_directory: sql.instances
     supported_apis:
     - v1beta4
   operations:
@@ -4136,6 +4208,7 @@ sqladmin:
     supported_apis:
     - v1beta4
   sslCerts:
+    home_directory: sql.ssl_certs
     supported_apis:
     - v1beta4
 storage:
@@ -4143,12 +4216,14 @@ storage:
     supported_apis:
     - v1
   buckets:
+    home_directory: storage.buckets
     supported_apis:
     - v1
   defaultObjectAccessControls:
     supported_apis:
     - v1
   notifications:
+    home_directory: storage.buckets.notificates
     supported_apis:
     - v1
   objectAccessControls:
@@ -4171,6 +4246,7 @@ storagetransfer:
     supported_apis:
     - v1
   transferJobs:
+    home_directory: transfer.jobs
     supported_apis:
     - v1
   transferOperations:

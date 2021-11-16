@@ -538,6 +538,24 @@
         }
       }
     },
+    "ApplySoftwareUpdateRequest": {
+      "id": "ApplySoftwareUpdateRequest",
+      "description": "Request for ApplySoftwareUpdate.",
+      "type": "object",
+      "properties": {
+        "nodeIds": {
+          "description": "Nodes to which we should apply the update to. Note all the selected nodes are updated in parallel.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "applyAll": {
+          "description": "Whether to apply the update to all nodes. If set to true, will explicitly restrict users from specifying any nodes, and apply software update to all nodes (where applicable) within the instance.",
+          "type": "boolean"
+        }
+      }
+    },
     "GoogleCloudMemcacheV1LocationMetadata": {
       "id": "GoogleCloudMemcacheV1LocationMetadata",
       "description": "Metadata for the given google.cloud.location.Location.",
@@ -1569,6 +1587,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "`ApplyParameters` restarts the set of specified nodes in order to update them to the current set of parameters for the Memcached Instance."
+                },
+                "applySoftwareUpdate": {
+                  "id": "memcache.projects.locations.instances.applySoftwareUpdate",
+                  "path": "v1/{+instance}:applySoftwareUpdate",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:applySoftwareUpdate",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "instance": {
+                      "description": "Required. Resource name of the Memcached instance for which software update should be applied.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "instance"
+                  ],
+                  "request": {
+                    "$ref": "ApplySoftwareUpdateRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates software on the selected nodes of the Instance."
                 }
               }
             }

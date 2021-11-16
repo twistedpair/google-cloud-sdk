@@ -254,7 +254,8 @@
             "Work is being done on the instance. You can get further details from the `statusMessage` field of the `Instance` resource.",
             "The instance is shutting down.",
             "The instance is experiencing an issue and might be unusable. You can get further details from the `statusMessage` field of the `Instance` resource.",
-            "The instance is restoring a backup to an existing file share and may be unusable during this time."
+            "The instance is restoring a backup to an existing file share and may be unusable during this time.",
+            "The instance is suspended. You can get further details from the `suspension_reasons` field of the `Instance` resource."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -263,7 +264,8 @@
             "REPAIRING",
             "DELETING",
             "ERROR",
-            "RESTORING"
+            "RESTORING",
+            "SUSPENDED"
           ]
         },
         "statusMessage": {
@@ -286,7 +288,8 @@
             "PREMIUM tier.",
             "BASIC instances offer a maximum capacity of 63.9 TB. BASIC_HDD is an alias for STANDARD Tier, offering economical performance backed by HDD.",
             "BASIC instances offer a maximum capacity of 63.9 TB. BASIC_SSD is an alias for PREMIUM Tier, and offers improved performance backed by SSD.",
-            "HIGH_SCALE instances offer expanded capacity and performance scaling capabilities."
+            "HIGH_SCALE instances offer expanded capacity and performance scaling capabilities.",
+            "ENTERPRISE instances offer the features and availability needed for mission-critical workloads."
           ],
           "enum": [
             "TIER_UNSPECIFIED",
@@ -294,7 +297,8 @@
             "PREMIUM",
             "BASIC_HDD",
             "BASIC_SSD",
-            "HIGH_SCALE_SSD"
+            "HIGH_SCALE_SSD",
+            "ENTERPRISE"
           ]
         },
         "labels": {
@@ -326,6 +330,26 @@
           "description": "Output only. Reserved for future use.",
           "readOnly": true,
           "type": "boolean"
+        },
+        "kmsKeyName": {
+          "description": "KMS key name used for data encryption.",
+          "type": "string"
+        },
+        "suspensionReasons": {
+          "description": "Output only. field indicates all the reasons the instance is in \"SUSPENDED\" state.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Not set.",
+              "The KMS key used by the instance is either revoked or denied access to."
+            ],
+            "enum": [
+              "SUSPENSION_REASON_UNSPECIFIED",
+              "KMS_KEY_ISSUE"
+            ]
+          }
         }
       }
     },
@@ -433,7 +457,7 @@
           }
         },
         "reservedIpRange": {
-          "description": "A \/29 CIDR block in one of the [internal IP address ranges](https:\/\/www.arin.net\/reference\/research\/statistics\/address_filters\/) that identifies the range of IP addresses reserved for this instance. For example, 10.0.0.0\/29 or 192.168.0.0\/29. The range you specify can't overlap with either existing subnets or assigned IP address ranges for other Cloud Filestore instances in the selected VPC network.",
+          "description": "Optional, reserved_ip_range can have one of the following two types of values. * CIDR range value when using DIRECT_PEERING connect mode. * [Allocated IP address range](https:\/\/cloud.google.com\/compute\/docs\/ip-addresses\/reserve-static-internal-ip-address) when using PRIVATE_SERVICE_ACCESS connect mode. When the name of an allocated IP address range is specified, it must be one of the ranges associated with the private service access connection. When specified as a direct CIDR value, it must be a \/29 CIDR block for Basic tier or a \/24 CIDR block for High Scale or Enterprise tier in one of the [internal IP address ranges](https:\/\/www.arin.net\/reference\/research\/statistics\/address_filters\/) that identifies the range of IP addresses reserved for this instance. For example, 10.0.0.0\/29 or 192.168.0.0\/24. The range you specify can't overlap with either existing subnets or assigned IP address ranges for other Cloud Filestore instances in the selected VPC network.",
           "type": "string"
         },
         "ipAddresses": {
@@ -443,6 +467,20 @@
           "items": {
             "type": "string"
           }
+        },
+        "connectMode": {
+          "description": "The network connect mode of the Filestore instance. If not provided, the connect mode defaults to DIRECT_PEERING.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not set.",
+            "Connect via direct peering to the Filestore service.",
+            "Connect to your Filestore instance using Private Service Access. Private services access provides an IP address range for multiple Google Cloud services, including Filestore."
+          ],
+          "enum": [
+            "CONNECT_MODE_UNSPECIFIED",
+            "DIRECT_PEERING",
+            "PRIVATE_SERVICE_ACCESS"
+          ]
         }
       }
     },
@@ -458,6 +496,76 @@
         "sourceBackup": {
           "description": "The resource name of the backup, in the format `projects\/{project_number}\/locations\/{location_id}\/backups\/{backup_id}`.",
           "type": "string"
+        }
+      }
+    },
+    "ListSnapshotsResponse": {
+      "id": "ListSnapshotsResponse",
+      "description": "ListSnapshotsResponse is the result of ListSnapshotsRequest.",
+      "type": "object",
+      "properties": {
+        "snapshots": {
+          "description": "A list of snapshots in the project for the specified instance.",
+          "type": "array",
+          "items": {
+            "$ref": "Snapshot"
+          }
+        },
+        "nextPageToken": {
+          "description": "The token you can use to retrieve the next page of results. Not returned if there are no more results in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "Snapshot": {
+      "id": "Snapshot",
+      "description": "A Filestore snapshot.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of the snapshot, in the format `projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}\/snapshots\/{snapshot_id}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "description": {
+          "description": "A description of the snapshot with 2048 characters or less. Requests with longer descriptions will be rejected.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The snapshot state.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "State not set.",
+            "Snapshot is being created.",
+            "Snapshot is available for use.",
+            "Snapshot is being deleted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "READY",
+            "DELETING"
+          ]
+        },
+        "createTime": {
+          "description": "Output only. The time when the snapshot was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Resource labels to represent user provided metadata.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "filesystemUsedBytes": {
+          "description": "Output only. The amount of bytes needed to allocate a full copy of the snapshot content",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -562,7 +670,8 @@
             "PREMIUM tier.",
             "BASIC instances offer a maximum capacity of 63.9 TB. BASIC_HDD is an alias for STANDARD Tier, offering economical performance backed by HDD.",
             "BASIC instances offer a maximum capacity of 63.9 TB. BASIC_SSD is an alias for PREMIUM Tier, and offers improved performance backed by SSD.",
-            "HIGH_SCALE instances offer expanded capacity and performance scaling capabilities."
+            "HIGH_SCALE instances offer expanded capacity and performance scaling capabilities.",
+            "ENTERPRISE instances offer the features and availability needed for mission-critical workloads."
           ],
           "enum": [
             "TIER_UNSPECIFIED",
@@ -570,7 +679,8 @@
             "PREMIUM",
             "BASIC_HDD",
             "BASIC_SSD",
-            "HIGH_SCALE_SSD"
+            "HIGH_SCALE_SSD",
+            "ENTERPRISE"
           ]
         },
         "downloadBytes": {
@@ -1548,6 +1658,11 @@
                       "location": "path",
                       "required": true,
                       "type": "string"
+                    },
+                    "force": {
+                      "description": "If set to true, all snapshots of the instance will also be deleted. (Otherwise, the request will only work if the instance has no snapshots.)",
+                      "location": "query",
+                      "type": "boolean"
                     }
                   },
                   "parameterOrder": [
@@ -1560,6 +1675,176 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes an instance."
+                }
+              }
+              ,
+              "resources": {
+                "snapshots": {
+                  "methods": {
+                    "list": {
+                      "id": "file.projects.locations.instances.snapshots.list",
+                      "path": "v1/{+parent}/snapshots",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/snapshots",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The instance for which to retrieve snapshot information, in the format `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of items to return.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The next_page_token value to use if there are additional results to retrieve for this list request.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Sort results. Supported values are \"name\", \"name desc\" or \"\" (unsorted).",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "List filter.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListSnapshotsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists all snapshots in a project for either a specified location or for all locations."
+                    },
+                    "get": {
+                      "id": "file.projects.locations.instances.snapshots.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/snapshots/{snapshotsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The snapshot resource name, in the format `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}\/snapshots\/{snapshot_id}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+\/snapshots\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Snapshot"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the details of a specific snapshot."
+                    },
+                    "create": {
+                      "id": "file.projects.locations.instances.snapshots.create",
+                      "path": "v1/{+parent}/snapshots",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/snapshots",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The Filestore Instance to create the snapshots of, in the format `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "snapshotId": {
+                          "description": "Required. The ID to use for the snapshot. The ID must be unique within the specified instance. This value must start with a lowercase letter followed by up to 62 lowercase letters, numbers, or hyphens, and cannot end with a hyphen.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "Snapshot"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a snapshot."
+                    },
+                    "delete": {
+                      "id": "file.projects.locations.instances.snapshots.delete",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/snapshots/{snapshotsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The snapshot resource name, in the format `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}\/snapshots\/{snapshot_id}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+\/snapshots\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a snapshot."
+                    },
+                    "patch": {
+                      "id": "file.projects.locations.instances.snapshots.patch",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/snapshots/{snapshotsId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Output only. The resource name of the snapshot, in the format `projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}\/snapshots\/{snapshot_id}`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+\/snapshots\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Required. Mask of fields to update. At least one path must be supplied in this field.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "Snapshot"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Updates the settings of a specific snapshot."
+                    }
+                  }
                 }
               }
             },

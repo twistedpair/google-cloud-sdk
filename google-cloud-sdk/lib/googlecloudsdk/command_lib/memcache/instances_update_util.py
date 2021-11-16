@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib import memcache
+from googlecloudsdk.command_lib.memcache import instances_util
 
 
 def ChooseUpdateMethod(unused_ref, args):
@@ -28,7 +29,43 @@ def ChooseUpdateMethod(unused_ref, args):
   return 'patch'
 
 
-def CreateUpdateRequest(ref, args):
+def AddFieldToUpdateMask(update_mask, field):
+  if field not in update_mask:
+    update_mask.append(field)
+
+
+def CreateUpdateRequestAlpha(ref, args):
+  """Generate alpha memcache update instance request."""
+  messages = memcache.Messages(ref.GetCollectionInfo().api_version)
+  mask = []
+  instance = messages.Instance()
+  maintenance_policy = messages.GoogleCloudMemcacheV1beta2MaintenancePolicy()
+  weekly_maintenance_window = messages.WeeklyMaintenanceWindow()
+  start_time = messages.TimeOfDay()
+  if args.IsSpecified('maintenance_window_day'):
+    AddFieldToUpdateMask(mask, 'maintenancePolicy')
+    weekly_maintenance_window.day = messages.WeeklyMaintenanceWindow.DayValueValuesEnum(
+        args.maintenance_window_day.upper())
+  if args.IsSpecified('maintenance_window_start_time'):
+    AddFieldToUpdateMask(mask, 'maintenancePolicy')
+    start_time.hours = instances_util.CheckMaintenanceWindowStartTimeField(
+        int(args.maintenance_window_start_time))
+    weekly_maintenance_window.startTime = start_time
+  if args.IsSpecified('maintenance_window_duration'):
+    AddFieldToUpdateMask(mask, 'maintenancePolicy')
+    weekly_maintenance_window.duration = instances_util.ConvertDurationToJsonFormat(
+        int(args.maintenance_window_duration))
+  if 'maintenancePolicy' in mask:
+    maintenance_policy.weeklyMaintenanceWindow = [weekly_maintenance_window]
+    instance.maintenancePolicy = maintenance_policy
+  if args.IsSpecified('maintenance_window_any'):
+    AddFieldToUpdateMask(mask, 'maintenancePolicy')
+    instance.maintenancePolicy = None
+
+  return CreateUpdateRequest(ref, args, mask, instance)
+
+
+def CreateUpdateRequest(ref, args, mask=None, instance=None):
   """Returns an Update or UpdateParameters request depending on the args given."""
   messages = memcache.Messages(ref.GetCollectionInfo().api_version)
   if args.IsSpecified('parameters'):
@@ -41,19 +78,20 @@ def CreateUpdateRequest(ref, args):
         messages.MemcacheProjectsLocationsInstancesUpdateParametersRequest(
             name=ref.RelativeName(), updateParametersRequest=param_req))
   else:
-    mask = []
-    instance = messages.Instance()
+    if mask is None:
+      mask = []
+    if instance is None:
+      instance = messages.Instance()
     if args.IsSpecified('display_name'):
-      mask.append('displayName')
+      AddFieldToUpdateMask(mask, 'displayName')
       instance.displayName = args.display_name
     if args.IsSpecified('node_count'):
-      mask.append('nodeCount')
+      AddFieldToUpdateMask(mask, 'nodeCount')
       instance.nodeCount = args.node_count
     if args.IsSpecified('labels'):
-      mask.append('labels')
+      AddFieldToUpdateMask(mask, 'labels')
       instance.labels = messages.Instance.LabelsValue(
           additionalProperties=args.labels)
-    # TODO(b/181810566): add maintenance policy update support to gcloud
     update_mask = ','.join(mask)
     request = (
         messages.MemcacheProjectsLocationsInstancesPatchRequest(

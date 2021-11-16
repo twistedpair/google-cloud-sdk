@@ -62,6 +62,8 @@ def FormatResponse(response, _):
     modified_response['tier'] = response.tier
   if response.transitEncryptionMode:
     modified_response['transitEncryptionMode'] = response.transitEncryptionMode
+  if response.persistenceConfig:
+    modified_response['persistenceConfig'] = response.persistenceConfig
 
   if response.maintenancePolicy:
     modified_mw_policy = {}

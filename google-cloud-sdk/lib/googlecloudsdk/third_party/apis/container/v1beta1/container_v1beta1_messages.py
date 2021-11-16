@@ -2648,10 +2648,13 @@ class MasterAuthorizedNetworksConfig(_messages.Message):
     cidrBlocks: cidr_blocks define up to 10 external networks that could
       access Kubernetes master through HTTPS.
     enabled: Whether or not master authorized networks is enabled.
+    gcpPublicCidrsAccessEnabled: Whether master is accessbile via Google
+      Compute Engine Public IPs.
   """
 
   cidrBlocks = _messages.MessageField('CidrBlock', 1, repeated=True)
   enabled = _messages.BooleanField(2)
+  gcpPublicCidrsAccessEnabled = _messages.BooleanField(3)
 
 
 class MasterSignalsConfig(_messages.Message):
@@ -3277,6 +3280,7 @@ class NodeNetworkConfig(_messages.Message):
       `ip_allocation_policy.use_ip_aliases` is true. This field cannot be
       changed after the node pool has been created.
     subnetwork: A string attribute.
+    tiers: Network bandwidth tier configuration.
   """
 
   createPodRange = _messages.BooleanField(1)
@@ -3287,6 +3291,7 @@ class NodeNetworkConfig(_messages.Message):
   podIpv4CidrBlock = _messages.StringField(6)
   podRange = _messages.StringField(7)
   subnetwork = _messages.StringField(8)
+  tiers = _messages.MessageField('Tiers', 9)
 
 
 class NodeNetworkPolicy(_messages.Message):
@@ -4837,6 +4842,48 @@ class StatusCondition(_messages.Message):
   canonicalCode = _messages.EnumField('CanonicalCodeValueValuesEnum', 1)
   code = _messages.EnumField('CodeValueValuesEnum', 2)
   message = _messages.StringField(3)
+
+
+class Tiers(_messages.Message):
+  r"""Configuration of all network bandwidth tiers
+
+  Enums:
+    ExternalIpEgressBandwidthTierValueValuesEnum: Specifies the network
+      bandwidth tier for the NodePool for traffic to external/public IP
+      addresses.
+    TotalEgressBandwidthTierValueValuesEnum: Specifies the total network
+      bandwidth tier for the NodePool.
+
+  Fields:
+    externalIpEgressBandwidthTier: Specifies the network bandwidth tier for
+      the NodePool for traffic to external/public IP addresses.
+    totalEgressBandwidthTier: Specifies the total network bandwidth tier for
+      the NodePool.
+  """
+
+  class ExternalIpEgressBandwidthTierValueValuesEnum(_messages.Enum):
+    r"""Specifies the network bandwidth tier for the NodePool for traffic to
+    external/public IP addresses.
+
+    Values:
+      TIER_UNSPECIFIED: Default value
+      TIER_1: Higher bandwidth, actual values based on VM size.
+    """
+    TIER_UNSPECIFIED = 0
+    TIER_1 = 1
+
+  class TotalEgressBandwidthTierValueValuesEnum(_messages.Enum):
+    r"""Specifies the total network bandwidth tier for the NodePool.
+
+    Values:
+      TIER_UNSPECIFIED: Default value
+      TIER_1: Higher bandwidth, actual values based on VM size.
+    """
+    TIER_UNSPECIFIED = 0
+    TIER_1 = 1
+
+  externalIpEgressBandwidthTier = _messages.EnumField('ExternalIpEgressBandwidthTierValueValuesEnum', 1)
+  totalEgressBandwidthTier = _messages.EnumField('TotalEgressBandwidthTierValueValuesEnum', 2)
 
 
 class TimeWindow(_messages.Message):

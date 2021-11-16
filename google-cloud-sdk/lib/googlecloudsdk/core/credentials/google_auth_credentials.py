@@ -64,10 +64,10 @@ class TokenRevokeError(Error, google_auth_exceptions.GoogleAuthError):
   """Exceptions when revoking google auth user credentials fails."""
 
 
-# In gcloud, UserCredWithReauth should be used for user account credentials.
+# In gcloud, Credentials should be used for user account credentials.
 # Do not use its parent class credentials.Credentials because it
 # does not support reauth.
-class UserCredWithReauth(credentials.Credentials):
+class Credentials(credentials.Credentials):
   """Extends user credentials of the google auth library for reauth.
 
   reauth is not supported by the google auth library. However, gcloud supports
@@ -80,10 +80,10 @@ class UserCredWithReauth(credentials.Credentials):
       del kwargs['rapt_token']
     else:
       self._rapt_token = None
-    super(UserCredWithReauth, self).__init__(*args, **kwargs)
+    super(Credentials, self).__init__(*args, **kwargs)
 
   def __setstate__(self, d):
-    super(UserCredWithReauth, self).__setstate__(d)
+    super(Credentials, self).__setstate__(d)
     self._rapt_token = d.get('_rapt_token')
 
   @property
@@ -170,7 +170,7 @@ class UserCredWithReauth(credentials.Credentials):
     Args:
       creds: google.oauth2.credentials.Credentials, The input credentials.
     Returns:
-      Credentials of UserCredWithReauth.
+      Credentials of Credentials.
     """
     res = cls(
         creds.token,

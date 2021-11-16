@@ -29,6 +29,21 @@ class ApplyParametersRequest(_messages.Message):
   nodeIds = _messages.StringField(2, repeated=True)
 
 
+class ApplySoftwareUpdateRequest(_messages.Message):
+  r"""Request for ApplySoftwareUpdate.
+
+  Fields:
+    applyAll: Whether to apply the update to all nodes. If set to true, will
+      explicitly restrict users from specifying any nodes, and apply software
+      update to all nodes (where applicable) within the instance.
+    nodeIds: Nodes to which we should apply the update to. Note all the
+      selected nodes are updated in parallel.
+  """
+
+  applyAll = _messages.BooleanField(1)
+  nodeIds = _messages.StringField(2, repeated=True)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -1155,6 +1170,20 @@ class MemcacheProjectsLocationsInstancesApplyParametersRequest(_messages.Message
 
   applyParametersRequest = _messages.MessageField('ApplyParametersRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class MemcacheProjectsLocationsInstancesApplySoftwareUpdateRequest(_messages.Message):
+  r"""A MemcacheProjectsLocationsInstancesApplySoftwareUpdateRequest object.
+
+  Fields:
+    applySoftwareUpdateRequest: A ApplySoftwareUpdateRequest resource to be
+      passed as the request body.
+    instance: Required. Resource name of the Memcached instance for which
+      software update should be applied.
+  """
+
+  applySoftwareUpdateRequest = _messages.MessageField('ApplySoftwareUpdateRequest', 1)
+  instance = _messages.StringField(2, required=True)
 
 
 class MemcacheProjectsLocationsInstancesCreateRequest(_messages.Message):

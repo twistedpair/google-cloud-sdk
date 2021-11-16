@@ -21,15 +21,15 @@ location:
     property: compute/zone
   disable_auto_completers: false
 
-privatecloud:
-  name: privatecloud
+private_cloud:
+  name: private cloud
   collection: vmwareengine.projects.locations.privateClouds
   attributes:
   - *project
   - *location
-  - &privatecloud
+  - &private_cloud
     parameter_name: privateCloudsId
-    attribute_name: privatecloud
+    attribute_name: private-cloud
     help: VMware Engine private cloud.
   disable_auto_completers: false
 
@@ -39,7 +39,7 @@ cluster:
   attributes:
   - *project
   - *location
-  - *privatecloud
+  - *private_cloud
   - &cluster
     parameter_name: clustersId
     attribute_name: cluster
@@ -52,7 +52,7 @@ hcx_activation_key:
   attributes:
   - *project
   - *location
-  - *privatecloud
+  - *private_cloud
   - &hcx_activation_key
     parameter_name: hcxActivationKeysId
     attribute_name: hcx-activation-key
@@ -72,14 +72,15 @@ operation:
   disable_auto_completers: false
 
 
-nodetype:
-  name: nodetype
+node_type:
+  name: node type
   collection: vmwareengine.projects.locations.nodeTypes
   attributes:
   - *project
   - *location
-  - parameter_name: nodeTypesId
-    attribute_name: nodetype
+  - &node_type
+    parameter_name: nodeTypesId
+    attribute_name: node-type
     help: |
       Node Type in a VMware Engine cluster.
   disable_auto_completers: false

@@ -1449,6 +1449,18 @@
             "PUBSUB",
             "MANUAL"
           ]
+        },
+        "includeBuildLogs": {
+          "description": "Optional. If set to INCLUDE_BUILD_LOGS_WITH_STATUS, log url will be shown on GitHub page when build status is final. Setting this field to INCLUDE_BUILD_LOGS_WITH_STATUS for non GitHub triggers results in INVALID_ARGUMENT error.",
+          "type": "string",
+          "enumDescriptions": [
+            "Build logs will not be shown on GitHub.",
+            "Build logs will be shown on GitHub."
+          ],
+          "enum": [
+            "INCLUDE_BUILD_LOGS_UNSPECIFIED",
+            "INCLUDE_BUILD_LOGS_WITH_STATUS"
+          ]
         }
       }
     },
@@ -2545,6 +2557,27 @@
       "properties": {
         "githubEnterpriseConfig": {
           "description": "The resource name of the GitHubEnterprise to be created. Format: `projects\/{project}\/locations\/{location}\/githubEnterpriseConfigs\/{id}`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Time the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "completeTime": {
+          "description": "Time the operation was completed.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "BatchCreateBitbucketServerConnectedRepositoriesResponseMetadata": {
+      "id": "BatchCreateBitbucketServerConnectedRepositoriesResponseMetadata",
+      "description": "Metadata for `BatchCreateBitbucketServerConnectedRepositories` operation.",
+      "type": "object",
+      "properties": {
+        "config": {
+          "description": "The name of the `BitbucketServerConfig` that added connected repositories. Format: `projects\/{project}\/locations\/{location}\/bitbucketServerConfigs\/{config}`",
           "type": "string"
         },
         "createTime": {

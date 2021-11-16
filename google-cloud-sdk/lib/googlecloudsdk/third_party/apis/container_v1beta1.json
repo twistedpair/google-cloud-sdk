@@ -1290,6 +1290,41 @@
         "enablePrivateNodes": {
           "description": "Whether nodes have internal IP addresses only. If enable_private_nodes is not specified, then the value is derived from cluster.privateClusterConfig.enablePrivateNodes",
           "type": "boolean"
+        },
+        "tiers": {
+          "description": "Network bandwidth tier configuration.",
+          "$ref": "Tiers"
+        }
+      }
+    },
+    "Tiers": {
+      "id": "Tiers",
+      "description": "Configuration of all network bandwidth tiers",
+      "type": "object",
+      "properties": {
+        "totalEgressBandwidthTier": {
+          "description": "Specifies the total network bandwidth tier for the NodePool.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value",
+            "Higher bandwidth, actual values based on VM size."
+          ],
+          "enum": [
+            "TIER_UNSPECIFIED",
+            "TIER_1"
+          ]
+        },
+        "externalIpEgressBandwidthTier": {
+          "description": "Specifies the network bandwidth tier for the NodePool for traffic to external\/public IP addresses.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value",
+            "Higher bandwidth, actual values based on VM size."
+          ],
+          "enum": [
+            "TIER_UNSPECIFIED",
+            "TIER_1"
+          ]
         }
       }
     },
@@ -1734,6 +1769,10 @@
           "items": {
             "$ref": "CidrBlock"
           }
+        },
+        "gcpPublicCidrsAccessEnabled": {
+          "description": "Whether master is accessbile via Google Compute Engine Public IPs.",
+          "type": "boolean"
         }
       }
     },

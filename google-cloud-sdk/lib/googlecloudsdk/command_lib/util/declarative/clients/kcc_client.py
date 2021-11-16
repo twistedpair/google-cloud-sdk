@@ -53,7 +53,9 @@ ApiClientArgs = collections.namedtuple('ApiClientArgs', [
 
 RESOURCE_LIST_FORMAT = (
     'table[box](GVK.Kind:label="KRM KIND", SupportsBulkExport.yesno("x", '
-    '""):label="BULK EXPORT?", SupportsExport.yesno("x", ""):label="EXPORT?")')
+    '""):label="BULK EXPORT?", SupportsExport.yesno("x", ""):label="EXPORT?", '
+    'SupportsIAM.yesno("x", ""):label="IAM?")'
+)
 
 
 class KrmGroupValueKind(object):
@@ -64,6 +66,7 @@ class KrmGroupValueKind(object):
                group,
                bulk_export_supported,
                export_supported,
+               iam_supported,
                version=None,
                resource_name_format=None):
     self.kind = kind
@@ -71,6 +74,7 @@ class KrmGroupValueKind(object):
     self.version = version
     self.bulk_export_supported = bulk_export_supported
     self.export_supported = export_supported
+    self.iam_supported = iam_supported
     self.resource_name_format = resource_name_format
 
   def AsDict(self):
@@ -84,6 +88,7 @@ class KrmGroupValueKind(object):
     output['ResourceNameFormat'] = self.resource_name_format or ''
     output['SupportsBulkExport'] = self.bulk_export_supported
     output['SupportsExport'] = self.export_supported
+    output['SupportsIAM'] = self.iam_supported
     return output
 
   def __str__(self):
@@ -99,13 +104,14 @@ class KrmGroupValueKind(object):
             self.version == o.version and
             self.bulk_export_supported == o.bulk_export_supported and
             self.export_supported == o.export_supported and
+            self.iam_supported == o.iam_supported and
             self.resource_name_format == o.resource_name_format)
 
   def __hash__(self):
     return sum(
         map(hash, [
             self.kind, self.group, self.version, self.bulk_export_supported,
-            self.export_supported, self.resource_name_format
+            self.export_supported, self.iam_supported, self.resource_name_format
         ]))
 
 
@@ -609,7 +615,8 @@ class KccClient(client_base.DeclarativeClient):
             group=meta_resource.krm_kind.krm_group + _KRM_GROUP_SUFFIX,
             bulk_export_supported=meta_resource.resource_data
             .support_bulk_export,
-            export_supported=meta_resource.resource_data.support_single_export)
+            export_supported=meta_resource.resource_data.support_single_export,
+            iam_supported=meta_resource.resource_data.support_iam)
         exportable_kinds.append(gvk)
       except resource_name_translator.ResourceIdentifierNotFoundError:
         continue  # no KRM mapping for this Asset Inventory Type

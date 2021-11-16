@@ -18,20 +18,34 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import datetime
 import os.path
-import re
 
 from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import log
+from googlecloudsdk.core import name_parsing
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import files
 from mako import runtime
 from mako import template
 
-
 _COMMAND_PATH_COMPONENTS = ('third_party', 'py', 'googlecloudsdk', 'surface')
 _SPEC_PATH_COMPONENTS = ('cloud', 'sdk', 'surface_specs', 'gcloud')
 _TEST_PATH_COMPONENTS = ('third_party', 'py', 'googlecloudsdk', 'tests', 'unit',
                          'surface')
+
+
+_BRANDING_NAMES = {
+    'accesscontextmanager': 'Access Context Manager',
+    'artifactregistry': 'Artifact Registry',
+    'bigquery': 'Google BigQuery',
+    'bigtableadmin': 'Cloud Bigtable',
+    'cloudbuild': 'Google Cloud Build',
+    'cloudidentity': 'Cloud Identity',
+    'cloudkms': 'Cloud KMS',
+    'cloudresourcemanager': 'Cloud Resource Manager',
+    'compute': 'Compute Engine'
+}
 
 
 class CollectionNotFoundError(core_exceptions.Error):
@@ -43,117 +57,215 @@ class CollectionNotFoundError(core_exceptions.Error):
     super(CollectionNotFoundError, self).__init__(message)
 
 
-def WriteConfigYaml(collection,
-                    output_root,
-                    command_group,
-                    release_tracks,
-                    enable_overwrites=True):
+def WriteConfigYaml(collection, output_root, resource_data, release_tracks,
+                    enable_overwrites):
   """Writes <comand|spec|test> declarative command files for collection.
 
   Args:
     collection: Name of collection to generate commands for.
-    output_root: Path to the root of the directory. Should just be $PWD
-      when executing the `meta generate-config-commands` command.
-    command_group: Command group to generate the `config export` command for.
-      Should be of the form `compute.instances`.
+    output_root: Path to the root of the directory. Should just be $PWD when
+      executing the `meta generate-config-commands` command.
+    resource_data: Resource map data for the given resource.
     release_tracks: Release tracks to generate files for.
     enable_overwrites: True to enable overwriting of existing config export
       files.
   """
-
+  log.status.Print('[{}]:'.format(collection))
   collection_info = resources.REGISTRY.GetCollectionInfo(collection)
-  file_paths = _BuildFilePaths(output_root, command_group)
-  context_dicts = _BuildContexts(collection_info, command_group, release_tracks)
-  file_templates = _BuildTemplates()
-
-  for file_path, file_template, context_dict in zip(file_paths, file_templates,
-                                                    context_dicts):
-    if not os.path.exists(file_path) or enable_overwrites:
-      with files.FileWriter(file_path) as f:
-        ctx = runtime.Context(f, **context_dict)
-        file_template.render_context(ctx)
-
-
-def _BuildFilePaths(output_root, command_group):
-  """Builds filepaths for output spec, command, and test files."""
-  command_path_args = (output_root,) + _COMMAND_PATH_COMPONENTS + tuple(
-      command_group.split('.')) + ('config', 'export.yaml')
-  command_path = os.path.join(*command_path_args)
-
-  surface_spec_path_args = (output_root,) + _SPEC_PATH_COMPONENTS + tuple(
-      command_group.split('.')) + ('config', 'export.yaml')
-  surface_spec_path = os.path.join(*surface_spec_path_args)
-
-  test_path_args = (output_root,) + _TEST_PATH_COMPONENTS + tuple(
-      command_group.split('.')) + ('config_export_test.py',)
-  test_path = os.path.join(*test_path_args)
-  return [command_path, surface_spec_path, test_path]
+  _RenderSurfaceSpecFiles(output_root, resource_data,
+                          collection_info, release_tracks, enable_overwrites)
+  _RenderCommandGroupInitFile(output_root, resource_data.home_directory,
+                              collection_info, release_tracks,
+                              enable_overwrites)
+  _RenderCommandFile(output_root, resource_data, collection_info,
+                     release_tracks, enable_overwrites)
+  _RenderTestFiles(output_root, resource_data, collection_info,
+                   enable_overwrites)
 
 
-def _BuildTemplates():
-  """Returns template objects for config export command/spec/test files."""
+def _RenderFile(file_path,
+                file_template,
+                context,
+                enable_overwrites):
+  """Renders a file to given path using the provided template and context."""
+  render_file = False
+  overwrite = False
+  if not os.path.exists(file_path):
+    render_file = True
+  elif enable_overwrites:
+    render_file = True
+    overwrite = True
 
+  if render_file:
+    log.status.Print(' -- Generating: File: [{}], Overwrite: [{}]'.format(
+        file_path, overwrite))
+    with files.FileWriter(file_path, create_path=True) as f:
+      ctx = runtime.Context(f, **context)
+      file_template.render_context(ctx)
+  else:
+    log.status.Print(' >> Skipped: File: [{}] --'.format(file_path))
+
+
+def _WriteFile(file_path, file_contents, enable_overwrites):
+  if not os.path.exists(file_path) or enable_overwrites:
+    with files.FileWriter(file_path, create_path=True) as f:
+      f.write(file_contents)
+
+
+def _BuildFilePath(output_root, sdk_path, home_directory, *argv):
+  path_args = (output_root,) + sdk_path + tuple(
+      home_directory.split('.')) + tuple(
+          path_component for path_component in argv)
+  file_path = os.path.join(*path_args)
+  return file_path
+
+
+def _BuildTemplate(template_file_name):
   dir_name = os.path.dirname(__file__)
-
-  command_template = template.Template(
-      filename=os.path.join(dir_name, 'command_templates',
-                            'config_export_template.tpl'))
-  test_template = template.Template(
-      filename=os.path.join(dir_name, 'test_templates',
-                            'config_export_template.tpl'))
-  surface_spec_template = template.Template(
-      filename=os.path.join(dir_name, 'surface_spec_templates',
-                            'config_export_template.tpl'))
-
-  return [command_template, surface_spec_template, test_template]
+  template_path = os.path.join(dir_name, 'config_export_templates',
+                               template_file_name)
+  file_template = template.Template(filename=template_path)
+  return file_template
 
 
-def _BuildContexts(collection_info, command_group, release_tracks):
-  """Returns context dicts for config command/xpec/test files."""
-  command_dict = _BuildCommandContext(collection_info, release_tracks)
-  surface_spec_dict = _BuildSurfaceSpecContext(collection_info, release_tracks)
-  test_dict = _BuildTestDictContext(collection_info, command_group)
-  return [command_dict, surface_spec_dict, test_dict]
+def _RenderCommandGroupInitFile(output_root, home_directory, collection_info,
+                                release_tracks, enable_overwrites):
+  file_path = _BuildFilePath(output_root, _COMMAND_PATH_COMPONENTS,
+                             home_directory, 'config', '__init__.py')
+  file_template = _BuildTemplate('command_group_init_template.tpl')
+  context = _BuildCommandGroupInitContext(collection_info, release_tracks)
+  _RenderFile(file_path, file_template, context, enable_overwrites)
 
 
-def _BuildCommandContext(collection_info, release_tracks):
+def _RenderCommandFile(output_root, resource_data, collection_info,
+                       release_tracks, enable_overwrites):
+  file_path = _BuildFilePath(output_root, _COMMAND_PATH_COMPONENTS,
+                             resource_data.home_directory,
+                             'config', 'export.yaml')
+  file_template = _BuildTemplate('command_template.tpl')
+  context = _BuildCommandContext(collection_info, release_tracks, resource_data)
+  _RenderFile(
+      file_path,
+      file_template,
+      context,
+      enable_overwrites)
+
+
+def _RenderSurfaceSpecFiles(output_root, resource_data, collection_info,
+                            release_tracks, enable_overwrites):
+  """Render surface spec files (both GROUP.yaml and command spec file.)"""
+  context = _BuildSurfaceSpecContext(collection_info, release_tracks,
+                                     resource_data)
+
+  # Render GROUP.yaml
+  group_template = _BuildTemplate('surface_spec_group_template.tpl')
+  group_file_path = _BuildFilePath(output_root, _SPEC_PATH_COMPONENTS,
+                                   resource_data.home_directory, 'config',
+                                   'GROUP.yaml')
+  _RenderFile(group_file_path, group_template, context, enable_overwrites)
+
+  # Render spec file
+  spec_path = _BuildFilePath(output_root, _SPEC_PATH_COMPONENTS,
+                             resource_data.home_directory, 'config',
+                             'export.yaml')
+  spec_template = _BuildTemplate('surface_spec_template.tpl')
+  _RenderFile(spec_path, spec_template, context, enable_overwrites)
+
+
+def _RenderTestFiles(output_root, resource_data, collection_info,
+                     enable_overwrites):
+  """Render python test file using template and context."""
+  context = _BuildTestContext(collection_info, resource_data)
+
+  # Render init file.
+  init_path = _BuildFilePath(output_root, _TEST_PATH_COMPONENTS,
+                             resource_data.home_directory, '__init__.py')
+  init_template = _BuildTemplate('python_blank_init_template.tpl')
+  _RenderFile(init_path, init_template, context, enable_overwrites)
+
+  # Render test file.
+  test_path = _BuildFilePath(output_root, _TEST_PATH_COMPONENTS,
+                             resource_data.home_directory,
+                             'config_export_test.py')
+  test_template = _BuildTemplate('unit_test_template.tpl')
+  _RenderFile(test_path, test_template, context, enable_overwrites)
+
+
+def _BuildCommandGroupInitContext(collection_info, release_tracks):
+  """Makes context dictionary for config init file template rendering."""
+  init_dict = {}
+  init_dict['utf_encoding'] = '-*- coding: utf-8 -*- #'
+  init_dict['current_year'] = datetime.datetime.now().year
+
+  init_dict['branded_api_name'] = _BRANDING_NAMES.get(
+      collection_info.api_name, collection_info.api_name.capitalize())
+  init_dict[
+      'singular_resource_name_with_spaces'] = name_parsing.convert_collection_name_to_delimited(
+          collection_info.name)
+
+  release_track_string = ''
+  for x, release_track in enumerate(release_tracks):
+    release_track_string += 'base.ReleaseTrack.{}'.format(release_track.upper())
+    if x != len(release_tracks) - 1:
+      release_track_string += ', '
+
+  init_dict['release_tracks'] = release_track_string
+  return init_dict
+
+
+def _BuildCommandContext(collection_info, release_tracks, resource_data):
   """Makes context dictionary for config export command template rendering."""
   command_dict = {}
 
   # apiname.collectionNames
   command_dict['collection_name'] = collection_info.name
-  # apiname
-  command_dict['api_name'] = collection_info.api_name
-  # Apiname
-  command_dict['capitalized_api_name'] = command_dict['api_name'].capitalize()
+  # Branded service name
+  command_dict['branded_api_name'] = _BRANDING_NAMES.get(
+      collection_info.api_name, collection_info.api_name.capitalize())
 
   # collection names
-  command_dict['plural_resource_name_with_spaces'] = _SplitCollectionOnCapitals(
-      _SplitNameAndGetLastIndex(collection_info.name)).lower()
+  command_dict[
+      'plural_resource_name_with_spaces'] = name_parsing.convert_collection_name_to_delimited(
+          collection_info.name, make_singular=False)
 
   # collection name
-  command_dict['singular_name_with_spaces'] = _MakeSingular(
-      command_dict['plural_resource_name_with_spaces'])
+  command_dict[
+      'singular_name_with_spaces'] = name_parsing.convert_collection_name_to_delimited(
+          collection_info.name)
 
   # Collection name
   command_dict['singular_capitalized_name'] = command_dict[
       'singular_name_with_spaces'].capitalize()
 
   # collection_name
-  command_dict['resource_file_name'] = command_dict[
-      'singular_name_with_spaces'].replace(' ', '_')
+  if 'resource_spec_name' in resource_data:
+    resource_spec_name = resource_data.resource_spec_name
+  else:
+    resource_spec_name = command_dict['singular_name_with_spaces'].replace(
+        ' ', '_')
+
+  if 'resource_spec_dir' in resource_data:
+    resource_spec_dir = resource_data.resource_spec_dir
+  else:
+    resource_spec_dir = resource_data.home_directory.split('.')[0]
+
+  if 'full_resource_spec_path' in resource_data:
+    command_dict[
+        'full_resource_spec_path'] = resource_data.full_resource_spec_path
+  else:
+    command_dict['full_resource_spec_path'] = '{}.resources:{}'.format(
+        resource_spec_dir, resource_spec_name)
 
   # my-collection-name
   command_dict['resource_argument_name'] = _MakeResourceArgName(
       collection_info.name)
 
   # Release tracks
-  command_dict['release_tracks'] = _GetReleaseTracks(
-      release_tracks)
+  command_dict['release_tracks'] = _GetReleaseTracks(release_tracks)
 
   # "a" or "an" for correct grammar.
   api_a_or_an = 'a'
-  if command_dict['api_name'][0] in 'aeiou':
+  if command_dict['branded_api_name'][0] in 'aeiou':
     api_a_or_an = 'an'
   command_dict['api_a_or_an'] = api_a_or_an
 
@@ -165,52 +277,43 @@ def _BuildCommandContext(collection_info, release_tracks):
   return command_dict
 
 
-def _BuildSurfaceSpecContext(collection_info, release_tracks):
+def _BuildSurfaceSpecContext(collection_info, release_tracks, resource_data):
   """Makes context dictionary for surface spec rendering."""
   surface_spec_dict = {}
   surface_spec_dict['release_tracks'] = _GetReleaseTracks(release_tracks)
-  surface_spec_dict['surface_spec_resource_arg'] = _MakeSurfaceSpecResourceArg(
-      collection_info)
+  # collection_name
+
+  if 'surface_spec_resource_name' in resource_data:
+    surface_spec_dict[
+        'surface_spec_resource_arg'] = resource_data.surface_spec_resource_name
+  elif 'resource_spec_name' in resource_data:
+    surface_spec_dict[
+        'surface_spec_resource_arg'] = resource_data.resource_spec_name.upper()
+  elif 'full_resource_spec_path' in resource_data:
+    surface_spec_dict[
+        'surface_spec_resource_arg'] = resource_data.full_resource_spec_path.split(
+            ':')[-1].upper()
+  else:
+    surface_spec_dict[
+        'surface_spec_resource_arg'] = _MakeSurfaceSpecResourceArg(
+            collection_info)
   return surface_spec_dict
 
 
-def _BuildTestDictContext(collection_info, command_group):
+def _BuildTestContext(collection_info, resource_data):
   """Makes context dictionary for config export est files rendering."""
   test_dict = {}
   test_dict['utf_encoding'] = '-*- coding: utf-8 -*- #'
-  resource_arg_flags = _MakeResourceArgFlags(collection_info)
+  test_dict['current_year'] = datetime.datetime.now().year
+  resource_arg_flags = _MakeResourceArgFlags(collection_info, resource_data)
   resource_arg_positional = _MakeResourceArgName(collection_info.name)
   test_dict['test_command_arguments'] = ' '.join(
       [resource_arg_positional, resource_arg_flags])
   test_dict['full_collection_name'] = '.'.join(
       [collection_info.api_name, collection_info.name])
-  test_dict['test_command_string'] = _MakeTestCommandString(command_group)
+  test_dict['test_command_string'] = _MakeTestCommandString(
+      resource_data.home_directory)
   return test_dict
-
-
-def _MakeSingular(collection_name):
-  """Convert the input collection name to singular form."""
-  ending_plurals = [('cies', 'cy'), ('xies', 'xy'), ('ries', 'ry'),
-                    ('xes', 'x'), ('esses', 'ess')]
-  singular_collection_name = None
-  for plural_suffix, replacement_singular in ending_plurals:
-    if collection_name.endswith(plural_suffix):
-      singular_collection_name = collection_name.replace(
-          plural_suffix, replacement_singular)
-  if not singular_collection_name:
-    singular_collection_name = collection_name[:-1]
-  return singular_collection_name
-
-
-def _SplitCollectionOnCapitals(collection_name, delimiter=' '):
-  """Split camel-cased collection names on capital letters."""
-  split_with_spaces = delimiter.join(
-      re.findall('[a-zA-Z][^A-Z]*', collection_name))
-  return split_with_spaces
-
-
-def _SplitNameAndGetLastIndex(collection_name, delimiter='.'):
-  return collection_name.split(delimiter)[-1]
 
 
 def _GetReleaseTracks(release_tracks):
@@ -226,30 +329,71 @@ def _GetReleaseTracks(release_tracks):
 
 def _MakeSurfaceSpecResourceArg(collection_info):
   """Makes resource arg name for surface specification context."""
-  return _SplitCollectionOnCapitals(
-      _MakeSingular(collection_info.name), delimiter='_').upper()
+  return name_parsing.convert_collection_name_to_delimited(
+      collection_info.name, delimiter='_').upper()
 
 
-def _MakeTestCommandString(command_group):
+def _MakeTestCommandString(home_directory):
   """Makes gcloud command string for test execution."""
   return '{} config export'.format(
-      command_group.replace('_', '-').replace('.', ' '))
+      home_directory.replace('_', '-').replace('.', ' '))
 
 
 def _MakeResourceArgName(collection_name):
-  resource_arg_name = 'my-{}'.format(_MakeSingular(
-      _SplitCollectionOnCapitals(_SplitNameAndGetLastIndex(collection_name),
-                                 delimiter='-')).lower())
+  resource_arg_name = 'my-{}'.format(
+      name_parsing.convert_collection_name_to_delimited(
+          collection_name, delimiter='-'))
   return resource_arg_name
 
 
-def _MakeResourceArgFlags(collection_info):
+def _MakeResourceArgFlags(collection_info, resource_data):
   """Makes input resource arg flags for config export test file."""
   resource_arg_flags = []
-  for param in collection_info.params:
-    if (param.lower() not in (_MakeSingular(collection_info.name).lower(),
-                              'project', 'name')):
-      resource_arg = '--{param}=my-{param}'.format(param=param)
-      resource_arg_flags.append(resource_arg)
+
+  if getattr(collection_info, 'flat_paths'):
+    if '' in getattr(collection_info, 'flat_paths', None):
+      components = collection_info.flat_paths[''].split('/')
+
+      resource_arg_flag_names = [
+          component.replace('{', '').replace('Id}', '')
+          for component in components
+          if '{' in component
+      ]
+
+      filtered_resource_arg_flag_names = [
+          resource_arg for resource_arg in resource_arg_flag_names
+          if 'project' not in resource_arg
+      ]
+
+      formatted_resource_arg_flag_names = []
+      for resource_arg in filtered_resource_arg_flag_names[:-1]:
+        formatted_name = name_parsing.split_name_on_capitals(
+            name_parsing.make_name_singular(resource_arg),
+            delimiter='-').lower()
+        formatted_resource_arg_flag_names.append(formatted_name)
+
+      if 'resource_attribute_renames' in resource_data:
+        for original_attr_name, new_attr_name in resource_data.resource_attribute_renames.items(
+        ):
+          for x in range(len(formatted_resource_arg_flag_names)):
+            if formatted_resource_arg_flag_names[x] == original_attr_name:
+              formatted_resource_arg_flag_names[x] = new_attr_name
+      resource_arg_flags = [
+          '--{param}=my-{param}'.format(param=resource_arg)
+          for resource_arg in formatted_resource_arg_flag_names
+      ]
+
+  elif getattr(collection_info, 'params', None):
+    for param in collection_info.params:
+      modified_param_name = param
+      if modified_param_name[-2:] == 'Id':
+        modified_param_name = modified_param_name[:-2]
+      modified_param_name = name_parsing.convert_collection_name_to_delimited(
+          modified_param_name, delimiter='-', make_singular=False)
+      if (modified_param_name
+          not in (name_parsing.convert_collection_name_to_delimited(
+              collection_info.name, delimiter='-'), 'project', 'name')):
+        resource_arg = '--{param}=my-{param}'.format(param=modified_param_name)
+        resource_arg_flags.append(resource_arg)
 
   return ' '.join(resource_arg_flags)

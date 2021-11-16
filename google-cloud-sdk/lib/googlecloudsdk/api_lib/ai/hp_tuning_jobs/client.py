@@ -104,7 +104,9 @@ class HpTuningJobsClient(object):
     job_spec.parallelTrialCount = parallel_trial_count
     job_spec.trialJobSpec.network = network
     job_spec.trialJobSpec.serviceAccount = service_account
-    job_spec.trialJobSpec.enableWebAccess = enable_web_access
+
+    if enable_web_access:
+      job_spec.trialJobSpec.enableWebAccess = enable_web_access
 
     if display_name:
       job_spec.displayName = display_name
