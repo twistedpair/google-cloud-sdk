@@ -343,7 +343,7 @@ class CDNPolicyCacheKeyPolicy(_messages.Message):
   Fields:
     excludeHost: Optional. If true, requests to different hosts will be cached
       separately. Note: this should only be enabled if hosts share the same
-      origin and content Removing the host from the cache key may
+      origin and content. Removing the host from the cache key may
       inadvertently result in different objects being cached than intended,
       depending on which route the first user matched.
     excludeQueryString: Optional. If true, exclude query string parameters
@@ -949,8 +949,7 @@ class Gateway(_messages.Message):
   Gateways to dictate how requests should be routed by this Gateway.
 
   Enums:
-    TypeValueValuesEnum: Required. Immutable. The type of the customer managed
-      gateway.
+    TypeValueValuesEnum: Immutable. The type of the customer managed gateway.
 
   Messages:
     LabelsValue: Optional. Set of label tags associated with the Gateway
@@ -961,9 +960,6 @@ class Gateway(_messages.Message):
       that the Gateway must receive traffic on. The proxy binds to the ports
       specified. IP address can be anything that is allowed by the underlying
       infrastructure (auto-allocation, static IP, BYOIP).
-    authorizationPolicy: Optional. A fully-qualified AuthorizationPolicy URL
-      reference. Specifies how traffic is authorized. If empty, authorization
-      checks are disabled.
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
@@ -976,15 +972,12 @@ class Gateway(_messages.Message):
       single coniguration to the proxy/load balancer. Max length 64
       characters. Scope should start with a letter and can only have letters,
       numbers, hyphens.
-    serverTlsPolicy: Optional. A fully-qualified ServerTLSPolicy URL
-      reference. Specifies how TLS traffic is terminated. If empty, TLS
-      termination is disabled.
-    type: Required. Immutable. The type of the customer managed gateway.
+    type: Immutable. The type of the customer managed gateway.
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Required. Immutable. The type of the customer managed gateway.
+    r"""Immutable. The type of the customer managed gateway.
 
     Values:
       TYPE_UNSPECIFIED: The type of the customer managed gateway is
@@ -1020,15 +1013,13 @@ class Gateway(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   addresses = _messages.StringField(1, repeated=True)
-  authorizationPolicy = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  scope = _messages.StringField(7)
-  serverTlsPolicy = _messages.StringField(8)
-  type = _messages.EnumField('TypeValueValuesEnum', 9)
-  updateTime = _messages.StringField(10)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  scope = _messages.StringField(6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class GrpcRoute(_messages.Message):
@@ -1047,10 +1038,30 @@ class GrpcRoute(_messages.Message):
       attached to, as one of the routing rules to route the requests served by
       the gateway. Each gateway reference should match the pattern:
       `projects/*/locations/global/gateways/`
-    hostnames: Required. If a port is specified, then gRPC clients must use
-      the channel URI with the port to match this rule (i.e.
-      "xds:///service:123"), otherwise they must supply the URI without a port
-      (i.e. "xds:///service").
+    hostnames: Required. Service hostnames with an optional port for which
+      this route describes traffic. Format: [:] Hostname is the fully
+      qualified domain name of a network host. This matches the RFC 1123
+      definition of a hostname with 2 notable exceptions: - IPs are not
+      allowed. - A hostname may be prefixed with a wildcard label (*.). The
+      wildcard label must appear by itself as the first label. Hostname can be
+      "precise" which is a domain name without the terminating dot of a
+      network host (e.g. "foo.example.com") or "wildcard", which is a domain
+      name prefixed with a single wildcard label (e.g. *.example.com). Note
+      that as per RFC1035 and RFC1123, a label must consist of lower case
+      alphanumeric characters or '-', and must start and end with an
+      alphanumeric character. No other punctuation is allowed. The routes
+      associated with a Router must have unique hostnames. If you attempt to
+      attach multiple routes with conflicting hostnames, the configuration
+      will be rejected. For example, while it is acceptable for routes for the
+      hostnames "*.foo.bar.com" and "*.bar.com" to be associated with the same
+      route, it is not possible to associate two routes both with "*.bar.com"
+      or both with "bar.com". In the case that multiple routes match the
+      hostname, the most specific match will be selected. For example,
+      "foo.bar.baz.com" will take precedence over "*.bar.baz.com" and
+      "*.bar.baz.com" will take precedence over "*.baz.com". If a port is
+      specified, then gRPC clients must use the channel URI with the port to
+      match this rule (i.e. "xds:///service:123"), otherwise they must supply
+      the URI without a port (i.e. "xds:///service").
     labels: Optional. Set of label tags associated with the GrpcRoute
       resource.
     meshes: Optional. Meshes defines a list of meshes this GrpcRoute is
@@ -1112,8 +1123,16 @@ class GrpcRouteDestination(_messages.Message):
     serviceName: Required. The URL of a destination service to which to route
       traffic. Must refer to either a BackendService or
       ServiceDirectoryService.
-    weight: Optional. If weights are unspecified for all services, then,
-      traffic is distributed in equal proportions to all of them.
+    weight: Optional. Specifies the proportion of requests forwarded to the
+      backend referenced by the serviceName field. This is computed as:
+      weight/Sum(weights in this destination list). For non-zero values, there
+      may be some epsilon from the exact proportion defined here depending on
+      the precision an implementation supports. If only one serviceName is
+      specified and it has a weight greater than 0, 100% of the traffic is
+      forwarded to that backend. If weights are specified for any one service
+      name, they need to be specified for all of them. If weights are
+      unspecified for all services, then, traffic is distributed in equal
+      proportions to all of them.
   """
 
   serviceName = _messages.StringField(1)
@@ -1763,7 +1782,16 @@ class HttpRouteDestination(_messages.Message):
 
   Fields:
     serviceName: The URL of a BackendService to route traffic to.
-    weight: A integer attribute.
+    weight: Specifies the proportion of requests forwarded to the backend
+      referenced by the serviceName field. This is computed as:
+      weight/Sum(weights in this destination list). For non-zero values, there
+      may be some epsilon from the exact proportion defined here depending on
+      the precision an implementation supports. If only one serviceName is
+      specified and it has a weight greater than 0, 100% of the traffic is
+      forwarded to that backend. If weights are specified for any one service
+      name, they need to be specified for all of them. If weights are
+      unspecified for all services, then, traffic is distributed in equal
+      proportions to all of them.
   """
 
   serviceName = _messages.StringField(1)
@@ -2419,6 +2447,21 @@ class ListTcpRoutesResponse(_messages.Message):
   tcpRoutes = _messages.MessageField('TcpRoute', 2, repeated=True)
 
 
+class ListTlsRoutesResponse(_messages.Message):
+  r"""Response returned by the ListTlsRoutes method.
+
+  Fields:
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+    tlsRoutes: List of TlsRoute resources.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  tlsRoutes = _messages.MessageField('TlsRoute', 2, repeated=True)
+
+
 class Location(_messages.Message):
   r"""A resource that represents Google Cloud Platform location.
 
@@ -2584,13 +2627,14 @@ class Mesh(_messages.Message):
     labels: Optional. Set of label tags associated with the Mesh resource.
     name: Required. Name of the Mesh resource. It matches pattern
       `projects/*/locations/global/meshes/`.
-    scope: Required. Immutable. Scope defines a logical configuration boundary
-      for mesh. The routes pointing to this particular mesh resource defines
-      the mesh configuration and the scope field name is used by mesh clients
-      to receive that configuration. There cannot be more than one Mesh
-      resource instance of the same type (SIDECAR or PROXYLESS_GRPC) with the
-      same scope. Max length 64 characters. Scope should start with a letter
-      and can only have letters, numbers, hyphens.
+    scope: Optional. Scope defines a logical configuration boundary for mesh.
+      The routes pointing to this particular mesh resource defines the mesh
+      configuration and the scope field name is used by mesh clients to
+      receive that configuration. There cannot be more than one Mesh resource
+      instance of the same type (SIDECAR or PROXYLESS_GRPC) with the same
+      scope. Max length 64 characters. Scope should start with a letter and
+      can only have letters, numbers, hyphens. If no scope is supplied
+      'default' is used as the scope.
     type: Required. Immutable. The type of the Mesh resource.
     updateTime: Output only. The timestamp when the resource was updated.
   """
@@ -4613,6 +4657,96 @@ class NetworkservicesProjectsLocationsTcpRoutesTestIamPermissionsRequest(_messag
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class NetworkservicesProjectsLocationsTlsRoutesCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsTlsRoutesCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource of the TlsRoute. Must be in the
+      format `projects/*/locations/global`.
+    tlsRoute: A TlsRoute resource to be passed as the request body.
+    tlsRouteId: Required. Short name of the TlsRoute resource to be created.
+      E.g. TODO(Add an example).
+  """
+
+  parent = _messages.StringField(1, required=True)
+  tlsRoute = _messages.MessageField('TlsRoute', 2)
+  tlsRouteId = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsTlsRoutesDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsTlsRoutesDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the TlsRoute to delete. Must be in the format
+      `projects/*/locations/global/tlsRoutes/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsTlsRoutesGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsTlsRoutesGetRequest object.
+
+  Fields:
+    name: Required. A name of the TlsRoute to get. Must be in the format
+      `projects/*/locations/global/tlsRoutes/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsTlsRoutesListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsTlsRoutesListRequest object.
+
+  Fields:
+    pageSize: Maximum number of TlsRoutes to return per call.
+    pageToken: The value returned by the last `ListTlsRoutesResponse`
+      Indicates that this is a continuation of a prior `ListRouters` call, and
+      that the system should return the next page of data.
+    parent: Required. The project and location from which the TlsRoutes should
+      be listed, specified in the format `projects/*/locations/global`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsTlsRoutesPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsTlsRoutesPatchRequest object.
+
+  Fields:
+    name: Required. Name of the TlsRoute resource. It matches pattern
+      `projects/*/locations/global/tlsRoutes/tls_route_name>`.
+    tlsRoute: A TlsRoute resource to be passed as the request body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the TlsRoute resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  tlsRoute = _messages.MessageField('TlsRoute', 2)
+  updateMask = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsTlsRoutesTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsTlsRoutesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class ObservabilityPolicy(_messages.Message):
   r"""ObservabilityPolicy is a resource for defining observability parameters.
 
@@ -5545,8 +5679,16 @@ class TcpRouteRouteDestination(_messages.Message):
 
   Fields:
     serviceName: Required. The URL of a BackendService to route traffic to.
-    weight: Optional. If weights are unspecified for all services, then,
-      traffic is distributed in equal proportions to all of them.
+    weight: Optional. Specifies the proportion of requests forwarded to the
+      backend referenced by the serviceName field. This is computed as:
+      weight/Sum(weights in this destination list). For non-zero values, there
+      may be some epsilon from the exact proportion defined here depending on
+      the precision an implementation supports. If only one serviceName is
+      specified and it has a weight greater than 0, 100% of the traffic is
+      forwarded to that backend. If weights are specified for any one service
+      name, they need to be specified for all of them. If weights are
+      unspecified for all services, then, traffic is distributed in equal
+      proportions to all of them.
   """
 
   serviceName = _messages.StringField(1)
@@ -5654,6 +5796,107 @@ class Timeout(_messages.Message):
   maxAttemptsTimeout = _messages.StringField(2)
   readTimeout = _messages.StringField(3)
   responseTimeout = _messages.StringField(4)
+
+
+class TlsRoute(_messages.Message):
+  r"""TlsRoute defines how traffic should be routed based on SNI and other
+  matching L3 attributes.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A free-text description of the resource. Max length
+      1024 characters.
+    gateways: Optional. Gateways defines a list of gateways this TlsRoute is
+      attached to, as one of the routing rules to route the requests served by
+      the gateway. Each gateway reference should match the pattern:
+      `projects/*/locations/global/gateways/`
+    meshes: Optional. Meshes defines a list of meshes this TlsRoute is
+      attached to, as one of the routing rules to route the requests served by
+      the mesh. Each mesh reference should match the pattern:
+      `projects/*/locations/global/meshes/` The attached Mesh should be of a
+      type SIDECAR
+    name: Required. Name of the TlsRoute resource. It matches pattern
+      `projects/*/locations/global/tlsRoutes/tls_route_name>`.
+    rules: Required. Rules that define how traffic is routed and handled. At
+      least one RouteRule must be supplied. If there are multiple rules then
+      the action taken will be the first rule to match.
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  gateways = _messages.StringField(3, repeated=True)
+  meshes = _messages.StringField(4, repeated=True)
+  name = _messages.StringField(5)
+  rules = _messages.MessageField('TlsRouteRouteRule', 6, repeated=True)
+  updateTime = _messages.StringField(7)
+
+
+class TlsRouteRouteAction(_messages.Message):
+  r"""The specifications for routing traffic and applying associated policies.
+
+  Fields:
+    destinations: Required. The destination services to which traffic should
+      be forwarded. At least one destination service is required.
+    originalDestination: Optional. If true, Router will use the destination IP
+      and port of the original connection as the destination of the request.
+      Default is false.
+  """
+
+  destinations = _messages.MessageField('TlsRouteRouteDestination', 1, repeated=True)
+  originalDestination = _messages.BooleanField(2)
+
+
+class TlsRouteRouteDestination(_messages.Message):
+  r"""Describe the destination for traffic to be routed to.
+
+  Fields:
+    serviceName: Required. The URL of a BackendService to route traffic to.
+    weight: Optional. Specifies the proportion of requests forwareded to the
+      backend referenced by the service_name field. This is computed as:
+      weight/Sum(weights in destinations) Weights in all destinations does not
+      need to sum up to 100.
+  """
+
+  serviceName = _messages.StringField(1)
+  weight = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class TlsRouteRouteMatch(_messages.Message):
+  r"""RouteMatch defines the predicate used to match requests to a given
+  action. Multiple match types are "AND"ed for evaluation. If no routeMatch
+  field is specified, this rule will unconditionally match traffic.
+
+  Fields:
+    alpn: Optional. ALPN (Application-Layer Protocol Negotiation) to match
+      against. Examples: "http/1.1", "h2". At least one of sni_host and alpn
+      is required. Up to 5 alpns across all matches can be set.
+    sniHost: Optional. SNI (server name indicator) to match against. SNI will
+      be matched against all wildcard domains, i.e. www.example.com will be
+      first matched against www.example.com, then *.example.com, then *.com.
+      Partial wildcards are not supported, and values like *w.example.com are
+      invalid. At least one of sni_host and alpn is required. Up to 5 sni
+      hosts across all matches can be set.
+  """
+
+  alpn = _messages.StringField(1, repeated=True)
+  sniHost = _messages.StringField(2, repeated=True)
+
+
+class TlsRouteRouteRule(_messages.Message):
+  r"""Specifies how to match traffic and how to route traffic when traffic is
+  matched.
+
+  Fields:
+    action: Required. The detailed rule defining how to route matched traffic.
+    matches: Optional. RouteMatch defines the predicate used to match requests
+      to a given action. Multiple match types are "OR"ed for evaluation. If no
+      routeMatch field is specified, this rule will unconditionally match
+      traffic.
+  """
+
+  action = _messages.MessageField('TlsRouteRouteAction', 1)
+  matches = _messages.MessageField('TlsRouteRouteMatch', 2, repeated=True)
 
 
 class TrafficPortSelector(_messages.Message):

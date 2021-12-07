@@ -875,6 +875,28 @@
       "description": "Spec for Anthos Observability. This is required since Feature proto requires a spec.",
       "type": "object",
       "properties": {
+        "membershipSpecs": {
+          "description": "Per-membership spec that determines the spec in Stackdriver CR",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "AnthosObservabilityMembershipSpec"
+          }
+        }
+      }
+    },
+    "AnthosObservabilityMembershipSpec": {
+      "id": "AnthosObservabilityMembershipSpec",
+      "description": "**Anthosobservability**: Per-Membership Feature spec.",
+      "type": "object",
+      "properties": {
+        "enableStackdriverOnApplications": {
+          "description": "enable collecting and reporting metrics and logs from user apps See go\/onyx-application-metrics-logs-user-guide",
+          "type": "boolean"
+        },
+        "doNotOptimizeMetrics": {
+          "description": "use full of metrics rather than optimized metrics. See https:\/\/cloud.google.com\/anthos\/clusters\/docs\/on-prem\/1.8\/concepts\/logging-and-monitoring#optimized_metrics_default_metrics",
+          "type": "boolean"
+        }
       }
     },
     "WorkloadCertificateFeatureSpec": {

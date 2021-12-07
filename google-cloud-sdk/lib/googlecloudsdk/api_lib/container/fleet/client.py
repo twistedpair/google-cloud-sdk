@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.fleet import util
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
@@ -114,9 +115,34 @@ class FleetClient(object):
     # Fleet containing fields with updated value(s)
     fleet = self.messages.Fleet(displayName=displayname)
     # Fields to be updated (currently only display_name)
-    mask = "display_name"
+    mask = 'display_name'
     req = self.messages.GkehubProjectsLocationsFleetsPatchRequest(
         fleet=fleet,
         name=util.FleetResourceName(project),
         updateMask=mask)
     return self.client.projects_locations_fleets.Patch(req)
+
+  def ListFleets(self, project, organization):
+    """Lists fleets in an organization.
+
+    Args:
+      project: the project to search.
+      organization: the organization to search.
+
+    Returns:
+      A ListFleetResponse (list of fleets and next page token)
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error
+    """
+    if organization:
+      parent = util.FleetOrgParentName(organization)
+    else:
+      parent = util.FleetParentName(project)
+    # Misleading name, parent is usually org, not project
+    req = self.messages.GkehubProjectsLocationsFleetsListRequest(
+        pageToken='',
+        parent=parent)
+    return list_pager.YieldFromList(
+        self.client.projects_locations_fleets, req, field='fleets',
+        batch_size_attribute=None)

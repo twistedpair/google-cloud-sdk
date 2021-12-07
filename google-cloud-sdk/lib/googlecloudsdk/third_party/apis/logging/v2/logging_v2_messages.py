@@ -1265,11 +1265,11 @@ class LogMetric(_messages.Message):
       characters and can include only the following characters: A-Z, a-z, 0-9,
       and the special characters _-.,+!*',()%/. The forward-slash character
       (/) denotes a hierarchy of name pieces, and it cannot be the first
-      character of the name.The metric identifier in this field must not be
-      URL-encoded (https://en.wikipedia.org/wiki/Percent-encoding). However,
-      when the metric identifier appears as the [METRIC_ID] part of a
-      metric_name API parameter, then the metric identifier must be URL-
-      encoded. Example: "projects/my-project/metrics/nginx%2Frequests".
+      character of the name.This field is the [METRIC_ID] part of a metric
+      resource name in the format "projects/PROJECT_ID/metrics/METRIC_ID".
+      Example: If the resource name of a metric is "projects/my-
+      project/metrics/nginx%2Frequests", this field's value is
+      "nginx/requests".
     updateTime: Output only. The last update timestamp of the metric.This
       field may not be present for older metrics.
     valueExtractor: Optional. A value_extractor is required when using a
@@ -1615,15 +1615,16 @@ class LoggingBillingAccountsGetSettingsRequest(_messages.Message):
   r"""A LoggingBillingAccountsGetSettingsRequest object.
 
   Fields:
-    name: Required. The resource for which to retrieve CMEK settings.
-      "projects/[PROJECT_ID]/Settings"
-      "organizations/[ORGANIZATION_ID]/Settings"
-      "billingAccounts/[BILLING_ACCOUNT_ID]/Settings"
-      "folders/[FOLDER_ID]/Settings" For
-      example:"organizations/12345/Settings"Note: CMEK for the Log Router can
-      currently only be configured for Google Cloud organizations. Once
-      configured, it applies to all projects and folders in the Google Cloud
-      organization.
+    name: Required. The resource for which to retrieve settings.
+      "projects/[PROJECT_ID]/settings"
+      "organizations/[ORGANIZATION_ID]/settings"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/settings"
+      "folders/[FOLDER_ID]/settings" For
+      example:"organizations/12345/settings"Note: Settings for the Log Router
+      can be get for Google Cloud projects, folders, organizations and billing
+      accounts. Currently it can only be configured for organizations. Once
+      configured for an organization, it applies to all projects and folders
+      in the Google Cloud organization.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2280,15 +2281,16 @@ class LoggingFoldersGetSettingsRequest(_messages.Message):
   r"""A LoggingFoldersGetSettingsRequest object.
 
   Fields:
-    name: Required. The resource for which to retrieve CMEK settings.
-      "projects/[PROJECT_ID]/Settings"
-      "organizations/[ORGANIZATION_ID]/Settings"
-      "billingAccounts/[BILLING_ACCOUNT_ID]/Settings"
-      "folders/[FOLDER_ID]/Settings" For
-      example:"organizations/12345/Settings"Note: CMEK for the Log Router can
-      currently only be configured for Google Cloud organizations. Once
-      configured, it applies to all projects and folders in the Google Cloud
-      organization.
+    name: Required. The resource for which to retrieve settings.
+      "projects/[PROJECT_ID]/settings"
+      "organizations/[ORGANIZATION_ID]/settings"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/settings"
+      "folders/[FOLDER_ID]/settings" For
+      example:"organizations/12345/settings"Note: Settings for the Log Router
+      can be get for Google Cloud projects, folders, organizations and billing
+      accounts. Currently it can only be configured for organizations. Once
+      configured for an organization, it applies to all projects and folders
+      in the Google Cloud organization.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2794,15 +2796,16 @@ class LoggingGetSettingsRequest(_messages.Message):
   r"""A LoggingGetSettingsRequest object.
 
   Fields:
-    name: Required. The resource for which to retrieve CMEK settings.
-      "projects/[PROJECT_ID]/Settings"
-      "organizations/[ORGANIZATION_ID]/Settings"
-      "billingAccounts/[BILLING_ACCOUNT_ID]/Settings"
-      "folders/[FOLDER_ID]/Settings" For
-      example:"organizations/12345/Settings"Note: CMEK for the Log Router can
-      currently only be configured for Google Cloud organizations. Once
-      configured, it applies to all projects and folders in the Google Cloud
-      organization.
+    name: Required. The resource for which to retrieve settings.
+      "projects/[PROJECT_ID]/settings"
+      "organizations/[ORGANIZATION_ID]/settings"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/settings"
+      "folders/[FOLDER_ID]/settings" For
+      example:"organizations/12345/settings"Note: Settings for the Log Router
+      can be get for Google Cloud projects, folders, organizations and billing
+      accounts. Currently it can only be configured for organizations. Once
+      configured for an organization, it applies to all projects and folders
+      in the Google Cloud organization.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3259,15 +3262,16 @@ class LoggingOrganizationsGetSettingsRequest(_messages.Message):
   r"""A LoggingOrganizationsGetSettingsRequest object.
 
   Fields:
-    name: Required. The resource for which to retrieve CMEK settings.
-      "projects/[PROJECT_ID]/Settings"
-      "organizations/[ORGANIZATION_ID]/Settings"
-      "billingAccounts/[BILLING_ACCOUNT_ID]/Settings"
-      "folders/[FOLDER_ID]/Settings" For
-      example:"organizations/12345/Settings"Note: CMEK for the Log Router can
-      currently only be configured for Google Cloud organizations. Once
-      configured, it applies to all projects and folders in the Google Cloud
-      organization.
+    name: Required. The resource for which to retrieve settings.
+      "projects/[PROJECT_ID]/settings"
+      "organizations/[ORGANIZATION_ID]/settings"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/settings"
+      "folders/[FOLDER_ID]/settings" For
+      example:"organizations/12345/settings"Note: Settings for the Log Router
+      can be get for Google Cloud projects, folders, organizations and billing
+      accounts. Currently it can only be configured for organizations. Once
+      configured for an organization, it applies to all projects and folders
+      in the Google Cloud organization.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3780,20 +3784,17 @@ class LoggingOrganizationsUpdateSettingsRequest(_messages.Message):
   r"""A LoggingOrganizationsUpdateSettingsRequest object.
 
   Fields:
-    name: Required. The resource name for the CMEK settings to update.
-      "projects/[PROJECT_ID]/Settings"
-      "organizations/[ORGANIZATION_ID]/Settings"
-      "billingAccounts/[BILLING_ACCOUNT_ID]/Settings"
-      "folders/[FOLDER_ID]/Settings" For
-      example:"organizations/12345/Settings"Note: CMEK for the Log Router can
-      currently only be configured for Google Cloud organizations. Once
+    name: Required. The resource name for the settings to update.
+      "organizations/[ORGANIZATION_ID]/settings" For
+      example:"organizations/12345/settings"Note: Settings for the Log Router
+      can currently only be configured for Google Cloud organizations. Once
       configured, it applies to all projects and folders in the Google Cloud
       organization.
     settings: A Settings resource to be passed as the request body.
-    updateMask: Optional. Field mask identifying which fields from
-      cmek_settings should be updated. A field will be overwritten if and only
-      if it is in the update mask. Output only fields cannot be updated.See
-      FieldMask for more information.For example: "updateMask=kmsKeyName"
+    updateMask: Optional. Field mask identifying which fields from settings
+      should be updated. A field will be overwritten if and only if it is in
+      the update mask. Output only fields cannot be updated.See FieldMask for
+      more information.For example: "updateMask=kmsKeyName"
   """
 
   name = _messages.StringField(1, required=True)
@@ -3913,15 +3914,16 @@ class LoggingProjectsGetSettingsRequest(_messages.Message):
   r"""A LoggingProjectsGetSettingsRequest object.
 
   Fields:
-    name: Required. The resource for which to retrieve CMEK settings.
-      "projects/[PROJECT_ID]/Settings"
-      "organizations/[ORGANIZATION_ID]/Settings"
-      "billingAccounts/[BILLING_ACCOUNT_ID]/Settings"
-      "folders/[FOLDER_ID]/Settings" For
-      example:"organizations/12345/Settings"Note: CMEK for the Log Router can
-      currently only be configured for Google Cloud organizations. Once
-      configured, it applies to all projects and folders in the Google Cloud
-      organization.
+    name: Required. The resource for which to retrieve settings.
+      "projects/[PROJECT_ID]/settings"
+      "organizations/[ORGANIZATION_ID]/settings"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/settings"
+      "folders/[FOLDER_ID]/settings" For
+      example:"organizations/12345/settings"Note: Settings for the Log Router
+      can be get for Google Cloud projects, folders, organizations and billing
+      accounts. Currently it can only be configured for organizations. Once
+      configured for an organization, it applies to all projects and folders
+      in the Google Cloud organization.
   """
 
   name = _messages.StringField(1, required=True)
@@ -4623,20 +4625,17 @@ class LoggingUpdateSettingsRequest(_messages.Message):
   r"""A LoggingUpdateSettingsRequest object.
 
   Fields:
-    name: Required. The resource name for the CMEK settings to update.
-      "projects/[PROJECT_ID]/Settings"
-      "organizations/[ORGANIZATION_ID]/Settings"
-      "billingAccounts/[BILLING_ACCOUNT_ID]/Settings"
-      "folders/[FOLDER_ID]/Settings" For
-      example:"organizations/12345/Settings"Note: CMEK for the Log Router can
-      currently only be configured for Google Cloud organizations. Once
+    name: Required. The resource name for the settings to update.
+      "organizations/[ORGANIZATION_ID]/settings" For
+      example:"organizations/12345/settings"Note: Settings for the Log Router
+      can currently only be configured for Google Cloud organizations. Once
       configured, it applies to all projects and folders in the Google Cloud
       organization.
     settings: A Settings resource to be passed as the request body.
-    updateMask: Optional. Field mask identifying which fields from
-      cmek_settings should be updated. A field will be overwritten if and only
-      if it is in the update mask. Output only fields cannot be updated.See
-      FieldMask for more information.For example: "updateMask=kmsKeyName"
+    updateMask: Optional. Field mask identifying which fields from settings
+      should be updated. A field will be overwritten if and only if it is in
+      the update mask. Output only fields cannot be updated.See FieldMask for
+      more information.For example: "updateMask=kmsKeyName"
   """
 
   name = _messages.StringField(1, required=True)
@@ -5481,7 +5480,7 @@ class Settings(_messages.Message):
       obtain the service account ID.See Enabling CMEK for Log Router
       (https://cloud.google.com/logging/docs/routing/managed-encryption) for
       more information.
-    name: Output only. The resource name of the CMEK settings.
+    name: Output only. The resource name of the settings.
     storageLocation: Optional. The Cloud region that will be used for _Default
       and _Required log buckets for newly created projects and folders. For
       example europe-west1. This setting does not affect the location of

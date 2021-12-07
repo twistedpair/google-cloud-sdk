@@ -330,6 +330,10 @@
           "description": "Optional. Specific information for a GKE Multi-Cloud cluster.",
           "$ref": "MultiCloudCluster"
         },
+        "edgeCluster": {
+          "description": "Optional. Specific information for a Google Edge cluster.",
+          "$ref": "EdgeCluster"
+        },
         "kubernetesMetadata": {
           "description": "Output only. Useful Kubernetes-specific metadata.",
           "readOnly": true,
@@ -390,6 +394,17 @@
           "description": "Output only. If cluster_missing is set then it denotes that API(gkemulticloud.googleapis.com) resource for this GKE Multi-Cloud cluster no longer exists.",
           "readOnly": true,
           "type": "boolean"
+        }
+      }
+    },
+    "EdgeCluster": {
+      "id": "EdgeCluster",
+      "description": "EdgeCluster contains information specific to Google Edge Clusters.",
+      "type": "object",
+      "properties": {
+        "resourceLink": {
+          "description": "Immutable. Self-link of the GCP resource for the Edge Cluster. For example: \/\/edgecontainer.googleapis.com\/projects\/my-project\/locations\/us-west1-a\/clusters\/my-cluster",
+          "type": "string"
         }
       }
     },
@@ -497,6 +512,10 @@
         "v1beta1Crd": {
           "description": "Optional. Use `apiextensions\/v1beta1` instead of `apiextensions\/v1` for CustomResourceDefinition resources. This option should be set for clusters with Kubernetes apiserver versions <1.16.",
           "type": "boolean"
+        },
+        "k8sVersion": {
+          "description": "Optional. Major version of the Kubernetes cluster. This is only used to determine which version to use for the CustomResourceDefinition resources, `apiextensions\/v1beta1` or`apiextensions\/v1`.",
+          "type": "string"
         }
       }
     },

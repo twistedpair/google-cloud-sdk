@@ -31,6 +31,16 @@ class Collections(enum.Enum):
       ['projectsId'],
       True
   )
+  PROJECTS_FIREWALLPOLICIES = (
+      'projects.firewallpolicies',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/firewallpolicies/{firewallpoliciesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_KEYS = (
       'projects.keys',
       '{+name}',

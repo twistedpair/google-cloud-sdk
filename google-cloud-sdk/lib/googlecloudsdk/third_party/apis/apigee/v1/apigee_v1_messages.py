@@ -565,7 +565,8 @@ class ApigeeOrganizationsDatacollectorsCreateRequest(_messages.Message):
 
   Fields:
     dataCollectorId: ID of the data collector. Overrides any ID in the data
-      collector resource. Must begin with `dc_`.
+      collector resource. Must be a string beginning with `dc_` that contains
+      only letters, numbers, and underscores.
     googleCloudApigeeV1DataCollector: A GoogleCloudApigeeV1DataCollector
       resource to be passed as the request body.
     parent: Required. Name of the organization in which to create the data
@@ -2085,6 +2086,23 @@ class ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesListRequest(_messages.Me
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class ApigeeOrganizationsEnvironmentsModifyEnvironmentRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsModifyEnvironmentRequest object.
+
+  Fields:
+    googleCloudApigeeV1Environment: A GoogleCloudApigeeV1Environment resource
+      to be passed as the request body.
+    name: Required. Name of the environment. Use the following structure in
+      your request: `organizations/{org}/environments/{environment}`.
+    updateMask: List of fields to be updated. Fields that can be updated:
+      node_config.
+  """
+
+  googleCloudApigeeV1Environment = _messages.MessageField('GoogleCloudApigeeV1Environment', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class ApigeeOrganizationsEnvironmentsOptimizedStatsGetRequest(_messages.Message):
@@ -4716,7 +4734,7 @@ class GoogleCloudApigeeV1ConnectorsPlatformConfig(_messages.Message):
     enabled: Flag that specifies whether the Connectors Platform add-on is
       enabled.
     expiresAt: Output only. Time at which the Connectors Platform add-on
-      expires in in milliseconds since epoch. If unspecified, the add-on will
+      expires in milliseconds since epoch. If unspecified, the add-on will
       never expire.
   """
 
@@ -4769,7 +4787,8 @@ class GoogleCloudApigeeV1Credential(_messages.Message):
     issuedAt: Time the credential was issued in milliseconds since epoch.
     scopes: List of scopes to apply to the app. Specified scopes must already
       exist on the API product that you associate with the app.
-    status: Status of the credential.
+    status: Status of the credential. Valid values include `approved` or
+      `revoked`.
   """
 
   apiProducts = _messages.MessageField('GoogleCloudApigeeV1ApiProductRef', 1, repeated=True)
@@ -5592,6 +5611,7 @@ class GoogleCloudApigeeV1Environment(_messages.Message):
       milliseconds since epoch.
     name: Required. Name of the environment. Values must match the regular
       expression `^[.\\p{Alnum}-_]{1,255}$`
+    nodeConfig: Optional. NodeConfig of the environment.
     properties: Optional. Key-value pairs that may be used for customizing the
       environment.
     state: Output only. State of the environment. Values other than ACTIVE
@@ -5666,8 +5686,9 @@ class GoogleCloudApigeeV1Environment(_messages.Message):
   displayName = _messages.StringField(5)
   lastModifiedAt = _messages.IntegerField(6)
   name = _messages.StringField(7)
-  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
+  nodeConfig = _messages.MessageField('GoogleCloudApigeeV1NodeConfig', 8)
+  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
 
 
 class GoogleCloudApigeeV1EnvironmentConfig(_messages.Message):
@@ -6148,6 +6169,14 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
       Apigee endpoint is enabled for the instance.
     host: Output only. Internal hostname or IP address of the Apigee endpoint
       used by clients to connect to the service.
+    ipRange: Optional. IP range represents the customer-provided CIDR block of
+      length 22 that will be used for the Apigee instance creation. This
+      optional range, if provided, should be freely available as part of
+      larger named range the customer has allocated to the Service Networking
+      peering. If this is not provided, Apigee will automatically request for
+      any available /22 CIDR block from Service Networking. The customer
+      should use this CIDR block for configuring their firewall needs to allow
+      traffic from Apigee. Input format: "a.b.c.d/22"
     lastModifiedAt: Output only. Time the instance was last modified in
       milliseconds since epoch.
     location: Required. Compute Engine location where the instance resides.
@@ -6214,14 +6243,15 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
   externalHost = _messages.StringField(5)
   externalHostEnabled = _messages.BooleanField(6)
   host = _messages.StringField(7)
-  lastModifiedAt = _messages.IntegerField(8)
-  location = _messages.StringField(9)
-  name = _messages.StringField(10)
-  nodeConfig = _messages.MessageField('GoogleCloudApigeeV1NodeConfig', 11)
-  peeringCidrRange = _messages.EnumField('PeeringCidrRangeValueValuesEnum', 12)
-  port = _messages.StringField(13)
-  runtimeVersion = _messages.StringField(14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
+  ipRange = _messages.StringField(8)
+  lastModifiedAt = _messages.IntegerField(9)
+  location = _messages.StringField(10)
+  name = _messages.StringField(11)
+  nodeConfig = _messages.MessageField('GoogleCloudApigeeV1NodeConfig', 12)
+  peeringCidrRange = _messages.EnumField('PeeringCidrRangeValueValuesEnum', 13)
+  port = _messages.StringField(14)
+  runtimeVersion = _messages.StringField(15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
 
 
 class GoogleCloudApigeeV1InstanceAttachment(_messages.Message):
@@ -6817,19 +6847,25 @@ class GoogleCloudApigeeV1NatAddress(_messages.Message):
 
 
 class GoogleCloudApigeeV1NodeConfig(_messages.Message):
-  r"""NodeConfig for the instance.
+  r"""NodeConfig for setting the min/max number of nodes associated with the
+  environment.
 
   Fields:
-    maxNodeCount: Optional. The maximum size of the nodepool that will be
-      reserved by the instance. If not specified, default is determined by the
-      size of the CIDR block range.
-    minNodeCount: Optional. The minimum size of the nodepool that will be
-      reserved by the instance. If not specified, default is determined by the
-      size of the CIDR block range.
+    currentAggregateNodeCount: Output only. The current total number of
+      gateway nodes that each environment currently has across all instances.
+    maxNodeCount: Optional. The maximum total number of gateway nodes that the
+      is reserved for all instances that has the specified environment. If not
+      specified, the default is determined by the recommended maximum number
+      of nodes for that gateway.
+    minNodeCount: Optional. The minimum total number of gateway nodes that the
+      is reserved for all instances that has the specified environment. If not
+      specified, the default is determined by the recommended minimum number
+      of nodes for that gateway.
   """
 
-  maxNodeCount = _messages.IntegerField(1)
-  minNodeCount = _messages.IntegerField(2)
+  currentAggregateNodeCount = _messages.IntegerField(1)
+  maxNodeCount = _messages.IntegerField(2)
+  minNodeCount = _messages.IntegerField(3)
 
 
 class GoogleCloudApigeeV1Operation(_messages.Message):

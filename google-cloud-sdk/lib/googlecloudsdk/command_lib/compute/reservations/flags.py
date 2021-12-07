@@ -168,7 +168,6 @@ def GetRemoveShareWithFlag(custom_name=None):
 
 
 def AddCreateFlags(parser,
-                   support_location_hint=False,
                    support_fleet=False,
                    support_share_setting=False):
   """Adds all flags needed for the create command."""
@@ -183,8 +182,7 @@ def AddCreateFlags(parser,
   group.AddArgument(GetMachineType())
   group.AddArgument(GetLocalSsdFlag())
   group.AddArgument(GetAcceleratorFlag())
-  if support_location_hint:
-    group.AddArgument(GetLocationHint())
+  group.AddArgument(GetLocationHint())
   if support_fleet:
     group.AddArgument(instance_flags.AddMaintenanceFreezeDuration())
     group.AddArgument(instance_flags.AddMaintenanceInterval())

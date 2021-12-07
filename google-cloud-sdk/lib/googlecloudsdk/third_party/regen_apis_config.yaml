@@ -25,10 +25,9 @@
 # api_name:
 #   api_version:
 #     discovery_doc: <relative path wrt root_dir>
+#     gcloud_gapic_library: name of the gcloud gapic client library to generate.
 #     unelidable_request_methods: <list of request method id>
 #     default: <true|false in case there more that one api version>
-#     version: <actual private version of this api,
-#               defaults to public api_version>
 #     resources:
 #       resource_collection_name: <parsing_template>
 
@@ -526,6 +525,8 @@ apis:
     v1alpha1:
       discovery_doc: datastream_v1alpha1.json
       default: true
+    v1:
+      discovery_doc: datastream_v1.json
 
   deploymentmanager:
     alpha:
@@ -815,6 +816,7 @@ apis:
   logging:
     v2:
       discovery_doc: logging_v2.json
+      gcloud_gapic_library: logging_v2_py
       default: true
   memcache:
     v1beta2:
@@ -1005,9 +1007,9 @@ apis:
     v1:
       discovery_doc: run_v1.json
       default: true
-  run_apps:
+  runapps:
     v1alpha1:
-      discovery_doc: run_apps_v1alpha1.json
+      discovery_doc: runapps_v1alpha1.json
   runtimeconfig:
     v1beta1:
       discovery_doc: runtimeconfig_v1beta1.json
@@ -1027,6 +1029,9 @@ apis:
           path: organizations/{organizationsId}/assets/{assetsId}
         organizations.notificationConfigs:
           path: organizations/{organizationsId}/notificationConfigs/{notificationConfigsId}
+        # We have to explicitly add this resource collection for bulk mute API.
+        organizations.findings:
+          path: organizations/{organizationsId}/findings/{findingId}
       default: true
   serviceconsumermanagement:
     v1beta1:
@@ -1124,6 +1129,8 @@ apis:
       discovery_doc: tpu_v1.json
     v2alpha1:
       discovery_doc: tpu_v2alpha1.json
+    v2:
+      discovery_doc: tpu_v2.json
   videointelligence:
     v1:
       discovery_doc: videointelligence_v1.json

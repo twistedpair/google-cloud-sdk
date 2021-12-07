@@ -21,23 +21,35 @@ from __future__ import unicode_literals
 from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import base
+
+VERSION_MAP = {
+    base.ReleaseTrack.ALPHA: 'v1beta1',
+    base.ReleaseTrack.BETA: 'v1beta1',
+    base.ReleaseTrack.GA: 'v1'
+}
 
 
-def _GetClientInstance():
-  return apis.GetClientInstance('transcoder', 'v1beta1')
+def _GetClientInstance(release_track=base.ReleaseTrack.GA):
+  api_version = VERSION_MAP.get(release_track)
+  return apis.GetClientInstance('transcoder', api_version)
 
 
 class JobsClient(object):
   """Client for job service in the Transcoder API."""
 
-  def __init__(self, client=None):
-    self.client = client or _GetClientInstance()
+  def __init__(self, release_track=base.ReleaseTrack.GA, client=None):
+    self.client = client or _GetClientInstance(release_track)
     self.message = self.client.MESSAGES_MODULE
     self._service = self.client.projects_locations_jobs
     self._job_class = self.client.MESSAGES_MODULE.Job
 
-  def Create(self, parent_ref, job_json=None, template_id=None, input_uri=None,
-             output_uri=None, priority=None):
+  def Create(self,
+             parent_ref,
+             job_json=None,
+             template_id=None,
+             input_uri=None,
+             output_uri=None):
     """Create a job.
 
     Args:
@@ -48,20 +60,18 @@ class JobsClient(object):
       input_uri: input video location in Google Cloud Storage
       output_uri: output directory (followed by a trailing forward slash) in
         Google Cloud Storage
-      priority: job priority. Optional
 
     Returns:
       Job: Job created, including configuration and name.
     """
 
     if job_json is None:
-      job = self.message.Job(inputUri=input_uri, outputUri=output_uri,
-                             templateId=template_id, priority=priority)
+      job = self.message.Job(
+          inputUri=input_uri, outputUri=output_uri, templateId=template_id)
     else:
       job = encoding.JsonToMessage(self._job_class, job_json)
       job.inputUri = input_uri
       job.outputUri = output_uri
-      job.priority = job.priority if priority is None else priority
 
     req = self.message.TranscoderProjectsLocationsJobsCreateRequest(
         parent=parent_ref.RelativeName(), job=job)

@@ -60,9 +60,10 @@ class RestorePoller(object):
         restore.state == self.messages.Restore.StateValueValuesEnum.DELETING)
 
   def _GetRestore(self, restore):
-    req = self.messages.GkebackupProjectsLocationsRestoresGetRequest()
+    req = self.messages.GkebackupProjectsLocationsRestorePlansRestoresGetRequest(
+    )
     req.name = restore
-    return self.client.projects_locations_restores.Get(req)
+    return self.client.projects_locations_restorePlans_restores.Get(req)
 
   def Poll(self, restore):
     return self._GetRestore(restore)

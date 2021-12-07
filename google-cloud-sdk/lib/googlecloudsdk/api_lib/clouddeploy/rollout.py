@@ -67,18 +67,24 @@ class RolloutClient(object):
         name=name)
     return self._service.Get(request)
 
-  def List(self, release_name, filter_str=None):
+  def List(self, release_name, filter_str=None, order_by=None, page_size=0):
     """Lists rollout resources that belongs to a release.
 
     Args:
       release_name: str, name of the release.
       filter_str: optional[str], list filter.
+      order_by: optional[str], field to sort by.
+      page_size: optional[int], the maximum number of `Rollout` objects to
+        return.
 
     Returns:
       Rollout list response.
     """
     request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsListRequest(
-        parent=release_name, filter=filter_str)
+        parent=release_name,
+        filter=filter_str,
+        orderBy=order_by,
+        pageSize=page_size)
     return self._service.List(request)
 
   def Create(self, rollout_ref, rollout_obj, annotations=None, labels=None):

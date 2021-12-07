@@ -402,6 +402,18 @@
             "type": "any",
             "description": "Properties of the object."
           }
+        },
+        "inlineConfig": {
+          "description": "Optional. KRM resource passed to the function as inlined input. The entire resource must be no larger than 1024 bytes.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object."
+          }
+        },
+        "gcsConfig": {
+          "description": "Optional. A Cloud Storage link referencing a KRM yaml file to use as input to the function. There are no size limitations on this field. Format: gs:\/\/my-bucket\/my-directory\/my-function-config.yaml",
+          "type": "string"
         }
       }
     },

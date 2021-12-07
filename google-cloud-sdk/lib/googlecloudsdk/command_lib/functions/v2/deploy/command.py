@@ -86,9 +86,8 @@ _INVALID_NON_HTTP_SIGNATURE_TYPE_ERROR_MESSAGE = (
 _INVALID_HTTP_SIGNATURE_TYPE_ERROR_MESSAGE = (
     'When an event trigger is provided, `--signature-type` cannot be set to '
     '`http`.')
-_SIGNATURE_TYPE_ENV_VAR_COLLISION_ERROR_MESSAGE = (
-    '`GOOGLE_FUNCTION_SIGNATURE_TYPE` is a reserved build environment variable.'
-)
+_INVALID_RETRY_FLAG_ERROR_MESSAGE = (
+    '`--retry` is only supported with an event trigger not http triggers.')
 
 _LEGACY_V1_FLAGS = [
     ('security_level', '--security-level'),
@@ -96,8 +95,6 @@ _LEGACY_V1_FLAGS = [
 _LEGACY_V1_FLAG_ERROR = '`%s` is only supported in Cloud Functions V1.'
 
 _UNSUPPORTED_V2_FLAGS = [
-    # TODO(b/192479883): Support --retry flag.
-    ('retry', '--retry'),
     # TODO(b/192480007): Add support for secrets.
     ('set_secrets', '--set-secrets'),
     ('update_secrets', '--update-secrets'),
@@ -115,7 +112,6 @@ _ZIP_MIME_TYPE = 'application/zip'
 
 _DEPLOYMENT_TOOL_LABEL = 'deployment-tool'
 _DEPLOYMENT_TOOL_VALUE = 'cli-gcloud'
-
 
 # GCF 2nd generation control plane valid memory units
 _GCF_GEN2_UNITS = [
@@ -453,48 +449,32 @@ def _GetEventTrigger(args, messages, existing_function):
     updated_fields_set: frozenset, set of update mask fields
   """
   if args.trigger_http:
-    return None, frozenset(['event_trigger'] if existing_function else [])
+    event_trigger, updated_fields_set = None, frozenset(
+        ['event_trigger'] if existing_function else [])
 
-  event_filters = []
-  event_type = None
-  pubsub_topic = None
-  service_account_email = args.trigger_service_account or args.service_account
+  elif args.trigger_event or args.trigger_resource:
+    event_trigger, updated_fields_set = _GetEventTriggerForEventType(
+        args, messages), frozenset(['event_trigger'])
+  elif args.trigger_topic or args.trigger_bucket or args.trigger_event_filters:
+    event_trigger, updated_fields_set = _GetEventTriggerForOther(
+        args, messages), frozenset(['event_trigger'])
 
-  if args.trigger_event or args.trigger_resource:
-    return _GetEventTriggerForEventType(args,
-                                        messages), frozenset(['event_trigger'])
-
-  if args.trigger_topic:
-    event_type = api_util.EA_PUBSUB_MESSAGE_PUBLISHED
-    pubsub_topic = _BuildFullPubsubTopic(args.trigger_topic)
-  elif args.trigger_bucket:
-    bucket = args.trigger_bucket[5:].rstrip('/')  # strip 'gs://' and final '/'
-    event_type = api_util.EA_STORAGE_FINALIZE
-    event_filters = [messages.EventFilter(attribute='bucket', value=bucket)]
-  elif args.trigger_event_filters:
-    event_type = args.trigger_event_filters.get('type')
-    event_filters = [
-        messages.EventFilter(attribute=attr, value=val)
-        for attr, val in args.trigger_event_filters.items()
-        if attr != 'type'
-    ]
   else:
     if existing_function:
-      return existing_function.eventTrigger, frozenset()
+      event_trigger, updated_fields_set = existing_function.eventTrigger, frozenset(
+      )
+    else:
+      raise calliope_exceptions.OneOfArgumentsRequiredException([
+          '--trigger-topic', '--trigger-bucket', '--trigger-http',
+          '--trigger-event', '--trigger-event-filters'
+      ], 'You must specify a trigger when deploying a new function.')
 
-    raise calliope_exceptions.OneOfArgumentsRequiredException([
-        '--trigger-topic', '--trigger-bucket', '--trigger-http',
-        '--trigger-event', '--trigger-event-filters'
-    ], 'You must specify a trigger when deploying a new function.')
+  if args.IsSpecified('retry'):
+    retry_policy, retry_updated_field = _GetRetry(args, messages, event_trigger)
+    event_trigger.retryPolicy = retry_policy
+    updated_fields_set = updated_fields_set.union(retry_updated_field)
 
-  event_trigger = messages.EventTrigger(
-      eventFilters=event_filters,
-      eventType=event_type,
-      pubsubTopic=pubsub_topic,
-      serviceAccountEmail=service_account_email,
-      triggerRegion=args.trigger_location)
-
-  return event_trigger, frozenset(['event_trigger'])
+  return event_trigger, updated_fields_set
 
 
 def _GetEventTriggerForEventType(args, messages):
@@ -540,6 +520,72 @@ def _GetEventTriggerForEventType(args, messages):
         'Unsupported event type: {} specified.'.format(trigger_event))
 
 
+def _GetEventTriggerForOther(args, messages):
+  """Constructs an EventTrigger when using --trigger-bucket/topic/filters.
+
+  Args:
+    args: argparse.Namespace, arguments that this command was invoked with
+    messages: messages module, the GCFv2 message stubs
+
+  Returns:
+    event_trigger: cloudfunctions_v2alpha_messages.EventTrigger, used to request
+      events sent from another service
+  """
+  event_filters = []
+  event_type = None
+  pubsub_topic = None
+  service_account_email = args.trigger_service_account or args.service_account
+
+  if args.trigger_topic:
+    event_type = api_util.EA_PUBSUB_MESSAGE_PUBLISHED
+    pubsub_topic = _BuildFullPubsubTopic(args.trigger_topic)
+  elif args.trigger_bucket:
+    bucket = args.trigger_bucket[5:].rstrip('/')  # strip 'gs://' and final '/'
+    event_type = api_util.EA_STORAGE_FINALIZE
+    event_filters = [messages.EventFilter(attribute='bucket', value=bucket)]
+  elif args.trigger_event_filters:
+    event_type = args.trigger_event_filters.get('type')
+    event_filters = [
+        messages.EventFilter(attribute=attr, value=val)
+        for attr, val in args.trigger_event_filters.items()
+        if attr != 'type'
+    ]
+
+  return messages.EventTrigger(
+      eventFilters=event_filters,
+      eventType=event_type,
+      pubsubTopic=pubsub_topic,
+      serviceAccountEmail=service_account_email,
+      triggerRegion=args.trigger_location)
+
+
+def _GetRetry(args, messages, event_trigger):
+  """Constructs an RetryPolicy enum from --(no-)retry flag.
+
+  Args:
+    args: argparse.Namespace, arguments that this command was invoked with
+    messages: messages module, the GCFv2 message stubs
+    event_trigger: cloudfunctions_v2alpha_messages.EventTrigger, used to request
+      events sent from another service
+
+  Returns:
+    EventTrigger.RetryPolicyValueValuesEnum(
+      'RETRY_POLICY_RETRY' | 'RETRY_POLICY_DO_NOT_RETRY')
+    frozenset, set of update mask fields
+  """
+
+  if event_trigger is None:
+    raise exceptions.FunctionsError(_INVALID_RETRY_FLAG_ERROR_MESSAGE)
+
+  if args.retry:
+    return messages.EventTrigger.RetryPolicyValueValuesEnum(
+        'RETRY_POLICY_RETRY'), frozenset(['eventTrigger.retryPolicy'])
+  else:
+    # explicitly using --no-retry flag
+    return messages.EventTrigger.RetryPolicyValueValuesEnum(
+        'RETRY_POLICY_DO_NOT_RETRY'), frozenset(['eventTrigger.retryPolicy'])
+
+
 def _BuildFullPubsubTopic(pubsub_topic):
   return 'projects/{}/topics/{}'.format(
       properties.VALUES.core.project.GetOrFail(), pubsub_topic)
@@ -557,24 +603,15 @@ def _GetSignatureType(args, event_trigger):
     signature_type: str, the desired functions signature type
     updated_fields_set: frozenset[str], set of update mask fields
   """
-  if args.trigger_http or not event_trigger:
-    if args.signature_type and args.signature_type != 'http':
-      raise exceptions.FunctionsError(
-          _INVALID_NON_HTTP_SIGNATURE_TYPE_ERROR_MESSAGE)
-    if args.trigger_http:
-      return 'http', frozenset(['build_config.environment_variables'])
-    else:
-      # do not add to update_mask if --trigger-http flag not provided
-      # as it is only implied to be 'http'
-      return 'http', frozenset()
-  elif args.signature_type:
-    if args.signature_type == 'http':
-      raise exceptions.FunctionsError(
-          _INVALID_HTTP_SIGNATURE_TYPE_ERROR_MESSAGE)
-    return args.signature_type, frozenset(
-        ['build_config.environment_variables'])
-  else:
-    return 'cloudevent', frozenset()
+  if not args.IsSpecified('signature_type'):
+    return None, frozenset()
+  if args.trigger_http and args.signature_type != 'http':
+    raise exceptions.FunctionsError(
+        _INVALID_NON_HTTP_SIGNATURE_TYPE_ERROR_MESSAGE)
+  elif event_trigger and args.signature_type == 'http':
+    # event_trigger should be either 'event' or 'cloudevent'
+    raise exceptions.FunctionsError(_INVALID_HTTP_SIGNATURE_TYPE_ERROR_MESSAGE)
+  return args.signature_type, frozenset(['build_config.environment_variables'])
 
 
 def _GetBuildConfig(args, client, messages, region, function_name,
@@ -609,17 +646,15 @@ def _GetBuildConfig(args, client, messages, region, function_name,
       old_build_env_vars[additional_property.key] = additional_property.value
 
   build_env_var_flags = map_util.GetMapFlagsFromArgs('build-env-vars', args)
+  # Dict
   build_env_vars = map_util.ApplyMapFlags(old_build_env_vars,
                                           **build_env_var_flags)
 
   signature_type, signature_updated_fields = _GetSignatureType(
       args, event_trigger)
 
-  if ('GOOGLE_FUNCTION_SIGNATURE_TYPE' in build_env_vars and
-      'GOOGLE_FUNCTION_SIGNATURE_TYPE' not in old_build_env_vars):
-    raise exceptions.FunctionsError(
-        _SIGNATURE_TYPE_ENV_VAR_COLLISION_ERROR_MESSAGE)
-  build_env_vars['GOOGLE_FUNCTION_SIGNATURE_TYPE'] = signature_type
+  if signature_updated_fields:
+    build_env_vars['GOOGLE_FUNCTION_SIGNATURE_TYPE'] = signature_type
 
   updated_fields = set()
 
@@ -750,8 +785,12 @@ def _GetLabels(args, messages, existing_function):
     labels: Function.LabelsValue, functions labels metadata
     updated_fields_set: frozenset[str], list of update mask fields
   """
+  if existing_function:
+    required_labels = {}
+  else:
+    required_labels = {_DEPLOYMENT_TOOL_LABEL: _DEPLOYMENT_TOOL_VALUE}
   labels_diff = labels_util.Diff.FromUpdateArgs(
-      args, required_labels={_DEPLOYMENT_TOOL_LABEL: _DEPLOYMENT_TOOL_VALUE})
+      args, required_labels=required_labels)
   labels_update = labels_diff.Apply(
       messages.Function.LabelsValue,
       existing_function.labels if existing_function else None)

@@ -40,6 +40,7 @@ class ManagedidentitiesV1alpha1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_global_domains_backups = self.ProjectsLocationsGlobalDomainsBackupsService(self)
+    self.projects_locations_global_domains_schemaExtensions = self.ProjectsLocationsGlobalDomainsSchemaExtensionsService(self)
     self.projects_locations_global_domains_sqlIntegrations = self.ProjectsLocationsGlobalDomainsSqlIntegrationsService(self)
     self.projects_locations_global_domains = self.ProjectsLocationsGlobalDomainsService(self)
     self.projects_locations_global_operations = self.ProjectsLocationsGlobalOperationsService(self)
@@ -271,6 +272,70 @@ class ManagedidentitiesV1alpha1(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsBackupsTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsGlobalDomainsSchemaExtensionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_global_domains_schemaExtensions resource."""
+
+    _NAME = 'projects_locations_global_domains_schemaExtensions'
+
+    def __init__(self, client):
+      super(ManagedidentitiesV1alpha1.ProjectsLocationsGlobalDomainsSchemaExtensionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates Schema Extension for a domain.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalDomainsSchemaExtensionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}/schemaExtensions',
+        http_method='POST',
+        method_id='managedidentities.projects.locations.global.domains.schemaExtensions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['schemaExtensionId'],
+        relative_path='v1alpha1/{+parent}/schemaExtensions',
+        request_field='schemaExtension',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsSchemaExtensionsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Schema Extensions history for a given domain.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalDomainsSchemaExtensionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSchemaExtensionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}/schemaExtensions',
+        http_method='GET',
+        method_id='managedidentities.projects.locations.global.domains.schemaExtensions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/schemaExtensions',
+        request_field='',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsSchemaExtensionsListRequest',
+        response_type_name='ListSchemaExtensionsResponse',
         supports_download=False,
     )
 

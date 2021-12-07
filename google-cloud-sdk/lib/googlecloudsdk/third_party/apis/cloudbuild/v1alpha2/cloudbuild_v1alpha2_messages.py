@@ -808,6 +808,22 @@ class ClusterOptions(_messages.Message):
   name = _messages.StringField(1)
 
 
+class CreateBitbucketServerConfigOperationMetadata(_messages.Message):
+  r"""Metadata for `CreateBitbucketServerConfig` operation.
+
+  Fields:
+    bitbucketServerConfig: The resource name of the BitbucketServerConfig to
+      be created. Format:
+      `projects/{project}/locations/{location}/bitbucketServerConfigs/{id}`.
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+  """
+
+  bitbucketServerConfig = _messages.StringField(1)
+  completeTime = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+
+
 class CreateGitHubEnterpriseConfigOperationMetadata(_messages.Message):
   r"""Metadata for `CreateGithubEnterpriseConfig` operation.
 
@@ -837,6 +853,22 @@ class CreateWorkerPoolOperationMetadata(_messages.Message):
   completeTime = _messages.StringField(1)
   createTime = _messages.StringField(2)
   workerPool = _messages.StringField(3)
+
+
+class DeleteBitbucketServerConfigOperationMetadata(_messages.Message):
+  r"""Metadata for `DeleteBitbucketServerConfig` operation.
+
+  Fields:
+    bitbucketServerConfig: The resource name of the BitbucketServerConfig to
+      be deleted. Format:
+      `projects/{project}/locations/{location}/bitbucketServerConfigs/{id}`.
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+  """
+
+  bitbucketServerConfig = _messages.StringField(1)
+  completeTime = _messages.StringField(2)
+  createTime = _messages.StringField(3)
 
 
 class DeleteGitHubEnterpriseConfigOperationMetadata(_messages.Message):
@@ -948,6 +980,23 @@ class GitSource(_messages.Message):
   url = _messages.StringField(3)
 
 
+class GoogleDevtoolsCloudbuildV1BuildOptionsPoolOptionWorkerConfig(_messages.Message):
+  r"""Configuration per workload for both Private Pools and Hybrid Pools.
+
+  Fields:
+    diskSizeGb: The disk size (in GB) which is requested for the build
+      container. If unset, a value of 10 GB will be used.
+    memoryGb: The memory (in GB) which is requested for the build container.
+      If unset, a value of 4 GB will be used.
+    vcpuCount: The number of vCPUs which are requested for the build
+      container. If unset, a value of 1 will be used.
+  """
+
+  diskSizeGb = _messages.IntegerField(1)
+  memoryGb = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  vcpuCount = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
 class GoogleDevtoolsCloudbuildV2OperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
@@ -1010,23 +1059,6 @@ class Hash(_messages.Message):
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
   value = _messages.BytesField(2)
-
-
-class HybridWorkerConfig(_messages.Message):
-  r"""These settings can be applied to a user's build operations. Next ID: 4
-
-  Fields:
-    diskSizeGb: The disk size (in GB) which is requested for the build
-      container. Defaults to 10 GB.
-    memoryGb: The memory (in GB) which is requested for the build container.
-      Defaults to 4 GB.
-    vcpuCount: The number of vCPUs which are requested for the build
-      container. Defaults to 1.
-  """
-
-  diskSizeGb = _messages.IntegerField(1)
-  memoryGb = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  vcpuCount = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
 
 
 class InlineSecret(_messages.Message):
@@ -1372,15 +1404,15 @@ class PoolOption(_messages.Message):
   private-pool) for more information.
 
   Fields:
-    hybridPoolOption: Configuration for a Hybrid Worker Pool.
     name: The `WorkerPool` resource to execute the build on. You must have
       `cloudbuild.workerpools.use` on the project hosting the WorkerPool.
       Format
       projects/{project}/locations/{location}/workerPools/{workerPoolId}
+    workerConfig: Configuration per workload.
   """
 
-  hybridPoolOption = _messages.MessageField('HybridWorkerConfig', 1)
-  name = _messages.StringField(2)
+  name = _messages.StringField(1)
+  workerConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV1BuildOptionsPoolOptionWorkerConfig', 2)
 
 
 class ProcessAppManifestCallbackOperationMetadata(_messages.Message):
@@ -1864,6 +1896,22 @@ class TimeSpan(_messages.Message):
 
   endTime = _messages.StringField(1)
   startTime = _messages.StringField(2)
+
+
+class UpdateBitbucketServerConfigOperationMetadata(_messages.Message):
+  r"""Metadata for `UpdateBitbucketServerConfig` operation.
+
+  Fields:
+    bitbucketServerConfig: The resource name of the BitbucketServerConfig to
+      be updated. Format:
+      `projects/{project}/locations/{location}/bitbucketServerConfigs/{id}`.
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+  """
+
+  bitbucketServerConfig = _messages.StringField(1)
+  completeTime = _messages.StringField(2)
+  createTime = _messages.StringField(3)
 
 
 class UpdateGitHubEnterpriseConfigOperationMetadata(_messages.Message):

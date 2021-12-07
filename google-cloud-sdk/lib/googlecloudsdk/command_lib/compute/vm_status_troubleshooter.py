@@ -23,10 +23,13 @@ from apitools.base.py import encoding
 
 from google.protobuf import timestamp_pb2
 
+from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.compute import ssh_troubleshooter
 from googlecloudsdk.command_lib.compute import ssh_troubleshooter_utils
 from googlecloudsdk.core import log
+from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.console.console_io import OperationCancelledError
 
 _API_MONITORING_CLIENT_NAME = 'monitoring'
 _API_MONITORING_VERSION_V3 = 'v3'
@@ -38,12 +41,20 @@ _CUSTOM_JSON_FIELD_MAPPINGS = {
     'interval_endTime': 'interval.endTime',
 }
 
+MONITORING_API = 'monitoring.googleapis.com'
+
+VM_STATUS_MESSAGE = (
+    'The VM may not be running. Try restarting it. If this doesn\'t work, the '
+    'VM may be in a panic state.\n'
+    'Help for restarting a VM: '
+    'https://cloud.google.com/compute/docs/instances/stop-start-instance\n')
+
 CPU_METRICS = 'compute.googleapis.com/instance/cpu/utilization'
 CPU_MESSAGE = (
-    'VM CPU utilization is high, which may causes slow SSH connections. Stop '
+    'VM CPU utilization is high, which may cause slow SSH connections. Stop '
     'your VM instance, increase the number of CPUs, and then restart it.\nHelp '
     'for stopping a VM: '
-    'https://cloud.google.com/compute/docs/instances/stop-start-instance')
+    'https://cloud.google.com/compute/docs/instances/stop-start-instance\n')
 
 FILTER_TEMPLATE = (
     'metric.type = "{metrics_type}" AND '
@@ -59,6 +70,7 @@ DISK_ERROR_PATTERN = [
 DISK_MESSAGE = (
     'The VM may need additional disk space. Resize and then restart the VM, '
     'or run a startup script to free up space.\n'
+    'Disk: {0}\n'
     'Help for resizing a boot disk: '
     'https://cloud.google.com/sdk/gcloud/reference/compute/disks/resize\n'
     'Help for running a startup script: '
@@ -93,13 +105,33 @@ class VMStatusTroubleshooter(ssh_troubleshooter.SshTroubleshooter):
     self.issues = {}
 
   def check_prerequisite(self):
-    return
+    log.status.Print('---- Checking VM status ----')
+    msg = 'The Monitoring API is needed to check the VM\'s Status.'
+    prompt = 'Is it OK to enable it and check the VM\'s Status?'
+    cancel = 'Test skipped.'
+    try:
+      prompt_continue = console_io.PromptContinue(
+          message=msg,
+          prompt_string=prompt,
+          cancel_on_no=True,
+          cancel_string=cancel)
+      self.skip_troubleshoot = not prompt_continue
+    except OperationCancelledError:
+      self.skip_troubleshoot = True
+
+    if self.skip_troubleshoot:
+      return
+
+    # Enable API
+    enable_api.EnableService(self.project.name, MONITORING_API)
 
   def cleanup_resources(self):
     return
 
   def troubleshoot(self):
-    log.status.Print('---- Checking VM status ----')
+    if self.skip_troubleshoot:
+      return
+    self._CheckVMStatus()
     self._CheckCpuStatus()
     self._CheckDiskStatus()
     log.status.Print('VM status: {0} issue(s) found.\n'.format(
@@ -108,8 +140,18 @@ class VMStatusTroubleshooter(ssh_troubleshooter.SshTroubleshooter):
     for message in self.issues.values():
       log.status.Print(message)
 
+  def _CheckVMStatus(self):
+    if self.instance.status != self.compute_message.Instance.StatusValueValuesEnum.RUNNING:  # pylint: disable=line-too-long
+      self.issues['vm_status'] = VM_STATUS_MESSAGE
+
   def _CheckCpuStatus(self):
     """Check cpu utilization."""
+    cpu_utilizatian = self._GetCpuUtilization()
+    if cpu_utilizatian > CPU_THRESHOLD:
+      self.issues['cpu'] = CPU_MESSAGE
+
+  def _GetCpuUtilization(self):
+    """Get CPU utilization from Cloud Monitoring API."""
     # Mapping of apitools request message fields to json parameters.
     for req_field, mapped_param in _CUSTOM_JSON_FIELD_MAPPINGS.items():
       encoding.AddCustomJsonFieldMapping(
@@ -121,10 +163,8 @@ class VMStatusTroubleshooter(ssh_troubleshooter.SshTroubleshooter):
     response = self.monitoring_client.projects_timeSeries.List(request=request)
     if response.timeSeries:
       points = response.timeSeries[0].points
-      cpu_utilizatian = sum(
-          point.value.doubleValue for point in points) / len(points)
-      if cpu_utilizatian > CPU_THRESHOLD:
-        self.issues['cpu'] = CPU_MESSAGE
+      return sum(point.value.doubleValue for point in points) / len(points)
+    return 0.0
 
   def _CheckDiskStatus(self):
     sc_log = ssh_troubleshooter_utils.GetSerialConsoleLog(
@@ -132,7 +172,7 @@ class VMStatusTroubleshooter(ssh_troubleshooter.SshTroubleshooter):
         self.project.name, self.zone)
     if ssh_troubleshooter_utils.SearchPatternErrorInLog(DISK_ERROR_PATTERN,
                                                         sc_log):
-      self.issues['disk'] = DISK_MESSAGE
+      self.issues['disk'] = DISK_MESSAGE.format(self.instance.disks[0].source)
 
   def _CreateTimeSeriesListRequest(self, metrics_type):
     """Create a MonitoringProjectsTimeSeriesListRequest.

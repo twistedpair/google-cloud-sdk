@@ -117,7 +117,7 @@ class KubeconfigError(exceptions.Error):
 class Product(enum.Enum):
   RUN = 'Run'
   EVENTS = 'Events'
-  RUN_APPS = 'RunApps'
+  RUN_APPS = 'Runapps'
 
 
 def AddImageArg(parser, required=True):
@@ -323,10 +323,22 @@ def AddConfidentialFlag(parser):
       help='Enables confidential Cloud Run.')
 
 
-def AddDeployTagFlag(parser):
-  """Add flag to specify a tag for the new revision."""
+def AddTokenFlag(parser):
   parser.add_argument(
-      '--tag', help='Traffic tag to assign to the newly created revision.')
+      '--token',
+      help='The specific identity token to add to all requests of the '
+      'proxied service. If not specified, the identity token of '
+      'the currently active authenticated account will be used '
+      '(e.g. gcloud auth print-identity-token).')
+
+
+_DEFAULT_DEPLOY_TAG_HELP = """Traffic tag to assign to the newly
+created revision."""
+
+
+def AddDeployTagFlag(parser, help_text=_DEFAULT_DEPLOY_TAG_HELP):
+  """Add flag to specify a tag for the new revision."""
+  parser.add_argument('--tag', help=help_text)
 
 
 def AddTrafficTagsFlags(parser):
@@ -641,10 +653,11 @@ def AddRevisionSuffixArg(parser):
       'would lead to a revision named \'helloworld-v1\'.')
 
 
-def AddSandboxArg(parser):
+def AddSandboxArg(parser, hidden=False):
   parser.add_argument(
       '--execution-environment',
       choices=_SANDBOX_CHOICES,
+      hidden=hidden,
       help='Selects the execution environment where the application will run.')
 
 
@@ -893,16 +906,20 @@ def _PortValue(value):
     return False
 
 
-def AddPortFlag(parser):
+_DEFAULT_PORT_HELP = """Container port to receive requests at. Also sets
+the $PORT environment variable. Must be a number between 1 and 65535, inclusive.
+To unset this field, pass the special value "default".
+"""
+
+
+def AddPortFlag(parser, help_text=_DEFAULT_PORT_HELP):
   """Add port flag to override $PORT."""
   parser.add_argument(
       '--port',
       type=arg_parsers.CustomFunctionValidator(
           _PortValue,
           'must be an integer between 1 and 65535, inclusive, or "default".'),
-      help='Container port to receive requests at. Also sets the $PORT '
-      'environment variable. Must be a number between 1 and 65535, inclusive. '
-      'To unset this field, pass the special value "default".')
+      help=help_text)
 
 
 def AddHttp2Flag(parser):
@@ -918,7 +935,6 @@ def AddParallelismFlag(parser):
   parser.add_argument(
       '--parallelism',
       type=arg_parsers.BoundedInt(lower_bound=1),
-      default=1,
       help='Number of tasks that may run concurrently. '
       'Must be less than or equal to the number of completions.')
 
@@ -1473,9 +1489,9 @@ def GetJobConfigurationChanges(args):
 
   if FlagIsExplicitlySet(args, 'parallelism'):
     changes.append(config_changes.SpecChange('parallelism', args.parallelism))
-  if FlagIsExplicitlySet(args, 'tasks'):
+  if 'tasks' in args:
     changes.append(config_changes.SpecChange('completions', args.tasks))
-  if FlagIsExplicitlySet(args, 'max_retries'):
+  if 'max_retries' in args:
     changes.append(config_changes.JobMaxRetriesChange(args.max_retries))
   if FlagIsExplicitlySet(args, 'task_timeout'):
     changes.append(config_changes.JobInstanceDeadlineChange(args.task_timeout))

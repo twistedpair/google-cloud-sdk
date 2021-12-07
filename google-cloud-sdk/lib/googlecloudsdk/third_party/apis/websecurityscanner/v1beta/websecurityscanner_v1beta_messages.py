@@ -110,6 +110,7 @@ class Finding(_messages.Message):
     vulnerableParameters: An addon containing information about request
       parameters which were found to be vulnerable.
     xss: An addon containing information reported for an XSS, if any.
+    xxe: An addon containing information reported for an XXE, if any.
   """
 
   class SeverityValueValuesEnum(_messages.Enum):
@@ -145,6 +146,7 @@ class Finding(_messages.Message):
   vulnerableHeaders = _messages.MessageField('VulnerableHeaders', 15)
   vulnerableParameters = _messages.MessageField('VulnerableParameters', 16)
   xss = _messages.MessageField('Xss', 17)
+  xxe = _messages.MessageField('Xxe', 18)
 
 
 class FindingTypeStats(_messages.Message):
@@ -1077,6 +1079,34 @@ class Xss(_messages.Message):
 
   errorMessage = _messages.StringField(1)
   stackTraces = _messages.StringField(2, repeated=True)
+
+
+class Xxe(_messages.Message):
+  r"""Information reported for an XXE.
+
+  Enums:
+    PayloadLocationValueValuesEnum: Location within the request where the
+      payload was placed.
+
+  Fields:
+    payloadLocation: Location within the request where the payload was placed.
+    payloadValue: The XML string that triggered the XXE vulnerability. Non-
+      payload values might be redacted.
+  """
+
+  class PayloadLocationValueValuesEnum(_messages.Enum):
+    r"""Location within the request where the payload was placed.
+
+    Values:
+      LOCATION_UNSPECIFIED: Unknown Location.
+      COMPLETE_REQUEST_BODY: The XML payload replaced the complete request
+        body.
+    """
+    LOCATION_UNSPECIFIED = 0
+    COMPLETE_REQUEST_BODY = 1
+
+  payloadLocation = _messages.EnumField('PayloadLocationValueValuesEnum', 1)
+  payloadValue = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

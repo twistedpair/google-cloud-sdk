@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.datastream import exceptions as ds_exceptions
 from googlecloudsdk.api_lib.datastream import util
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import resources
@@ -89,9 +90,14 @@ class ConnectionProfilesClient(object):
         password=args.oracle_password,
         databaseService=args.database_service)
 
-  def _GetGCSProfile(self, args):
-    gcs_profile = self._messages.GcsProfile(
-        bucketName=args.bucket_name)
+  def _GetGCSProfile(self, args, release_track):
+    # TODO(b/207467120): remove bucket_name arg check.
+    if release_track == base.ReleaseTrack.BETA:
+      bucket = args.bucket_name
+    else:
+      bucket = args.bucket
+
+    gcs_profile = self._messages.GcsProfile(bucket=bucket)
     gcs_profile.rootPath = args.root_path if args.root_path else '/'
     return gcs_profile
 
@@ -126,7 +132,7 @@ class ConnectionProfilesClient(object):
     if not data:
       return {}
     return self._messages.GcsProfile(
-        bucketName=data.get('bucket_name'), rootPath=data.get('root_path'))
+        bucket=data.get('bucket_name'), rootPath=data.get('root_path'))
 
   def _GetForwardSshTunnelConnectivity(self, args):
     return self._messages.ForwardSshTunnelConnectivity(
@@ -136,7 +142,8 @@ class ConnectionProfilesClient(object):
         privateKey=args.forward_ssh_private_key,
         password=args.forward_ssh_password)
 
-  def _GetConnectionProfile(self, cp_type, connection_profile_id, args):
+  def _GetConnectionProfile(self, cp_type, connection_profile_id, args,
+                            release_track):
     """Returns a connection profile according to type."""
     labels = labels_util.ParseCreateArgs(
         args, self._messages.ConnectionProfile.LabelsValue)
@@ -149,14 +156,20 @@ class ConnectionProfilesClient(object):
     elif cp_type == 'ORACLE':
       connection_profile_obj.oracleProfile = self._GetOracleProfile(args)
     elif cp_type == 'GOOGLE-CLOUD-STORAGE':
-      connection_profile_obj.gcsProfile = self._GetGCSProfile(args)
+      connection_profile_obj.gcsProfile = self._GetGCSProfile(
+          args, release_track)
     else:
       raise exceptions.InvalidArgumentException(
           cp_type,
           'The connection profile type {0} is either unknown or not supported yet.'
           .format(cp_type))
 
-    private_connectivity_ref = args.CONCEPTS.private_connection_name.Parse()
+    # TODO(b/207467120): deprecate BETA client.
+    if release_track == base.ReleaseTrack.BETA:
+      private_connectivity_ref = args.CONCEPTS.private_connection_name.Parse()
+    else:
+      private_connectivity_ref = args.CONCEPTS.private_connection.Parse()
+
     if private_connectivity_ref:
       connection_profile_obj.privateConnectivity = self._messages.PrivateConnectivity(
           privateConnectionName=private_connectivity_ref.RelativeName())
@@ -165,8 +178,6 @@ class ConnectionProfilesClient(object):
           args)
     elif args.static_ip_connectivity:
       connection_profile_obj.staticServiceIpConnectivity = {}
-    else:
-      connection_profile_obj.noConnectivity = {}
 
     return connection_profile_obj
 
@@ -198,10 +209,7 @@ class ConnectionProfilesClient(object):
     elif gcs_profile:
       connection_profile_msg.gcsProfile = gcs_profile
 
-    if 'no_connectivity' in connection_profile_data:
-      connection_profile_msg.noConnectivity = connection_profile_data.get(
-          'no_connectivity')
-    elif 'static_service_ip_connectivity' in connection_profile_data:
+    if 'static_service_ip_connectivity' in connection_profile_data:
       connection_profile_msg.staticServiceIpConnectivity = connection_profile_data.get(
           'static_service_ip_connectivity')
     elif 'forward_ssh_connectivity' in connection_profile_data:
@@ -236,13 +244,17 @@ class ConnectionProfilesClient(object):
       connection_profile.forwardSshConnectivity.privateKey = args.forward_ssh_password
       update_fields.append('forwardSshConnectivity.password')
 
-  def _UpdateGCSProfile(self,
-                        connection_profile,
-                        args, update_fields):
+  def _UpdateGCSProfile(self, connection_profile, release_track, args,
+                        update_fields):
     """Updates GOOGLE CLOUD STORAGE connection profile."""
-    if args.IsSpecified('bucket_name'):
-      connection_profile.gcsProfile.bucketName = args.bucket_name
-      update_fields.append('gcsProfile.bucketName')
+    # TODO(b/207467120): remove bucket_name arg check.
+    if release_track == base.ReleaseTrack.BETA and args.IsSpecified(
+        'bucket_name'):
+      connection_profile.gcsProfile.bucket = args.bucket_name
+      update_fields.append('gcsProfile.bucket')
+    if release_track == base.ReleaseTrack.GA and args.IsSpecified('bucket'):
+      connection_profile.gcsProfile.bucket = args.bucket
+      update_fields.append('gcsProfile.bucket')
     if args.IsSpecified('root_path'):
       connection_profile.gcsProfile.rootPath = args.root_path
       update_fields.append('gcsProfile.rootPath')
@@ -320,10 +332,8 @@ class ConnectionProfilesClient(object):
     if update_result.needs_update:
       connection_profile.labels = update_result.labels
 
-  def _GetUpdatedConnectionProfile(
-      self, connection_profile,
-      cp_type,
-      args):
+  def _GetUpdatedConnectionProfile(self, connection_profile, cp_type,
+                                   release_track, args):
     """Returns updated connection profile and list of updated fields."""
     update_fields = []
     if args.IsSpecified('display_name'):
@@ -336,14 +346,20 @@ class ConnectionProfilesClient(object):
     elif cp_type == 'ORACLE':
       self._UpdateOracleProfile(connection_profile, args, update_fields)
     elif cp_type == 'GOOGLE-CLOUD-STORAGE':
-      self._UpdateGCSProfile(connection_profile, args, update_fields)
+      self._UpdateGCSProfile(connection_profile, release_track, args,
+                             update_fields)
     else:
       raise exceptions.InvalidArgumentException(
           cp_type,
           'The connection profile type {0} is either unknown or not supported yet.'
           .format(cp_type))
 
-    private_connectivity_ref = args.CONCEPTS.private_connection_name.Parse()
+    # TODO(b/207467120): deprecate BETA client.
+    if release_track == base.ReleaseTrack.BETA:
+      private_connectivity_ref = args.CONCEPTS.private_connection_name.Parse()
+    else:
+      private_connectivity_ref = args.CONCEPTS.private_connection.Parse()
+
     if private_connectivity_ref:
       connection_profile.privateConnectivity = self._messages.PrivateConnectivity(
           privateConnectionName=private_connectivity_ref.RelativeName())
@@ -358,7 +374,12 @@ class ConnectionProfilesClient(object):
     self._UpdateLabels(connection_profile, args)
     return connection_profile, update_fields
 
-  def Create(self, parent_ref, connection_profile_id, cp_type, args=None):
+  def Create(self,
+             parent_ref,
+             connection_profile_id,
+             cp_type,
+             release_track,
+             args=None):
     """Creates a connection profile.
 
     Args:
@@ -366,6 +387,8 @@ class ConnectionProfilesClient(object):
         resource for this connection profile.
       connection_profile_id: str, the name of the resource to create.
       cp_type: str, the type of the connection profile ('MYSQL', ''
+      release_track: Some arguments are added based on the command release
+        track.
       args: argparse.Namespace, The arguments that this command was invoked
         with.
 
@@ -375,7 +398,12 @@ class ConnectionProfilesClient(object):
     self._ValidateArgs(args)
 
     connection_profile = self._GetConnectionProfile(cp_type,
-                                                    connection_profile_id, args)
+                                                    connection_profile_id, args,
+                                                    release_track)
+    # TODO(b/207467120): only use flags from args.
+    force = False
+    if release_track == base.ReleaseTrack.BETA or args.force:
+      force = True
 
     request_id = util.GenerateRequestId()
     create_req_type = self._messages.DatastreamProjectsLocationsConnectionProfilesCreateRequest
@@ -383,17 +411,20 @@ class ConnectionProfilesClient(object):
         connectionProfile=connection_profile,
         connectionProfileId=connection_profile.name,
         parent=parent_ref,
-        requestId=request_id)
+        requestId=request_id,
+        force=force)
 
     return self._service.Create(create_req)
 
-  def Update(self, name, cp_type, args=None):
+  def Update(self, name, cp_type, release_track, args=None):
     """Updates a connection profile.
 
     Args:
       name: str, the reference of the connection profile to
           update.
       cp_type: str, the type of the connection profile ('MYSQL', 'ORACLE')
+      release_track: Some arguments are added based on the command release
+        track.
       args: argparse.Namespace, The arguments that this command was
           invoked with.
 
@@ -405,7 +436,12 @@ class ConnectionProfilesClient(object):
     current_cp = self._GetExistingConnectionProfile(name)
 
     updated_cp, update_fields = self._GetUpdatedConnectionProfile(
-        current_cp, cp_type, args)
+        current_cp, cp_type, release_track, args)
+
+    # TODO(b/207467120): only use flags from args.
+    force = False
+    if release_track == base.ReleaseTrack.BETA or args.force:
+      force = True
 
     request_id = util.GenerateRequestId()
     update_req_type = self._messages.DatastreamProjectsLocationsConnectionProfilesPatchRequest
@@ -413,8 +449,8 @@ class ConnectionProfilesClient(object):
         connectionProfile=updated_cp,
         name=updated_cp.name,
         updateMask=','.join(update_fields),
-        requestId=request_id
-    )
+        requestId=request_id,
+        force=force)
 
     return self._service.Patch(update_req)
 
@@ -447,12 +483,14 @@ class ConnectionProfilesClient(object):
         field='connectionProfiles',
         batch_size_attribute='pageSize')
 
-  def Discover(self, parent_ref, args):
+  def Discover(self, parent_ref, release_track, args):
     """Discover a connection profile.
 
     Args:
       parent_ref: a Resource reference to a parent datastream.projects.locations
         resource for this connection profile.
+      release_track: Some arguments are added based on the command release
+        track.
       args: argparse.Namespace, The arguments that this command was invoked
         with.
 
@@ -470,14 +508,16 @@ class ConnectionProfilesClient(object):
     if args.recursive:
       request.recursive = True
     else:
-      request.recursionDepth = (int)(args.recursive_depth)
+      request.hierarchyDepth = (int)(args.recursive_depth)
 
     if args.mysql_rdbms_file:
       request.mysqlRdbms = util.ParseMysqlRdbmsFile(self._messages,
-                                                    args.mysql_rdbms_file)
+                                                    args.mysql_rdbms_file,
+                                                    release_track)
     elif args.oracle_rdbms_file:
       request.oracleRdbms = util.ParseOracleRdbmsFile(self._messages,
-                                                      args.oracle_rdbms_file)
+                                                      args.oracle_rdbms_file,
+                                                      release_track)
 
     discover_req_type = self._messages.DatastreamProjectsLocationsConnectionProfilesDiscoverRequest
     discover_req = discover_req_type(

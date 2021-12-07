@@ -661,7 +661,8 @@ class CloudfunctionsProjectsLocationsFunctionsPatchRequest(_messages.Message):
     cloudFunction: A CloudFunction resource to be passed as the request body.
     name: A user-defined name of the function. Function names must be unique
       globally and match pattern `projects/*/locations/*/functions/*`
-    updateMask: Required list of fields to be updated in this request.
+    updateMask: Required. The list of fields in `CloudFunction` that have to
+      be updated.
   """
 
   cloudFunction = _messages.MessageField('CloudFunction', 1)

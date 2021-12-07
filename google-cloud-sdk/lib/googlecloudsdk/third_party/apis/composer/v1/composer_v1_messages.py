@@ -492,14 +492,22 @@ class EnvironmentConfig(_messages.Message):
       supported for Cloud Composer environments in versions
       composer-1.*.*-airflow-*.*.*.
     encryptionConfig: Optional. The encryption options for the Cloud Composer
-      environment and its dependencies. Cannot be updated. This field is
-      supported for Cloud Composer environments in versions
-      composer-1.*.*-airflow-*.*.*.
+      environment and its dependencies. Cannot be updated.
     environmentSize: Optional. The size of the Cloud Composer environment.
       This field is supported for Cloud Composer environments in versions
       composer-2.*.*-airflow-*.*.* and newer.
     gkeCluster: Output only. The Kubernetes Engine cluster used to run this
       environment.
+    maintenanceWindow: Optional. The maintenance window is the period when
+      Cloud Composer components may undergo maintenance. It is defined so that
+      maintenance is not executed during peak hours or critical time periods.
+      The system will not be under maintenance for every occurrence of this
+      window, but when maintenance is planned, it will be scheduled during the
+      window. The maintenance window period must encompass at least 12 hours
+      per week. This may be split into multiple chunks, each with a size of at
+      least 4 hours. If this value is omitted, the default value for
+      maintenance window will be applied. The default value is Saturday and
+      Sunday 00-06 GMT.
     nodeConfig: The configuration used for the Kubernetes Engine cluster.
     nodeCount: The number of nodes in the Kubernetes Engine cluster that will
       be used to run this environment. This field is supported for Cloud
@@ -512,8 +520,7 @@ class EnvironmentConfig(_messages.Message):
       server App Engine instance.
     webServerNetworkAccessControl: Optional. The network-level access control
       policy for the Airflow web server. If unspecified, no network-level
-      access restrictions will be applied. This field is supported for Cloud
-      Composer environments in versions composer-1.*.*-airflow-*.*.*.
+      access restrictions will be applied.
     workloadsConfig: Optional. The workloads configuration settings for the
       GKE cluster associated with the Cloud Composer environment. The GKE
       cluster runs Airflow scheduler, web server and workers workloads. This
@@ -544,13 +551,14 @@ class EnvironmentConfig(_messages.Message):
   encryptionConfig = _messages.MessageField('EncryptionConfig', 4)
   environmentSize = _messages.EnumField('EnvironmentSizeValueValuesEnum', 5)
   gkeCluster = _messages.StringField(6)
-  nodeConfig = _messages.MessageField('NodeConfig', 7)
-  nodeCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 9)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 10)
-  webServerConfig = _messages.MessageField('WebServerConfig', 11)
-  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 12)
-  workloadsConfig = _messages.MessageField('WorkloadsConfig', 13)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 7)
+  nodeConfig = _messages.MessageField('NodeConfig', 8)
+  nodeCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 10)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 11)
+  webServerConfig = _messages.MessageField('WebServerConfig', 12)
+  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 13)
+  workloadsConfig = _messages.MessageField('WorkloadsConfig', 14)
 
 
 class IPAllocationPolicy(_messages.Message):
@@ -662,6 +670,31 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class MaintenanceWindow(_messages.Message):
+  r"""The configuration settings for Cloud Composer maintenance window. The
+  following example: ``` { "startTime":"2019-08-01T01:00:00Z"
+  "endTime":"2019-08-01T07:00:00Z" "recurrence":"FREQ=WEEKLY;BYDAY=TU,WE" }
+  ``` would define a maintenance window between 01 and 07 hours UTC during
+  each Tuesday and Wednesday.
+
+  Fields:
+    endTime: Required. Maintenance window end time. It is used only to
+      calculate the duration of the maintenance window. The value for end-time
+      must be in the future, relative to `start_time`.
+    recurrence: Required. Maintenance window recurrence. Format is a subset of
+      [RFC-5545](https://tools.ietf.org/html/rfc5545) `RRULE`. The only
+      allowed values for `FREQ` field are `FREQ=DAILY` and
+      `FREQ=WEEKLY;BYDAY=...` Example values: `FREQ=WEEKLY;BYDAY=TU,WE`,
+      `FREQ=DAILY`.
+    startTime: Required. Start time of the first recurrence of the maintenance
+      window.
+  """
+
+  endTime = _messages.StringField(1)
+  recurrence = _messages.StringField(2)
+  startTime = _messages.StringField(3)
 
 
 class NodeConfig(_messages.Message):
@@ -887,6 +920,7 @@ class OperationMetadata(_messages.Message):
       UPDATE: A resource update operation.
       CHECK: A resource check operation.
       STORE_STATE: Stores the state of the resource operation.
+      LOAD_STATE: Loads the state of the resource operation.
     """
     TYPE_UNSPECIFIED = 0
     CREATE = 1
@@ -894,6 +928,7 @@ class OperationMetadata(_messages.Message):
     UPDATE = 3
     CHECK = 4
     STORE_STATE = 5
+    LOAD_STATE = 6
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current operation state.
@@ -1338,8 +1373,6 @@ class WebServerConfig(_messages.Message):
 
 class WebServerNetworkAccessControl(_messages.Message):
   r"""Network-level access control policy for the Airflow web server.
-  Supported for Cloud Composer environments in versions
-  composer-1.*.*-airflow-*.*.*.
 
   Fields:
     allowedIpRanges: A collection of allowed IP ranges with descriptions.

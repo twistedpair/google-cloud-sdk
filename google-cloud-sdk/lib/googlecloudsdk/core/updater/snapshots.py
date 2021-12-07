@@ -29,21 +29,17 @@ import collections
 import json
 import os
 import re
-import ssl
 
-from googlecloudsdk.calliope import base
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.updater import installers
 from googlecloudsdk.core.updater import schemas
-from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 
 import requests
 import six
-from six.moves import urllib
 
 
 class Error(exceptions.Error):
@@ -200,49 +196,25 @@ class ComponentSnapshot(object):
       URLFetchError: If the URL cannot be fetched.
     """
     extra_repo = url if is_extra_repo else None
-    if base.UseRequests():
-      try:
-        response = installers.MakeRequestViaRequests(url, command_path)
-      except requests.exceptions.HTTPError:
-        log.debug('Could not fetch [{url}]'.format(url=url), exc_info=True)
-        response = None
-      if response is None:
-        raise URLFetchError(extra_repo=extra_repo)
-      code = response.status_code
-      if code != requests.codes.ok:
-        raise URLFetchError(code=code, extra_repo=extra_repo)
-      try:
-        # response.content is always in bytes
-        data = json.loads(response.content.decode('utf-8'))
-        return data
-      except ValueError as e:
-        log.debug('Failed to parse snapshot [{}]: {}'.format(url, e))
-        raise MalformedSnapshotError()
-    else:
-      try:
-        response = installers.MakeRequest(url, command_path)
-      except (urllib.error.HTTPError, urllib.error.URLError, ssl.SSLError):
-        log.debug('Could not fetch [{url}]'.format(url=url), exc_info=True)
-        response = None
-      except ValueError as e:
-        message = str(e)
-        if not message or 'unknown url type' not in message:
-          raise
-        log.debug('Bad repository url: [{url}]'.format(url=url), exc_info=True)
-        raise URLFetchError(malformed=True, extra_repo=extra_repo)
+    try:
+      response = installers.MakeRequest(url, command_path)
+    except requests.exceptions.HTTPError:
+      log.debug('Could not fetch [{url}]'.format(url=url), exc_info=True)
+      response = None
 
-      if not response:
-        raise URLFetchError(extra_repo=extra_repo)
-      code = response.getcode()
-      if code and code != 200:
-        raise URLFetchError(code=code, extra_repo=extra_repo)
-      response_text = encoding.Decode(response.read())
-      try:
-        data = json.loads(response_text)
-        return data
-      except ValueError as e:
-        log.debug('Failed to parse snapshot [{}]: {}'.format(url, e))
-        raise MalformedSnapshotError()
+    if response is None:
+      raise URLFetchError(extra_repo=extra_repo)
+    code = response.status_code
+    if code != requests.codes.ok:
+      raise URLFetchError(code=code, extra_repo=extra_repo)
+
+    try:
+      # response.content is always in bytes
+      data = json.loads(response.content.decode('utf-8'))
+      return data
+    except ValueError as e:
+      log.debug('Failed to parse snapshot [{}]: {}'.format(url, e))
+      raise MalformedSnapshotError()
 
   @staticmethod
   def FromInstallState(install_state):

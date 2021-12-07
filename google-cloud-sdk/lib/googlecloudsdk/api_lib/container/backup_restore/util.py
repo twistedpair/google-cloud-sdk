@@ -28,7 +28,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import retry
 
-VERSION_MAP = {base.ReleaseTrack.ALPHA: 'v1alpha1'}
+VERSION_MAP = {base.ReleaseTrack.ALPHA: 'v1'}
 
 
 class WaitForCompletionTimeoutError(exceptions.Error):
@@ -145,8 +145,6 @@ def WaitForBackupToFinish(backup,
 
 def CreateRestore(restore_ref,
                   backup,
-                  cluster,
-                  restore_config,
                   description=None,
                   labels=None,
                   client=None):
@@ -154,24 +152,20 @@ def CreateRestore(restore_ref,
   if client is None:
     client = GetClientInstance()
   messages = GetMessagesModule()
-  req = messages.GkebackupProjectsLocationsRestoresCreateRequest()
+  req = messages.GkebackupProjectsLocationsRestorePlansRestoresCreateRequest()
   req.restoreId = restore_ref.Name()
   req.parent = restore_ref.Parent().RelativeName()
   req.restore = messages.Restore()
   req.restore.backup = backup
-  req.restore.cluster = cluster
-  req.restore.restoreConfig = restore_config
   if description:
     req.restore.description = description
   if labels:
     req.restore.labels = labels
-  return client.projects_locations_restores.Create(req)
+  return client.projects_locations_restorePlans_restores.Create(req)
 
 
 def CreateRestoreAndWaitForLRO(restore_ref,
                                backup,
-                               cluster,
-                               restore_config,
                                description=None,
                                labels=None,
                                client=None):
@@ -181,8 +175,6 @@ def CreateRestoreAndWaitForLRO(restore_ref,
   operation = CreateRestore(
       restore_ref,
       backup=backup,
-      cluster=cluster,
-      restore_config=restore_config,
       description=description,
       labels=labels,
       client=client)

@@ -120,8 +120,8 @@ class OsloginUsersProjectsDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class OsloginUsersSshPublicKeyCreateRequest(_messages.Message):
-  r"""A OsloginUsersSshPublicKeyCreateRequest object.
+class OsloginUsersSshPublicKeysCreateRequest(_messages.Message):
+  r"""A OsloginUsersSshPublicKeysCreateRequest object.
 
   Fields:
     parent: Required. The unique ID for the user in format `users/{user}`.

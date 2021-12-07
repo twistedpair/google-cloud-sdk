@@ -201,10 +201,6 @@ class BitbucketServerConfig(_messages.Message):
     connectedRepositories: Connected Bitbucket Server repositories for this
       config.
     createTime: Time when the config was created.
-    displayName: Optional. The user assigned display name for the config.
-      Display names must meet the following requirements: + They must contain
-      only alphanumeric characters and dashes. + They can be 1-64 characters
-      long. + They must begin and end with an alphanumeric character.
     hostUri: Required. Immutable. The URI of the Bitbucket Server host. Once
       this field has been set, it cannot be changed. If you need to change it,
       please create another BitbucketServerConfig.
@@ -231,14 +227,13 @@ class BitbucketServerConfig(_messages.Message):
   apiKey = _messages.StringField(1)
   connectedRepositories = _messages.MessageField('BitbucketServerRepositoryId', 2, repeated=True)
   createTime = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  hostUri = _messages.StringField(5)
-  name = _messages.StringField(6)
-  peeredNetwork = _messages.StringField(7)
-  secrets = _messages.MessageField('BitbucketServerSecrets', 8)
-  sslCa = _messages.StringField(9)
-  username = _messages.StringField(10)
-  webhookKey = _messages.StringField(11)
+  hostUri = _messages.StringField(4)
+  name = _messages.StringField(5)
+  peeredNetwork = _messages.StringField(6)
+  secrets = _messages.MessageField('BitbucketServerSecrets', 7)
+  sslCa = _messages.StringField(8)
+  username = _messages.StringField(9)
+  webhookKey = _messages.StringField(10)
 
 
 class BitbucketServerRepositoryId(_messages.Message):
@@ -2718,6 +2713,23 @@ class GitSource(_messages.Message):
   url = _messages.StringField(3)
 
 
+class GoogleDevtoolsCloudbuildV1BuildOptionsPoolOptionWorkerConfig(_messages.Message):
+  r"""Configuration per workload for both Private Pools and Hybrid Pools.
+
+  Fields:
+    diskSizeGb: The disk size (in GB) which is requested for the build
+      container. If unset, a value of 10 GB will be used.
+    memoryGb: The memory (in GB) which is requested for the build container.
+      If unset, a value of 4 GB will be used.
+    vcpuCount: The number of vCPUs which are requested for the build
+      container. If unset, a value of 1 will be used.
+  """
+
+  diskSizeGb = _messages.IntegerField(1)
+  memoryGb = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  vcpuCount = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
 class GoogleDevtoolsCloudbuildV2OperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
@@ -3426,15 +3438,15 @@ class PoolOption(_messages.Message):
   private-pool) for more information.
 
   Fields:
-    hybridPoolOption: Configuration for a Hybrid Worker Pool.
     name: The `WorkerPool` resource to execute the build on. You must have
       `cloudbuild.workerpools.use` on the project hosting the WorkerPool.
       Format
       projects/{project}/locations/{location}/workerPools/{workerPoolId}
+    workerConfig: Configuration per workload.
   """
 
-  hybridPoolOption = _messages.MessageField('HybridWorkerConfig', 1)
-  name = _messages.StringField(2)
+  name = _messages.StringField(1)
+  workerConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV1BuildOptionsPoolOptionWorkerConfig', 2)
 
 
 class PrivatePoolV1Config(_messages.Message):
@@ -4246,7 +4258,7 @@ class WorkerPool(_messages.Message):
       value of `{worker_pool}` is provided by `worker_pool_id` in
       `CreateWorkerPool` request and the value of `{location}` is determined
       by the endpoint accessed.
-    privatePoolV1Config: Private Pool using a v1 configuration.
+    privatePoolV1Config: Legacy Private Pool configuration.
     state: Output only. `WorkerPool` state.
     uid: Output only. A unique identifier for the `WorkerPool`.
     updateTime: Output only. Time at which the request to update the
@@ -4263,12 +4275,14 @@ class WorkerPool(_messages.Message):
       DELETING: `WorkerPool` is being deleted: cancelling builds and draining
         workers.
       DELETED: `WorkerPool` is deleted.
+      UPDATING: `WorkerPool` is being updated; new builds cannot be run.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     RUNNING = 2
     DELETING = 3
     DELETED = 4
+    UPDATING = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):

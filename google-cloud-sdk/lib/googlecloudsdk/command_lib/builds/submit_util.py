@@ -23,6 +23,7 @@ import uuid
 
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as api_exceptions
+from googlecloudsdk.api_lib.cloudbuild import cloudbuild_exceptions
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudbuild import config
 from googlecloudsdk.api_lib.cloudbuild import logs as cb_logs
@@ -214,22 +215,6 @@ def _SetBuildSteps(tag, no_cache, messages, substitutions, arg_config,
   return build_config
 
 
-def _SetClusterAlpha(build_config, messages, arg_cluster_name,
-                     arg_cluster_location):
-  """Set the cluster config for the build config."""
-  if arg_cluster_name is None:
-    return build_config
-
-  if build_config.options is None:
-    build_config.options = messages.BuildOptions()
-  build_config.options.cluster = messages.ClusterOptions(
-      name=_CLUSTER_NAME_FMT.format(
-          project=properties.VALUES.core.project.Get(),
-          location=arg_cluster_location,
-          cluster_name=arg_cluster_name))
-  return build_config
-
-
 def _SetSource(build_config,
                messages,
                is_specified_source,
@@ -413,6 +398,33 @@ def _SetWorkerPool(build_config, messages, arg_worker_pool):
   return build_config
 
 
+def _SetWorkerPoolConfig(build_config, messages, arg_disk_size, arg_memory,
+                         arg_vcpu_count):
+  """Set the worker pool config."""
+  if (arg_disk_size is not None and
+      cloudbuild_util.WorkerPoolIsSpecified(build_config)
+     ) or arg_memory is not None or arg_vcpu_count is not None:
+    if not build_config.options:
+      build_config.options = messages.BuildOptions()
+
+    if not build_config.options.pool:
+      build_config.options.pool = messages.PoolOption()
+    if not build_config.options.pool.workerConfig:
+      build_config.options.pool.workerConfig = messages.GoogleDevtoolsCloudbuildV1BuildOptionsPoolOptionWorkerConfig(
+      )
+
+    if arg_disk_size is not None:
+      disk_size = compute_utils.BytesToGb(arg_disk_size)
+      build_config.options.pool.workerConfig.diskSizeGb = disk_size
+    if arg_memory is not None:
+      memory = cloudbuild_util.BytesToGb(arg_memory)
+      build_config.options.pool.workerConfig.memoryGb = memory
+    if arg_vcpu_count is not None:
+      build_config.options.pool.workerConfig.vcpuCount = arg_vcpu_count
+
+  return build_config
+
+
 def CreateBuildConfig(tag, no_cache, messages, substitutions, arg_config,
                       is_specified_source, no_source, source,
                       gcs_source_staging_dir, ignore_file, arg_gcs_log_dir,
@@ -448,10 +460,10 @@ def CreateBuildConfigAlpha(tag,
                            arg_gcs_log_dir,
                            arg_machine_type,
                            arg_disk_size,
+                           arg_memory,
+                           arg_vcpu_count,
                            arg_worker_pool,
                            buildpack,
-                           arg_cluster_name=None,
-                           arg_cluster_location=None,
                            hide_logs=False):
   """Returns a build config."""
   timeout_str = _GetBuildTimeout()
@@ -470,10 +482,16 @@ def CreateBuildConfigAlpha(tag,
       hide_logs=hide_logs)
   build_config = _SetLogsBucket(build_config, arg_gcs_log_dir)
   build_config = _SetMachineType(build_config, messages, arg_machine_type)
-  build_config = _SetDiskSize(build_config, messages, arg_disk_size)
   build_config = _SetWorkerPool(build_config, messages, arg_worker_pool)
-  build_config = _SetClusterAlpha(build_config, messages, arg_cluster_name,
-                                  arg_cluster_location)
+  build_config = _SetWorkerPoolConfig(build_config, messages, arg_disk_size,
+                                      arg_memory, arg_vcpu_count)
+
+  if cloudbuild_util.WorkerPoolConfigIsSpecified(
+      build_config) and not cloudbuild_util.WorkerPoolIsSpecified(build_config):
+    raise cloudbuild_exceptions.WorkerConfigButNoWorkerpoolError
+
+  if not cloudbuild_util.WorkerPoolIsSpecified(build_config):
+    build_config = _SetDiskSize(build_config, messages, arg_disk_size)
 
   return build_config
 

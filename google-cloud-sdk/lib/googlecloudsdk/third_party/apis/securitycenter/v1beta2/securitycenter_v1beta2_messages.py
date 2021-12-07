@@ -505,11 +505,16 @@ class Finding(_messages.Message):
 
   Enums:
     FindingClassValueValuesEnum: The class of the finding.
+    MuteValueValuesEnum: Indicates the mute state of a finding (either
+      unspecified, muted, unmuted or undefined).
     SeverityValueValuesEnum: The severity of the finding. This field is
       managed by the source that writes the finding.
     StateValueValuesEnum: The state of the finding.
 
   Messages:
+    ExternalSystemsValue: Output only. Third party SIEM/SOAR fields within
+      SCC, contains external system information and external system finding
+      fields.
     SourcePropertiesValue: Source specific properties. These properties are
       managed by the source that writes the finding. The key names in the
       source_properties map must be between 1 and 255 characters, and must
@@ -535,6 +540,8 @@ class Finding(_messages.Message):
       were to be resolved afterward, this time would reflect when the finding
       was resolved. Must not be set to a value greater than the current
       timestamp.
+    externalSystems: Output only. Third party SIEM/SOAR fields within SCC,
+      contains external system information and external system finding fields.
     externalUri: The URI that, if available, points to a web page outside of
       Security Command Center where additional information about the finding
       can be found. This field is guaranteed to be either empty or a well
@@ -545,6 +552,13 @@ class Finding(_messages.Message):
       or in an operating system that, with high confidence, indicates a
       computer intrusion. Reference:
       https://en.wikipedia.org/wiki/Indicator_of_compromise
+    mute: Indicates the mute state of a finding (either unspecified, muted,
+      unmuted or undefined).
+    muteInitiator: First known as mute_annotation. Records additional
+      information about the mute operation e.g. mute config that muted the
+      finding, user who muted the finding, etc.
+    muteUpdateTime: Output only. The most recent time this finding was muted
+      or unmuted.
     name: The relative resource name of this finding. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
       me Example: "organizations/{organization_id}/sources/{source_id}/finding
@@ -595,6 +609,21 @@ class Finding(_messages.Message):
     MISCONFIGURATION = 3
     OBSERVATION = 4
     SCC_ERROR = 5
+
+  class MuteValueValuesEnum(_messages.Enum):
+    r"""Indicates the mute state of a finding (either unspecified, muted,
+    unmuted or undefined).
+
+    Values:
+      MUTE_UNSPECIFIED: Unspecified.
+      MUTED: Finding has been muted.
+      UNMUTED: Finding has been unmuted.
+      UNDEFINED: Finding has never been muted/unmuted.
+    """
+    MUTE_UNSPECIFIED = 0
+    MUTED = 1
+    UNMUTED = 2
+    UNDEFINED = 3
 
   class SeverityValueValuesEnum(_messages.Enum):
     r"""The severity of the finding. This field is managed by the source that
@@ -659,6 +688,32 @@ class Finding(_messages.Message):
     INACTIVE = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExternalSystemsValue(_messages.Message):
+    r"""Output only. Third party SIEM/SOAR fields within SCC, contains
+    external system information and external system finding fields.
+
+    Messages:
+      AdditionalProperty: An additional property for a ExternalSystemsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ExternalSystemsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExternalSystemsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudSecuritycenterV1ExternalSystem attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudSecuritycenterV1ExternalSystem', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class SourcePropertiesValue(_messages.Message):
     r"""Source specific properties. These properties are managed by the source
     that writes the finding. The key names in the source_properties map must
@@ -691,17 +746,21 @@ class Finding(_messages.Message):
   category = _messages.StringField(2)
   createTime = _messages.StringField(3)
   eventTime = _messages.StringField(4)
-  externalUri = _messages.StringField(5)
-  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 6)
-  indicator = _messages.MessageField('Indicator', 7)
-  name = _messages.StringField(8)
-  parent = _messages.StringField(9)
-  resourceName = _messages.StringField(10)
-  securityMarks = _messages.MessageField('SecurityMarks', 11)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 12)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  vulnerability = _messages.MessageField('Vulnerability', 15)
+  externalSystems = _messages.MessageField('ExternalSystemsValue', 5)
+  externalUri = _messages.StringField(6)
+  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 7)
+  indicator = _messages.MessageField('Indicator', 8)
+  mute = _messages.EnumField('MuteValueValuesEnum', 9)
+  muteInitiator = _messages.StringField(10)
+  muteUpdateTime = _messages.StringField(11)
+  name = _messages.StringField(12)
+  parent = _messages.StringField(13)
+  resourceName = _messages.StringField(14)
+  securityMarks = _messages.MessageField('SecurityMarks', 15)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 16)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  vulnerability = _messages.MessageField('Vulnerability', 19)
 
 
 class Folder(_messages.Message):
@@ -716,6 +775,78 @@ class Folder(_messages.Message):
 
   resourceFolder = _messages.StringField(1)
   resourceFolderDisplayName = _messages.StringField(2)
+
+
+class GoogleCloudSecuritycenterV1BulkMuteFindingsResponse(_messages.Message):
+  r"""The response to a BulkMute request. Contains the LRO information."""
+
+
+class GoogleCloudSecuritycenterV1ExternalSystem(_messages.Message):
+  r"""Representation of third party SIEM/SOAR fields within SCC.
+
+  Fields:
+    assignees: References primary/secondary etc assignees in the external
+      system.
+    externalSystemUpdateTime: The most recent time when the corresponding
+      finding's ticket/tracker was updated in the external system.
+    externalUid: Identifier that's used to track the given finding in the
+      external system.
+    name: External System Name e.g. jira, demisto, etc. e.g.:
+      organizations/1234/sources/5678/findings/123456/externalSystems/jira
+      folders/1234/sources/5678/findings/123456/externalSystems/jira
+      projects/1234/sources/5678/findings/123456/externalSystems/jira
+    status: Most recent status of the corresponding finding's ticket/tracker
+      in the external system.
+  """
+
+  assignees = _messages.StringField(1, repeated=True)
+  externalSystemUpdateTime = _messages.StringField(2)
+  externalUid = _messages.StringField(3)
+  name = _messages.StringField(4)
+  status = _messages.StringField(5)
+
+
+class GoogleCloudSecuritycenterV1MuteConfig(_messages.Message):
+  r"""A mute config is a Cloud SCC resource that contains the configuration to
+  mute create/update events of findings.
+
+  Fields:
+    createTime: Output only. The time at which the mute config was created.
+      This field is set by the server and will be ignored if provided on
+      config creation.
+    description: A description of the mute config.
+    displayName: The human readable name to be displayed for the mute config.
+    filter: Required. An expression that defines the filter to apply across
+      create/update events of findings. While creating a filter string, be
+      mindful of the scope in which the mute configuration is being created.
+      E.g., If a filter contains project = X but is created under the project
+      = Y scope, it might not match any findings. The following field and
+      operator combinations are supported: * severity: `=`, `:` * category:
+      `=`, `:` * resource.name: `=`, `:` * resource.project_name: `=`, `:` *
+      resource.project_display_name: `=`, `:` *
+      resource.folders.resource_folder: `=`, `:` * resource.parent_name: `=`,
+      `:` * resource.parent_display_name: `=`, `:` * resource.type: `=`, `:` *
+      finding_class: `=`, `:` * indicator.ip_addresses: `=`, `:` *
+      indicator.domains: `=`, `:`
+    mostRecentEditor: Output only. Email address of the user who last edited
+      the mute config. This field is set by the server and will be ignored if
+      provided on config creation or update.
+    name: This field will be ignored if provided on config creation. Format
+      "organizations/{organization}/muteConfigs/{mute_config}"
+      "folders/{folder}/muteConfigs/{mute_config}"
+      "projects/{project}/muteConfigs/{mute_config}"
+    updateTime: Output only. The most recent time at which the mute config was
+      updated. This field is set by the server and will be ignored if provided
+      on config creation or update.
+  """
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  filter = _messages.StringField(4)
+  mostRecentEditor = _messages.StringField(5)
+  name = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class GoogleCloudSecuritycenterV1NotificationMessage(_messages.Message):

@@ -95,7 +95,7 @@ class CancelWipeDeviceUserResponse(_messages.Message):
   deviceUser = _messages.MessageField('DeviceUser', 1)
 
 
-class CertificateInfo(_messages.Message):
+class CertificateAttributes(_messages.Message):
   r"""Stores information about a certificate.
 
   Enums:
@@ -1072,10 +1072,10 @@ class EndpointVerificationSpecificAttributes(_messages.Message):
   Device.
 
   Fields:
-    certificateInfo: Details of certificates reported by SecureConnect.
+    certificateAttributes: Details of certificates reported by SecureConnect.
   """
 
-  certificateInfo = _messages.MessageField('CertificateInfo', 1, repeated=True)
+  certificateAttributes = _messages.MessageField('CertificateAttributes', 1, repeated=True)
 
 
 class EntityKey(_messages.Message):

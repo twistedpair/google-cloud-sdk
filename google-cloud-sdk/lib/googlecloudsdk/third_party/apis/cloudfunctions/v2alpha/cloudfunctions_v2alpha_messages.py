@@ -555,6 +555,7 @@ class Function(_messages.Message):
   response to an event. It encapsulate function and triggers configurations.
 
   Enums:
+    EnvironmentValueValuesEnum: Describe whether the function is gen1 or gen2.
     StateValueValuesEnum: Output only. State of the function.
 
   Messages:
@@ -564,6 +565,7 @@ class Function(_messages.Message):
     buildConfig: Describes the Build step of the function that builds a
       container from the given source.
     description: User-provided description of a function.
+    environment: Describe whether the function is gen1 or gen2.
     eventTrigger: An Eventarc trigger managed by Google Cloud Functions that
       fires events in response to a condition in another service.
     labels: Labels associated with this Cloud Function.
@@ -575,6 +577,18 @@ class Function(_messages.Message):
     stateMessages: Output only. State Messages for this Cloud Function.
     updateTime: Output only. The last update timestamp of a Cloud Function.
   """
+
+  class EnvironmentValueValuesEnum(_messages.Enum):
+    r"""Describe whether the function is gen1 or gen2.
+
+    Values:
+      ENVIRONMENT_UNSPECIFIED: Unspecified
+      GEN_1: Gen 1
+      GEN_2: Gen 2
+    """
+    ENVIRONMENT_UNSPECIFIED = 0
+    GEN_1 = 1
+    GEN_2 = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of the function.
@@ -622,13 +636,14 @@ class Function(_messages.Message):
 
   buildConfig = _messages.MessageField('BuildConfig', 1)
   description = _messages.StringField(2)
-  eventTrigger = _messages.MessageField('EventTrigger', 3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  serviceConfig = _messages.MessageField('ServiceConfig', 6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  stateMessages = _messages.MessageField('GoogleCloudFunctionsV2alphaStateMessage', 8, repeated=True)
-  updateTime = _messages.StringField(9)
+  environment = _messages.EnumField('EnvironmentValueValuesEnum', 3)
+  eventTrigger = _messages.MessageField('EventTrigger', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  serviceConfig = _messages.MessageField('ServiceConfig', 7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  stateMessages = _messages.MessageField('GoogleCloudFunctionsV2alphaStateMessage', 9, repeated=True)
+  updateTime = _messages.StringField(10)
 
 
 class GenerateDownloadUrlRequest(_messages.Message):
@@ -1444,6 +1459,11 @@ class ServiceConfig(_messages.Message):
       during function execution.
 
   Fields:
+    allTrafficOnLatestRevision: Whether 100% of traffic is routed to the
+      latest revision. On CreateFunction and UpdateFunction, when set to true,
+      the revision being deployed will serve 100% of traffic, ignoring any
+      traffic split settings, if any. On GetFunction, true will be returned if
+      the latest revision is serving 100% of traffic.
     availableMemory: The amount of memory available for a function. Defaults
       to 256M. Supported units are k, M, G, Mi, Gi. If no unit is supplied the
       value is interpreted as bytes. See https://github.com/kubernetes/kuberne
@@ -1545,18 +1565,19 @@ class ServiceConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  availableMemory = _messages.StringField(1)
-  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 2)
-  gcfUri = _messages.StringField(3)
-  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 4)
-  maxInstanceCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  minInstanceCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  service = _messages.StringField(7)
-  serviceAccountEmail = _messages.StringField(8)
-  timeoutSeconds = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  uri = _messages.StringField(10)
-  vpcConnector = _messages.StringField(11)
-  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 12)
+  allTrafficOnLatestRevision = _messages.BooleanField(1)
+  availableMemory = _messages.StringField(2)
+  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 3)
+  gcfUri = _messages.StringField(4)
+  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 5)
+  maxInstanceCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  minInstanceCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  service = _messages.StringField(8)
+  serviceAccountEmail = _messages.StringField(9)
+  timeoutSeconds = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  uri = _messages.StringField(11)
+  vpcConnector = _messages.StringField(12)
+  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 13)
 
 
 class SetIamPolicyRequest(_messages.Message):

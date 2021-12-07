@@ -1862,6 +1862,20 @@
         }
       }
     },
+    "PausePatchDeploymentRequest": {
+      "id": "PausePatchDeploymentRequest",
+      "description": "A request message for pausing a patch deployment.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ResumePatchDeploymentRequest": {
+      "id": "ResumePatchDeploymentRequest",
+      "description": "A request message for resuming a patch deployment.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "OSPolicyAssignmentOperationMetadata": {
       "id": "OSPolicyAssignmentOperationMetadata",
       "description": "OS policy assignment operation metadata provided by OS policy assignment API methods that return long running operations.",
@@ -2304,6 +2318,62 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Update an OS Config patch deployment."
+            },
+            "pause": {
+              "id": "osconfig.projects.patchDeployments.pause",
+              "path": "v1alpha2/{+name}:pause",
+              "flatPath": "v1alpha2/projects/{projectsId}/patchDeployments/{patchDeploymentsId}:pause",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. The resource name of the patch deployment in the form `projects\/*\/patchDeployments\/*`.",
+                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "PausePatchDeploymentRequest"
+              },
+              "response": {
+                "$ref": "PatchDeployment"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Change state of patch deployment to \"PAUSED\". Patch deployment in paused state doesn't generate patch jobs."
+            },
+            "resume": {
+              "id": "osconfig.projects.patchDeployments.resume",
+              "path": "v1alpha2/{+name}:resume",
+              "flatPath": "v1alpha2/projects/{projectsId}/patchDeployments/{patchDeploymentsId}:resume",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. The resource name of the patch deployment in the form `projects\/*\/patchDeployments\/*`.",
+                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "ResumePatchDeploymentRequest"
+              },
+              "response": {
+                "$ref": "PatchDeployment"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Change state of patch deployment back to \"ACTIVE\". Patch deployment in active state continues to generate patch jobs."
             }
           }
         },

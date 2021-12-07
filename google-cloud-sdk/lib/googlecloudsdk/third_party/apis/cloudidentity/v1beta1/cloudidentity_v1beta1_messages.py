@@ -115,7 +115,7 @@ class CancelWipeDeviceUserResponse(_messages.Message):
   deviceUser = _messages.MessageField('DeviceUser', 1)
 
 
-class CertificateInfo(_messages.Message):
+class CertificateAttributes(_messages.Message):
   r"""Stores information about a certificate.
 
   Enums:
@@ -1532,13 +1532,13 @@ class DynamicGroupStatus(_messages.Message):
 
 class EndpointVerificationSpecificAttributes(_messages.Message):
   r"""Resource representing the Endpoint Verification-specific attributes of a
-  Device.
+  Device. https://cloud.google.com/endpoint-verification/docs/overview
 
   Fields:
-    certificateInfo: Details of certificates.
+    certificateAttributes: Details of certificates.
   """
 
-  certificateInfo = _messages.MessageField('CertificateInfo', 1, repeated=True)
+  certificateAttributes = _messages.MessageField('CertificateAttributes', 1, repeated=True)
 
 
 class EntityKey(_messages.Message):

@@ -389,47 +389,6 @@
         "kmsKeyName": {
           "description": "The Cloud KMS resource name of the customer managed encryption key that\u2019s used to encrypt the contents of the Repository. Has the form: `projects\/my-project\/locations\/my-region\/keyRings\/my-kr\/cryptoKeys\/my-key`. This value may not be changed after the Repository has been created.",
           "type": "string"
-        },
-        "mode": {
-          "description": "The mode of the repository.",
-          "type": "string",
-          "enumDescriptions": [
-            "Unspecified mode.",
-            "A standard repository storing artifacts.",
-            "A virtual repository to serve artifacts from one or more sources."
-          ],
-          "enum": [
-            "MODE_UNSPECIFIED",
-            "STANDARD_REPOSITORY",
-            "VIRTUAL_REPOSITORY"
-          ]
-        },
-        "upstreamPolicies": {
-          "description": "Policies that configure the upstream artifacts distributed by the Virtual Repository. Upstream policies cannot be set on a standard repository.",
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1UpstreamPolicy"
-          }
-        }
-      }
-    },
-    "GoogleDevtoolsArtifactregistryV1alpha1UpstreamPolicy": {
-      "id": "GoogleDevtoolsArtifactregistryV1alpha1UpstreamPolicy",
-      "description": "Artifact policy configuration for the repository contents.",
-      "type": "object",
-      "properties": {
-        "id": {
-          "description": "The user-provided ID of the upstream policy.",
-          "type": "string"
-        },
-        "repository": {
-          "description": "A reference to the repository resource, for example: \"projects\/p1\/locations\/us-central1\/repository\/repo1\".",
-          "type": "string"
-        },
-        "priority": {
-          "description": "Entries with a greater priority value take precedence in the pull order.",
-          "type": "integer",
-          "format": "int32"
         }
       }
     },
@@ -1142,14 +1101,14 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "The name of the parent resource whose repositories will be listed.",
+                      "description": "Required. The name of the parent resource whose repositories will be listed.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "The maximum number of repositories to return. Maximum page size is 10,000.",
+                      "description": "The maximum number of repositories to return.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -1179,7 +1138,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The name of the repository to retrieve.",
+                      "description": "Required. The name of the repository to retrieve.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1205,7 +1164,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "The name of the parent resource where the repository will be created.",
+                      "description": "Required. The name of the parent resource where the repository will be created.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1272,7 +1231,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "The name of the repository to delete.",
+                      "description": "Required. The name of the repository to delete.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                       "location": "path",
                       "required": true,

@@ -411,11 +411,15 @@ class HiveMetastoreConfig(_messages.Message):
     ConfigOverridesValue: A mapping of Hive metastore configuration key-value
       pairs to apply to the Hive metastore (configured in hive-site.xml). The
       mappings override system defaults (some keys cannot be overridden).
+      These overrides are also applied to auxiliary versions and can be
+      further customized in the auxiliary version's AuxiliaryVersionConfig.
 
   Fields:
     configOverrides: A mapping of Hive metastore configuration key-value pairs
       to apply to the Hive metastore (configured in hive-site.xml). The
       mappings override system defaults (some keys cannot be overridden).
+      These overrides are also applied to auxiliary versions and can be
+      further customized in the auxiliary version's AuxiliaryVersionConfig.
     endpointProtocol: The protocol to use for the metastore service endpoint.
       If unspecified, defaults to THRIFT.
     kerberosConfig: Information used to configure the Hive metastore service
@@ -445,7 +449,9 @@ class HiveMetastoreConfig(_messages.Message):
   class ConfigOverridesValue(_messages.Message):
     r"""A mapping of Hive metastore configuration key-value pairs to apply to
     the Hive metastore (configured in hive-site.xml). The mappings override
-    system defaults (some keys cannot be overridden).
+    system defaults (some keys cannot be overridden). These overrides are also
+    applied to auxiliary versions and can be further customized in the
+    auxiliary version's AuxiliaryVersionConfig.
 
     Messages:
       AdditionalProperty: An additional property for a ConfigOverridesValue

@@ -2237,6 +2237,13 @@
         "sipRecordingMediaLabel": {
           "description": "Optional. Label applied to streams representing this participant in SIPREC XML metadata and SDP. This is used to assign transcriptions from that media stream to this participant. This field can be updated.",
           "type": "string"
+        },
+        "documentsMetadataFilters": {
+          "description": "Optional. Key-value filters on the metadata of documents returned by article suggestion. If specified, article suggestion only returns suggested documents that match all filters in their Document.metadata. Multiple values for a metadata key should be concatenated by comma. For example, filters to match all documents that have 'US' or 'CA' in their market metadata values and 'agent' in their user metadata values will be ``` documents_metadata_filters { key: \"market\" value: \"US,CA\" } documents_metadata_filters { key: \"user\" value: \"agent\" } ```",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -2279,9 +2286,27 @@
           "description": "Parameters for a Dialogflow virtual-agent query.",
           "$ref": "GoogleCloudDialogflowV2QueryParameters"
         },
+        "assistQueryParams": {
+          "description": "Parameters for a human assist query.",
+          "$ref": "GoogleCloudDialogflowV2AssistQueryParameters"
+        },
         "requestId": {
           "description": "A unique identifier for this request. Restricted to 36 ASCII characters. A random UUID is recommended. This request is only idempotent if a `request_id` is provided.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDialogflowV2AssistQueryParameters": {
+      "id": "GoogleCloudDialogflowV2AssistQueryParameters",
+      "description": "Represents the parameters of human assist query.",
+      "type": "object",
+      "properties": {
+        "documentsMetadataFilters": {
+          "description": "Key-value filters on the metadata of documents returned by article suggestion. If specified, article suggestion only returns suggested documents that match all filters in their Document.metadata. Multiple values for a metadata key should be concatenated by comma. For example, filters to match all documents that have 'US' or 'CA' in their market metadata values and 'agent' in their user metadata values will be ``` documents_metadata_filters { key: \"market\" value: \"US,CA\" } documents_metadata_filters { key: \"user\" value: \"agent\" } ```",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -2622,6 +2647,10 @@
           "description": "Max number of messages prior to and including latest_message to use as context when compiling the suggestion. By default 20 and at most 50.",
           "type": "integer",
           "format": "int32"
+        },
+        "assistQueryParams": {
+          "description": "Parameters for a human assist query.",
+          "$ref": "GoogleCloudDialogflowV2AssistQueryParameters"
         }
       }
     },
@@ -2638,6 +2667,10 @@
           "description": "Max number of messages prior to and including [latest_message] to use as context when compiling the suggestion. By default 20 and at most 50.",
           "type": "integer",
           "format": "int32"
+        },
+        "assistQueryParams": {
+          "description": "Parameters for a human assist query.",
+          "$ref": "GoogleCloudDialogflowV2AssistQueryParameters"
         }
       }
     },
@@ -2990,12 +3023,14 @@
           "enumDescriptions": [
             "Unspecified feature type.",
             "Run article suggestion model.",
-            "Run FAQ model."
+            "Run FAQ model.",
+            "Run smart reply model."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
             "ARTICLE_SUGGESTION",
-            "FAQ"
+            "FAQ",
+            "SMART_REPLY"
           ]
         }
       }
@@ -3198,7 +3233,7 @@
       "type": "object",
       "properties": {
         "speechModelVariant": {
-          "description": "Optional. The speech model used in speech to text. `SPEECH_MODEL_VARIANT_UNSPECIFIED`, `USE_BEST_AVAILABLE` will be treated as `USE_ENHANCED`. It can be overridden in AnalyzeContentRequest and StreamingAnalyzeContentRequest request.",
+          "description": "The speech model used in speech to text. `SPEECH_MODEL_VARIANT_UNSPECIFIED`, `USE_BEST_AVAILABLE` will be treated as `USE_ENHANCED`. It can be overridden in AnalyzeContentRequest and StreamingAnalyzeContentRequest request. If enhanced model variant is specified and an enhanced version of the specified model for the language does not exist, then it would emit an error.",
           "type": "string",
           "enumDescriptions": [
             "No model variant specified. In this case Dialogflow defaults to USE_BEST_AVAILABLE.",
@@ -4129,6 +4164,10 @@
           "description": "Output only. An audio response message composed of both the synthesized Dialogflow agent responses and responses defined via play_audio. This message is generated by Dialogflow only and not supposed to be defined by the user.",
           "readOnly": true,
           "$ref": "GoogleCloudDialogflowCxV3ResponseMessageMixedAudio"
+        },
+        "telephonyTransferCall": {
+          "description": "A signal that the client should transfer the phone call connected to this agent to a third-party endpoint.",
+          "$ref": "GoogleCloudDialogflowCxV3ResponseMessageTelephonyTransferCall"
         }
       }
     },
@@ -4256,6 +4295,17 @@
           "description": "Output only. Whether the playback of this segment can be interrupted by the end user's speech and the client should then start the next Dialogflow request.",
           "readOnly": true,
           "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3ResponseMessageTelephonyTransferCall": {
+      "id": "GoogleCloudDialogflowCxV3ResponseMessageTelephonyTransferCall",
+      "description": "Represents the signal that telles the client to transfer the phone call connected to the agent to a third-party endpoint.",
+      "type": "object",
+      "properties": {
+        "phoneNumber": {
+          "description": "Transfer the call to a phone number in [E.164 format](https:\/\/en.wikipedia.org\/wiki\/E.164).",
+          "type": "string"
         }
       }
     },
@@ -5801,6 +5851,10 @@
           "description": "Output only. An audio response message composed of both the synthesized Dialogflow agent responses and responses defined via play_audio. This message is generated by Dialogflow only and not supposed to be defined by the user.",
           "readOnly": true,
           "$ref": "GoogleCloudDialogflowCxV3beta1ResponseMessageMixedAudio"
+        },
+        "telephonyTransferCall": {
+          "description": "A signal that the client should transfer the phone call connected to this agent to a third-party endpoint.",
+          "$ref": "GoogleCloudDialogflowCxV3beta1ResponseMessageTelephonyTransferCall"
         }
       }
     },
@@ -5928,6 +5982,17 @@
           "description": "Output only. Whether the playback of this segment can be interrupted by the end user's speech and the client should then start the next Dialogflow request.",
           "readOnly": true,
           "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3beta1ResponseMessageTelephonyTransferCall": {
+      "id": "GoogleCloudDialogflowCxV3beta1ResponseMessageTelephonyTransferCall",
+      "description": "Represents the signal that telles the client to transfer the phone call connected to the agent to a third-party endpoint.",
+      "type": "object",
+      "properties": {
+        "phoneNumber": {
+          "description": "Transfer the call to a phone number in [E.164 format](https:\/\/en.wikipedia.org\/wiki\/E.164).",
+          "type": "string"
         }
       }
     },

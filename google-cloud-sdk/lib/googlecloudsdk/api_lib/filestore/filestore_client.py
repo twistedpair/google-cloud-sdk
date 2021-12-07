@@ -142,22 +142,19 @@ class FilestoreClient(object):
         name=backup_ref.RelativeName())
     return self.client.projects_locations_backups.Get(request)
 
-  def DeleteInstance(self, instance_ref, async_):
+  def DeleteInstance(self, instance_ref, async_, force=False):
+    """Deletes an existing Cloud Filestore instance."""
+    request = self.messages.FileProjectsLocationsInstancesDeleteRequest(
+        name=instance_ref.RelativeName(), force=force)
+    return self._DeleteInstance(async_, request)
+
+  def DeleteInstanceAlpha(self, instance_ref, async_):
     """Delete an existing Cloud Filestore instance."""
     request = self.messages.FileProjectsLocationsInstancesDeleteRequest(
         name=instance_ref.RelativeName())
-    delete_op = self.client.projects_locations_instances.Delete(request)
-    if async_:
-      return delete_op
-    operation_ref = resources.REGISTRY.ParseRelativeName(
-        delete_op.name, collection=OPERATIONS_COLLECTION)
-    return self.WaitForOperation(operation_ref)
+    return self._DeleteInstance(async_, request)
 
-  def DeleteInstanceBeta(self, instance_ref, async_, force):
-    """Deletes an existing Cloud Filestore instance."""
-    request = self.messages.FileProjectsLocationsInstancesDeleteRequest(
-        name=instance_ref.RelativeName(),
-        force=force)
+  def _DeleteInstance(self, async_, request):
     delete_op = self.client.projects_locations_instances.Delete(request)
     if async_:
       return delete_op
@@ -647,9 +644,6 @@ class FilestoreAdapter(BetaFilestoreAdapter):
           'Must update the file share to a larger capacity. Existing capacity: '
           '[{}]. New capacity requested: [{}].'.format(
               existing_file_share.capacityGb, new_capacity))
-
-  def ParseConnectMode(self, network_config, key):
-    return
 
 
 def GetFilestoreRegistry(api_version=V1_API_VERSION):

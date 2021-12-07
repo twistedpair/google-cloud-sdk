@@ -35,14 +35,14 @@ class InvalidArgumentException(exceptions.Error):
       parameter_name: str, the parameter flag or argument name
       message: str, the exception message
     """
-    super(InvalidArgumentException, self).__init__(
-        'Invalid value for [{0}]: {1}'.format(parameter_name, message))
+    super(InvalidArgumentException,
+          self).__init__('Invalid value for [{0}]: {1}'.format(
+              parameter_name, message))
     self.parameter_name = parameter_name
 
 
 class RequiredArgumentException(exceptions.Error):
-  """An exception for when a usually optional argument is required in this case.
-  """
+  """An exception for when a usually optional argument is required in this case."""
 
   def __init__(self, parameter_name, message):
     super(RequiredArgumentException,
@@ -51,6 +51,8 @@ class RequiredArgumentException(exceptions.Error):
     self.parameter_name = parameter_name
 
 
-def StatusToFunctionsError(status):
+def StatusToFunctionsError(status, error_message=None):
   """Convert a google.rpc.Status (used for LRO errors) into a FunctionsError."""
+  if error_message:
+    return FunctionsError(error_message)
   return FunctionsError(status.message)

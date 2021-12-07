@@ -24,3 +24,7 @@ from googlecloudsdk.calliope import base
 @base.ReleaseTracks(${release_tracks})
 class Config(base.Group):
   """Manage ${branded_api_name} ${singular_resource_name_with_spaces} configurations."""
+% if group_category:
+
+  category = base.${group_category}
+% endif

@@ -780,6 +780,22 @@ class CloudbuildProjectsLocationsWorkerPoolsPatchRequest(_messages.Message):
   workerPool = _messages.MessageField('WorkerPool', 3)
 
 
+class CreateBitbucketServerConfigOperationMetadata(_messages.Message):
+  r"""Metadata for `CreateBitbucketServerConfig` operation.
+
+  Fields:
+    bitbucketServerConfig: The resource name of the BitbucketServerConfig to
+      be created. Format:
+      `projects/{project}/locations/{location}/bitbucketServerConfigs/{id}`.
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+  """
+
+  bitbucketServerConfig = _messages.StringField(1)
+  completeTime = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+
+
 class CreateGitHubEnterpriseConfigOperationMetadata(_messages.Message):
   r"""Metadata for `CreateGithubEnterpriseConfig` operation.
 
@@ -809,6 +825,22 @@ class CreateWorkerPoolOperationMetadata(_messages.Message):
   completeTime = _messages.StringField(1)
   createTime = _messages.StringField(2)
   workerPool = _messages.StringField(3)
+
+
+class DeleteBitbucketServerConfigOperationMetadata(_messages.Message):
+  r"""Metadata for `DeleteBitbucketServerConfig` operation.
+
+  Fields:
+    bitbucketServerConfig: The resource name of the BitbucketServerConfig to
+      be deleted. Format:
+      `projects/{project}/locations/{location}/bitbucketServerConfigs/{id}`.
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+  """
+
+  bitbucketServerConfig = _messages.StringField(1)
+  completeTime = _messages.StringField(2)
+  createTime = _messages.StringField(3)
 
 
 class DeleteGitHubEnterpriseConfigOperationMetadata(_messages.Message):
@@ -1796,6 +1828,22 @@ class TimeSpan(_messages.Message):
 
   endTime = _messages.StringField(1)
   startTime = _messages.StringField(2)
+
+
+class UpdateBitbucketServerConfigOperationMetadata(_messages.Message):
+  r"""Metadata for `UpdateBitbucketServerConfig` operation.
+
+  Fields:
+    bitbucketServerConfig: The resource name of the BitbucketServerConfig to
+      be updated. Format:
+      `projects/{project}/locations/{location}/bitbucketServerConfigs/{id}`.
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+  """
+
+  bitbucketServerConfig = _messages.StringField(1)
+  completeTime = _messages.StringField(2)
+  createTime = _messages.StringField(3)
 
 
 class UpdateGitHubEnterpriseConfigOperationMetadata(_messages.Message):

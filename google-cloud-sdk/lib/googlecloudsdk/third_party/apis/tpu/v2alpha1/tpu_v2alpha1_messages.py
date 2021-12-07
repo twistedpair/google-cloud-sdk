@@ -307,6 +307,9 @@ class NetworkConfig(_messages.Message):
   r"""Network related configurations.
 
   Fields:
+    canIpForward: Allows the TPU node to send and receive packets with non-
+      matching destination or source IPs. This is required if you plan to use
+      the TPU workers to forward routes.
     enableExternalIps: Indicates that external IP addresses would be
       associated with the TPU workers. If set to false, the specified
       subnetwork or network should have Private Google Access enabled.
@@ -318,9 +321,10 @@ class NetworkConfig(_messages.Message):
       "default" will be used.
   """
 
-  enableExternalIps = _messages.BooleanField(1)
-  network = _messages.StringField(2)
-  subnetwork = _messages.StringField(3)
+  canIpForward = _messages.BooleanField(1)
+  enableExternalIps = _messages.BooleanField(2)
+  network = _messages.StringField(3)
+  subnetwork = _messages.StringField(4)
 
 
 class NetworkEndpoint(_messages.Message):

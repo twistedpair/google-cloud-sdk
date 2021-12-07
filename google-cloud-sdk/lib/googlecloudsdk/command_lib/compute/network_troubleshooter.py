@@ -41,17 +41,24 @@ _API_NETWORKMANAGEMENT_CLIENT_NAME = 'networkmanagement'
 _API_COMPUTE_CLIENT_NAME = 'compute'
 _API_CLIENT_VERSION_V1 = 'v1'
 
+NETWORK_API = 'networkmanagement.googleapis.com'
+
 networkmanagement_permissions = [
     'networkmanagement.connectivitytests.get',
-    'networkmanagement.connectivitytests.delete'
 ]
+
+CONNECTIVITY_TEST_MESSAGE = (
+    'To view complete details of this test, see '
+    'https://console.cloud.google.com/net-intelligence/connectivity/tests/details/{0}?project={1}\n'
+    '\n'
+    'Help for connectivity tests:\n'
+    'https://cloud.google.com/network-intelligence-center/docs/connectivity-tests/concepts/overview\n')
 
 
 def _GetRandomSuffix():
   random_characters = [
       random.choice(string.ascii_lowercase + string.digits)
-      for _ in range(_NUM_RANDOM_CHARACTERS)
-  ]
+      for _ in range(_NUM_RANDOM_CHARACTERS)]
   return ''.join(random_characters)
 
 
@@ -75,12 +82,12 @@ class NetworkTroubleshooter(ssh_troubleshooter.SshTroubleshooter):
 
   def check_prerequisite(self):
     log.status.Print('---- Checking network connectivity ----')
-    msg = ("The troubleshooting tool needs permission to check the VM's "
-           'network connectivity.')
-    prompt = 'Is it OK to run this test?'
+    msg = ('The Network Management API is needed to check the VM\'s network '
+           'connectivity.')
+    prompt = 'Is it OK to enable it and check the VM\'s network connectivity?'
     cancel = ('Test skipped.\n'
               'To manually test network connectivity, try reaching another '
-              'device on the same network.')
+              'device on the same network.\n')
     try:
       prompt_continue = console_io.PromptContinue(
           message=msg,
@@ -95,8 +102,7 @@ class NetworkTroubleshooter(ssh_troubleshooter.SshTroubleshooter):
       return
 
     # Enable API
-    enable_api.EnableService(self.project.name,
-                             'networkmanagement.googleapis.com')
+    enable_api.EnableService(self.project.name, NETWORK_API)
     # Test IAM Permission
     missing_permissions = self._CheckNetworkManagementPermissions()
 
@@ -104,14 +110,12 @@ class NetworkTroubleshooter(ssh_troubleshooter.SshTroubleshooter):
       log.status.Print(
           'Missing the IAM permissions {0} necessary to perform the network '
           'connectivity test. To manually test network connectivity, try '
-          'reaching another device on the same network.'.format(
+          'reaching another device on the same network.\n'.format(
               ' '.join(missing_permissions)))
       self.skip_troubleshoot = True
       return
 
   def cleanup_resources(self):
-    if not self.skip_troubleshoot:
-      self._DeleteNetworkConnectivityTest()
     return
 
   def troubleshoot(self):
@@ -119,10 +123,10 @@ class NetworkTroubleshooter(ssh_troubleshooter.SshTroubleshooter):
       return
 
     self.ip_address = self._GetSourceIPAddress()
-    log.status.Print('Your source IP address is {0}'.format(self.ip_address))
+    log.status.Print('Your source IP address is {0}\n'.format(self.ip_address))
     if not self.ip_address:
       log.status.Print('Could not resolve source external IP address, can\'t '
-                       'run network connectivity test')
+                       'run network connectivity test.\n')
       self.skip_troubleshoot = True
       return
 
@@ -133,6 +137,8 @@ class NetworkTroubleshooter(ssh_troubleshooter.SshTroubleshooter):
 
     test_result = self._GetConnectivityTestResult()
     self._PrintConciseConnectivityTestResult(test_result)
+    log.status.Print(CONNECTIVITY_TEST_MESSAGE.format(
+        self.test_id, self.project.name))
     return
 
   def _RunConnectivityTest(self):
@@ -190,14 +196,6 @@ class NetworkTroubleshooter(ssh_troubleshooter.SshTroubleshooter):
     response = self.nm_client.projects_locations_global_connectivityTests.TestIamPermissions(nm_testiampermission_req)
     return set(networkmanagement_permissions) - set(response.permissions)
 
-  def _DeleteNetworkConnectivityTest(self):
-    # pylint: disable=line-too-long
-    delete_req = self.nm_message.NetworkmanagementProjectsLocationsGlobalConnectivityTestsDeleteRequest(
-        name='projects/{project_id}/locations/global/connectivityTests/{test_id}'
-        .format(project_id=self.project.name, test_id=self.test_id))
-    self.nm_client.projects_locations_global_connectivityTests.Delete(
-        delete_req)
-
   def _GetSourceIPAddress(self):
     """Get current external IP from Google DNS server.
 
@@ -222,11 +220,5 @@ class NetworkTroubleshooter(ssh_troubleshooter.SshTroubleshooter):
     """
     details = response.reachabilityDetails
     if details:
-      log.status.Print('Network Connectivity Test Result: {0}'.format(
+      log.status.Print('Network Connectivity Test Result: {0}\n'.format(
           details.result))
-    traces = details.traces
-    for trace in traces:
-      log.status.Print('EndpointInfo {0}'.format(trace.endpointInfo))
-      for step in trace.steps:
-        log.status.Print('{0}'.format(step.description))
-        log.status.Print('{0}'.format(step.state))

@@ -7,7 +7,7 @@
   "version": "v2alpha1",
   "revision": "0",
   "title": "Organization Policy API",
-  "description": "The Org Policy API allows users to configure governance ruleson their GCP resources across the Cloud Resource Hierarchy.",
+  "description": "The Org Policy API allows users to configure governance rules on their GCP resources across the Cloud Resource Hierarchy.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -220,10 +220,6 @@
         },
         "spec": {
           "$ref": "GoogleCloudOrgpolicyV2alpha1PolicySpec"
-        },
-        "alternate": {
-          "description": "An alternate policy configuration that will be used instead of the baseline policy configurations as determined by the launch. Currently the only way the launch can trigger the alternate configuration is via dry-run\/dark.",
-          "$ref": "GoogleCloudOrgpolicyV2alpha1AlternatePolicySpec"
         }
       }
     },
@@ -327,19 +323,6 @@
         "location": {
           "description": "Optional. String indicating the location of the expression for error reporting, e.g. a file name and a position in the file.",
           "type": "string"
-        }
-      }
-    },
-    "GoogleCloudOrgpolicyV2alpha1AlternatePolicySpec": {
-      "id": "GoogleCloudOrgpolicyV2alpha1AlternatePolicySpec",
-      "type": "object",
-      "properties": {
-        "launch": {
-          "description": "Reference to the launch that will be used while audit logging and to control the launch. Should be set only in the alternate policy.",
-          "type": "string"
-        },
-        "spec": {
-          "$ref": "GoogleCloudOrgpolicyV2alpha1PolicySpec"
         }
       }
     },

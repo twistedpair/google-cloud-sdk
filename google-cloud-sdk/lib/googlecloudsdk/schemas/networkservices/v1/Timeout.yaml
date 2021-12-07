@@ -25,6 +25,34 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
+  connectTimeout:
+    description: |-
+      The maximum duration to wait for a single origin connection to be
+      established, including DNS lookup, TLS handshake and TCP/QUIC connection
+      establishment. Defaults to 5 seconds. The timeout must be a value between
+      1s and 15s. The connectTimeout capped by the deadline set by the request's
+      maxAttemptsTimeout. The last connection attempt may have a smaller
+      connectTimeout in order to adhere to the overall maxAttemptsTimeout.
+    type: string
+  maxAttemptsTimeout:
+    description: |-
+      The maximum time across all connection attempts to all origins, including
+      failover origins, before returning an error to the client. A HTTP 504 will
+      be returned if the timeout is reached before a response is returned.
+      Defaults to 15 seconds. The timeout must be a value between 1s and 30s. If
+      a failoverOrigin is specified, the maxAttemptsTimeout of the first
+      configured origin sets the deadline for all connection attempts across all
+      failoverOrigins.
+    type: string
+  readTimeout:
+    description: |-
+      The maximum duration to wait between reads of a single HTTP
+      connection/stream. Defaults to 15 seconds. The timeout must be a value
+      between 1s and 30s. The readTimeout is capped by the responseTimeout. All
+      reads of the HTTP connection/stream must be completed by the deadline set
+      by the responseTimeout. If the response headers have already been written
+      to the connection, the response will be truncated and logged.
+    type: string
   responseTimeout:
     description: |-
       The maximum duration to wait for the last byte of a response to arrive

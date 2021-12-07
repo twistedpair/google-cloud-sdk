@@ -2324,6 +2324,34 @@ class OsconfigProjectsPatchDeploymentsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class OsconfigProjectsPatchDeploymentsPauseRequest(_messages.Message):
+  r"""A OsconfigProjectsPatchDeploymentsPauseRequest object.
+
+  Fields:
+    name: Required. The resource name of the patch deployment in the form
+      `projects/*/patchDeployments/*`.
+    pausePatchDeploymentRequest: A PausePatchDeploymentRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pausePatchDeploymentRequest = _messages.MessageField('PausePatchDeploymentRequest', 2)
+
+
+class OsconfigProjectsPatchDeploymentsResumeRequest(_messages.Message):
+  r"""A OsconfigProjectsPatchDeploymentsResumeRequest object.
+
+  Fields:
+    name: Required. The resource name of the patch deployment in the form
+      `projects/*/patchDeployments/*`.
+    resumePatchDeploymentRequest: A ResumePatchDeploymentRequest resource to
+      be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  resumePatchDeploymentRequest = _messages.MessageField('ResumePatchDeploymentRequest', 2)
+
+
 class OsconfigProjectsPatchJobsCancelRequest(_messages.Message):
   r"""A OsconfigProjectsPatchJobsCancelRequest object.
 
@@ -2819,6 +2847,10 @@ class PatchRollout(_messages.Message):
   mode = _messages.EnumField('ModeValueValuesEnum', 2)
 
 
+class PausePatchDeploymentRequest(_messages.Message):
+  r"""A request message for pausing a patch deployment."""
+
+
 class RecurringSchedule(_messages.Message):
   r"""Sets the time for recurring patch deployments.
 
@@ -2870,6 +2902,10 @@ class RecurringSchedule(_messages.Message):
   timeOfDay = _messages.MessageField('TimeOfDay', 7)
   timeZone = _messages.MessageField('TimeZone', 8)
   weekly = _messages.MessageField('WeeklySchedule', 9)
+
+
+class ResumePatchDeploymentRequest(_messages.Message):
+  r"""A request message for resuming a patch deployment."""
 
 
 class StandardQueryParameters(_messages.Message):
@@ -3059,6 +3095,7 @@ class VulnerabilityReportVulnerability(_messages.Message):
       affected by this vulnerability. If the vulnerability report was not
       updated after the VM inventory update, these values might not display in
       VM inventory. For some distros, this field may be empty.
+    items: List of items affected by the vulnerability.
     updateTime: The timestamp for when the vulnerability was last modified.
   """
 
@@ -3066,7 +3103,8 @@ class VulnerabilityReportVulnerability(_messages.Message):
   createTime = _messages.StringField(2)
   details = _messages.MessageField('VulnerabilityReportVulnerabilityDetails', 3)
   installedInventoryItemIds = _messages.StringField(4, repeated=True)
-  updateTime = _messages.StringField(5)
+  items = _messages.MessageField('VulnerabilityReportVulnerabilityItem', 5, repeated=True)
+  updateTime = _messages.StringField(6)
 
 
 class VulnerabilityReportVulnerabilityDetails(_messages.Message):
@@ -3106,6 +3144,35 @@ class VulnerabilityReportVulnerabilityDetailsReference(_messages.Message):
 
   source = _messages.StringField(1)
   url = _messages.StringField(2)
+
+
+class VulnerabilityReportVulnerabilityItem(_messages.Message):
+  r"""OS inventory item that is affected by a vulnerability or fixed as a
+  result of a vulnerability.
+
+  Fields:
+    availableInventoryItemId: Corresponds to the `AVAILABLE_PACKAGE` inventory
+      item on the VM. If the vulnerability report was not updated after the VM
+      inventory update, these values might not display in VM inventory. If
+      there is no available fix, the field is empty. The `inventory_item`
+      value specifies the latest `SoftwarePackage` available to the VM that
+      fixes the vulnerability.
+    fixedCpeUri: The recommended [CPE
+      URI](https://cpe.mitre.org/specification/) update that contains a fix
+      for this vulnerability.
+    installedInventoryItemId: Corresponds to the `INSTALLED_PACKAGE` inventory
+      item on the VM. This field displays the inventory items affected by this
+      vulnerability. If the vulnerability report was not updated after the VM
+      inventory update, these values might not display in VM inventory. For
+      some operating systems, this field might be empty.
+    upstreamFix: The upstream OS patch, packages or KB that fixes the
+      vulnerability.
+  """
+
+  availableInventoryItemId = _messages.StringField(1)
+  fixedCpeUri = _messages.StringField(2)
+  installedInventoryItemId = _messages.StringField(3)
+  upstreamFix = _messages.StringField(4)
 
 
 class WeekDayOfMonth(_messages.Message):

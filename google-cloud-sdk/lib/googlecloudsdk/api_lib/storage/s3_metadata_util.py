@@ -163,20 +163,21 @@ def get_metadata_dict_from_request_config(request_config):
     metadata['ACL'] = translate_predefined_acl_string_to_s3(
         request_config.predefined_acl_string)
 
-  if request_config.cache_control is not None:
-    metadata['CacheControl'] = request_config.cache_control
-  if request_config.content_disposition is not None:
-    metadata['ContentDisposition'] = request_config.content_disposition
-  if request_config.content_encoding is not None:
-    metadata['ContentEncoding'] = request_config.content_encoding
-  if request_config.content_language is not None:
-    metadata['ContentLanguage'] = request_config.content_language
-  if request_config.content_type is not None:
-    metadata['ContentType'] = request_config.content_type
-  if request_config.md5_hash is not None:
-    metadata['ContentMD5'] = request_config.md5_hash
-
-  if request_config.custom_metadata:
-    metadata['Metadata'] = request_config.custom_metadata
+  resource_args = request_config.resource_args
+  if resource_args:
+    if resource_args.cache_control is not None:
+      metadata['CacheControl'] = resource_args.cache_control
+    if resource_args.content_disposition is not None:
+      metadata['ContentDisposition'] = resource_args.content_disposition
+    if resource_args.content_encoding is not None:
+      metadata['ContentEncoding'] = resource_args.content_encoding
+    if resource_args.content_language is not None:
+      metadata['ContentLanguage'] = resource_args.content_language
+    if resource_args.content_type is not None:
+      metadata['ContentType'] = resource_args.content_type
+    if resource_args.md5_hash is not None:
+      metadata['ContentMD5'] = resource_args.md5_hash
+    if resource_args.custom_metadata:
+      metadata['Metadata'] = resource_args.custom_metadata
 
   return metadata

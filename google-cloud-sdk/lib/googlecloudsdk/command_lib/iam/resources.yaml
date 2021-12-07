@@ -212,6 +212,21 @@ workforce_pool_provider:
       and may not be specified.
   disable_auto_completers: false
 
+workforce_pool_subject:
+  name: workforce pool subject
+  collection: iam.locations.workforcePools.subjects
+  request_id_field: workforcePoolSubjectId
+  attributes:
+  - *wf_location
+  - *workforce_pool
+  - &workforce_pool_subject
+    parameter_name: subjectsId
+    attribute_name: subject
+    help: |
+      The ID to use for the workforce pool subject, which becomes the final component of the
+      resource name.
+  disable_auto_completers: false
+
 workforce_pool_provider_operation:
   name: workforce pool provider operation
   collection: iam.locations.workforcePools.providers.operations

@@ -875,7 +875,7 @@ class DatastreamV1alpha1(base_api.BaseApiClient):
           }
 
     def FetchStaticIps(self, request, global_params=None):
-      r"""The FetchStaticIps API call exposes the static ips used by Datastream. Typically, a request returns children data objects under a parent data object that's optionally supplied in the request.
+      r"""The FetchStaticIps API call exposes the static IP addresses used by Datastream.
 
       Args:
         request: (DatastreamProjectsLocationsFetchStaticIpsRequest) input message

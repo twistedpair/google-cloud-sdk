@@ -38,6 +38,20 @@ def AddConstraintArgToParser(parser):
       ))
 
 
+def AddCustomConstraintArgToParser(parser):
+  """Adds argument for the custom constraint name to the parser.
+
+  Args:
+    parser: ArgumentInterceptor, An argparse parser.
+  """
+  parser.add_argument(
+      'custom_constraint',
+      metavar='CUSTOM_CONSTRAINT',
+      help=(
+          'Name of the custom constraint.'
+      ))
+
+
 def AddValueArgToParser(parser):
   """Adds argument for a list of values to the parser.
 
@@ -77,3 +91,21 @@ def AddResourceFlagsToParser(parser):
       '--folder', metavar='FOLDER_ID', help='Folder ID.')
   common_args.ProjectArgument(
       help_text_to_overwrite='Project ID.').AddToParser(resource_group)
+
+
+def AddOrganizationResourceFlagsToParser(parser):
+  """Adds flag for the organization ID to the parser.
+
+  Adds --organization flag to the parser. The flag
+  is added as required.
+
+  Args:
+    parser: ArgumentInterceptor, An argparse parser.
+  """
+  parser.add_argument(
+      '--organization',
+      metavar='ORGANIZATION_ID',
+      required=True,
+      help=(
+          'Organization ID.'
+      ))

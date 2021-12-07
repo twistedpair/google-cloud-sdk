@@ -18,13 +18,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import operator
-
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.clouddeploy import client_util
 from googlecloudsdk.api_lib.clouddeploy import rollout
 from googlecloudsdk.command_lib.deploy import exceptions as cd_exceptions
-from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
 
 _ROLLOUT_COLLECTION = 'clouddeploy.projects.locations.deliveryPipelines.releases.rollouts'
@@ -36,6 +33,9 @@ DEPLOYED_ROLLOUT_FILTER_TEMPLATE = (
     'approvalState!="NEEDS_APPROVAL") AND state="SUCCEEDED" AND targetId="{}"')
 ROLLOUT_IN_TARGET_FILTER_TEMPLATE = 'targetId="{}"'
 ROLLOUT_ID_TEMPLATE = '{}-to-{}-{:04d}'
+WILDCARD_RELEASE_NAME_TEMPLATE = '{}/releases/-'
+SUCCEED_ROLLOUT_ORDERBY = 'DeployEndTime desc'
+PENDING_ROLLOUT_ORDERBY = 'CreateTime desc'
 
 
 def RolloutId(rollout_name_or_id):
@@ -55,7 +55,7 @@ def RolloutId(rollout_name_or_id):
   return rollout_id
 
 
-def ListPendingRollouts(releases, target_ref):
+def ListPendingRollouts(target_ref, pipeline_ref):
   """Lists the rollouts in PENDING_APPROVAL state for the releases associated with the specified target.
 
   The rollouts must be approvalState=NEEDS_APPROVAL and
@@ -63,50 +63,40 @@ def ListPendingRollouts(releases, target_ref):
   time.
 
   Args:
-    releases: releases objects.
-    target_ref: target object.
+    target_ref: protorpc.messages.Message, target object.
+    pipeline_ref: protorpc.messages.Message, pipeline object.
 
   Returns:
     a sorted list of rollouts.
   """
-  rollouts = []
   filter_str = PENDING_APPROVAL_FILTER_TEMPLATE.format(target_ref.Name())
-  for release in releases:
-    resp = rollout.RolloutClient().List(release.name, filter_str)
-    if resp:
-      rollouts.extend(resp.rollouts)
+  parent = WILDCARD_RELEASE_NAME_TEMPLATE.format(pipeline_ref.RelativeName())
 
-  return sorted(rollouts, key=operator.attrgetter('createTime'), reverse=True)
+  return rollout.RolloutClient().List(
+      release_name=parent,
+      filter_str=filter_str,
+      order_by=PENDING_ROLLOUT_ORDERBY).rollouts
 
 
-def GetSucceededRollout(releases, target_ref, index=0):
+def GetSucceededRollout(target_ref, pipeline_ref, limit=0):
   """Gets a successfully deployed rollouts for the releases associated with the specified target and index.
 
   Args:
-    releases: releases objects.
-    target_ref: target object.
-    index: the nth rollout in the list to be returned.
+    target_ref: protorpc.messages.Message, target object.
+    pipeline_ref: protorpc.messages.Message, pipeline object.
+    limit: int, the maximum number of `Rollout` objects to return.
 
   Returns:
     a rollout object or None if no rollouts in the target.
   """
-  rollouts = []
   filter_str = DEPLOYED_ROLLOUT_FILTER_TEMPLATE.format(target_ref.Name())
-  for release in releases:
-    resp = rollout.RolloutClient().List(release.name, filter_str)
-    if resp:
-      rollouts.extend(resp.rollouts)
+  parent = WILDCARD_RELEASE_NAME_TEMPLATE.format(pipeline_ref.RelativeName())
 
-  if rollouts:
-    if not 0 <= index < len(rollouts):
-      raise exceptions.Error(
-          'total number of rollouts for target {} is {}, index {} out of range.'
-          .format(target_ref.Name(), len(rollouts), index))
-
-    return sorted(
-        rollouts, key=operator.attrgetter('deployEndTime'), reverse=True)[index]
-
-  return None
+  return rollout.RolloutClient().List(
+      release_name=parent,
+      filter_str=filter_str,
+      order_by=SUCCEED_ROLLOUT_ORDERBY,
+      page_size=limit).rollouts
 
 
 def CreateRollout(release_ref,

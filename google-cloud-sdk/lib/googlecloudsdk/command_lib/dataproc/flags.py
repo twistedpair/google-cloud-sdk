@@ -375,6 +375,33 @@ def AddBatchResourceArg(parser, verb, api_version):
       required=True).AddToParser(parser)
 
 
+def AddSessionResourceArg(parser, verb, api_version):
+  """Adds session resource argument to parser."""
+
+  def SessionConfig():
+    return concepts.ResourceParameterAttributeConfig(
+        name='session',
+        help_text='Session ID.',
+    )
+
+  def GetSessionResourceSpec(api_version):
+    return concepts.ResourceSpec(
+        'dataproc.projects.locations.sessions',
+        api_version=api_version,
+        resource_name='session',
+        disable_auto_completers=True,
+        projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+        locationsId=_RegionAttributeConfig(),
+        sessionsId=SessionConfig(),
+    )
+
+  concept_parsers.ConceptParser.ForResource(
+      'session',
+      GetSessionResourceSpec(api_version),
+      'ID of the session to {0}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
 def OperationConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='operation',

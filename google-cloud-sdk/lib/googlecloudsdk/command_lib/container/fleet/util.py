@@ -18,6 +18,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+LIST_FORMAT = """
+    table(
+      displayName:sort=1,
+      name.segment(1):label=PROJECT,
+      uid
+    )
+"""
+
 
 def DefaultFleetID():
   """Returns 'default' to be used as a fallthrough hook in resources.yaml."""

@@ -2118,13 +2118,26 @@ class GoogleIdentityAccesscontextmanagerV1AccessPolicy(_messages.Message):
     parent: Required. The parent of this `AccessPolicy` in the Cloud Resource
       Hierarchy. Currently immutable once created. Format:
       `organizations/{organization_id}`
+    scopes: The scopes of a policy define which resources an ACM policy can
+      restrict, and where ACM resources can be referenced. For example, a
+      policy with scopes=["folders/123"] has the following behavior: - vpcsc
+      perimeters can only restrict projects within folders/123 - access levels
+      can only be referenced by resources within folders/123. If empty, there
+      are no limitations on which resources can be restricted by an ACM
+      policy, and there are no limitations on where ACM resources can be
+      referenced. Only one policy can include a given scope (attempting to
+      create a second policy which includes "folders/123" will result in an
+      error). Currently, scopes cannot be modified after a policy is created.
+      Currently, policies can only have a single scope. Format: list of
+      `folders/{folder_number}` or `projects/{project_number}`
     title: Required. Human readable title. Does not affect behavior.
   """
 
   etag = _messages.StringField(1)
   name = _messages.StringField(2)
   parent = _messages.StringField(3)
-  title = _messages.StringField(4)
+  scopes = _messages.StringField(4, repeated=True)
+  title = _messages.StringField(5)
 
 
 class GoogleIdentityAccesscontextmanagerV1ApiOperation(_messages.Message):
@@ -2742,7 +2755,7 @@ class IamPolicyAnalysisOutputConfig(_messages.Message):
 
 
 class IamPolicyAnalysisQuery(_messages.Message):
-  r"""## IAM policy analysis query message.
+  r"""IAM policy analysis query message.
 
   Fields:
     accessSelector: Optional. Specifies roles or permissions for analysis.
@@ -3561,8 +3574,8 @@ class QueryAssetsRequest(_messages.Message):
       sql/enabling-standard-sql).
     timeout: Optional. Specifies the maximum amount of time that the client is
       willing to wait for the query to complete. By default, this limit is 5
-      min for the first query, and 10 seconds for the following queries. If
-      the query is complete, the `done` field in the `QueryAssetsResponse` is
+      min for the first query, and 1 minute for the following queries. If the
+      query is complete, the `done` field in the `QueryAssetsResponse` is
       true, otherwise false. Like BigQuery [jobs.query API](https://cloud.goog
       le.com/bigquery/docs/reference/rest/v2/jobs/query#queryrequest) The call
       is not guaranteed to wait for the specified timeout; it typically

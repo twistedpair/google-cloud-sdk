@@ -77,6 +77,7 @@ SUBCOMMAND_ALLOWLIST = {
     'dags': ('2.0.0', '3.0.0'),
     'delete_dag': ('1.10.1', '2.0.0'),
     'kerberos': (None, '3.0.0'),
+    'kubernetes': ('2.1.4', '3.0.0'),
     'list_dag_runs': ('1.10.2', '2.0.0'),
     'list_dags': (None, '2.0.0'),
     'list_tasks': (None, '2.0.0'),

@@ -103,10 +103,11 @@ def AddEgressSettingsFlag(parser):
 def AddSecurityLevelFlag(parser):
   security_level_arg = base.ChoiceArgument(
       '--security-level',
+      default='secure-always',
       choices=[x.lower() for x in SECURITY_LEVEL],
       help_str='Security level controls whether a function\'s URL supports '
-      'HTTPS only or both HTTP and HTTPS. By default, `secure-optional` will'
-      ' be used, meaning both HTTP and HTTPS are supported.')
+      'HTTPS only or both HTTP and HTTPS. By default, `secure-always` will'
+      ' be used, meaning only HTTPS is supported.')
   security_level_arg.AddToParser(parser)
 
 

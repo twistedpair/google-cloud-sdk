@@ -1478,6 +1478,69 @@
         }
       }
     },
+    "CreateBitbucketServerConfigOperationMetadata": {
+      "id": "CreateBitbucketServerConfigOperationMetadata",
+      "description": "Metadata for `CreateBitbucketServerConfig` operation.",
+      "type": "object",
+      "properties": {
+        "bitbucketServerConfig": {
+          "description": "The resource name of the BitbucketServerConfig to be created. Format: `projects\/{project}\/locations\/{location}\/bitbucketServerConfigs\/{id}`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Time the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "completeTime": {
+          "description": "Time the operation was completed.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "UpdateBitbucketServerConfigOperationMetadata": {
+      "id": "UpdateBitbucketServerConfigOperationMetadata",
+      "description": "Metadata for `UpdateBitbucketServerConfig` operation.",
+      "type": "object",
+      "properties": {
+        "bitbucketServerConfig": {
+          "description": "The resource name of the BitbucketServerConfig to be updated. Format: `projects\/{project}\/locations\/{location}\/bitbucketServerConfigs\/{id}`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Time the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "completeTime": {
+          "description": "Time the operation was completed.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "DeleteBitbucketServerConfigOperationMetadata": {
+      "id": "DeleteBitbucketServerConfigOperationMetadata",
+      "description": "Metadata for `DeleteBitbucketServerConfig` operation.",
+      "type": "object",
+      "properties": {
+        "bitbucketServerConfig": {
+          "description": "The resource name of the BitbucketServerConfig to be deleted. Format: `projects\/{project}\/locations\/{location}\/bitbucketServerConfigs\/{id}`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Time the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "completeTime": {
+          "description": "Time the operation was completed.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
     "HTTPDelivery": {
       "id": "HTTPDelivery",
       "description": "HTTPDelivery is the delivery configuration for an HTTP notification.",

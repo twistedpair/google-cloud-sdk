@@ -54,10 +54,17 @@ def BuildAutoscaling(args, messages):
 def BuildShareSettings(messages, args):
   """Build ShareSettings object from parameters."""
   if (args.share_setting == 'projects') and (not args.share_with):
-    msg = '[--share_setting=projects] must be specified with [--share_with]'
-    raise exceptions.RequiredArgumentException('--share_with', msg)
+    msg = '[--share-setting=projects] must be specified with [--share-with]'
+    raise exceptions.RequiredArgumentException('--share-with', msg)
+  if (args.share_setting == 'organization') and args.share_with:
+    msg = 'List of shared projects must be empty for organization share type'
+    raise exceptions.InvalidArgumentException('--share-with', msg)
   if args.share_setting == 'projects':
     return messages.ShareSettings(
         shareType=(
             messages.ShareSettings.ShareTypeValueValuesEnum.SPECIFIC_PROJECTS),
         projects=args.share_with)
+  elif args.share_setting == 'organization':
+    return messages.ShareSettings(
+        shareType=(
+            messages.ShareSettings.ShareTypeValueValuesEnum.ORGANIZATION))

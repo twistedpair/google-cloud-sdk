@@ -24,6 +24,7 @@ from googlecloudsdk.api_lib.util import exceptions
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.composer.flags import ENVIRONMENT_SIZE_ALPHA
 from googlecloudsdk.command_lib.composer.flags import ENVIRONMENT_SIZE_BETA
+from googlecloudsdk.command_lib.composer.flags import ENVIRONMENT_SIZE_GA
 
 
 def GetService(release_track=base.ReleaseTrack.GA):
@@ -84,6 +85,9 @@ class CreateEnvironmentFlags():
     web_server_ipv4_cidr: IPv4 CIDR range to use for Web Server network.
     cloud_sql_ipv4_cidr: IPv4 CIDR range to use for Cloud SQL network.
     composer_network_ipv4_cidr: IPv4 CIDR range to use for Composer network.
+    connection_subnetwork: str or None, the Compute Engine subnetwork from which
+      to reserve the IP address for internal connections, specified as relative
+      resource name.
     web_server_access_control: [{string: string}], List of IP ranges with
       descriptions to allow access to the web server.
     cloud_sql_machine_type: str or None, Cloud SQL machine type used by the
@@ -156,6 +160,7 @@ class CreateEnvironmentFlags():
                web_server_ipv4_cidr=None,
                cloud_sql_ipv4_cidr=None,
                composer_network_ipv4_cidr=None,
+               connection_subnetwork=None,
                web_server_access_control=None,
                cloud_sql_machine_type=None,
                web_server_machine_type=None,
@@ -206,6 +211,7 @@ class CreateEnvironmentFlags():
     self.web_server_ipv4_cidr = web_server_ipv4_cidr
     self.cloud_sql_ipv4_cidr = cloud_sql_ipv4_cidr
     self.composer_network_ipv4_cidr = composer_network_ipv4_cidr
+    self.connection_subnetwork = connection_subnetwork
     self.web_server_access_control = web_server_access_control
     self.cloud_sql_machine_type = cloud_sql_machine_type
     self.web_server_machine_type = web_server_machine_type
@@ -291,7 +297,10 @@ def _CreateConfig(messages, flags, is_composer_v1):
     config.encryptionConfig = messages.EncryptionConfig(
         kmsKeyName=flags.kms_key)
   if flags.environment_size:
-    if flags.release_track == base.ReleaseTrack.BETA:
+    if flags.release_track == base.ReleaseTrack.GA:
+      config.environmentSize = ENVIRONMENT_SIZE_GA.GetEnumForChoice(
+          flags.environment_size)
+    elif flags.release_track == base.ReleaseTrack.BETA:
       config.environmentSize = ENVIRONMENT_SIZE_BETA.GetEnumForChoice(
           flags.environment_size)
     elif flags.release_track == base.ReleaseTrack.ALPHA:
@@ -353,6 +362,9 @@ def _CreateConfig(messages, flags, is_composer_v1):
     if flags.privately_used_public_ips is not None:
       private_env_config_args[
           'enablePrivatelyUsedPublicIps'] = flags.privately_used_public_ips
+    if flags.connection_subnetwork is not None:
+      private_env_config_args[
+          'cloudComposerConnectionSubnetwork'] = flags.connection_subnetwork
     config.privateEnvironmentConfig = messages.PrivateEnvironmentConfig(
         **private_env_config_args)
 

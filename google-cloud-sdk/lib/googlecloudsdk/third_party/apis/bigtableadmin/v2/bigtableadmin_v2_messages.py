@@ -610,7 +610,7 @@ class BigtableadminProjectsInstancesClustersPartialUpdateClusterRequest(_message
     name: The unique name of the cluster. Values are of the form
       `projects/{project}/instances/{instance}/clusters/a-z*`.
     updateMask: Required. The subset of Cluster fields which should be
-      replaced. Must be explicitly set.
+      replaced.
   """
 
   cluster = _messages.MessageField('Cluster', 1)
@@ -1084,8 +1084,8 @@ class Cluster(_messages.Message):
       should be of the form `projects/{project}/locations/{zone}`.
     name: The unique name of the cluster. Values are of the form
       `projects/{project}/instances/{instance}/clusters/a-z*`.
-    serveNodes: Required. The number of nodes allocated to this cluster. More
-      nodes enable higher throughput and more consistent performance.
+    serveNodes: The number of nodes allocated to this cluster. More nodes
+      enable higher throughput and more consistent performance.
     state: Output only. The current state of the cluster.
   """
 
@@ -1151,11 +1151,7 @@ class ClusterConfig(_messages.Message):
   r"""Configuration for a cluster.
 
   Fields:
-    clusterAutoscalingConfig: Autoscaling configuration for this cluster. Note
-      that when creating or updating a cluster, exactly one of serve_nodes or
-      cluster_autoscaling_config must be set. If serve_nodes is set, then
-      serve_nodes is fixed and autoscaling is turned off. If
-      cluster_autoscaling_config is set, then serve_nodes will be autoscaled.
+    clusterAutoscalingConfig: Autoscaling configuration for this cluster.
   """
 
   clusterAutoscalingConfig = _messages.MessageField('ClusterAutoscalingConfig', 1)
@@ -1542,30 +1538,6 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
-
-
-class FailureTrace(_messages.Message):
-  r"""Added to the error payload.
-
-  Fields:
-    frames: A Frame attribute.
-  """
-
-  frames = _messages.MessageField('Frame', 1, repeated=True)
-
-
-class Frame(_messages.Message):
-  r"""A Frame object.
-
-  Fields:
-    targetName: A string attribute.
-    workflowGuid: A string attribute.
-    zoneId: A string attribute.
-  """
-
-  targetName = _messages.StringField(1)
-  workflowGuid = _messages.StringField(2)
-  zoneId = _messages.StringField(3)
 
 
 class GcRule(_messages.Message):
@@ -2256,7 +2228,7 @@ class PartialUpdateClusterMetadata(_messages.Message):
   Fields:
     finishTime: The time at which the operation failed or was completed
       successfully.
-    originalRequest: A PartialUpdateClusterRequest attribute.
+    originalRequest: The original request for PartialUpdateCluster.
     requestTime: The time at which the original request was received.
   """
 
@@ -2272,7 +2244,7 @@ class PartialUpdateClusterRequest(_messages.Message):
     cluster: Required. The Cluster which contains the partial updates to be
       applied, subject to the update_mask.
     updateMask: Required. The subset of Cluster fields which should be
-      replaced. Must be explicitly set.
+      replaced.
   """
 
   cluster = _messages.MessageField('Cluster', 1)
@@ -2785,22 +2757,6 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
-
-
-class UndeleteTableMetadata(_messages.Message):
-  r"""Metadata type for the operation returned by
-  google.bigtable.admin.v2.BigtableTableAdmin.UndeleteTable.
-
-  Fields:
-    endTime: If set, the time at which this operation finished or was
-      cancelled.
-    name: The name of the table being restored.
-    startTime: The time at which this operation started.
-  """
-
-  endTime = _messages.StringField(1)
-  name = _messages.StringField(2)
-  startTime = _messages.StringField(3)
 
 
 class Union(_messages.Message):

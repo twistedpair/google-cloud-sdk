@@ -273,14 +273,16 @@
             "Transformation is queued.",
             "Transformation is in running state.",
             "Transformation has been completed.",
-            "Transformation has been cancelled."
+            "Transformation has been cancelled.",
+            "Transformation is in cancelling state."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "QUEUED",
             "RUNNING",
             "COMPLETED",
-            "CANCELLED"
+            "CANCELLED",
+            "CANCELLING"
           ]
         },
         "invocationId": {
@@ -1032,11 +1034,11 @@
           "type": "string",
           "format": "google-datetime"
         },
-        "items": {
-          "description": "List of asset types and their configurations within this catalog.",
-          "type": "array",
-          "items": {
-            "$ref": "Item"
+        "assetTypeConfigs": {
+          "description": "A map between asset type name and its configuration within this catalog.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "AssetTypeConfig"
           }
         },
         "labels": {
@@ -1048,8 +1050,8 @@
         }
       }
     },
-    "Item": {
-      "id": "Item",
+    "AssetTypeConfig": {
+      "id": "AssetTypeConfig",
       "description": "Catalog search item that includes the asset type and it's configuration.",
       "type": "object",
       "properties": {
@@ -1058,7 +1060,7 @@
           "type": "string"
         },
         "indexedFieldConfigs": {
-          "description": "A map between user-defined word and IndexedFieldConfig, where the word is indexed with the value configured by IndexedFieldConfig and customers can use the word as search operator.",
+          "description": "A map between user-defined key and IndexedFieldConfig, where the key is indexed with the value configured by IndexedFieldConfig and customers can use the key as search operator if the expression is nonempty. If the expression in CatalogIndexedFieldConfig is empty, the key must be \"\".",
           "type": "object",
           "additionalProperties": {
             "$ref": "CatalogIndexedFieldConfig"
@@ -1068,11 +1070,11 @@
     },
     "CatalogIndexedFieldConfig": {
       "id": "CatalogIndexedFieldConfig",
-      "description": "CatalogIndexedFieldConfig configured the asset type's metadata fields that need to be included in catalog's search result.",
+      "description": "CatalogIndexedFieldConfig configures the asset type's metadata fields that need to be included in catalog's search result.",
       "type": "object",
       "properties": {
         "expression": {
-          "description": "The expression that points to the indexed field in the asset. If it's empty, the default is metadata.word, where the word is the search operator that this field is mapped to.",
+          "description": "The expression that points to the indexed field in the asset. If it's empty, the default is metadata.key, and the key will not be used as search operator.",
           "type": "string"
         }
       }

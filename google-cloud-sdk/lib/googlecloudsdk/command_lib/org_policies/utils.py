@@ -28,6 +28,7 @@ from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import files
 
 CONSTRAINT_PREFIX = 'constraints/'
+CUSTOM_CONSTRAINT_PREFIX = 'customConstraints/'
 
 
 def GetConstraintFromArgs(args):
@@ -62,6 +63,22 @@ def GetConstraintNameFromArgs(args):
     return args.constraint[len(CONSTRAINT_PREFIX):]
 
   return args.constraint
+
+
+def GetCustomConstraintNameFromArgs(args):
+  """Returns the custom constraint name from the user-specified arguments.
+
+  This handles both cases in which the user specifies and does not specify the
+  custom constraint prefix.
+
+  Args:
+    args: argparse.Namespace, An object that contains the values for the
+      arguments specified in the Args method.
+  """
+  if args.custom_constraint.startswith(CUSTOM_CONSTRAINT_PREFIX):
+    return args.custom_constraint[len(CUSTOM_CONSTRAINT_PREFIX):]
+
+  return args.custom_constraint
 
 
 def GetResourceFromArgs(args):
@@ -102,6 +119,23 @@ def GetPolicyNameFromArgs(args):
   return '{}/policies/{}'.format(resource, constraint_name)
 
 
+def GetCustomConstraintFromArgs(args):
+  """Returns the CustomConstraint from the user-specified arguments.
+
+  A CustomConstraint has the following syntax:
+  organizations/{organization_id}/customConstraints/{constraint_name}.
+
+  Args:
+    args: argparse.Namespace, An object that contains the values for the
+      arguments specified in the Args method.
+  """
+  organization_id = args.organization
+  constraint_name = GetCustomConstraintNameFromArgs(args)
+
+  return 'organizations/{}/customConstraints/{}'.format(organization_id,
+                                                        constraint_name)
+
+
 def _GetPolicyMessageName(release_track):
   """Returns the organization policy message name based on the release_track."""
   api_version = org_policy_service.GetApiVersion(release_track).capitalize()
@@ -126,6 +160,32 @@ def GetMessageFromFile(filepath, release_track):
 
   org_policy_messages = org_policy_service.OrgPolicyMessages(release_track)
   message = getattr(org_policy_messages, _GetPolicyMessageName(release_track))
+  try:
+    return encoding.JsonToMessage(message, json_str)
+  except Exception as e:
+    raise exceptions.InvalidInputError('Unable to parse file [{}]: {}.'.format(
+        filepath, e))
+
+
+def GetCustomConstraintMessageFromFile(filepath, release_track):
+  """Returns a message populated from the JSON or YAML file on the specified filepath.
+
+  Args:
+    filepath: str, A local path to an object specification in JSON or YAML
+      format.
+    release_track: calliope.base.ReleaseTrack, Release track of the command.
+  """
+  file_contents = files.ReadFileContents(filepath)
+
+  try:
+    yaml_obj = yaml.load(file_contents)
+    json_str = json.dumps(yaml_obj)
+  except yaml.YAMLParseError:
+    json_str = file_contents
+
+  org_policy_messages = org_policy_service.OrgPolicyMessages(release_track)
+  message = getattr(org_policy_messages,
+                    'GoogleCloudOrgpolicyV2CustomConstraint')
   try:
     return encoding.JsonToMessage(message, json_str)
   except Exception as e:

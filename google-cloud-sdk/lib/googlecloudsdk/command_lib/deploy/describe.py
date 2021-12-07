@@ -51,11 +51,20 @@ def DescribeTarget(target_ref, pipeline_id):
   """
   target_obj = target_util.GetTarget(target_ref)
   output = {'Target': target_obj}
-  releases, current_rollout = target_util.GetReleasesAndCurrentRollout(
-      target_ref, pipeline_id)
+  target_dict = target_ref.AsDict()
+  pipeline_ref = resources.REGISTRY.Parse(
+      None,
+      collection='clouddeploy.projects.locations.deliveryPipelines',
+      params={
+          'projectsId': target_dict['projectsId'],
+          'locationsId': target_dict['locationsId'],
+          'deliveryPipelinesId': pipeline_id
+      })
+
+  current_rollout = target_util.GetCurrentRollout(target_ref, pipeline_ref)
   output = SetCurrentReleaseAndRollout(current_rollout, output)
   if target_obj.requireApproval:
-    output = ListPendingApprovals(releases, target_ref, output)
+    output = ListPendingApprovals(target_ref, pipeline_ref, output)
 
   return output
 
@@ -83,24 +92,24 @@ def SetCurrentReleaseAndRollout(current_rollout, output):
   return output
 
 
-def ListPendingApprovals(releases, target_ref, output):
+def ListPendingApprovals(target_ref, pipeline_ref, output):
   """Lists the rollouts in pending approval state for the specified target.
 
   Args:
-    releases: releases associated with the target.
     target_ref: protorpc.messages.Message, target object.
+    pipeline_ref: protorpc.messages.Message, pipeline object.
     output: dict[str:str], a directory holds the output content.
 
   Returns:
     A content directory.
 
   """
-  if releases:
-    try:
-      pending_approvals = rollout_util.ListPendingRollouts(releases, target_ref)
-      if pending_approvals:
-        output['Pending Approvals'] = [ro.name for ro in pending_approvals]
-    except apitools_exceptions.HttpError as error:
-      log.debug('Failed to list pending approvals: ' + error.content)
+  try:
+    pending_approvals = rollout_util.ListPendingRollouts(
+        target_ref, pipeline_ref)
+    if pending_approvals:
+      output['Pending Approvals'] = [ro.name for ro in pending_approvals]
+  except apitools_exceptions.HttpError as error:
+    log.debug('Failed to list pending approvals: ' + error.content)
 
   return output

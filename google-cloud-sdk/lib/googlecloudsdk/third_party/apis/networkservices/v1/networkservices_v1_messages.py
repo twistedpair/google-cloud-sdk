@@ -343,7 +343,7 @@ class CDNPolicyCacheKeyPolicy(_messages.Message):
   Fields:
     excludeHost: Optional. If true, requests to different hosts will be cached
       separately. Note: this should only be enabled if hosts share the same
-      origin and content Removing the host from the cache key may
+      origin and content. Removing the host from the cache key may
       inadvertently result in different objects being cached than intended,
       depending on which route the first user matched.
     excludeQueryString: Optional. If true, exclude query string parameters

@@ -238,6 +238,22 @@ class GoogleCloudMlV1AutomatedStoppingConfigMedianAutomatedStoppingConfig(_messa
   useElapsedTime = _messages.BooleanField(1)
 
 
+class GoogleCloudMlV1BlurBaselineConfig(_messages.Message):
+  r"""Config for blur baseline. When enabled, a linear path from the maximally
+  blurred image to the input image is created. Using a blurred baseline
+  instead of zero (black image) is motivated by the BlurIG approach explained
+  here: https://arxiv.org/abs/2004.03383
+
+  Fields:
+    maxBlurSigma: The standard deviation of the blur kernel for the blurred
+      baseline. The same blurring parameter is used for both the height and
+      the width dimension. If not set, the method defaults to the zero (i.e.
+      black for images) baseline.
+  """
+
+  maxBlurSigma = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+
+
 class GoogleCloudMlV1BuiltInAlgorithmOutput(_messages.Message):
   r"""Represents output related to a built-in algorithm Job.
 
@@ -1078,6 +1094,11 @@ class GoogleCloudMlV1IntegratedGradientsAttribution(_messages.Message):
   details: https://arxiv.org/abs/1703.01365
 
   Fields:
+    blurBaselineConfig: Config for IG with blur baseline. When enabled, a
+      linear path from the maximally blurred image to the input image is
+      created. Using a blurred baseline instead of zero (black image) is
+      motivated by the BlurIG approach explained here:
+      https://arxiv.org/abs/2004.03383
     numIntegralSteps: Number of steps for approximating the path integral. A
       good value to start is 50 and gradually increase until the sum to diff
       property is met within the desired error range.
@@ -1088,8 +1109,9 @@ class GoogleCloudMlV1IntegratedGradientsAttribution(_messages.Message):
       https://arxiv.org/pdf/1706.03825.pdf
   """
 
-  numIntegralSteps = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  smoothGradConfig = _messages.MessageField('GoogleCloudMlV1SmoothGradConfig', 2)
+  blurBaselineConfig = _messages.MessageField('GoogleCloudMlV1BlurBaselineConfig', 1)
+  numIntegralSteps = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  smoothGradConfig = _messages.MessageField('GoogleCloudMlV1SmoothGradConfig', 3)
 
 
 class GoogleCloudMlV1Job(_messages.Message):
@@ -3324,6 +3346,11 @@ class GoogleCloudMlV1XraiAttribution(_messages.Message):
   natural image inputs.
 
   Fields:
+    blurBaselineConfig: Config for XRAI with blur baseline. When enabled, a
+      linear path from the maximally blurred image to the input image is
+      created. Using a blurred baseline instead of zero (black image) is
+      motivated by the BlurIG approach explained here:
+      https://arxiv.org/abs/2004.03383
     numIntegralSteps: Number of steps for approximating the path integral. A
       good value to start is 50 and gradually increase until the sum to diff
       property is met within the desired error range.
@@ -3334,8 +3361,9 @@ class GoogleCloudMlV1XraiAttribution(_messages.Message):
       https://arxiv.org/pdf/1706.03825.pdf
   """
 
-  numIntegralSteps = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  smoothGradConfig = _messages.MessageField('GoogleCloudMlV1SmoothGradConfig', 2)
+  blurBaselineConfig = _messages.MessageField('GoogleCloudMlV1BlurBaselineConfig', 1)
+  numIntegralSteps = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  smoothGradConfig = _messages.MessageField('GoogleCloudMlV1SmoothGradConfig', 3)
 
 
 class GoogleIamV1AuditConfig(_messages.Message):

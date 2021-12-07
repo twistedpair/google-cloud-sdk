@@ -531,11 +531,12 @@ class EnrolledService(_messages.Message):
       Compute Engine * Cloud Dataflow * Cloud DLP * Cloud EKM * Cloud HSM *
       Cloud Identity and Access Management * Cloud Logging * Cloud Pub/Sub *
       Cloud Spanner * Cloud SQL * Cloud Storage * Google Kubernetes Engine *
-      Organization Policy Serivice * Persistent Disk * Speaker ID Note: These
-      values are supported as input for legacy purposes, but will not be
-      returned from the API. * all * ga-only * appengine.googleapis.com *
-      bigquery.googleapis.com * bigtable.googleapis.com *
-      container.googleapis.com * cloudkms.googleapis.com *
+      Organization Policy Serivice * Persistent Disk * Resource Manager *
+      Speaker ID Note: These values are supported as input for legacy
+      purposes, but will not be returned from the API. * all * ga-only *
+      appengine.googleapis.com * bigquery.googleapis.com *
+      bigtable.googleapis.com * container.googleapis.com *
+      cloudkms.googleapis.com * cloudresourcemanager.googleapis.com *
       cloudsql.googleapis.com * compute.googleapis.com *
       dataflow.googleapis.com * dlp.googleapis.com * iam.googleapis.com *
       logging.googleapis.com * orgpolicy.googleapis.com *

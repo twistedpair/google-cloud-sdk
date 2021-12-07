@@ -355,6 +355,179 @@ class BuilderConfig(_messages.Message):
   id = _messages.StringField(1)
 
 
+class CVSS(_messages.Message):
+  r"""Common Vulnerability Scoring System. For details, see
+  https://www.first.org/cvss/specification-document This is a message we will
+  try to use for storing multiple versions of CVSS. The intention is that as
+  new versions of CVSS scores get added, we will be able to modify this
+  message rather than adding new protos for each new version of the score.
+
+  Enums:
+    AttackComplexityValueValuesEnum:
+    AttackVectorValueValuesEnum: Base Metrics Represents the intrinsic
+      characteristics of a vulnerability that are constant over time and
+      across user environments.
+    AuthenticationValueValuesEnum:
+    AvailabilityImpactValueValuesEnum:
+    ConfidentialityImpactValueValuesEnum:
+    IntegrityImpactValueValuesEnum:
+    PrivilegesRequiredValueValuesEnum:
+    ScopeValueValuesEnum:
+    UserInteractionValueValuesEnum:
+
+  Fields:
+    attackComplexity: A AttackComplexityValueValuesEnum attribute.
+    attackVector: Base Metrics Represents the intrinsic characteristics of a
+      vulnerability that are constant over time and across user environments.
+    authentication: A AuthenticationValueValuesEnum attribute.
+    availabilityImpact: A AvailabilityImpactValueValuesEnum attribute.
+    baseScore: The base score is a function of the base metric scores.
+    confidentialityImpact: A ConfidentialityImpactValueValuesEnum attribute.
+    exploitabilityScore: A number attribute.
+    impactScore: A number attribute.
+    integrityImpact: A IntegrityImpactValueValuesEnum attribute.
+    privilegesRequired: A PrivilegesRequiredValueValuesEnum attribute.
+    scope: A ScopeValueValuesEnum attribute.
+    userInteraction: A UserInteractionValueValuesEnum attribute.
+  """
+
+  class AttackComplexityValueValuesEnum(_messages.Enum):
+    r"""AttackComplexityValueValuesEnum enum type.
+
+    Values:
+      ATTACK_COMPLEXITY_UNSPECIFIED: <no description>
+      ATTACK_COMPLEXITY_LOW: <no description>
+      ATTACK_COMPLEXITY_HIGH: <no description>
+    """
+    ATTACK_COMPLEXITY_UNSPECIFIED = 0
+    ATTACK_COMPLEXITY_LOW = 1
+    ATTACK_COMPLEXITY_HIGH = 2
+
+  class AttackVectorValueValuesEnum(_messages.Enum):
+    r"""Base Metrics Represents the intrinsic characteristics of a
+    vulnerability that are constant over time and across user environments.
+
+    Values:
+      ATTACK_VECTOR_UNSPECIFIED: <no description>
+      ATTACK_VECTOR_NETWORK: <no description>
+      ATTACK_VECTOR_ADJACENT: <no description>
+      ATTACK_VECTOR_LOCAL: <no description>
+      ATTACK_VECTOR_PHYSICAL: <no description>
+    """
+    ATTACK_VECTOR_UNSPECIFIED = 0
+    ATTACK_VECTOR_NETWORK = 1
+    ATTACK_VECTOR_ADJACENT = 2
+    ATTACK_VECTOR_LOCAL = 3
+    ATTACK_VECTOR_PHYSICAL = 4
+
+  class AuthenticationValueValuesEnum(_messages.Enum):
+    r"""AuthenticationValueValuesEnum enum type.
+
+    Values:
+      AUTHENTICATION_UNSPECIFIED: <no description>
+      AUTHENTICATION_MULTIPLE: <no description>
+      AUTHENTICATION_SINGLE: <no description>
+      AUTHENTICATION_NONE: <no description>
+    """
+    AUTHENTICATION_UNSPECIFIED = 0
+    AUTHENTICATION_MULTIPLE = 1
+    AUTHENTICATION_SINGLE = 2
+    AUTHENTICATION_NONE = 3
+
+  class AvailabilityImpactValueValuesEnum(_messages.Enum):
+    r"""AvailabilityImpactValueValuesEnum enum type.
+
+    Values:
+      IMPACT_UNSPECIFIED: <no description>
+      IMPACT_HIGH: <no description>
+      IMPACT_LOW: <no description>
+      IMPACT_NONE: <no description>
+    """
+    IMPACT_UNSPECIFIED = 0
+    IMPACT_HIGH = 1
+    IMPACT_LOW = 2
+    IMPACT_NONE = 3
+
+  class ConfidentialityImpactValueValuesEnum(_messages.Enum):
+    r"""ConfidentialityImpactValueValuesEnum enum type.
+
+    Values:
+      IMPACT_UNSPECIFIED: <no description>
+      IMPACT_HIGH: <no description>
+      IMPACT_LOW: <no description>
+      IMPACT_NONE: <no description>
+    """
+    IMPACT_UNSPECIFIED = 0
+    IMPACT_HIGH = 1
+    IMPACT_LOW = 2
+    IMPACT_NONE = 3
+
+  class IntegrityImpactValueValuesEnum(_messages.Enum):
+    r"""IntegrityImpactValueValuesEnum enum type.
+
+    Values:
+      IMPACT_UNSPECIFIED: <no description>
+      IMPACT_HIGH: <no description>
+      IMPACT_LOW: <no description>
+      IMPACT_NONE: <no description>
+    """
+    IMPACT_UNSPECIFIED = 0
+    IMPACT_HIGH = 1
+    IMPACT_LOW = 2
+    IMPACT_NONE = 3
+
+  class PrivilegesRequiredValueValuesEnum(_messages.Enum):
+    r"""PrivilegesRequiredValueValuesEnum enum type.
+
+    Values:
+      PRIVILEGES_REQUIRED_UNSPECIFIED: <no description>
+      PRIVILEGES_REQUIRED_NONE: <no description>
+      PRIVILEGES_REQUIRED_LOW: <no description>
+      PRIVILEGES_REQUIRED_HIGH: <no description>
+    """
+    PRIVILEGES_REQUIRED_UNSPECIFIED = 0
+    PRIVILEGES_REQUIRED_NONE = 1
+    PRIVILEGES_REQUIRED_LOW = 2
+    PRIVILEGES_REQUIRED_HIGH = 3
+
+  class ScopeValueValuesEnum(_messages.Enum):
+    r"""ScopeValueValuesEnum enum type.
+
+    Values:
+      SCOPE_UNSPECIFIED: <no description>
+      SCOPE_UNCHANGED: <no description>
+      SCOPE_CHANGED: <no description>
+    """
+    SCOPE_UNSPECIFIED = 0
+    SCOPE_UNCHANGED = 1
+    SCOPE_CHANGED = 2
+
+  class UserInteractionValueValuesEnum(_messages.Enum):
+    r"""UserInteractionValueValuesEnum enum type.
+
+    Values:
+      USER_INTERACTION_UNSPECIFIED: <no description>
+      USER_INTERACTION_NONE: <no description>
+      USER_INTERACTION_REQUIRED: <no description>
+    """
+    USER_INTERACTION_UNSPECIFIED = 0
+    USER_INTERACTION_NONE = 1
+    USER_INTERACTION_REQUIRED = 2
+
+  attackComplexity = _messages.EnumField('AttackComplexityValueValuesEnum', 1)
+  attackVector = _messages.EnumField('AttackVectorValueValuesEnum', 2)
+  authentication = _messages.EnumField('AuthenticationValueValuesEnum', 3)
+  availabilityImpact = _messages.EnumField('AvailabilityImpactValueValuesEnum', 4)
+  baseScore = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+  confidentialityImpact = _messages.EnumField('ConfidentialityImpactValueValuesEnum', 6)
+  exploitabilityScore = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
+  impactScore = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
+  integrityImpact = _messages.EnumField('IntegrityImpactValueValuesEnum', 9)
+  privilegesRequired = _messages.EnumField('PrivilegesRequiredValueValuesEnum', 10)
+  scope = _messages.EnumField('ScopeValueValuesEnum', 11)
+  userInteraction = _messages.EnumField('UserInteractionValueValuesEnum', 12)
+
+
 class CVSSv3(_messages.Message):
   r"""Common Vulnerability Scoring System version 3. For details, see
   https://www.first.org/cvss/specification-document
@@ -506,10 +679,6 @@ class CVSSv3(_messages.Message):
   privilegesRequired = _messages.EnumField('PrivilegesRequiredValueValuesEnum', 9)
   scope = _messages.EnumField('ScopeValueValuesEnum', 10)
   userInteraction = _messages.EnumField('UserInteractionValueValuesEnum', 11)
-
-
-class CancelOperationRequest(_messages.Message):
-  r"""The request message for Operations.CancelOperation."""
 
 
 class Category(_messages.Message):
@@ -1797,55 +1966,6 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Volume(_messages.Message):
   path = _messages.StringField(2)
 
 
-class ContaineranalysisOperationsCancelRequest(_messages.Message):
-  r"""A ContaineranalysisOperationsCancelRequest object.
-
-  Fields:
-    cancelOperationRequest: A CancelOperationRequest resource to be passed as
-      the request body.
-    name: The name of the operation resource to be cancelled.
-  """
-
-  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class ContaineranalysisOperationsDeleteRequest(_messages.Message):
-  r"""A ContaineranalysisOperationsDeleteRequest object.
-
-  Fields:
-    name: The name of the operation resource to be deleted.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class ContaineranalysisOperationsGetRequest(_messages.Message):
-  r"""A ContaineranalysisOperationsGetRequest object.
-
-  Fields:
-    name: The name of the operation resource.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class ContaineranalysisOperationsListRequest(_messages.Message):
-  r"""A ContaineranalysisOperationsListRequest object.
-
-  Fields:
-    filter: The standard list filter.
-    name: The name of the operation's parent resource.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
-  """
-
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-
-
 class ContaineranalysisProjectsNotesBatchCreateRequest(_messages.Message):
   r"""A ContaineranalysisProjectsNotesBatchCreateRequest object.
 
@@ -2864,19 +2984,6 @@ class ListOccurrencesResponse(_messages.Message):
   occurrences = _messages.MessageField('Occurrence', 2, repeated=True)
 
 
-class ListOperationsResponse(_messages.Message):
-  r"""The response message for Operations.ListOperations.
-
-  Fields:
-    nextPageToken: The standard List next-page token.
-    operations: A list of operations that matches the specified filter in the
-      request.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  operations = _messages.MessageField('Operation', 2, repeated=True)
-
-
 class Location(_messages.Message):
   r"""An occurrence of a particular package installation found within a
   system's filesystem. E.g., glibc was found in `/var/lib/dpkg/status`.
@@ -3147,114 +3254,6 @@ class Occurrence(_messages.Message):
   updateTime = _messages.StringField(16)
   upgrade = _messages.MessageField('UpgradeOccurrence', 17)
   vulnerability = _messages.MessageField('VulnerabilityOccurrence', 18)
-
-
-class Operation(_messages.Message):
-  r"""This resource represents a long-running operation that is the result of
-  a network API call.
-
-  Messages:
-    MetadataValue: Service-specific metadata associated with the operation. It
-      typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata. Any method
-      that returns a long-running operation should document the metadata type,
-      if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`. If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource. For other
-      methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name. For example, if the original method name is
-      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
-
-  Fields:
-    done: If the value is `false`, it means the operation is still in
-      progress. If `true`, the operation is completed, and either `error` or
-      `response` is available.
-    error: The error result of the operation in case of failure or
-      cancellation.
-    metadata: Service-specific metadata associated with the operation. It
-      typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata. Any method
-      that returns a long-running operation should document the metadata type,
-      if any.
-    name: The server-assigned name, which is only unique within the same
-      service that originally returns it. If you use the default HTTP mapping,
-      the `name` should be a resource name ending with
-      `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
-      original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`. If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource. For other
-      methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name. For example, if the original method name is
-      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class MetadataValue(_messages.Message):
-    r"""Service-specific metadata associated with the operation. It typically
-    contains progress information and common metadata such as create time.
-    Some services might not provide such metadata. Any method that returns a
-    long-running operation should document the metadata type, if any.
-
-    Messages:
-      AdditionalProperty: An additional property for a MetadataValue object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a MetadataValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource. For other
-    methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name. For example, if the original method name is
-    `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
-
-    Messages:
-      AdditionalProperty: An additional property for a ResponseValue object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ResponseValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  done = _messages.BooleanField(1)
-  error = _messages.MessageField('Status', 2)
-  metadata = _messages.MessageField('MetadataValue', 3)
-  name = _messages.StringField(4)
-  response = _messages.MessageField('ResponseValue', 5)
 
 
 class PackageIssue(_messages.Message):
@@ -4268,6 +4267,7 @@ class VulnerabilityOccurrence(_messages.Message):
     cvssScore: Output only. The CVSS score of this vulnerability. CVSS score
       is on a scale of 0 - 10 where 0 indicates low severity and 10 indicates
       high severity.
+    cvssv3: The cvss v3 score for the vulnerability.
     effectiveSeverity: The distro assigned severity for this vulnerability
       when it is available, otherwise this is the note provider assigned
       severity. When there are multiple PackageIssues for this vulnerability,
@@ -4338,14 +4338,15 @@ class VulnerabilityOccurrence(_messages.Message):
     CRITICAL = 5
 
   cvssScore = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  effectiveSeverity = _messages.EnumField('EffectiveSeverityValueValuesEnum', 2)
-  fixAvailable = _messages.BooleanField(3)
-  longDescription = _messages.StringField(4)
-  packageIssue = _messages.MessageField('PackageIssue', 5, repeated=True)
-  relatedUrls = _messages.MessageField('RelatedUrl', 6, repeated=True)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 7)
-  shortDescription = _messages.StringField(8)
-  type = _messages.StringField(9)
+  cvssv3 = _messages.MessageField('CVSS', 2)
+  effectiveSeverity = _messages.EnumField('EffectiveSeverityValueValuesEnum', 3)
+  fixAvailable = _messages.BooleanField(4)
+  longDescription = _messages.StringField(5)
+  packageIssue = _messages.MessageField('PackageIssue', 6, repeated=True)
+  relatedUrls = _messages.MessageField('RelatedUrl', 7, repeated=True)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 8)
+  shortDescription = _messages.StringField(9)
+  type = _messages.StringField(10)
 
 
 class VulnerabilityOccurrencesSummary(_messages.Message):

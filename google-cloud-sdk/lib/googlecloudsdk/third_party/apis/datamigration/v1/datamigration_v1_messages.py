@@ -186,6 +186,7 @@ class CloudSqlSettings(_messages.Message):
       storage capacity. If the available storage repeatedly falls below the
       threshold size, Cloud SQL continues to add storage until it reaches the
       maximum of 30 TB.
+    cmekKeyName: The KMS key name used for the csql instance.
     collation: The Cloud SQL default instance level collation.
     dataDiskSizeGb: The storage capacity available to the database, in GB. The
       minimum (and default) size is 10GB.
@@ -326,19 +327,20 @@ class CloudSqlSettings(_messages.Message):
 
   activationPolicy = _messages.EnumField('ActivationPolicyValueValuesEnum', 1)
   autoStorageIncrease = _messages.BooleanField(2)
-  collation = _messages.StringField(3)
-  dataDiskSizeGb = _messages.IntegerField(4)
-  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 5)
-  databaseFlags = _messages.MessageField('DatabaseFlagsValue', 6)
-  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 7)
-  ipConfig = _messages.MessageField('SqlIpConfig', 8)
-  rootPassword = _messages.StringField(9)
-  rootPasswordSet = _messages.BooleanField(10)
-  sourceId = _messages.StringField(11)
-  storageAutoResizeLimit = _messages.IntegerField(12)
-  tier = _messages.StringField(13)
-  userLabels = _messages.MessageField('UserLabelsValue', 14)
-  zone = _messages.StringField(15)
+  cmekKeyName = _messages.StringField(3)
+  collation = _messages.StringField(4)
+  dataDiskSizeGb = _messages.IntegerField(5)
+  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 6)
+  databaseFlags = _messages.MessageField('DatabaseFlagsValue', 7)
+  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 8)
+  ipConfig = _messages.MessageField('SqlIpConfig', 9)
+  rootPassword = _messages.StringField(10)
+  rootPasswordSet = _messages.BooleanField(11)
+  sourceId = _messages.StringField(12)
+  storageAutoResizeLimit = _messages.IntegerField(13)
+  tier = _messages.StringField(14)
+  userLabels = _messages.MessageField('UserLabelsValue', 15)
+  zone = _messages.StringField(16)
 
 
 class ConnectionProfile(_messages.Message):

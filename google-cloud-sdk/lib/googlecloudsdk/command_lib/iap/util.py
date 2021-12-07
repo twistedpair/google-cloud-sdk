@@ -428,3 +428,16 @@ def ParseIapSettingsResource(release_track, args):
 
   raise iap_exc.InvalidIapIamResourceError(
       'Could not parse IAP settings resource.')
+
+
+def ParseIapGatewayResource(release_track):
+  """Parse an IAP gateway resource from the input arguments.
+
+  Args:
+    release_track: base.ReleaseTrack, release track of command.
+
+  Returns:
+    The specified IapGatewayResource
+  """
+  project = properties.VALUES.core.project.GetOrFail()
+  return iap_api.IAPGateway(release_track, project)

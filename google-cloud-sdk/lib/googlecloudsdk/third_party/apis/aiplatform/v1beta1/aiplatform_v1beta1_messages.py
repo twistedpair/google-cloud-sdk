@@ -958,7 +958,10 @@ class AiplatformProjectsLocationsEndpointsCreateRequest(_messages.Message):
     endpointId: Immutable. The ID to use for endpoint, which will become the
       final component of the endpoint resource name. If not provided, Vertex
       AI will generate a value for this ID. This value should be 1-10
-      characters, and valid characters are /[0-9]/.
+      characters, and valid characters are /[0-9]/. When using HTTP/JSON, this
+      field is populated based on a query string argument, such as
+      `?endpoint_id=12345`. This is the fallback for fields that are not
+      included in either the URI or the body.
     googleCloudAiplatformV1beta1Endpoint: A
       GoogleCloudAiplatformV1beta1Endpoint resource to be passed as the
       request body.
@@ -5637,6 +5640,22 @@ class GoogleCloudAiplatformInternalBatchReadFeatureValuesResponse(_messages.Mess
   r"""Response message for FeaturestoreService.BatchReadFeatureValues."""
 
 
+class GoogleCloudAiplatformInternalBlurBaselineConfig(_messages.Message):
+  r"""Config for blur baseline. When enabled, a linear path from the maximally
+  blurred image to the input image is created. Using a blurred baseline
+  instead of zero (black image) is motivated by the BlurIG approach explained
+  here: https://arxiv.org/abs/2004.03383
+
+  Fields:
+    maxBlurSigma: The standard deviation of the blur kernel for the blurred
+      baseline. The same blurring parameter is used for both the height and
+      the width dimension. If not set, the method defaults to the zero (i.e.
+      black for images) baseline.
+  """
+
+  maxBlurSigma = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+
+
 class GoogleCloudAiplatformInternalCalculateSavedQueryStatsOperationMetadata(_messages.Message):
   r"""Runtime operation information for
   DatasetService.CalculateSavedQueryStats.
@@ -5981,8 +6000,8 @@ class GoogleCloudAiplatformInternalDeployedModel(_messages.Message):
 
 
 class GoogleCloudAiplatformInternalDocumentCriteria(_messages.Message):
-  r"""Describes the triggering criteria of the human in the loop configuration
-  for document AI.
+  r"""LINT.IfChange Describes the triggering criteria of the human in the loop
+  configuration for document AI.
 
   Enums:
     CriteriaTypeValueValuesEnum: The current enabled criteria.
@@ -7162,9 +7181,77 @@ class GoogleCloudAiplatformInternalHumanInTheLoop(_messages.Message):
   updateTime = _messages.StringField(23)
 
 
+class GoogleCloudAiplatformInternalHumanInTheLoopEntitlement(_messages.Message):
+  r"""A HumanInTheLoopEntitlement represents a purchase of Human-in-the-Loop
+  (HITL) product made by a customer on the GCP Marketplace. It allows to the
+  purchased HITL product and to ensure the appropriate billing events occur.
+  Next id: 10
+
+  Enums:
+    StateValueValuesEnum: State of the human in the loop entitlement.
+    TypeValueValuesEnum: TaskType of the entitlement.
+
+  Fields:
+    account: The resource name of the GCP Marketplace account that this
+      entitlement is based on. (
+    displayName: Human-friendly display name of the entitlement. This can be
+      updated regardless of state.
+    name: Output only. The resource name of the human in the loop entitlement.
+      Format: projects/{project}/locations/{location}/humanInTheLoopEntitlemen
+      ts/{human_in_the_loop_entitlement}
+    planId: The identifier of the plan of the product that was procured. Plans
+      represent different pricing models for the product. Required if the
+      product has plans.
+    productId: The identifier of the procured product published by the seller
+      to Marketplace.
+    providerId: The identifier of the service provider that this entitlement
+      was created against. Each service provider is assigned a unique provider
+      value when they onboard with GCP platform.
+    specialistPool: The resource name of the specialist pool that this
+      entitlement is associated with.
+    state: State of the human in the loop entitlement.
+    type: TaskType of the entitlement.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of the human in the loop entitlement.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified.
+      UNINITIALIZED: Uninitialized
+      ACTIVATED: Activated.
+      DEACTIVATED: Deactivated due to plan ended/changed/cancelled/deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    UNINITIALIZED = 1
+    ACTIVATED = 2
+    DEACTIVATED = 3
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""TaskType of the entitlement.
+
+    Values:
+      TASK_TYPE_UNSPECIFIED: Unspecified.
+      DOCUMENT_ANNOTATION: The product is specialized in document annotation
+        tasks.
+    """
+    TASK_TYPE_UNSPECIFIED = 0
+    DOCUMENT_ANNOTATION = 1
+
+  account = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  name = _messages.StringField(3)
+  planId = _messages.StringField(4)
+  productId = _messages.StringField(5)
+  providerId = _messages.StringField(6)
+  specialistPool = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  type = _messages.EnumField('TypeValueValuesEnum', 9)
+
+
 class GoogleCloudAiplatformInternalHumanInTheLoopRandomSampling(_messages.Message):
-  r"""Describe the random sampling parameters for triggering human in the
-  loop.
+  r"""LINT.IfChange Describe the random sampling parameters for triggering
+  human in the loop.
 
   Fields:
     rate: Sampling rate: (0,1]
@@ -7188,14 +7275,14 @@ class GoogleCloudAiplatformInternalImportDataResponse(_messages.Message):
 
 
 class GoogleCloudAiplatformInternalImportFeatureValuesOperationMetadata(_messages.Message):
-  r"""Details of operations that perform import feature values.
+  r"""Details of operations that perform import Feature values.
 
   Fields:
-    genericMetadata: Operation metadata for Featurestore import feature
+    genericMetadata: Operation metadata for Featurestore import Feature
       values.
     importedEntityCount: Number of entities that have been imported by the
       operation.
-    importedFeatureValueCount: Number of feature values that have been
+    importedFeatureValueCount: Number of Feature values that have been
       imported by the operation.
     invalidRowCount: The number of rows in input source that weren't imported
       due to either * Not having any featureValues. * Having a null entityId.
@@ -7234,6 +7321,11 @@ class GoogleCloudAiplatformInternalIntegratedGradientsAttribution(_messages.Mess
   for more details: https://arxiv.org/abs/1703.01365
 
   Fields:
+    blurBaselineConfig: Config for IG with blur baseline. When enabled, a
+      linear path from the maximally blurred image to the input image is
+      created. Using a blurred baseline instead of zero (black image) is
+      motivated by the BlurIG approach explained here:
+      https://arxiv.org/abs/2004.03383
     smoothGradConfig: Config for SmoothGrad approximation of gradients. When
       enabled, the gradients are approximated by averaging the gradients from
       noisy samples in the vicinity of the inputs. Adding noise can help
@@ -7245,8 +7337,9 @@ class GoogleCloudAiplatformInternalIntegratedGradientsAttribution(_messages.Mess
       its value is [1, 100], inclusively.
   """
 
-  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformInternalSmoothGradConfig', 1)
-  stepCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  blurBaselineConfig = _messages.MessageField('GoogleCloudAiplatformInternalBlurBaselineConfig', 1)
+  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformInternalSmoothGradConfig', 2)
+  stepCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformInternalMachineSpec(_messages.Message):
@@ -7553,6 +7646,9 @@ class GoogleCloudAiplatformInternalSpecialistPool(_messages.Message):
       default case.
 
   Fields:
+    crowdComputePoolId: Output only. The corresponding pool id in
+      CrowdCompute. This can be used to composite URL to CrowdCompute UI with
+      the pattern of: datacompute.google.com/[w|cm|r]/[crowd_compute_pool_id]
     displayName: Required. The user-defined name of the SpecialistPool. The
       name can be up to 128 characters long and can be consist of any UTF-8
       characters. This field should be unique on project-level.
@@ -7578,13 +7674,14 @@ class GoogleCloudAiplatformInternalSpecialistPool(_messages.Message):
     USE_CASE_UNSPECIFIED = 0
     TRANSLATION_HUB = 1
 
-  displayName = _messages.StringField(1)
-  name = _messages.StringField(2)
-  pendingDataLabelingJobs = _messages.StringField(3, repeated=True)
-  specialistManagerEmails = _messages.StringField(4, repeated=True)
-  specialistManagersCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  specialistWorkerEmails = _messages.StringField(6, repeated=True)
-  useCase = _messages.EnumField('UseCaseValueValuesEnum', 7)
+  crowdComputePoolId = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  name = _messages.StringField(3)
+  pendingDataLabelingJobs = _messages.StringField(4, repeated=True)
+  specialistManagerEmails = _messages.StringField(5, repeated=True)
+  specialistManagersCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  specialistWorkerEmails = _messages.StringField(7, repeated=True)
+  useCase = _messages.EnumField('UseCaseValueValuesEnum', 8)
 
 
 class GoogleCloudAiplatformInternalUndeployModelOperationMetadata(_messages.Message):
@@ -7664,6 +7761,11 @@ class GoogleCloudAiplatformInternalXraiAttribution(_messages.Message):
   https://arxiv.org/abs/1906.02825 Supported only by image Models.
 
   Fields:
+    blurBaselineConfig: Config for XRAI with blur baseline. When enabled, a
+      linear path from the maximally blurred image to the input image is
+      created. Using a blurred baseline instead of zero (black image) is
+      motivated by the BlurIG approach explained here:
+      https://arxiv.org/abs/2004.03383
     smoothGradConfig: Config for SmoothGrad approximation of gradients. When
       enabled, the gradients are approximated by averaging the gradients from
       noisy samples in the vicinity of the inputs. Adding noise can help
@@ -7675,8 +7777,9 @@ class GoogleCloudAiplatformInternalXraiAttribution(_messages.Message):
       of its value is [1, 100], inclusively.
   """
 
-  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformInternalSmoothGradConfig', 1)
-  stepCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  blurBaselineConfig = _messages.MessageField('GoogleCloudAiplatformInternalBlurBaselineConfig', 1)
+  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformInternalSmoothGradConfig', 2)
+  stepCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformUiAnnotationSpecStats(_messages.Message):
@@ -7888,6 +7991,22 @@ class GoogleCloudAiplatformUiBigQuerySource(_messages.Message):
   """
 
   inputUri = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformUiBlurBaselineConfig(_messages.Message):
+  r"""Config for blur baseline. When enabled, a linear path from the maximally
+  blurred image to the input image is created. Using a blurred baseline
+  instead of zero (black image) is motivated by the BlurIG approach explained
+  here: https://arxiv.org/abs/2004.03383
+
+  Fields:
+    maxBlurSigma: The standard deviation of the blur kernel for the blurred
+      baseline. The same blurring parameter is used for both the height and
+      the width dimension. If not set, the method defaults to the zero (i.e.
+      black for images) baseline.
+  """
+
+  maxBlurSigma = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudAiplatformUiCalculateSavedQueryStatsOperationMetadata(_messages.Message):
@@ -9369,20 +9488,20 @@ class GoogleCloudAiplatformUiImportDataResponse(_messages.Message):
 
 
 class GoogleCloudAiplatformUiImportFeatureValuesOperationMetadata(_messages.Message):
-  r"""Details of operations that perform import feature values.
+  r"""Details of operations that perform import Feature values.
 
   Fields:
-    genericMetadata: Operation metadata for Featurestore import feature
+    genericMetadata: Operation metadata for Featurestore import Feature
       values.
     importedEntityCount: Number of entities that have been imported by the
       operation.
-    importedFeatureValueCount: Number of feature values that have been
+    importedFeatureValueCount: Number of Feature values that have been
       imported by the operation.
     invalidRowCount: The number of rows in input source that weren't imported
       due to either * Not having any featureValues. * Having a null entityId.
       * Having a null timestamp. * Not being parsable (applicable for CSV
       sources).
-    sourceUris: The source URI from where feature values are imported.
+    sourceUris: The source URI from where Feature values are imported.
     workerCount: The number of workers used to run the import operation.
   """
 
@@ -9419,6 +9538,11 @@ class GoogleCloudAiplatformUiIntegratedGradientsAttribution(_messages.Message):
   for more details: https://arxiv.org/abs/1703.01365
 
   Fields:
+    blurBaselineConfig: Config for IG with blur baseline. When enabled, a
+      linear path from the maximally blurred image to the input image is
+      created. Using a blurred baseline instead of zero (black image) is
+      motivated by the BlurIG approach explained here:
+      https://arxiv.org/abs/2004.03383
     smoothGradConfig: Config for SmoothGrad approximation of gradients. When
       enabled, the gradients are approximated by averaging the gradients from
       noisy samples in the vicinity of the inputs. Adding noise can help
@@ -9430,8 +9554,9 @@ class GoogleCloudAiplatformUiIntegratedGradientsAttribution(_messages.Message):
       its value is [1, 100], inclusively.
   """
 
-  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformUiSmoothGradConfig', 1)
-  stepCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  blurBaselineConfig = _messages.MessageField('GoogleCloudAiplatformUiBlurBaselineConfig', 1)
+  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformUiSmoothGradConfig', 2)
+  stepCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformUiMachineSpec(_messages.Message):
@@ -10072,18 +10197,23 @@ class GoogleCloudAiplatformUiNumericStatsHistogramBucket(_messages.Message):
 
 
 class GoogleCloudAiplatformUiPrivateEndpoints(_messages.Message):
-  r"""PrivateEndpoints is used to provide paths for users to send requests via
-  private services access.
+  r"""PrivateEndpoints proto is used to provide paths for users to send
+  requests privately. To send request via private service access, use
+  predict_http_uri, explain_http_uri or health_http_uri. To send request via
+  private service connect, use service_attachment.
 
   Fields:
     explainHttpUri: Output only. Http(s) path to send explain requests.
     healthHttpUri: Output only. Http(s) path to send health check requests.
     predictHttpUri: Output only. Http(s) path to send prediction requests.
+    serviceAttachment: Output only. The name of the service attachment
+      resource. Populated if private service connect is enabled.
   """
 
   explainHttpUri = _messages.StringField(1)
   healthHttpUri = _messages.StringField(2)
   predictHttpUri = _messages.StringField(3)
+  serviceAttachment = _messages.StringField(4)
 
 
 class GoogleCloudAiplatformUiPurgeArtifactsMetadata(_messages.Message):
@@ -10849,6 +10979,9 @@ class GoogleCloudAiplatformUiSpecialistPool(_messages.Message):
   workers handle the jobs using CrowdCompute console.
 
   Fields:
+    crowdComputePoolId: Output only. The corresponding pool id in
+      CrowdCompute. This can be used to composite URL to CrowdCompute UI with
+      the pattern of: datacompute.google.com/[w|cm|r]/[crowd_compute_pool_id]
     displayName: Required. The user-defined name of the SpecialistPool. The
       name can be up to 128 characters long and can be consist of any UTF-8
       characters. This field should be unique on project-level.
@@ -10865,13 +10998,14 @@ class GoogleCloudAiplatformUiSpecialistPool(_messages.Message):
       SpecialistPool.
   """
 
-  displayName = _messages.StringField(1)
-  name = _messages.StringField(2)
-  pendingDataLabelingJobObjects = _messages.MessageField('GoogleCloudAiplatformUiDataLabelingJobRef', 3, repeated=True)
-  pendingDataLabelingJobs = _messages.StringField(4, repeated=True)
-  specialistManagerEmails = _messages.StringField(5, repeated=True)
-  specialistManagersCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  specialistWorkerEmails = _messages.StringField(7, repeated=True)
+  crowdComputePoolId = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  name = _messages.StringField(3)
+  pendingDataLabelingJobObjects = _messages.MessageField('GoogleCloudAiplatformUiDataLabelingJobRef', 4, repeated=True)
+  pendingDataLabelingJobs = _messages.StringField(5, repeated=True)
+  specialistManagerEmails = _messages.StringField(6, repeated=True)
+  specialistManagersCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  specialistWorkerEmails = _messages.StringField(8, repeated=True)
 
 
 class GoogleCloudAiplatformUiSuggestTrialsMetadata(_messages.Message):
@@ -11297,6 +11431,11 @@ class GoogleCloudAiplatformUiXraiAttribution(_messages.Message):
   https://arxiv.org/abs/1906.02825 Supported only by image Models.
 
   Fields:
+    blurBaselineConfig: Config for XRAI with blur baseline. When enabled, a
+      linear path from the maximally blurred image to the input image is
+      created. Using a blurred baseline instead of zero (black image) is
+      motivated by the BlurIG approach explained here:
+      https://arxiv.org/abs/2004.03383
     smoothGradConfig: Config for SmoothGrad approximation of gradients. When
       enabled, the gradients are approximated by averaging the gradients from
       noisy samples in the vicinity of the inputs. Adding noise can help
@@ -11308,8 +11447,9 @@ class GoogleCloudAiplatformUiXraiAttribution(_messages.Message):
       of its value is [1, 100], inclusively.
   """
 
-  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformUiSmoothGradConfig', 1)
-  stepCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  blurBaselineConfig = _messages.MessageField('GoogleCloudAiplatformUiBlurBaselineConfig', 1)
+  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformUiSmoothGradConfig', 2)
+  stepCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1AutomaticResources(_messages.Message):
@@ -11434,6 +11574,22 @@ class GoogleCloudAiplatformV1BatchReadFeatureValuesOperationMetadata(_messages.M
 
 class GoogleCloudAiplatformV1BatchReadFeatureValuesResponse(_messages.Message):
   r"""Response message for FeaturestoreService.BatchReadFeatureValues."""
+
+
+class GoogleCloudAiplatformV1BlurBaselineConfig(_messages.Message):
+  r"""Config for blur baseline. When enabled, a linear path from the maximally
+  blurred image to the input image is created. Using a blurred baseline
+  instead of zero (black image) is motivated by the BlurIG approach explained
+  here: https://arxiv.org/abs/2004.03383
+
+  Fields:
+    maxBlurSigma: The standard deviation of the blur kernel for the blurred
+      baseline. The same blurring parameter is used for both the height and
+      the width dimension. If not set, the method defaults to the zero (i.e.
+      black for images) baseline.
+  """
+
+  maxBlurSigma = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudAiplatformV1CheckTrialEarlyStoppingStateMetatdata(_messages.Message):
@@ -11613,15 +11769,20 @@ class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
       `projects/12345/global/networks/myVPC`.
       [Format](/compute/docs/reference/rest/v1/networks/insert) is of the form
       `projects/{project}/global/networks/{network}`. Where {project} is a
-      project number, as in `12345`, and {network} is a network name. Private
-      services access must already be configured for the network. If left
-      unspecified, the job is not peered with any network.
+      project number, as in `12345`, and {network} is a network name. To
+      specify this field, you must have already [configured VPC Network
+      Peering for Vertex AI](https://cloud.google.com/vertex-
+      ai/docs/general/vpc-peering). If this field is left unspecified, the job
+      is not peered with any network.
     scheduling: Scheduling options for a CustomJob.
     serviceAccount: Specifies the service account for workload run-as account.
       Users submitting jobs must have act-as permission on this run-as
       account. If unspecified, the [Vertex AI Custom Code Service
       Agent](https://cloud.google.com/vertex-ai/docs/general/access-
       control#service-agents) for the CustomJob's project is used.
+    tensorboard: Optional. The name of a Vertex AI Tensorboard resource to
+      which this CustomJob will upload Tensorboard logs. Format:
+      `projects/{project}/locations/{location}/tensorboards/{tensorboard}`
     workerPoolSpecs: Required. The spec of the worker pools including machine
       type and Docker image. All worker pools except the first one are
       optional and can be skipped by providing an empty value.
@@ -11632,7 +11793,8 @@ class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
   network = _messages.StringField(3)
   scheduling = _messages.MessageField('GoogleCloudAiplatformV1Scheduling', 4)
   serviceAccount = _messages.StringField(5)
-  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1WorkerPoolSpec', 6, repeated=True)
+  tensorboard = _messages.StringField(6)
+  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1WorkerPoolSpec', 7, repeated=True)
 
 
 class GoogleCloudAiplatformV1DedicatedResources(_messages.Message):
@@ -12658,14 +12820,14 @@ class GoogleCloudAiplatformV1ImportDataResponse(_messages.Message):
 
 
 class GoogleCloudAiplatformV1ImportFeatureValuesOperationMetadata(_messages.Message):
-  r"""Details of operations that perform import feature values.
+  r"""Details of operations that perform import Feature values.
 
   Fields:
-    genericMetadata: Operation metadata for Featurestore import feature
+    genericMetadata: Operation metadata for Featurestore import Feature
       values.
     importedEntityCount: Number of entities that have been imported by the
       operation.
-    importedFeatureValueCount: Number of feature values that have been
+    importedFeatureValueCount: Number of Feature values that have been
       imported by the operation.
     invalidRowCount: The number of rows in input source that weren't imported
       due to either * Not having any featureValues. * Having a null entityId.
@@ -12700,14 +12862,20 @@ class GoogleCloudAiplatformV1ImportFeatureValuesResponse(_messages.Message):
 
 class GoogleCloudAiplatformV1IndexPrivateEndpoints(_messages.Message):
   r"""IndexPrivateEndpoints proto is used to provide paths for users to send
-  requests via private services access.
+  requests via private endpoints (e.g. private service access, private service
+  connect). To send request via private service access, use
+  match_grpc_address. To send request via private service connect, use
+  service_attachment.
 
   Fields:
     matchGrpcAddress: Output only. The ip address used to send match gRPC
       requests.
+    serviceAttachment: Output only. The name of the service attachment
+      resource. Populated if private service connect is enabled.
   """
 
   matchGrpcAddress = _messages.StringField(1)
+  serviceAttachment = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1IntegratedGradientsAttribution(_messages.Message):
@@ -12716,6 +12884,11 @@ class GoogleCloudAiplatformV1IntegratedGradientsAttribution(_messages.Message):
   for more details: https://arxiv.org/abs/1703.01365
 
   Fields:
+    blurBaselineConfig: Config for IG with blur baseline. When enabled, a
+      linear path from the maximally blurred image to the input image is
+      created. Using a blurred baseline instead of zero (black image) is
+      motivated by the BlurIG approach explained here:
+      https://arxiv.org/abs/2004.03383
     smoothGradConfig: Config for SmoothGrad approximation of gradients. When
       enabled, the gradients are approximated by averaging the gradients from
       noisy samples in the vicinity of the inputs. Adding noise can help
@@ -12727,8 +12900,9 @@ class GoogleCloudAiplatformV1IntegratedGradientsAttribution(_messages.Message):
       its value is [1, 100], inclusively.
   """
 
-  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformV1SmoothGradConfig', 1)
-  stepCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  blurBaselineConfig = _messages.MessageField('GoogleCloudAiplatformV1BlurBaselineConfig', 1)
+  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformV1SmoothGradConfig', 2)
+  stepCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1MachineSpec(_messages.Message):
@@ -13033,6 +13207,30 @@ class GoogleCloudAiplatformV1MigrateResourceResponse(_messages.Message):
   model = _messages.StringField(3)
 
 
+class GoogleCloudAiplatformV1MutateDeployedIndexOperationMetadata(_messages.Message):
+  r"""Runtime operation information for
+  IndexEndpointService.MutateDeployedIndex.
+
+  Fields:
+    deployedIndexId: The unique index id specified by user
+    genericMetadata: The operation generic information.
+  """
+
+  deployedIndexId = _messages.StringField(1)
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 2)
+
+
+class GoogleCloudAiplatformV1MutateDeployedIndexResponse(_messages.Message):
+  r"""Response message for IndexEndpointService.MutateDeployedIndex.
+
+  Fields:
+    deployedIndex: The DeployedIndex that had been updated in the
+      IndexEndpoint.
+  """
+
+  deployedIndex = _messages.MessageField('GoogleCloudAiplatformV1DeployedIndex', 1)
+
+
 class GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadata(_messages.Message):
   r"""Runtime operation metadata with regard to Matching Engine Index.
 
@@ -13121,18 +13319,23 @@ class GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadataRecordError(_
 
 
 class GoogleCloudAiplatformV1PrivateEndpoints(_messages.Message):
-  r"""PrivateEndpoints is used to provide paths for users to send requests via
-  private services access.
+  r"""PrivateEndpoints proto is used to provide paths for users to send
+  requests privately. To send request via private service access, use
+  predict_http_uri, explain_http_uri or health_http_uri. To send request via
+  private service connect, use service_attachment.
 
   Fields:
     explainHttpUri: Output only. Http(s) path to send explain requests.
     healthHttpUri: Output only. Http(s) path to send health check requests.
     predictHttpUri: Output only. Http(s) path to send prediction requests.
+    serviceAttachment: Output only. The name of the service attachment
+      resource. Populated if private service connect is enabled.
   """
 
   explainHttpUri = _messages.StringField(1)
   healthHttpUri = _messages.StringField(2)
   predictHttpUri = _messages.StringField(3)
+  serviceAttachment = _messages.StringField(4)
 
 
 class GoogleCloudAiplatformV1PurgeArtifactsMetadata(_messages.Message):
@@ -16364,6 +16567,11 @@ class GoogleCloudAiplatformV1XraiAttribution(_messages.Message):
   https://arxiv.org/abs/1906.02825 Supported only by image Models.
 
   Fields:
+    blurBaselineConfig: Config for XRAI with blur baseline. When enabled, a
+      linear path from the maximally blurred image to the input image is
+      created. Using a blurred baseline instead of zero (black image) is
+      motivated by the BlurIG approach explained here:
+      https://arxiv.org/abs/2004.03383
     smoothGradConfig: Config for SmoothGrad approximation of gradients. When
       enabled, the gradients are approximated by averaging the gradients from
       noisy samples in the vicinity of the inputs. Adding noise can help
@@ -16375,8 +16583,9 @@ class GoogleCloudAiplatformV1XraiAttribution(_messages.Message):
       of its value is [1, 100], inclusively.
   """
 
-  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformV1SmoothGradConfig', 1)
-  stepCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  blurBaselineConfig = _messages.MessageField('GoogleCloudAiplatformV1BlurBaselineConfig', 1)
+  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformV1SmoothGradConfig', 2)
+  stepCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1alpha1AutomaticResources(_messages.Message):
@@ -17081,14 +17290,20 @@ class GoogleCloudAiplatformV1alpha1ImportDataResponse(_messages.Message):
 
 class GoogleCloudAiplatformV1alpha1IndexPrivateEndpoints(_messages.Message):
   r"""IndexPrivateEndpoints proto is used to provide paths for users to send
-  requests via private services access.
+  requests via private endpoints (e.g. private service access, private service
+  connect). To send request via private service access, use
+  match_grpc_address. To send request via private service connect, use
+  service_attachment.
 
   Fields:
     matchGrpcAddress: Output only. The ip address used to send match gRPC
       requests.
+    serviceAttachment: Output only. The name of the service attachment
+      resource. Populated if private service connect is enabled.
   """
 
   matchGrpcAddress = _messages.StringField(1)
+  serviceAttachment = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1alpha1MachineSpec(_messages.Message):
@@ -17387,6 +17602,30 @@ class GoogleCloudAiplatformV1alpha1MigrateResourceResponse(_messages.Message):
   dataset = _messages.StringField(1)
   migratableResource = _messages.MessageField('GoogleCloudAiplatformV1alpha1MigratableResource', 2)
   model = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1alpha1MutateDeployedIndexOperationMetadata(_messages.Message):
+  r"""Runtime operation information for
+  IndexEndpointService.MutateDeployedIndex.
+
+  Fields:
+    deployedIndexId: The unique index id specified by user
+    genericMetadata: The operation generic information.
+  """
+
+  deployedIndexId = _messages.StringField(1)
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 2)
+
+
+class GoogleCloudAiplatformV1alpha1MutateDeployedIndexResponse(_messages.Message):
+  r"""Response message for IndexEndpointService.MutateDeployedIndex.
+
+  Fields:
+    deployedIndex: The DeployedIndex that had been updated in the
+      IndexEndpoint.
+  """
+
+  deployedIndex = _messages.MessageField('GoogleCloudAiplatformV1alpha1DeployedIndex', 1)
 
 
 class GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadata(_messages.Message):
@@ -18999,9 +19238,10 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJob(_messages.Message):
     manualBatchTuningParameters: Immutable. Parameters configuring the batch
       behavior. Currently only applicable when dedicated_resources are used
       (in other cases Vertex AI does the tuning itself).
-    model: Required. The name of the Model that produces the predictions via
+    model: The name of the Model resoure that produces the predictions via
       this job, must share the same ancestor Location. Starting this job has
       no impact on any existing deployments of the Model and their resources.
+      Exactly one of model and unmanaged_container_model must be set.
     modelParameters: The parameters that govern the predictions. The schema of
       the parameters may be specified via the Model's PredictSchemata's
       parameters_schema_uri.
@@ -19022,6 +19262,9 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJob(_messages.Message):
     startTime: Output only. Time when the BatchPredictionJob for the first
       time entered the `JOB_STATE_RUNNING` state.
     state: Output only. The detailed state of the job.
+    unmanagedContainerModel: Contains model information necessary to perform
+      batch prediction without requiring uploading to model registry. Exactly
+      one of model and unmanaged_container_model must be set.
     updateTime: Output only. Time when the BatchPredictionJob was most
       recently updated.
   """
@@ -19104,7 +19347,8 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJob(_messages.Message):
   resourcesConsumed = _messages.MessageField('GoogleCloudAiplatformV1beta1ResourcesConsumed', 19)
   startTime = _messages.StringField(20)
   state = _messages.EnumField('StateValueValuesEnum', 21)
-  updateTime = _messages.StringField(22)
+  unmanagedContainerModel = _messages.MessageField('GoogleCloudAiplatformV1beta1UnmanagedContainerModel', 22)
+  updateTime = _messages.StringField(23)
 
 
 class GoogleCloudAiplatformV1beta1BatchPredictionJobInputConfig(_messages.Message):
@@ -19312,6 +19556,22 @@ class GoogleCloudAiplatformV1beta1BigQuerySource(_messages.Message):
   """
 
   inputUri = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1BlurBaselineConfig(_messages.Message):
+  r"""Config for blur baseline. When enabled, a linear path from the maximally
+  blurred image to the input image is created. Using a blurred baseline
+  instead of zero (black image) is motivated by the BlurIG approach explained
+  here: https://arxiv.org/abs/2004.03383
+
+  Fields:
+    maxBlurSigma: The standard deviation of the blur kernel for the blurred
+      baseline. The same blurring parameter is used for both the height and
+      the width dimension. If not set, the method defaults to the zero (i.e.
+      black for images) baseline.
+  """
+
+  maxBlurSigma = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudAiplatformV1beta1BoolArray(_messages.Message):
@@ -19926,9 +20186,11 @@ class GoogleCloudAiplatformV1beta1CustomJobSpec(_messages.Message):
       `projects/12345/global/networks/myVPC`.
       [Format](/compute/docs/reference/rest/v1/networks/insert) is of the form
       `projects/{project}/global/networks/{network}`. Where {project} is a
-      project number, as in `12345`, and {network} is a network name. Private
-      services access must already be configured for the network. If left
-      unspecified, the job is not peered with any network.
+      project number, as in `12345`, and {network} is a network name. To
+      specify this field, you must have already [configured VPC Network
+      Peering for Vertex AI](https://cloud.google.com/vertex-
+      ai/docs/general/vpc-peering). If this field is left unspecified, the job
+      is not peered with any network.
     scheduling: Scheduling options for a CustomJob.
     serviceAccount: Specifies the service account for workload run-as account.
       Users submitting jobs must have act-as permission on this run-as
@@ -20759,6 +21021,9 @@ class GoogleCloudAiplatformV1beta1Endpoint(_messages.Message):
     description: The description of the Endpoint.
     displayName: Required. The display name of the Endpoint. The name can be
       up to 128 characters long and can be consist of any UTF-8 characters.
+    enablePrivateServiceConnect: If true, expose the Endpoint via private
+      service connect. Only one of the fields, network or
+      enable_private_service_connect, can be set.
     encryptionSpec: Customer-managed encryption key spec for an Endpoint. If
       set, this Endpoint and all sub-resources of this Endpoint will be
       secured by this key.
@@ -20779,10 +21044,11 @@ class GoogleCloudAiplatformV1beta1Endpoint(_messages.Message):
       [network](https://cloud.google.com//compute/docs/networks-and-
       firewalls#networks) to which the Endpoint should be peered. Private
       services access must already be configured for the network. If left
-      unspecified, the Endpoint is not peered with any network. [Format](https
-      ://cloud.google.com/compute/docs/reference/rest/v1/networks/insert):
-      `projects/{project}/global/networks/{network}`. Where `{project}` is a
-      project number, as in `12345`, and `{network}` is network name.
+      unspecified, the Endpoint is not peered with any network. Only one of
+      the fields, network or enable_private_service_connect, can be set. [Form
+      at](https://cloud.google.com/compute/docs/reference/rest/v1/networks/ins
+      ert): `projects/{project}/global/networks/{network}`. Where `{project}`
+      is a project number, as in `12345`, and `{network}` is network name.
     trafficSplit: A map from a DeployedModel's ID to the percentage of this
       Endpoint's traffic that should be forwarded to that DeployedModel. If a
       DeployedModel's ID is not listed in this map, then it receives no
@@ -20852,14 +21118,15 @@ class GoogleCloudAiplatformV1beta1Endpoint(_messages.Message):
   deployedModels = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployedModel', 2, repeated=True)
   description = _messages.StringField(3)
   displayName = _messages.StringField(4)
-  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 5)
-  etag = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  modelDeploymentMonitoringJob = _messages.StringField(8)
-  name = _messages.StringField(9)
-  network = _messages.StringField(10)
-  trafficSplit = _messages.MessageField('TrafficSplitValue', 11)
-  updateTime = _messages.StringField(12)
+  enablePrivateServiceConnect = _messages.BooleanField(5)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 6)
+  etag = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  modelDeploymentMonitoringJob = _messages.StringField(9)
+  name = _messages.StringField(10)
+  network = _messages.StringField(11)
+  trafficSplit = _messages.MessageField('TrafficSplitValue', 12)
+  updateTime = _messages.StringField(13)
 
 
 class GoogleCloudAiplatformV1beta1EntityType(_messages.Message):
@@ -21875,27 +22142,54 @@ class GoogleCloudAiplatformV1beta1ExportFeatureValuesRequest(_messages.Message):
   Fields:
     destination: Required. Specifies destination location and format.
     featureSelector: Required. Selects Features to export values of.
+    fullExport: Exports all historical values of all entities of the
+      EntityType within a time range
     settings: Per-Feature export settings.
-    snapshotExport: Exports Feature values of all entities of the EntityType
-      as of a snapshot time.
+    snapshotExport: Exports the latest Feature values of all entities of the
+      EntityType within a time range.
   """
 
   destination = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureValueDestination', 1)
   featureSelector = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureSelector', 2)
-  settings = _messages.MessageField('GoogleCloudAiplatformV1beta1DestinationFeatureSetting', 3, repeated=True)
-  snapshotExport = _messages.MessageField('GoogleCloudAiplatformV1beta1ExportFeatureValuesRequestSnapshotExport', 4)
+  fullExport = _messages.MessageField('GoogleCloudAiplatformV1beta1ExportFeatureValuesRequestFullExport', 3)
+  settings = _messages.MessageField('GoogleCloudAiplatformV1beta1DestinationFeatureSetting', 4, repeated=True)
+  snapshotExport = _messages.MessageField('GoogleCloudAiplatformV1beta1ExportFeatureValuesRequestSnapshotExport', 5)
+
+
+class GoogleCloudAiplatformV1beta1ExportFeatureValuesRequestFullExport(_messages.Message):
+  r"""Describes exporting all historical Feature values of all entities of the
+  EntityType between [start_time, end_time].
+
+  Fields:
+    endTime: Exports Feature values as of this timestamp. If not set, retrieve
+      values as of now. Timestamp, if present, must not have higher than
+      millisecond precision.
+    startTime: Excludes Feature values with feature generation timestamp
+      before this timestamp. If not set, retrieve oldest values kept in
+      Feature Store. Timestamp, if present, must not have higher than
+      millisecond precision.
+  """
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1beta1ExportFeatureValuesRequestSnapshotExport(_messages.Message):
-  r"""Describes exporting Feature values as of the snapshot timestamp.
+  r"""Describes exporting the latest Feature values of all entities of the
+  EntityType between [start_time, snapshot_time].
 
   Fields:
     snapshotTime: Exports Feature values as of this timestamp. If not set,
       retrieve values as of now. Timestamp, if present, must not have higher
       than millisecond precision.
+    startTime: Excludes Feature values with feature generation timestamp
+      before this timestamp. If not set, retrieve oldest values kept in
+      Feature Store. Timestamp, if present, must not have higher than
+      millisecond precision.
   """
 
   snapshotTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1beta1ExportFeatureValuesResponse(_messages.Message):
@@ -22808,14 +23102,14 @@ class GoogleCloudAiplatformV1beta1ImportDataResponse(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1ImportFeatureValuesOperationMetadata(_messages.Message):
-  r"""Details of operations that perform import feature values.
+  r"""Details of operations that perform import Feature values.
 
   Fields:
-    genericMetadata: Operation metadata for Featurestore import feature
+    genericMetadata: Operation metadata for Featurestore import Feature
       values.
     importedEntityCount: Number of entities that have been imported by the
       operation.
-    importedFeatureValueCount: Number of feature values that have been
+    importedFeatureValueCount: Number of Feature values that have been
       imported by the operation.
     invalidRowCount: The number of rows in input source that weren't imported
       due to either * Not having any featureValues. * Having a null entityId.
@@ -23008,6 +23302,9 @@ class GoogleCloudAiplatformV1beta1IndexEndpoint(_messages.Message):
     description: The description of the IndexEndpoint.
     displayName: Required. The display name of the IndexEndpoint. The name can
       be up to 128 characters long and can consist of any UTF-8 characters.
+    enablePrivateServiceConnect: Optional. If true, expose the IndexEndpoint
+      via private service connect. Only one of the fields, network or
+      enable_private_service_connect, can be set.
     etag: Used to perform consistent read-modify-write updates. If not set, a
       blind "overwrite" update happens.
     labels: The labels with user-defined metadata to organize your
@@ -23017,13 +23314,14 @@ class GoogleCloudAiplatformV1beta1IndexEndpoint(_messages.Message):
       allowed. See https://goo.gl/xmQnxf for more information and examples of
       labels.
     name: Output only. The resource name of the IndexEndpoint.
-    network: Required. Immutable. The full name of the Google Compute Engine
+    network: Optional. The full name of the Google Compute Engine
       [network](https://cloud.google.com/compute/docs/networks-and-
       firewalls#networks) to which the IndexEndpoint should be peered. Private
       services access must already be configured for the network. If left
-      unspecified, the Endpoint is not peered with any network. [Format](https
-      ://cloud.google.com/compute/docs/reference/rest/v1/networks/insert):
-      projects/{project}/global/networks/{network}. Where {project} is a
+      unspecified, the Endpoint is not peered with any network. Only one of
+      the fields, network or enable_private_service_connect, can be set. [Form
+      at](https://cloud.google.com/compute/docs/reference/rest/v1/networks/ins
+      ert): projects/{project}/global/networks/{network}. Where {project} is a
       project number, as in '12345', and {network} is network name.
     updateTime: Output only. Timestamp when this IndexEndpoint was last
       updated. This timestamp is not updated when the endpoint's
@@ -23063,23 +23361,30 @@ class GoogleCloudAiplatformV1beta1IndexEndpoint(_messages.Message):
   deployedIndexes = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployedIndex', 2, repeated=True)
   description = _messages.StringField(3)
   displayName = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  network = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  enablePrivateServiceConnect = _messages.BooleanField(5)
+  etag = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  network = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class GoogleCloudAiplatformV1beta1IndexPrivateEndpoints(_messages.Message):
   r"""IndexPrivateEndpoints proto is used to provide paths for users to send
-  requests via private services access.
+  requests via private endpoints (e.g. private service access, private service
+  connect). To send request via private service access, use
+  match_grpc_address. To send request via private service connect, use
+  service_attachment.
 
   Fields:
     matchGrpcAddress: Output only. The ip address used to send match gRPC
       requests.
+    serviceAttachment: Output only. The name of the service attachment
+      resource. Populated if private service connect is enabled.
   """
 
   matchGrpcAddress = _messages.StringField(1)
+  serviceAttachment = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1beta1InputDataConfig(_messages.Message):
@@ -23176,6 +23481,11 @@ class GoogleCloudAiplatformV1beta1IntegratedGradientsAttribution(_messages.Messa
   for more details: https://arxiv.org/abs/1703.01365
 
   Fields:
+    blurBaselineConfig: Config for IG with blur baseline. When enabled, a
+      linear path from the maximally blurred image to the input image is
+      created. Using a blurred baseline instead of zero (black image) is
+      motivated by the BlurIG approach explained here:
+      https://arxiv.org/abs/2004.03383
     smoothGradConfig: Config for SmoothGrad approximation of gradients. When
       enabled, the gradients are approximated by averaging the gradients from
       noisy samples in the vicinity of the inputs. Adding noise can help
@@ -23187,8 +23497,9 @@ class GoogleCloudAiplatformV1beta1IntegratedGradientsAttribution(_messages.Messa
       its value is [1, 100], inclusively.
   """
 
-  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SmoothGradConfig', 1)
-  stepCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  blurBaselineConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1BlurBaselineConfig', 1)
+  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SmoothGradConfig', 2)
+  stepCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1beta1LineageSubgraph(_messages.Message):
@@ -24854,9 +25165,15 @@ class GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfig(_messages.Message):
 
   Fields:
     emailAlertConfig: Email alert config.
+    enableLogging: Dump the anomalies to Cloud Logging. The anomalies will be
+      put to json payload encoded from proto
+      google.cloud.aiplatform.logging.ModelMonitoringAnomaliesLogEntry. This
+      can be further sinked to Pub/Sub or any other services supported by
+      Cloud Logging.
   """
 
   emailAlertConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfigEmailAlertConfig', 1)
+  enableLogging = _messages.BooleanField(2)
 
 
 class GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfigEmailAlertConfig(_messages.Message):
@@ -25199,6 +25516,30 @@ class GoogleCloudAiplatformV1beta1ModelOriginalModelInfo(_messages.Message):
   """
 
   model = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1MutateDeployedIndexOperationMetadata(_messages.Message):
+  r"""Runtime operation information for
+  IndexEndpointService.MutateDeployedIndex.
+
+  Fields:
+    deployedIndexId: The unique index id specified by user
+    genericMetadata: The operation generic information.
+  """
+
+  deployedIndexId = _messages.StringField(1)
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 2)
+
+
+class GoogleCloudAiplatformV1beta1MutateDeployedIndexResponse(_messages.Message):
+  r"""Response message for IndexEndpointService.MutateDeployedIndex.
+
+  Fields:
+    deployedIndex: The DeployedIndex that had been updated in the
+      IndexEndpoint.
+  """
+
+  deployedIndex = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployedIndex', 1)
 
 
 class GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadata(_messages.Message):
@@ -25895,18 +26236,23 @@ class GoogleCloudAiplatformV1beta1PredictSchemata(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1PrivateEndpoints(_messages.Message):
-  r"""PrivateEndpoints is used to provide paths for users to send requests via
-  private services access.
+  r"""PrivateEndpoints proto is used to provide paths for users to send
+  requests privately. To send request via private service access, use
+  predict_http_uri, explain_http_uri or health_http_uri. To send request via
+  private service connect, use service_attachment.
 
   Fields:
     explainHttpUri: Output only. Http(s) path to send explain requests.
     healthHttpUri: Output only. Http(s) path to send health check requests.
     predictHttpUri: Output only. Http(s) path to send prediction requests.
+    serviceAttachment: Output only. The name of the service attachment
+      resource. Populated if private service connect is enabled.
   """
 
   explainHttpUri = _messages.StringField(1)
   healthHttpUri = _messages.StringField(2)
   predictHttpUri = _messages.StringField(3)
+  serviceAttachment = _messages.StringField(4)
 
 
 class GoogleCloudAiplatformV1beta1PurgeArtifactsMetadata(_messages.Message):
@@ -28980,7 +29326,7 @@ class GoogleCloudAiplatformV1beta1StringArray(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1Study(_messages.Message):
-  r"""A message representing a Study.
+  r"""LINT.IfChange A message representing a Study.
 
   Enums:
     StateValueValuesEnum: Output only. The detailed state of a Study.
@@ -30003,6 +30349,9 @@ class GoogleCloudAiplatformV1beta1TrainingPipeline(_messages.Message):
       populated. The Model is always uploaded into the Project and Location in
       which this pipeline is.
     name: Output only. Resource name of the TrainingPipeline.
+    parentModel: Optional. When specify this field, the `model_to_upload` will
+      not be uploaded as a new model, instead, it will become a new version of
+      this `parent_model`.
     startTime: Output only. Time when the TrainingPipeline for the first time
       entered the `PIPELINE_STATE_RUNNING` state.
     state: Output only. The detailed state of the pipeline.
@@ -30091,12 +30440,13 @@ class GoogleCloudAiplatformV1beta1TrainingPipeline(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 7)
   modelToUpload = _messages.MessageField('GoogleCloudAiplatformV1beta1Model', 8)
   name = _messages.StringField(9)
-  startTime = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  trainingTaskDefinition = _messages.StringField(12)
-  trainingTaskInputs = _messages.MessageField('extra_types.JsonValue', 13)
-  trainingTaskMetadata = _messages.MessageField('extra_types.JsonValue', 14)
-  updateTime = _messages.StringField(15)
+  parentModel = _messages.StringField(10)
+  startTime = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  trainingTaskDefinition = _messages.StringField(13)
+  trainingTaskInputs = _messages.MessageField('extra_types.JsonValue', 14)
+  trainingTaskMetadata = _messages.MessageField('extra_types.JsonValue', 15)
+  updateTime = _messages.StringField(16)
 
 
 class GoogleCloudAiplatformV1beta1Trial(_messages.Message):
@@ -30334,6 +30684,24 @@ class GoogleCloudAiplatformV1beta1UndeployModelResponse(_messages.Message):
   r"""Response message for EndpointService.UndeployModel."""
 
 
+class GoogleCloudAiplatformV1beta1UnmanagedContainerModel(_messages.Message):
+  r"""Contains model information necessary to perform batch prediction without
+  requiring a full model import.
+
+  Fields:
+    artifactUri: The path to the directory containing the Model artifact and
+      any of its supporting files.
+    containerSpec: Input only. The specification of the container that is to
+      be used when deploying this Model.
+    predictSchemata: Contains the schemata used in Model's predictions and
+      explanations
+  """
+
+  artifactUri = _messages.StringField(1)
+  containerSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelContainerSpec', 2)
+  predictSchemata = _messages.MessageField('GoogleCloudAiplatformV1beta1PredictSchemata', 3)
+
+
 class GoogleCloudAiplatformV1beta1UpdateFeaturestoreOperationMetadata(_messages.Message):
   r"""Details of operations that perform update Featurestore.
 
@@ -30529,6 +30897,11 @@ class GoogleCloudAiplatformV1beta1XraiAttribution(_messages.Message):
   https://arxiv.org/abs/1906.02825 Supported only by image Models.
 
   Fields:
+    blurBaselineConfig: Config for XRAI with blur baseline. When enabled, a
+      linear path from the maximally blurred image to the input image is
+      created. Using a blurred baseline instead of zero (black image) is
+      motivated by the BlurIG approach explained here:
+      https://arxiv.org/abs/2004.03383
     smoothGradConfig: Config for SmoothGrad approximation of gradients. When
       enabled, the gradients are approximated by averaging the gradients from
       noisy samples in the vicinity of the inputs. Adding noise can help
@@ -30540,8 +30913,9 @@ class GoogleCloudAiplatformV1beta1XraiAttribution(_messages.Message):
       of its value is [1, 100], inclusively.
   """
 
-  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SmoothGradConfig', 1)
-  stepCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  blurBaselineConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1BlurBaselineConfig', 1)
+  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SmoothGradConfig', 2)
+  stepCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudLocationListLocationsResponse(_messages.Message):

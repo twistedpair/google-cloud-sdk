@@ -1143,11 +1143,13 @@ cloudbuild:
     - v1beta1
   projects.triggers:
     asset_inventory_type: cloudbuild.googleapis.com/Trigger
+    enable_single_resource_autogen: true
+    group_category: CI_CD_CATEGORY
     home_directory: builds.triggers
     krm_group: cloudbuild
     krm_kind: CloudBuildTrigger
-    support_bulk_export: false
-    support_iam: false
+    resource_spec_dir: cloudbuild
+    support_bulk_export: true
     support_single_export: false
     supported_apis:
     - v1
@@ -1275,6 +1277,7 @@ cloudidentity:
     - v1beta1
   groups:
     asset_inventory_type: cloudidentity.googleapis.com/Group
+    enable_single_resource_autogen: true
     home_directory: identity.groups
     krm_group: cloudidentity
     krm_kind: CloudIdentityGroup
@@ -1318,6 +1321,7 @@ cloudkms:
     - v1
   projects.locations.keyRings:
     asset_inventory_type: cloudkms.googleapis.com/KeyRing
+    enable_single_resource_autogen: true
     home_directory: kms.keyrings
     krm_group: kms
     krm_kind: KMSKeyRing
@@ -1326,11 +1330,16 @@ cloudkms:
     support_single_export: true
     supported_apis:
     - v1
+    surface_spec_resource_name: KEYRING
   projects.locations.keyRings.cryptoKeys:
     asset_inventory_type: cloudkms.googleapis.com/CryptoKey
+    enable_single_resource_autogen: true
     home_directory: kms.keys
     krm_group: kms
     krm_kind: KMSCryptoKey
+    resource_attribute_renames:
+      key-ring: keyring
+    resource_spec_name: key
     support_bulk_export: true
     support_iam: true
     support_single_export: false
@@ -1358,6 +1367,7 @@ cloudresourcemanager:
     - v3
   liens:
     asset_inventory_type: cloudresourcemanager.googleapis.com/Lien
+    enable_single_resource_autogen: true
     home_directory: resource_manager.liens
     krm_group: resourcemanager
     krm_kind: ResourceManagerLien
@@ -1378,6 +1388,7 @@ cloudresourcemanager:
     - v3
   projects:
     asset_inventory_type: cloudresourcemanager.googleapis.com/Project
+    enable_single_resource_autogen: false
     krm_group: resourcemanager
     krm_kind: Project
     support_bulk_export: true
@@ -1518,6 +1529,7 @@ compute:
     - v1
   backendBuckets:
     asset_inventory_type: compute.googleapis.com/BackendBucket
+    enable_single_resource_autogen: true
     home_directory: compute.backend_buckets
     krm_group: compute
     krm_kind: ComputeBackendBucket
@@ -1530,6 +1542,7 @@ compute:
     - v1
   backendServices:
     asset_inventory_type: compute.googleapis.com/BackendService
+    enable_single_resource_autogen: false
     home_directory: compute.backend_services
     krm_group: compute
     krm_kind: ComputeBackendService
@@ -1547,6 +1560,7 @@ compute:
     - v1
   disks:
     asset_inventory_type: compute.googleapis.com/Disk
+    enable_single_resource_autogen: true
     home_directory: compute.disks
     krm_group: compute
     krm_kind: ComputeDisk
@@ -1720,7 +1734,6 @@ compute:
     home_directory: compute.instances
     krm_group: compute
     krm_kind: ComputeInstance
-    resource_spec_name: instance
     support_bulk_export: true
     support_iam: true
     support_single_export: false
@@ -2079,9 +2092,11 @@ compute:
     - v1
   subnetworks:
     asset_inventory_type: compute.googleapis.com/Subnetwork
+    enable_single_resource_autogen: true
     home_directory: compute.networks.subnets
     krm_group: compute
     krm_kind: ComputeSubnetwork
+    full_resource_spec_path: compute.resources:subnet
     support_bulk_export: true
     support_iam: true
     support_single_export: true
@@ -2089,8 +2104,10 @@ compute:
     - alpha
     - beta
     - v1
+    surface_spec_resource_name: SUBNETWORK
   targetGrpcProxies:
     asset_inventory_type: compute.googleapis.com/TargetGRPCProxy
+    enable_single_resource_autogen: true
     home_directory: compute.target_grpc_proxies
     krm_group: compute
     krm_kind: ComputeTargetGRPCProxy
@@ -2103,6 +2120,7 @@ compute:
     - v1
   targetHttpProxies:
     asset_inventory_type: compute.googleapis.com/TargetHTTPProxy
+    enable_single_resource_autogen: true
     home_directory: compute.target_http_proxies
     krm_group: compute
     krm_kind: ComputeTargetHTTPProxy
@@ -2115,6 +2133,7 @@ compute:
     - v1
   targetHttpsProxies:
     asset_inventory_type: compute.googleapis.com/TargetHTTPSProxy
+    enable_single_resource_autogen: true
     home_directory: compute.target_https_proxies
     krm_group: compute
     krm_kind: ComputeTargetHTTPSProxy
@@ -2127,6 +2146,7 @@ compute:
     - v1
   targetInstances:
     asset_inventory_type: compute.googleapis.com/TargetInstance
+    enable_single_resource_autogen: true
     home_directory: compute.target_instances
     krm_group: compute
     krm_kind: ComputeTargetInstance
@@ -2139,6 +2159,7 @@ compute:
     - v1
   targetPools:
     asset_inventory_type: compute.googleapis.com/TargetPool
+    enable_single_resource_autogen: true
     home_directory: compute.target_pools
     krm_group: compute
     krm_kind: ComputeTargetPool
@@ -2151,6 +2172,7 @@ compute:
     - v1
   targetSslProxies:
     asset_inventory_type: compute.googleapis.com/TargetSSLProxy
+    enable_single_resource_autogen: true
     home_directory: compute.target_ssl_proxies
     krm_group: compute
     krm_kind: ComputeTargetSSLProxy
@@ -2163,6 +2185,7 @@ compute:
     - v1
   targetTcpProxies:
     asset_inventory_type: compute.googleapis.com/TargetTCPProxy
+    enable_single_resource_autogen: true
     home_directory: compute.target_tcp_proxies
     krm_group: compute
     krm_kind: ComputeTargetTCPProxy
@@ -2175,6 +2198,7 @@ compute:
     - v1
   targetVpnGateways:
     asset_inventory_type: compute.googleapis.com/TargetVPNGateway
+    enable_single_resource_autogen: true
     home_directory: compute.target_vpn_gateways
     krm_group: compute
     krm_kind: ComputeTargetVPNGateway
@@ -2187,6 +2211,7 @@ compute:
     - v1
   urlMaps:
     asset_inventory_type: compute.googleapis.com/URLMap
+    enable_single_resource_autogen: false
     home_directory: compute.url_maps
     krm_group: compute
     krm_kind: ComputeURLMap
@@ -2199,6 +2224,7 @@ compute:
     - v1
   vpnGateways:
     asset_inventory_type: compute.googleapis.com/VPNGateway
+    enable_single_resource_autogen: true
     home_directory: compute.vpn_gateways
     krm_group: compute
     krm_kind: ComputeVPNGateway
@@ -2211,6 +2237,7 @@ compute:
     - v1
   vpnTunnels:
     asset_inventory_type: compute.googleapis.com/VPNTunnel
+    enable_single_resource_autogen: true
     home_directory: compute.vpn_tunnels
     krm_group: compute
     krm_kind: ComputeVPNTunnel
@@ -2260,9 +2287,12 @@ container:
     - v1beta1
   projects.locations.clusters:
     asset_inventory_type: container.googleapis.com/Cluster
+    # Group contains flags which prevent a clean autogen.
+    enable_single_resource_autogen: false
     home_directory: container.clusters
     krm_group: container
     krm_kind: ContainerCluster
+    resource_spec_dir: container.clusters
     support_bulk_export: true
     support_iam: false
     support_single_export: true
@@ -2272,9 +2302,12 @@ container:
     - v1beta1
   projects.locations.clusters.nodePools:
     asset_inventory_type: container.googleapis.com/NodePool
+    # Group contains flags which prevent a clean autogen.
+    enable_single_resource_autogen: false
     home_directory: container.node_pools
     krm_group: container
     krm_kind: ContainerNodePool
+    resource_spec_dir: container.clusters
     support_bulk_export: true
     support_iam: false
     support_single_export: false
@@ -2407,6 +2440,7 @@ dataflow:
     - v1b3
   projects.jobs:
     asset_inventory_type: dataflow.googleapis.com/Job
+    enable_single_resource_autogen: true
     home_directory: dataflow.jobs
     krm_group: dataflow
     krm_kind: DataflowJob
@@ -2851,6 +2885,7 @@ dns:
     - v1beta2
   managedZones:
     asset_inventory_type: dns.googleapis.com/ManagedZone
+    enable_single_resource_autogen: true
     home_directory: dns.managed_zones
     krm_group: dns
     krm_kind: DNSManagedZone
@@ -2863,6 +2898,7 @@ dns:
     - v1beta2
   policies:
     asset_inventory_type: dns.googleapis.com/Policy
+    enable_single_resource_autogen: true
     home_directory: dns.policies
     krm_group: dns
     krm_kind: DNSPolicy
@@ -2880,6 +2916,8 @@ dns:
     - v1beta2
   resourceRecordSets:
     asset_inventory_type: dns.googleapis.com/RecordSet
+    # Has odd URI ending in /{recordSetId}/{type}
+    enable_single_resource_autogen: false
     home_directory: dns.record_sets
     krm_group: dns
     krm_kind: DNSRecordSet
@@ -3098,6 +3136,8 @@ firestore:
     - v1beta1
   projects.databases.indexes:
     asset_inventory_type: firestore.googleapis.com/Index
+    # not present in v1
+    enable_single_resource_autogen: false
     home_directory: firestore.indexes
     krm_group: firestore
     krm_kind: FirestoreIndex
@@ -3421,6 +3461,7 @@ iam:
     - v1
   projects.serviceAccounts:
     asset_inventory_type: iam.googleapis.com/ServiceAccount
+    enable_single_resource_autogen: true
     home_directory: iam.service_accounts
     krm_group: iam
     krm_kind: IAMServiceAccount
@@ -3434,16 +3475,22 @@ iam:
     - v1
   projects.serviceAccounts.keys:
     asset_inventory_type: iam.googleapis.com/ServiceAccountKey
+    enable_single_resource_autogen: true
     home_directory: iam.service_accounts.keys
     krm_group: iam
     krm_kind: IAMServiceAccountKey
+    full_resource_spec_path: iam.resources:iam_key
     support_bulk_export: false
     support_iam: false
     support_single_export: false
     supported_apis:
     - v1
+    resource_attribute_renames:
+      service-account: iam-account
   roles:
     asset_inventory_type: iam.googleapis.com/CustomRole
+    # Complex resource with potential folder,org,project parent.
+    enable_single_resource_autogen: false
     home_directory: iam.roles
     krm_group: iam
     krm_kind: IAMCustomRole
@@ -3653,6 +3700,8 @@ logging:
     - v2
   sinks:
     asset_inventory_type: logging.googleapis.com/LogSink
+    # Complex resource, needs further examination.
+    enable_single_resource_autogen: false
     home_directory: logging.sinks
     krm_group: logging
     krm_kind: LoggingLogSink
@@ -3747,6 +3796,7 @@ memcache:
     - v1beta2
   projects.locations.instances:
     asset_inventory_type: memcache.googleapis.com/Instance
+    enable_single_resource_autogen: true
     home_directory: memcache.instances
     krm_group: memcache
     krm_kind: MemcacheInstance
@@ -3756,6 +3806,8 @@ memcache:
     supported_apis:
     - v1
     - v1beta2
+    resource_attribute_renames:
+      location: region
   projects.locations.operations:
     supported_apis:
     - v1
@@ -3832,6 +3884,8 @@ monitoring:
     - v3
   projects.alertPolicies:
     asset_inventory_type: monitoring.googleapis.com/AlertPolicy
+    enable_single_resource_autogen: true
+    full_resource_spec_path: monitoring.resources:policy
     home_directory: monitoring.policies
     krm_group: monitoring
     krm_kind: MonitoringAlertPolicy
@@ -3860,6 +3914,7 @@ monitoring:
     - v3
   projects.notificationChannels:
     asset_inventory_type: monitoring.googleapis.com/NotificationChannel
+    enable_single_resource_autogen: true
     home_directory: monitoring.channels
     krm_group: monitoring
     krm_kind: MonitoringNotificationChannel
@@ -3868,6 +3923,7 @@ monitoring:
     support_single_export: false
     supported_apis:
     - v3
+    surface_spec_resource_name: CHANNEL
   projects.uptimeCheckConfigs:
     supported_apis:
     - v3
@@ -4283,6 +4339,7 @@ pubsub:
     - v1
   projects.subscriptions:
     asset_inventory_type: pubsub.googleapis.com/Subscription
+    enable_single_resource_autogen: true
     home_directory: pubsub.subscriptions
     krm_group: pubsub
     krm_kind: PubSubSubscription
@@ -4293,6 +4350,7 @@ pubsub:
     - v1
   projects.topics:
     asset_inventory_type: pubsub.googleapis.com/Topic
+    enable_single_resource_autogen: true
     home_directory: pubsub.topics
     krm_group: pubsub
     krm_kind: PubSubTopic
@@ -4470,6 +4528,7 @@ redis:
     - v1beta1
   projects.locations.instances:
     asset_inventory_type: redis.googleapis.com/Instance
+    enable_single_resource_autogen: true
     home_directory: redis.instances
     krm_group: redis
     krm_kind: RedisInstance
@@ -4480,6 +4539,8 @@ redis:
     - v1
     - v1alpha1
     - v1beta1
+    resource_attribute_renames:
+      location: region
   projects.locations.operations:
     supported_apis:
     - v1
@@ -4639,6 +4700,7 @@ secretmanager:
     - v1
   projects.secrets:
     asset_inventory_type: secretmanager.googleapis.com/Secret
+    enable_single_resource_autogen: true
     home_directory: secrets
     krm_group: secretmanager
     krm_kind: SecretManagerSecret
@@ -4649,6 +4711,7 @@ secretmanager:
     - v1
   projects.secrets.versions:
     asset_inventory_type: secretmanager.googleapis.com/SecretVersion
+    enable_single_resource_autogen: true
     home_directory: secrets.versions
     krm_group: secretmanager
     krm_kind: SecretManagerSecretVersion
@@ -4766,6 +4829,8 @@ serviceusage:
     - v1beta1
   services:
     asset_inventory_type: serviceusage.googleapis.com/Service
+    # No real usecase to manipulate services
+    enable_single_resource_autogen: false
     home_directory: services
     krm_group: serviceusage
     krm_kind: Service
@@ -4818,6 +4883,7 @@ sourcerepo:
     - v1
   projects.repos:
     asset_inventory_type: sourcerepo.googleapis.com/Repository
+    enable_single_resource_autogen: true
     home_directory: source.repos
     krm_group: sourcerepo
     krm_kind: SourceRepoRepository
@@ -4826,6 +4892,7 @@ sourcerepo:
     support_single_export: true
     supported_apis:
     - v1
+    surface_spec_resource_name: REPOSITORY_NAME
 spanner:
   projects:
     supported_apis:
@@ -4835,6 +4902,7 @@ spanner:
     - v1
   projects.instances:
     asset_inventory_type: spanner.googleapis.com/Instance
+    enable_single_resource_autogen: true
     home_directory: spanner.instances
     krm_group: spanner
     krm_kind: SpannerInstance
@@ -4851,6 +4919,7 @@ spanner:
     - v1
   projects.instances.databases:
     asset_inventory_type: spanner.googleapis.com/Database
+    enable_single_resource_autogen: true
     home_directory: spanner.databases
     krm_group: spanner
     krm_kind: SpannerDatabase
@@ -4902,6 +4971,7 @@ sqladmin:
     - v1beta4
   databases:
     asset_inventory_type: sqladmin.googleapis.com/Database
+    enable_single_resource_autogen: true
     home_directory: sql.databases
     krm_group: sql
     krm_kind: SQLDatabase
@@ -4912,6 +4982,7 @@ sqladmin:
     - v1beta4
   instances:
     asset_inventory_type: sqladmin.googleapis.com/Instance
+    enable_single_resource_autogen: true
     home_directory: sql.instances
     krm_group: sql
     krm_kind: SQLInstance
@@ -4928,6 +4999,8 @@ sqladmin:
     - v1beta4
   sslCerts:
     asset_inventory_type: sqladmin.googleapis.com/SSLCert
+    # Complication with sha1 fingerprint attribute.
+    enable_single_resource_autogen: false
     home_directory: sql.ssl_certs
     krm_group: sql
     krm_kind: SQLSSLCert
@@ -4936,9 +5009,13 @@ sqladmin:
     support_single_export: false
     supported_apis:
     - v1beta4
+    resource_attribute_renames:
+      sha1-fingerprint: policy
 storage:
   bucketAccessControls:
     asset_inventory_type: storage.googleapis.com/BucketAccessControl
+    # No associated gcloud surface
+    enable_single_resource_autogen: false
     krm_group: storage
     krm_kind: StorageBucketAccessControl
     support_bulk_export: false
@@ -4948,6 +5025,9 @@ storage:
     - v1
   buckets:
     asset_inventory_type: storage.googleapis.com/Bucket
+    # Storage lacks standard resource parsing.
+    enable_single_resource_autogen: true
+    full_resource_spec_path: storage.resources.resources:bucket
     home_directory: storage.buckets
     krm_group: storage
     krm_kind: StorageBucket
@@ -4958,6 +5038,8 @@ storage:
     - v1
   defaultObjectAccessControls:
     asset_inventory_type: storage.googleapis.com/DefaultObjectAccessControl
+    # No associated gcloud surface
+    enable_single_resource_autogen: false
     krm_group: storage
     krm_kind: StorageDefaultObjectAccessControl
     support_bulk_export: false
@@ -4967,7 +5049,9 @@ storage:
     - v1
   notifications:
     asset_inventory_type: storage.googleapis.com/Notification
-    home_directory: storage.buckets.notificates
+    # storage not a standard api
+    enable_single_resource_autogen: false
+    home_directory: storage.buckets.notifications
     krm_group: storage
     krm_kind: StorageNotification
     support_bulk_export: false
@@ -5002,6 +5086,7 @@ storagetransfer:
     - v1
   transferJobs:
     asset_inventory_type: storagetransfer.googleapis.com/Job
+    enable_single_resource_autogen: true
     home_directory: transfer.jobs
     krm_group: storagetransfer
     krm_kind: StorageTransferJob
@@ -5010,6 +5095,7 @@ storagetransfer:
     support_single_export: false
     supported_apis:
     - v1
+    surface_spec_resource_name: JOB
   transferOperations:
     supported_apis:
     - v1

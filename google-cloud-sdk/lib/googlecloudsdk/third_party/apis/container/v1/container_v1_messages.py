@@ -424,6 +424,9 @@ class Cluster(_messages.Message):
       for hosting containers. This is provisioned from within the
       `container_ipv4_cidr` range. This field will only be set when cluster is
       in route-based network mode.
+    nodePoolAutoConfig: node pool configs that apply to all auto-provisioned
+      node pools in autopilot clusters and node auto-provisioning enabled
+      clusters
     nodePoolDefaults: Default NodePool settings for the entire cluster. These
       settings are overridden if specified on the specific NodePool object.
     nodePools: The node pools associated with this cluster. This field should
@@ -557,23 +560,24 @@ class Cluster(_messages.Message):
   networkPolicy = _messages.MessageField('NetworkPolicy', 40)
   nodeConfig = _messages.MessageField('NodeConfig', 41)
   nodeIpv4CidrSize = _messages.IntegerField(42, variant=_messages.Variant.INT32)
-  nodePoolDefaults = _messages.MessageField('NodePoolDefaults', 43)
-  nodePools = _messages.MessageField('NodePool', 44, repeated=True)
-  notificationConfig = _messages.MessageField('NotificationConfig', 45)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 46)
-  releaseChannel = _messages.MessageField('ReleaseChannel', 47)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 48)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 49)
-  selfLink = _messages.StringField(50)
-  servicesIpv4Cidr = _messages.StringField(51)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 52)
-  status = _messages.EnumField('StatusValueValuesEnum', 53)
-  statusMessage = _messages.StringField(54)
-  subnetwork = _messages.StringField(55)
-  tpuIpv4CidrBlock = _messages.StringField(56)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 57)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 58)
-  zone = _messages.StringField(59)
+  nodePoolAutoConfig = _messages.MessageField('NodePoolAutoConfig', 43)
+  nodePoolDefaults = _messages.MessageField('NodePoolDefaults', 44)
+  nodePools = _messages.MessageField('NodePool', 45, repeated=True)
+  notificationConfig = _messages.MessageField('NotificationConfig', 46)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 47)
+  releaseChannel = _messages.MessageField('ReleaseChannel', 48)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 49)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 50)
+  selfLink = _messages.StringField(51)
+  servicesIpv4Cidr = _messages.StringField(52)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 53)
+  status = _messages.EnumField('StatusValueValuesEnum', 54)
+  statusMessage = _messages.StringField(55)
+  subnetwork = _messages.StringField(56)
+  tpuIpv4CidrBlock = _messages.StringField(57)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 58)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 59)
+  zone = _messages.StringField(60)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -689,6 +693,9 @@ class ClusterUpdate(_messages.Message):
       1.15). * `none` - No metrics will be exported from the cluster. If left
       as an empty string,`monitoring.googleapis.com/kubernetes` will be used
       for GKE 1.14+ or `monitoring.googleapis.com` for earlier versions.
+    desiredNodePoolAutoConfigNetworkTags: The desired network tags that apply
+      to all auto-provisioned node pools in autopilot clusters and node auto-
+      provisioning enabled clusters.
     desiredNodePoolAutoscaling: Autoscaler configuration for the node pool
       specified in desired_node_pool_id. If there is only one pool in the
       cluster and desired_node_pool_id is not provided then the change applies
@@ -712,6 +719,8 @@ class ClusterUpdate(_messages.Message):
     desiredReleaseChannel: The desired release channel configuration.
     desiredResourceUsageExportConfig: The desired configuration for exporting
       resource usage.
+    desiredServiceExternalIpsConfig: ServiceExternalIPsConfig specifies the
+      config for the use of Services with ExternalIPs field.
     desiredShieldedNodes: Configuration for Shielded Nodes.
     desiredVerticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
       configuration.
@@ -773,17 +782,19 @@ class ClusterUpdate(_messages.Message):
   desiredMeshCertificates = _messages.MessageField('MeshCertificates', 21)
   desiredMonitoringConfig = _messages.MessageField('MonitoringConfig', 22)
   desiredMonitoringService = _messages.StringField(23)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 24)
-  desiredNodePoolId = _messages.StringField(25)
-  desiredNodeVersion = _messages.StringField(26)
-  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 27)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 28)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 29)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 30)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 31)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 32)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 33)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 34)
+  desiredNodePoolAutoConfigNetworkTags = _messages.MessageField('NetworkTags', 24)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 25)
+  desiredNodePoolId = _messages.StringField(26)
+  desiredNodeVersion = _messages.StringField(27)
+  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 28)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 29)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 30)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 31)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 32)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 33)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 34)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 35)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 36)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1511,6 +1522,36 @@ class Empty(_messages.Message):
 
 
 
+class Filter(_messages.Message):
+  r"""Allows filtering to one or more specific event types. If event types are
+  present, those and only those event types will be transmitted to the
+  cluster. Other types will be skipped. If no filter is specified, or no event
+  types are present, all event types will be sent
+
+  Enums:
+    EventTypeValueListEntryValuesEnum:
+
+  Fields:
+    eventType: Event types to allowlist.
+  """
+
+  class EventTypeValueListEntryValuesEnum(_messages.Enum):
+    r"""EventTypeValueListEntryValuesEnum enum type.
+
+    Values:
+      EVENT_TYPE_UNSPECIFIED: Not set, will be ignored.
+      UPGRADE_AVAILABLE_EVENT: Corresponds with UpgradeAvailableEvent.
+      UPGRADE_EVENT: Corresponds with UpgradeEvent.
+      SECURITY_BULLETIN_EVENT: Corresponds with SecurityBulletinEvent.
+    """
+    EVENT_TYPE_UNSPECIFIED = 0
+    UPGRADE_AVAILABLE_EVENT = 1
+    UPGRADE_EVENT = 2
+    SECURITY_BULLETIN_EVENT = 3
+
+  eventType = _messages.EnumField('EventTypeValueListEntryValuesEnum', 1, repeated=True)
+
+
 class GcePersistentDiskCsiDriverConfig(_messages.Message):
   r"""Configuration for the Compute Engine PD CSI driver.
 
@@ -2203,6 +2244,8 @@ class NetworkConfig(_messages.Message):
     privateIpv6GoogleAccess: The desired state of IPv6 connectivity to Google
       Services. By default, no private IPv6 access to or from Google Services
       (all access will be via IPv4)
+    serviceExternalIpsConfig: ServiceExternalIPsConfig specifies if services
+      with externalIPs field are blocked or not.
     subnetwork: Output only. The relative name of the Google Compute Engine
       [subnetwork](https://cloud.google.com/compute/docs/vpc) to which the
       cluster is connected. Example: projects/my-project/regions/us-
@@ -2251,7 +2294,8 @@ class NetworkConfig(_messages.Message):
   enableL4ilbSubsetting = _messages.BooleanField(5)
   network = _messages.StringField(6)
   privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 7)
-  subnetwork = _messages.StringField(8)
+  serviceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 8)
+  subnetwork = _messages.StringField(9)
 
 
 class NetworkPolicy(_messages.Message):
@@ -2290,6 +2334,17 @@ class NetworkPolicyConfig(_messages.Message):
   """
 
   disabled = _messages.BooleanField(1)
+
+
+class NetworkTags(_messages.Message):
+  r"""Collection of Compute Engine network tags that can be applied to a
+  node's underlying VM instance.
+
+  Fields:
+    tags: List of network tags.
+  """
+
+  tags = _messages.StringField(1, repeated=True)
 
 
 class NodeConfig(_messages.Message):
@@ -2549,8 +2604,8 @@ class NodeKubeletConfig(_messages.Message):
       duration.
     cpuManagerPolicy: Control the CPU management policy on the node. See
       https://kubernetes.io/docs/tasks/administer-cluster/cpu-management-
-      policies/ The following values are allowed. - "none": the default, which
-      represents the existing scheduling behavior. - "static": allows pods
+      policies/ The following values are allowed. * "none": the default, which
+      represents the existing scheduling behavior. * "static": allows pods
       with certain resource characteristics to be granted increased CPU
       affinity and exclusivity on the node. The default value is 'none' if
       unspecified.
@@ -2708,6 +2763,20 @@ class NodePool(_messages.Message):
   statusMessage = _messages.StringField(14)
   upgradeSettings = _messages.MessageField('UpgradeSettings', 15)
   version = _messages.StringField(16)
+
+
+class NodePoolAutoConfig(_messages.Message):
+  r"""node pool configs that apply to all auto-provisioned node pools in
+  autopilot clusters and node auto-provisioning enabled clusters
+
+  Fields:
+    networkTags: The list of instance tags applied to all nodes. Tags are used
+      to identify valid sources or targets for network firewalls and are
+      specified by the client during cluster creation. Each tag within the
+      list must comply with RFC1035.
+  """
+
+  networkTags = _messages.MessageField('NetworkTags', 1)
 
 
 class NodePoolAutoscaling(_messages.Message):
@@ -2984,12 +3053,16 @@ class PubSub(_messages.Message):
 
   Fields:
     enabled: Enable notifications for Pub/Sub.
+    filter: Allows filtering to one or more specific event types. If no filter
+      is specified, or if a filter is specified with no event types, all event
+      types will be sent
     topic: The desired Pub/Sub topic to which notifications will be sent by
       GKE. Format is `projects/{project}/topics/{topic}`.
   """
 
   enabled = _messages.BooleanField(1)
-  topic = _messages.StringField(2)
+  filter = _messages.MessageField('Filter', 2)
+  topic = _messages.StringField(3)
 
 
 class RecurringTimeWindow(_messages.Message):
@@ -3221,6 +3294,46 @@ class SandboxConfig(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 1)
 
 
+class SecurityBulletinEvent(_messages.Message):
+  r"""SecurityBulletinEvent is a notification sent to customers when a
+  security bulletin has been posted that they are vulnerable to.
+
+  Fields:
+    affectedSupportedMinors: The GKE minor versions affected by this
+      vulnerability.
+    briefDescription: A brief description of the bulletin. See the bulletin
+      pointed to by the bulletin_uri field for an expanded description.
+    bulletinId: The ID of the bulletin corresponding to the vulnerability.
+    bulletinUri: The URI link to the bulletin on the website for more
+      information.
+    cveIds: The CVEs associated with this bulletin.
+    manualStepsRequired: If this field is specified, it means there are manual
+      steps that the user must take to make their clusters safe.
+    patchedVersions: The GKE versions where this vulnerability is patched.
+    resourceTypeAffected: The resource type (node/control plane) that has the
+      vulnerability. Multiple notifications (1 notification per resource type)
+      will be sent for a vulnerability that affects > 1 resource type.
+    severity: The severity of this bulletin as it relates to GKE.
+    suggestedUpgradeTarget: This represents a version selected from the
+      patched_versions field that the cluster receiving this notification
+      should most likely want to upgrade to based on its current version. Note
+      that if this notification is being received by a given cluster, it means
+      that this version is currently available as an upgrade target in that
+      cluster's location.
+  """
+
+  affectedSupportedMinors = _messages.StringField(1, repeated=True)
+  briefDescription = _messages.StringField(2)
+  bulletinId = _messages.StringField(3)
+  bulletinUri = _messages.StringField(4)
+  cveIds = _messages.StringField(5, repeated=True)
+  manualStepsRequired = _messages.BooleanField(6)
+  patchedVersions = _messages.StringField(7, repeated=True)
+  resourceTypeAffected = _messages.StringField(8)
+  severity = _messages.StringField(9)
+  suggestedUpgradeTarget = _messages.StringField(10)
+
+
 class ServerConfig(_messages.Message):
   r"""Kubernetes Engine service configuration.
 
@@ -3241,6 +3354,16 @@ class ServerConfig(_messages.Message):
   validImageTypes = _messages.StringField(4, repeated=True)
   validMasterVersions = _messages.StringField(5, repeated=True)
   validNodeVersions = _messages.StringField(6, repeated=True)
+
+
+class ServiceExternalIPsConfig(_messages.Message):
+  r"""Config to block services with externalIPs field.
+
+  Fields:
+    enabled: Whether Services with ExternalIPs field are allowed or not.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class SetAddonsConfigRequest(_messages.Message):

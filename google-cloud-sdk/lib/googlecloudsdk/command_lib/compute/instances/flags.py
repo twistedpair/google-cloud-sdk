@@ -1245,7 +1245,8 @@ def AddAddressArgs(parser,
                    instances=True,
                    support_subinterface=False,
                    instance_create=False,
-                   containers=False):
+                   containers=False,
+                   support_network_queue_count=False):
   """Adds address arguments for instances and instance-templates.
 
   Args:
@@ -1257,6 +1258,8 @@ def AddAddressArgs(parser,
       true.
     containers: adds address arguments for create-with-containers command if set
       to true, for create command otherwise.
+    support_network_queue_count: indicates flexible networking queue count is
+      supported or not.
   """
   addresses = parser.add_mutually_exclusive_group()
   AddNoAddressArg(addresses)
@@ -1336,6 +1339,16 @@ def AddAddressArgs(parser,
 
       *nic-type*::: Specifies the  Network Interface Controller (NIC) type for
       the interface. ``NIC_TYPE'' must be one of: `GVNIC`, `VIRTIO_NET`.
+      """)
+
+  if support_network_queue_count:
+    multiple_network_interface_cards_spec['queue-count'] = int
+    network_interface_help_texts.append("""
+      *queue-count*::: Specifies the networking queue count for this interface.
+      Both Rx and Tx queues will be set to this number. If it's not
+      specified, a default queue count will be assigned. For Virtio-net,
+      each interface will get min(floor(#vCPU / #vNIC), 32) queues. For gVNIC,
+      each interface will get min(floor(#vCPU / #vNIC / 2), 16) qeueus.
       """)
 
   if not containers:

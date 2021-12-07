@@ -20,6 +20,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.run import exceptions
 
 
 def AddFileArg(parser):
@@ -45,11 +46,29 @@ def AddNameArg(parser):
       help='Name of the integration.')
 
 
-def AddServiceArg(parser):
-  """Add a service arg."""
+def AddNamePositionalArg(parser):
+  """Add an integration name arg."""
+  parser.add_argument(
+      'name',
+      help='Name of the integration.')
+
+
+def AddServiceCreateArg(parser):
+  """Add a service arg for create."""
   parser.add_argument(
       '--service',
-      help='Name of the Cloud Run service to attach the integration to.')
+      help='Name of the Cloud Run service to attach to the integration.')
+
+
+def AddServiceUpdateArgs(parser):
+  """Add service arguments for update."""
+  group = parser.add_mutually_exclusive_group()
+  group.add_argument(
+      '--add-service',
+      help='Name of the Cloud Run service to attach to the integration.')
+  group.add_argument(
+      '--remove-service',
+      help='Name of the Cloud Run service to remove from the integration.')
 
 
 def AddParametersArg(parser):
@@ -65,21 +84,22 @@ def AddParametersArg(parser):
       'integration type. Only simple values can be specified with this flag.')
 
 
-def _ValidateParameters(integration_type, parameters):
+def ValidateParameters(integration_type, parameters, is_create=True):
   """Validates given params conform to what's expected from the integration."""
-  # TODO(b/205648394): Validate parameters
-  del integration_type
-  del parameters
-  pass
+  if integration_type == 'router':
+    if is_create:
+      requires = ['domain', 'dns-zone']
+      for key in requires:
+        if key not in parameters:
+          raise exceptions.ArgumentError(
+              '[{}] is required to create integration of type [{}]'.format(
+                  key, integration_type))
 
 
-def GetAndValidateParameters(args, integration_type):
+def GetParameters(args):
   """Validates all parameters and returns a dict of values."""
-  # Check the passed parameters for unknown keys or missing required keys
   parameters = {}
   if args.IsSpecified('parameters'):
     parameters.update(args.parameters)
-
-  _ValidateParameters(integration_type, parameters)
 
   return parameters

@@ -850,7 +850,7 @@ class AiplatformV1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.endpoints.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=[],
+        query_params=['endpointId'],
         relative_path='v1/{+parent}/endpoints',
         request_field='googleCloudAiplatformV1Endpoint',
         request_type_name='AiplatformProjectsLocationsEndpointsCreateRequest',
@@ -4380,7 +4380,7 @@ class AiplatformV1(base_api.BaseApiClient):
     )
 
     def Suggest(self, request, global_params=None):
-      r"""Adds one or more Trials to a Study, with parameter values suggested by Vertex Vizier. Returns a long-running operation associated with the generation of Trial suggestions. When this long-running operation succeeds, it will contain a SuggestTrialsResponse.
+      r"""Adds one or more Trials to a Study, with parameter values suggested by Vertex AI Vizier. Returns a long-running operation associated with the generation of Trial suggestions. When this long-running operation succeeds, it will contain a SuggestTrialsResponse.
 
       Args:
         request: (AiplatformProjectsLocationsStudiesTrialsSuggestRequest) input message

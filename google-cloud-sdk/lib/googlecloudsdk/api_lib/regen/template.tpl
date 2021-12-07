@@ -20,9 +20,14 @@ MAP = {
       % for api_version, api_def in sorted(api_versions.items()):
         '${api_version}':
             APIDef(
-                class_path='${api_def.class_path}',
-                client_classpath='${api_def.client_classpath}',
-                messages_modulepath='${api_def.messages_modulepath}',
+                ApitoolsClientDef(
+                    class_path='${api_def.apitools.class_path}',
+                    client_classpath='${api_def.apitools.client_classpath}',
+                    messages_modulepath='${api_def.apitools.messages_modulepath}'),
+                % if api_def.gapic:
+                GapicClientDef(
+                    class_path='${api_def.gapic.class_path}'),
+                % endif
                 default_version=${api_def.default_version},
                 enable_mtls=${api_def.enable_mtls},
                 mtls_endpoint_override='${api_def.mtls_endpoint_override}'),

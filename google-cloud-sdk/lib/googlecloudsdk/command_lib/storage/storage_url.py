@@ -235,8 +235,8 @@ class PosixFileSystemUrl(StorageUrl):
     super(PosixFileSystemUrl, self).__init__()
     self.scheme = ProviderPrefix.POSIX
     self.bucket_name = None
-    # Leaves one '/' at the beginning b/c these URLs start from root.
-    self.object_name = url_string[len(ProviderPrefix.POSIX.value + ':/'):]
+    # Use object_name to represent a schemeless root URL.
+    self.object_name = url_string[len(ProviderPrefix.POSIX.value + '://'):]
     self.generation = None
 
   @property

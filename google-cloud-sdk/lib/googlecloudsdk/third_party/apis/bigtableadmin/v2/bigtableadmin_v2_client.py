@@ -608,7 +608,7 @@ class BigtableadminV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a cluster within an instance.
+      r"""Creates a cluster within an instance. Note that exactly one of Cluster.serve_nodes and Cluster.cluster_config.cluster_autoscaling_config can be set. If serve_nodes is set to non-zero, then the cluster is manually scaled. If cluster_config.cluster_autoscaling_config is non-empty, then autoscaling is enabled.
 
       Args:
         request: (BigtableadminProjectsInstancesClustersCreateRequest) input message
@@ -716,7 +716,7 @@ class BigtableadminV2(base_api.BaseApiClient):
     )
 
     def PartialUpdateCluster(self, request, global_params=None):
-      r"""Partially updates a cluster within a project. This method is the preferred way to update a Cluster. .
+      r"""Partially updates a cluster within a project. This method is the preferred way to update a Cluster. To enable and update autoscaling, set cluster_config.cluster_autoscaling_config. When autoscaling is enabled, serve_nodes is treated as an OUTPUT_ONLY field, meaning that updates to it are ignored. Note that an update cannot simultaneously set serve_nodes to non-zero and cluster_config.cluster_autoscaling_config to non-empty, and also specify both in the update_mask. To disable autoscaling, clear cluster_config.cluster_autoscaling_config, and explicitly set a serve_node count via the update_mask.
 
       Args:
         request: (BigtableadminProjectsInstancesClustersPartialUpdateClusterRequest) input message
@@ -743,7 +743,7 @@ class BigtableadminV2(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates a cluster within an instance. UpdateCluster is deprecated. Please use PartialUpdateCluster instead.
+      r"""Updates a cluster within an instance. Note that UpdateCluster does not support updating cluster_config.cluster_autoscaling_config. In order to update it, you must use PartialUpdateCluster.
 
       Args:
         request: (Cluster) input message
@@ -1114,7 +1114,7 @@ class BigtableadminV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Create an instance within a project.
+      r"""Create an instance within a project. Note that exactly one of Cluster.serve_nodes and Cluster.cluster_config.cluster_autoscaling_config can be set. If serve_nodes is set to non-zero, then the cluster is manually scaled. If cluster_config.cluster_autoscaling_config is non-empty, then autoscaling is enabled.
 
       Args:
         request: (CreateInstanceRequest) input message

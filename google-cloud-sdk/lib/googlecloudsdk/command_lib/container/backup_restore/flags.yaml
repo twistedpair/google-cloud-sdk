@@ -67,6 +67,21 @@ cron_schedule:
     "10 3 * * *" will automatically create a backup at 0310 every day. All times are interpreted as
     UTC. The minimum interval between scheduled backups is 10 minutes.
 
+update_cron_schedule:
+  arg_name: cron-schedule
+  api_field: backupPlan.backupSchedule.cronSchedule
+  type: str
+  # backupPlan.backupSchedule message should be nil by default.
+  default: null
+  # This only means when backup schedule is passed in, cron-schedule must be
+  # passed in.
+  help_text: |
+    Schedule on which backups will be automatically created.
+
+    Use standard [cron](http://en.wikipedia.org/wiki/Cron#Overview) syntax. For example,
+    "10 3 * * *" will automatically create a backup at 0310 every day. All times are interpreted as
+    UTC. The minimum interval between scheduled backups is 10 minutes.
+
 paused:
   arg_name: paused
   api_field: backupPlan.backupSchedule.paused
@@ -80,7 +95,9 @@ paused:
 all_namespaces:
   arg_name: all-namespaces
   api_field: backupPlan.backupConfig.allNamespaces
+  processor: googlecloudsdk.command_lib.container.backup_restore.hooks:ProcessAllNamespaces
   type: bool
+  action: store_true
   default: null
   help_text: |
     Scope of the backup includes resources from all namespaces.  Mutually exclusive with
@@ -89,11 +106,13 @@ all_namespaces:
 selected_namespaces:
   arg_name: selected-namespaces
   api_field: backupPlan.backupConfig.selectedNamespaces.namespaces
+  processor: googlecloudsdk.command_lib.container.backup_restore.hooks:ProcessSelectedNamespaces
   type: arg_list
   default: null
   help_text: |
     List of namespaces whose resources are included in the backup. Mutually exclusive with
-    --all-namespaces and --selected-applications.
+    --all-namespaces and --selected-applications. e.g:
+    --selected-namespaces=foo,bar
 
 selected_applications:
   arg_name: selected-applications
@@ -102,7 +121,8 @@ selected_applications:
   default: null
   help_text: |
     List of ProtectedApplication instances whose resources are included in the backup. Mutually
-    exclusive with --all-namespaces and --selected-namespaces.
+    exclusive with --all-namespaces and --selected-namespaces. e.g:
+    --selected-applications=namespace1/foo,namespace2/bar
 
 include_volume_data:
   arg_name: include-volume-data
@@ -129,7 +149,7 @@ encryption_key:
   help_text: |
     Encryption key used for encrypting the backup.
 
-    For the private preview release, only the Cloud Key Management Service (Cloud KMS) is supported.
+    At this time, only the Cloud Key Management Service (Cloud KMS) is supported.
     Value must be entered as a relative name, e.g.:
     `projects/<project>/locations/<location>/keyRings/<key-ring>/cryptoKeys/<key>`.
 
@@ -176,9 +196,143 @@ backup_description:
   help_text: |
     The description of the backup.
 
+restore_plan_cluster:
+  arg_name: cluster
+  api_field: restorePlan.cluster
+  required: true
+  help_text: |
+    The target cluster into which Restores created via this RestorePlan will restore data.
+    NOTE: the cluster's region must be the same as the RestorePlan.
+
+    Value must be entered as a relative name, e.g.:
+    `projects/<project>/locations/<location>/clusters/<cluster>` for a regional cluster
+    or
+    `projects/<project>/zones/<zone>/clusters/<cluster>` for a zonal cluster.
+
+restore_plan_backup_plan:
+  arg_name: backup-plan
+  api_field: restorePlan.backupPlan
+  required: true
+  help_text: |
+    The BackupPlan from which Backups may be used as the source for Restores created via this
+    RestorePlan.
+
+    Value must be entered as a relative name, e.g.
+    `projects/<project>/locations/<location>/backupPlans/<backupPlans>`.
+
+restore_plan_description:
+  arg_name: description
+  api_field: restorePlan.description
+  help_text: |
+    The description of the restore plan.
+
+volume_data_restore_policy:
+  arg_name: volume-data-restore-policy
+  api_field: restorePlan.restoreConfig.volumeDataRestorePolicy
+  help_text: |
+    Define how data is populated for restored volumes.
+
+cluster_resource_conflict_policy:
+  arg_name: cluster-resource-conflict-policy
+  api_field: restorePlan.restoreConfig.clusterResourceConflictPolicy
+  required: true
+  help_text: |
+    Define how to handle restore-time conflicts for cluster-scoped resources.
+
+namespaced_resource_restore_mode:
+  arg_name: namespaced-resource-restore-mode
+  api_field: restorePlan.restoreConfig.namespacedResourceRestoreMode
+  required: true
+  help_text: |
+    Define how to handle restore-time conflicts for namespaced resources.
+
+namespaced_resource_restore_mode_update:
+  arg_name: namespaced-resource-restore-mode
+  api_field: restorePlan.restoreConfig.namespacedResourceRestoreMode
+  help_text: |
+    Define how to handle restore-time conflicts for namespaced resources.
+
+cluster_resource_restore_scope:
+  arg_name: cluster-resource-restore-scope
+  api_field: restorePlan.restoreConfig.clusterResourceRestoreScope
+  type: arg_list
+  required: true
+  processor: googlecloudsdk.command_lib.container.backup_restore.hooks:ProcessClusterResourceRestoreScope
+  help_text: |
+    List of cluster-scoped resource types to be restored. Not specifying this means NO cluster
+    resource will be restored. The format of a resource is "<group>/<kind>", e.g.
+    `storage.k8s.io/StorageClass` for StorageClass.
+
+restore_plan_all_namespaces:
+  arg_name: all-namespaces
+  api_field: restorePlan.restoreConfig.allNamespaces
+  type: bool
+  action: store_true
+  default: null
+  help_text: |
+    If true, restore all namespaced resources in the backup.
+
+restore_plan_selected_namespaces:
+  arg_name: selected-namespaces
+  api_field: restorePlan.restoreConfig.selectedNamespaces.namespaces
+  type: arg_list
+  default: null
+  help_text: |
+    List of selected namespaces to restore. Only those namespaced resources belonging to a selected
+    namespace are restored.
+
+restore_plan_selected_applications:
+  arg_name: selected-applications
+  api_field: restorePlan.restoreConfig.selectedApplications
+  processor: googlecloudsdk.command_lib.container.backup_restore.hooks:ProcessSelectedApplications
+  default: null
+  help_text: |
+    List of selected applications to restore. Only those namespaced resources which belong to one of
+    the selected applications are restored.
+
+restore_plan_substitution_rules_file:
+  arg_name: substitution-rules-file
+  api_field: restorePlan.restoreConfig.substitutionRules
+  processor: googlecloudsdk.command_lib.container.backup_restore.hooks:ReadSubstitutionRuleFile
+  help_text: |
+    If provided, defines a set of resource transformations that will be applied to resources from
+    the source backup before they are created in the target cluster.
+
 etag:
   arg_name: etag
   api_field: etag
+  type: str
+  help_text: |
+    The etag is used for optimistic concurrency control as a way to help
+    prevent simultaneous updates or deletes of a resource from overwriting each other.
+
+backup_plan_etag:
+  arg_name: etag
+  api_field: backupPlan.etag
+  type: str
+  help_text: |
+    The etag is used for optimistic concurrency control as a way to help
+    prevent simultaneous updates or deletes of a resource from overwriting each other.
+
+backup_etag:
+  arg_name: etag
+  api_field: backup.etag
+  type: str
+  help_text: |
+    The etag is used for optimistic concurrency control as a way to help
+    prevent simultaneous updates or deletes of a resource from overwriting each other.
+
+restore_plan_etag:
+  arg_name: etag
+  api_field: restorePlan.etag
+  type: str
+  help_text: |
+    The etag is used for optimistic concurrency control as a way to help
+    prevent simultaneous updates or deletes of a resource from overwriting each other.
+
+restore_etag:
+  arg_name: etag
+  api_field: restore.etag
   type: str
   help_text: |
     The etag is used for optimistic concurrency control as a way to help

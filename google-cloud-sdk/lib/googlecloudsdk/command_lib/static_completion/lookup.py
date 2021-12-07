@@ -23,6 +23,7 @@ import os
 import shlex
 import sys
 from googlecloudsdk.core.util import encoding
+from googlecloudsdk.core.util import platforms
 import six
 
 
@@ -37,6 +38,7 @@ FLAG_PREFIX = '--'
 FLAG_BOOLEAN = 'bool'
 FLAG_DYNAMIC = 'dynamic'
 FLAG_VALUE = 'value'
+ENV_VAR = 'env_var'
 
 LOOKUP_COMMANDS = 'commands'
 LOOKUP_FLAGS = 'flags'
@@ -83,6 +85,33 @@ def _GetCmdWordQueue(cmd_line):
   return cmd_words
 
 
+def GetEnvVarPrefix():
+  # TODO(b/207384119) support powershell environment variables
+  return '%' if platforms.OperatingSystem.IsWindows() else '$'
+
+
+def MatchEnvVars(word, env_vars):
+  """Returns environment variables beginning with `word`.
+
+  Args:
+    word: The word that is being compared to environment variables.
+    env_vars: The list of environment variables.
+
+  Returns:
+    []: No completions.
+    [completions]: List, all possible sorted completions.
+  """
+  completions = []
+  prefix = word[1:]  # exclude '$' or '%' and only use the variable name
+  for child in env_vars:
+    if child.startswith(prefix):
+      if platforms.OperatingSystem.IsWindows():
+        completions.append('%' + child + '%')
+      else:
+        completions.append('$' + child)
+  return completions
+
+
 def _FindCompletions(root, cmd_line):
   """Try to perform a completion based on the static CLI tree.
 
@@ -104,6 +133,9 @@ def _FindCompletions(root, cmd_line):
 
   completions = []
   flag_mode = FLAG_BOOLEAN
+
+  env_var_prefix = GetEnvVarPrefix()
+  env_vars = os.environ
   while words:
     word = words.pop()
 
@@ -114,7 +146,13 @@ def _FindCompletions(root, cmd_line):
       # Add the value part back to the queue if it exists
       if _VALUE_SEP in word:
         word, flag_value = word.split(_VALUE_SEP, 1)
+        # This predates the env var completion but is necessary for completing
+        # environment variables that are flag values.
         words.append(flag_value)
+    elif word.startswith(env_var_prefix):
+      is_flag_word = False
+      child_nodes = env_vars
+      flag_mode = ENV_VAR
     else:
       is_flag_word = False
       child_nodes = node.get(LOOKUP_COMMANDS, {})
@@ -127,6 +165,8 @@ def _FindCompletions(root, cmd_line):
         else:
           flag_mode = FLAG_BOOLEAN
           node = child_nodes[word]  # Progress to next command node
+      elif flag_mode == ENV_VAR:
+        continue
       elif flag_mode != FLAG_BOOLEAN:
         flag_mode = FLAG_BOOLEAN
         continue  # Just consume if we are expecting a flag value
@@ -145,6 +185,8 @@ def _FindCompletions(root, cmd_line):
             'Dynamic completions are not handled by this module')
       elif flag_mode == FLAG_VALUE:
         return []  # Cannot complete, so nothing to do
+      elif flag_mode == ENV_VAR:
+        completions += MatchEnvVars(word, child_nodes)
       elif flag_mode != FLAG_BOOLEAN:  # Must be list of choices
         for value in flag_mode:
           if value.startswith(word):

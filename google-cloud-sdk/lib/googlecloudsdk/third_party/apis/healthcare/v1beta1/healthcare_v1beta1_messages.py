@@ -927,7 +927,8 @@ class CryptoHashConfig(_messages.Message):
   Fields:
     cryptoKey: An AES 128/192/256 bit key. Causes the hash to be computed
       based on this key. A default key is generated for each Deidentify
-      operation and is used wherever crypto_key is not specified.
+      operation and is used when neither `crypto_key` nor `kms_wrapped` is
+      specified. Must not be set if `kms_wrapped` is set.
   """
 
   cryptoKey = _messages.BytesField(1)
@@ -959,8 +960,8 @@ class DateShiftConfig(_messages.Message):
   Fields:
     cryptoKey: An AES 128/192/256 bit key. Causes the shift to be computed
       based on this key and the patient ID. A default key is generated for
-      each Deidentify operation and is used wherever crypto_key is not
-      specified.
+      each de-identification operation and is used when neither `crypto_key`
+      nor `kms_wrapped` is specified. Must not be set if `kms_wrapped` is set.
   """
 
   cryptoKey = _messages.BytesField(1)
@@ -1933,10 +1934,11 @@ class FieldMetadata(_messages.Message):
       "Address.String". For "choice" types (those defined in the FHIR spec
       with the form: field[x]), use two separate components. For example,
       "deceasedAge.unit" is matched by "Deceased.Age.unit". Supported types
-      are: AdministrativeGenderCode, Code, Date, DateTime, Decimal, HumanName,
-      Id, LanguageCode, Markdown, Oid, String, Uri, Uuid, Xhtml. The sub-type
-      for HumanName, such as HumanName.given or HumanName.family, can be
-      omitted.
+      are: AdministrativeGenderCode, Base64Binary, Boolean, Code, Date,
+      DateTime, Decimal, HumanName, Id, Instant, Integer, LanguageCode,
+      Markdown, Oid, PositiveInt, String, UnsignedInt, Uri, Uuid, Xhtml. The
+      sub-type for HumanName(for example HumanName.given, HumanName.family)
+      can be omitted.
   """
 
   class ActionValueValuesEnum(_messages.Enum):
@@ -6348,9 +6350,10 @@ class ParserConfig(_messages.Message):
   the messages.
 
   Enums:
-    VersionValueValuesEnum: Immutable. Determines the version of the
-      unschematized parser to be used when `schema` is not given. This field
-      is immutable after store creation.
+    VersionValueValuesEnum: Immutable. Determines the version of both the
+      default parser to be used when `schema` is not given, as well as the
+      schematized parser used when `schema` is specified. This field is
+      immutable after HL7v2 store creation.
 
   Fields:
     allowNullHeader: Determines whether messages with no header are allowed.
@@ -6359,14 +6362,16 @@ class ParserConfig(_messages.Message):
     segmentTerminator: Byte(s) to use as the segment terminator. If this is
       unset, '\r' is used as segment terminator, matching the HL7 version 2
       specification.
-    version: Immutable. Determines the version of the unschematized parser to
-      be used when `schema` is not given. This field is immutable after store
-      creation.
+    version: Immutable. Determines the version of both the default parser to
+      be used when `schema` is not given, as well as the schematized parser
+      used when `schema` is specified. This field is immutable after HL7v2
+      store creation.
   """
 
   class VersionValueValuesEnum(_messages.Enum):
-    r"""Immutable. Determines the version of the unschematized parser to be
-    used when `schema` is not given. This field is immutable after store
+    r"""Immutable. Determines the version of both the default parser to be
+    used when `schema` is not given, as well as the schematized parser used
+    when `schema` is specified. This field is immutable after HL7v2 store
     creation.
 
     Values:

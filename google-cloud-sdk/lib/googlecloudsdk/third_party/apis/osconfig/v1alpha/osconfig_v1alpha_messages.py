@@ -2474,6 +2474,7 @@ class VulnerabilityReportVulnerability(_messages.Message):
       affected by this vulnerability. If the vulnerability report was not
       updated after the VM inventory update, these values might not display in
       VM inventory. For some distros, this field may be empty.
+    items: List of items affected by the vulnerability.
     updateTime: The timestamp for when the vulnerability was last modified.
   """
 
@@ -2481,7 +2482,8 @@ class VulnerabilityReportVulnerability(_messages.Message):
   createTime = _messages.StringField(2)
   details = _messages.MessageField('VulnerabilityReportVulnerabilityDetails', 3)
   installedInventoryItemIds = _messages.StringField(4, repeated=True)
-  updateTime = _messages.StringField(5)
+  items = _messages.MessageField('VulnerabilityReportVulnerabilityItem', 5, repeated=True)
+  updateTime = _messages.StringField(6)
 
 
 class VulnerabilityReportVulnerabilityDetails(_messages.Message):
@@ -2521,6 +2523,35 @@ class VulnerabilityReportVulnerabilityDetailsReference(_messages.Message):
 
   source = _messages.StringField(1)
   url = _messages.StringField(2)
+
+
+class VulnerabilityReportVulnerabilityItem(_messages.Message):
+  r"""OS inventory item that is affected by a vulnerability or fixed as a
+  result of a vulnerability.
+
+  Fields:
+    availableInventoryItemId: Corresponds to the `AVAILABLE_PACKAGE` inventory
+      item on the VM. If the vulnerability report was not updated after the VM
+      inventory update, these values might not display in VM inventory. If
+      there is no available fix, the field is empty. The `inventory_item`
+      value specifies the latest `SoftwarePackage` available to the VM that
+      fixes the vulnerability.
+    fixedCpeUri: The recommended [CPE
+      URI](https://cpe.mitre.org/specification/) update that contains a fix
+      for this vulnerability.
+    installedInventoryItemId: Corresponds to the `INSTALLED_PACKAGE` inventory
+      item on the VM. This field displays the inventory items affected by this
+      vulnerability. If the vulnerability report was not updated after the VM
+      inventory update, these values might not display in VM inventory. For
+      some operating systems, this field might be empty.
+    upstreamFix: The upstream OS patch, packages or KB that fixes the
+      vulnerability.
+  """
+
+  availableInventoryItemId = _messages.StringField(1)
+  fixedCpeUri = _messages.StringField(2)
+  installedInventoryItemId = _messages.StringField(3)
+  upstreamFix = _messages.StringField(4)
 
 
 encoding.AddCustomJsonFieldMapping(

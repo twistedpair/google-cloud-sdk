@@ -27,8 +27,7 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import encoding
 
 
-# TODO(b/203471916): rename run_apps API
-API_NAME = 'run_apps'
+API_NAME = 'runapps'
 API_VERSION = 'v1alpha1'
 
 # Max wait time before timing out
@@ -38,16 +37,16 @@ _RETRY_TIMEOUT_MS = 1000
 
 
 def GetMessages():
-  """Returns the messages module for the RunApps API.
+  """Returns the messages module for the Runapps API.
 
   Returns:
-    Module containing the definitions of messages for the RunApps API.
+    Module containing the definitions of messages for the Runapps API.
   """
   return apis.GetMessagesModule(API_NAME, API_VERSION)
 
 
 def GetApplication(client, app_ref):
-  """Calls ApplicationGet API of RunApps of the specificed reference.
+  """Calls ApplicationGet API of Runapps of the specificed reference.
 
   Args:
     client: GAPIC API client, the api client to use.
@@ -57,7 +56,7 @@ def GetApplication(client, app_ref):
   Returns:
     The Application object. Or None if not found.
   """
-  request = client.MESSAGES_MODULE.RunAppsProjectsLocationsApplicationsGetRequest(
+  request = client.MESSAGES_MODULE.RunappsProjectsLocationsApplicationsGetRequest(
       name=app_ref.RelativeName())
   try:
     return client.projects_locations_applications.Get(request)
@@ -66,7 +65,7 @@ def GetApplication(client, app_ref):
 
 
 def CreateApplication(client, app_ref, application):
-  """Calls ApplicationCreate API of RunApps of the specificed reference.
+  """Calls ApplicationCreate API of Runapps of the specificed reference.
 
   Args:
     client: GAPIC API client, the api client to use.
@@ -78,14 +77,14 @@ def CreateApplication(client, app_ref, application):
     run_apps.v1alpha1.Operation, the LRO of this request.
   """
   return client.projects_locations_applications.Create(
-      client.MESSAGES_MODULE.RunAppsProjectsLocationsApplicationsCreateRequest(
+      client.MESSAGES_MODULE.RunappsProjectsLocationsApplicationsCreateRequest(
           application=application,
           applicationId=application.name,
           parent=app_ref.Parent().RelativeName()))
 
 
 def PatchApplication(client, app_ref, application, update_mask=None):
-  """Calls ApplicationPatch API of RunApps of the specificed reference.
+  """Calls ApplicationPatch API of Runapps of the specificed reference.
 
   Args:
     client: GAPIC API client, the api client to use.
@@ -98,14 +97,14 @@ def PatchApplication(client, app_ref, application, update_mask=None):
     run_apps.v1alpha1.Operation, the LRO of this request.
   """
   return client.projects_locations_applications.Patch(
-      client.MESSAGES_MODULE.RunAppsProjectsLocationsApplicationsPatchRequest(
+      client.MESSAGES_MODULE.RunappsProjectsLocationsApplicationsPatchRequest(
           application=application,
           updateMask=update_mask,
           name=app_ref.RelativeName()))
 
 
 def CreateDeployment(client, app_ref, deployment, validate_only=False):
-  """Calls ApplicationDeployementCreate API of RunApps.
+  """Calls ApplicationDeploymentCreate API of Runapps.
 
   Args:
     client: GAPIC API client, the api client to use.
@@ -119,7 +118,7 @@ def CreateDeployment(client, app_ref, deployment, validate_only=False):
   """
   return client.projects_locations_applications_deployments.Create(
       client.MESSAGES_MODULE
-      .RunAppsProjectsLocationsApplicationsDeploymentsCreateRequest(
+      .RunappsProjectsLocationsApplicationsDeploymentsCreateRequest(
           parent=app_ref.RelativeName(),
           deployment=deployment,
           deploymentId=deployment.name,

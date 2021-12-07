@@ -4,7 +4,7 @@ group:
   request_id_field: groupsId
   attributes:
   - &group
-    parameter_name: groupsId
+    parameter_name: groupId
     attribute_name: group
     help: group ID
 

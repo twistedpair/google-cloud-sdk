@@ -1495,7 +1495,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def CreateSnapshot(self, request, global_params=None):
-      r"""Creates a snapshot of a specified persistent disk.
+      r"""Creates a snapshot of a specified persistent disk. For regular snapshot creation, consider using snapshots.insert instead, as that method supports more features, such as creating snapshots in a project different from the source disk project.
 
       Args:
         request: (ComputeDisksCreateSnapshotRequest) input message
@@ -11244,6 +11244,32 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Update(self, request, global_params=None):
+      r"""Updates the specified commitment with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: auto_renew.
+
+      Args:
+        request: (ComputeRegionCommitmentsUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.regionCommitments.update',
+        ordered_params=['project', 'region', 'commitment'],
+        path_params=['commitment', 'project', 'region'],
+        query_params=['paths', 'requestId', 'updateMask'],
+        relative_path='projects/{project}/regions/{region}/commitments/{commitment}',
+        request_field='commitmentResource',
+        request_type_name='ComputeRegionCommitmentsUpdateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def UpdateReservations(self, request, global_params=None):
       r"""Transfers GPUs or local SSDs between reservations within commitments.
 
@@ -11369,7 +11395,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def CreateSnapshot(self, request, global_params=None):
-      r"""Creates a snapshot of this regional disk.
+      r"""Creates a snapshot of a specified persistent disk. For regular snapshot creation, consider using snapshots.insert instead, as that method supports more features, such as creating snapshots in a project different from the source disk project.
 
       Args:
         request: (ComputeRegionDisksCreateSnapshotRequest) input message
@@ -15573,7 +15599,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a snapshot in the specified project using the data included in the request.
+      r"""Creates a snapshot in the specified project using the data included in the request. For regular snapshot creation, consider using this method instead of disks.createSnapshot, as this method supports more features, such as creating snapshots in a project different from the source disk project.
 
       Args:
         request: (ComputeSnapshotsInsertRequest) input message

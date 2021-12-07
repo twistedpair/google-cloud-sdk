@@ -172,6 +172,10 @@ class Cluster(_messages.Message):
       `projects/my-project/locations/us-west1-a/privateClouds/my-
       cloud/clusters/my-cluster`
     nodeCount: Required. Number of bare metal nodes in this cluster.
+    nodeCustomCoreCount: Optional. Customized number of cores available to
+      each node of the cluster. This number must always be one of
+      `NodeType.available_custom_core_counts`. If zero is provided max value
+      from `NodeType.available_custom_core_counts` will be used.
     nodeTypeId: Required. The canonical identifier of node types (`NodeType`)
       in this cluster. For example: standard-72.
     state: Output only. State of the resource.
@@ -238,10 +242,11 @@ class Cluster(_messages.Message):
   management = _messages.BooleanField(3)
   name = _messages.StringField(4)
   nodeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  nodeTypeId = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  uid = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  nodeCustomCoreCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  nodeTypeId = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class Credentials(_messages.Message):
@@ -574,13 +579,18 @@ class ManagementCluster(_messages.Message):
       Complies with [RFC 1034](https://datatracker.ietf.org/doc/html/rfc1034)
       (section 3.5)
     nodeCount: Required. Number of nodes in this cluster.
+    nodeCustomCoreCount: Optional. Customized number of cores available to
+      each node of the cluster. This number must always be one of
+      `NodeType.available_custom_core_counts`. If zero is provided max value
+      from `NodeType.available_custom_core_counts` will be used.
     nodeTypeId: Required. The canonical identifier of node types (`NodeType`)
       in this cluster. For example: standard-72.
   """
 
   clusterId = _messages.StringField(1)
   nodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  nodeTypeId = _messages.StringField(3)
+  nodeCustomCoreCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  nodeTypeId = _messages.StringField(4)
 
 
 class NetworkConfig(_messages.Message):
@@ -756,6 +766,8 @@ class NodeType(_messages.Message):
   r"""Describes node type.
 
   Fields:
+    availableCustomCoreCounts: Output only. List of possible values of custom
+      core count.
     diskSizeGb: Output only. The amount of storage available, defined in GB.
     displayName: Output only. The friendly name for this node type. For
       example: ve1-standard-72
@@ -771,12 +783,13 @@ class NodeType(_messages.Message):
       node.
   """
 
-  diskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  displayName = _messages.StringField(2)
-  memoryGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  name = _messages.StringField(4)
-  nodeTypeId = _messages.StringField(5)
-  virtualCpuCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  availableCustomCoreCounts = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
+  diskSizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  displayName = _messages.StringField(3)
+  memoryGb = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  name = _messages.StringField(5)
+  nodeTypeId = _messages.StringField(6)
+  virtualCpuCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
 
 
 class Nsx(_messages.Message):
@@ -1807,8 +1820,8 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersCreateRequest(_messages.
     requestId: Optional. The request ID must be a valid UUID with the
       exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. When true, the request is validated only, but not
-      executed.
+    validateOnly: Optional. True if you want the request to be validated and
+      not executed; false otherwise.
   """
 
   cluster = _messages.MessageField('Cluster', 1)
@@ -1930,8 +1943,8 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersPatchRequest(_messages.M
       specified in the `updateMask` are relative to the resource, not the full
       request. A field will be overwritten if it is in the mask. If the user
       does not provide a mask then all fields will be overwritten.
-    validateOnly: Optional. When true, the request is validated only, but not
-      executed.
+    validateOnly: Optional. True if you want the request to be validated and
+      not executed; false otherwise.
   """
 
   cluster = _messages.MessageField('Cluster', 1)
@@ -1994,8 +2007,8 @@ class VmwareengineProjectsLocationsPrivateCloudsCreateRequest(_messages.Message)
     requestId: Optional. The request ID must be a valid UUID with the
       exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. When true, the request is validated only, but not
-      executed.
+    validateOnly: Optional. True if you want the request to be validated and
+      not executed; false otherwise.
   """
 
   parent = _messages.StringField(1, required=True)

@@ -807,6 +807,33 @@ class NotebooksV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def UpdateMetadataItems(self, request, global_params=None):
+      r"""Add/update metadata items for an instance.
+
+      Args:
+        request: (NotebooksProjectsLocationsInstancesUpdateMetadataItemsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (UpdateInstanceMetadataItemsResponse) The response message.
+      """
+      config = self.GetMethodConfig('UpdateMetadataItems')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateMetadataItems.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:updateMetadataItems',
+        http_method='PATCH',
+        method_id='notebooks.projects.locations.instances.updateMetadataItems',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:updateMetadataItems',
+        request_field='updateInstanceMetadataItemsRequest',
+        request_type_name='NotebooksProjectsLocationsInstancesUpdateMetadataItemsRequest',
+        response_type_name='UpdateInstanceMetadataItemsResponse',
+        supports_download=False,
+    )
+
     def UpdateShieldedInstanceConfig(self, request, global_params=None):
       r"""Updates the Shielded instance configuration of a single Instance.
 

@@ -1089,6 +1089,8 @@ class ServerlessOperations(object):
           None,
           None,
           None,
+          None,
+          None,
           build_pack,
           hide_logs=True)
       tracker.CompleteStage(stages.UPLOAD_SOURCE)

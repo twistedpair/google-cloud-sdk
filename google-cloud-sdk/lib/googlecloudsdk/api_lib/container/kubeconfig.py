@@ -223,12 +223,7 @@ def User(name,
           (cert_data and key_data)):
     raise Error('either auth_provider or cert & key must be provided')
   user = {}
-  # Setup ExecAuth if USE_GKE_GCLOUD_AUTH_PLUGIN is True
-  use_exec_auth = False
-  use_gke_gcloud_auth_plugin = encoding.GetEncodedValue(
-      os.environ, 'USE_GKE_GCLOUD_AUTH_PLUGIN')
-  if use_gke_gcloud_auth_plugin == 'True':
-    use_exec_auth = True
+  use_exec_auth = _UseExecAuth()
 
   if auth_provider:
     # Setup authprovider
@@ -265,6 +260,40 @@ def User(name,
   }
 
 
+def _UseExecAuth():
+  """Returns a bool noting if ExecAuth should be enabled.
+
+  Returns:
+    bool, which notes if ExecAuth should be enabled
+  """
+  # Enable ExecAuth for all Googlers
+  use_exec_auth = _IsGoogler()
+
+  use_gke_gcloud_auth_plugin = encoding.GetEncodedValue(
+      os.environ, 'USE_GKE_GCLOUD_AUTH_PLUGIN')
+  # if use_gke_gcloud_auth_plugin is explicitly set(True/False), take action.
+  # if use_gke_gcloud_auth_plugin is NOT explicitly set, do nothing
+  if use_gke_gcloud_auth_plugin and use_gke_gcloud_auth_plugin.lower(
+  ) == 'true':
+    use_exec_auth = True
+  elif use_gke_gcloud_auth_plugin and use_gke_gcloud_auth_plugin.lower(
+  ) == 'false':
+    use_exec_auth = False
+
+  return use_exec_auth
+
+
+def _IsGoogler():
+  """Returns a bool noting if User is a Googler.
+
+  Returns:
+    bool, which notes if user is a Googler
+  """
+  username = properties.VALUES.core.account.Get()
+  if username and username.lower().endswith('@google.com'):
+    return True
+  return False
+
 SDK_BIN_PATH_NOT_FOUND = '''\
 Path to sdk installation not found. Please switch to application default
 credentials using one of
@@ -299,11 +328,15 @@ def _ExecAuthPlugin():
   if sdk_bin_path is not None:
     command = os.path.join(sdk_bin_path, bin_name)
   exec_cfg = {
-      'command': command,
-      'apiVersion': 'client.authentication.k8s.io/v1beta1',
-      'installHint': 'Install gke-gcloud-auth-plugin by running: '
-                     'gcloud components install gke-gcloud-auth-plugin',
-      'provideClusterInfo': True,
+      'command':
+          command,
+      'apiVersion':
+          'client.authentication.k8s.io/v1beta1',
+      'installHint':
+          'Install gke-gcloud-auth-plugin for use with kubectl by following '
+          'go/gke-kubectl-exec-auth',
+      'provideClusterInfo':
+          True,
   }
 
   if properties.VALUES.container.use_app_default_credentials.GetBool():

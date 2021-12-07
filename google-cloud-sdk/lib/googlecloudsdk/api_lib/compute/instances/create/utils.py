@@ -776,7 +776,8 @@ def CreateNetworkInterfaceMessage(resources,
                                   public_ptr_domain=None,
                                   stack_type=None,
                                   ipv6_network_tier=None,
-                                  ipv6_public_ptr_domain=None):
+                                  ipv6_public_ptr_domain=None,
+                                  queue_count=None):
   """Returns a new NetworkInterface message."""
   # TODO(b/30460572): instance reference should have zone name, not zone URI.
   if scope == compute_scopes.ScopeEnum.ZONE:
@@ -823,6 +824,9 @@ def CreateNetworkInterfaceMessage(resources,
   if nic_type is not None:
     network_interface.nicType = (
         messages.NetworkInterface.NicTypeValueValuesEnum(nic_type))
+
+  if queue_count is not None:
+    network_interface.queueCount = queue_count
 
   if alias_ip_ranges_string:
     network_interface.aliasIpRanges = (
@@ -928,7 +932,8 @@ def CreateNetworkInterfaceMessages(resources,
               stack_type=interface.get('stack-type', None),
               ipv6_network_tier=interface.get('ipv6-network-tier', None),
               ipv6_public_ptr_domain=interface.get('ipv6-public-ptr-domain',
-                                                   None)))
+                                                   None),
+              queue_count=interface.get('queue-count', None)))
   elif network_interface_json is not None:
     network_interfaces = yaml.load(network_interface_json)
     if not network_interfaces:  # Empty json.

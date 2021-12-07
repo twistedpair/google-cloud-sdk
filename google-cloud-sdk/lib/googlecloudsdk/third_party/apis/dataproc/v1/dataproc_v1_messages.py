@@ -524,6 +524,8 @@ class ClusterConfig(_messages.Message):
       (https://cloud.google.com/dataproc/docs/concepts/configuring-
       clusters/staging-bucket)). This field requires a Cloud Storage bucket
       name, not a gs://... URI to a Cloud Storage bucket.
+    dataprocMetricConfig: Optional. The configuration(s) for a dataproc
+      metric(s).
     encryptionConfig: Optional. Encryption settings for the cluster.
     endpointConfig: Optional. Port/endpoint configuration for this cluster
     gceClusterConfig: Optional. The shared Compute Engine config settings for
@@ -567,19 +569,20 @@ class ClusterConfig(_messages.Message):
   autoscalingConfig = _messages.MessageField('AutoscalingConfig', 1)
   auxiliaryNodePoolConfigs = _messages.MessageField('NodePoolConfig', 2, repeated=True)
   configBucket = _messages.StringField(3)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 4)
-  endpointConfig = _messages.MessageField('EndpointConfig', 5)
-  gceClusterConfig = _messages.MessageField('GceClusterConfig', 6)
-  gkeClusterConfig = _messages.MessageField('GkeClusterConfig', 7)
-  initializationActions = _messages.MessageField('NodeInitializationAction', 8, repeated=True)
-  lifecycleConfig = _messages.MessageField('LifecycleConfig', 9)
-  masterConfig = _messages.MessageField('InstanceGroupConfig', 10)
-  metastoreConfig = _messages.MessageField('MetastoreConfig', 11)
-  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 12)
-  securityConfig = _messages.MessageField('SecurityConfig', 13)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 14)
-  tempBucket = _messages.StringField(15)
-  workerConfig = _messages.MessageField('InstanceGroupConfig', 16)
+  dataprocMetricConfig = _messages.MessageField('DataprocMetricConfig', 4)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 5)
+  endpointConfig = _messages.MessageField('EndpointConfig', 6)
+  gceClusterConfig = _messages.MessageField('GceClusterConfig', 7)
+  gkeClusterConfig = _messages.MessageField('GkeClusterConfig', 8)
+  initializationActions = _messages.MessageField('NodeInitializationAction', 9, repeated=True)
+  lifecycleConfig = _messages.MessageField('LifecycleConfig', 10)
+  masterConfig = _messages.MessageField('InstanceGroupConfig', 11)
+  metastoreConfig = _messages.MessageField('MetastoreConfig', 12)
+  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 13)
+  securityConfig = _messages.MessageField('SecurityConfig', 14)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 15)
+  tempBucket = _messages.StringField(16)
+  workerConfig = _messages.MessageField('InstanceGroupConfig', 17)
 
 
 class ClusterMetrics(_messages.Message):
@@ -905,6 +908,38 @@ class ConfidentialInstanceConfig(_messages.Message):
   enableConfidentialCompute = _messages.BooleanField(1)
 
 
+class DataprocMetricConfig(_messages.Message):
+  r"""Contains dataproc metric config.
+
+  Enums:
+    MetricSourcesValueListEntryValuesEnum:
+
+  Fields:
+    enabled: Optional. Specifies that dataproc metric is enabled.
+    metricSources: Optional. Optional field. If not mentioned all MetricSource
+      are enabled
+  """
+
+  class MetricSourcesValueListEntryValuesEnum(_messages.Enum):
+    r"""MetricSourcesValueListEntryValuesEnum enum type.
+
+    Values:
+      METRIC_SOURCE_UNSPECIFIED: Required unspecified metric source
+      MONITORING_AGENT: Monitoring agent metric source, all default monitoring
+        agent metrics are published when we enable a metric agent in cluster
+        VM
+      HADOOP: Hadoop metric source
+      SPARK: Spark metric source
+    """
+    METRIC_SOURCE_UNSPECIFIED = 0
+    MONITORING_AGENT = 1
+    HADOOP = 2
+    SPARK = 3
+
+  enabled = _messages.BooleanField(1)
+  metricSources = _messages.EnumField('MetricSourcesValueListEntryValuesEnum', 2, repeated=True)
+
+
 class DataprocProjectsLocationsAutoscalingPoliciesCreateRequest(_messages.Message):
   r"""A DataprocProjectsLocationsAutoscalingPoliciesCreateRequest object.
 
@@ -1180,7 +1215,7 @@ class DataprocProjectsLocationsWorkflowTemplatesCreateRequest(_messages.Message)
   Fields:
     parent: Required. The resource name of the region or location, as
       described in https://cloud.google.com/apis/design/resource_names. For
-      projects.regions.workflowTemplates,create, the resource name of the
+      projects.regions.workflowTemplates.create, the resource name of the
       region has the following format: projects/{project_id}/regions/{region}
       For projects.locations.workflowTemplates.create, the resource name of
       the location has the following format:
@@ -2110,7 +2145,7 @@ class DataprocProjectsRegionsWorkflowTemplatesCreateRequest(_messages.Message):
   Fields:
     parent: Required. The resource name of the region or location, as
       described in https://cloud.google.com/apis/design/resource_names. For
-      projects.regions.workflowTemplates,create, the resource name of the
+      projects.regions.workflowTemplates.create, the resource name of the
       region has the following format: projects/{project_id}/regions/{region}
       For projects.locations.workflowTemplates.create, the resource name of
       the location has the following format:
@@ -3442,10 +3477,16 @@ class JobScheduling(_messages.Message):
       may be restarted as a result of driver exiting with non-zero code before
       job is reported failed.A job may be reported as thrashing if driver
       exits with non-zero code 4 times within 10 minute window.Maximum value
-      is 10.
+      is 10.Note: Currently, this restartable job option is not supported in
+      Dataproc workflow template
+      (https://cloud.google.com/dataproc/docs/concepts/workflows/using-
+      workflows#adding_jobs_to_a_template) jobs.
     maxFailuresTotal: Optional. Maximum number of times in total a driver may
       be restarted as a result of driver exiting with non-zero code before job
-      is reported failed. Maximum value is 240.
+      is reported failed. Maximum value is 240.Note: Currently, this
+      restartable job option is not supported in Dataproc workflow template
+      (https://cloud.google.com/dataproc/docs/concepts/workflows/using-
+      workflows#adding_jobs_to_a_template) jobs.
   """
 
   maxFailuresPerHour = _messages.IntegerField(1, variant=_messages.Variant.INT32)

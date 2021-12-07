@@ -555,17 +555,17 @@ class S3Api(cloud_api.CloudApi):
     extra_args = s3_metadata_util.get_metadata_dict_from_request_config(
         request_config)
 
-    if request_config.md5_hash:
+    md5_hash = getattr(request_config.resource_args, 'md5_hash', None)
+    if md5_hash:
       # The upload_fileobj method can perform multipart uploads, so it cannot
       # validate with user-provided MD5 hashes. Hence we use the put_object API
       # method if MD5 validation is requested.
-      if request_config.size > MAX_PUT_OBJECT_SIZE:
-        log.debug('The MD5 hash %s will be ignored', request_config.md5_hash)
+      if request_config.resource_args.size > MAX_PUT_OBJECT_SIZE:
+        log.debug('The MD5 hash %s will be ignored', md5_hash)
         log.warning(
             'S3 does not support MD5 validation for the entire object if'
-            ' size > %d bytes. File size: %d',
-            MAX_PUT_OBJECT_SIZE,
-            request_config.size)
+            ' size > %d bytes. File size: %d', MAX_PUT_OBJECT_SIZE,
+            request_config.resource_args.size)
 
         # ContentMD5 might get populated for extra_args during request_config
         # translation. Remove it since upload_fileobj

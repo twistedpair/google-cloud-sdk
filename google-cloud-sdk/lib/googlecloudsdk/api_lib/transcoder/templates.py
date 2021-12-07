@@ -21,17 +21,25 @@ from __future__ import unicode_literals
 from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import base
+
+VERSION_MAP = {
+    base.ReleaseTrack.ALPHA: 'v1beta1',
+    base.ReleaseTrack.BETA: 'v1beta1',
+    base.ReleaseTrack.GA: 'v1'
+}
 
 
-def _GetClientInstance():
-  return apis.GetClientInstance('transcoder', 'v1beta1')
+def _GetClientInstance(release_track=base.ReleaseTrack.GA):
+  api_version = VERSION_MAP.get(release_track)
+  return apis.GetClientInstance('transcoder', api_version)
 
 
 class TemplatesClient(object):
   """Client for template service in the Transcoder API."""
 
-  def __init__(self, client=None):
-    self.client = client or _GetClientInstance()
+  def __init__(self, release_track=base.ReleaseTrack.GA, client=None):
+    self.client = client or _GetClientInstance(release_track)
     self.message = self.client.MESSAGES_MODULE
     self._service = self.client.projects_locations_jobTemplates
     self._template_class = self.client.MESSAGES_MODULE.JobTemplate

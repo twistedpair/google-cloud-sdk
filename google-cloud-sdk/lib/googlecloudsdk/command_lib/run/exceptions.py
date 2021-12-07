@@ -52,6 +52,10 @@ class JobNotFoundError(exceptions.Error):
   """Indicates that a provided job name was not found."""
 
 
+class IntegrationNotFoundError(exceptions.Error):
+  """Indicates that a provided integration name was not found."""
+
+
 class DockerVersionError(exceptions.Error):
   """Indicates an error in determining the docker version."""
 

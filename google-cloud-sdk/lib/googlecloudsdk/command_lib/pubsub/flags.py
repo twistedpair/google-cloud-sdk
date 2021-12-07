@@ -406,7 +406,7 @@ def AddTopicMessageRetentionFlags(parser, is_update):
 
   current_group.add_argument(
       '--message-retention-duration',
-      type=arg_parsers.Duration(lower_bound='600s', upper_bound='604800s'),
+      type=arg_parsers.Duration(lower_bound='10m', upper_bound='31d'),
       help="""\
           Indicates the minimum duration to retain a message after it is
           published to the topic. If this field is set, messages published to
@@ -415,7 +415,7 @@ def AddTopicMessageRetentionFlags(parser, is_update):
           seek to a timestamp that is up to MESSAGE_RETENTION_DURATION in the
           past. If this field is not set, message retention is controlled by
           settings on individual subscriptions. The minimum is 10 minutes and
-          the maximum is 7 days. {}""".format(DURATION_HELP_STR))
+          the maximum is 31 days. {}""".format(DURATION_HELP_STR))
 
 
 def ParseMessageBody(args):

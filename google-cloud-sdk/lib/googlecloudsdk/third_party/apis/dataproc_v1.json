@@ -928,6 +928,10 @@
           "items": {
             "$ref": "NodePoolConfig"
           }
+        },
+        "dataprocMetricConfig": {
+          "description": "Optional. The configuration(s) for a dataproc metric(s).",
+          "$ref": "DataprocMetricConfig"
         }
       }
     },
@@ -1682,6 +1686,36 @@
         "nodePoolConfig": {
           "description": "Optional. The Compute Engine config settings of the instances of the node pool.",
           "$ref": "InstanceGroupConfig"
+        }
+      }
+    },
+    "DataprocMetricConfig": {
+      "id": "DataprocMetricConfig",
+      "description": "Contains dataproc metric config.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Optional. Specifies that dataproc metric is enabled.",
+          "type": "boolean"
+        },
+        "metricSources": {
+          "description": "Optional. Optional field. If not mentioned all MetricSource are enabled",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Required unspecified metric source",
+              "Monitoring agent metric source, all default monitoring agent metrics are published when we enable a metric agent in cluster VM",
+              "Hadoop metric source",
+              "Spark metric source"
+            ],
+            "enum": [
+              "METRIC_SOURCE_UNSPECIFIED",
+              "MONITORING_AGENT",
+              "HADOOP",
+              "SPARK"
+            ]
+          }
         }
       }
     },
@@ -2610,12 +2644,12 @@
       "type": "object",
       "properties": {
         "maxFailuresPerHour": {
-          "description": "Optional. Maximum number of times per hour a driver may be restarted as a result of driver exiting with non-zero code before job is reported failed.A job may be reported as thrashing if driver exits with non-zero code 4 times within 10 minute window.Maximum value is 10.",
+          "description": "Optional. Maximum number of times per hour a driver may be restarted as a result of driver exiting with non-zero code before job is reported failed.A job may be reported as thrashing if driver exits with non-zero code 4 times within 10 minute window.Maximum value is 10.Note: Currently, this restartable job option is not supported in Dataproc workflow template (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/workflows\/using-workflows#adding_jobs_to_a_template) jobs.",
           "type": "integer",
           "format": "int32"
         },
         "maxFailuresTotal": {
-          "description": "Optional. Maximum number of times in total a driver may be restarted as a result of driver exiting with non-zero code before job is reported failed. Maximum value is 240.",
+          "description": "Optional. Maximum number of times in total a driver may be restarted as a result of driver exiting with non-zero code before job is reported failed. Maximum value is 240.Note: Currently, this restartable job option is not supported in Dataproc workflow template (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/workflows\/using-workflows#adding_jobs_to_a_template) jobs.",
           "type": "integer",
           "format": "int32"
         }
@@ -4249,7 +4283,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The resource name of the region or location, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.workflowTemplates,create, the resource name of the region has the following format: projects\/{project_id}\/regions\/{region} For projects.locations.workflowTemplates.create, the resource name of the location has the following format: projects\/{project_id}\/locations\/{location}",
+                      "description": "Required. The resource name of the region or location, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.workflowTemplates.create, the resource name of the region has the following format: projects\/{project_id}\/regions\/{region} For projects.locations.workflowTemplates.create, the resource name of the location has the following format: projects\/{project_id}\/locations\/{location}",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5994,7 +6028,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The resource name of the region or location, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.workflowTemplates,create, the resource name of the region has the following format: projects\/{project_id}\/regions\/{region} For projects.locations.workflowTemplates.create, the resource name of the location has the following format: projects\/{project_id}\/locations\/{location}",
+                      "description": "Required. The resource name of the region or location, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.workflowTemplates.create, the resource name of the region has the following format: projects\/{project_id}\/regions\/{region} For projects.locations.workflowTemplates.create, the resource name of the location has the following format: projects\/{project_id}\/locations\/{location}",
                       "pattern": "^projects\/[^\/]+\/regions\/[^\/]+$",
                       "location": "path",
                       "required": true,

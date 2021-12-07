@@ -39,19 +39,20 @@ def AddStateFlag(parser):
   parser.add_argument('--state', help=help_text)
 
 
-def AddValidateOnlyFlag(parser):
-  """Adds a --validate-only flag to the given parser."""
-  help_text = """Only validate the stream, but do not create any resources.
-  The default is false."""
-  parser.add_argument(
-      '--validate-only', help=help_text, action='store_true', default=False)
-
-
-def AddForceFlag(parser):
-  """Adds a --force flag to the given parser."""
-  help_text = """Create the stream without validating it."""
-  parser.add_argument(
-      '--force', help=help_text, action='store_true', default=False)
+def AddValidationGroup(parser):
+  """Adds a --validate-only or --force flag to the given parser."""
+  validation_group = parser.add_group(mutex=True)
+  validation_group.add_argument(
+      '--validate-only',
+      help="""Only validate the stream, but do not create any resources.
+      The default is false.""",
+      action='store_true',
+      default=False)
+  validation_group.add_argument(
+      '--force',
+      help="""Create the stream without validating it.""",
+      action='store_true',
+      default=False)
 
 
 def AddBackfillStrategyGroup(parser, required=True):

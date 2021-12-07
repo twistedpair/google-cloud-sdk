@@ -33,33 +33,37 @@ properties:
     description: |-
       A free-text description of the resource. Max length 1024 characters.
     type: string
+  gateways:
+    description: |-
+      Gateways defines a list of gateways this GrpcRoute is attached to, as one
+      of the routing rules to route the requests served by the gateway. Each
+      gateway reference should match the pattern:
+      `projects/*/locations/global/gateways/`
+    type: array
+    items:
+      type: string
   hostnames:
     description: |-
-      Service hostnames with an optional port for which this route describes
-      traffic. Format: [:] These strings may be literals or patterns. In the
-      case of a pattern string, '*' (asterisk) matches any string conforming to
-      the regex ([a-z0-9-.]*). In that case, '*' must be the first character and
-      must be followed in the pattern by either the character '-' (dash) or the
-      character '.' (dot). A single route object may not have multiple GrpcRoute
-      objects associated with it that have the same hostname pattern. If an
-      attempt is made to associate a GrpcRoute with a duplicated hostname, that
-      configuration will be rejected. For example, while it is acceptable for
-      GrpcRoutes for the hostnames "*.foo.bar.com" and "*.bar.com" to be
-      associated with the same GrpcRoute, it is not possible to associate two
-      GrpcRoutes both with "*.bar.com" or both with "bar.com". In the case that
-      multiple GrpcRoutes match the hostname, the most specific match will be
-      selected. For example, "foo.bar.baz.com" will take precedence over
-      "*.bar.baz.com" and "*.bar.baz.com" will take precedence over "*.baz.com".
-      If a port is specified, then gRPC clients must use the channel URI with
-      the port to match this rule (i.e. "xds://service:123"), otherwise they
-      must supply the URI without a port (i.e. "xds://service"). At the moment,
-      only exact match of hostnames is supported.
+      If a port is specified, then gRPC clients must use the channel URI
+      with the port to match this rule (i.e. "xds:///service:123"),
+      otherwise they must supply the URI without a port (i.e.
+      "xds:///service").
     type: array
     items:
       type: string
   labels:
-    description: Set of label tags associated with the GrpcRoute resource.
+    description: |-
+      Set of label tags associated with the GrpcRoute resource.
     $ref: LabelsValue.yaml
+  meshes:
+    description: |-
+      Meshes defines a list of meshes this GrpcRoute is attached to, as
+      one of the routing rules to route the requests served by the mesh.
+      Each mesh reference should match the pattern:
+      `projects/*/locations/global/meshes/`
+    type: array
+    items:
+      type: string
   name:
     description: |-
       Name of the GrpcRoute resource. It matches pattern
@@ -67,18 +71,18 @@ properties:
     type: string
   routers:
     description: |-
-      Routers define a list of routers this GrpcRoute should be served by.
-      Each router reference should match the pattern:
+      Routers define a list of routers this GrpcRoute should be
+      served by. Each router reference should match the pattern:
       `projects/*/locations/global/routers/`
     type: array
     items:
       type: string
   rules:
     description: |-
-      A list of detailed rules defining how to route traffic. Within a
-      single GrpcRoute, the GrpcRoute.RouteAction associated with the
-      first matching GrpcRoute.RouteRule will be executed. At least one
-      rule must be supplied.
+      A list of detailed rules defining how to route traffic.
+      Within a single GrpcRoute, the GrpcRoute.RouteAction
+      associated with the first matching GrpcRoute.RouteRule
+      will be executed. At least one rule must be supplied.
     type: array
     items:
       $ref: GrpcRouteRouteRule.yaml

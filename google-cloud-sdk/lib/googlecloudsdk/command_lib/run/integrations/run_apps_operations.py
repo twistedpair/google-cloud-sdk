@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 import contextlib
 import datetime
+import re
 
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.run.integrations import api_utils
@@ -29,12 +30,13 @@ from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
-_API_NAME = 'run_apps'
-
 # Max wait time before timing out
 _POLLING_TIMEOUT_MS = 180000
 # Max wait time between poll retries before timing out
 _RETRY_TIMEOUT_MS = 1000
+
+_CONFIG_KEY = 'config'
+_RESOURCES_KEY = 'resources'
 
 _DEFAULT_APP_NAME = 'default'
 
@@ -86,8 +88,9 @@ class RunAppsOperations(object):
                      appname,
                      appconfig,
                      message=None,
-                     match_type_names=None):
-    """Apply the application config.
+                     match_type_names=None,
+                     etag=None):
+    """Applies the application config.
 
     Args:
       appname:  name of the application.
@@ -95,14 +98,16 @@ class RunAppsOperations(object):
       message: the message to display when waiting for API call to finish.
         If not given, default messages will be used.
       match_type_names: array of type/name pairs used for create selector.
+      etag: the etag of the application if it's an incremental patch.
 
     Returns:
       The updated application.
     """
     app_ref = self.GetAppRef(appname)
-    application = self.messages.Application(name=appname, config=appconfig)
-    existing_app = api_utils.GetApplication(self._client, app_ref)
-    if existing_app:
+    application = self.messages.Application(
+        name=appname, config=appconfig, etag=etag)
+    is_patch = etag or api_utils.GetApplication(self._client, app_ref)
+    if is_patch:
       operation = api_utils.PatchApplication(self._client, app_ref, application)
       if message is None:
         message = 'Updating Application [{}]'.format(appname)
@@ -144,37 +149,88 @@ class RunAppsOperations(object):
     application = api_utils.GetApplication(self._client, app_ref)
     if not application:
       application = self.messages.Application(
-          name=_DEFAULT_APP_NAME, config={'resources': {}})
+          name=_DEFAULT_APP_NAME, config={_RESOURCES_KEY: {}})
 
     app_dict = encoding.MessageToDict(application)
-    app_dict.setdefault('config', {})
-    app_dict['config'].setdefault('resources', {})
+    app_dict.setdefault(_CONFIG_KEY, {})
+    app_dict[_CONFIG_KEY].setdefault(_RESOURCES_KEY, {})
     if not name:
-      name = self._GetIntegrationName(integration_type, service)
+      name = self.NewIntegrationName(integration_type, service, app_dict)
 
-    if name in app_dict['config']['resources']:
+    if name in app_dict[_CONFIG_KEY][_RESOURCES_KEY]:
       raise exceptions.ArgumentError(
           'Integration with name [{}] already exists.'.format(name))
 
-    resource_config = self.GetResourceConfig(integration_type, parameters,
-                                             service, {})
-    app_dict['config']['resources'][name] = resource_config
+    resource_config = self._GetResourceConfig(integration_type, parameters,
+                                              service, None, {})
+    app_dict[_CONFIG_KEY][_RESOURCES_KEY][name] = resource_config
     application = encoding.DictToMessage(app_dict, self.messages.Application)
-    # TODO(b/201452306): pass in etag.
     match_type_names = [{'type': integration_type, 'name': name}]
     return self.ApplyAppConfig(
         appname=_DEFAULT_APP_NAME,
         appconfig=application.config,
         message='Creating Integration [{}]'.format(name),
-        match_type_names=match_type_names)
+        match_type_names=match_type_names,
+        etag=application.etag)
 
-  def GetResourceConfig(self, int_type, parameters, service, res_config):
+  def UpdateIntegration(self,
+                        name,
+                        parameters,
+                        add_service=None,
+                        remove_service=None):
+    """Update an integration.
+
+    Args:
+      name:  str, the name of the resource to update.
+      parameters: dict, the parameters from args.
+      add_service: the service to attach to the integration.
+      remove_service: the service to remove from the integration.
+
+    Raises:
+      IntegrationNotFoundError: If the integration is not found.
+
+    Returns:
+      The updated application.
+    """
+    app_ref = self.GetAppRef(_DEFAULT_APP_NAME)
+    application = api_utils.GetApplication(self._client, app_ref)
+    if not application:
+      raise exceptions.IntegrationNotFoundError(
+          'Integration [{}] cannot be found'.format(name))
+    app_dict = encoding.MessageToDict(application)
+    existing_resource = app_dict.get(_CONFIG_KEY, {}).get(_RESOURCES_KEY,
+                                                          {}).get(name)
+    if existing_resource is None:
+      raise exceptions.IntegrationNotFoundError(
+          'Integration [{}] cannot be found'.format(name))
+    # Get the integration type. It is in the oneof block from proto,
+    # which translated as the only key in the resource dict.
+    keys = list(existing_resource.keys())
+    assert len(keys) == 1
+    integration_type = keys[0]
+
+    resource_config = self._GetResourceConfig(integration_type, parameters,
+                                              add_service, remove_service,
+                                              existing_resource)
+    app_dict[_CONFIG_KEY][_RESOURCES_KEY][name] = resource_config
+    application = encoding.DictToMessage(app_dict, self.messages.Application)
+    match_type_names = [{'type': integration_type, 'name': name}]
+    return self.ApplyAppConfig(
+        appname=_DEFAULT_APP_NAME,
+        appconfig=application.config,
+        message='Updating Integration [{}]'.format(name),
+        match_type_names=match_type_names,
+        etag=application.etag)
+
+  def _GetResourceConfig(self, int_type, parameters, add_service,
+                         remove_service, res_config):
     """Returns a new resource config according to the parameters.
 
     Args:
       int_type: type of the resource.
       parameters: parameter dictionary from args.
-      service: the service to attach to the new integration.
+      add_service: the service to attach to the integration.
+      remove_service: the service to remove from the integration.
       res_config: previous resource config. If given, changes will be made based
         on it.
 
@@ -191,8 +247,11 @@ class RunAppsOperations(object):
         config['dns-zone'] = parameters['dns-zone']
       if 'domain' in parameters:
         config['domain'] = parameters['domain']
-      if service:
-        route = {'ref': 'service/{}'.format(service)}
+      if remove_service:
+        ref = 'service/{}'.format(remove_service)
+        config['routes'] = [x for x in config['routes'] if x['ref'] != ref]
+      if add_service:
+        route = {'ref': 'service/{}'.format(add_service)}
         if 'paths' in parameters:
           route['paths'] = parameters['paths']
           if 'routes' not in config:
@@ -205,9 +264,32 @@ class RunAppsOperations(object):
     raise exceptions.ArgumentError(
         'Unsupported integration type [{}]'.format(int_type))
 
-  def _GetIntegrationName(self, integration_type, service):
-    # TODO(b/201452306):check for duplicate.
-    return '{}-{}'.format(integration_type, service)
+  def NewIntegrationName(self, integration_type, service, app_dict):
+    """Returns a new name for an integration.
+
+    It makes sure the new name does not exist in the given app_dict.
+
+    Args:
+      integration_type:  str, type of the integration.
+      service: str, name of the service
+      app_dict: dict, the dictionary that represents the application
+
+    Returns:
+      str, the new name.
+
+    """
+    if integration_type == 'router':
+      name = 'default-router'
+    else:
+      name = '{}-{}'.format(integration_type, service)
+    while name in app_dict[_CONFIG_KEY][_RESOURCES_KEY]:
+      count = 1
+      match = re.search(r'(.+)-(\d+)$', name)
+      if match:
+        name = match.group(1)
+        count = int(match.group(2)) + 1
+      name = '{}-{}'.format(name, count)
+    return name
 
   def GetAppRef(self, name):
     """Returns the application resource object.
@@ -226,5 +308,5 @@ class RunAppsOperations(object):
             'projectsId': project,
             'locationsId': location
         },
-        collection='run_apps.projects.locations.applications')
+        collection='runapps.projects.locations.applications')
     return app_ref

@@ -188,6 +188,16 @@ class _StorageStreamResponseHandler(requests.ResponseHandler):
         break
 
 
+def _get_encryption_headers(key):
+  if key and key.type == encryption_util.KeyType.CSEK:
+    return {
+        'x-goog-encryption-algorithm': 'AES256',
+        'x-goog-encryption-key': key.key,
+        'x-goog-encryption-key-sha256': key.sha256,
+    }
+  return {}
+
+
 class GcsApi(cloud_api.CloudApi):
   """Client for Google Cloud Storage API."""
 
@@ -217,27 +227,16 @@ class GcsApi(cloud_api.CloudApi):
       self.client.additional_http_headers = old_headers
 
   def _encryption_headers_context(self, key):
-    if key and key.type == encryption_util.KeyType.CSEK:
-      additional_headers = {
-          'x-goog-encryption-algorithm': 'AES256',
-          'x-goog-encryption-key': key.key,
-          'x-goog-encryption-key-sha256': key.sha256,
-      }
-    else:
-      additional_headers = {}
-    return self._apitools_request_headers_context(additional_headers)
+    return self._apitools_request_headers_context(_get_encryption_headers(key))
 
   def _encryption_headers_for_rewrite_call_context(self, request_config):
     additional_headers = {}
-    encryption_key = request_config.encryption_key
-    if encryption_key and encryption_key.type == encryption_util.KeyType.CSEK:
-      additional_headers.update({
-          'x-goog-encryption-algorithm': 'AES256',
-          'x-goog-encryption-key': encryption_key.key,
-          'x-goog-encryption-key-sha256': encryption_key.sha256,
-      })
+    encryption_key = getattr(request_config.resource_args, 'encryption_key',
+                             None)
+    additional_headers.update(_get_encryption_headers(encryption_key))
 
-    decryption_key = request_config.decryption_key
+    decryption_key = getattr(request_config.resource_args, 'decryption_key',
+                             None)
     if decryption_key and decryption_key.type == encryption_util.KeyType.CSEK:
       additional_headers.update({
           'x-goog-copy-source-encryption-algorithm': 'AES256',
@@ -252,7 +251,7 @@ class GcsApi(cloud_api.CloudApi):
     Args:
       fields_scope (FieldsScope): Used to determine projection to return.
       message_class (object): Apitools message object that contains a projection
-          enum.
+        enum.
 
     Returns:
       projection (ProjectionValueValuesEnum): Determines if ACL properties
@@ -493,7 +492,9 @@ class GcsApi(cloud_api.CloudApi):
     projection = self._get_projection(fields_scope,
                                       self.messages.StorageObjectsGetRequest)
 
-    with self._encryption_headers_context(request_config.decryption_key):
+    decryption_key = getattr(request_config.resource_args, 'decryption_key',
+                             None)
+    with self._encryption_headers_context(decryption_key):
       object_metadata = self.client.objects.Get(
           self.messages.StorageObjectsGetRequest(
               bucket=bucket_name,
@@ -607,8 +608,8 @@ class GcsApi(cloud_api.CloudApi):
             object=destination_metadata,
             sourceGeneration=source_generation,
             ifGenerationMatch=request_config.precondition_generation_match,
-            ifMetagenerationMatch=(
-                request_config.precondition_metageneration_match),
+            ifMetagenerationMatch=request_config
+            .precondition_metageneration_match,
             destinationPredefinedAcl=predefined_acl,
             rewriteToken=resume_rewrite_token,
             maxBytesRewrittenPerCall=max_bytes_per_call)
@@ -638,6 +639,7 @@ class GcsApi(cloud_api.CloudApi):
                        download_stream,
                        apitools_download,
                        apitools_request,
+                       request_config,
                        do_not_decompress=False,
                        generation=None,
                        serialization_data=None,
@@ -653,6 +655,8 @@ class GcsApi(cloud_api.CloudApi):
         managing downloads.
       apitools_request (apitools.messages.StorageObjectsGetReqest):
         Holds call to GCS API.
+      request_config (request_config_factory._RequestConfig): Additional
+        request metadata.
       do_not_decompress (bool): If true, gzipped objects will not be
         decompressed on-the-fly if supported by the API.
       generation (int): Generation of the object to retrieve.
@@ -672,7 +676,9 @@ class GcsApi(cloud_api.CloudApi):
     if do_not_decompress:
       additional_headers['accept-encoding'] = 'gzip'
 
-    # TODO(b/161437904): Add decryption handling.
+    decryption_key = getattr(request_config.resource_args, 'decryption_key',
+                             None)
+    additional_headers.update(_get_encryption_headers(decryption_key))
 
     if start_byte or end_byte is not None:
       apitools_download.GetRange(
@@ -693,6 +699,7 @@ class GcsApi(cloud_api.CloudApi):
                                  download_stream,
                                  apitools_download,
                                  apitools_request,
+                                 request_config,
                                  decryption_wrapper=None,
                                  do_not_decompress=False,
                                  generation=None,
@@ -733,6 +740,7 @@ class GcsApi(cloud_api.CloudApi):
           download_stream,
           apitools_download,
           apitools_request,
+          request_config,
           do_not_decompress=do_not_decompress,
           generation=generation,
           serialization_data=serialization_data,
@@ -793,29 +801,30 @@ class GcsApi(cloud_api.CloudApi):
         object=cloud_resource.name,
         generation=generation)
 
-    with self._encryption_headers_context(request_config.decryption_key):
-      if download_strategy == cloud_api.DownloadStrategy.ONE_SHOT:
-        return self._download_object(
-            cloud_resource,
-            download_stream,
-            apitools_download,
-            request,
-            do_not_decompress=do_not_decompress,
-            generation=generation,
-            serialization_data=serialization_data,
-            start_byte=start_byte,
-            end_byte=end_byte)
-      else:
-        return self._download_object_resumable(
-            cloud_resource,
-            download_stream,
-            apitools_download,
-            request,
-            do_not_decompress=do_not_decompress,
-            generation=generation,
-            serialization_data=serialization_data,
-            start_byte=start_byte,
-            end_byte=end_byte)
+    if download_strategy == cloud_api.DownloadStrategy.ONE_SHOT:
+      return self._download_object(
+          cloud_resource,
+          download_stream,
+          apitools_download,
+          request,
+          request_config,
+          do_not_decompress=do_not_decompress,
+          generation=generation,
+          serialization_data=serialization_data,
+          start_byte=start_byte,
+          end_byte=end_byte)
+    else:
+      return self._download_object_resumable(
+          cloud_resource,
+          download_stream,
+          apitools_download,
+          request,
+          request_config,
+          do_not_decompress=do_not_decompress,
+          generation=generation,
+          serialization_data=serialization_data,
+          start_byte=start_byte,
+          end_byte=end_byte)
 
   @_catch_http_error_raise_gcs_api_error()
   def upload_object(self,
@@ -846,8 +855,10 @@ class GcsApi(cloud_api.CloudApi):
       raise command_errors.Error(
           'Invalid upload strategy: {}.'.format(upload_strategy.value))
 
+    encryption_key = getattr(request_config.resource_args, 'encryption_key',
+                             None)
     try:
-      with self._encryption_headers_context(request_config.encryption_key):
+      with self._encryption_headers_context(encryption_key):
         metadata = upload.run()
     except (
         apitools_exceptions.StreamExhausted,
@@ -898,10 +909,8 @@ class GcsApi(cloud_api.CloudApi):
         composeRequest=compose_request_payload,
         destinationBucket=destination_resource.storage_url.bucket_name,
         destinationObject=destination_resource.storage_url.object_name,
-        ifGenerationMatch=(request_config.precondition_generation_match),
-        ifMetagenerationMatch=(
-            request_config.precondition_metageneration_match),
-    )
+        ifGenerationMatch=request_config.precondition_generation_match,
+        ifMetagenerationMatch=request_config.precondition_metageneration_match)
 
     if request_config.predefined_acl_string is not None:
       compose_request.destinationPredefinedAcl = getattr(
@@ -909,6 +918,8 @@ class GcsApi(cloud_api.CloudApi):
           DestinationPredefinedAclValueValuesEnum,
           request_config.predefined_acl_string)
 
-    with self._encryption_headers_context(request_config.encryption_key):
+    encryption_key = getattr(request_config.resource_args, 'encryption_key',
+                             None)
+    with self._encryption_headers_context(encryption_key):
       return gcs_metadata_util.get_object_resource_from_metadata(
           self.client.objects.Compose(compose_request))

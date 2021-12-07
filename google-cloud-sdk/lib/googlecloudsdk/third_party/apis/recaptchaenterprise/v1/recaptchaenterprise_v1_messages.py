@@ -216,6 +216,131 @@ class GoogleCloudRecaptchaenterpriseV1Event(_messages.Message):
   userIpAddress = _messages.StringField(5)
 
 
+class GoogleCloudRecaptchaenterpriseV1FirewallAction(_messages.Message):
+  r"""An individual action. Each action represents what to do if a policy
+  matches.
+
+  Fields:
+    allow: The user request did not match any policy and should be allowed
+      access to the requested resource.
+    block: This action will deny access to a given page. The user will get an
+      HTTP error code.
+    redirect: This action will redirect the request to a ReCaptcha
+      interstitial to attach a token.
+    setHeader: This action will set a custom header but allow the request to
+      continue to the customer backend.
+    substitute: This action will transparently serve a different page to an
+      offending user.
+  """
+
+  allow = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallActionAllowAction', 1)
+  block = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallActionBlockAction', 2)
+  redirect = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallActionRedirectAction', 3)
+  setHeader = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallActionSetHeaderAction', 4)
+  substitute = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallActionSubstituteAction', 5)
+
+
+class GoogleCloudRecaptchaenterpriseV1FirewallActionAllowAction(_messages.Message):
+  r"""An allow action continues processing a request unimpeded."""
+
+
+class GoogleCloudRecaptchaenterpriseV1FirewallActionBlockAction(_messages.Message):
+  r"""A block action serves an HTTP error code a prevents the request from
+  hitting the backend.
+  """
+
+
+
+class GoogleCloudRecaptchaenterpriseV1FirewallActionRedirectAction(_messages.Message):
+  r"""A redirect action returns a 307 (temporary redirect) response, pointing
+  the user to a ReCaptcha interstitial page to attach a token.
+  """
+
+
+
+class GoogleCloudRecaptchaenterpriseV1FirewallActionSetHeaderAction(_messages.Message):
+  r"""A set header action sets a header and forwards the request to the
+  backend. This can be used to trigger custom protection implemented on the
+  backend.
+
+  Fields:
+    key: The header key to set in the request to the backend server.
+    value: The header value to set in the request to the backend server.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class GoogleCloudRecaptchaenterpriseV1FirewallActionSubstituteAction(_messages.Message):
+  r"""A substitute action transparently serves a different page than the one
+  requested.
+
+  Fields:
+    path: The address to redirect to. The target is a relative path in the
+      current host. Example: "/blog/404.html".
+  """
+
+  path = _messages.StringField(1)
+
+
+class GoogleCloudRecaptchaenterpriseV1FirewallPolicy(_messages.Message):
+  r"""An FirewallPolicy represents a single matching pattern and resulting
+  actions to take.
+
+  Enums:
+    ProtectionValueValuesEnum: The reCAPTCHA protection mode set on the site
+      key owning this policy.
+
+  Fields:
+    actions: The actions that the caller should take regarding the user. There
+      should be at most 1 terminal action. A terminal action is any action
+      that forces a response, such as Allow, Block or Substitute. If it makes
+      sense for it to happen multple times, such as SetHeader, the action is
+      non-terminal.
+    condition: A CEL (Common Expression Language) conditional expression that
+      specifies if this policy applies to an incoming user request. If this
+      condition evaluates to true and the requested path matched the path
+      pattern, the associated actions should be executed by the caller. The
+      condition string is checked for CEL syntax correctness on creation. For
+      more information, see the [CEL spec](https://github.com/google/cel-spec)
+      and its [language definition](https://github.com/google/cel-
+      spec/blob/master/doc/langdef.md)
+    description: A description of what this policy aims to achieve, for
+      convenience purposes. The description can at most include 256 UTF-8
+      characters.
+    name: The resource name for the FirewallPolicy in the format
+      "projects/{project}/firewallpolicies/{firewallpolicy}".
+    path: The path for which this policy applies, specified as a glob pattern.
+      For more information on glob, see the [manual
+      page](https://man7.org/linux/man-pages/man7/glob.7.html).
+    protection: The reCAPTCHA protection mode set on the site key owning this
+      policy.
+  """
+
+  class ProtectionValueValuesEnum(_messages.Enum):
+    r"""The reCAPTCHA protection mode set on the site key owning this policy.
+
+    Values:
+      PROTECTION_UNSPECIFIED: Default value that indicates this enum hasn't
+        been specified.
+      LITE: Lightweight server-side protection.
+      REDIRECT: Redirect incoming requests to reCAPTCHA Enterprise to
+        determine whether each request is potentially fraudulent or
+        legitimate.
+    """
+    PROTECTION_UNSPECIFIED = 0
+    LITE = 1
+    REDIRECT = 2
+
+  actions = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallAction', 1, repeated=True)
+  condition = _messages.StringField(2)
+  description = _messages.StringField(3)
+  name = _messages.StringField(4)
+  path = _messages.StringField(5)
+  protection = _messages.EnumField('ProtectionValueValuesEnum', 6)
+
+
 class GoogleCloudRecaptchaenterpriseV1IOSKeySettings(_messages.Message):
   r"""Settings specific to keys that can be used by iOS apps.
 
@@ -280,6 +405,19 @@ class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):
   name = _messages.StringField(6)
   testingOptions = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TestingOptions', 7)
   webSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1WebKeySettings', 8)
+
+
+class GoogleCloudRecaptchaenterpriseV1ListFirewallPoliciesResponse(_messages.Message):
+  r"""Response to request to list firewall policies belonging to a key.
+
+  Fields:
+    firewallPolicies: Policy details.
+    nextPageToken: Token to retrieve the next page of results. It is set to
+      empty if no policies remain in results.
+  """
+
+  firewallPolicies = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallPolicy', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class GoogleCloudRecaptchaenterpriseV1ListKeysResponse(_messages.Message):
@@ -732,6 +870,78 @@ class RecaptchaenterpriseProjectsAssessmentsCreateRequest(_messages.Message):
 
   googleCloudRecaptchaenterpriseV1Assessment = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1Assessment', 1)
   parent = _messages.StringField(2, required=True)
+
+
+class RecaptchaenterpriseProjectsFirewallpoliciesCreateRequest(_messages.Message):
+  r"""A RecaptchaenterpriseProjectsFirewallpoliciesCreateRequest object.
+
+  Fields:
+    googleCloudRecaptchaenterpriseV1FirewallPolicy: A
+      GoogleCloudRecaptchaenterpriseV1FirewallPolicy resource to be passed as
+      the request body.
+    parent: Required. The name of the project this policy will apply to, in
+      the format "projects/{project}".
+  """
+
+  googleCloudRecaptchaenterpriseV1FirewallPolicy = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallPolicy', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class RecaptchaenterpriseProjectsFirewallpoliciesDeleteRequest(_messages.Message):
+  r"""A RecaptchaenterpriseProjectsFirewallpoliciesDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the policy to be deleted, in the format
+      "projects/{project}/firewallpolicies/{firewallpolicy}".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RecaptchaenterpriseProjectsFirewallpoliciesGetRequest(_messages.Message):
+  r"""A RecaptchaenterpriseProjectsFirewallpoliciesGetRequest object.
+
+  Fields:
+    name: Required. The name of the requested policy, in the format
+      "projects/{project}/firewallpolicies/{firewallpolicy}".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RecaptchaenterpriseProjectsFirewallpoliciesListRequest(_messages.Message):
+  r"""A RecaptchaenterpriseProjectsFirewallpoliciesListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of policies to return. Default is
+      10. Max limit is 1000.
+    pageToken: Optional. The next_page_token value returned from a previous.
+      ListFirewallPoliciesRequest, if any.
+    parent: Required. The name of the project to list the policies for, in the
+      format "projects/{project}".
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class RecaptchaenterpriseProjectsFirewallpoliciesPatchRequest(_messages.Message):
+  r"""A RecaptchaenterpriseProjectsFirewallpoliciesPatchRequest object.
+
+  Fields:
+    googleCloudRecaptchaenterpriseV1FirewallPolicy: A
+      GoogleCloudRecaptchaenterpriseV1FirewallPolicy resource to be passed as
+      the request body.
+    name: The resource name for the FirewallPolicy in the format
+      "projects/{project}/firewallpolicies/{firewallpolicy}".
+    updateMask: Optional. The mask to control which fields of the policy get
+      updated. If the mask is not present, all fields will be updated.
+  """
+
+  googleCloudRecaptchaenterpriseV1FirewallPolicy = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallPolicy', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class RecaptchaenterpriseProjectsKeysCreateRequest(_messages.Message):

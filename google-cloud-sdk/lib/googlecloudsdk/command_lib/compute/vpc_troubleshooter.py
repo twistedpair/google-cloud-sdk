@@ -26,10 +26,27 @@ _API_COMPUTE_CLIENT_NAME = 'compute'
 _API_CLIENT_VERSION_V1 = 'v1'
 
 IAP_MESSAGE = (
-    'There is an issue with IAP port forwarding. Make sure the IAP '
-    'firewall rule is valid.\n'
+    'There is an issue with your IAP configuration\n'
+    '\n'
+    'Check the following items:\n'
+    ' - The IAP firewall rule is valid.\n'
+    ' - IAP tunneling is enabled.\n'
+    ' - You are connecting using an IAP token.\n'
+    ' - You have the IAM role of Project Owner, IAP-Secured Tunnel User, or '
+    'iap.tunnelInstances.accessViaIAP (preferred)\n'
+    ' - Your organization hasn\'t blocked access to external IP addresses. '
+    'IAP changes the source traffic to 35.235.240.0/20 and the tunnel to '
+    'https://tunnel.cloudproxy.app.\n'
+    ' - If your organization blocks access to public IP addresses, try '
+    'connecting through a bastion server.\n'
+    '\n'
     'Help for IAP port forwarding: '
-    'https://cloud.google.com/iap/docs/using-tcp-forwarding\n')
+    'https://cloud.google.com/iap/docs/using-tcp-forwarding\n'
+    'https://cloud.google.com/iap/docs/faq#what_domain_does_for_tcp_use'
+    '\n'
+    'Help for bastion server: '
+    'https://cloud.google.com/compute/docs/instances/connecting-advanced#bastion_host\n')   # pylint: disable=line-too-long
+
 
 DEFAULT_SSH_PORT_MESSAGE = (
     'No ingress firewall rule allowing SSH found.\n'

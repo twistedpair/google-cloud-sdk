@@ -26,7 +26,7 @@ class AgentPool(_messages.Message):
       unspecified, the default value is set as 'No Limit'.
     displayName: Specifies the client-specified AgentPool description.
     name: Required. Specifies a unique string that identifies the agent pool.
-      Format: projects/{project_id}/agentPools/{agent_pool_id}
+      Format: `projects/{project_id}/agentPools/{agent_pool_id}`
     state: Output only. Specifies the state of the AgentPool.
   """
 
@@ -152,12 +152,11 @@ class AzureCredentials(_messages.Message):
 
 
 class BandwidthLimit(_messages.Message):
-  r"""Specifies the BandwidthLimit to describe the non-negative bandwidth rate
-  in mbps for the agent pool.
+  r"""Specifies a bandwidth limit for an agent pool.
 
   Fields:
-    limitMbps: Specifies bandwidth rate in mbps distributed across all the
-      agents in the pool.
+    limitMbps: Bandwidth rate in megabytes per second, distributed across all
+      the agents in the pool.
   """
 
   limitMbps = _messages.IntegerField(1)
@@ -444,14 +443,54 @@ class ListTransferJobsResponse(_messages.Message):
 class LoggingConfig(_messages.Message):
   r"""Logging configuration.
 
+  Enums:
+    LogActionStatesValueListEntryValuesEnum:
+    LogActionsValueListEntryValuesEnum:
+
   Fields:
     enableOnpremGcsTransferLogs: Enables the Cloud Storage transfer logs for
       this transfer. This is only supported for transfer jobs with
       PosixFilesystem sources. The default is that logs are not generated for
       this transfer.
+    logActionStates: States in which `log_actions` are logged. If empty, no
+      logs are generated. This is not yet supported for transfers with
+      PosixFilesystem data sources.
+    logActions: Actions to be logged. If empty, no logs are generated. This is
+      not yet supported for transfers with PosixFilesystem data sources.
   """
 
+  class LogActionStatesValueListEntryValuesEnum(_messages.Enum):
+    r"""LogActionStatesValueListEntryValuesEnum enum type.
+
+    Values:
+      LOGGABLE_ACTION_STATE_UNSPECIFIED: Default value. This value is unused.
+      SUCCEEDED: `LoggableAction` is completed successfully. `SUCCEEDED`
+        actions are logged as INFO.
+      FAILED: `LoggableAction` is terminated in an error state. `FAILED`
+        actions are logged as ERROR.
+    """
+    LOGGABLE_ACTION_STATE_UNSPECIFIED = 0
+    SUCCEEDED = 1
+    FAILED = 2
+
+  class LogActionsValueListEntryValuesEnum(_messages.Enum):
+    r"""LogActionsValueListEntryValuesEnum enum type.
+
+    Values:
+      LOGGABLE_ACTION_UNSPECIFIED: Default value. This value is unused.
+      FIND: Finding objects to transfer e.g. listing objects of the source
+        bucket.
+      DELETE: Deleting objects at source or destination.
+      COPY: Copying objects from source to destination.
+    """
+    LOGGABLE_ACTION_UNSPECIFIED = 0
+    FIND = 1
+    DELETE = 2
+    COPY = 3
+
   enableOnpremGcsTransferLogs = _messages.BooleanField(1)
+  logActionStates = _messages.EnumField('LogActionStatesValueListEntryValuesEnum', 2, repeated=True)
+  logActions = _messages.EnumField('LogActionsValueListEntryValuesEnum', 3, repeated=True)
 
 
 class NotificationConfig(_messages.Message):
@@ -576,18 +615,22 @@ class ObjectConditions(_messages.Message):
       worth of data at a time. For that you'd set each of the fields as
       follows: * `last_modified_since` to the start of the day *
       `last_modified_before` to the end of the day
-    maxTimeElapsedSinceLastModification: If specified, only objects with a
-      "last modification time" on or after `NOW` -
-      `max_time_elapsed_since_last_modification` and objects that don't have a
-      "last modification time" are transferred. For each TransferOperation
-      started by this TransferJob, `NOW` refers to the start_time of the
-      `TransferOperation`.
-    minTimeElapsedSinceLastModification: If specified, only objects with a
-      "last modification time" before `NOW` -
-      `min_time_elapsed_since_last_modification` and objects that don't have a
-      "last modification time" are transferred. For each TransferOperation
-      started by this TransferJob, `NOW` refers to the start_time of the
-      `TransferOperation`.
+    maxTimeElapsedSinceLastModification: Ensures that objects are not
+      transferred if a specific maximum time has elapsed since the "last
+      modification time". When a TransferOperation begins, objects with a
+      "last modification time" are transferred only if the elapsed time
+      between the start_time of the `TransferOperation`and the "last
+      modification time" of the object is less than the value of
+      max_time_elapsed_since_last_modification`. Objects that do not have a
+      "last modification time" are also transferred.
+    minTimeElapsedSinceLastModification: Ensures that objects are not
+      transferred until a specific minimum time has elapsed after the "last
+      modification time". When a TransferOperation begins, objects with a
+      "last modification time" are transferred only if the elapsed time
+      between the start_time of the `TransferOperation` and the "last
+      modification time" of the object is equal to or greater than the value
+      of min_time_elapsed_since_last_modification`. Objects that do not have a
+      "last modification time" are also transferred.
   """
 
   excludePrefixes = _messages.StringField(1, repeated=True)
@@ -718,8 +761,8 @@ class RunTransferJobRequest(_messages.Message):
   r"""Request passed to RunTransferJob.
 
   Fields:
-    projectId: Required. The ID of the Google Cloud Platform Console project
-      that owns the transfer job.
+    projectId: Required. The ID of the Google Cloud project that owns the
+      transfer job.
   """
 
   projectId = _messages.StringField(1)
@@ -894,8 +937,8 @@ class StoragetransferGoogleServiceAccountsGetRequest(_messages.Message):
   r"""A StoragetransferGoogleServiceAccountsGetRequest object.
 
   Fields:
-    projectId: Required. The ID of the Google Cloud Platform Console project
-      that the Google service account is associated with.
+    projectId: Required. The ID of the Google Cloud project that the Google
+      service account is associated with.
   """
 
   projectId = _messages.StringField(1, required=True)
@@ -906,12 +949,16 @@ class StoragetransferProjectsAgentPoolsCreateRequest(_messages.Message):
 
   Fields:
     agentPool: A AgentPool resource to be passed as the request body.
-    agentPoolId: Required. The id of the agent pool to create. The
-      agent_pool_id must be non-empty, less than or equal to 128 characters,
-      and satisfy the following regex: "^[a-z]([a-z0-9-._~]*[a-z0-9])?$".
-      Also, agent pool names cannot start with the string "goog".
-    projectId: Required. The ID of the Google Cloud Platform Console project
-      that owns the agent pool.
+    agentPoolId: Required. The ID of the agent pool to create. The
+      `agent_pool_id` must meet the following requirements: * Length of 128
+      characters or less. * Not start with the string `goog`. * Start with a
+      lowercase ASCII character, followed by: * Zero or more: lowercase Latin
+      alphabet characters, numerals, hyphens (`-`), periods (`.`), underscores
+      (`_`), or tildes (`~`). * One or more numerals or lowercase ASCII
+      characters. As expressed by the regular expression:
+      `^(?!goog)[a-z]([a-z0-9-._~]*[a-z0-9])?$`.
+    projectId: Required. The ID of the Google Cloud project that owns the
+      agent pool.
   """
 
   agentPool = _messages.MessageField('AgentPool', 1)
@@ -923,7 +970,7 @@ class StoragetransferProjectsAgentPoolsDeleteRequest(_messages.Message):
   r"""A StoragetransferProjectsAgentPoolsDeleteRequest object.
 
   Fields:
-    name: Required. The agent pool name to delete.
+    name: Required. The name of the agent pool to delete.
   """
 
   name = _messages.StringField(1, required=True)
@@ -933,7 +980,7 @@ class StoragetransferProjectsAgentPoolsGetRequest(_messages.Message):
   r"""A StoragetransferProjectsAgentPoolsGetRequest object.
 
   Fields:
-    name: Required. The agent pool to get.
+    name: Required. The name of the agent pool to get.
   """
 
   name = _messages.StringField(1, required=True)
@@ -943,16 +990,14 @@ class StoragetransferProjectsAgentPoolsListRequest(_messages.Message):
   r"""A StoragetransferProjectsAgentPoolsListRequest object.
 
   Fields:
-    filter: A list of optional query parameters specified as JSON text in the
+    filter: An optional list of query parameters specified as JSON text in the
       form of: `{"agentPoolNames":["agentpool1","agentpool2",...]}` Since
       `agentPoolNames` support multiple values, its values must be specified
-      with array notation. `agentPoolNames` is an optional field. The list
-      returns all agent pools for the project when the filter is not provided
-      or empty.
-    pageSize: The list page size. The max allowed value is 256.
+      with array notation. When the filter is either empty or not provided,
+      the list returns all agent pools for the project.
+    pageSize: The list page size. The max allowed value is `256`.
     pageToken: The list page token.
-    projectId: Required. The ID of the Google Cloud Platform Console project
-      that owns the job.
+    projectId: Required. The ID of the Google Cloud project that owns the job.
   """
 
   filter = _messages.StringField(1)
@@ -967,10 +1012,11 @@ class StoragetransferProjectsAgentPoolsPatchRequest(_messages.Message):
   Fields:
     agentPool: A AgentPool resource to be passed as the request body.
     name: Required. Specifies a unique string that identifies the agent pool.
-      Format: projects/{project_id}/agentPools/{agent_pool_id}
-    updateMask: The field mask of the fields in `agentPool` that are to be
-      updated in this request. Fields in `agentPool` that can be updated are:
-      display_name, bandwidth_limit,
+      Format: `projects/{project_id}/agentPools/{agent_pool_id}`
+    updateMask: The [field mask] (https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf) of the fields in `agentPool` to
+      update in this request. The following `agentPool` fields can be updated:
+      * display_name * bandwidth_limit
   """
 
   agentPool = _messages.MessageField('AgentPool', 1)
@@ -983,8 +1029,7 @@ class StoragetransferTransferJobsGetRequest(_messages.Message):
 
   Fields:
     jobName: Required. The job to get.
-    projectId: Required. The ID of the Google Cloud Platform Console project
-      that owns the job.
+    projectId: Required. The ID of the Google Cloud project that owns the job.
   """
 
   jobName = _messages.StringField(1, required=True)
@@ -1247,7 +1292,7 @@ class TransferJob(_messages.Message):
       Invalid job names fail with an INVALID_ARGUMENT error.
     notificationConfig: Notification configuration. This is not supported for
       transfers involving PosixFilesystem.
-    projectId: The ID of the Google Cloud Platform Project that owns the job.
+    projectId: The ID of the Google Cloud project that owns the job.
     schedule: Specifies schedule for the transfer job. This is an optional
       field. When the field is not set, the job never executes a transfer,
       unless you invoke RunTransferJob or update the job to have a non-empty
@@ -1297,6 +1342,19 @@ class TransferJob(_messages.Message):
   transferSpec = _messages.MessageField('TransferSpec', 12)
 
 
+class TransferManifest(_messages.Message):
+  r"""Specifies where the manifest is located.
+
+  Fields:
+    location: Specifies the path to the manifest in Cloud Storage. The Google-
+      managed service account for the transfer must have `storage.objects.get`
+      permission for this object. An example path is
+      `gs://bucket_name/path/manifest.csv`.
+  """
+
+  location = _messages.StringField(1)
+
+
 class TransferOperation(_messages.Message):
   r"""A description of the execution of a transfer.
 
@@ -1310,8 +1368,7 @@ class TransferOperation(_messages.Message):
       entries.
     name: A globally unique ID assigned by the system.
     notificationConfig: Notification configuration.
-    projectId: The ID of the Google Cloud Platform Project that owns the
-      operation.
+    projectId: The ID of the Google Cloud project that owns the operation.
     startTime: Start time of this transfer execution.
     status: Status of the transfer operation.
     transferJobName: The name of the transfer job that triggers this transfer
@@ -1393,6 +1450,10 @@ class TransferSpec(_messages.Message):
       data sink. When unspecified, the default name is used.
     sourceAgentPoolName: Specifies the agent pool name associated with the
       posix data source. When unspecified, the default name is used.
+    transferManifest: A manifest file provides a list of objects to be
+      transferred from the data source. This field points to the location of
+      the manifest file. Otherwise, the entire source bucket is used.
+      ObjectConditions still apply.
     transferOptions: If the option delete_objects_unique_in_sink is `true` and
       time-based object conditions such as 'last modification time' are
       specified, the request fails with an INVALID_ARGUMENT error.
@@ -1408,15 +1469,15 @@ class TransferSpec(_messages.Message):
   posixDataSource = _messages.MessageField('PosixFilesystem', 8)
   sinkAgentPoolName = _messages.StringField(9)
   sourceAgentPoolName = _messages.StringField(10)
-  transferOptions = _messages.MessageField('TransferOptions', 11)
+  transferManifest = _messages.MessageField('TransferManifest', 11)
+  transferOptions = _messages.MessageField('TransferOptions', 12)
 
 
 class UpdateTransferJobRequest(_messages.Message):
   r"""Request passed to UpdateTransferJob.
 
   Fields:
-    projectId: Required. The ID of the Google Cloud Platform Console project
-      that owns the job.
+    projectId: Required. The ID of the Google Cloud project that owns the job.
     transferJob: Required. The job to update. `transferJob` is expected to
       specify only four fields: description, transfer_spec,
       notification_config, and status. An `UpdateTransferJobRequest` that

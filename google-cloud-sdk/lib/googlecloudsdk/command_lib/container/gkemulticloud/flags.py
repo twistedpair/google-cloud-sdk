@@ -467,7 +467,8 @@ def AddProxyConfig(parser):
 def AddFleetProject(parser):
   parser.add_argument(
       '--fleet-project',
-      help='Name of the Fleet host project where the cluster is registered.')
+      help='ID or number of the Fleet host project where the cluster is registered.'
+  )
 
 
 def GetFleetProject(args):

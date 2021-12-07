@@ -504,7 +504,6 @@ def GetScheduling(args,
                   skip_defaults,
                   support_node_affinity=False,
                   support_min_node_cpu=True,
-                  support_location_hint=False,
                   support_node_project=False,
                   support_provisioning_model=False,
                   support_termination_action=False,
@@ -518,7 +517,7 @@ def GetScheduling(args,
   if support_min_node_cpu:
     min_node_cpu = args.min_node_cpu
   location_hint = None
-  if support_location_hint:
+  if hasattr(args, 'location_hint'):
     location_hint = args.location_hint
   if (skip_defaults and not IsAnySpecified(
       args, 'maintenance_policy', 'preemptible', 'restart_on_failure') and

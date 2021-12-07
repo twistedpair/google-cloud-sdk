@@ -57,11 +57,12 @@ class PackageVulnerabilitiesSummary(SummaryResolver):
 
     for occs in self.vulnerabilities.values():
       for occ in occs:
+        self.total_vulnerability_found += 1
         for package_issue in occ.vulnerability.packageIssue:
-          self.total_vulnerability_found += 1
           if (package_issue.fixedVersion.kind ==
               self.__messages.Version.KindValueValuesEnum.MAXIMUM):
             self.not_fixed_vulnerability_count += 1
+            break
     # The gcloud encoder gets confused unless we turn this back into a dict.
     self.vulnerabilities = dict(self.vulnerabilities)
 

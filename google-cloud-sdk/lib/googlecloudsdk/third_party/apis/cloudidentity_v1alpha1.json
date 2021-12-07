@@ -1064,17 +1064,17 @@
       "description": "Resource representing the Endpoint Verification specific attributes of a Device.",
       "type": "object",
       "properties": {
-        "certificateInfo": {
+        "certificateAttributes": {
           "description": "Details of certificates reported by SecureConnect.",
           "type": "array",
           "items": {
-            "$ref": "CertificateInfo"
+            "$ref": "CertificateAttributes"
           }
         }
       }
     },
-    "CertificateInfo": {
-      "id": "CertificateInfo",
+    "CertificateAttributes": {
+      "id": "CertificateAttributes",
       "description": "Stores information about a certificate.",
       "type": "object",
       "properties": {

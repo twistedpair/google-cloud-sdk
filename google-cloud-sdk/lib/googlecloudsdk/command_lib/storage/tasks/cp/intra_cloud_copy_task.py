@@ -80,6 +80,7 @@ class IntraCloudCopyTask(task.Task):
 
     request_config = request_config_factory.get_request_config(
         self._destination_resource.storage_url,
+        decryption_key_hash=self._source_resource.decryption_key_hash,
         user_request_args=self._user_request_args)
     # TODO(b/161900052): Support all of copy_object's parameters
     provider = self._source_resource.storage_url.scheme

@@ -44,7 +44,7 @@ class PrivateConnectionsClient(object):
         name=private_connection_id, labels={}, displayName=args.display_name)
     vpc_peering_ref = args.CONCEPTS.vpc_name.Parse()
     private_connection_obj.vpcPeeringConfig = self._messages.VpcPeeringConfig(
-        vpcName=vpc_peering_ref.RelativeName(), subnet=args.subnet)
+        vpc=vpc_peering_ref.RelativeName(), subnet=args.subnet)
 
     return private_connection_obj
 
@@ -73,5 +73,3 @@ class PrivateConnectionsClient(object):
         requestId=request_id)
 
     return self._service.Create(create_req)
-
-

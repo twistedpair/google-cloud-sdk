@@ -52,7 +52,8 @@ class PrivateCloudsClient(util.VmwareClientBase):
              node_count=None,
              network_cidr=None,
              network=None,
-             network_project=None):
+             network_project=None,
+             node_custom_core_count=None):
     parent = resource.Parent().RelativeName()
     private_cloud_id = resource.Name()
     private_cloud = self.messages.PrivateCloud(description=description)
@@ -67,7 +68,10 @@ class PrivateCloudsClient(util.VmwareClientBase):
       network_config.network = 'projects/{}/global/networks/{}'.format(
           network_project, network)
     management_cluster = self.messages.ManagementCluster(
-        clusterId=cluster_id, nodeCount=node_count, nodeTypeId=node_type)
+        clusterId=cluster_id, nodeCount=node_count,
+        nodeTypeId=node_type, nodeCustomCoreCount=node_custom_core_count)
+    if node_custom_core_count is not None:
+      management_cluster.nodeCustomCoreCount = node_custom_core_count
     private_cloud.managementCluster = management_cluster
     private_cloud.networkConfig = network_config
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsCreateRequest(
@@ -102,10 +106,10 @@ class PrivateCloudsClient(util.VmwareClientBase):
         name=resource.RelativeName())
     return self.service.Undelete(request)
 
-  def Delete(self, resource):
-    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsDeleteRequest(
-        name=resource.RelativeName())
-    return self.service.Delete(request)
+  def Delete(self, resource, delay_hours=None):
+    return self.service.Delete(
+        self.messages.VmwareengineProjectsLocationsPrivateCloudsDeleteRequest(
+            name=resource.RelativeName(), delayHours=delay_hours))
 
   def List(self,
            location_resource,

@@ -29,8 +29,5 @@ properties:
     description: The URL of a BackendService to route traffic to.
     type: string
   weight:
-    description: |-
-      Specifies the proportion of requests forwareded to the backend referenced
-      by the service_name field. This is computed as: weight/Sum(weights in
-      destinations) Weights in all destinations should sum up to 100.
+    description: A integer attribute.
     type: integer

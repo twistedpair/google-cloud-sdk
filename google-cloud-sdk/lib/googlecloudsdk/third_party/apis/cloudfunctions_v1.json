@@ -1443,7 +1443,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required list of fields to be updated in this request.",
+                      "description": "Required. The list of fields in `CloudFunction` that have to be updated.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"

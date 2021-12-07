@@ -38,6 +38,10 @@ class DisplayHelper(util.Bunch):
   def batchType(self):
     return self.getTruncatedFieldNameBySuffix('Batch')
 
+  @property
+  def sessionType(self):
+    return self.getTruncatedFieldNameBySuffix('Session')
+
   def getTruncatedFieldNameBySuffix(self, suffix):
     """Get a field name by suffix and truncate it.
 

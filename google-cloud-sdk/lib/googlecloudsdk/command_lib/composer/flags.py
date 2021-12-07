@@ -77,18 +77,6 @@ def ValidateComposerVersionExclusiveOptionFactory(composer_v1_option,
 
 @ValidateComposerVersionExclusiveOptionFactory(True,
                                                _INVALID_OPTION_FOR_V2_ERROR_MSG)
-class V1ExclusiveAppendAction(argparse._AppendAction):  # pylint: disable=protected-access
-  """AppendActionClass first validating if option can is Composer 1 exclusive."""
-
-
-@ValidateComposerVersionExclusiveOptionFactory(True,
-                                               _INVALID_OPTION_FOR_V2_ERROR_MSG)
-class V1ExclusiveStoreTrueAction(argparse._StoreTrueAction):  # pylint: disable=protected-access
-  """StoreTrueActionClass first validating if option is Composer 1 exclusive."""
-
-
-@ValidateComposerVersionExclusiveOptionFactory(True,
-                                               _INVALID_OPTION_FOR_V2_ERROR_MSG)
 class V1ExclusiveStoreAction(argparse._StoreAction):  # pylint: disable=protected-access
   """StoreActionClass first validating if option is Composer 1 exclusive."""
 
@@ -381,7 +369,7 @@ MAX_PODS_PER_NODE = base.Argument(
 
 WEB_SERVER_ALLOW_IP = base.Argument(
     '--web-server-allow-ip',
-    action=V1ExclusiveAppendAction,
+    action='append',
     type=arg_parsers.ArgDict(spec={
         'ip_range': str,
         'description': str
@@ -404,14 +392,14 @@ WEB_SERVER_ALLOW_IP = base.Argument(
 
 WEB_SERVER_DENY_ALL = base.Argument(
     '--web-server-deny-all',
-    action=V1ExclusiveStoreTrueAction,
+    action='store_true',
     help="""\
     Denies all incoming traffic to the Airflow web server.
     """)
 
 WEB_SERVER_ALLOW_ALL = base.Argument(
     '--web-server-allow-all',
-    action=V1ExclusiveStoreTrueAction,
+    action='store_true',
     help="""\
     Allows all IP addresses to access the Airflow web server.
     """)
@@ -422,7 +410,7 @@ UPDATE_WEB_SERVER_ALLOW_IP = base.Argument(
         'ip_range': str,
         'description': str
     }),
-    action=V1ExclusiveAppendAction,
+    action='append',
     help="""\
     Specifies a list of IPv4 or IPv6 ranges that will be allowed to access the
     Airflow web server. By default, all IPs are allowed to access the web
@@ -588,6 +576,13 @@ NUM_SCHEDULERS = base.Argument(
     Number of schedulers, supported in the Environments with Airflow 2.0.1 and later.
     """)
 
+ENVIRONMENT_SIZE_GA = arg_utils.ChoiceEnumMapper(
+    arg_name='--environment-size',
+    help_str='Size of the environment. Unspecified means that the default option will be chosen.',
+    message_enum=api_util.GetMessagesModule(release_track=base.ReleaseTrack.GA)
+    .EnvironmentConfig.EnvironmentSizeValueValuesEnum,
+    custom_mappings=_ENVIRONMENT_SIZE_MAPPING)
+
 ENVIRONMENT_SIZE_BETA = arg_utils.ChoiceEnumMapper(
     arg_name='--environment-size',
     help_str='Size of the environment. Unspecified means that the default option will be chosen.',
@@ -703,6 +698,23 @@ ENABLE_PRIVATELY_USED_PUBLIC_IPS_FLAG = base.Argument(
     specified.
     """)
 
+CONNECTION_SUBNETWORK_FLAG = base.Argument(
+    '--connection-subnetwork',
+    default=None,
+    action=V2ExclusiveStoreAction,
+    help="""\
+    Subnetwork from which an IP address for internal communications will be
+    reserved. Needs to belong to the Compute network to which the environment is
+    connected. Can be the same subnetwork as the one to which the environment is
+    connected.
+
+    If specified, the environment will use a Private Service Connect-based
+    configuration, instead of using VPC peerings.
+
+    Can be specified for Composer 2.X or greater. Cannot be specified
+    unless '--enable-private-environment' is also specified.
+    """)
+
 
 def _GetIpv4CidrMaskSize(ipv4_cidr_block):
   """Returns the size of IPV4 CIDR block mask in bits.
@@ -813,7 +825,7 @@ COMPOSER_NETWORK_IPV4_CIDR_FLAG = base.Argument(
     IPv4 CIDR range to use for the Composer network. This must have
     a size of the netmask between 24 and 29.
 
-    Can be specified for Composer v2 environments only. Cannot be specified
+    Can be specified for Composer 2.X or greater. Cannot be specified
     unless '--enable-private-environment' is also specified.
     """)
 
@@ -874,14 +886,6 @@ def GetAndValidateKmsEncryptionKey(args):
     if getattr(args, keyword.replace('-', '_'), None):
       raise exceptions.InvalidArgumentException(
           '--kms-key', 'Encryption key not fully specified.')
-
-
-def ValidateSchedulerCountFlag(scheduler_count, is_composer_v1, release_track):
-  """Raises InputError if scheduler count flag is used for Composer v2 in GA."""
-  if (scheduler_count and release_track == base.ReleaseTrack.GA and
-      not is_composer_v1):
-    raise command_util.InvalidUserInputError(
-        _INVALID_OPTION_FOR_V2_ERROR_MSG.format(opt='scheduler-count'))
 
 
 def AddImportSourceFlag(parser, folder):
@@ -1108,9 +1112,10 @@ def AddPrivateIpEnvironmentFlags(update_type_group, release_track):
   MASTER_IPV4_CIDR_FLAG.AddToParser(group)
   WEB_SERVER_IPV4_CIDR_FLAG.AddToParser(group)
   CLOUD_SQL_IPV4_CIDR_FLAG.AddToParser(group)
+  COMPOSER_NETWORK_IPV4_CIDR_FLAG.AddToParser(group)
   if release_track != base.ReleaseTrack.GA:
-    COMPOSER_NETWORK_IPV4_CIDR_FLAG.AddToParser(group)
     ENABLE_PRIVATELY_USED_PUBLIC_IPS_FLAG.AddToParser(group)
+    CONNECTION_SUBNETWORK_FLAG.AddToParser(group)
 
 
 def AddPypiUpdateFlagsToGroup(update_type_group):
@@ -1182,7 +1187,9 @@ def AddAutoscalingUpdateFlagsToGroup(update_type_group, release_track):
     update_type_group: argument group, the group to which flags should be added.
     release_track: gcloud version to add flags to.
   """
-  if release_track == base.ReleaseTrack.BETA:
+  if release_track == base.ReleaseTrack.GA:
+    ENVIRONMENT_SIZE_GA.choice_arg.AddToParser(update_type_group)
+  elif release_track == base.ReleaseTrack.BETA:
     ENVIRONMENT_SIZE_BETA.choice_arg.AddToParser(update_type_group)
   elif release_track == base.ReleaseTrack.ALPHA:
     ENVIRONMENT_SIZE_ALPHA.choice_arg.AddToParser(update_type_group)

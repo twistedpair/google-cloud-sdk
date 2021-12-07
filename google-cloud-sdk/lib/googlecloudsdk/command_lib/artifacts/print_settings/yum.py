@@ -39,4 +39,27 @@ enabled=1
 repo_gpgcheck=0
 gpgcheck=0
 EOL
+
+# Update Yum:
+sudo yum makecache
+"""
+
+
+PUBLIC_TEMPLATE = """\
+# To configure your package manager with this repository:
+
+# Configure your VM to access Artifact Registry packages using the following
+# command:
+
+sudo tee -a /etc/yum.repos.d/artifact-registry.repo << EOL
+[{repo}]
+name={repo}
+baseurl=https://{location}-yum.pkg.dev/projects/{repo_path}
+enabled=1
+repo_gpgcheck=0
+gpgcheck=0
+EOL
+
+# Update Yum:
+sudo yum makecache
 """

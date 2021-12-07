@@ -5304,6 +5304,33 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ModifyEnvironment(self, request, global_params=None):
+      r"""Updates properties for an Apigee environment with patch semantics using a field mask. **Note:** Not supported for Apigee hybrid.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsModifyEnvironmentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('ModifyEnvironment')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ModifyEnvironment.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}',
+        http_method='PATCH',
+        method_id='apigee.organizations.environments.modifyEnvironment',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudApigeeV1Environment',
+        request_type_name='ApigeeOrganizationsEnvironmentsModifyEnvironmentRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the IAM policy on an environment, if the policy already exists it will be replaced. For more information, see [Manage users, roles, and permissions using the API](https://cloud.google.com/apigee/docs/api-platform/system-administration/manage-users-roles). You must have the `apigee.environments.setIamPolicy` permission to call this API.
 

@@ -32,18 +32,6 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 INSTANCES_LIST_FORMAT = """\
     table(
       name.basename():label=INSTANCE_NAME:sort=1,
-      name.segment(3):label=ZONE,
-      tier,
-      fileShares[0].capacityGb:label=CAPACITY_GB,
-      fileShares[0].name:label=FILE_SHARE_NAME,
-      networks[0].ipAddresses[0]:label=IP_ADDRESS,
-      state,
-      createTime.date()
-    )"""
-
-INSTANCES_LIST_FORMAT_ALPHA_BETA = """\
-    table(
-      name.basename():label=INSTANCE_NAME:sort=1,
       name.segment(3):label=LOCATION,
       tier,
       fileShares[0].capacityGb:label=CAPACITY_GB,
@@ -190,31 +178,40 @@ def GetTierArg(messages, api_version):
             messages.Instance.TierValueValuesEnum,
             help_str='The service tier for the Cloud Filestore instance.',
             custom_mappings={
-                'STANDARD': ('standard', 'Standard Filestore instance.'),
-                'PREMIUM': ('premium', 'Premium Filestore instance.')
+                'STANDARD':
+                    ('standard',
+                     """Standard Filestore instance, an alias for BASIC_HDD.
+                     Use BASIC_HDD instead whenever possible."""),
+                'PREMIUM':
+                    ('premium',
+                     """Premium Filestore instance, an alias for BASIC_SSD.
+                            Use BASIC_SSD instead whenever possible."""),
+                'BASIC_HDD':
+                    ('basic-hdd', 'Performant NFS storage system using HDD.'),
+                'BASIC_SSD':
+                    ('basic-ssd', 'Performant NFS storage system using SSD.'),
+                'ENTERPRISE':
+                    ('enterprise', """ENTERPRISE instances offer the features\
+                    and availability needed for mission-critical workloads.""")
             },
             default='STANDARD'))
   return tier_arg
 
 
-def AddNetworkArg(parser, api_version):
+def AddNetworkArg(parser):
   """Adds a --network flag to the given parser.
 
   Args:
     parser: argparse parser.
-    api_version: API version.
   """
 
-  network_arg_spec = {}
+  network_arg_spec = {
+      'name': str,
+      'reserved-ip-range': str,
+      'connect-mode': str,
+  }
 
-  if api_version == filestore_client.ALPHA_API_VERSION or api_version == filestore_client.BETA_API_VERSION:
-    network_arg_spec = {
-        'name': str,
-        'reserved-ip-range': str,
-        'connect-mode': str,
-    }
-
-    network_help = """\
+  network_help = """\
         Network configuration for a Cloud Filestore instance. Specifying
         `reserved-ip-range` and `connect-mode` is optional.
         *name*::: The name of the Google Compute Engine
@@ -236,26 +233,7 @@ def AddNetworkArg(parser, api_version):
         other Cloud Filestore instances in the selected VPC network.
         *connect-mode*::: Network connection mode used by instances.
         CONNECT_MODE must be one of: DIRECT_PEERING or PRIVATE_SERVICE_ACCESS.
-    """
-  else:
-    network_arg_spec = {
-        'name': str,
-        'reserved-ip-range': str,
-    }
-
-    network_help = """\
-      Network configuration for a Cloud Filestore instance. Specifying
-      `reserved-ip-range` is optional.
-      *name*::: The name of the Google Compute Engine
-      [VPC network](/compute/docs/networks-and-firewalls#networks) to which the
-      instance is connected.
-      *reserved-ip-range*::: A /29 CIDR block in one of the
-      [internal IP address ranges](https://www.arin.net/knowledge/address_filters.html)
-      that identifies the range of IP addresses reserved for this
-      instance. For example, 10.0.0.0/29 or 192.168.0.0/29. The range you
-      specify can't overlap with either existing subnets or assigned IP address
-      ranges for other Cloud Filestore instances in the selected VPC network.
-      """
+  """
 
   parser.add_argument(
       '--network',
@@ -454,12 +432,10 @@ def AddInstanceCreateArgs(parser, api_version):
   ]).AddToParser(parser)
   AddDescriptionArg(parser)
   AddLocationArg(parser)
-  if ((api_version == filestore_client.ALPHA_API_VERSION) or
-      (api_version == filestore_client.BETA_API_VERSION)):
-    AddRegionArg(parser)
+  AddRegionArg(parser)
   AddAsyncFlag(parser)
   labels_util.AddCreateLabelsFlags(parser)
-  AddNetworkArg(parser, api_version)
+  AddNetworkArg(parser)
   messages = filestore_client.GetMessages(version=api_version)
   GetTierArg(messages, api_version).choice_arg.AddToParser(parser)
   AddFileShareArg(
@@ -468,7 +444,8 @@ def AddInstanceCreateArgs(parser, api_version):
       include_snapshot_flags=(
           api_version == filestore_client.ALPHA_API_VERSION),
       include_backup_flags=True)
-  if api_version == filestore_client.BETA_API_VERSION:
+  if api_version in [filestore_client.BETA_API_VERSION,
+                     filestore_client.V1_API_VERSION]:
     AddKmsKeyArg(parser)
 
 
@@ -479,9 +456,7 @@ def AddInstanceUpdateArgs(parser, api_version):
   ]).AddToParser(parser)
   AddDescriptionArg(parser)
   AddLocationArg(parser)
-  if ((api_version == filestore_client.ALPHA_API_VERSION) or
-      (api_version == filestore_client.BETA_API_VERSION)):
-    AddRegionArg(parser)
+  AddRegionArg(parser)
   AddAsyncFlag(parser)
   labels_util.AddUpdateLabelsFlags(parser)
   AddFileShareArg(

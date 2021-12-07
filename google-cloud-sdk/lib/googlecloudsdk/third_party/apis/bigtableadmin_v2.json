@@ -337,7 +337,7 @@
           ]
         },
         "serveNodes": {
-          "description": "Required. The number of nodes allocated to this cluster. More nodes enable higher throughput and more consistent performance.",
+          "description": "The number of nodes allocated to this cluster. More nodes enable higher throughput and more consistent performance.",
           "type": "integer",
           "format": "int32"
         },
@@ -371,7 +371,7 @@
       "type": "object",
       "properties": {
         "clusterAutoscalingConfig": {
-          "description": "Autoscaling configuration for this cluster. Note that when creating or updating a cluster, exactly one of serve_nodes or cluster_autoscaling_config must be set. If serve_nodes is set, then serve_nodes is fixed and autoscaling is turned off. If cluster_autoscaling_config is set, then serve_nodes will be autoscaled.",
+          "description": "Autoscaling configuration for this cluster.",
           "$ref": "ClusterAutoscalingConfig"
         }
       }
@@ -1485,9 +1485,6 @@
       "description": "The metadata for the Operation returned by PartialUpdateCluster.",
       "type": "object",
       "properties": {
-        "originalRequest": {
-          "$ref": "PartialUpdateClusterRequest"
-        },
         "requestTime": {
           "description": "The time at which the original request was received.",
           "type": "string",
@@ -1497,6 +1494,10 @@
           "description": "The time at which the operation failed or was completed successfully.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "originalRequest": {
+          "description": "The original request for PartialUpdateCluster.",
+          "$ref": "PartialUpdateClusterRequest"
         }
       }
     },
@@ -1510,7 +1511,7 @@
           "$ref": "Cluster"
         },
         "updateMask": {
-          "description": "Required. The subset of Cluster fields which should be replaced. Must be explicitly set.",
+          "description": "Required. The subset of Cluster fields which should be replaced.",
           "type": "string",
           "format": "google-fieldmask"
         }
@@ -1637,55 +1638,6 @@
         "progress": {
           "description": "The progress of the post-restore optimizations.",
           "$ref": "OperationProgress"
-        }
-      }
-    },
-    "UndeleteTableMetadata": {
-      "id": "UndeleteTableMetadata",
-      "description": "Metadata type for the operation returned by google.bigtable.admin.v2.BigtableTableAdmin.UndeleteTable.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The name of the table being restored.",
-          "type": "string"
-        },
-        "startTime": {
-          "description": "The time at which this operation started.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "endTime": {
-          "description": "If set, the time at which this operation finished or was cancelled.",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
-    "FailureTrace": {
-      "id": "FailureTrace",
-      "description": "Added to the error payload.",
-      "type": "object",
-      "properties": {
-        "frames": {
-          "type": "array",
-          "items": {
-            "$ref": "Frame"
-          }
-        }
-      }
-    },
-    "Frame": {
-      "id": "Frame",
-      "type": "object",
-      "properties": {
-        "zoneId": {
-          "type": "string"
-        },
-        "targetName": {
-          "type": "string"
-        },
-        "workflowGuid": {
-          "type": "string"
         }
       }
     }
@@ -1879,7 +1831,7 @@
                 "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Create an instance within a project."
+              "description": "Create an instance within a project. Note that exactly one of Cluster.serve_nodes and Cluster.cluster_config.cluster_autoscaling_config can be set. If serve_nodes is set to non-zero, then the cluster is manually scaled. If cluster_config.cluster_autoscaling_config is non-empty, then autoscaling is enabled."
             },
             "get": {
               "id": "bigtableadmin.projects.instances.get",
@@ -2190,7 +2142,7 @@
                     "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a cluster within an instance."
+                  "description": "Creates a cluster within an instance. Note that exactly one of Cluster.serve_nodes and Cluster.cluster_config.cluster_autoscaling_config can be set. If serve_nodes is set to non-zero, then the cluster is manually scaled. If cluster_config.cluster_autoscaling_config is non-empty, then autoscaling is enabled."
                 },
                 "get": {
                   "id": "bigtableadmin.projects.instances.clusters.get",
@@ -2290,7 +2242,7 @@
                     "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates a cluster within an instance. UpdateCluster is deprecated. Please use PartialUpdateCluster instead."
+                  "description": "Updates a cluster within an instance. Note that UpdateCluster does not support updating cluster_config.cluster_autoscaling_config. In order to update it, you must use PartialUpdateCluster."
                 },
                 "partialUpdateCluster": {
                   "id": "bigtableadmin.projects.instances.clusters.partialUpdateCluster",
@@ -2306,7 +2258,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. The subset of Cluster fields which should be replaced. Must be explicitly set.",
+                      "description": "Required. The subset of Cluster fields which should be replaced.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -2329,7 +2281,7 @@
                     "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Partially updates a cluster within a project. This method is the preferred way to update a Cluster. "
+                  "description": "Partially updates a cluster within a project. This method is the preferred way to update a Cluster. To enable and update autoscaling, set cluster_config.cluster_autoscaling_config. When autoscaling is enabled, serve_nodes is treated as an OUTPUT_ONLY field, meaning that updates to it are ignored. Note that an update cannot simultaneously set serve_nodes to non-zero and cluster_config.cluster_autoscaling_config to non-empty, and also specify both in the update_mask. To disable autoscaling, clear cluster_config.cluster_autoscaling_config, and explicitly set a serve_node count via the update_mask."
                 },
                 "delete": {
                   "id": "bigtableadmin.projects.instances.clusters.delete",

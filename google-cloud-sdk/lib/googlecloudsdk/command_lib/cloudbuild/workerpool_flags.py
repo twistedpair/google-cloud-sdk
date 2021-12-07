@@ -30,6 +30,14 @@ _CREATE_FILE_DESC = ('A file that contains the configuration for the'
 _UPDATE_FILE_DESC = ('A file that contains updates to the configuration for'
                      ' the worker pool. See %s for options.' % _WP_CONFIG_LINK)
 
+DEFAULT_FLAG_VALUES = {
+    'DOCKER_SECURITY_POLICY': 'PRIVILEGED_PERMITTED',
+    'BUILDER_IMAGE_CACHING': 'VOLUME_CACHING',
+    'DISK_SIZE': '60GB',
+    'MEMORY': '4.0GB',
+    'VCPU_COUNT': 1.0
+}
+
 
 def AddWorkerpoolArgs(parser, release_track, update=False):
   """Set up all the argparse flags for creating or updating a workerpool.
@@ -58,10 +66,11 @@ def AddWorkerpoolArgs(parser, release_track, update=False):
       '--config-from-file',
       help=(_UPDATE_FILE_DESC if update else _CREATE_FILE_DESC),
   )
-  flags = file_or_flags.add_argument_group(
+  private_or_hybrid = file_or_flags.add_mutually_exclusive_group()
+  private_flags = private_or_hybrid.add_argument_group(
       'Command-line flags to configure the worker pool:')
   if not update:
-    flags.add_argument(
+    private_flags.add_argument(
         '--peered-network',
         help="""\
 Existing network to which workers are peered. The network is specified in
@@ -71,7 +80,41 @@ projects/{network_project}/global/networks/{network_name}.
 If not specified, the workers are not peered to any network.
 """)
 
-  worker_flags = flags.add_argument_group(
+  if release_track == base.ReleaseTrack.ALPHA:
+    hybrid_flags = private_or_hybrid.add_argument_group(
+        'Command-line flags to configure the hybrid worker pool:',
+        hidden=True,
+    )
+    if not update:
+      hybrid_flags.add_argument(
+          '--membership',
+          required=True,
+          help="""\
+            The Hub member to install a hybrid worker pool on.
+      """)
+      hybrid_flags.add_argument(
+          '--builder-image-caching',
+          choices={
+              'CACHING_DISABLED':
+                  'Disable image caching.',
+              'VOLUME_CACHING':
+                  'Enable image caching of Cloud Builders and Skaffold.'
+          },
+          default=DEFAULT_FLAG_VALUES['BUILDER_IMAGE_CACHING'],
+          help="""\
+            Controls whether the hybrid worker pool should cache Cloud Builders (https://cloud.google.com/build/docs/cloud-builders) and Skaffold.
+            Enabling VOLUME_CACHING may signficantly shorten build execution times.
+      """)
+      hybrid_flags.add_argument(
+          '--caching-storage-class',
+          type=str,
+          help="""\
+            The name of the Kubernetes StorageClass used by any PersistentVolumeClaims installed on the hybrid worker pool.
+            If this flag is omitted, PersistentVolumeClaims are created without a spec.storageClassName field during installation.
+            The name should be formatted according to http://kubernetes.io/docs/user-guide/identifiers#names.
+            """)
+
+  worker_flags = private_flags.add_argument_group(
       'Configuration to be used for creating workers in the worker pool:')
   worker_flags.add_argument(
       '--worker-machine-type',
@@ -104,8 +147,37 @@ If not given, Cloud Build will use a standard disk size.
   If the worker pool is within a VPC Service Control perimeter, use this flag.
   """)
 
+  if release_track == base.ReleaseTrack.ALPHA:
+    default_build_disk_size = DEFAULT_FLAG_VALUES[
+        'DISK_SIZE'] if not update else None
+    hybrid_flags.add_argument(
+        '--default-build-disk-size',
+        type=arg_parsers.BinarySize(lower_bound='10GB', default_unit='GB'),
+        default=default_build_disk_size,
+        help="""\
+          The default disk size that each build requires.
+    """)
+    default_build_memory_gb = DEFAULT_FLAG_VALUES[
+        'MEMORY'] if not update else None
+    hybrid_flags.add_argument(
+        '--default-build-memory',
+        type=arg_parsers.BinarySize(default_unit='GB'),
+        default=default_build_memory_gb,
+        help="""\
+          The default memory size that each build requires.
+    """)
+    default_build_vcpu_count = DEFAULT_FLAG_VALUES[
+        'VCPU_COUNT'] if not update else None
+    hybrid_flags.add_argument(
+        '--default-build-vcpu-count',
+        type=float,
+        default=default_build_vcpu_count,
+        help="""\
+          The default vcpu count that each build requires.
+    """)
+
   if update:
-    egress_flags = flags.add_mutually_exclusive_group()
+    egress_flags = private_flags.add_mutually_exclusive_group()
     egress_flags.add_argument(
         '--no-public-egress',
         action='store_true',
@@ -122,7 +194,7 @@ If the worker pool is within a VPC Service Control perimeter, use this flag.
 If set, workers in the worker pool are created with an external IP address.
 """)
   else:
-    flags.add_argument(
+    private_flags.add_argument(
         '--no-public-egress',
         action='store_true',
         help="""\

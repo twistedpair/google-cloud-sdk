@@ -32,6 +32,28 @@ INSTANCES_ARG_FOR_OS_UPGRADE = compute_flags.ResourceArgument(
     plural=False)
 
 
+def AddPatchDeploymentsUpdateFlags(parser, api_version, release_track):
+  """Adds flags for os-config update command to parser."""
+  parser.add_argument(
+      'PATCH_DEPLOYMENT_ID',
+      type=str,
+      help="""\
+        Name of the patch deployment to update.
+
+        To get a list of patch deployments that are available for update, run
+        the `gcloud {release_track} compute os-config patch-deployments list`
+        command.""".format(release_track=release_track),
+  )
+  parser.add_argument(
+      '--file',
+      required=True,
+      help="""\
+        The JSON or YAML file with the patch deployment to update. For
+        information about the patch deployment format, see https://cloud.google.com/compute/docs/osconfig/rest/{api_version}/projects.patchDeployments."""
+      .format(api_version=api_version),
+  )
+
+
 def AddPatchDeploymentsCreateFlags(parser, api_version):
   """Adds flags for os-config create command to parser."""
   parser.add_argument(

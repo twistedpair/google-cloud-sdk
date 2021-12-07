@@ -57,7 +57,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Create an Access Level. The longrunning operation from this RPC will have a successful status once the Access Level has propagated to long-lasting storage. Access Levels containing errors will result in an error response for the first error encountered.
+      r"""Creates an access level. The long- running operation from this RPC has a successful status after the access level propagates to long-lasting storage. If access levels contain errors, an error response is returned for the first error encountered.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesAccessLevelsCreateRequest) input message
@@ -84,7 +84,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete an Access Level by resource name. The longrunning operation from this RPC will have a successful status once the Access Level has been removed from long-lasting storage.
+      r"""Deletes an access level based on the resource name. The long-running operation from this RPC has a successful status after the access level has been removed from long-lasting storage.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesAccessLevelsDeleteRequest) input message
@@ -111,7 +111,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Get an Access Level by resource name.
+      r"""Gets an access level based on the resource name.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesAccessLevelsGetRequest) input message
@@ -138,7 +138,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List all Access Levels for an access policy.
+      r"""Lists all access levels for an access policy.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesAccessLevelsListRequest) input message
@@ -165,7 +165,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Update an Access Level. The longrunning operation from this RPC will have a successful status once the changes to the Access Level have propagated to long-lasting storage. Access Levels containing errors will result in an error response for the first error encountered.
+      r"""Updates an access level. The long- running operation from this RPC has a successful status after the changes to the access level propagate to long-lasting storage. If access levels contain errors, an error response is returned for the first error encountered.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesAccessLevelsPatchRequest) input message
@@ -192,7 +192,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
     )
 
     def ReplaceAll(self, request, global_params=None):
-      r"""Replace all existing Access Levels in an Access Policy with the Access Levels provided. This is done atomically. The longrunning operation from this RPC will have a successful status once all replacements have propagated to long-lasting storage. Replacements containing errors will result in an error response for the first error encountered. Replacement will be cancelled on error existing Access Levels will not affected. Operation.response field will contain ReplaceAccessLevelsResponse. Removing Access Levels contained in existing Service Perimeters will result in error.
+      r"""Replaces all existing access levels in an access policy with the access levels provided. This is done atomically. The long-running operation from this RPC has a successful status after all replacements propagate to long-lasting storage. If the replacement contains errors, an error response is returned for the first error encountered. Upon error, the replacement is cancelled, and existing access levels are not affected. The Operation.response field contains ReplaceAccessLevelsResponse. Removing access levels contained in existing service perimeters result in an error.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesAccessLevelsReplaceAllRequest) input message
@@ -219,7 +219,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns the IAM permissions that the caller has on the specified Access Context Manager resource. The resource may be an Access Policy, Access Level, or Service Perimeter. No other resources are supported.
+      r"""Returns the IAM permissions that the caller has on the specified Access Context Manager resource. The resource can be an AccessPolicy, AccessLevel, or ServicePerimeter. This method does not support other resources.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesAccessLevelsTestIamPermissionsRequest) input message
@@ -256,7 +256,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
           }
 
     def Commit(self, request, global_params=None):
-      r"""Commit the dry-run spec for all the Service Perimeters in an Access Policy. A commit operation on a Service Perimeter involves copying its `spec` field to that Service Perimeter's `status` field. Only Service Perimeters with `use_explicit_dry_run_spec` field set to true are affected by a commit operation. The longrunning operation from this RPC will have a successful status once the dry-run specs for all the Service Perimeters have been committed. If a commit fails, it will cause the longrunning operation to return an error response and the entire commit operation will be cancelled. When successful, Operation.response field will contain CommitServicePerimetersResponse. The `dry_run` and the `spec` fields will be cleared after a successful commit operation.
+      r"""Commits the dry-run specification for all the service perimeters in an access policy. A commit operation on a service perimeter involves copying its `spec` field to the `status` field of the service perimeter. Only service perimeters with `use_explicit_dry_run_spec` field set to true are affected by a commit operation. The long-running operation from this RPC has a successful status after the dry-run specifications for all the service perimeters have been committed. If a commit fails, it causes the long-running operation to return an error response and the entire commit operation is cancelled. When successful, the Operation.response field contains CommitServicePerimetersResponse. The `dry_run` and the `spec` fields are cleared after a successful commit operation.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesServicePerimetersCommitRequest) input message
@@ -283,7 +283,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Create a Service Perimeter. The longrunning operation from this RPC will have a successful status once the Service Perimeter has propagated to long-lasting storage. Service Perimeters containing errors will result in an error response for the first error encountered.
+      r"""Creates a service perimeter. The long-running operation from this RPC has a successful status after the service perimeter propagates to long-lasting storage. If a service perimeter contains errors, an error response is returned for the first error encountered.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesServicePerimetersCreateRequest) input message
@@ -310,7 +310,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete a Service Perimeter by resource name. The longrunning operation from this RPC will have a successful status once the Service Perimeter has been removed from long-lasting storage.
+      r"""Deletes a service perimeter based on the resource name. The long-running operation from this RPC has a successful status after the service perimeter is removed from long-lasting storage.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesServicePerimetersDeleteRequest) input message
@@ -337,7 +337,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Get a Service Perimeter by resource name.
+      r"""Gets a service perimeter based on the resource name.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesServicePerimetersGetRequest) input message
@@ -364,7 +364,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List all Service Perimeters for an access policy.
+      r"""Lists all service perimeters for an access policy.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesServicePerimetersListRequest) input message
@@ -391,7 +391,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Update a Service Perimeter. The longrunning operation from this RPC will have a successful status once the changes to the Service Perimeter have propagated to long-lasting storage. Service Perimeter containing errors will result in an error response for the first error encountered.
+      r"""Updates a service perimeter. The long-running operation from this RPC has a successful status after the service perimeter propagates to long-lasting storage. If a service perimeter contains errors, an error response is returned for the first error encountered.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesServicePerimetersPatchRequest) input message
@@ -418,7 +418,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
     )
 
     def ReplaceAll(self, request, global_params=None):
-      r"""Replace all existing Service Perimeters in an Access Policy with the Service Perimeters provided. This is done atomically. The longrunning operation from this RPC will have a successful status once all replacements have propagated to long-lasting storage. Replacements containing errors will result in an error response for the first error encountered. Replacement will be cancelled on error, existing Service Perimeters will not be affected. Operation.response field will contain ReplaceServicePerimetersResponse.
+      r"""Replace all existing service perimeters in an access policy with the service perimeters provided. This is done atomically. The long-running operation from this RPC has a successful status after all replacements propagate to long-lasting storage. Replacements containing errors result in an error response for the first error encountered. Upon an error, replacement are cancelled and existing service perimeters are not affected. The Operation.response field contains ReplaceServicePerimetersResponse.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesServicePerimetersReplaceAllRequest) input message
@@ -445,7 +445,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns the IAM permissions that the caller has on the specified Access Context Manager resource. The resource may be an Access Policy, Access Level, or Service Perimeter. No other resources are supported.
+      r"""Returns the IAM permissions that the caller has on the specified Access Context Manager resource. The resource can be an AccessPolicy, AccessLevel, or ServicePerimeter. This method does not support other resources.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesServicePerimetersTestIamPermissionsRequest) input message
@@ -482,7 +482,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Create an `AccessPolicy`. Fails if this organization already has a `AccessPolicy`. The longrunning Operation will have a successful status once the `AccessPolicy` has propagated to long-lasting storage. Syntactic and basic semantic errors will be returned in `metadata` as a BadRequest proto.
+      r"""Creates an access policy. This method fails if the organization already has an access policy. The long-running operation has a successful status after the access policy propagates to long-lasting storage. Syntactic and basic semantic errors are returned in `metadata` as a BadRequest proto.
 
       Args:
         request: (AccessPolicy) input message
@@ -508,7 +508,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete an AccessPolicy by resource name. The longrunning Operation will have a successful status once the AccessPolicy has been removed from long-lasting storage.
+      r"""Deletes an access policy based on the resource name. The long-running operation has a successful status after the access policy is removed from long-lasting storage.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesDeleteRequest) input message
@@ -535,7 +535,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Get an AccessPolicy by name.
+      r"""Returns an access policy based on the name.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesGetRequest) input message
@@ -562,7 +562,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the IAM policy for the specified Access Context Manager Access Policy.
+      r"""Gets the IAM policy for the specified Access Context Manager access policy.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesGetIamPolicyRequest) input message
@@ -589,7 +589,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List all AccessPolicies under a container.
+      r"""Lists all access policies in an organization.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesListRequest) input message
@@ -615,7 +615,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Update an AccessPolicy. The longrunning Operation from this RPC will have a successful status once the changes to the AccessPolicy have propagated to long-lasting storage. Syntactic and basic semantic errors will be returned in `metadata` as a BadRequest proto.
+      r"""Updates an access policy. The long-running operation from this RPC has a successful status after the changes to the access policy propagate to long-lasting storage.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesPatchRequest) input message
@@ -642,7 +642,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the IAM policy for the specified Access Context Manager Access Policy. Replaces any existing IAM policy. The IAM policy controls the set of users who are allowed to perform specific operations on the Access Context Manager AccessPolicy.
+      r"""Sets the IAM policy for the specified Access Context Manager access policy. This method replaces the existing IAM policy on the access policy. The IAM policy controls the set of users who can perform specific operations on the Access Context Manager access policy.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesSetIamPolicyRequest) input message
@@ -669,7 +669,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns the IAM permissions that the caller has on the specified Access Context Manager resource. The resource may be an Access Policy, Access Level, or Service Perimeter. No other resources are supported.
+      r"""Returns the IAM permissions that the caller has on the specified Access Context Manager resource. The resource can be an AccessPolicy, AccessLevel, or ServicePerimeter. This method does not support other resources.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesTestIamPermissionsRequest) input message
@@ -743,7 +743,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a GcpUserAccessBinding. If the client specifies a name, the server will ignore it. Fails if a resource already exists with the same group_key. Completion of this long-running operation does not necessarily signify that the new binding is deployed onto all affected users, which may take more time.
+      r"""Creates a GcpUserAccessBinding. If the client specifies a name, the server ignores it. Fails if a resource already exists with the same group_key. Completion of this long-running operation does not necessarily signify that the new binding is deployed onto all affected users, which may take more time.
 
       Args:
         request: (AccesscontextmanagerOrganizationsGcpUserAccessBindingsCreateRequest) input message

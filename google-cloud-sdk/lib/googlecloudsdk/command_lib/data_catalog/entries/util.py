@@ -25,6 +25,7 @@ from googlecloudsdk.api_lib.data_catalog import util as api_util
 from googlecloudsdk.command_lib.concepts import exceptions as concept_exceptions
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import yaml
 import six
 
@@ -52,6 +53,7 @@ def CorrectUpdateMask(ref, args, request):
     ref: The entry resource reference.
     args: The parsed args namespace.
     request: The update entry request.
+
   Returns:
     Request with corrected update mask.
   """
@@ -114,6 +116,7 @@ def LookupAndParseEntry(ref, args, request):
     ref: None.
     args: The parsed args namespace.
     request: The update entry request.
+
   Returns:
     Request containing the parsed entry.
   Raises:
@@ -134,8 +137,7 @@ def LookupAndParseEntry(ref, args, request):
   if ((entry_ref and args.IsSpecified('lookup_entry')) or
       (not entry_ref and not args.IsSpecified('lookup_entry'))):
     raise concept_exceptions.RequiredMutexGroupError(
-        'entry',
-        '([ENTRY : --entry-group=ENTRY_GROUP --location=LOCATION] '
+        'entry', '([ENTRY : --entry-group=ENTRY_GROUP --location=LOCATION] '
         '| --lookup-entry)')
 
   if entry_ref:
@@ -150,8 +152,7 @@ def ProcessSchemaFromFile(schema_file):
   try:
     schema = yaml.load(schema_file)
   except yaml.YAMLParseError as e:
-    raise InvalidSchemaFileError(
-        'Error parsing schema file: [{}]'.format(e))
+    raise InvalidSchemaFileError('Error parsing schema file: [{}]'.format(e))
   return _SchemaToMessage(schema)
 
 
@@ -161,6 +162,7 @@ def _SchemaToMessage(schema):
 
   Args:
     schema: dict, The schema that has been processed.
+
   Returns:
     googleCloudDatacatalogV1betaSchema
   Raises:
@@ -170,8 +172,7 @@ def _SchemaToMessage(schema):
 
   try:
     schema_message = encoding.DictToMessage(
-        {'columns': schema},
-        messages.GoogleCloudDatacatalogV1beta1Schema)
+        {'columns': schema}, messages.GoogleCloudDatacatalogV1beta1Schema)
   except AttributeError:
     # TODO(b/77547931): Fix apitools bug related to unchecked iteritems() call.
     raise InvalidSchemaError(
@@ -199,6 +200,14 @@ def _GetUnrecognizedFieldPaths(message):
     # Don't print the top level columns field since the user didn't specify it
     message_field_path = message_field_path.replace('columns', '', 1)
     for field_name in field_names:
-      unrecognized_field_paths.append('{}.{}'.format(
-          message_field_path, field_name))
+      unrecognized_field_paths.append('{}.{}'.format(message_field_path,
+                                                     field_name))
   return sorted(unrecognized_field_paths)
+
+
+def LogStarSuccess(_, args):
+  log.out.Print('Starred entry [{}].'.format(args.entry))
+
+
+def LogUnstarSuccess(_, args):
+  log.out.Print('Unstarred entry [{}].'.format(args.entry))

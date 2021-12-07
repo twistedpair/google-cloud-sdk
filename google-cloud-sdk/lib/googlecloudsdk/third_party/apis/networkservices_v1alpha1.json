@@ -1223,7 +1223,7 @@
           "type": "boolean"
         },
         "excludeHost": {
-          "description": "Optional. If true, requests to different hosts will be cached separately. Note: this should only be enabled if hosts share the same origin and content Removing the host from the cache key may inadvertently result in different objects being cached than intended, depending on which route the first user matched.",
+          "description": "Optional. If true, requests to different hosts will be cached separately. Note: this should only be enabled if hosts share the same origin and content. Removing the host from the cache key may inadvertently result in different objects being cached than intended, depending on which route the first user matched.",
           "type": "boolean"
         },
         "includedQueryParameters": {
@@ -1598,7 +1598,7 @@
           "type": "string"
         },
         "type": {
-          "description": "Required. Immutable. The type of the customer managed gateway.",
+          "description": "Immutable. The type of the customer managed gateway.",
           "type": "string",
           "enumDescriptions": [
             "The type of the customer managed gateway is unspecified.",
@@ -1618,14 +1618,6 @@
         },
         "scope": {
           "description": "Required. Immutable. Scope determines how configuration across multiple Gateway instances are merged. The configuration for multiple Gateway instances with the same scope will be merged as presented as a single coniguration to the proxy\/load balancer. Max length 64 characters. Scope should start with a letter and can only have letters, numbers, hyphens.",
-          "type": "string"
-        },
-        "serverTlsPolicy": {
-          "description": "Optional. A fully-qualified ServerTLSPolicy URL reference. Specifies how TLS traffic is terminated. If empty, TLS termination is disabled.",
-          "type": "string"
-        },
-        "authorizationPolicy": {
-          "description": "Optional. A fully-qualified AuthorizationPolicy URL reference. Specifies how traffic is authorized. If empty, authorization checks are disabled.",
           "type": "string"
         }
       }
@@ -1681,7 +1673,7 @@
           "type": "string"
         },
         "hostnames": {
-          "description": "Required. If a port is specified, then gRPC clients must use the channel URI with the port to match this rule (i.e. \"xds:\/\/\/service:123\"), otherwise they must supply the URI without a port (i.e. \"xds:\/\/\/service\").",
+          "description": "Required. Service hostnames with an optional port for which this route describes traffic. Format: [:] Hostname is the fully qualified domain name of a network host. This matches the RFC 1123 definition of a hostname with 2 notable exceptions: - IPs are not allowed. - A hostname may be prefixed with a wildcard label (*.). The wildcard label must appear by itself as the first label. Hostname can be \u201Cprecise\u201D which is a domain name without the terminating dot of a network host (e.g. \u201Cfoo.example.com\u201D) or \u201Cwildcard\u201D, which is a domain name prefixed with a single wildcard label (e.g. *.example.com). Note that as per RFC1035 and RFC1123, a label must consist of lower case alphanumeric characters or \u2018-\u2019, and must start and end with an alphanumeric character. No other punctuation is allowed. The routes associated with a Router must have unique hostnames. If you attempt to attach multiple routes with conflicting hostnames, the configuration will be rejected. For example, while it is acceptable for routes for the hostnames \"*.foo.bar.com\" and \"*.bar.com\" to be associated with the same route, it is not possible to associate two routes both with \"*.bar.com\" or both with \"bar.com\". In the case that multiple routes match the hostname, the most specific match will be selected. For example, \"foo.bar.baz.com\" will take precedence over \"*.bar.baz.com\" and \"*.bar.baz.com\" will take precedence over \"*.baz.com\". If a port is specified, then gRPC clients must use the channel URI with the port to match this rule (i.e. \"xds:\/\/\/service:123\"), otherwise they must supply the URI without a port (i.e. \"xds:\/\/\/service\").",
           "type": "array",
           "items": {
             "type": "string"
@@ -1868,7 +1860,7 @@
           "type": "string"
         },
         "weight": {
-          "description": "Optional. If weights are unspecified for all services, then, traffic is distributed in equal proportions to all of them.",
+          "description": "Optional. Specifies the proportion of requests forwarded to the backend referenced by the serviceName field. This is computed as: weight\/Sum(weights in this destination list). For non-zero values, there may be some epsilon from the exact proportion defined here depending on the precision an implementation supports. If only one serviceName is specified and it has a weight greater than 0, 100% of the traffic is forwarded to that backend. If weights are specified for any one service name, they need to be specified for all of them. If weights are unspecified for all services, then, traffic is distributed in equal proportions to all of them.",
           "type": "integer",
           "format": "int32"
         }
@@ -2362,6 +2354,7 @@
           "type": "string"
         },
         "weight": {
+          "description": "Specifies the proportion of requests forwarded to the backend referenced by the serviceName field. This is computed as: weight\/Sum(weights in this destination list). For non-zero values, there may be some epsilon from the exact proportion defined here depending on the precision an implementation supports. If only one serviceName is specified and it has a weight greater than 0, 100% of the traffic is forwarded to that backend. If weights are specified for any one service name, they need to be specified for all of them. If weights are unspecified for all services, then, traffic is distributed in equal proportions to all of them.",
           "type": "integer",
           "format": "int32"
         }
@@ -2741,7 +2734,146 @@
           "type": "string"
         },
         "weight": {
-          "description": "Optional. If weights are unspecified for all services, then, traffic is distributed in equal proportions to all of them.",
+          "description": "Optional. Specifies the proportion of requests forwarded to the backend referenced by the serviceName field. This is computed as: weight\/Sum(weights in this destination list). For non-zero values, there may be some epsilon from the exact proportion defined here depending on the precision an implementation supports. If only one serviceName is specified and it has a weight greater than 0, 100% of the traffic is forwarded to that backend. If weights are specified for any one service name, they need to be specified for all of them. If weights are unspecified for all services, then, traffic is distributed in equal proportions to all of them.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ListTlsRoutesResponse": {
+      "id": "ListTlsRoutesResponse",
+      "description": "Response returned by the ListTlsRoutes method.",
+      "type": "object",
+      "properties": {
+        "tlsRoutes": {
+          "description": "List of TlsRoute resources.",
+          "type": "array",
+          "items": {
+            "$ref": "TlsRoute"
+          }
+        },
+        "nextPageToken": {
+          "description": "If there might be more results than those appearing in this response, then `next_page_token` is included. To get the next set of results, call this method again using the value of `next_page_token` as `page_token`.",
+          "type": "string"
+        }
+      }
+    },
+    "TlsRoute": {
+      "id": "TlsRoute",
+      "description": "TlsRoute defines how traffic should be routed based on SNI and other matching L3 attributes.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Name of the TlsRoute resource. It matches pattern `projects\/*\/locations\/global\/tlsRoutes\/tls_route_name>`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The timestamp when the resource was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The timestamp when the resource was updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "description": {
+          "description": "Optional. A free-text description of the resource. Max length 1024 characters.",
+          "type": "string"
+        },
+        "rules": {
+          "description": "Required. Rules that define how traffic is routed and handled. At least one RouteRule must be supplied. If there are multiple rules then the action taken will be the first rule to match.",
+          "type": "array",
+          "items": {
+            "$ref": "TlsRouteRouteRule"
+          }
+        },
+        "meshes": {
+          "description": "Optional. Meshes defines a list of meshes this TlsRoute is attached to, as one of the routing rules to route the requests served by the mesh. Each mesh reference should match the pattern: `projects\/*\/locations\/global\/meshes\/` The attached Mesh should be of a type SIDECAR",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "gateways": {
+          "description": "Optional. Gateways defines a list of gateways this TlsRoute is attached to, as one of the routing rules to route the requests served by the gateway. Each gateway reference should match the pattern: `projects\/*\/locations\/global\/gateways\/`",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "TlsRouteRouteRule": {
+      "id": "TlsRouteRouteRule",
+      "description": "Specifies how to match traffic and how to route traffic when traffic is matched.",
+      "type": "object",
+      "properties": {
+        "matches": {
+          "description": "Optional. RouteMatch defines the predicate used to match requests to a given action. Multiple match types are \u201COR\u201Ded for evaluation. If no routeMatch field is specified, this rule will unconditionally match traffic.",
+          "type": "array",
+          "items": {
+            "$ref": "TlsRouteRouteMatch"
+          }
+        },
+        "action": {
+          "description": "Required. The detailed rule defining how to route matched traffic.",
+          "$ref": "TlsRouteRouteAction"
+        }
+      }
+    },
+    "TlsRouteRouteMatch": {
+      "id": "TlsRouteRouteMatch",
+      "description": "RouteMatch defines the predicate used to match requests to a given action. Multiple match types are \u201CAND\u201Ded for evaluation. If no routeMatch field is specified, this rule will unconditionally match traffic.",
+      "type": "object",
+      "properties": {
+        "sniHost": {
+          "description": "Optional. SNI (server name indicator) to match against. SNI will be matched against all wildcard domains, i.e. www.example.com will be first matched against www.example.com, then *.example.com, then *.com. Partial wildcards are not supported, and values like *w.example.com are invalid. At least one of sni_host and alpn is required. Up to 5 sni hosts across all matches can be set.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "alpn": {
+          "description": "Optional. ALPN (Application-Layer Protocol Negotiation) to match against. Examples: \"http\/1.1\", \"h2\". At least one of sni_host and alpn is required. Up to 5 alpns across all matches can be set.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "TlsRouteRouteAction": {
+      "id": "TlsRouteRouteAction",
+      "description": "The specifications for routing traffic and applying associated policies.",
+      "type": "object",
+      "properties": {
+        "destinations": {
+          "description": "Required. The destination services to which traffic should be forwarded. At least one destination service is required.",
+          "type": "array",
+          "items": {
+            "$ref": "TlsRouteRouteDestination"
+          }
+        },
+        "originalDestination": {
+          "description": "Optional. If true, Router will use the destination IP and port of the original connection as the destination of the request. Default is false.",
+          "type": "boolean"
+        }
+      }
+    },
+    "TlsRouteRouteDestination": {
+      "id": "TlsRouteRouteDestination",
+      "description": "Describe the destination for traffic to be routed to.",
+      "type": "object",
+      "properties": {
+        "serviceName": {
+          "description": "Required. The URL of a BackendService to route traffic to.",
+          "type": "string"
+        },
+        "weight": {
+          "description": "Optional. Specifies the proportion of requests forwareded to the backend referenced by the service_name field. This is computed as: weight\/Sum(weights in destinations) Weights in all destinations does not need to sum up to 100.",
           "type": "integer",
           "format": "int32"
         }
@@ -2872,7 +3004,7 @@
           ]
         },
         "scope": {
-          "description": "Required. Immutable. Scope defines a logical configuration boundary for mesh. The routes pointing to this particular mesh resource defines the mesh configuration and the scope field name is used by mesh clients to receive that configuration. There cannot be more than one Mesh resource instance of the same type (SIDECAR or PROXYLESS_GRPC) with the same scope. Max length 64 characters. Scope should start with a letter and can only have letters, numbers, hyphens.",
+          "description": "Optional. Scope defines a logical configuration boundary for mesh. The routes pointing to this particular mesh resource defines the mesh configuration and the scope field name is used by mesh clients to receive that configuration. There cannot be more than one Mesh resource instance of the same type (SIDECAR or PROXYLESS_GRPC) with the same scope. Max length 64 characters. Scope should start with a letter and can only have letters, numbers, hyphens. If no scope is supplied 'default' is used as the scope.",
           "type": "string"
         },
         "interceptionPort": {
@@ -5983,6 +6115,191 @@
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tcpRoutes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "TestIamPermissionsRequest"
+                  },
+                  "response": {
+                    "$ref": "TestIamPermissionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+            },
+            "tlsRoutes": {
+              "methods": {
+                "list": {
+                  "id": "networkservices.projects.locations.tlsRoutes.list",
+                  "path": "v1alpha1/{+parent}/tlsRoutes",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/tlsRoutes",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The project and location from which the TlsRoutes should be listed, specified in the format `projects\/*\/locations\/global`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Maximum number of TlsRoutes to return per call.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The value returned by the last `ListTlsRoutesResponse` Indicates that this is a continuation of a prior `ListRouters` call, and that the system should return the next page of data.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListTlsRoutesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists TlsRoute in a given project and location."
+                },
+                "get": {
+                  "id": "networkservices.projects.locations.tlsRoutes.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/tlsRoutes/{tlsRoutesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the TlsRoute to get. Must be in the format `projects\/*\/locations\/global\/tlsRoutes\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tlsRoutes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "TlsRoute"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single TlsRoute."
+                },
+                "create": {
+                  "id": "networkservices.projects.locations.tlsRoutes.create",
+                  "path": "v1alpha1/{+parent}/tlsRoutes",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/tlsRoutes",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource of the TlsRoute. Must be in the format `projects\/*\/locations\/global`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "tlsRouteId": {
+                      "description": "Required. Short name of the TlsRoute resource to be created. E.g. TODO(Add an example).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "TlsRoute"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new TlsRoute in a given project and location."
+                },
+                "patch": {
+                  "id": "networkservices.projects.locations.tlsRoutes.patch",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/tlsRoutes/{tlsRoutesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the TlsRoute resource. It matches pattern `projects\/*\/locations\/global\/tlsRoutes\/tls_route_name>`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tlsRoutes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Optional. Field mask is used to specify the fields to be overwritten in the TlsRoute resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "TlsRoute"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the parameters of a single TlsRoute."
+                },
+                "delete": {
+                  "id": "networkservices.projects.locations.tlsRoutes.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/tlsRoutes/{tlsRoutesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the TlsRoute to delete. Must be in the format `projects\/*\/locations\/global\/tlsRoutes\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tlsRoutes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single TlsRoute."
+                },
+                "testIamPermissions": {
+                  "id": "networkservices.projects.locations.tlsRoutes.testIamPermissions",
+                  "path": "v1alpha1/{+resource}:testIamPermissions",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/tlsRoutes/{tlsRoutesId}:testIamPermissions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tlsRoutes\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"

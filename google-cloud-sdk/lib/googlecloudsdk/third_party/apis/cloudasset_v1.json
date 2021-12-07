@@ -666,6 +666,13 @@
           "description": "Required. Human readable title. Does not affect behavior.",
           "type": "string"
         },
+        "scopes": {
+          "description": "The scopes of a policy define which resources an ACM policy can restrict, and where ACM resources can be referenced. For example, a policy with scopes=[\"folders\/123\"] has the following behavior: - vpcsc perimeters can only restrict projects within folders\/123 - access levels can only be referenced by resources within folders\/123. If empty, there are no limitations on which resources can be restricted by an ACM policy, and there are no limitations on where ACM resources can be referenced. Only one policy can include a given scope (attempting to create a second policy which includes \"folders\/123\" will result in an error). Currently, scopes cannot be modified after a policy is created. Currently, policies can only have a single scope. Format: list of `folders\/{folder_number}` or `projects\/{project_number}`",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "etag": {
           "description": "Output only. An opaque identifier for the current version of the `AccessPolicy`. This will always be a strongly validated etag, meaning that two Access Polices will be identical if and only if their etags are identical. Clients should not expect this to be in any specific format.",
           "type": "string"
@@ -2126,7 +2133,7 @@
     },
     "IamPolicyAnalysisQuery": {
       "id": "IamPolicyAnalysisQuery",
-      "description": "## IAM policy analysis query message.",
+      "description": "IAM policy analysis query message.",
       "type": "object",
       "properties": {
         "scope": {
@@ -2628,7 +2635,7 @@
           "type": "string"
         },
         "timeout": {
-          "description": "Optional. Specifies the maximum amount of time that the client is willing to wait for the query to complete. By default, this limit is 5 min for the first query, and 10 seconds for the following queries. If the query is complete, the `done` field in the `QueryAssetsResponse` is true, otherwise false. Like BigQuery [jobs.query API](https:\/\/cloud.google.com\/bigquery\/docs\/reference\/rest\/v2\/jobs\/query#queryrequest) The call is not guaranteed to wait for the specified timeout; it typically returns after around 200 seconds (200,000 milliseconds), even if the query is not complete.",
+          "description": "Optional. Specifies the maximum amount of time that the client is willing to wait for the query to complete. By default, this limit is 5 min for the first query, and 1 minute for the following queries. If the query is complete, the `done` field in the `QueryAssetsResponse` is true, otherwise false. Like BigQuery [jobs.query API](https:\/\/cloud.google.com\/bigquery\/docs\/reference\/rest\/v2\/jobs\/query#queryrequest) The call is not guaranteed to wait for the specified timeout; it typically returns after around 200 seconds (200,000 milliseconds), even if the query is not complete.",
           "type": "string",
           "format": "google-duration"
         }

@@ -1,0 +1,60 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networkservices v1alpha1 TlsRouteRouteMatch export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  sniHost:
+    description: |-
+      SNI (server name indicator) to match against.
+      SNI will be matched against all wildcard domains, i.e. www.example.com
+      will be first matched against www.example.com, then *.example.com, then
+      *.com.
+      Partial wildcards are not supported, and values like *w.example.com are
+      invalid.
+      At least one of sni_host and alpn is required.
+    type: array
+    items:
+      type: string
+  alpn:
+    description: |-
+      ALPN (Application-Layer Protocol Negotiation) to match against.
+      Examples: "http/1.1", "h2".
+      At least one of sni_host and alpn is required.
+    type: array
+    items:
+      type: string
+  ipAddress:
+    description: |-
+      Must be specified in the CIDR range format. A CIDR range consists of an IP
+      Address and a prefix length to construct the subnet mask. By default, the
+      prefix length is 32 (i.e. matches a single IP address). Only IPV4
+      addresses are supported. Examples: "10.0.0.1" - matches against this exact
+      IP address. "10.0.0.0/8" - matches against any IP address within the
+      10.0.0.0 subnet and 255.255.255.0 mask. "0.0.0.0/0" - matches against any
+      IP address'.
+    type: string
+  port:
+    description: Specifies the destination port to match against.
+    type: string

@@ -651,6 +651,60 @@ class OsconfigV1alpha2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Pause(self, request, global_params=None):
+      r"""Change state of patch deployment to "PAUSED". Patch deployment in paused state doesn't generate patch jobs.
+
+      Args:
+        request: (OsconfigProjectsPatchDeploymentsPauseRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PatchDeployment) The response message.
+      """
+      config = self.GetMethodConfig('Pause')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Pause.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/patchDeployments/{patchDeploymentsId}:pause',
+        http_method='POST',
+        method_id='osconfig.projects.patchDeployments.pause',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha2/{+name}:pause',
+        request_field='pausePatchDeploymentRequest',
+        request_type_name='OsconfigProjectsPatchDeploymentsPauseRequest',
+        response_type_name='PatchDeployment',
+        supports_download=False,
+    )
+
+    def Resume(self, request, global_params=None):
+      r"""Change state of patch deployment back to "ACTIVE". Patch deployment in active state continues to generate patch jobs.
+
+      Args:
+        request: (OsconfigProjectsPatchDeploymentsResumeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PatchDeployment) The response message.
+      """
+      config = self.GetMethodConfig('Resume')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Resume.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/patchDeployments/{patchDeploymentsId}:resume',
+        http_method='POST',
+        method_id='osconfig.projects.patchDeployments.resume',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha2/{+name}:resume',
+        request_field='resumePatchDeploymentRequest',
+        request_type_name='OsconfigProjectsPatchDeploymentsResumeRequest',
+        response_type_name='PatchDeployment',
+        supports_download=False,
+    )
+
   class ProjectsPatchJobsInstanceDetailsService(base_api.BaseApiService):
     """Service class for the projects_patchJobs_instanceDetails resource."""
 

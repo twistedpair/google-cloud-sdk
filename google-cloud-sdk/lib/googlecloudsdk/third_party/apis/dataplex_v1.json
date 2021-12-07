@@ -197,11 +197,6 @@
           "description": "Required. Identifies the storage format of the entity data. It does not apply to entities with data stored in BigQuery.",
           "$ref": "GoogleCloudDataplexV1StorageFormat"
         },
-        "compatibilityDeprecated": {
-          "description": "Output only. Metadata stores that the entity is compatible with.",
-          "readOnly": true,
-          "$ref": "GoogleCloudDataplexV1EntityCompatibility"
-        },
         "compatibility": {
           "description": "Output only. Metadata stores that the entity is compatible with.",
           "readOnly": true,
@@ -219,7 +214,8 @@
       "type": "object",
       "properties": {
         "format": {
-          "description": "Required. The data format associated with the stored data, which represents content type values.",
+          "description": "Output only. The data format associated with the stored data, which represents content type values.",
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Format unspecified.",
@@ -257,24 +253,20 @@
           "type": "string",
           "enumDescriptions": [
             "CompressionFormat unspecified. Implies uncompressed data.",
-            "Zip compressed set of files.",
             "GZip compressed set of files.",
-            "BZip2 compressed set of files."
+            "BZip2 compressed set of files.",
+            "LZ4 compressed set of files."
           ],
           "enum": [
             "COMPRESSION_FORMAT_UNSPECIFIED",
-            "ZIP",
             "GZIP",
-            "BZIP2"
+            "BZIP2",
+            "LZ4"
           ]
         },
         "mimeType": {
-          "description": "Optional. The mime type descriptor for the data. This field is valid for formats other than UNKNOWN and MIXED.",
+          "description": "Required. The mime type descriptor for the data. This field is valid for formats other than UNKNOWN and MIXED.",
           "type": "string"
-        },
-        "userManaged": {
-          "description": "Required. Whether the format and content type are user-managed or managed by the service. User managed formats are not automatically updated by discovery jobs.",
-          "type": "boolean"
         },
         "csv": {
           "description": "Optional. Additional information about CSV formatted data.",
@@ -318,23 +310,6 @@
         "encoding": {
           "description": "Optional. The character encoding of the data. The default is UTF-8.",
           "type": "string"
-        }
-      }
-    },
-    "GoogleCloudDataplexV1EntityCompatibility": {
-      "id": "GoogleCloudDataplexV1EntityCompatibility",
-      "description": "Metadata stores the entity is compatible with.",
-      "type": "object",
-      "properties": {
-        "hiveMetastore": {
-          "description": "Output only. Whether the entity can be represented in Hive Metastore.",
-          "readOnly": true,
-          "type": "boolean"
-        },
-        "bigquery": {
-          "description": "Output only. Whether the entity can be represented in BigQuery.",
-          "readOnly": true,
-          "type": "boolean"
         }
       }
     },
@@ -770,14 +745,6 @@
           "description": "Output only. Metastore status of the lake.",
           "readOnly": true,
           "$ref": "GoogleCloudDataplexV1LakeMetastoreStatus"
-        },
-        "actions": {
-          "description": "Output only. The current set of actions required of the administrator for this lake.",
-          "readOnly": true,
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudDataplexV1Action"
-          }
         }
       }
     },
@@ -848,6 +815,49 @@
         }
       }
     },
+    "GoogleCloudDataplexV1ListLakesResponse": {
+      "id": "GoogleCloudDataplexV1ListLakesResponse",
+      "description": "List lakes response.",
+      "type": "object",
+      "properties": {
+        "lakes": {
+          "description": "Lakes under the given parent location.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDataplexV1Lake"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        },
+        "unreachableLocations": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudDataplexV1ListActionsResponse": {
+      "id": "GoogleCloudDataplexV1ListActionsResponse",
+      "description": "List actions response.",
+      "type": "object",
+      "properties": {
+        "actions": {
+          "description": "Actions under the given parent lake\/zone\/asset.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDataplexV1Action"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudDataplexV1Action": {
       "id": "GoogleCloudDataplexV1Action",
       "description": "Action represents an issue requiring administrator action for resolution.",
@@ -860,27 +870,18 @@
             "Unspecified category",
             "Resource management related issues.",
             "Security policy related issues.",
-            "Data and discovery related issues.",
-            "Metadata publishing related issues."
+            "Data and discovery related issues."
           ],
           "enum": [
             "CATEGORY_UNSPECIFIED",
             "RESOURCE_MANAGEMENT",
             "SECURITY_POLICY",
-            "DATA_DISCOVERY",
-            "METADATA_PUBLISHING"
+            "DATA_DISCOVERY"
           ]
         },
         "issue": {
           "description": "Detailed description of the issue requiring action.",
           "type": "string"
-        },
-        "locations": {
-          "description": "The list of data locations associated with this action. Paths reflect the underlying storage service. Cloud Storage locations are represented as URI paths. BigQuery locations refer to resource names.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudDataplexV1ActionLocation"
-          }
         },
         "detectTime": {
           "description": "The time that the issue was detected.",
@@ -938,22 +939,6 @@
           "description": "Details for issues related to lack of permissions to access data resources.",
           "$ref": "GoogleCloudDataplexV1ActionUnauthorizedResource"
         },
-        "invalidDiscoveryConfig": {
-          "description": "Details for issues related to invalid discovery configuration files.",
-          "$ref": "GoogleCloudDataplexV1ActionInvalidDiscoveryConfig"
-        },
-        "unauthorizedDataset": {
-          "description": "Details for issues related to metadata publishing to BigQuery due to unauthorized errors.",
-          "$ref": "GoogleCloudDataplexV1ActionUnauthorizedDataset"
-        },
-        "missingMetastore": {
-          "description": "Details for issues related to metadata publishing to Dataproc Metastore due to a missing metastore service instance.",
-          "$ref": "GoogleCloudDataplexV1ActionMissingMetastore"
-        },
-        "invalidMetastore": {
-          "description": "Details for issues related to metadata publishing to Dataproc Metastore caused by issues in the metastore service instance, e.g., wrong metastore configuration.",
-          "$ref": "GoogleCloudDataplexV1ActionInvalidMetastore"
-        },
         "failedSecurityPolicyApply": {
           "description": "Details for issues related to applying security policy.",
           "$ref": "GoogleCloudDataplexV1ActionFailedSecurityPolicyApply"
@@ -961,28 +946,6 @@
         "invalidDataOrganization": {
           "description": "Details for issues related to invalid data arrangement.",
           "$ref": "GoogleCloudDataplexV1ActionInvalidDataOrganization"
-        }
-      }
-    },
-    "GoogleCloudDataplexV1ActionLocation": {
-      "id": "GoogleCloudDataplexV1ActionLocation",
-      "description": "The list of data locations associated with this action. Paths reflect the underlying storage service. Cloud Storage locations are represented as URI paths. BigQuery locations refer to resource names.",
-      "type": "object",
-      "properties": {
-        "paths": {
-          "description": "Paths (e.g., Cloud Storage paths) where issues identified in this action are found.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "table": {
-          "description": "The table containing invalid data referenced by its catalog name.",
-          "type": "string"
-        },
-        "fileset": {
-          "description": "The fileset containing invalid data referenced by its catalog name.",
-          "type": "string"
         }
       }
     },
@@ -1076,34 +1039,6 @@
       "properties": {
       }
     },
-    "GoogleCloudDataplexV1ActionInvalidDiscoveryConfig": {
-      "id": "GoogleCloudDataplexV1ActionInvalidDiscoveryConfig",
-      "description": "Action details for invalid discovery configuration data detected by discovery.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "GoogleCloudDataplexV1ActionUnauthorizedDataset": {
-      "id": "GoogleCloudDataplexV1ActionUnauthorizedDataset",
-      "description": "Action details for issues of metadata publishing to BigQuery due to unauthorized errors.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "GoogleCloudDataplexV1ActionMissingMetastore": {
-      "id": "GoogleCloudDataplexV1ActionMissingMetastore",
-      "description": "Action details for issues of metadata publishing to Dataproc Metastore due to a missing metastore service instance.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "GoogleCloudDataplexV1ActionInvalidMetastore": {
-      "id": "GoogleCloudDataplexV1ActionInvalidMetastore",
-      "description": "Action details for issues of metadata publishing to Dataproc Metastore caused by issues in the metastore service instance, e.g., wrong metastore configuration.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "GoogleCloudDataplexV1ActionFailedSecurityPolicyApply": {
       "id": "GoogleCloudDataplexV1ActionFailedSecurityPolicyApply",
       "description": "Failed to apply security policy to the managed resource(s) under a lake, zone or an asset. For a lake or zone resource, one or more underlying assets has a failure applying security policy to the associated managed resource.",
@@ -1118,56 +1053,6 @@
     "GoogleCloudDataplexV1ActionInvalidDataOrganization": {
       "id": "GoogleCloudDataplexV1ActionInvalidDataOrganization",
       "description": "Action details for invalid data arrangement.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "GoogleCloudDataplexV1ListLakesResponse": {
-      "id": "GoogleCloudDataplexV1ListLakesResponse",
-      "description": "List lakes response.",
-      "type": "object",
-      "properties": {
-        "lakes": {
-          "description": "Lakes under the given parent location.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudDataplexV1Lake"
-          }
-        },
-        "nextPageToken": {
-          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
-          "type": "string"
-        },
-        "unreachableLocations": {
-          "description": "Locations that could not be reached.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "GoogleCloudDataplexV1ListActionsResponse": {
-      "id": "GoogleCloudDataplexV1ListActionsResponse",
-      "description": "List actions response.",
-      "type": "object",
-      "properties": {
-        "actions": {
-          "description": "Actions under the given parent lake\/zone\/asset.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudDataplexV1Action"
-          }
-        },
-        "nextPageToken": {
-          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudDataplexV1ResolveLakeActionsRequest": {
-      "id": "GoogleCloudDataplexV1ResolveLakeActionsRequest",
-      "description": "ResolveLakeActions request.",
       "type": "object",
       "properties": {
       }
@@ -1259,14 +1144,6 @@
           "description": "Output only. Aggregated status of the underlying assets of the zone.",
           "readOnly": true,
           "$ref": "GoogleCloudDataplexV1AssetStatus"
-        },
-        "actions": {
-          "description": "Output only. The current set of actions required of the administrator for this zone.",
-          "readOnly": true,
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudDataplexV1Action"
-          }
         }
       }
     },
@@ -1304,10 +1181,6 @@
         "schedule": {
           "description": "Optional. Cron schedule (https:\/\/en.wikipedia.org\/wiki\/Cron) for running discovery jobs periodically. Discovery jobs must be scheduled at least 30 minutes apart. To explicitly set a timezone to the cron tab, apply a prefix in the cron tab: \"CRON_TZ=${IANA_TIME_ZONE}\" or TZ=${IANA_TIME_ZONE}\". The ${IANA_TIME_ZONE} may only be a valid string from IANA time zone database. For example, \"CRON_TZ=America\/New_York 1 * * * *\", or \"TZ=America\/New_York 1 * * * *\".",
           "type": "string"
-        },
-        "publishing": {
-          "description": "Optional. Settings to manage metadata publishing from the zone.",
-          "$ref": "GoogleCloudDataplexV1ZoneDiscoverySpecMetadataPublishing"
         }
       }
     },
@@ -1350,51 +1223,6 @@
         }
       }
     },
-    "GoogleCloudDataplexV1ZoneDiscoverySpecMetadataPublishing": {
-      "id": "GoogleCloudDataplexV1ZoneDiscoverySpecMetadataPublishing",
-      "description": "Settings to manage metadata publishing from a zone.",
-      "type": "object",
-      "properties": {
-        "metastore": {
-          "description": "Required. Settings to manage metadata publishing to a Hive Metastore in the zone.",
-          "$ref": "GoogleCloudDataplexV1ZoneDiscoverySpecMetadataPublishingMetastore"
-        },
-        "bigquery": {
-          "description": "Required. Settings to manage metadata publishing to BigQuery in the zone.",
-          "$ref": "GoogleCloudDataplexV1ZoneDiscoverySpecMetadataPublishingBigQuery"
-        }
-      }
-    },
-    "GoogleCloudDataplexV1ZoneDiscoverySpecMetadataPublishingMetastore": {
-      "id": "GoogleCloudDataplexV1ZoneDiscoverySpecMetadataPublishingMetastore",
-      "description": "Settings to manage metadata publishing to a Hive Metastore from a zone.",
-      "type": "object",
-      "properties": {
-        "enabled": {
-          "description": "Required. Whether to publish metadata to metastore.",
-          "type": "boolean"
-        },
-        "databaseName": {
-          "description": "Immutable. The name of the metastore database associated with the zone. The specified value is interpreted as a name template that can refer to ${lake_id} and ${zone_id} placeholders. If unspecified, this defaults to \"${lake_id}_${zone_id}\". The database is created in the metastore instance associated with the parent lake. The specified name must not already be in use. Upon creation, this field is updated to reflect the actual database name. Maximum length is 128.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudDataplexV1ZoneDiscoverySpecMetadataPublishingBigQuery": {
-      "id": "GoogleCloudDataplexV1ZoneDiscoverySpecMetadataPublishingBigQuery",
-      "description": "Settings to manage metadata publishing to BigQuery from a zone.",
-      "type": "object",
-      "properties": {
-        "enabled": {
-          "description": "Required. Whether to publish metadata to BigQuery.",
-          "type": "boolean"
-        },
-        "datasetName": {
-          "description": "Immutable. The name of the BigQuery dataset associated with the zone. The specified value is interpreted as a name template that can refer to ${lake_id} and ${zone_id} placeholders. If unspecified, this defaults to \"${lake_id}_${zone_id}\". The dataset is created in the project associated with the parent lake. The specified name must not already be in use. Upon creation, this field is updated to reflect the actual dataset name.",
-          "type": "string"
-        }
-      }
-    },
     "GoogleCloudDataplexV1ZoneResourceSpec": {
       "id": "GoogleCloudDataplexV1ZoneResourceSpec",
       "description": "Settings for resources attached as assets within a zone.",
@@ -1432,13 +1260,6 @@
           "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
           "type": "string"
         }
-      }
-    },
-    "GoogleCloudDataplexV1ResolveZoneActionsRequest": {
-      "id": "GoogleCloudDataplexV1ResolveZoneActionsRequest",
-      "description": "ResolveZoneActions request.",
-      "type": "object",
-      "properties": {
       }
     },
     "GoogleCloudDataplexV1Asset": {
@@ -1524,14 +1345,6 @@
           "description": "Output only. Status of the discovery feature applied to data referenced by this asset.",
           "readOnly": true,
           "$ref": "GoogleCloudDataplexV1AssetDiscoveryStatus"
-        },
-        "actions": {
-          "description": "Output only. The current set of actions required of the administrator for this asset.",
-          "readOnly": true,
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudDataplexV1Action"
-          }
         }
       }
     },
@@ -1556,34 +1369,6 @@
             "TYPE_UNSPECIFIED",
             "STORAGE_BUCKET",
             "BIGQUERY_DATASET"
-          ]
-        },
-        "creationPolicy": {
-          "description": "Immutable. Creation policy for the referenced resource.",
-          "type": "string",
-          "enumDescriptions": [
-            "Policy not specified.",
-            "Attach existing resource. This is the default behavior.",
-            "Create a new resource for the asset."
-          ],
-          "enum": [
-            "CREATION_POLICY_UNSPECIFIED",
-            "ATTACH_RESOURCE",
-            "CREATE_RESOURCE"
-          ]
-        },
-        "deletionPolicy": {
-          "description": "Optional. Deletion policy for the referenced resource.",
-          "type": "string",
-          "enumDescriptions": [
-            "Policy not specified.",
-            "Detach resource when asset is deleted. This is the default behavior.",
-            "Delete resource when the asset is deleted."
-          ],
-          "enum": [
-            "DELETION_POLICY_UNSPECIFIED",
-            "DETACH_RESOURCE",
-            "DELETE_RESOURCE"
           ]
         }
       }
@@ -1684,10 +1469,6 @@
         "schedule": {
           "description": "Optional. Cron schedule (https:\/\/en.wikipedia.org\/wiki\/Cron) for running discovery jobs periodically. Discovery jobs must be scheduled at least 30 minutes apart.",
           "type": "string"
-        },
-        "publishing": {
-          "description": "Optional. Settings to manage metadata publishing for the zone.",
-          "$ref": "GoogleCloudDataplexV1AssetDiscoverySpecMetadataPublishing"
         }
       }
     },
@@ -1727,21 +1508,6 @@
         "disableTypeInference": {
           "description": "Optional. Whether to disable the inference of data type for Json data. If true, all columns will be registered as their primitive types (strings, number or boolean).",
           "type": "boolean"
-        }
-      }
-    },
-    "GoogleCloudDataplexV1AssetDiscoverySpecMetadataPublishing": {
-      "id": "GoogleCloudDataplexV1AssetDiscoverySpecMetadataPublishing",
-      "description": "Settings to manage metadata publishing for an asset.",
-      "type": "object",
-      "properties": {
-        "tableNamePrefix": {
-          "description": "Immutable. The prefix for table names. If provided, table names are prefixed with the specified value.",
-          "type": "string"
-        },
-        "filesetNamePrefix": {
-          "description": "Immutable. The prefix for fileset names. If provided, fileset names are prefixed with the specified value.",
-          "type": "string"
         }
       }
     },
@@ -1793,54 +1559,8 @@
           "type": "string",
           "format": "google-datetime"
         },
-        "stats": {
-          "description": "Data Stats of the asset reported by discovery.",
-          "$ref": "GoogleCloudDataplexV1AssetDiscoveryStatusStats"
-        },
-        "lastRunDuration": {
-          "description": "The duration of the last run of the discovery job of the asset.",
-          "type": "string",
-          "format": "google-duration"
-        },
         "latestProcessedChangeTime": {
           "description": "Timestamp of the latest change to data that has been processed. This is only valid when discovery is in PROCESSING_CHANGES state.",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
-    "GoogleCloudDataplexV1AssetDiscoveryStatusStats": {
-      "id": "GoogleCloudDataplexV1AssetDiscoveryStatusStats",
-      "description": "The aggregated data statistics for the asset reported by discovery. The data is collected from the last run of the discovery jobs.",
-      "type": "object",
-      "properties": {
-        "dataItems": {
-          "description": "The count of data items within the referenced resource.",
-          "type": "string",
-          "format": "int64"
-        },
-        "dataSize": {
-          "description": "The number of stored data bytes within the referenced resource.",
-          "type": "string",
-          "format": "int64"
-        },
-        "tables": {
-          "description": "The count of table entities within the referenced resource.",
-          "type": "string",
-          "format": "int64"
-        },
-        "filesets": {
-          "description": "The count of fileset entities within the referenced resource.",
-          "type": "string",
-          "format": "int64"
-        },
-        "dataRangeStartTime": {
-          "description": "The earilest creation timestamp of data in the attached resource (e.g. Cloud Storage objects, or BigQuery tables).",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "dataRangeEndTime": {
-          "description": "The latest update timestamp of data in the attached resource (e.g. Cloud Storage objects, or BigQuery tables).",
           "type": "string",
           "format": "google-datetime"
         }
@@ -1862,13 +1582,6 @@
           "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
           "type": "string"
         }
-      }
-    },
-    "GoogleCloudDataplexV1ResolveAssetActionsRequest": {
-      "id": "GoogleCloudDataplexV1ResolveAssetActionsRequest",
-      "description": "ResolveAssetActions request.",
-      "type": "object",
-      "properties": {
       }
     },
     "GoogleCloudDataplexV1Task": {
@@ -2032,10 +1745,6 @@
           "description": "The GCS URI of the main Python file to use as the driver. Must be a .py file. The execution args are passed in as a sequence of named process arguments (--key=value).",
           "type": "string"
         },
-        "pythonScript": {
-          "description": "Python script text to execute as the driver. The execution args are passed in as a sequence of named process arguments (--key=value).",
-          "type": "string"
-        },
         "sqlScriptFile": {
           "description": "A reference to a query file. This can be the GCS URI of the query file or it can the path to a SqlScript Content. The execution args are used to declare a set of script variables (set key=\"value\";).",
           "type": "string"
@@ -2164,6 +1873,13 @@
         "nextPageToken": {
           "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
           "type": "string"
+        },
+        "unreachableLocations": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -2989,184 +2705,6 @@
         "serviceJob": {
           "description": "The reference to the job within the service.",
           "type": "string"
-        },
-        "discovery": {
-          "description": "Details about the discovery job.",
-          "$ref": "GoogleCloudDataplexV1JobEventDiscoveryDetails"
-        }
-      }
-    },
-    "GoogleCloudDataplexV1JobEventDiscoveryDetails": {
-      "id": "GoogleCloudDataplexV1JobEventDiscoveryDetails",
-      "description": "Details about discovery jobs.",
-      "type": "object",
-      "properties": {
-        "zoneId": {
-          "description": "The id of the associated zone.",
-          "type": "string"
-        },
-        "assetId": {
-          "description": "The id of the associated asset.",
-          "type": "string"
-        },
-        "dataItemsRead": {
-          "description": "The number of data items within the asset that were read.",
-          "type": "string",
-          "format": "int64"
-        },
-        "metadataEventCount": {
-          "description": "The number of metadata events logged in this job.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "actionsDetected": {
-          "description": "Whether the job resulted in actions on the asset.",
-          "type": "boolean"
-        }
-      }
-    },
-    "GoogleCloudDataplexV1MetadataEvent": {
-      "id": "GoogleCloudDataplexV1MetadataEvent",
-      "description": "The payload associated with Metadata logs that contains events describing entities that were discovered.",
-      "type": "object",
-      "properties": {
-        "message": {
-          "description": "The log message.",
-          "type": "string"
-        },
-        "assetId": {
-          "description": "The id of the associated asset.",
-          "type": "string"
-        },
-        "jobId": {
-          "description": "The unique id of the discovery job that resulted in this event.",
-          "type": "string"
-        },
-        "entityType": {
-          "description": "The type of the entity being created, updated or deleted.",
-          "type": "string",
-          "enumDescriptions": [
-            "An unspecified entity type.",
-            "An event representing a table.",
-            "An event representing a fileset.",
-            "An event representing a partition within a table or fileset."
-          ],
-          "enum": [
-            "ENTITY_TYPE_UNSPECIFIED",
-            "TABLE",
-            "FILESET",
-            "PARTITION"
-          ]
-        },
-        "eventType": {
-          "description": "The type of event.",
-          "type": "string",
-          "enumDescriptions": [
-            "An unspecified event type.",
-            "An event representing a metadata entity being created.",
-            "An event representing a metadata entity being updated.",
-            "An event representing a metadata entity being deleted."
-          ],
-          "enum": [
-            "EVENT_TYPE_UNSPECIFIED",
-            "CREATE",
-            "UPDATE",
-            "DELETE"
-          ]
-        },
-        "table": {
-          "description": "The table being created, updated or deleted.",
-          "$ref": "GoogleCloudDataplexV1MetadataEventTable"
-        },
-        "fileset": {
-          "description": "The fileset being created, updated or deleted.",
-          "$ref": "GoogleCloudDataplexV1MetadataEventFileset"
-        },
-        "partition": {
-          "description": "The partition being created or deleted.",
-          "$ref": "GoogleCloudDataplexV1MetadataEventPartition"
-        }
-      }
-    },
-    "GoogleCloudDataplexV1MetadataEventTable": {
-      "id": "GoogleCloudDataplexV1MetadataEventTable",
-      "description": "Details about table entities being created, updated or deleted.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The name of the table entity.",
-          "type": "string"
-        },
-        "location": {
-          "description": "The data location of the table.",
-          "type": "string"
-        },
-        "dataFormat": {
-          "description": "The format of the data within the table.",
-          "type": "string"
-        },
-        "dataItemsCount": {
-          "description": "The number of data items in the table.",
-          "type": "string",
-          "format": "int64"
-        },
-        "schema": {
-          "description": "The schema of the table.",
-          "type": "string"
-        },
-        "externalTables": {
-          "description": "The list of associated external tables published for the table. This is formatted using fully-qualified names such as: dpms:project.location.service.database.table and bigquery:project.location.dataset.table",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "GoogleCloudDataplexV1MetadataEventFileset": {
-      "id": "GoogleCloudDataplexV1MetadataEventFileset",
-      "description": "Details about fileset entities being created, updated or deleted.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The name of the fileset entity.",
-          "type": "string"
-        },
-        "location": {
-          "description": "The data location of the fileset.",
-          "type": "string"
-        },
-        "dataFormat": {
-          "description": "The format of the data within the fileset.",
-          "type": "string"
-        },
-        "dataItemsCount": {
-          "description": "The number of data items in the fileset.",
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "GoogleCloudDataplexV1MetadataEventPartition": {
-      "id": "GoogleCloudDataplexV1MetadataEventPartition",
-      "description": "Details about paritions of entities being created or deleted.",
-      "type": "object",
-      "properties": {
-        "entity": {
-          "description": "The name of the table or fileset entity containing this partition.",
-          "type": "string"
-        },
-        "keys": {
-          "description": "The set of key\/value pairs identifying the partition.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "dataItemsCount": {
-          "description": "The number of data items in the partition.",
-          "type": "string",
-          "format": "int64"
         }
       }
     }
@@ -3543,34 +3081,6 @@
                   ],
                   "description": "Retrieves a lake resource."
                 },
-                "resolveLakeActions": {
-                  "id": "dataplex.projects.locations.lakes.resolveLakeActions",
-                  "path": "v1/{+lake}:resolveLakeActions",
-                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}:resolveLakeActions",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "lake": {
-                      "description": "Required. The name of the lake for which actions are being resolved of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "lake"
-                  ],
-                  "request": {
-                    "$ref": "GoogleCloudDataplexV1ResolveLakeActionsRequest"
-                  },
-                  "response": {
-                    "$ref": "GoogleLongrunningOperation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Marks actions associated with a lake as resolved."
-                },
                 "setIamPolicy": {
                   "id": "dataplex.projects.locations.lakes.setIamPolicy",
                   "path": "v1/{+resource}:setIamPolicy",
@@ -3613,7 +3123,7 @@
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
-                      "description": "Optional. The policy format version to be returned.Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected.Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset.To learn which resources support conditions in their IAM policies, see the IAM documentation (https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                      "description": "Optional. The maximum policy version that will be used to format the policy.Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected.Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset.The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1.To learn which resources support conditions in their IAM policies, see the IAM documentation (https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -3876,34 +3386,6 @@
                       ],
                       "description": "Retrieves a zone resource."
                     },
-                    "resolveZoneActions": {
-                      "id": "dataplex.projects.locations.lakes.zones.resolveZoneActions",
-                      "path": "v1/{+zone}:resolveZoneActions",
-                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}:resolveZoneActions",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "zone": {
-                          "description": "Required. The name of the zone for which actions are being resolved of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/zones\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "zone"
-                      ],
-                      "request": {
-                        "$ref": "GoogleCloudDataplexV1ResolveZoneActionsRequest"
-                      },
-                      "response": {
-                        "$ref": "GoogleLongrunningOperation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Marks actions associated with a zone as resolved."
-                    },
                     "setIamPolicy": {
                       "id": "dataplex.projects.locations.lakes.zones.setIamPolicy",
                       "path": "v1/{+resource}:setIamPolicy",
@@ -3946,7 +3428,7 @@
                           "type": "string"
                         },
                         "options.requestedPolicyVersion": {
-                          "description": "Optional. The policy format version to be returned.Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected.Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset.To learn which resources support conditions in their IAM policies, see the IAM documentation (https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                          "description": "Optional. The maximum policy version that will be used to format the policy.Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected.Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset.The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1.To learn which resources support conditions in their IAM policies, see the IAM documentation (https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
@@ -4107,7 +3589,7 @@
                               "parameters": {
                                 "name": {
                                   "description": "Required. The resource name of the partition: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/entities\/{entity_id}\/partitions\/{partition_id}.",
-                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/zones\/[^\/]+\/entities\/[^\/]+\/partitions\/[^\/]+$",
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/zones\/[^\/]+\/entities\/[^\/]+\/partitions\/.*$",
                                   "location": "path",
                                   "required": true,
                                   "type": "string"
@@ -4384,34 +3866,6 @@
                           ],
                           "description": "Retrieves an asset resource."
                         },
-                        "resolveAssetActions": {
-                          "id": "dataplex.projects.locations.lakes.zones.assets.resolveAssetActions",
-                          "path": "v1/{+asset}:resolveAssetActions",
-                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/assets/{assetsId}:resolveAssetActions",
-                          "httpMethod": "POST",
-                          "parameters": {
-                            "asset": {
-                              "description": "Required. The name of the asset for which actions are being resolved of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/assets\/{asset_id}",
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/zones\/[^\/]+\/assets\/[^\/]+$",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "asset"
-                          ],
-                          "request": {
-                            "$ref": "GoogleCloudDataplexV1ResolveAssetActionsRequest"
-                          },
-                          "response": {
-                            "$ref": "GoogleLongrunningOperation"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Marks actions associated with an asset as resolved(Deprecated)."
-                        },
                         "setIamPolicy": {
                           "id": "dataplex.projects.locations.lakes.zones.assets.setIamPolicy",
                           "path": "v1/{+resource}:setIamPolicy",
@@ -4454,7 +3908,7 @@
                               "type": "string"
                             },
                             "options.requestedPolicyVersion": {
-                              "description": "Optional. The policy format version to be returned.Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected.Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset.To learn which resources support conditions in their IAM policies, see the IAM documentation (https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                              "description": "Optional. The maximum policy version that will be used to format the policy.Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected.Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset.The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1.To learn which resources support conditions in their IAM policies, see the IAM documentation (https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
                               "location": "query",
                               "type": "integer",
                               "format": "int32"
@@ -4763,7 +4217,7 @@
                           "type": "string"
                         },
                         "options.requestedPolicyVersion": {
-                          "description": "Optional. The policy format version to be returned.Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected.Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset.To learn which resources support conditions in their IAM policies, see the IAM documentation (https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                          "description": "Optional. The maximum policy version that will be used to format the policy.Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected.Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset.The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1.To learn which resources support conditions in their IAM policies, see the IAM documentation (https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
@@ -4944,7 +4398,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Create a environment resource."
+                      "description": "Create an environment resource."
                     },
                     "patch": {
                       "id": "dataplex.projects.locations.lakes.environments.patch",
@@ -5123,7 +4577,7 @@
                           "type": "string"
                         },
                         "options.requestedPolicyVersion": {
-                          "description": "Optional. The policy format version to be returned.Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected.Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset.To learn which resources support conditions in their IAM policies, see the IAM documentation (https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                          "description": "Optional. The maximum policy version that will be used to format the policy.Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected.Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset.The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1.To learn which resources support conditions in their IAM policies, see the IAM documentation (https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
@@ -5435,7 +4889,7 @@
                           "type": "string"
                         },
                         "options.requestedPolicyVersion": {
-                          "description": "Optional. The policy format version to be returned.Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected.Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset.To learn which resources support conditions in their IAM policies, see the IAM documentation (https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                          "description": "Optional. The maximum policy version that will be used to format the policy.Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected.Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset.The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1.To learn which resources support conditions in their IAM policies, see the IAM documentation (https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"

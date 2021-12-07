@@ -257,10 +257,10 @@ class DetachTrustRequest(_messages.Message):
 
 
 class Domain(_messages.Message):
-  r"""If the domain is being changed, it will be placed into the UPDATING
-  state, which indicates that the resource is being reconciled. At this point,
-  Get will reflect an intermediate state. Represents a managed Microsoft
-  Active Directory domain.
+  r"""Represents a managed Microsoft Active Directory domain. If the domain is
+  being changed, it will be placed into the UPDATING state, which indicates
+  that the resource is being reconciled. At this point, Get will reflect an
+  intermediate state.
 
   Enums:
     StateValueValuesEnum: Output only. The current state of this domain.

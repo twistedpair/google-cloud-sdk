@@ -306,6 +306,11 @@ class Phrase(_messages.Message):
   to a string unique to all class resources and inline classes. Then use the
   class' id wrapped in $`{...}` e.g. "${my-months}". To refer to custom
   classes resources, use the class' id wrapped in `${}` (e.g. `${my-months}`).
+  Speech-to-Text supports three locations: `global`, `us` (US North America),
+  and `eu` (Europe). If you are calling the `speech.googleapis.com` endpoint,
+  use the `global` location. To specify a region, use a [regional
+  endpoint](/speech-to-text/docs/endpoints) with matching `us` or `eu`
+  location value.
 
   Fields:
     boost: Hint Boost. Overrides the boost set at the phrase set level.
@@ -825,8 +830,12 @@ class SpeechProjectsLocationsCustomClassesCreateRequest(_messages.Message):
     createCustomClassRequest: A CreateCustomClassRequest resource to be passed
       as the request body.
     parent: Required. The parent resource where this custom class will be
-      created. Format:
-      {api_version}/projects/{project}/locations/{location}/customClasses
+      created. Format: `projects/{project}/locations/{location}/customClasses`
+      Speech-to-Text supports three locations: `global`, `us` (US North
+      America), and `eu` (Europe). If you are calling the
+      `speech.googleapis.com` endpoint, use the `global` location. To specify
+      a region, use a [regional endpoint](/speech-to-text/docs/endpoints) with
+      matching `us` or `eu` location value.
   """
 
   createCustomClassRequest = _messages.MessageField('CreateCustomClassRequest', 1)
@@ -837,8 +846,13 @@ class SpeechProjectsLocationsCustomClassesDeleteRequest(_messages.Message):
   r"""A SpeechProjectsLocationsCustomClassesDeleteRequest object.
 
   Fields:
-    name: Required. The name of the custom class to delete. Format: {api_versi
-      on}/projects/{project}/locations/{location}/customClasses/{custom_class}
+    name: Required. The name of the custom class to delete. Format:
+      `projects/{project}/locations/{location}/customClasses/{custom_class}`
+      Speech-to-Text supports three locations: `global`, `us` (US North
+      America), and `eu` (Europe). If you are calling the
+      `speech.googleapis.com` endpoint, use the `global` location. To specify
+      a region, use a [regional endpoint](/speech-to-text/docs/endpoints) with
+      matching `us` or `eu` location value.
   """
 
   name = _messages.StringField(1, required=True)
@@ -848,9 +862,8 @@ class SpeechProjectsLocationsCustomClassesGetRequest(_messages.Message):
   r"""A SpeechProjectsLocationsCustomClassesGetRequest object.
 
   Fields:
-    name: Required. The name of the custom class to retrieve. Format: {api_ver
-      sion}/projects/{project}/locations/{location}/customClasses/{custom_clas
-      s}
+    name: Required. The name of the custom class to retrieve. Format:
+      `projects/{project}/locations/{location}/customClasses/{custom_class}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -869,8 +882,12 @@ class SpeechProjectsLocationsCustomClassesListRequest(_messages.Message):
       parameters provided to `ListCustomClass` must match the call that
       provided the page token.
     parent: Required. The parent, which owns this collection of custom
-      classes. Format:
-      {api_version}/projects/{project}/locations/{location}/customClasses
+      classes. Format: `projects/{project}/locations/{location}/customClasses`
+      Speech-to-Text supports three locations: `global`, `us` (US North
+      America), and `eu` (Europe). If you are calling the
+      `speech.googleapis.com` endpoint, use the `global` location. To specify
+      a region, use a [regional endpoint](/speech-to-text/docs/endpoints) with
+      matching `us` or `eu` location value.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -899,8 +916,12 @@ class SpeechProjectsLocationsPhraseSetsCreateRequest(_messages.Message):
     createPhraseSetRequest: A CreatePhraseSetRequest resource to be passed as
       the request body.
     parent: Required. The parent resource where this phrase set will be
-      created. Format:
-      {api_version}/projects/{project}/locations/{location}/phraseSets
+      created. Format: `projects/{project}/locations/{location}/phraseSets`
+      Speech-to-Text supports three locations: `global`, `us` (US North
+      America), and `eu` (Europe). If you are calling the
+      `speech.googleapis.com` endpoint, use the `global` location. To specify
+      a region, use a [regional endpoint](/speech-to-text/docs/endpoints) with
+      matching `us` or `eu` location value.
   """
 
   createPhraseSetRequest = _messages.MessageField('CreatePhraseSetRequest', 1)
@@ -911,8 +932,8 @@ class SpeechProjectsLocationsPhraseSetsDeleteRequest(_messages.Message):
   r"""A SpeechProjectsLocationsPhraseSetsDeleteRequest object.
 
   Fields:
-    name: Required. The name of the phrase set to delete. Format: {api_version
-      }/projects/{project}/locations/{location}/phraseSets/{phrase_set}
+    name: Required. The name of the phrase set to delete. Format:
+      `projects/{project}/locations/{location}/phraseSets/{phrase_set}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -922,8 +943,13 @@ class SpeechProjectsLocationsPhraseSetsGetRequest(_messages.Message):
   r"""A SpeechProjectsLocationsPhraseSetsGetRequest object.
 
   Fields:
-    name: Required. The name of the phrase set to retrieve. Format: {api_versi
-      on}/projects/{project}/locations/{location}/phraseSets/{phrase_set}
+    name: Required. The name of the phrase set to retrieve. Format:
+      `projects/{project}/locations/{location}/phraseSets/{phrase_set}`
+      Speech-to-Text supports three locations: `global`, `us` (US North
+      America), and `eu` (Europe). If you are calling the
+      `speech.googleapis.com` endpoint, use the `global` location. To specify
+      a region, use a [regional endpoint](/speech-to-text/docs/endpoints) with
+      matching `us` or `eu` location value.
   """
 
   name = _messages.StringField(1, required=True)
@@ -942,7 +968,12 @@ class SpeechProjectsLocationsPhraseSetsListRequest(_messages.Message):
       parameters provided to `ListPhraseSet` must match the call that provided
       the page token.
     parent: Required. The parent, which owns this collection of phrase set.
-      Format: projects/{project}/locations/{location}
+      Format: `projects/{project}/locations/{location}` Speech-to-Text
+      supports three locations: `global`, `us` (US North America), and `eu`
+      (Europe). If you are calling the `speech.googleapis.com` endpoint, use
+      the `global` location. To specify a region, use a [regional
+      endpoint](/speech-to-text/docs/endpoints) with matching `us` or `eu`
+      location value.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)

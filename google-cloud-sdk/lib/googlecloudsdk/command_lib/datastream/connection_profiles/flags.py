@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import base
+
 
 def AddTypeFlag(parser):
   """Adds a --type flag to the given parser."""
@@ -116,14 +118,20 @@ def AddOracleProfileGroup(parser, required=True):
       help='Prompt for the password used to connect to the database.')
 
 
-def AddGcsProfileGroup(parser, required=True):
+def AddGcsProfileGroup(parser, release_track, required=True):
   """Adds necessary GCS profile flags to the given parser."""
   gcs_profile = parser.add_group()
+
+  bucket_field_name = '--bucket'
+  if release_track == base.ReleaseTrack.BETA:
+    bucket_field_name = '--bucket-name'
+
   gcs_profile.add_argument(
-      '--bucket-name',
+      bucket_field_name,
       help="""The full project and resource path for Cloud Storage
       bucket including the name.""",
       required=required)
+
   gcs_profile.add_argument(
       '--root-path',
       help="""The root path inside the Cloud Storage bucket.""",
@@ -155,3 +163,13 @@ def AddRdbmsGroup(parser):
       '--oracle-rdbms-file',
       help="""Path to a YAML (or JSON) file containing the ORACLE RDBMS to enrich with child data objects and metadata. If you pass - as the value of the flag the file content will be read from stdin."""
   )
+
+
+def AddValidationGroup(parser, verb):
+  """Adds a --force flag to the given parser."""
+  validation_group = parser.add_group(mutex=True)
+  validation_group.add_argument(
+      '--force',
+      help="""%s the connection profile without validating it.""" % verb,
+      action='store_true',
+      default=False)

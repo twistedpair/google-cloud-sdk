@@ -33,6 +33,7 @@ from googlecloudsdk.core.util import http_proxy_types
 import httplib2
 import requests
 import six
+
 from six.moves import http_client as httplib
 from six.moves import urllib
 import socks
@@ -43,7 +44,9 @@ def GetSession(timeout='unset',
                ca_certs=None,
                session=None,
                streaming_response_body=False,
-               redact_request_body_reason=None):
+               redact_request_body_reason=None,
+               client_certificate=None,
+               client_key=None,):
   """Get a requests.Session that is properly configured for use by gcloud.
 
   This method does not add credentials to the client. For a requests.Session
@@ -62,12 +65,17 @@ def GetSession(timeout='unset',
         be a streaming body.
     redact_request_body_reason: str, the reason why the request body must be
         redacted if --log-http is used. If None, the body is not redacted.
+    client_certificate: str, absolute filename of a client_certificate file that
+        is set explicitly for client certificate authentication
+    client_key: str, absolute filename of a client_key file that
+        is set explicitly for client certificate authentication
 
   Returns:
     A requests.Session object configured with all the required settings
     for gcloud.
   """
-  http_client = _CreateRawSession(timeout, ca_certs, session)
+  http_client = _CreateRawSession(timeout, ca_certs, session,
+                                  client_certificate, client_key)
   http_client = RequestWrapper().WrapWithDefaults(
       http_client,
       streaming_response_body=streaming_response_body,
@@ -182,7 +190,9 @@ def Session(
     timeout=None,
     ca_certs=None,
     disable_ssl_certificate_validation=False,
-    session=None):
+    session=None,
+    client_certificate=None,
+    client_key=None):
   """Returns a requests.Session subclass.
 
   Args:
@@ -192,6 +202,8 @@ def Session(
         validation.
     session: requests.Session instance. Otherwise, a new requests.Session will
         be initialized.
+    client_certificate: str, absolute filename of a client_certificate file
+    client_key: str, absolute filename of a client_key file
 
   Returns: A requests.Session subclass.
   """
@@ -211,18 +223,24 @@ def Session(
         'http': proxy_info,
         'https': proxy_info,
     }
-
   client_side_certificate = None
-  ca_config = context_aware.Config()
-  if ca_config:
-    log.debug('Using client certificate %s',
-              ca_config.encrypted_client_cert_path)
+  if client_certificate is not None and client_key is not None and ca_certs is not None:
+    log.debug(
+        'Using provided server certificate %s, client certificate %s, client certificate key %s',
+        ca_certs, client_certificate, client_key)
     client_side_certificate = ClientSideCertificate(
-        ca_config.encrypted_client_cert_path,
-        ca_config.encrypted_client_cert_path,
-        ca_config.encrypted_client_cert_password)
+        client_certificate, client_key)
   else:
-    client_side_certificate = None
+    ca_config = context_aware.Config()
+    if ca_config:
+      log.debug('Using client certificate %s',
+                ca_config.encrypted_client_cert_path)
+      client_side_certificate = ClientSideCertificate(
+          ca_config.encrypted_client_cert_path,
+          ca_config.encrypted_client_cert_path,
+          ca_config.encrypted_client_cert_password)
+    else:
+      client_side_certificate = None
 
   adapter = HTTPAdapter(client_side_certificate)
 
@@ -235,7 +253,8 @@ def Session(
   return session
 
 
-def _CreateRawSession(timeout='unset', ca_certs=None, session=None):
+def _CreateRawSession(timeout='unset', ca_certs=None, session=None,
+                      client_certificate=None, client_key=None):
   """Create a requests.Session matching the appropriate gcloud properties."""
   # Compared with setting the default timeout in the function signature (i.e.
   # timeout=300), this lets you test with short default timeouts by mocking
@@ -255,7 +274,9 @@ def _CreateRawSession(timeout='unset', ca_certs=None, session=None):
   return Session(timeout=effective_timeout,
                  ca_certs=ca_certs,
                  disable_ssl_certificate_validation=no_validate,
-                 session=session)
+                 session=session,
+                 client_certificate=client_certificate,
+                 client_key=client_key)
 
 
 def _GetURIFromRequestArgs(url, params):

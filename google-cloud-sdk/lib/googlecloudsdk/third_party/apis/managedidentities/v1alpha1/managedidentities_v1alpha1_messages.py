@@ -1123,6 +1123,22 @@ class ListSQLIntegrationsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListSchemaExtensionsResponse(_messages.Message):
+  r"""ListSchemaExtensionsResponse is the response message for
+  ListSchemaExtensions method.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    schemaExtensions: A list of SchemaExtension of a domain.
+    unreachable: A list of locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  schemaExtensions = _messages.MessageField('SchemaExtension', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class Location(_messages.Message):
   r"""A resource that represents Google Cloud Platform location.
 
@@ -1650,6 +1666,56 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsRestoreRequest(_messages.Me
 
   name = _messages.StringField(1, required=True)
   restoreDomainRequest = _messages.MessageField('RestoreDomainRequest', 2)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsSchemaExtensionsCreateRequest(_messages.Message):
+  r"""A
+  ManagedidentitiesProjectsLocationsGlobalDomainsSchemaExtensionsCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The domain resource name using the form:
+      `projects/{project_id}/locations/global/domains/{domain_name}`
+    schemaExtension: A SchemaExtension resource to be passed as the request
+      body.
+    schemaExtensionId: Required. Unique id of the Schema Extension Request.
+      This value should be 4-63 characters, and valid characters are
+      /A-Z[0-9]-/.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  schemaExtension = _messages.MessageField('SchemaExtension', 2)
+  schemaExtensionId = _messages.StringField(3)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsSchemaExtensionsListRequest(_messages.Message):
+  r"""A
+  ManagedidentitiesProjectsLocationsGlobalDomainsSchemaExtensionsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filter specifying constraints of a list operation. For
+      example, `SchemaExtension.name="projects/proj-
+      test/locations/global/domains/test.com/schemaExtensions/s-123"`.
+    orderBy: Optional. Specifies the ordering of results following syntax at
+      https://cloud.google.com/apis/design/design_patterns#sorting_order.
+    pageSize: Optional. The maximum number of items to return. The maximum
+      value is 1000; values above 1000 will be coerced to 1000. If not
+      specified, a default value of 1000 will be used by the service.
+      Regardless of the page_size value, the response may include a partial
+      list and a caller should only rely on response. next_page_token to
+      determine if there are more instances left to be queried.
+    pageToken: Optional. The next_page_token value returned from a previous
+      List request, if any.
+    parent: Required. The domain resource name using the form:
+      `projects/{project_id}/locations/global/domains/{domain_name}`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class ManagedidentitiesProjectsLocationsGlobalDomainsSetIamPolicyRequest(_messages.Message):
@@ -2373,6 +2439,53 @@ class Schedule(_messages.Message):
   day = _messages.EnumField('DayValueValuesEnum', 1)
   duration = _messages.StringField(2)
   startTime = _messages.MessageField('TimeOfDay', 3)
+
+
+class SchemaExtension(_messages.Message):
+  r"""Represents a Managed Microsoft Identities Schema Extension.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the Schema
+      Extension.
+
+  Fields:
+    backup: Output only. Id for backup taken before extending domain schema.
+    createTime: Output only. The time the schema extension was created.
+    description: Description for Schema Change.
+    ldif: LDIF File Resource name for Schema Extensions. Represented in the
+      form of
+      projects/{project_id}/buckets/{bucket_name}/objects/{object_name}
+    name: The unique name of the Schema Extension in the form of projects/{pro
+      ject_id}/locations/global/domains/{domain_name}/schemaExtensions/{schema
+      _extension}
+    state: Output only. The current state of the Schema Extension.
+    statusMessage: Output only. Additional information about the current
+      status of this Schema Extension, if available.
+    updateTime: Output only. Last update time.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the Schema Extension.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      CREATING: LDIF is currently getting applied on domain.
+      COMPLETED: LDIF has been successfully applied on domain.
+      FAILED: LDIF did not applied successfully.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    COMPLETED = 2
+    FAILED = 3
+
+  backup = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  ldif = _messages.StringField(4)
+  name = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  statusMessage = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class SetIamPolicyRequest(_messages.Message):

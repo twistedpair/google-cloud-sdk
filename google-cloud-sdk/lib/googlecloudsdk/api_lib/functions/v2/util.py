@@ -28,8 +28,8 @@ from googlecloudsdk.api_lib.functions.v2 import exceptions
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.core.console import progress_tracker
+from googlecloudsdk.core.util import encoding as encoder
 from googlecloudsdk.core.util import retry
-
 import six
 
 _API_NAME = 'cloudfunctions'
@@ -178,13 +178,13 @@ def _GetOperationStatus(client, request, tracker, messages):
   """Returns a Boolean indicating whether the request has completed."""
   operation = client.projects_locations_operations.Get(request)
   if operation.error:
-    raise exceptions.StatusToFunctionsError(operation.error)
+    raise exceptions.StatusToFunctionsError(
+        operation.error, error_message=OperationErrorToString(operation.error))
 
   operation_metadata = _GetOperationMetadata(messages, operation)
   for stage in operation_metadata.stages:
     stage_in_progress = (
-        stage.state is GetStage(messages)
-        .StateValueValuesEnum.IN_PROGRESS)
+        stage.state is GetStage(messages).StateValueValuesEnum.IN_PROGRESS)
     stage_complete = (
         stage.state is GetStage(messages).StateValueValuesEnum.COMPLETE)
 
@@ -264,3 +264,24 @@ def FormatTimestamp(timestamp):
     Formatted timestamp string.
   """
   return re.sub(r'(\.\d{3})\d*Z$', r'\1', timestamp.replace('T', ' '))
+
+
+def OperationErrorToString(error):
+  """Returns a human readable string representation from the operation.
+
+  Args:
+    error: A string representing the raw json of the operation error.
+
+  Returns:
+    A human readable string representation of the error.
+  """
+  message__format = 'OperationError: code={0}, message={1}'.format(
+      error.code, encoder.Decode(error.message))
+  messages = apis.GetMessagesModule('cloudfunctions', _V2_ALPHA)
+  if error.details:
+    for detail in error.details:
+      sub_error = encoding.PyValueToMessage(messages.Status,
+                                            encoding.MessageToPyValue(detail))
+      if sub_error.code is not None or sub_error.message is not None:
+        message__format += '\n' + OperationErrorToString(sub_error)
+  return message__format

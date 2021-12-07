@@ -394,20 +394,20 @@
     },
     "EndpointVerificationSpecificAttributes": {
       "id": "EndpointVerificationSpecificAttributes",
-      "description": "Resource representing the Endpoint Verification-specific attributes of a Device.",
+      "description": "Resource representing the Endpoint Verification-specific attributes of a Device. https:\/\/cloud.google.com\/endpoint-verification\/docs\/overview",
       "type": "object",
       "properties": {
-        "certificateInfo": {
+        "certificateAttributes": {
           "description": "Details of certificates.",
           "type": "array",
           "items": {
-            "$ref": "CertificateInfo"
+            "$ref": "CertificateAttributes"
           }
         }
       }
     },
-    "CertificateInfo": {
-      "id": "CertificateInfo",
+    "CertificateAttributes": {
+      "id": "CertificateAttributes",
       "description": "Stores information about a certificate.",
       "type": "object",
       "properties": {
@@ -1511,7 +1511,7 @@
     },
     "UserInvitation": {
       "id": "UserInvitation",
-      "description": "The `UserInvitation` resource represents an email that can be sent to an unmanaged user account inviting them to join the customer\u2019s Google Workspace or Cloud Identity account. An unmanaged account shares an email address domain with the Google Workspace or Cloud Identity account but is not managed by it yet. If the user accepts the `UserInvitation`, the user account will become managed.",
+      "description": "The `UserInvitation` resource represents an email that can be sent to an unmanaged user account inviting them to join the customer's Google Workspace or Cloud Identity account. An unmanaged account shares an email address domain with the Google Workspace or Cloud Identity account but is not managed by it yet. If the user accepts the `UserInvitation`, the user account will become managed.",
       "type": "object",
       "properties": {
         "name": {

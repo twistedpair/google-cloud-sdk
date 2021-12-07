@@ -25,6 +25,58 @@ class AcknowledgeRequest(_messages.Message):
   ackIds = _messages.StringField(1, repeated=True)
 
 
+class BigQueryConfig(_messages.Message):
+  r"""Configuration for a BigQuery subscription.
+
+  Enums:
+    StateValueValuesEnum: Output only. An output-only field that indicates
+      whether or not the subscription can receive messages.
+
+  Fields:
+    dropUnknownFields: When true and use_topic_shema is true, any fields that
+      are a part of the topic schema that are not part of the BigQuery table
+      schema are dropped when writing to BigQuery. Otherwise, the schemas must
+      be kept in sync and any messages with extra fields are not written and
+      remain in the subscription's backlog.
+    state: Output only. An output-only field that indicates whether or not the
+      subscription can receive messages.
+    table: The name of the table to which to write data, of the form
+      {projectId}:{datasetId}.{tableId}
+    useTopicSchema: When true, use the topic's schema as the columns to write
+      to in BigQuery, if it exists.
+    writeMetadata: When true, write the subscription name, message_id,
+      publish_time, attributes, and ordering_key to additional columns in the
+      table. The subscription name, message_id, and publish_time fields are
+      put in their own columns while all other message properties (other than
+      data) are written to a JSON object in the attributes column.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. An output-only field that indicates whether or not the
+    subscription can receive messages.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      ACTIVE: The subscription can actively send messages to BigQuery
+      PERMISSION_DENIED: Cannot write to the BigQuery table because of
+        permission denied errors.
+      NOT_FOUND: Cannot write to the BigQuery table because it does not exist.
+      SCHEMA_MISMATCH: Cannot write to the BigQuery table due to a schema
+        mismatch.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    PERMISSION_DENIED = 2
+    NOT_FOUND = 3
+    SCHEMA_MISMATCH = 4
+
+  dropUnknownFields = _messages.BooleanField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+  table = _messages.StringField(3)
+  useTopicSchema = _messages.BooleanField(4)
+  writeMetadata = _messages.BooleanField(5)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -1602,6 +1654,10 @@ class StandardQueryParameters(_messages.Message):
 class Subscription(_messages.Message):
   r"""A subscription resource.
 
+  Enums:
+    StateValueValuesEnum: Output only. An output-only field indicating whether
+      or not the subscription can receive messages.
+
   Messages:
     LabelsValue: See Creating and managing labels.
 
@@ -1622,6 +1678,10 @@ class Subscription(_messages.Message):
       value is also used to set the request timeout for the call to the push
       endpoint. If the subscriber never acknowledges the message, the Pub/Sub
       system will eventually redeliver the message.
+    bigqueryConfig: If delivery to BigQuery is used with this subscription,
+      this field is used to configure it. At most one of `pushConfig` and
+      `bigQueryConfig` can be set. If both are empty, then the subscriber will
+      pull and ack messages using API methods.
     deadLetterPolicy: A policy that specifies the conditions for dead
       lettering messages in this subscription. If dead_letter_policy is not
       set, dead lettering is disabled. The Cloud Pub/Sub service account
@@ -1673,8 +1733,9 @@ class Subscription(_messages.Message):
       plus (`+`) or percent signs (`%`). It must be between 3 and 255
       characters in length, and it must not start with `"goog"`.
     pushConfig: If push delivery is used with this subscription, this field is
-      used to configure it. An empty `pushConfig` signifies that the
-      subscriber will pull and ack messages using API methods.
+      used to configure it. At most one of `pushConfig` and `bigQueryConfig`
+      can be set. If both are empty, then the subscriber will pull and ack
+      messages using API methods.
     retainAckedMessages: Indicates whether to retain acknowledged messages. If
       true, then messages are not expunged from the subscription's backlog,
       even if they are acknowledged, until they fall out of the
@@ -1687,6 +1748,8 @@ class Subscription(_messages.Message):
       This generally implies that messages will be retried as soon as possible
       for healthy subscribers. RetryPolicy will be triggered on NACKs or
       acknowledgement deadline exceeded events for a given message.
+    state: Output only. An output-only field indicating whether or not the
+      subscription can receive messages.
     topic: Required. The name of the topic from which this subscription is
       receiving messages. Format is `projects/{project}/topics/{topic}`. The
       value of this field will be `_deleted-topic_` if the topic has been
@@ -1699,6 +1762,21 @@ class Subscription(_messages.Message):
       field in `Topic`. This field is set only in responses from the server;
       it is ignored if it is set in any requests.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. An output-only field indicating whether or not the
+    subscription can receive messages.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      ACTIVE: The subscription can actively receive messages
+      RESOURCE_ERROR: The subscription cannot receive messages because of an
+        error with the resource to which it pushes messages. See the more
+        detailed error state in the corresponding configuration.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    RESOURCE_ERROR = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1725,20 +1803,22 @@ class Subscription(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   ackDeadlineSeconds = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  deadLetterPolicy = _messages.MessageField('DeadLetterPolicy', 2)
-  detached = _messages.BooleanField(3)
-  enableExactlyOnceDelivery = _messages.BooleanField(4)
-  enableMessageOrdering = _messages.BooleanField(5)
-  expirationPolicy = _messages.MessageField('ExpirationPolicy', 6)
-  filter = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  messageRetentionDuration = _messages.StringField(9)
-  name = _messages.StringField(10)
-  pushConfig = _messages.MessageField('PushConfig', 11)
-  retainAckedMessages = _messages.BooleanField(12)
-  retryPolicy = _messages.MessageField('RetryPolicy', 13)
-  topic = _messages.StringField(14)
-  topicMessageRetentionDuration = _messages.StringField(15)
+  bigqueryConfig = _messages.MessageField('BigQueryConfig', 2)
+  deadLetterPolicy = _messages.MessageField('DeadLetterPolicy', 3)
+  detached = _messages.BooleanField(4)
+  enableExactlyOnceDelivery = _messages.BooleanField(5)
+  enableMessageOrdering = _messages.BooleanField(6)
+  expirationPolicy = _messages.MessageField('ExpirationPolicy', 7)
+  filter = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  messageRetentionDuration = _messages.StringField(10)
+  name = _messages.StringField(11)
+  pushConfig = _messages.MessageField('PushConfig', 12)
+  retainAckedMessages = _messages.BooleanField(13)
+  retryPolicy = _messages.MessageField('RetryPolicy', 14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  topic = _messages.StringField(16)
+  topicMessageRetentionDuration = _messages.StringField(17)
 
 
 class TestIamPermissionsRequest(_messages.Message):

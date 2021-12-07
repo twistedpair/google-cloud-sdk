@@ -314,7 +314,9 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
 
     request_config = request_config_factory.get_request_config(
         self._source_resource.storage_url,
-        user_request_args=self._user_request_args)
+        decryption_key_hash=self._source_resource.decryption_key_hash,
+        user_request_args=self._user_request_args,
+    )
 
     if self._source_resource.size and self._component_number is not None:
       try:

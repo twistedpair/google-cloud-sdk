@@ -1341,10 +1341,10 @@ class LinearBuckets(_messages.Message):
 
 
 class ListClusterGroupBackupsResponse(_messages.Message):
-  r"""A list of private cloud cluster group backups.
+  r"""A list of cluster group backups.
 
   Fields:
-    clusterGroupBackups: A list of private cloud cluster group backups.
+    clusterGroupBackups: A list of cluster group backups.
     nextPageToken: A token that you can send as `page_token` to retrieve the
       next page. If you omit this field, there are no subsequent pages.
     unreachable: List of locations that could not be reached.
@@ -1359,7 +1359,7 @@ class ListClusterGroupsResponse(_messages.Message):
   r"""A ListClusterGroupsResponse object.
 
   Fields:
-    clusterGroups: A list of private cloud cluster groups.
+    clusterGroups: A list of cluster groups.
     nextPageToken: A token, which can be send as `page_token` to retrieve the
       next page. If you omit this field, there are no subsequent pages.
     unreachable: List of locations that could not be reached.
@@ -2632,9 +2632,9 @@ class SddcProjectsLocationsClusterGroupsIpAddressesCreateRequest(_messages.Messa
     ipAddressId: Required. The user-provided ID of the `IpAddress` to create.
       This ID must be unique among `IpAddress` within the parent and becomes
       the final token in the name URI.
-    parent: Required. The ClusterGroup or private cloud in which the
-      `IpAddress` will be created. For example, projects/PROJECT-NUMBER
-      /locations/us-central1/clusterGroups/MY-GROUP
+    parent: Required. The ClusterGroup in which the `IpAddress` will be
+      created. For example, projects/PROJECT-NUMBER/locations/us-
+      central1/clusterGroups/ MY-GROUP
   """
 
   ipAddress = _messages.MessageField('IpAddress', 1)
@@ -2678,9 +2678,9 @@ class SddcProjectsLocationsClusterGroupsIpAddressesListRequest(_messages.Message
       call. Provide this to retrieve the subsequent page. When paginating, you
       must provide exactly the same parameters to `ListIpAddressesRequest` as
       you provided to the page token request
-    parent: Required. The parent ClusterGroup or PrivateCloud of which the
-      IpAddresses belong to. For example: projects/PROJECT-NUMBER
-      /locations/us-central1/clusterGroups/MY-GROUP
+    parent: Required. The parent ClusterGroup of which the IpAddresses belong
+      to. For example: projects/PROJECT-NUMBER/locations/us-
+      central1/clusterGroups/ MY-GROUP
   """
 
   filter = _messages.StringField(1)

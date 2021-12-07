@@ -37,11 +37,15 @@ class ClustersClient(util.VmwareClientBase):
   def Create(self,
              resource,
              node_type=None,
-             node_count=None):
+             node_count=None,
+             node_custom_core_count=None):
     parent = resource.Parent().RelativeName()
     cluster_id = resource.Name()
+
     cluster = self.messages.Cluster(
         nodeCount=node_count, nodeTypeId=node_type)
+    if node_custom_core_count is not None:
+      cluster.nodeCustomCoreCount = node_custom_core_count
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsClustersCreateRequest(
         parent=parent,
         cluster=cluster,

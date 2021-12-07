@@ -111,7 +111,7 @@ class AuthorizationLoggingOptions(_messages.Message):
 
 
 class Binding(_messages.Message):
-  r"""Associates `members` with a `role`.
+  r"""Associates `members`, or principals, with a `role`.
 
   Fields:
     bindingId: A string attribute.
@@ -119,12 +119,12 @@ class Binding(_messages.Message):
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
       not apply to the current request. However, a different role binding
-      might grant the same role to one or more of the members in this binding.
-      To learn which resources support conditions in their IAM policies, see
-      the [IAM
+      might grant the same role to one or more of the principals in this
+      binding. To learn which resources support conditions in their IAM
+      policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the identities requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Cloud Platform
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -154,8 +154,8 @@ class Binding(_messages.Message):
       group retains the role in the binding. * `domain:{domain}`: The G Suite
       domain (primary) that represents all the users of that domain. For
       example, `google.com` or `example.com`.
-    role: Role that is assigned to `members`. For example, `roles/viewer`,
-      `roles/editor`, or `roles/owner`.
+    role: Role that is assigned to the list of `members`, or principals. For
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
 
   bindingId = _messages.StringField(1)
@@ -231,15 +231,16 @@ class Condition(_messages.Message):
         same security realm, which is currently but not guaranteed to be
         campus-sized) - 'self:metro' (i.e., clients that are in the same
         metro) - 'self:cloud-region' (i.e., allow connections from clients
-        that are in the same cloud region) - 'guardians' (i.e., allow
-        connections from its guardian realms. See go/security-realms-
-        glossary#guardian for more information.) - a realm (e.g., 'campus-
-        abc') - a realm group (e.g., 'realms-for-borg-cell-xx', see: go/realm-
-        groups) A match is determined by a realm group membership check
-        performed by a RealmAclRep object (go/realm-acl-howto). It is not
-        permitted to grant access based on the *absence* of a realm, so realm
-        conditions can only be used in a "positive" context (e.g., ALLOW/IN or
-        DENY/NOT_IN).
+        that are in the same cloud region) - 'self:prod-region' (i.e., allow
+        connections from clients that are in the same prod region) -
+        'guardians' (i.e., allow connections from its guardian realms. See
+        go/security-realms-glossary#guardian for more information.) - a realm
+        (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx',
+        see: go/realm-groups) A match is determined by a realm group
+        membership check performed by a RealmAclRep object (go/realm-acl-
+        howto). It is not permitted to grant access based on the *absence* of
+        a realm, so realm conditions can only be used in a "positive" context
+        (e.g., ALLOW/IN or DENY/NOT_IN).
       APPROVER: An approver (distinct from the requester) that has authorized
         this request. When used with IN, the condition indicates that one of
         the approvers associated with the request matches the specified
@@ -343,6 +344,33 @@ class CounterOptions(_messages.Message):
   metric = _messages.StringField(3)
 
 
+class CreateReferenceRequest(_messages.Message):
+  r"""The CreateReferenceRequest request.
+
+  Fields:
+    parent: Required. The parent resource name (target_resource of this
+      reference). For example: `targetservice.googleapis.com/projects/{my-
+      project}/locations/{location}/instances/{my-instance}`.
+    reference: Required. The reference to be created.
+    referenceId: The unique id of this resource. Must be unique within a scope
+      of a target resource, but does not have to be globally unique. Reference
+      ID is part of resource name of the reference. Resource name is generated
+      in the following way: {parent}/references/{reference_id}. Reference ID
+      field is currently required but id auto generation might be added in the
+      future. It can be any arbitrary string, either GUID or any other string,
+      however CLHs can use preprocess callbacks to perform a custom
+      validation.
+    requestId: Optional. Request ID is an idempotency ID of the request. It
+      must be a valid UUID. Zero UUID (00000000-0000-0000-0000-000000000000)
+      is not supported.
+  """
+
+  parent = _messages.StringField(1)
+  reference = _messages.MessageField('Reference', 2)
+  referenceId = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+
+
 class CustomField(_messages.Message):
   r"""Custom fields. These can be used to create a counter with arbitrary
   field/value pairs. See: go/rpcsp-custom-fields.
@@ -392,6 +420,23 @@ class DataAccessOptions(_messages.Message):
   logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
 
 
+class DeleteReferenceRequest(_messages.Message):
+  r"""The DeleteReferenceRequest request.
+
+  Fields:
+    name: Required. Resource name of the reference, in the following format:
+      `{targer_service}/{target_resource}/references/{reference_id}`. For
+      example: `targetservice.googleapis.com/projects/{my-
+      project}/locations/{location}/instances/{my-instance}/references/{xyz}`.
+    requestId: Optional. Request ID is an idempotency ID of the request. It
+      must be a valid UUID. Zero UUID (00000000-0000-0000-0000-000000000000)
+      is not supported.
+  """
+
+  name = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -435,8 +480,7 @@ class EndpointPolicy(_messages.Message):
       AuthorizationPolicy resource that applies authorization policies to the
       inbound traffic at the matched endpoints. Refer to Authorization. If
       this field is not specified, authorization is disabled(no authz checks)
-      for this endpoint. Applicable only when EndpointPolicyType is
-      SIDECAR_PROXY.
+      for this endpoint.
     clientTlsPolicy: Optional. A URL referring to a ClientTlsPolicy resource.
       ClientTlsPolicy can be set to specify the authentication for traffic
       from the proxy to the actual endpoints. More specifically, it is applied
@@ -454,7 +498,8 @@ class EndpointPolicy(_messages.Message):
     labels: Optional. Set of label tags associated with the EndpointPolicy
       resource.
     name: Required. Name of the EndpointPolicy resource. It matches pattern
-      `projects/*/locations/global/endpointPolicies/`.
+      `projects/{project}/locations/global/endpointPolicies/{endpoint_policy}`
+      .
     serverTlsPolicy: Optional. A URL referring to ServerTlsPolicy resource.
       ServerTlsPolicy is used to determine the authentication policy to be
       applied to terminate the inbound traffic at the identified backends. If
@@ -556,6 +601,49 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class GetReferenceRequest(_messages.Message):
+  r"""The GetReferenceRequest request.
+
+  Fields:
+    name: Required. Resource name of the reference, in the following format:
+      `{target_service}/{target_resource}/references/{reference_id}`. For
+      example: `targetservice.googleapis.com/projects/{my-
+      project}/locations/{location}/instances/{my-instance}/references/{xyz}`.
+  """
+
+  name = _messages.StringField(1)
+
+
+class InvalidateCacheRequest(_messages.Message):
+  r"""Request used by the InvalidateCache method.
+
+  Fields:
+    cacheTags: A list of cache tags used to identify cached objects. Cache
+      tags are specified when the response is first cached, by setting the
+      "Cache-Tag" response header at the origin. By default, all objects have
+      a cache tag representing the HTTP status code of the response, the MIME
+      content-type, and the origin. Multiple cache tags in the same
+      revalidation request are treated as Boolean OR - e.g. tag1 OR tag2 OR
+      tag3. If a host and/or path are also specified, these are treated as
+      Boolean AND with any tags. Up to 10 tags may be specified in a single
+      invalidation request.
+    host: The hostname to invalidate against. You can specify an exact or
+      wildcard host - e.g. "video.example.com" or "*.example.com" - based on
+      host component.
+    path: The path to invalidate against. You can specify an exact or wildcard
+      path - e.g. "/videos/hls/139123.mp4" or "/manifests/*" - based on path
+      component.
+  """
+
+  cacheTags = _messages.StringField(1, repeated=True)
+  host = _messages.StringField(2)
+  path = _messages.StringField(3)
+
+
+class InvalidateCacheResponse(_messages.Message):
+  r"""Response used by the InvalidateCache method."""
+
+
 class ListEndpointPoliciesResponse(_messages.Message):
   r"""Response returned by the ListEndpointPolicies method.
 
@@ -595,6 +683,54 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListReferencesRequest(_messages.Message):
+  r"""The ListResourceMetadataRequest request.
+
+  Fields:
+    pageSize: The maximum number of items to return. If unspecified, server
+      will pick an appropriate default. Server may return fewer items than
+      requested. A caller should only rely on response's next_page_token to
+      determine if there are more References left to be queried.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+    parent: Required. The parent resource name (target_resource of this
+      reference). For example: `targetservice.googleapis.com/projects/{my-
+      project}/locations/{location}/instances/{my-instance}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3)
+
+
+class ListReferencesResponse(_messages.Message):
+  r"""The ListReferencesResponse response.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    references: The list of references.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  references = _messages.MessageField('Reference', 2, repeated=True)
+
+
+class ListServiceBindingsResponse(_messages.Message):
+  r"""Response returned by the ListServiceBindings method.
+
+  Fields:
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+    serviceBindings: List of ServiceBinding resources.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  serviceBindings = _messages.MessageField('ServiceBinding', 2, repeated=True)
 
 
 class Location(_messages.Message):
@@ -772,6 +908,23 @@ class MetadataLabels(_messages.Message):
   labelValue = _messages.StringField(2)
 
 
+class NetworkservicesProjectsLocationsEdgeCacheServicesInvalidateCacheRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsEdgeCacheServicesInvalidateCacheRequest
+  object.
+
+  Fields:
+    edgeCacheService: Required. A name of the EdgeCacheService to apply the
+      invalidation request to. Must be in the format
+      `projects/*/locations/global/edgeCacheServices/*`.
+    invalidateCacheRequest: A InvalidateCacheRequest resource to be passed as
+      the request body.
+  """
+
+  edgeCacheService = _messages.StringField(1, required=True)
+  invalidateCacheRequest = _messages.MessageField('InvalidateCacheRequest', 2)
+
+
 class NetworkservicesProjectsLocationsEndpointPoliciesCreateRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsEndpointPoliciesCreateRequest object.
 
@@ -805,12 +958,16 @@ class NetworkservicesProjectsLocationsEndpointPoliciesGetIamPolicyRequest(_messa
   object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -857,7 +1014,8 @@ class NetworkservicesProjectsLocationsEndpointPoliciesPatchRequest(_messages.Mes
     endpointPolicy: A EndpointPolicy resource to be passed as the request
       body.
     name: Required. Name of the EndpointPolicy resource. It matches pattern
-      `projects/*/locations/global/endpointPolicies/`.
+      `projects/{project}/locations/global/endpointPolicies/{endpoint_policy}`
+      .
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the EndpointPolicy resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
@@ -983,6 +1141,141 @@ class NetworkservicesProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsServiceBindingsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceBindingsCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource of the ServiceBinding. Must be in
+      the format `projects/*/locations/global`.
+    serviceBinding: A ServiceBinding resource to be passed as the request
+      body.
+    serviceBindingId: Required. Short name of the ServiceBinding resource to
+      be created.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  serviceBinding = _messages.MessageField('ServiceBinding', 2)
+  serviceBindingId = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsServiceBindingsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceBindingsDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the ServiceBinding to delete. Must be in the
+      format `projects/*/locations/global/serviceBindings/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsServiceBindingsGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceBindingsGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkservicesProjectsLocationsServiceBindingsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceBindingsGetRequest object.
+
+  Fields:
+    name: Required. A name of the ServiceBinding to get. Must be in the format
+      `projects/*/locations/global/serviceBindings/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsServiceBindingsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceBindingsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of ServiceBindings to return per call.
+    pageToken: The value returned by the last `ListServiceBindingsResponse`
+      Indicates that this is a continuation of a prior `ListRouters` call, and
+      that the system should return the next page of data.
+    parent: Required. The project and location from which the ServiceBindings
+      should be listed, specified in the format `projects/*/locations/global`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsServiceBindingsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceBindingsPatchRequest object.
+
+  Fields:
+    name: Required. Name of the ServiceBinding resource. It matches pattern
+      `projects/*/locations/global/serviceBindings/service_binding_name>`.
+    serviceBinding: A ServiceBinding resource to be passed as the request
+      body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the ServiceBinding resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  serviceBinding = _messages.MessageField('ServiceBinding', 2)
+  updateMask = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsServiceBindingsSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceBindingsSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkservicesProjectsLocationsServiceBindingsTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsServiceBindingsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class Operation(_messages.Message):
@@ -1123,15 +1416,15 @@ class OperationMetadata(_messages.Message):
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
-  `bindings`. A `binding` binds one or more `members` to a single `role`.
-  Members can be user accounts, service accounts, Google groups, and domains
-  (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role. For some types of
-  Google Cloud resources, a `binding` can also specify a `condition`, which is
-  a logical expression that allows access to a resource only if the expression
-  evaluates to `true`. A condition can add constraints based on attributes of
-  the request, the resource, or both. To learn which resources support
-  conditions in their IAM policies, see the [IAM
+  `bindings`. A `binding` binds one or more `members`, or principals, to a
+  single `role`. Principals can be user accounts, service accounts, Google
+  groups, and domains (such as G Suite). A `role` is a named list of
+  permissions; each `role` can be an IAM predefined role or a user-created
+  custom role. For some types of Google Cloud resources, a `binding` can also
+  specify a `condition`, which is a logical expression that allows access to a
+  resource only if the expression evaluates to `true`. A condition can add
+  constraints based on attributes of the request, the resource, or both. To
+  learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
   policies). **JSON example:** { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
@@ -1147,15 +1440,21 @@ class Policy(_messages.Message):
   roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
   role: roles/resourcemanager.organizationViewer condition: title: expirable
   access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
   version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. Optionally, may
-      specify a `condition` that determines how and when the `bindings` are
-      applied. Each of the `bindings` must contain at least one member.
+    bindings: Associates a list of `members`, or principals, with a `role`.
+      Optionally, may specify a `condition` that determines how and when the
+      `bindings` are applied. Each of the `bindings` must contain at least one
+      principal. The `bindings` in a `Policy` can refer to up to 1,500
+      principals; up to 250 of these principals can be Google groups. Each
+      occurrence of a principal counts towards these limits. For example, if
+      the `bindings` grant 50 different roles to `user:alice@example.com`, and
+      not to any other principal, then you can add another 1,450 principals to
+      the `bindings` in the `Policy`.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -1167,7 +1466,6 @@ class Policy(_messages.Message):
       `etag` field whenever you call `setIamPolicy`. If you omit this field,
       then IAM allows you to overwrite a version `3` policy with a version `1`
       policy, and all of the conditions in the version `3` policy are lost.
-    iamOwned: A boolean attribute.
     rules: If more than one rule is specified, the rules are applied in the
       following manner: - All matching LOG rules are always applied. - If any
       DENY/DENY_WITH_LOG rule matches, permission is denied. Logging will be
@@ -1197,9 +1495,65 @@ class Policy(_messages.Message):
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
-  iamOwned = _messages.BooleanField(4)
-  rules = _messages.MessageField('Rule', 5, repeated=True)
-  version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  rules = _messages.MessageField('Rule', 4, repeated=True)
+  version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
+class Reference(_messages.Message):
+  r"""Represents a reference to a resource.
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    createTime: Output only. The creation time.
+    details: Details of the reference type with no implied semantics.
+      Cumulative size of the field must not be more than 1KiB. Note: For the
+      Arcus Reference API, you must add the proto you store in this field to
+      http://cs/symbol:cloud.cluster.reference.ReferencePayload
+    name: Output only. Resource name of the reference. Includes target
+      resource as a parent and reference uid
+      `{target_resource}/references/{reference_id}`. For example,
+      `projects/{my-project}/locations/{location}/instances/{my-
+      instance}/references/{xyz}`.
+    sourceResource: Required. Full resource name of the resource which refers
+      the target resource. For example:
+      //tpu.googleapis.com/projects/myproject/nodes/mynode
+    type: Required. Type of the reference. A service might impose limits on
+      number of references of a specific type.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  name = _messages.StringField(3)
+  sourceResource = _messages.StringField(4)
+  type = _messages.StringField(5)
 
 
 class Rule(_messages.Message):
@@ -1215,8 +1569,8 @@ class Rule(_messages.Message):
     description: Human-readable description of the rule.
     in_: If one or more 'in' clauses are specified, the rule matches if the
       PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
-    logConfig: The config returned to callers of tech.iam.IAM.CheckPolicy for
-      any entries that match the LOG action.
+    logConfig: The config returned to callers of CheckPolicy for any entries
+      that match the LOG action.
     notIn: If one or more 'not_in' clauses are specified, the rule matches if
       the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
       for in and not_in entries can be found at in the Local IAM documentation
@@ -1253,6 +1607,65 @@ class Rule(_messages.Message):
   logConfig = _messages.MessageField('LogConfig', 5, repeated=True)
   notIn = _messages.StringField(6, repeated=True)
   permissions = _messages.StringField(7, repeated=True)
+
+
+class ServiceBinding(_messages.Message):
+  r"""ServiceBinding is the resource that defines a Service Directory Service
+  to be used in a BackendService resource.
+
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the
+      ServiceBinding resource.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A free-text description of the resource. Max length
+      1024 characters.
+    endpointFilter: Optional. The endpoint filter associated with the Service
+      Binding. The syntax is described in http://cloud/service-directory/docs/
+      reference/rpc/google.cloud.servicedirectory.v1#google.cloud.servicedirec
+      tory.v1.ResolveServiceRequest
+    labels: Optional. Set of label tags associated with the ServiceBinding
+      resource.
+    name: Required. Name of the ServiceBinding resource. It matches pattern
+      `projects/*/locations/global/serviceBindings/service_binding_name>`.
+    service: Required. The full service directory service name of the format
+      /projects/*/locations/*/namespaces/*/services/*
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the ServiceBinding
+    resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  endpointFilter = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  service = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class SetIamPolicyRequest(_messages.Message):

@@ -445,32 +445,38 @@ class BigqueryTablesPatchRequest(_messages.Message):
   r"""A BigqueryTablesPatchRequest object.
 
   Fields:
+    autodetect_schema: When true will autodetect schema, else will keep
+      original schema
     datasetId: Dataset ID of the table to update
     projectId: Project ID of the table to update
     table: A Table resource to be passed as the request body.
     tableId: Table ID of the table to update
   """
 
-  datasetId = _messages.StringField(1, required=True)
-  projectId = _messages.StringField(2, required=True)
-  table = _messages.MessageField('Table', 3)
-  tableId = _messages.StringField(4, required=True)
+  autodetect_schema = _messages.BooleanField(1)
+  datasetId = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
+  table = _messages.MessageField('Table', 4)
+  tableId = _messages.StringField(5, required=True)
 
 
 class BigqueryTablesUpdateRequest(_messages.Message):
   r"""A BigqueryTablesUpdateRequest object.
 
   Fields:
+    autodetect_schema: When true will autodetect schema, else will keep
+      original schema
     datasetId: Dataset ID of the table to update
     projectId: Project ID of the table to update
     table: A Table resource to be passed as the request body.
     tableId: Table ID of the table to update
   """
 
-  datasetId = _messages.StringField(1, required=True)
-  projectId = _messages.StringField(2, required=True)
-  table = _messages.MessageField('Table', 3)
-  tableId = _messages.StringField(4, required=True)
+  autodetect_schema = _messages.BooleanField(1)
+  datasetId = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
+  table = _messages.MessageField('Table', 4)
+  tableId = _messages.StringField(5, required=True)
 
 
 class BigtableColumn(_messages.Message):
@@ -1053,15 +1059,7 @@ class DestinationTableProperties(_messages.Message):
       will only be used if the destination table is newly created. If the
       table already exists and a value different than the current description
       is provided, the job will fail.
-    expirationTime: [Optional] The destination table expiration time. If this
-      field is set: For a new table, it will set the table's expiration time
-      (even if there is a dataset level default table expiration time). For an
-      existing table, it will update the table's expiration time. If this
-      field is not set: For a new table, if dataset level default table
-      expiration time is present, that will be applied. For an existing table,
-      no change is made to the table's expiration time. Additionally this
-      field is only applied when data is written to an empty table
-      (WRITE_EMPTY) or data is overwritten to a table (WRITE_TRUNCATE).
+    expirationTime: [Internal] This field is for Google internal use only.
     friendlyName: [Optional] The friendly name for the destination table. This
       will only be used if the destination table is newly created. If the
       table already exists and a value different than the current friendly

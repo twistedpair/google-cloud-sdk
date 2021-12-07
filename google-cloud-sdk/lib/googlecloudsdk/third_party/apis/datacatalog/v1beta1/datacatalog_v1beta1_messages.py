@@ -82,7 +82,7 @@ class DatacatalogEntriesLookupRequest(_messages.Message):
       `bigquery.table.project_id.dataset_id.table_id` *
       `bigquery.dataset.project_id.dataset_id` *
       `datacatalog.entry.project_id.location_id.entry_group_id.entry_id`
-      `*_id`s shoud satisfy the standard SQL rules for identifiers.
+      `*_id`s should satisfy the standard SQL rules for identifiers.
       https://cloud.google.com/bigquery/docs/reference/standard-sql/lexical.
   """
 
@@ -1565,7 +1565,8 @@ class GoogleCloudDatacatalogV1beta1SearchCatalogRequest(_messages.Message):
     orderBy: Specifies the ordering of results, currently supported case-
       sensitive choices are: * `relevance`, only supports descending *
       `last_modified_timestamp [asc|desc]`, defaults to descending if not
-      specified If not specified, defaults to `relevance` descending.
+      specified * `default` that can only be descending If not specified,
+      defaults to `relevance` descending.
     pageSize: Number of results in the search page. If <=0 then defaults to
       10. Max limit for page_size is 1000. Throws an invalid argument for
       page_size > 1000.

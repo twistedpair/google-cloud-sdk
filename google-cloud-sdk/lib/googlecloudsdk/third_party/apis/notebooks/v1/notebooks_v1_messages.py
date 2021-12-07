@@ -1666,6 +1666,20 @@ class NotebooksProjectsLocationsInstancesUpdateConfigRequest(_messages.Message):
   updateInstanceConfigRequest = _messages.MessageField('UpdateInstanceConfigRequest', 2)
 
 
+class NotebooksProjectsLocationsInstancesUpdateMetadataItemsRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsInstancesUpdateMetadataItemsRequest object.
+
+  Fields:
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`
+    updateInstanceMetadataItemsRequest: A UpdateInstanceMetadataItemsRequest
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateInstanceMetadataItemsRequest = _messages.MessageField('UpdateInstanceMetadataItemsRequest', 2)
+
+
 class NotebooksProjectsLocationsInstancesUpdateShieldedInstanceConfigRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsInstancesUpdateShieldedInstanceConfigRequest
   object.
@@ -3062,6 +3076,80 @@ class UpdateInstanceConfigRequest(_messages.Message):
   """
 
   config = _messages.MessageField('InstanceConfig', 1)
+
+
+class UpdateInstanceMetadataItemsRequest(_messages.Message):
+  r"""Request for adding/changing metadata items for an instance.
+
+  Messages:
+    ItemsValue: Metadata items to add/update for the instance.
+
+  Fields:
+    items: Metadata items to add/update for the instance.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ItemsValue(_messages.Message):
+    r"""Metadata items to add/update for the instance.
+
+    Messages:
+      AdditionalProperty: An additional property for a ItemsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ItemsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ItemsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  items = _messages.MessageField('ItemsValue', 1)
+
+
+class UpdateInstanceMetadataItemsResponse(_messages.Message):
+  r"""Response for adding/changing metadata items for an instance.
+
+  Messages:
+    ItemsValue: Map of items that were added/updated to/in the metadata.
+
+  Fields:
+    items: Map of items that were added/updated to/in the metadata.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ItemsValue(_messages.Message):
+    r"""Map of items that were added/updated to/in the metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a ItemsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ItemsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ItemsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  items = _messages.MessageField('ItemsValue', 1)
 
 
 class UpdateShieldedInstanceConfigRequest(_messages.Message):

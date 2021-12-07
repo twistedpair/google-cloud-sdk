@@ -336,12 +336,12 @@
       }
       ,
       "resources": {
-        "sshPublicKey": {
+        "sshPublicKeys": {
           "methods": {
             "create": {
-              "id": "oslogin.users.sshPublicKey.create",
-              "path": "v1/{+parent}/sshPublicKey",
-              "flatPath": "v1/users/{usersId}/sshPublicKey",
+              "id": "oslogin.users.sshPublicKeys.create",
+              "path": "v1/{+parent}/sshPublicKeys",
+              "flatPath": "v1/users/{usersId}/sshPublicKeys",
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
@@ -366,41 +366,7 @@
                 "https://www.googleapis.com/auth/compute"
               ],
               "description": "Create an SSH public key"
-            }
-          }
-        },
-        "projects": {
-          "methods": {
-            "delete": {
-              "id": "oslogin.users.projects.delete",
-              "path": "v1/{+name}",
-              "flatPath": "v1/users/{usersId}/projects/{projectsId}",
-              "httpMethod": "DELETE",
-              "parameters": {
-                "name": {
-                  "description": "Required. A reference to the POSIX account to update. POSIX accounts are identified by the project ID they are associated with. A reference to the POSIX account is in format `users\/{user}\/projects\/{project}`.",
-                  "pattern": "^users\/[^\/]+\/projects\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "Empty"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
-              ],
-              "description": "Deletes a POSIX account."
-            }
-          }
-        },
-        "sshPublicKeys": {
-          "methods": {
+            },
             "delete": {
               "id": "oslogin.users.sshPublicKeys.delete",
               "path": "v1/{+name}",
@@ -487,6 +453,36 @@
                 "https://www.googleapis.com/auth/compute"
               ],
               "description": "Updates an SSH public key and returns the profile information. This method supports patch semantics."
+            }
+          }
+        },
+        "projects": {
+          "methods": {
+            "delete": {
+              "id": "oslogin.users.projects.delete",
+              "path": "v1/{+name}",
+              "flatPath": "v1/users/{usersId}/projects/{projectsId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "name": {
+                  "description": "Required. A reference to the POSIX account to update. POSIX accounts are identified by the project ID they are associated with. A reference to the POSIX account is in format `users\/{user}\/projects\/{project}`.",
+                  "pattern": "^users\/[^\/]+\/projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/compute"
+              ],
+              "description": "Deletes a POSIX account."
             }
           }
         }

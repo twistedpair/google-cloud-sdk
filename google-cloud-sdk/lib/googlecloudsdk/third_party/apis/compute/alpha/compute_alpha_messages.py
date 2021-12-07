@@ -677,14 +677,15 @@ class Address(_messages.Message):
       of a VPC network) - VPC_PEERING for global internal IP addresses used
       for private services access allocated ranges. - NAT_AUTO for the
       regional external IP addresses used by Cloud NAT when allocating
-      addresses using . - IPSEC_INTERCONNECT for addresses created from a
-      private IP range that are reserved for a VLAN attachment in an *IPsec-
-      encrypted Cloud Interconnect* configuration. These addresses are
-      regional resources. Not currently available publicly. -
-      `SHARED_LOADBALANCER_VIP` for an internal IP address that is assigned to
-      multiple internal forwarding rules. - `PRIVATE_SERVICE_CONNECT` for a
-      private network address that is used to configure Private Service
-      Connect. Only global internal addresses can use this purpose.
+      addresses using automatic NAT IP address allocation. -
+      IPSEC_INTERCONNECT for addresses created from a private IP range that
+      are reserved for a VLAN attachment in an *IPsec-encrypted Cloud
+      Interconnect* configuration. These addresses are regional resources. Not
+      currently available publicly. - `SHARED_LOADBALANCER_VIP` for an
+      internal IP address that is assigned to multiple internal forwarding
+      rules. - `PRIVATE_SERVICE_CONNECT` for a private network address that is
+      used to configure Private Service Connect. Only global internal
+      addresses can use this purpose.
     StatusValueValuesEnum: [Output Only] The status of the address, which can
       be one of RESERVING, RESERVED, or IN_USE. An address that is RESERVING
       is currently in the process of being reserved. A RESERVED address is
@@ -745,14 +746,14 @@ class Address(_messages.Message):
       VPC network) - VPC_PEERING for global internal IP addresses used for
       private services access allocated ranges. - NAT_AUTO for the regional
       external IP addresses used by Cloud NAT when allocating addresses using
-      . - IPSEC_INTERCONNECT for addresses created from a private IP range
-      that are reserved for a VLAN attachment in an *IPsec-encrypted Cloud
-      Interconnect* configuration. These addresses are regional resources. Not
-      currently available publicly. - `SHARED_LOADBALANCER_VIP` for an
-      internal IP address that is assigned to multiple internal forwarding
-      rules. - `PRIVATE_SERVICE_CONNECT` for a private network address that is
-      used to configure Private Service Connect. Only global internal
-      addresses can use this purpose.
+      automatic NAT IP address allocation. - IPSEC_INTERCONNECT for addresses
+      created from a private IP range that are reserved for a VLAN attachment
+      in an *IPsec-encrypted Cloud Interconnect* configuration. These
+      addresses are regional resources. Not currently available publicly. -
+      `SHARED_LOADBALANCER_VIP` for an internal IP address that is assigned to
+      multiple internal forwarding rules. - `PRIVATE_SERVICE_CONNECT` for a
+      private network address that is used to configure Private Service
+      Connect. Only global internal addresses can use this purpose.
     region: [Output Only] The URL of the region where a regional address
       resides. For regional addresses, you must specify the region as a path
       parameter in the HTTP request URL. *This field is not applicable to
@@ -834,14 +835,15 @@ class Address(_messages.Message):
     addresses (regional internal IP address in a subnet of a VPC network) -
     VPC_PEERING for global internal IP addresses used for private services
     access allocated ranges. - NAT_AUTO for the regional external IP addresses
-    used by Cloud NAT when allocating addresses using . - IPSEC_INTERCONNECT
-    for addresses created from a private IP range that are reserved for a VLAN
-    attachment in an *IPsec-encrypted Cloud Interconnect* configuration. These
-    addresses are regional resources. Not currently available publicly. -
-    `SHARED_LOADBALANCER_VIP` for an internal IP address that is assigned to
-    multiple internal forwarding rules. - `PRIVATE_SERVICE_CONNECT` for a
-    private network address that is used to configure Private Service Connect.
-    Only global internal addresses can use this purpose.
+    used by Cloud NAT when allocating addresses using automatic NAT IP address
+    allocation. - IPSEC_INTERCONNECT for addresses created from a private IP
+    range that are reserved for a VLAN attachment in an *IPsec-encrypted Cloud
+    Interconnect* configuration. These addresses are regional resources. Not
+    currently available publicly. - `SHARED_LOADBALANCER_VIP` for an internal
+    IP address that is assigned to multiple internal forwarding rules. -
+    `PRIVATE_SERVICE_CONNECT` for a private network address that is used to
+    configure Private Service Connect. Only global internal addresses can use
+    this purpose.
 
     Values:
       DNS_RESOLVER: DNS resolver address in the subnetwork.
@@ -1649,7 +1651,8 @@ class AttachedDisk(_messages.Message):
       disks.source is required except for local SSD. If desired, you can also
       attach existing non-root persistent disks using this property. This
       field is only applicable for persistent disks. Note that for
-      InstanceTemplate, specify the disk name, not the URL for the disk.
+      InstanceTemplate, specify the disk name for zonal disk, and the URL for
+      regional disk.
     type: Specifies the type of the disk, either SCRATCH or PERSISTENT. If not
       specified, the default is PERSISTENT.
     userLicenses: [Output Only] A list of user provided licenses. It
@@ -1826,6 +1829,13 @@ class AttachedDiskInitializeParams(_messages.Message):
       supplied encryption keys, so you cannot create disks for instances in a
       managed instance group if the source images are encrypted with your own
       keys.
+    sourceInstantSnapshot: The source instant-snapshot to create this disk.
+      When creating a new instance, one of initializeParams.sourceSnapshot or
+      initializeParams.sourceInstantSnapshot initializeParams.sourceImage or
+      disks.source is required except for local SSD. To create a disk with a
+      snapshot that you created, specify the snapshot name in the following
+      format: us-central1-a/instantSnapshots/my-backup If the source instant-
+      snapshot is deleted later, this field will not be set.
     sourceSnapshot: The source snapshot to create this disk. When creating a
       new instance, one of initializeParams.sourceSnapshot or
       initializeParams.sourceImage or disks.source is required except for
@@ -1920,8 +1930,9 @@ class AttachedDiskInitializeParams(_messages.Message):
   resourcePolicies = _messages.StringField(15, repeated=True)
   sourceImage = _messages.StringField(16)
   sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
-  sourceSnapshot = _messages.StringField(18)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 19)
+  sourceInstantSnapshot = _messages.StringField(18)
+  sourceSnapshot = _messages.StringField(19)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 20)
 
 
 class AuditConfig(_messages.Message):
@@ -3871,7 +3882,8 @@ class BackendService(_messages.Message):
       configurable failover: [Internal TCP/UDP Load
       Balancing](https://cloud.google.com/load-
       balancing/docs/internal/failover-overview) and [external TCP/UDP Load
-      Balancing](/network/networklb-failover-overview).
+      Balancing](https://cloud.google.com/load-
+      balancing/docs/network/networklb-failover-overview).
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a BackendService. An up-to-date
@@ -4720,14 +4732,14 @@ class BackendServiceFailoverPolicy(_messages.Message):
   r"""For load balancers that have configurable failover: [Internal TCP/UDP
   Load Balancing](https://cloud.google.com/load-
   balancing/docs/internal/failover-overview) and [external TCP/UDP Load
-  Balancing](/network/networklb-failover-overview). On failover or failback,
-  this field indicates whether connection draining will be honored. Google
-  Cloud has a fixed connection draining timeout of 10 minutes. A setting of
-  true terminates existing TCP connections to the active pool during failover
-  and failback, immediately draining traffic. A setting of false allows
-  existing TCP connections to persist, even on VMs no longer in the active
-  pool, for up to the duration of the connection draining timeout (10
-  minutes).
+  Balancing](https://cloud.google.com/load-balancing/docs/network/networklb-
+  failover-overview). On failover or failback, this field indicates whether
+  connection draining will be honored. Google Cloud has a fixed connection
+  draining timeout of 10 minutes. A setting of true terminates existing TCP
+  connections to the active pool during failover and failback, immediately
+  draining traffic. A setting of false allows existing TCP connections to
+  persist, even on VMs no longer in the active pool, for up to the duration of
+  the connection draining timeout (10 minutes).
 
   Fields:
     disableConnectionDrainOnFailover: This can be set to true only if the
@@ -4739,7 +4751,9 @@ class BackendServiceFailoverPolicy(_messages.Message):
       that have configurable failover: [Internal TCP/UDP Load
       Balancing](https://cloud.google.com/load-
       balancing/docs/internal/failover-overview) and [external TCP/UDP Load
-      Balancing](/network/networklb-failover-overview). The default is false.
+      Balancing](https://cloud.google.com/load-
+      balancing/docs/network/networklb-failover-overview). The default is
+      false.
     failoverRatio: The value of the field must be in the range [0, 1]. If the
       value is 0, the load balancer performs a failover when the number of
       healthy primary VMs equals zero. For all other values, the load balancer
@@ -4747,7 +4761,8 @@ class BackendServiceFailoverPolicy(_messages.Message):
       than this ratio. For load balancers that have configurable failover:
       [Internal TCP/UDP Load Balancing](https://cloud.google.com/load-
       balancing/docs/internal/failover-overview) and [external TCP/UDP Load
-      Balancing](/network/networklb-failover-overview).
+      Balancing](https://cloud.google.com/load-
+      balancing/docs/network/networklb-failover-overview).
   """
 
   disableConnectionDrainOnFailover = _messages.BooleanField(1)
@@ -5835,6 +5850,8 @@ class Commitment(_messages.Message):
       commitments.
     licenseResource: The license specification required as part of a license
       commitment.
+    mergeSourceCommitments: List of source commitments to be merged into a new
+      commitment.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -5852,6 +5869,8 @@ class Commitment(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
+    splitSourceCommitment: Source commitment to be splitted into a new
+      commitment.
     startTimestamp: [Output Only] Commitment start time in RFC3339 text
       format.
     status: [Output Only] Status of the commitment with regards to eventual
@@ -5950,17 +5969,19 @@ class Commitment(_messages.Message):
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(7, default='compute#commitment')
   licenseResource = _messages.MessageField('LicenseResourceCommitment', 8)
-  name = _messages.StringField(9)
-  plan = _messages.EnumField('PlanValueValuesEnum', 10)
-  region = _messages.StringField(11)
-  reservations = _messages.MessageField('Reservation', 12, repeated=True)
-  resources = _messages.MessageField('ResourceCommitment', 13, repeated=True)
-  selfLink = _messages.StringField(14)
-  selfLinkWithId = _messages.StringField(15)
-  startTimestamp = _messages.StringField(16)
-  status = _messages.EnumField('StatusValueValuesEnum', 17)
-  statusMessage = _messages.StringField(18)
-  type = _messages.EnumField('TypeValueValuesEnum', 19)
+  mergeSourceCommitments = _messages.StringField(9, repeated=True)
+  name = _messages.StringField(10)
+  plan = _messages.EnumField('PlanValueValuesEnum', 11)
+  region = _messages.StringField(12)
+  reservations = _messages.MessageField('Reservation', 13, repeated=True)
+  resources = _messages.MessageField('ResourceCommitment', 14, repeated=True)
+  selfLink = _messages.StringField(15)
+  selfLinkWithId = _messages.StringField(16)
+  splitSourceCommitment = _messages.StringField(17)
+  startTimestamp = _messages.StringField(18)
+  status = _messages.EnumField('StatusValueValuesEnum', 19)
+  statusMessage = _messages.StringField(20)
+  type = _messages.EnumField('TypeValueValuesEnum', 21)
 
 
 class CommitmentAggregatedList(_messages.Message):
@@ -10337,8 +10358,7 @@ class ComputeGlobalPublicDelegatedPrefixesDeleteRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
   """
 
   project = _messages.StringField(1, required=True)
@@ -10375,8 +10395,7 @@ class ComputeGlobalPublicDelegatedPrefixesInsertRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
   """
 
   project = _messages.StringField(1, required=True)
@@ -10456,8 +10475,7 @@ class ComputeGlobalPublicDelegatedPrefixesPatchRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
   """
 
   project = _messages.StringField(1, required=True)
@@ -18627,8 +18645,7 @@ class ComputePublicAdvertisedPrefixesDeleteRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
   """
 
   project = _messages.StringField(1, required=True)
@@ -18665,8 +18682,7 @@ class ComputePublicAdvertisedPrefixesInsertRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
   """
 
   project = _messages.StringField(1, required=True)
@@ -18746,8 +18762,7 @@ class ComputePublicAdvertisedPrefixesPatchRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
   """
 
   project = _messages.StringField(1, required=True)
@@ -18835,8 +18850,7 @@ class ComputePublicDelegatedPrefixesDeleteRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
   """
 
   project = _messages.StringField(1, required=True)
@@ -18877,8 +18891,7 @@ class ComputePublicDelegatedPrefixesInsertRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
   """
 
   project = _messages.StringField(1, required=True)
@@ -18962,8 +18975,7 @@ class ComputePublicDelegatedPrefixesPatchRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
   """
 
   project = _messages.StringField(1, required=True)
@@ -22418,8 +22430,7 @@ class ComputeRegionNotificationEndpointsDeleteRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
   """
 
   notificationEndpoint = _messages.StringField(1, required=True)
@@ -22459,8 +22470,7 @@ class ComputeRegionNotificationEndpointsInsertRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
   """
 
   notificationEndpoint = _messages.MessageField('NotificationEndpoint', 1)
@@ -22810,8 +22820,7 @@ class ComputeRegionSslCertificatesDeleteRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     sslCertificate: Name of the SslCertificate resource to delete.
   """
 
@@ -22850,8 +22859,7 @@ class ComputeRegionSslCertificatesInsertRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     sslCertificate: A SslCertificate resource to be passed as the request
       body.
   """
@@ -22920,6 +22928,245 @@ class ComputeRegionSslCertificatesListRequest(_messages.Message):
 
 class ComputeRegionSslCertificatesTestIamPermissionsRequest(_messages.Message):
   r"""A ComputeRegionSslCertificatesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
+class ComputeRegionSslPoliciesDeleteRequest(_messages.Message):
+  r"""A ComputeRegionSslPoliciesDeleteRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    sslPolicy: Name of the SSL policy to delete. The name must be 1-63
+      characters long, and comply with RFC1035.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  sslPolicy = _messages.StringField(4, required=True)
+
+
+class ComputeRegionSslPoliciesGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeRegionSslPoliciesGetIamPolicyRequest object.
+
+  Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  resource = _messages.StringField(4, required=True)
+
+
+class ComputeRegionSslPoliciesGetRequest(_messages.Message):
+  r"""A ComputeRegionSslPoliciesGetRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    sslPolicy: Name of the SSL policy to update. The name must be 1-63
+      characters long, and comply with RFC1035.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  sslPolicy = _messages.StringField(3, required=True)
+
+
+class ComputeRegionSslPoliciesInsertRequest(_messages.Message):
+  r"""A ComputeRegionSslPoliciesInsertRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    sslPolicy: A SslPolicy resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  sslPolicy = _messages.MessageField('SslPolicy', 4)
+
+
+class ComputeRegionSslPoliciesListAvailableFeaturesRequest(_messages.Message):
+  r"""A ComputeRegionSslPoliciesListAvailableFeaturesRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
+      instances, you can exclude instances named `example-instance` by
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
+      fields. For example, you could specify `scheduling.automaticRestart =
+      false` to include instances only if they are not scheduled for automatic
+      restarts. You can use filtering on nested fields to filter based on
+      resource labels. To filter on multiple expressions, provide each
+      separate expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ```
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+
+
+class ComputeRegionSslPoliciesListRequest(_messages.Message):
+  r"""A ComputeRegionSslPoliciesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
+      instances, you can exclude instances named `example-instance` by
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
+      fields. For example, you could specify `scheduling.automaticRestart =
+      false` to include instances only if they are not scheduled for automatic
+      restarts. You can use filtering on nested fields to filter based on
+      resource labels. To filter on multiple expressions, provide each
+      separate expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ```
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+
+
+class ComputeRegionSslPoliciesPatchRequest(_messages.Message):
+  r"""A ComputeRegionSslPoliciesPatchRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    sslPolicy: Name of the SSL policy to update. The name must be 1-63
+      characters long, and comply with RFC1035.
+    sslPolicyResource: A SslPolicy resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  sslPolicy = _messages.StringField(4, required=True)
+  sslPolicyResource = _messages.MessageField('SslPolicy', 5)
+
+
+class ComputeRegionSslPoliciesTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeRegionSslPoliciesTestIamPermissionsRequest object.
 
   Fields:
     project: Project ID for this request.
@@ -23116,8 +23363,7 @@ class ComputeRegionTargetHttpsProxiesDeleteRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     targetHttpsProxy: Name of the TargetHttpsProxy resource to delete.
   """
 
@@ -23156,8 +23402,7 @@ class ComputeRegionTargetHttpsProxiesInsertRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     targetHttpsProxy: A TargetHttpsProxy resource to be passed as the request
       body.
   """
@@ -23242,8 +23487,7 @@ class ComputeRegionTargetHttpsProxiesSetSslCertificatesRequest(_messages.Message
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     targetHttpsProxy: Name of the TargetHttpsProxy resource to set an
       SslCertificates resource for.
   """
@@ -23270,8 +23514,7 @@ class ComputeRegionTargetHttpsProxiesSetUrlMapRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     targetHttpsProxy: Name of the TargetHttpsProxy to set a URL map for.
     urlMapReference: A UrlMapReference resource to be passed as the request
       body.
@@ -24991,8 +25234,7 @@ class ComputeServiceAttachmentsDeleteRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     serviceAttachment: Name of the ServiceAttachment resource to delete.
   """
 
@@ -25047,8 +25289,7 @@ class ComputeServiceAttachmentsInsertRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     serviceAttachment: A ServiceAttachment resource to be passed as the
       request body.
   """
@@ -25130,8 +25371,7 @@ class ComputeServiceAttachmentsPatchRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     serviceAttachment: The resource id of the ServiceAttachment to patch. It
       should conform to RFC1035 resource name or be a string form on an
       unsigned long number.
@@ -25427,8 +25667,7 @@ class ComputeSslCertificatesDeleteRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     sslCertificate: Name of the SslCertificate resource to delete.
   """
 
@@ -25463,8 +25702,7 @@ class ComputeSslCertificatesInsertRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     sslCertificate: A SslCertificate resource to be passed as the request
       body.
   """
@@ -25541,6 +25779,68 @@ class ComputeSslCertificatesTestIamPermissionsRequest(_messages.Message):
   project = _messages.StringField(1, required=True)
   resource = _messages.StringField(2, required=True)
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+
+
+class ComputeSslPoliciesAggregatedListRequest(_messages.Message):
+  r"""A ComputeSslPoliciesAggregatedListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
+      instances, you can exclude instances named `example-instance` by
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
+      fields. For example, you could specify `scheduling.automaticRestart =
+      false` to include instances only if they are not scheduled for automatic
+      restarts. You can use filtering on nested fields to filter based on
+      resource labels. To filter on multiple expressions, provide each
+      separate expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ```
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Name of the project scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeSslPoliciesDeleteRequest(_messages.Message):
@@ -26150,8 +26450,7 @@ class ComputeTargetGrpcProxiesDeleteRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     targetGrpcProxy: Name of the TargetGrpcProxy resource to delete.
   """
 
@@ -26186,8 +26485,7 @@ class ComputeTargetGrpcProxiesInsertRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     targetGrpcProxy: A TargetGrpcProxy resource to be passed as the request
       body.
   """
@@ -26265,8 +26563,7 @@ class ComputeTargetGrpcProxiesPatchRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     targetGrpcProxy: Name of the TargetGrpcProxy resource to patch.
     targetGrpcProxyResource: A TargetGrpcProxy resource to be passed as the
       request body.
@@ -26482,8 +26779,7 @@ class ComputeTargetHttpProxiesPatchRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     targetHttpProxy: Name of the TargetHttpProxy resource to patch.
     targetHttpProxyResource: A TargetHttpProxy resource to be passed as the
       request body.
@@ -26725,8 +27021,7 @@ class ComputeTargetHttpsProxiesPatchRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     targetHttpsProxy: Name of the TargetHttpsProxy resource to patch.
     targetHttpsProxyResource: A TargetHttpsProxy resource to be passed as the
       request body.
@@ -32190,16 +32485,24 @@ class FirewallPolicyRuleMatcher(_messages.Message):
       traffic destination. Maximum number of destination address groups is 10.
     destFqdns: Fully Qualified Domain Name (FQDN) which should be matched
       against traffic destination. Maximum number of destination fqdn allowed
-      is 5000.
+      is 1000.
     destIpRanges: CIDR IP address range. Maximum number of destination CIDR IP
       ranges allowed is 5000.
+    destRegionCodes: Region codes whose IP addresses will be used to match for
+      destination of traffic. Should be specified as 2 letter country code
+      defined as per ISO 3166 alpha-2 country codes. ex."US" Maximum number of
+      dest region codes allowed is 5000.
     layer4Configs: Pairs of IP protocols and ports that the rule should match.
     srcAddressGroups: Address groups which should be matched against the
       traffic source. Maximum number of source address groups is 10.
     srcFqdns: Fully Qualified Domain Name (FQDN) which should be matched
-      against traffic source. Maximum number of source fqdn allowed is 5000.
+      against traffic source. Maximum number of source fqdn allowed is 1000.
     srcIpRanges: CIDR IP address range. Maximum number of source CIDR IP
       ranges allowed is 5000.
+    srcRegionCodes: Region codes whose IP addresses will be used to match for
+      source of traffic. Should be specified as 2 letter country code defined
+      as per ISO 3166 alpha-2 country codes. ex."US" Maximum number of source
+      region codes allowed is 5000.
     srcSecureTags: List of secure tag values, which should be matched at the
       source of the traffic. For INGRESS rule, if all the srcSecureTag are
       INEFFECTIVE, and there is no srcIpRange, this rule will be ignored.
@@ -32209,11 +32512,13 @@ class FirewallPolicyRuleMatcher(_messages.Message):
   destAddressGroups = _messages.StringField(1, repeated=True)
   destFqdns = _messages.StringField(2, repeated=True)
   destIpRanges = _messages.StringField(3, repeated=True)
-  layer4Configs = _messages.MessageField('FirewallPolicyRuleMatcherLayer4Config', 4, repeated=True)
-  srcAddressGroups = _messages.StringField(5, repeated=True)
-  srcFqdns = _messages.StringField(6, repeated=True)
-  srcIpRanges = _messages.StringField(7, repeated=True)
-  srcSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 8, repeated=True)
+  destRegionCodes = _messages.StringField(4, repeated=True)
+  layer4Configs = _messages.MessageField('FirewallPolicyRuleMatcherLayer4Config', 5, repeated=True)
+  srcAddressGroups = _messages.StringField(6, repeated=True)
+  srcFqdns = _messages.StringField(7, repeated=True)
+  srcIpRanges = _messages.StringField(8, repeated=True)
+  srcRegionCodes = _messages.StringField(9, repeated=True)
+  srcSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 10, repeated=True)
 
 
 class FirewallPolicyRuleMatcherLayer4Config(_messages.Message):
@@ -32362,6 +32667,8 @@ class ForwardingRule(_messages.Message):
       TargetInstance. If the field is set to TRUE, clients can access ILB from
       all regions. Otherwise only allows access from clients in the same
       region as the internal load balancer.
+    allowPscGlobalAccess: This is used in PSC consumer ForwardingRule to
+      control whether the PSC endpoint can be accessed from another region.
     backendService: Identifies the backend service to which the forwarding
       rule sends traffic. Required for Internal TCP/UDP Load Balancing and
       Network Load Balancing; must be omitted for all other load balancer
@@ -32472,7 +32779,7 @@ class ForwardingRule(_messages.Message):
       the resource id.
     serviceDirectoryRegistrations: Service Directory resources to register
       this forwarding rule with. Currently, only supports a single Service
-      Directory resource. It is only supported for internal load balancing.
+      Directory resource.
     serviceLabel: An optional prefix to the service name for this Forwarding
       Rule. If specified, the prefix is the first label of the fully qualified
       service name. The label must be 1-63 characters long, and comply with
@@ -32632,34 +32939,35 @@ class ForwardingRule(_messages.Message):
   IPProtocol = _messages.EnumField('IPProtocolValueValuesEnum', 2)
   allPorts = _messages.BooleanField(3)
   allowGlobalAccess = _messages.BooleanField(4)
-  backendService = _messages.StringField(5)
-  creationTimestamp = _messages.StringField(6)
-  description = _messages.StringField(7)
-  fingerprint = _messages.BytesField(8)
-  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 10)
-  isMirroringCollector = _messages.BooleanField(11)
-  kind = _messages.StringField(12, default='compute#forwardingRule')
-  labelFingerprint = _messages.BytesField(13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 15)
-  metadataFilters = _messages.MessageField('MetadataFilter', 16, repeated=True)
-  name = _messages.StringField(17)
-  network = _messages.StringField(18)
-  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 19)
-  portRange = _messages.StringField(20)
-  ports = _messages.StringField(21, repeated=True)
-  pscConnectionId = _messages.IntegerField(22, variant=_messages.Variant.UINT64)
-  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 23)
-  region = _messages.StringField(24)
-  selfLink = _messages.StringField(25)
-  selfLinkWithId = _messages.StringField(26)
-  serviceDirectoryRegistrations = _messages.MessageField('ForwardingRuleServiceDirectoryRegistration', 27, repeated=True)
-  serviceLabel = _messages.StringField(28)
-  serviceName = _messages.StringField(29)
-  sourceIpRanges = _messages.StringField(30, repeated=True)
-  subnetwork = _messages.StringField(31)
-  target = _messages.StringField(32)
+  allowPscGlobalAccess = _messages.BooleanField(5)
+  backendService = _messages.StringField(6)
+  creationTimestamp = _messages.StringField(7)
+  description = _messages.StringField(8)
+  fingerprint = _messages.BytesField(9)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 11)
+  isMirroringCollector = _messages.BooleanField(12)
+  kind = _messages.StringField(13, default='compute#forwardingRule')
+  labelFingerprint = _messages.BytesField(14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 16)
+  metadataFilters = _messages.MessageField('MetadataFilter', 17, repeated=True)
+  name = _messages.StringField(18)
+  network = _messages.StringField(19)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 20)
+  portRange = _messages.StringField(21)
+  ports = _messages.StringField(22, repeated=True)
+  pscConnectionId = _messages.IntegerField(23, variant=_messages.Variant.UINT64)
+  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 24)
+  region = _messages.StringField(25)
+  selfLink = _messages.StringField(26)
+  selfLinkWithId = _messages.StringField(27)
+  serviceDirectoryRegistrations = _messages.MessageField('ForwardingRuleServiceDirectoryRegistration', 28, repeated=True)
+  serviceLabel = _messages.StringField(29)
+  serviceName = _messages.StringField(30)
+  sourceIpRanges = _messages.StringField(31, repeated=True)
+  subnetwork = _messages.StringField(32)
+  target = _messages.StringField(33)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -37336,6 +37644,8 @@ class Instance(_messages.Message):
       network services, such as connecting to the internet. Multiple
       interfaces are supported per instance.
     networkPerformanceConfig: A NetworkPerformanceConfig attribute.
+    params: Input only. [Input Only] Additional params passed with the
+      request, but not persisted as part of resource payload.
     postKeyRevocationActionType: PostKeyRevocationActionType of the instance.
     preservedStateSizeGb: Total amount of preserved state for SUSPENDED
       instances. Read-only in the api.
@@ -37522,30 +37832,31 @@ class Instance(_messages.Message):
   name = _messages.StringField(26)
   networkInterfaces = _messages.MessageField('NetworkInterface', 27, repeated=True)
   networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 28)
-  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 29)
-  preservedStateSizeGb = _messages.IntegerField(30)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 31)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 32)
-  resourcePolicies = _messages.StringField(33, repeated=True)
-  resourceStatus = _messages.MessageField('ResourceStatus', 34)
-  satisfiesPzs = _messages.BooleanField(35)
-  scheduling = _messages.MessageField('Scheduling', 36)
-  secureTags = _messages.StringField(37, repeated=True)
-  selfLink = _messages.StringField(38)
-  selfLinkWithId = _messages.StringField(39)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 40, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 41)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 42)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 43)
-  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 44)
-  sourceMachineImage = _messages.StringField(45)
-  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 46)
-  startRestricted = _messages.BooleanField(47)
-  status = _messages.EnumField('StatusValueValuesEnum', 48)
-  statusMessage = _messages.StringField(49)
-  tags = _messages.MessageField('Tags', 50)
-  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 51)
-  zone = _messages.StringField(52)
+  params = _messages.MessageField('InstanceParams', 29)
+  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 30)
+  preservedStateSizeGb = _messages.IntegerField(31)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 32)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 33)
+  resourcePolicies = _messages.StringField(34, repeated=True)
+  resourceStatus = _messages.MessageField('ResourceStatus', 35)
+  satisfiesPzs = _messages.BooleanField(36)
+  scheduling = _messages.MessageField('Scheduling', 37)
+  secureTags = _messages.StringField(38, repeated=True)
+  selfLink = _messages.StringField(39)
+  selfLinkWithId = _messages.StringField(40)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 41, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 42)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 43)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 44)
+  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 45)
+  sourceMachineImage = _messages.StringField(46)
+  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 47)
+  startRestricted = _messages.BooleanField(48)
+  status = _messages.EnumField('StatusValueValuesEnum', 49)
+  statusMessage = _messages.StringField(50)
+  tags = _messages.MessageField('Tags', 51)
+  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 52)
+  zone = _messages.StringField(53)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -40582,6 +40893,56 @@ class InstanceMoveRequest(_messages.Message):
   targetInstance = _messages.StringField(2)
 
 
+class InstanceParams(_messages.Message):
+  r"""Additional instance params.
+
+  Messages:
+    ResourceManagerTagsValue: Resource manager tags to be bound to the
+      instance. Tag keys and values have the same definition as resource
+      manager tags. Keys must be in the format `tagKeys/{tag_key_id}`, and
+      values are in the format `tagValues/456`. The field is ignored (both PUT
+      & PATCH) when empty.
+
+  Fields:
+    resourceManagerTags: Resource manager tags to be bound to the instance.
+      Tag keys and values have the same definition as resource manager tags.
+      Keys must be in the format `tagKeys/{tag_key_id}`, and values are in the
+      format `tagValues/456`. The field is ignored (both PUT & PATCH) when
+      empty.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceManagerTagsValue(_messages.Message):
+    r"""Resource manager tags to be bound to the instance. Tag keys and values
+    have the same definition as resource manager tags. Keys must be in the
+    format `tagKeys/{tag_key_id}`, and values are in the format
+    `tagValues/456`. The field is ignored (both PUT & PATCH) when empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ResourceManagerTagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ResourceManagerTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceManagerTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 1)
+
+
 class InstanceProperties(_messages.Message):
   r"""A InstanceProperties object.
 
@@ -40597,6 +40958,11 @@ class InstanceProperties(_messages.Message):
   Messages:
     LabelsValue: Labels to apply to instances that are created from these
       properties.
+    ResourceManagerTagsValue: Resource manager tags to be bound to the
+      instance. Tag keys and values have the same definition as resource
+      manager tags. Keys must be in the format `tagKeys/{tag_key_id}`, and
+      values are in the format `tagValues/456`. The field is ignored (both PUT
+      & PATCH) when empty.
 
   Fields:
     advancedMachineFeatures: Controls for advanced machine-related behavior
@@ -40642,6 +41008,11 @@ class InstanceProperties(_messages.Message):
       MachineImage, this is not supported yet.
     reservationAffinity: Specifies the reservations that instances can consume
       from. Note that for MachineImage, this is not supported yet.
+    resourceManagerTags: Resource manager tags to be bound to the instance.
+      Tag keys and values have the same definition as resource manager tags.
+      Keys must be in the format `tagKeys/{tag_key_id}`, and values are in the
+      format `tagValues/456`. The field is ignored (both PUT & PATCH) when
+      empty.
     resourcePolicies: Resource policies (names, not ULRs) applied to instances
       created from these properties. Note that for MachineImage, this is not
       supported yet.
@@ -40735,6 +41106,35 @@ class InstanceProperties(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceManagerTagsValue(_messages.Message):
+    r"""Resource manager tags to be bound to the instance. Tag keys and values
+    have the same definition as resource manager tags. Keys must be in the
+    format `tagKeys/{tag_key_id}`, and values are in the format
+    `tagValues/456`. The field is ignored (both PUT & PATCH) when empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ResourceManagerTagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ResourceManagerTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceManagerTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   advancedMachineFeatures = _messages.MessageField('AdvancedMachineFeatures', 1)
   canIpForward = _messages.BooleanField(2)
   confidentialInstanceConfig = _messages.MessageField('ConfidentialInstanceConfig', 3)
@@ -40752,13 +41152,14 @@ class InstanceProperties(_messages.Message):
   postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 15)
   privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 16)
   reservationAffinity = _messages.MessageField('ReservationAffinity', 17)
-  resourcePolicies = _messages.StringField(18, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 19)
-  secureTags = _messages.StringField(20, repeated=True)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 21, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 22)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 23)
-  tags = _messages.MessageField('Tags', 24)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 18)
+  resourcePolicies = _messages.StringField(19, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 20)
+  secureTags = _messages.StringField(21, repeated=True)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 22, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 23)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 24)
+  tags = _messages.MessageField('Tags', 25)
 
 
 class InstancePropertiesPatch(_messages.Message):
@@ -41501,6 +41902,8 @@ class InstantSnapshot(_messages.Message):
     region: [Output Only] URL of the region where the instant snapshot
       resides. You must specify this field as part of the HTTP request URL. It
       is not settable as a field in the request body.
+    resourceStatus: [Output Only] Status information for the instant snapshot
+      resource.
     satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource's
@@ -41591,13 +41994,14 @@ class InstantSnapshot(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 9)
   name = _messages.StringField(10)
   region = _messages.StringField(11)
-  satisfiesPzs = _messages.BooleanField(12)
-  selfLink = _messages.StringField(13)
-  selfLinkWithId = _messages.StringField(14)
-  sourceDisk = _messages.StringField(15)
-  sourceDiskId = _messages.StringField(16)
-  status = _messages.EnumField('StatusValueValuesEnum', 17)
-  zone = _messages.StringField(18)
+  resourceStatus = _messages.MessageField('InstantSnapshotResourceStatus', 12)
+  satisfiesPzs = _messages.BooleanField(13)
+  selfLink = _messages.StringField(14)
+  selfLinkWithId = _messages.StringField(15)
+  sourceDisk = _messages.StringField(16)
+  sourceDiskId = _messages.StringField(17)
+  status = _messages.EnumField('StatusValueValuesEnum', 18)
+  zone = _messages.StringField(19)
 
 
 class InstantSnapshotAggregatedList(_messages.Message):
@@ -41969,6 +42373,16 @@ class InstantSnapshotList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class InstantSnapshotResourceStatus(_messages.Message):
+  r"""A InstantSnapshotResourceStatus object.
+
+  Fields:
+    storageSizeBytes: [Output Only] The storage size of this instant snapshot.
+  """
+
+  storageSizeBytes = _messages.IntegerField(1)
 
 
 class InstantSnapshotsExportRequest(_messages.Message):
@@ -49135,7 +49549,7 @@ class NodeGroupNode(_messages.Message):
     consumedResources: Node resources that are reserved by all instances.
     cpuOvercommitType: CPU overcommit.
     disks: Local disk configurations.
-    instanceConsumptionDatas: Instance data that shows consumed resources on
+    instanceConsumptionData: Instance data that shows consumed resources on
       the node.
     instances: Instances scheduled on this node.
     name: The name of the node.
@@ -49179,7 +49593,7 @@ class NodeGroupNode(_messages.Message):
   consumedResources = _messages.MessageField('InstanceConsumptionInfo', 2)
   cpuOvercommitType = _messages.EnumField('CpuOvercommitTypeValueValuesEnum', 3)
   disks = _messages.MessageField('LocalDisk', 4, repeated=True)
-  instanceConsumptionDatas = _messages.MessageField('InstanceConsumptionData', 5, repeated=True)
+  instanceConsumptionData = _messages.MessageField('InstanceConsumptionData', 5, repeated=True)
   instances = _messages.StringField(6, repeated=True)
   name = _messages.StringField(7)
   nodeType = _messages.StringField(8)
@@ -54510,6 +54924,7 @@ class Quota(_messages.Message):
       EXTERNAL_VPN_GATEWAYS: <no description>
       FIREWALLS: <no description>
       FORWARDING_RULES: <no description>
+      GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES: <no description>
       GLOBAL_INTERNAL_ADDRESSES: <no description>
       GPUS_ALL_REGIONS: <no description>
       HEALTH_CHECKS: <no description>
@@ -54650,102 +55065,103 @@ class Quota(_messages.Message):
     EXTERNAL_VPN_GATEWAYS = 37
     FIREWALLS = 38
     FORWARDING_RULES = 39
-    GLOBAL_INTERNAL_ADDRESSES = 40
-    GPUS_ALL_REGIONS = 41
-    HEALTH_CHECKS = 42
-    IMAGES = 43
-    INSTANCES = 44
-    INSTANCES_PER_NETWORK_GLOBAL = 45
-    INSTANCE_GROUPS = 46
-    INSTANCE_GROUP_MANAGERS = 47
-    INSTANCE_TEMPLATES = 48
-    INTERCONNECTS = 49
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 50
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 51
-    INTERCONNECT_TOTAL_GBPS = 52
-    INTERNAL_ADDRESSES = 53
-    INTERNAL_FORWARDING_RULES_PER_NETWORK = 54
-    INTERNAL_FORWARDING_RULES_WITH_GLOBAL_ACCESS_PER_NETWORK = 55
-    INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK = 56
-    INTERNAL_TARGET_INSTANCE_WITH_GLOBAL_ACCESS_PER_NETWORK = 57
-    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 58
-    IN_PLACE_SNAPSHOTS = 59
-    IN_USE_ADDRESSES = 60
-    IN_USE_BACKUP_SCHEDULES = 61
-    IN_USE_MAINTENANCE_WINDOWS = 62
-    IN_USE_SNAPSHOT_SCHEDULES = 63
-    LOCAL_SSD_TOTAL_GB = 64
-    M1_CPUS = 65
-    M2_CPUS = 66
-    MACHINE_IMAGES = 67
-    N2A_CPUS = 68
-    N2D_CPUS = 69
-    N2_CPUS = 70
-    NETWORKS = 71
-    NETWORK_ENDPOINT_GROUPS = 72
-    NETWORK_FIREWALL_POLICIES = 73
-    NODE_GROUPS = 74
-    NODE_TEMPLATES = 75
-    NVIDIA_A100_GPUS = 76
-    NVIDIA_K80_GPUS = 77
-    NVIDIA_P100_GPUS = 78
-    NVIDIA_P100_VWS_GPUS = 79
-    NVIDIA_P4_GPUS = 80
-    NVIDIA_P4_VWS_GPUS = 81
-    NVIDIA_T4_GPUS = 82
-    NVIDIA_T4_VWS_GPUS = 83
-    NVIDIA_V100_GPUS = 84
-    PACKET_MIRRORINGS = 85
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 86
-    PREEMPTIBLE_CPUS = 87
-    PREEMPTIBLE_LOCAL_SSD_GB = 88
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 89
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 90
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 91
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 92
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 93
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 94
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 95
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 96
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 97
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 98
-    PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 99
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 100
-    PSC_INTERNAL_LB_FORWARDING_RULES = 101
-    PUBLIC_ADVERTISED_PREFIXES = 102
-    PUBLIC_DELEGATED_PREFIXES = 103
-    REGIONAL_AUTOSCALERS = 104
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 105
-    RESERVATIONS = 106
-    RESOURCE_POLICIES = 107
-    ROUTERS = 108
-    ROUTES = 109
-    SECURITY_POLICIES = 110
-    SECURITY_POLICIES_PER_REGION = 111
-    SECURITY_POLICY_CEVAL_RULES = 112
-    SECURITY_POLICY_RULES = 113
-    SECURITY_POLICY_RULES_PER_REGION = 114
-    SERVICE_ATTACHMENTS = 115
-    SNAPSHOTS = 116
-    SSD_TOTAL_GB = 117
-    SSL_CERTIFICATES = 118
-    STATIC_ADDRESSES = 119
-    STATIC_BYOIP_ADDRESSES = 120
-    SUBNETWORKS = 121
-    SUBNET_RANGES_PER_NETWORK = 122
-    T2A_CPUS = 123
-    T2D_CPUS = 124
-    TARGET_HTTPS_PROXIES = 125
-    TARGET_HTTP_PROXIES = 126
-    TARGET_INSTANCES = 127
-    TARGET_POOLS = 128
-    TARGET_SSL_PROXIES = 129
-    TARGET_TCP_PROXIES = 130
-    TARGET_VPN_GATEWAYS = 131
-    URL_MAPS = 132
-    VPN_GATEWAYS = 133
-    VPN_TUNNELS = 134
-    XPN_SERVICE_PROJECTS = 135
+    GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES = 40
+    GLOBAL_INTERNAL_ADDRESSES = 41
+    GPUS_ALL_REGIONS = 42
+    HEALTH_CHECKS = 43
+    IMAGES = 44
+    INSTANCES = 45
+    INSTANCES_PER_NETWORK_GLOBAL = 46
+    INSTANCE_GROUPS = 47
+    INSTANCE_GROUP_MANAGERS = 48
+    INSTANCE_TEMPLATES = 49
+    INTERCONNECTS = 50
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 51
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 52
+    INTERCONNECT_TOTAL_GBPS = 53
+    INTERNAL_ADDRESSES = 54
+    INTERNAL_FORWARDING_RULES_PER_NETWORK = 55
+    INTERNAL_FORWARDING_RULES_WITH_GLOBAL_ACCESS_PER_NETWORK = 56
+    INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK = 57
+    INTERNAL_TARGET_INSTANCE_WITH_GLOBAL_ACCESS_PER_NETWORK = 58
+    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 59
+    IN_PLACE_SNAPSHOTS = 60
+    IN_USE_ADDRESSES = 61
+    IN_USE_BACKUP_SCHEDULES = 62
+    IN_USE_MAINTENANCE_WINDOWS = 63
+    IN_USE_SNAPSHOT_SCHEDULES = 64
+    LOCAL_SSD_TOTAL_GB = 65
+    M1_CPUS = 66
+    M2_CPUS = 67
+    MACHINE_IMAGES = 68
+    N2A_CPUS = 69
+    N2D_CPUS = 70
+    N2_CPUS = 71
+    NETWORKS = 72
+    NETWORK_ENDPOINT_GROUPS = 73
+    NETWORK_FIREWALL_POLICIES = 74
+    NODE_GROUPS = 75
+    NODE_TEMPLATES = 76
+    NVIDIA_A100_GPUS = 77
+    NVIDIA_K80_GPUS = 78
+    NVIDIA_P100_GPUS = 79
+    NVIDIA_P100_VWS_GPUS = 80
+    NVIDIA_P4_GPUS = 81
+    NVIDIA_P4_VWS_GPUS = 82
+    NVIDIA_T4_GPUS = 83
+    NVIDIA_T4_VWS_GPUS = 84
+    NVIDIA_V100_GPUS = 85
+    PACKET_MIRRORINGS = 86
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 87
+    PREEMPTIBLE_CPUS = 88
+    PREEMPTIBLE_LOCAL_SSD_GB = 89
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 90
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 91
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 92
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 93
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 94
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 95
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 96
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 97
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 98
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 99
+    PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 100
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 101
+    PSC_INTERNAL_LB_FORWARDING_RULES = 102
+    PUBLIC_ADVERTISED_PREFIXES = 103
+    PUBLIC_DELEGATED_PREFIXES = 104
+    REGIONAL_AUTOSCALERS = 105
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 106
+    RESERVATIONS = 107
+    RESOURCE_POLICIES = 108
+    ROUTERS = 109
+    ROUTES = 110
+    SECURITY_POLICIES = 111
+    SECURITY_POLICIES_PER_REGION = 112
+    SECURITY_POLICY_CEVAL_RULES = 113
+    SECURITY_POLICY_RULES = 114
+    SECURITY_POLICY_RULES_PER_REGION = 115
+    SERVICE_ATTACHMENTS = 116
+    SNAPSHOTS = 117
+    SSD_TOTAL_GB = 118
+    SSL_CERTIFICATES = 119
+    STATIC_ADDRESSES = 120
+    STATIC_BYOIP_ADDRESSES = 121
+    SUBNETWORKS = 122
+    SUBNET_RANGES_PER_NETWORK = 123
+    T2A_CPUS = 124
+    T2D_CPUS = 125
+    TARGET_HTTPS_PROXIES = 126
+    TARGET_HTTP_PROXIES = 127
+    TARGET_INSTANCES = 128
+    TARGET_POOLS = 129
+    TARGET_SSL_PROXIES = 130
+    TARGET_TCP_PROXIES = 131
+    TARGET_VPN_GATEWAYS = 132
+    URL_MAPS = 133
+    VPN_GATEWAYS = 134
+    VPN_TUNNELS = 135
+    XPN_SERVICE_PROJECTS = 136
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -60537,8 +60953,11 @@ class Scheduling(_messages.Message):
 
     Values:
       SPOT: Heavily discounted, no guaranteed runtime.
+      STANDARD: Standard provisioning with user controlled runtime, no
+        discounts.
     """
     SPOT = 0
+    STANDARD = 1
 
   automaticRestart = _messages.BooleanField(1)
   availabilityDomain = _messages.IntegerField(2, variant=_messages.Variant.INT32)
@@ -61027,6 +61446,7 @@ class SecurityPolicy(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     parent: [Output Only] The parent of the security policy.
+    recaptchaOptionsConfig: A SecurityPolicyRecaptchaOptionsConfig attribute.
     region: [Output Only] URL of the region where the regional security policy
       resides. This field is not applicable to global security policies.
     ruleTupleCount: [Output Only] Total count of all security policy rule
@@ -61110,12 +61530,13 @@ class SecurityPolicy(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 13)
   name = _messages.StringField(14)
   parent = _messages.StringField(15)
-  region = _messages.StringField(16)
-  ruleTupleCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  rules = _messages.MessageField('SecurityPolicyRule', 18, repeated=True)
-  selfLink = _messages.StringField(19)
-  selfLinkWithId = _messages.StringField(20)
-  type = _messages.EnumField('TypeValueValuesEnum', 21)
+  recaptchaOptionsConfig = _messages.MessageField('SecurityPolicyRecaptchaOptionsConfig', 16)
+  region = _messages.StringField(17)
+  ruleTupleCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  rules = _messages.MessageField('SecurityPolicyRule', 19, repeated=True)
+  selfLink = _messages.StringField(20)
+  selfLinkWithId = _messages.StringField(21)
+  type = _messages.EnumField('TypeValueValuesEnum', 22)
 
 
 class SecurityPolicyAdaptiveProtectionConfig(_messages.Message):
@@ -61397,6 +61818,21 @@ class SecurityPolicyList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 7)
 
 
+class SecurityPolicyRecaptchaOptionsConfig(_messages.Message):
+  r"""A SecurityPolicyRecaptchaOptionsConfig object.
+
+  Fields:
+    redirectSiteKey: An optional field to supply a reCAPTCHA site key to be
+      used for all the rules using the redirect action with the type of
+      GOOGLE_RECAPTCHA under the security policy. The specified site key needs
+      to be created from the reCAPTCHA API. The user is responsible for the
+      validity of the specified site key. If not specified, a Google-managed
+      site key is used.
+  """
+
+  redirectSiteKey = _messages.StringField(1)
+
+
 class SecurityPolicyReference(_messages.Message):
   r"""A SecurityPolicyReference object.
 
@@ -61674,9 +62110,14 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       key types: HTTP_HEADER -- Name of the HTTP header whose value is taken
       as the key value. HTTP_COOKIE -- Name of the HTTP cookie whose value is
       taken as the key value.
-    exceedAction: When a request is denied, returns the HTTP response code
-      specified. Valid options are "deny()" where valid values for status are
-      403, 404, 429, and 502.
+    exceedAction: Action to take for requests that are above the configured
+      rate limit threshold, to either deny with a specified HTTP response
+      code, or redirect to a different endpoint. Valid options are "deny()"
+      where valid values for status are 403, 404, 429, and 502, and "redirect"
+      where the redirect parameters come from exceed_redirect_options below.
+    exceedRedirectOptions: Parameters defining the redirect action that is
+      used as the exceed action. Cannot be specified if the exceed action is
+      not redirect.
     rateLimitThreshold: Threshold at which to begin ratelimiting.
   """
 
@@ -61718,7 +62159,8 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
   enforceOnKey = _messages.EnumField('EnforceOnKeyValueValuesEnum', 4)
   enforceOnKeyName = _messages.StringField(5)
   exceedAction = _messages.StringField(6)
-  rateLimitThreshold = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsThreshold', 7)
+  exceedRedirectOptions = _messages.MessageField('SecurityPolicyRuleRedirectOptions', 7)
+  rateLimitThreshold = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsThreshold', 8)
 
 
 class SecurityPolicyRuleRateLimitOptionsThreshold(_messages.Message):
@@ -62538,14 +62980,16 @@ class ShareSettings(_messages.Message):
   Messages:
     FolderMapValue: A map of folder id and folder config to specify consumer
       projects for this shared-reservation. This is only valid when
-      share_type's value is DIRECT_PROJECTS_UNDER_SPECIFIC_FOLDERS.
+      share_type's value is DIRECT_PROJECTS_UNDER_SPECIFIC_FOLDERS. Folder id
+      should be a string of number, and without "folders/" prefix.
     ProjectMapValue: A map of project id and project config. This is only
       valid when share_type's value is SPECIFIC_PROJECTS.
 
   Fields:
     folderMap: A map of folder id and folder config to specify consumer
       projects for this shared-reservation. This is only valid when
-      share_type's value is DIRECT_PROJECTS_UNDER_SPECIFIC_FOLDERS.
+      share_type's value is DIRECT_PROJECTS_UNDER_SPECIFIC_FOLDERS. Folder id
+      should be a string of number, and without "folders/" prefix.
     projectMap: A map of project id and project config. This is only valid
       when share_type's value is SPECIFIC_PROJECTS.
     projects: A List of Project names to specify consumer projects for this
@@ -62575,7 +63019,8 @@ class ShareSettings(_messages.Message):
   class FolderMapValue(_messages.Message):
     r"""A map of folder id and folder config to specify consumer projects for
     this shared-reservation. This is only valid when share_type's value is
-    DIRECT_PROJECTS_UNDER_SPECIFIC_FOLDERS.
+    DIRECT_PROJECTS_UNDER_SPECIFIC_FOLDERS. Folder id should be a string of
+    number, and without "folders/" prefix.
 
     Messages:
       AdditionalProperty: An additional property for a FolderMapValue object.
@@ -62633,7 +63078,8 @@ class ShareSettingsFolderConfig(_messages.Message):
 
   Fields:
     folderId: The folder ID, should be same as the key of this folder config
-      in the parent map.
+      in the parent map. Folder id should be a string of number, and without
+      "folders/" prefix.
   """
 
   folderId = _messages.StringField(1)
@@ -62794,6 +63240,7 @@ class Snapshot(_messages.Message):
   Enums:
     ArchitectureValueValuesEnum: [Output Only] The architecture of the
       snapshot. Valid values are ARM64 or X86_64.
+    SnapshotTypeValueValuesEnum: Indicates the type of the snapshot.
     StatusValueValuesEnum: [Output Only] The status of the snapshot. This can
       be CREATING, DELETING, FAILED, READY, or UPLOADING.
     StorageBytesStatusValueValuesEnum: [Output Only] An indicator whether
@@ -62873,6 +63320,7 @@ class Snapshot(_messages.Message):
       provide an encryption key when creating the snapshot, then the snapshot
       will be encrypted using an automatically generated key and you do not
       need to provide a key to use the snapshot later.
+    snapshotType: Indicates the type of the snapshot.
     sourceDisk: The source disk used to create this snapshot.
     sourceDiskEncryptionKey: The customer-supplied encryption key of the
       source disk. Required if the source disk is protected by a customer-
@@ -62923,6 +63371,16 @@ class Snapshot(_messages.Message):
     ARCHITECTURE_UNSPECIFIED = 0
     ARM64 = 1
     X86_64 = 2
+
+  class SnapshotTypeValueValuesEnum(_messages.Enum):
+    r"""Indicates the type of the snapshot.
+
+    Values:
+      ARCHIVE: <no description>
+      STANDARD: <no description>
+    """
+    ARCHIVE = 0
+    STANDARD = 1
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the snapshot. This can be CREATING,
@@ -63000,16 +63458,17 @@ class Snapshot(_messages.Message):
   selfLink = _messages.StringField(19)
   selfLinkWithId = _messages.StringField(20)
   snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
-  sourceDisk = _messages.StringField(22)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 23)
-  sourceDiskId = _messages.StringField(24)
-  sourceInstantSnapshot = _messages.StringField(25)
-  sourceInstantSnapshotId = _messages.StringField(26)
-  status = _messages.EnumField('StatusValueValuesEnum', 27)
-  storageBytes = _messages.IntegerField(28)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 29)
-  storageLocations = _messages.StringField(30, repeated=True)
-  userLicenses = _messages.StringField(31, repeated=True)
+  snapshotType = _messages.EnumField('SnapshotTypeValueValuesEnum', 22)
+  sourceDisk = _messages.StringField(23)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 24)
+  sourceDiskId = _messages.StringField(25)
+  sourceInstantSnapshot = _messages.StringField(26)
+  sourceInstantSnapshotId = _messages.StringField(27)
+  status = _messages.EnumField('StatusValueValuesEnum', 28)
+  storageBytes = _messages.IntegerField(29)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 30)
+  storageLocations = _messages.StringField(31, repeated=True)
+  userLicenses = _messages.StringField(32, repeated=True)
 
 
 class SnapshotList(_messages.Message):
@@ -64002,6 +64461,187 @@ class SslCertificatesScopedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 2)
 
 
+class SslPoliciesAggregatedList(_messages.Message):
+  r"""A SslPoliciesAggregatedList object.
+
+  Messages:
+    ItemsValue: A list of SslPoliciesScopedList resources.
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    etag: A string attribute.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of SslPoliciesScopedList resources.
+    kind: [Output Only] Type of resource. Always
+      compute#sslPolicyAggregatedList for lists of SSL Policies.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
+    warning: [Output Only] Informational warning message.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ItemsValue(_messages.Message):
+    r"""A list of SslPoliciesScopedList resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a ItemsValue object.
+
+    Fields:
+      additionalProperties: Name of the scope containing this set of SSL
+        policies.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ItemsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A SslPoliciesScopedList attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('SslPoliciesScopedList', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
+          by a failed operation.
+        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
+        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
+          has a type marked as deprecated
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
+          larger than image size.
+        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
+          resources has a type marked as experimental
+        EXTERNAL_API_WARNING: Warning that is present in an external api call
+        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
+          overridden. Deprecated unused field.
+        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
+          kernel, which is deprecated.
+        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
+          exceedingly large number of resources
+        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
+          assigned to an instance on the network.
+        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
+          forward.
+        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
+          an instance that does not exist.
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
+          refers to an instance that is not on the same network as the route.
+        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
+          status of RUNNING.
+        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
+          continue the process despite the mentioned error.
+        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
+        PARTIAL_SUCCESS: Success is reported, but some results may be missing
+          due to errors
+        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
+          requires a TOS they have not accepted.
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
+          in use.
+        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
+          could not be deleted because they were in use.
+        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
+          ignored.
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
+          group manager is valid as such, but its application does not make a
+          lot of sense, because it allows only single instance in instance
+          group.
+        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
+          present
+        UNREACHABLE: A given scope cannot be reached.
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      LARGE_DEPLOYMENT_WARNING = 8
+      MISSING_TYPE_DEPENDENCY = 9
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
+      NEXT_HOP_CANNOT_IP_FORWARD = 11
+      NEXT_HOP_INSTANCE_NOT_FOUND = 12
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
+      NEXT_HOP_NOT_RUNNING = 14
+      NOT_CRITICAL_ERROR = 15
+      NO_RESULTS_ON_PAGE = 16
+      PARTIAL_SUCCESS = 17
+      REQUIRED_TOS_AGREEMENT = 18
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
+      RESOURCE_NOT_DELETED = 20
+      SCHEMA_VALIDATION_IGNORED = 21
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
+      UNDECLARED_PROPERTIES = 23
+      UNREACHABLE = 24
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  etag = _messages.StringField(1)
+  id = _messages.StringField(2)
+  items = _messages.MessageField('ItemsValue', 3)
+  kind = _messages.StringField(4, default='compute#sslPoliciesAggregatedList')
+  nextPageToken = _messages.StringField(5)
+  selfLink = _messages.StringField(6)
+  unreachables = _messages.StringField(7, repeated=True)
+  warning = _messages.MessageField('WarningValue', 8)
+
+
 class SslPoliciesList(_messages.Message):
   r"""A SslPoliciesList object.
 
@@ -64163,6 +64803,146 @@ class SslPoliciesListAvailableFeaturesResponse(_messages.Message):
   features = _messages.StringField(1, repeated=True)
 
 
+class SslPoliciesScopedList(_messages.Message):
+  r"""A SslPoliciesScopedList object.
+
+  Messages:
+    WarningValue: Informational warning which replaces the list of SSL
+      policies when the list is empty.
+
+  Fields:
+    sslPolicies: A list of SslPolicies contained in this scope.
+    warning: Informational warning which replaces the list of SSL policies
+      when the list is empty.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""Informational warning which replaces the list of SSL policies when the
+    list is empty.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
+          by a failed operation.
+        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
+        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
+          has a type marked as deprecated
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
+          larger than image size.
+        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
+          resources has a type marked as experimental
+        EXTERNAL_API_WARNING: Warning that is present in an external api call
+        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
+          overridden. Deprecated unused field.
+        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
+          kernel, which is deprecated.
+        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
+          exceedingly large number of resources
+        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
+          assigned to an instance on the network.
+        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
+          forward.
+        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
+          an instance that does not exist.
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
+          refers to an instance that is not on the same network as the route.
+        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
+          status of RUNNING.
+        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
+          continue the process despite the mentioned error.
+        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
+        PARTIAL_SUCCESS: Success is reported, but some results may be missing
+          due to errors
+        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
+          requires a TOS they have not accepted.
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
+          in use.
+        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
+          could not be deleted because they were in use.
+        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
+          ignored.
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
+          group manager is valid as such, but its application does not make a
+          lot of sense, because it allows only single instance in instance
+          group.
+        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
+          present
+        UNREACHABLE: A given scope cannot be reached.
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      LARGE_DEPLOYMENT_WARNING = 8
+      MISSING_TYPE_DEPENDENCY = 9
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
+      NEXT_HOP_CANNOT_IP_FORWARD = 11
+      NEXT_HOP_INSTANCE_NOT_FOUND = 12
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
+      NEXT_HOP_NOT_RUNNING = 14
+      NOT_CRITICAL_ERROR = 15
+      NO_RESULTS_ON_PAGE = 16
+      PARTIAL_SUCCESS = 17
+      REQUIRED_TOS_AGREEMENT = 18
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
+      RESOURCE_NOT_DELETED = 20
+      SCHEMA_VALIDATION_IGNORED = 21
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
+      UNDECLARED_PROPERTIES = 23
+      UNREACHABLE = 24
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  sslPolicies = _messages.MessageField('SslPolicy', 1, repeated=True)
+  warning = _messages.MessageField('WarningValue', 2)
+
+
 class SslPolicy(_messages.Message):
   r"""Represents an SSL Policy resource. Use SSL policies to control the SSL
   features, such as versions and cipher suites, offered by an HTTPS or SSL
@@ -64214,6 +64994,8 @@ class SslPolicy(_messages.Message):
       load balancer when negotiating SSL with clients. This can be one of
       COMPATIBLE, MODERN, RESTRICTED, or CUSTOM. If using CUSTOM, the set of
       SSL features to enable must be specified in the customFeatures field.
+    region: [Output Only] URL of the region where the regional SSL policy
+      resides. This field is not applicable to global SSL policies.
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
@@ -64392,10 +65174,11 @@ class SslPolicy(_messages.Message):
   minTlsVersion = _messages.EnumField('MinTlsVersionValueValuesEnum', 8)
   name = _messages.StringField(9)
   profile = _messages.EnumField('ProfileValueValuesEnum', 10)
-  selfLink = _messages.StringField(11)
-  selfLinkWithId = _messages.StringField(12)
-  tlsSettings = _messages.MessageField('ServerTlsSettings', 13)
-  warnings = _messages.MessageField('WarningsValueListEntry', 14, repeated=True)
+  region = _messages.StringField(11)
+  selfLink = _messages.StringField(12)
+  selfLinkWithId = _messages.StringField(13)
+  tlsSettings = _messages.MessageField('ServerTlsSettings', 14)
+  warnings = _messages.MessageField('WarningsValueListEntry', 15, repeated=True)
 
 
 class SslPolicyReference(_messages.Message):

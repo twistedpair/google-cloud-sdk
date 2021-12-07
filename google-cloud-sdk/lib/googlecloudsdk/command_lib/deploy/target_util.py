@@ -19,23 +19,20 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import exceptions as apitools_exceptions
-from googlecloudsdk.api_lib.clouddeploy import release
 from googlecloudsdk.api_lib.clouddeploy import target
 from googlecloudsdk.command_lib.deploy import rollout_util
-from googlecloudsdk.command_lib.projects import util as p_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 
 _SHARED_TARGET_COLLECTION = 'clouddeploy.projects.locations.targets'
 
 
-def GetReleasesAndCurrentRollout(target_ref, pipeline_id, index=0):
+def GetCurrentRollout(target_ref, pipeline_ref):
   """Gets the releases in the specified target and the last deployment associated with the target.
 
   Args:
     target_ref: protorpc.messages.Message, target resource object.
-    pipeline_id: str, delivery pipeline ID.
-    index: int, the nth rollout that is deployed to the target.
+    pipeline_ref: protorpc.messages.Message, pipeline object.
 
   Returns:
     release messages associated with the target.
@@ -43,25 +40,17 @@ def GetReleasesAndCurrentRollout(target_ref, pipeline_id, index=0):
   Raises:
    Exceptions raised by RolloutClient.GetCurrentRollout()
   """
-  releases = []
   current_rollout = None
   try:
-    # get all of the releases associated with the target.
-    target_dict = target_ref.AsDict()
-    project_number = p_util.GetProjectNumber(target_dict['projectsId'])
-    target_ref_project_number = TargetReference(target_dict['targetsId'],
-                                                project_number,
-                                                target_dict['locationsId'])
-    releases = release.ReleaseClient().ListReleasesByTarget(
-        target_ref_project_number, target_dict['projectsId'], pipeline_id)
     # find the last deployed rollout.
-    current_rollout = rollout_util.GetSucceededRollout(releases, target_ref,
-                                                       index)
+    rollouts = rollout_util.GetSucceededRollout(target_ref, pipeline_ref, 1)
+    if rollouts:
+      current_rollout = rollouts[0]
   except apitools_exceptions.HttpError as error:
-    log.debug('failed to get the releases and current rollout of target {}: {}'
-              .format(target_ref.RelativeName(), error.content))
+    log.debug('failed to get the current rollout of target {}: {}'.format(
+        target_ref.RelativeName(), error.content))
 
-  return releases, current_rollout
+  return current_rollout
 
 
 def TargetReferenceFromName(target_name):
@@ -97,8 +86,7 @@ def TargetId(target_name_or_id):
 def TargetReference(target_name_or_id, project, location_id):
   """Creates the target reference base on the parameters.
 
-  Returns the less shared target reference if pipeline_id is specified,
-  otherwise the default shared target reference.
+  Returns the shared target reference.
 
   Args:
     target_name_or_id: str, target full name or ID.

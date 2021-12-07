@@ -292,7 +292,7 @@
       "type": "object",
       "properties": {
         "cloudRun": {
-          "description": "Cloud Run fully-managed service that receives the events. The service should be running in the same project of the trigger.",
+          "description": "Cloud Run fully-managed resource that receives the events. The resource should be in the same project as the trigger.",
           "$ref": "CloudRun"
         },
         "cloudFunction": {
@@ -1717,6 +1717,11 @@
                     },
                     "orderBy": {
                       "description": "The sorting order of the resources returned. Value should be a comma separated list of fields. The default sorting oder is ascending. To specify descending order for a field, append a ` desc` suffix; for example: `name desc, _id`.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The filter field that the list request will filter on.",
                       "location": "query",
                       "type": "string"
                     }

@@ -100,6 +100,14 @@ class OrgPolicyApi(object):
     pass
 
   @abc.abstractmethod
+  def CreateCustomConstraint(self, custom_constraint):
+    pass
+
+  @abc.abstractmethod
+  def GetCustomConstraint(self, name):
+    pass
+
+  @abc.abstractmethod
   def BuildPolicy(self, name):
     pass
 
@@ -209,6 +217,17 @@ class OrgPolicyApiGA(OrgPolicyApi):
       return self.client.folders_policies.Patch(policy)
     else:
       return self.client.projects_policies.Patch(policy)
+
+  def CreateCustomConstraint(self, custom_constraint):
+    parent = utils.GetResourceFromPolicyName(custom_constraint.name)
+    request = self.messages.OrgpolicyOrganizationsCustomConstraintsCreateRequest(
+        parent=parent, googleCloudOrgpolicyV2CustomConstraint=custom_constraint)
+    return self.client.organizations_customConstraints.Create(request=request)
+
+  def GetCustomConstraint(self, name):
+    request = self.messages.OrgpolicyOrganizationsCustomConstraintsGetRequest(
+        name=name)
+    return self.client.organizations_customConstraints.Get(request)
 
   def BuildPolicy(self, name):
     spec = self.messages.GoogleCloudOrgpolicyV2PolicySpec()

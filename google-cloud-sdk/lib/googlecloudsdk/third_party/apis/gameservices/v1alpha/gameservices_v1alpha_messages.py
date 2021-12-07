@@ -688,11 +688,6 @@ class GameServerCluster(_messages.Message):
   r"""A game server cluster resource.
 
   Enums:
-    AllocationPriorityValueValuesEnum: Optional. The allocation priority
-      assigned to the game server cluster. Game server clusters receive new
-      game server allocations based on the relative allocation priorites set
-      for each cluster, if the realm is configured for multicluster
-      allocation.
     StateValueValuesEnum: Output only. The state of the Game Server Cluster.
 
   Messages:
@@ -701,10 +696,6 @@ class GameServerCluster(_messages.Message):
 
   Fields:
     agonesOptions: Optional. Options for installing Agones.
-    allocationPriority: Optional. The allocation priority assigned to the game
-      server cluster. Game server clusters receive new game server allocations
-      based on the relative allocation priorites set for each cluster, if the
-      realm is configured for multicluster allocation.
     allocationWeight: Optional. The allocation weight assigned to the game
       server cluster. Allocation weight is used to control a single cluster's
       allocation load ratio, from 0 (allocation disabled) to 100 (its full
@@ -731,26 +722,6 @@ class GameServerCluster(_messages.Message):
     state: Output only. The state of the Game Server Cluster.
     updateTime: Output only. The last-modified time.
   """
-
-  class AllocationPriorityValueValuesEnum(_messages.Enum):
-    r"""Optional. The allocation priority assigned to the game server cluster.
-    Game server clusters receive new game server allocations based on the
-    relative allocation priorites set for each cluster, if the realm is
-    configured for multicluster allocation.
-
-    Values:
-      PRIORITY_UNSPECIFIED: The default allocation priority.
-        `PRIORITY_UNSPECIFIED` is the lowest possible priority.
-      P1: Priority 1, the highest priority.
-      P2: Priority 2.
-      P3: Priority 3.
-      P4: Priority 4.
-    """
-    PRIORITY_UNSPECIFIED = 0
-    P1 = 1
-    P2 = 2
-    P3 = 3
-    P4 = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of the Game Server Cluster.
@@ -793,17 +764,16 @@ class GameServerCluster(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   agonesOptions = _messages.MessageField('AgonesOptions', 1)
-  allocationPriority = _messages.EnumField('AllocationPriorityValueValuesEnum', 2)
-  allocationWeight = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  clusterState = _messages.MessageField('KubernetesClusterState', 4)
-  connectionInfo = _messages.MessageField('GameServerClusterConnectionInfo', 5)
-  createTime = _messages.StringField(6)
-  description = _messages.StringField(7)
-  etag = _messages.StringField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
+  allocationWeight = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  clusterState = _messages.MessageField('KubernetesClusterState', 3)
+  connectionInfo = _messages.MessageField('GameServerClusterConnectionInfo', 4)
+  createTime = _messages.StringField(5)
+  description = _messages.StringField(6)
+  etag = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
 
 
 class GameServerClusterConnectionInfo(_messages.Message):
@@ -812,17 +782,13 @@ class GameServerClusterConnectionInfo(_messages.Message):
   Fields:
     gkeClusterReference: Reference to the GKE cluster where the game servers
       are installed.
-    gkeHubClusterReference: Reference to a Kubernetes cluster registered
-      through GKE Hub. See https://cloud.google.com/anthos/multicluster-
-      management/ for more information about registering Kubernetes clusters.
     namespace: Namespace designated on the game server cluster where the
       Agones game server instances will be created. Existence of the namespace
       will be validated during creation.
   """
 
   gkeClusterReference = _messages.MessageField('GkeClusterReference', 1)
-  gkeHubClusterReference = _messages.MessageField('GkeHubClusterReference', 2)
-  namespace = _messages.StringField(3)
+  namespace = _messages.StringField(2)
 
 
 class GameServerConfig(_messages.Message):
@@ -1810,23 +1776,6 @@ class GkeClusterReference(_messages.Message):
   """
 
   cluster = _messages.StringField(1)
-
-
-class GkeHubClusterReference(_messages.Message):
-  r"""GkeHubClusterReference represents a reference to a Kubernetes cluster
-  registered through GKE Hub.
-
-  Fields:
-    membership: The full or partial name of a GKE Hub membership, using one of
-      the following forms: * `https://gkehub.googleapis.com/v1beta1/projects/{
-      project_id}/locations/global/memberships/{membership_id}` *
-      `projects/{project_id}/locations/global/memberships/{membership_id}` *
-      `{membership_id}` If project is not specified, the project of the
-      GameServerCluster resource is used to generate the full name of the GKE
-      Hub membership.
-  """
-
-  membership = _messages.StringField(1)
 
 
 class KubernetesClusterState(_messages.Message):

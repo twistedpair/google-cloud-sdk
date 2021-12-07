@@ -934,6 +934,10 @@
         "collation": {
           "description": "The Cloud SQL default instance level collation.",
           "type": "string"
+        },
+        "cmekKeyName": {
+          "description": "The KMS key name used for the csql instance.",
+          "type": "string"
         }
       }
     },

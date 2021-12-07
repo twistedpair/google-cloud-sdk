@@ -1574,6 +1574,10 @@
             "PROGRAMMABLE",
             "CONFIGURABLE"
           ]
+        },
+        "nodeConfig": {
+          "description": "Optional. NodeConfig of the environment.",
+          "$ref": "GoogleCloudApigeeV1NodeConfig"
         }
       }
     },
@@ -1603,6 +1607,29 @@
         "value": {
           "description": "The property value",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudApigeeV1NodeConfig": {
+      "id": "GoogleCloudApigeeV1NodeConfig",
+      "description": "NodeConfig for setting the min\/max number of nodes associated with the environment.",
+      "type": "object",
+      "properties": {
+        "minNodeCount": {
+          "description": "Optional. The minimum total number of gateway nodes that the is reserved for all instances that has the specified environment. If not specified, the default is determined by the recommended minimum number of nodes for that gateway.",
+          "type": "string",
+          "format": "int64"
+        },
+        "maxNodeCount": {
+          "description": "Optional. The maximum total number of gateway nodes that the is reserved for all instances that has the specified environment. If not specified, the default is determined by the recommended maximum number of nodes for that gateway.",
+          "type": "string",
+          "format": "int64"
+        },
+        "currentAggregateNodeCount": {
+          "description": "Output only. The current total number of gateway nodes that each environment currently has across all instances.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -2382,23 +2409,10 @@
           "description": "Output only. Version of the runtime system running in the instance. The runtime system is the set of components that serve the API Proxy traffic in your Environments.",
           "readOnly": true,
           "type": "string"
-        }
-      }
-    },
-    "GoogleCloudApigeeV1NodeConfig": {
-      "id": "GoogleCloudApigeeV1NodeConfig",
-      "description": "NodeConfig for the instance.",
-      "type": "object",
-      "properties": {
-        "minNodeCount": {
-          "description": "Optional. The minimum size of the nodepool that will be reserved by the instance. If not specified, default is determined by the size of the CIDR block range.",
-          "type": "string",
-          "format": "int64"
         },
-        "maxNodeCount": {
-          "description": "Optional. The maximum size of the nodepool that will be reserved by the instance. If not specified, default is determined by the size of the CIDR block range.",
-          "type": "string",
-          "format": "int64"
+        "ipRange": {
+          "description": "Optional. IP range represents the customer-provided CIDR block of length 22 that will be used for the Apigee instance creation. This optional range, if provided, should be freely available as part of larger named range the customer has allocated to the Service Networking peering. If this is not provided, Apigee will automatically request for any available \/22 CIDR block from Service Networking. The customer should use this CIDR block for configuring their firewall needs to allow traffic from Apigee. Input format: \"a.b.c.d\/22\"",
+          "type": "string"
         }
       }
     },
@@ -2721,7 +2735,7 @@
           "type": "boolean"
         },
         "expiresAt": {
-          "description": "Output only. Time at which the Connectors Platform add-on expires in in milliseconds since epoch. If unspecified, the add-on will never expire.",
+          "description": "Output only. Time at which the Connectors Platform add-on expires in milliseconds since epoch. If unspecified, the add-on will never expire.",
           "readOnly": true,
           "type": "string",
           "format": "int64"
@@ -4045,7 +4059,7 @@
           }
         },
         "status": {
-          "description": "Status of the credential.",
+          "description": "Status of the credential. Valid values include `approved` or `revoked`.",
           "type": "string"
         }
       }
@@ -7136,7 +7150,7 @@
                   "type": "string"
                 },
                 "dataCollectorId": {
-                  "description": "ID of the data collector. Overrides any ID in the data collector resource. Must begin with `dc_`.",
+                  "description": "ID of the data collector. Overrides any ID in the data collector resource. Must be a string beginning with `dc_` that contains only letters, numbers, and underscores.",
                   "location": "query",
                   "type": "string"
                 }
@@ -7705,6 +7719,40 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Deletes a subscription for the environment's Pub\/Sub topic."
+            },
+            "modifyEnvironment": {
+              "id": "apigee.organizations.environments.modifyEnvironment",
+              "path": "v1/{+name}",
+              "flatPath": "v1/organizations/{organizationsId}/environments/{environmentsId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "Required. Name of the environment. Use the following structure in your request: `organizations\/{org}\/environments\/{environment}`.",
+                  "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "List of fields to be updated. Fields that can be updated: node_config.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GoogleCloudApigeeV1Environment"
+              },
+              "response": {
+                "$ref": "GoogleLongrunningOperation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Updates properties for an Apigee environment with patch semantics using a field mask. **Note:** Not supported for Apigee hybrid."
             }
           }
           ,

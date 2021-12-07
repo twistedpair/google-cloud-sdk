@@ -367,7 +367,7 @@ class DataplexV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Create a environment resource.
+      r"""Create an environment resource.
 
       Args:
         request: (DataplexProjectsLocationsLakesEnvironmentsCreateRequest) input message
@@ -1145,33 +1145,6 @@ class DataplexV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def ResolveAssetActions(self, request, global_params=None):
-      r"""Marks actions associated with an asset as resolved(Deprecated).
-
-      Args:
-        request: (DataplexProjectsLocationsLakesZonesAssetsResolveAssetActionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('ResolveAssetActions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ResolveAssetActions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/assets/{assetsId}:resolveAssetActions',
-        http_method='POST',
-        method_id='dataplex.projects.locations.lakes.zones.assets.resolveAssetActions',
-        ordered_params=['asset'],
-        path_params=['asset'],
-        query_params=[],
-        relative_path='v1/{+asset}:resolveAssetActions',
-        request_field='googleCloudDataplexV1ResolveAssetActionsRequest',
-        request_type_name='DataplexProjectsLocationsLakesZonesAssetsResolveAssetActionsRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any existing policy.Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors.
 
@@ -1526,33 +1499,6 @@ class DataplexV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def ResolveZoneActions(self, request, global_params=None):
-      r"""Marks actions associated with a zone as resolved.
-
-      Args:
-        request: (DataplexProjectsLocationsLakesZonesResolveZoneActionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('ResolveZoneActions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ResolveZoneActions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}:resolveZoneActions',
-        http_method='POST',
-        method_id='dataplex.projects.locations.lakes.zones.resolveZoneActions',
-        ordered_params=['zone'],
-        path_params=['zone'],
-        query_params=[],
-        relative_path='v1/{+zone}:resolveZoneActions',
-        request_field='googleCloudDataplexV1ResolveZoneActionsRequest',
-        request_type_name='DataplexProjectsLocationsLakesZonesResolveZoneActionsRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any existing policy.Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors.
 
@@ -1775,33 +1721,6 @@ class DataplexV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='googleCloudDataplexV1Lake',
         request_type_name='DataplexProjectsLocationsLakesPatchRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-    def ResolveLakeActions(self, request, global_params=None):
-      r"""Marks actions associated with a lake as resolved.
-
-      Args:
-        request: (DataplexProjectsLocationsLakesResolveLakeActionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('ResolveLakeActions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ResolveLakeActions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}:resolveLakeActions',
-        http_method='POST',
-        method_id='dataplex.projects.locations.lakes.resolveLakeActions',
-        ordered_params=['lake'],
-        path_params=['lake'],
-        query_params=[],
-        relative_path='v1/{+lake}:resolveLakeActions',
-        request_field='googleCloudDataplexV1ResolveLakeActionsRequest',
-        request_type_name='DataplexProjectsLocationsLakesResolveLakeActionsRequest',
         response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )

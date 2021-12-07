@@ -189,3 +189,117 @@ ssl_policy:
   - parameter_name: sslPolicy
     attribute_name: ssl_policy
     help: The name of the SSL policy.
+
+backend_bucket:
+  name: backend bucket
+  collection: compute.backendBuckets
+  attributes:
+  - *project
+  - parameter_name: backendBucket
+    attribute_name: backend_bucket
+    help: The name of the Google Compute Engine backend bucket.
+
+backend_service:
+  name: backend service
+  collection: compute.regionBackendServices
+  attributes:
+  - *project
+  - *region
+  - parameter_name: backendService
+    attribute_name: backend_service
+    help: The name of the Google Compute Engine backend service.
+
+target_grpc_proxy:
+  name: target GRPC proxy
+  collection: compute.targetGrpcProxies
+  attributes:
+  - *project
+  - parameter_name: targetGrpcProxy
+    attribute_name: target_grpc_proxy
+    help: The name of the Google Compute Engine target GRPC proxy.
+
+target_http_proxy:
+  name: target HTTP proxy
+  collection: compute.targetHttpProxies
+  attributes:
+  - *project
+  - parameter_name: targetHttpProxy
+    attribute_name: target_http_proxy
+    help: The name of the Google Compute Engine target HTTP proxy.
+
+target_https_proxy:
+  name: target HTTPS proxy
+  collection: compute.targetHttpsProxies
+  attributes:
+  - *project
+  - parameter_name: targetHttpsProxy
+    attribute_name: target_https_proxy
+    help: The name of the Google Compute Engine target HTTPS proxy.
+
+target_instance:
+  name: target instance
+  collection: compute.targetInstances
+  attributes:
+  - *project
+  - *zone
+  - parameter_name: targetInstance
+    attribute_name: target_instance
+    help: The name of the Google Compute Engine target instance.
+
+target_ssl_proxy:
+  name: target SSL proxy
+  collection: compute.targetSslProxies
+  attributes:
+  - *project
+  - parameter_name: targetSslProxy
+    attribute_name: target_ssl_proxy
+    help: The name of the Google Compute Engine target SSL proxy.
+
+target_tcp_proxy:
+  name: target TCP proxy
+  collection: compute.targetTcpProxies
+  attributes:
+  - *project
+  - parameter_name: targetTcpProxy
+    attribute_name: target_tcp_proxy
+    help: The name of the Google Compute Engine target TCP proxy.
+
+target_vpn_gateway:
+  name: target VPN gateway
+  collection: compute.targetVpnGateways
+  attributes:
+  - *project
+  - *region
+  - parameter_name: targetVpnGateway
+    attribute_name: target_vpn_gateway
+    help: The name of the Google Compute Engine VPN gateway.
+
+target_pool:
+  name: target pool
+  collection: compute.targetPools
+  attributes:
+  - *project
+  - *region
+  - parameter_name: targetPool
+    attribute_name: target_pool
+    help: The name of the Google Compute Engine target pool.
+
+vpn_gateway:
+  name: VPN gateway
+  collection: compute.vpnGateways
+  attributes:
+  - *project
+  - *region
+  - parameter_name: vpnGateway
+    attribute_name: vpn_gateway
+    help: The name of the Google Compute Engine VPN gateway.
+
+vpn_tunnel:
+  name: VPN tunnel
+  collection: compute.vpnTunnels
+  attributes:
+  - *project
+  - *region
+  - parameter_name: vpnTunnel
+    attribute_name: vpn_tunnel
+    help: The name of the Google Compute Engine VPN tunnel.

@@ -21,9 +21,9 @@ from __future__ import unicode_literals
 import re
 from apitools.base.protorpclite import messages as proto_messages
 from apitools.base.py import encoding as apitools_encoding
+from googlecloudsdk.api_lib.cloudbuild import cloudbuild_exceptions
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
-from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.util import files
@@ -33,6 +33,7 @@ import six
 _API_NAME = 'cloudbuild'
 _GA_API_VERSION = 'v1'
 _BETA_API_VERSION = 'v1beta1'
+CBH_SUPPORTED_REGIONS = frozenset({'us-west4'})
 
 RELEASE_TRACK_TO_API_VERSION = {
     base.ReleaseTrack.GA: _GA_API_VERSION,
@@ -46,6 +47,8 @@ REGIONAL_WORKERPOOL_REGION_SELECTOR = r'projects/.*/locations/(.*)/workerPools/.
 
 # Default for optionally-regional requests when the user does not specify.
 DEFAULT_REGION = 'global'
+
+BYTES_IN_ONE_GB = 2**30
 
 
 def GetMessagesModule(release_track=base.ReleaseTrack.GA):
@@ -111,29 +114,6 @@ def EncodeTriggerSubstitutions(substitutions, messages):
             key=key, value=value))
   return messages.BuildTrigger.SubstitutionsValue(
       additionalProperties=substitution_properties)
-
-
-class ParserError(exceptions.Error):
-  """Error parsing YAML into a dictionary."""
-
-  def __init__(self, path, msg):
-    msg = 'parsing {path}: {msg}'.format(
-        path=path,
-        msg=msg,
-    )
-    super(ParserError, self).__init__(msg)
-
-
-class ParseProtoException(exceptions.Error):
-  """Error interpreting a dictionary as a specific proto message."""
-
-  def __init__(self, path, proto_name, msg):
-    msg = 'interpreting {path} as {proto_name}: {msg}'.format(
-        path=path,
-        proto_name=proto_name,
-        msg=msg,
-    )
-    super(ParseProtoException, self).__init__(msg)
 
 
 def SnakeToCamelString(snake):
@@ -217,9 +197,11 @@ def MessageToFieldPaths(msg):
       # Repeated field is initialized as an empty list.
       continue
     if v is not None:
-      # ConvertToSnakeCase produces private_poolv1_config.
+      # ConvertToSnakeCase produces private_poolv1_config or hybrid_pool_config.
       if field.name == 'privatePoolV1Config':
         name = 'private_pool_v1_config'
+      elif field.name == 'hybridPoolConfig':
+        name = 'hybrid_pool_config'
       else:
         name = resource_property.ConvertToSnakeCase(field.name)
       if hasattr(v, 'all_fields'):
@@ -308,9 +290,10 @@ def LoadMessageFromStream(stream,
   try:
     structured_data = yaml.load(stream, file_hint=path)
   except yaml.Error as e:
-    raise ParserError(path, e.inner_error)
+    raise cloudbuild_exceptions.ParserError(path, e.inner_error)
   if not isinstance(structured_data, dict):
-    raise ParserError(path, 'Could not parse as a dictionary.')
+    raise cloudbuild_exceptions.ParserError(path,
+                                            'Could not parse as a dictionary.')
 
   return _YamlToMessage(structured_data, msg_type, msg_friendly_name,
                         skip_camel_case, path)
@@ -346,7 +329,7 @@ def LoadMessagesFromStream(stream,
   try:
     structured_data = yaml.load_all(stream, file_hint=path)
   except yaml.Error as e:
-    raise ParserError(path, e.inner_error)
+    raise cloudbuild_exceptions.ParserError(path, e.inner_error)
 
   return [
       _YamlToMessage(item, msg_type, msg_friendly_name, skip_camel_case, path)
@@ -388,7 +371,8 @@ def _YamlToMessage(structured_data,
     # Catch all exceptions here because a valid YAML can sometimes not be a
     # valid message, so we need to catch all errors in the dict to message
     # conversion.
-    raise ParseProtoException(path, msg_friendly_name, '%s' % e)
+    raise cloudbuild_exceptions.ParseProtoException(path, msg_friendly_name,
+                                                    '%s' % e)
 
   return msg
 
@@ -565,3 +549,27 @@ def BitbucketServerConfigFromArgs(args, update=False):
   if not update and args.peered_network is not None:
     bbs.peeredNetwork = args.peered_network
   return bbs
+
+
+def WorkerPoolIsSpecified(build_config):
+  return build_config is not None and build_config.options is not None and build_config.options.pool is not None and build_config.options.pool.name is not None
+
+
+def WorkerPoolConfigIsSpecified(build_config):
+  return build_config is not None and build_config.options is not None and build_config.options.pool is not None and build_config.options.pool.workerConfig is not None
+
+
+def BytesToGb(size):
+  """Converts bytes to GB.
+
+  Args:
+    size: a size in GB  Does not require size to be a multiple of 1 GB unlike
+      utils.BytesToGb from from googlecloudsdk.api_lib.compute
+
+  Returns:
+    size in bytes.
+  """
+  if not size:
+    return None
+
+  return size // BYTES_IN_ONE_GB

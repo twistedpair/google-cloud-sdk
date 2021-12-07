@@ -369,24 +369,6 @@
           "description": "Human readable description of the cluster.",
           "type": "string"
         },
-        "allocationPriority": {
-          "description": "Optional. The allocation priority assigned to the game server cluster. Game server clusters receive new game server allocations based on the relative allocation priorites set for each cluster, if the realm is configured for multicluster allocation.",
-          "type": "string",
-          "enumDescriptions": [
-            "The default allocation priority. `PRIORITY_UNSPECIFIED` is the lowest possible priority.",
-            "Priority 1, the highest priority.",
-            "Priority 2.",
-            "Priority 3.",
-            "Priority 4."
-          ],
-          "enum": [
-            "PRIORITY_UNSPECIFIED",
-            "P1",
-            "P2",
-            "P3",
-            "P4"
-          ]
-        },
         "allocationWeight": {
           "description": "Optional. The allocation weight assigned to the game server cluster. Allocation weight is used to control a single cluster's allocation load ratio, from 0 (allocation disabled) to 100 (its full expected load). For example, if there are two clusters in a realm where each expects to receive 500 units of allocations eventually. The ratio does not represent the load ratio across the realm (1000), but the percentage of traffic of the cluster (500). Any overflow is load balanced across the clusters according to the weight.",
           "type": "integer",
@@ -427,10 +409,6 @@
           "description": "Reference to the GKE cluster where the game servers are installed.",
           "$ref": "GkeClusterReference"
         },
-        "gkeHubClusterReference": {
-          "description": "Reference to a Kubernetes cluster registered through GKE Hub. See https:\/\/cloud.google.com\/anthos\/multicluster-management\/ for more information about registering Kubernetes clusters.",
-          "$ref": "GkeHubClusterReference"
-        },
         "namespace": {
           "description": "Namespace designated on the game server cluster where the Agones game server instances will be created. Existence of the namespace will be validated during creation.",
           "type": "string"
@@ -444,17 +422,6 @@
       "properties": {
         "cluster": {
           "description": "The full or partial name of a GKE cluster, using one of the following forms: * `projects\/{project}\/locations\/{location}\/clusters\/{cluster}` * `locations\/{location}\/clusters\/{cluster}` * `{cluster}` If project and location are not specified, the project and location of the GameServerCluster resource are used to generate the full name of the GKE cluster.",
-          "type": "string"
-        }
-      }
-    },
-    "GkeHubClusterReference": {
-      "id": "GkeHubClusterReference",
-      "description": "GkeHubClusterReference represents a reference to a Kubernetes cluster registered through GKE Hub.",
-      "type": "object",
-      "properties": {
-        "membership": {
-          "description": "The full or partial name of a GKE Hub membership, using one of the following forms: * `https:\/\/gkehub.googleapis.com\/v1beta1\/projects\/{project_id}\/locations\/global\/memberships\/{membership_id}` * `projects\/{project_id}\/locations\/global\/memberships\/{membership_id}` * `{membership_id}` If project is not specified, the project of the GameServerCluster resource is used to generate the full name of the GKE Hub membership.",
           "type": "string"
         }
       }

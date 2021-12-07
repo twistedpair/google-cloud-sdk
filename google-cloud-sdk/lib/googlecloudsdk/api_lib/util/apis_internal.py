@@ -48,7 +48,7 @@ def _GetDefaultVersion(api_name):
 
 
 def _GetApiNames():
-  """Returns list of avaibleable apis, ignoring the version."""
+  """Returns list of avaiblable apis, ignoring the version."""
   return sorted(apis_map.MAP.keys())
 
 
@@ -132,7 +132,8 @@ def _GetClientClassFromDef(api_def):
   Returns:
     base_api.BaseApiClient, Client class for the specified API.
   """
-  module_path, client_class_name = api_def.client_full_classpath.rsplit('.', 1)
+  client_full_classpath = api_def.apitools.client_full_classpath
+  module_path, client_class_name = client_full_classpath.rsplit('.', 1)
   module_obj = __import__(module_path, fromlist=[client_class_name])
   return getattr(module_obj, client_class_name)
 
@@ -190,10 +191,13 @@ def _GetGapicClientClass(api_name, api_version, is_async=False):
     api_version: str, The version of the API.
     is_async: bool, If True, return the asyncio version of the gapic client.
   """
-  client_type = 'async_client' if is_async else 'client'
-  module_path = 'googlecloudsdk.third_party.gapic_wrappers.{0}.{1}.{2}'.format(
-      api_name, api_version, client_type)
-  client_class_name = 'GapicWrapperClient'
+  api_def = _GetApiDef(api_name, api_version)
+  if is_async:
+    client_full_classpath = api_def.gapic.async_client_full_classpath
+  else:
+    client_full_classpath = api_def.gapic.client_full_classpath
+
+  module_path, client_class_name = client_full_classpath.rsplit('.', 1)
   module_obj = __import__(module_path, fromlist=[client_class_name])
   return getattr(module_obj, client_class_name)
 
@@ -302,7 +306,8 @@ def _GetMessagesModule(api_name, api_version):
   api_def = _GetApiDef(api_name, api_version)
   # fromlist below must not be empty, see:
   # http://stackoverflow.com/questions/2724260/why-does-pythons-import-require-fromlist.
-  return __import__(api_def.messages_full_modulepath, fromlist=['something'])
+  return __import__(api_def.apitools.messages_full_modulepath,
+                    fromlist=['something'])
 
 
 def _GetResourceModule(api_name, api_version):
@@ -311,7 +316,7 @@ def _GetResourceModule(api_name, api_version):
   api_def = _GetApiDef(api_name, api_version)
   # fromlist below must not be empty, see:
   # http://stackoverflow.com/questions/2724260/why-does-pythons-import-require-fromlist.
-  return __import__(api_def.class_path + '.' + 'resources',
+  return __import__(api_def.apitools.class_path + '.' + 'resources',
                     fromlist=['something'])
 
 

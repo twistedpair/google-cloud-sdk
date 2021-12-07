@@ -468,6 +468,10 @@
         "workloadConfig": {
           "description": "Enable\/Disable Workload Audit Configuration for the cluster.",
           "$ref": "WorkloadConfig"
+        },
+        "nodePoolAutoConfig": {
+          "description": "node pool configs that apply to all auto-provisioned node pools in autopilot clusters and node auto-provisioning enabled clusters",
+          "$ref": "NodePoolAutoConfig"
         }
       }
     },
@@ -650,6 +654,11 @@
         "gpuPartitionSize": {
           "description": "Size of partitions to create on the GPU. Valid values are described in the NVIDIA [mig user guide](https:\/\/docs.nvidia.com\/datacenter\/tesla\/mig-user-guide\/#partitioning).",
           "type": "string"
+        },
+        "maxTimeSharedClientsPerGpu": {
+          "description": "The number of time-shared GPU resources to expose for each physical GPU.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -813,7 +822,7 @@
       "type": "object",
       "properties": {
         "cpuManagerPolicy": {
-          "description": "Control the CPU management policy on the node. See https:\/\/kubernetes.io\/docs\/tasks\/administer-cluster\/cpu-management-policies\/ The following values are allowed. - \"none\": the default, which represents the existing scheduling behavior. - \"static\": allows pods with certain resource characteristics to be granted increased CPU affinity and exclusivity on the node. The default value is 'none' if unspecified.",
+          "description": "Control the CPU management policy on the node. See https:\/\/kubernetes.io\/docs\/tasks\/administer-cluster\/cpu-management-policies\/ The following values are allowed. * \"none\": the default, which represents the existing scheduling behavior. * \"static\": allows pods with certain resource characteristics to be granted increased CPU affinity and exclusivity on the node. The default value is 'none' if unspecified.",
           "type": "string"
         },
         "cpuCfsQuota": {
@@ -1291,14 +1300,18 @@
           "description": "Whether nodes have internal IP addresses only. If enable_private_nodes is not specified, then the value is derived from cluster.privateClusterConfig.enablePrivateNodes",
           "type": "boolean"
         },
-        "tiers": {
+        "networkPerformanceConfig": {
           "description": "Network bandwidth tier configuration.",
-          "$ref": "Tiers"
+          "$ref": "NetworkPerformanceConfig"
+        },
+        "targetPodIpv4Range": {
+          "description": "The target IP address range of the pod IPs in this node pool. This setting works in conjunction with `pod_ipv4_cidr_block`. When `pod_ipv4_cidr_block` specifies an IP mask length then the corresponding range will be auto assigned from within the CIDR block specified here. Set to blank to use the default range (10.0.0.0\/8). Set to a [CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing) notation (e.g. `240.0.0.0\/8`) to pick a specific range to use.",
+          "type": "string"
         }
       }
     },
-    "Tiers": {
-      "id": "Tiers",
+    "NetworkPerformanceConfig": {
+      "id": "NetworkPerformanceConfig",
       "description": "Configuration of all network bandwidth tiers",
       "type": "object",
       "properties": {
@@ -1751,6 +1764,18 @@
             "INTERNAL",
             "EXTERNAL"
           ]
+        },
+        "targetNodeIpv4Range": {
+          "description": "The target IP address range of the node IPs in this cluster. This is applicable only if `create_subnetwork` is true. This setting works in conjunction with `node_ipv4_cidr_block`. When `node_ipv4_cidr_block` specifies an IP mask length then the corresponding range will be auto assigned from within the CIDR block specified here. Set to blank to use the default range (10.0.0.0\/8). Set to a [CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing) notation (e.g. `100.64.0.0\/16`) to pick a specific range to use.",
+          "type": "string"
+        },
+        "targetPodIpv4Range": {
+          "description": "The target IP address range of the pod IPs in this cluster. This setting works in conjunction with `cluster_ipv4_cidr_block`. When `cluster_ipv4_cidr_block` specifies an IP mask length then the corresponding range will be auto assigned from within the CIDR block specified here. Set to blank to use the default range (10.0.0.0\/8). Set to a [CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing) notation (e.g. `240.0.0.0\/8`) to pick a specific range to use.",
+          "type": "string"
+        },
+        "targetServiceIpv4Range": {
+          "description": "The target IP address range of the services IPs in this cluster. This setting works in conjunction with `services_ipv4_cidr_block`. When `services_ipv4_cidr_block` specifies an IP mask length then the corresponding range will be auto assigned from within the CIDR block specified here. Set to blank to use the default range (10.0.0.0\/8). Set to a [CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing) notation (e.g. `192.168.0.0\/16`) to pick a specific range to use.",
+          "type": "string"
         }
       }
     },
@@ -2826,6 +2851,31 @@
         }
       }
     },
+    "NodePoolAutoConfig": {
+      "id": "NodePoolAutoConfig",
+      "description": "node pool configs that apply to all auto-provisioned node pools in autopilot clusters and node auto-provisioning enabled clusters",
+      "type": "object",
+      "properties": {
+        "networkTags": {
+          "description": "The list of instance tags applied to all nodes. Tags are used to identify valid sources or targets for network firewalls and are specified by the client during cluster creation. Each tag within the list must comply with RFC1035.",
+          "$ref": "NetworkTags"
+        }
+      }
+    },
+    "NetworkTags": {
+      "id": "NetworkTags",
+      "description": "Collection of Compute Engine network tags that can be applied to a node's underlying VM instance. (See `tags` field in [`NodeConfig`](\/kubernetes-engine\/docs\/reference\/rest\/v1\/NodeConfig)).",
+      "type": "object",
+      "properties": {
+        "tags": {
+          "description": "List of network tags.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "CreateClusterRequest": {
       "id": "CreateClusterRequest",
       "description": "CreateClusterRequest creates a cluster.",
@@ -3241,8 +3291,12 @@
           "$ref": "Autopilot"
         },
         "desiredGcfsConfig": {
-          "description": "The desired GCFS config for the cluster",
+          "description": "The desired GCFS config for the cluster.",
           "$ref": "GcfsConfig"
+        },
+        "desiredStableFleetConfig": {
+          "description": "StableFleetConfig contains the desired stable fleet config for the cluster.",
+          "$ref": "StableFleetConfig"
         },
         "desiredImage": {
           "description": "The desired name of the image to use for this node. This is used to create clusters using a custom image.",
@@ -3323,6 +3377,14 @@
         "desiredWorkloadConfig": {
           "description": "Enable\/Disable Workload Configuration for the cluster.",
           "$ref": "WorkloadConfig"
+        },
+        "desiredEnablePrivateEndpoint": {
+          "description": "Enable\/Disable private endpoint for the cluster.",
+          "type": "boolean"
+        },
+        "desiredNodePoolAutoConfigNetworkTags": {
+          "description": "The desired network tags that apply to all auto-provisioned node pools in autopilot clusters and node auto-provisioning enabled clusters.",
+          "$ref": "NetworkTags"
         }
       }
     },
@@ -3446,20 +3508,6 @@
         "gvnic": {
           "description": "Enable or disable gvnic on the node pool.",
           "$ref": "VirtualNIC"
-        }
-      }
-    },
-    "NetworkTags": {
-      "id": "NetworkTags",
-      "description": "Collection of Compute Engine network tags that can be applied to a node's underlying VM instance. (See `tags` field in [`NodeConfig`](\/kubernetes-engine\/docs\/reference\/rest\/v1\/NodeConfig)).",
-      "type": "object",
-      "properties": {
-        "tags": {
-          "description": "List of network tags.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         }
       }
     },
@@ -4561,6 +4609,62 @@
         "windowsVersions": {
           "description": "Windows node versions info.",
           "$ref": "WindowsVersions"
+        }
+      }
+    },
+    "SecurityBulletinEvent": {
+      "id": "SecurityBulletinEvent",
+      "description": "SecurityBulletinEvent is a notification sent to customers when a security bulletin has been posted that they are vulnerable to.",
+      "type": "object",
+      "properties": {
+        "resourceTypeAffected": {
+          "description": "The resource type (node\/control plane) that has the vulnerability. Multiple notifications (1 notification per resource type) will be sent for a vulnerability that affects > 1 resource type.",
+          "type": "string"
+        },
+        "bulletinId": {
+          "description": "The ID of the bulletin corresponding to the vulnerability.",
+          "type": "string"
+        },
+        "cveIds": {
+          "description": "The CVEs associated with this bulletin.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "severity": {
+          "description": "The severity of this bulletin as it relates to GKE.",
+          "type": "string"
+        },
+        "bulletinUri": {
+          "description": "The URI link to the bulletin on the website for more information.",
+          "type": "string"
+        },
+        "briefDescription": {
+          "description": "A brief description of the bulletin. See the bulletin pointed to by the bulletin_uri field for an expanded description.",
+          "type": "string"
+        },
+        "affectedSupportedMinors": {
+          "description": "The GKE minor versions affected by this vulnerability.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "patchedVersions": {
+          "description": "The GKE versions where this vulnerability is patched.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "suggestedUpgradeTarget": {
+          "description": "This represents a version selected from the patched_versions field that the cluster receiving this notification should most likely want to upgrade to based on its current version. Note that if this notification is being received by a given cluster, it means that this version is currently available as an upgrade target in that cluster's location.",
+          "type": "string"
+        },
+        "manualStepsRequired": {
+          "description": "If this field is specified, it means there are manual steps that the user must take to make their clusters safe.",
+          "type": "boolean"
         }
       }
     }

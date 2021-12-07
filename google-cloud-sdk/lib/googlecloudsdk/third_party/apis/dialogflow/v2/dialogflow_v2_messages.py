@@ -4845,6 +4845,8 @@ class GoogleCloudDialogflowCxV3ResponseMessage(_messages.Message):
       client-specific URI. Dialogflow uses this to construct mixed_audio.
       However, Dialogflow itself does not try to read or process the URI in
       any way.
+    telephonyTransferCall: A signal that the client should transfer the phone
+      call connected to this agent to a third-party endpoint.
     text: Returns a text response.
   """
 
@@ -4879,7 +4881,8 @@ class GoogleCloudDialogflowCxV3ResponseMessage(_messages.Message):
   outputAudioText = _messages.MessageField('GoogleCloudDialogflowCxV3ResponseMessageOutputAudioText', 5)
   payload = _messages.MessageField('PayloadValue', 6)
   playAudio = _messages.MessageField('GoogleCloudDialogflowCxV3ResponseMessagePlayAudio', 7)
-  text = _messages.MessageField('GoogleCloudDialogflowCxV3ResponseMessageText', 8)
+  telephonyTransferCall = _messages.MessageField('GoogleCloudDialogflowCxV3ResponseMessageTelephonyTransferCall', 8)
+  text = _messages.MessageField('GoogleCloudDialogflowCxV3ResponseMessageText', 9)
 
 
 class GoogleCloudDialogflowCxV3ResponseMessageConversationSuccess(_messages.Message):
@@ -5047,6 +5050,18 @@ class GoogleCloudDialogflowCxV3ResponseMessagePlayAudio(_messages.Message):
 
   allowPlaybackInterruption = _messages.BooleanField(1)
   audioUri = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowCxV3ResponseMessageTelephonyTransferCall(_messages.Message):
+  r"""Represents the signal that telles the client to transfer the phone call
+  connected to the agent to a third-party endpoint.
+
+  Fields:
+    phoneNumber: Transfer the call to a phone number in [E.164
+      format](https://en.wikipedia.org/wiki/E.164).
+  """
+
+  phoneNumber = _messages.StringField(1)
 
 
 class GoogleCloudDialogflowCxV3ResponseMessageText(_messages.Message):
@@ -6813,6 +6828,8 @@ class GoogleCloudDialogflowCxV3beta1ResponseMessage(_messages.Message):
       client-specific URI. Dialogflow uses this to construct mixed_audio.
       However, Dialogflow itself does not try to read or process the URI in
       any way.
+    telephonyTransferCall: A signal that the client should transfer the phone
+      call connected to this agent to a third-party endpoint.
     text: Returns a text response.
   """
 
@@ -6847,7 +6864,8 @@ class GoogleCloudDialogflowCxV3beta1ResponseMessage(_messages.Message):
   outputAudioText = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessageOutputAudioText', 5)
   payload = _messages.MessageField('PayloadValue', 6)
   playAudio = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessagePlayAudio', 7)
-  text = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessageText', 8)
+  telephonyTransferCall = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessageTelephonyTransferCall', 8)
+  text = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessageText', 9)
 
 
 class GoogleCloudDialogflowCxV3beta1ResponseMessageConversationSuccess(_messages.Message):
@@ -7015,6 +7033,18 @@ class GoogleCloudDialogflowCxV3beta1ResponseMessagePlayAudio(_messages.Message):
 
   allowPlaybackInterruption = _messages.BooleanField(1)
   audioUri = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowCxV3beta1ResponseMessageTelephonyTransferCall(_messages.Message):
+  r"""Represents the signal that telles the client to transfer the phone call
+  connected to the agent to a third-party endpoint.
+
+  Fields:
+    phoneNumber: Transfer the call to a phone number in [E.164
+      format](https://en.wikipedia.org/wiki/E.164).
+  """
+
+  phoneNumber = _messages.StringField(1)
 
 
 class GoogleCloudDialogflowCxV3beta1ResponseMessageText(_messages.Message):
@@ -7807,6 +7837,7 @@ class GoogleCloudDialogflowV2AnalyzeContentRequest(_messages.Message):
   r"""The request message for Participants.AnalyzeContent.
 
   Fields:
+    assistQueryParams: Parameters for a human assist query.
     eventInput: An input event to send to Dialogflow.
     queryParams: Parameters for a Dialogflow virtual-agent query.
     replyAudioConfig: Speech synthesis configuration. The speech synthesis
@@ -7819,11 +7850,12 @@ class GoogleCloudDialogflowV2AnalyzeContentRequest(_messages.Message):
     textInput: The natural language text to be processed.
   """
 
-  eventInput = _messages.MessageField('GoogleCloudDialogflowV2EventInput', 1)
-  queryParams = _messages.MessageField('GoogleCloudDialogflowV2QueryParameters', 2)
-  replyAudioConfig = _messages.MessageField('GoogleCloudDialogflowV2OutputAudioConfig', 3)
-  requestId = _messages.StringField(4)
-  textInput = _messages.MessageField('GoogleCloudDialogflowV2TextInput', 5)
+  assistQueryParams = _messages.MessageField('GoogleCloudDialogflowV2AssistQueryParameters', 1)
+  eventInput = _messages.MessageField('GoogleCloudDialogflowV2EventInput', 2)
+  queryParams = _messages.MessageField('GoogleCloudDialogflowV2QueryParameters', 3)
+  replyAudioConfig = _messages.MessageField('GoogleCloudDialogflowV2OutputAudioConfig', 4)
+  requestId = _messages.StringField(5)
+  textInput = _messages.MessageField('GoogleCloudDialogflowV2TextInput', 6)
 
 
 class GoogleCloudDialogflowV2AnalyzeContentResponse(_messages.Message):
@@ -8007,6 +8039,68 @@ class GoogleCloudDialogflowV2ArticleAnswer(_messages.Message):
   snippets = _messages.StringField(4, repeated=True)
   title = _messages.StringField(5)
   uri = _messages.StringField(6)
+
+
+class GoogleCloudDialogflowV2AssistQueryParameters(_messages.Message):
+  r"""Represents the parameters of human assist query.
+
+  Messages:
+    DocumentsMetadataFiltersValue: Key-value filters on the metadata of
+      documents returned by article suggestion. If specified, article
+      suggestion only returns suggested documents that match all filters in
+      their Document.metadata. Multiple values for a metadata key should be
+      concatenated by comma. For example, filters to match all documents that
+      have 'US' or 'CA' in their market metadata values and 'agent' in their
+      user metadata values will be ``` documents_metadata_filters { key:
+      "market" value: "US,CA" } documents_metadata_filters { key: "user"
+      value: "agent" } ```
+
+  Fields:
+    documentsMetadataFilters: Key-value filters on the metadata of documents
+      returned by article suggestion. If specified, article suggestion only
+      returns suggested documents that match all filters in their
+      Document.metadata. Multiple values for a metadata key should be
+      concatenated by comma. For example, filters to match all documents that
+      have 'US' or 'CA' in their market metadata values and 'agent' in their
+      user metadata values will be ``` documents_metadata_filters { key:
+      "market" value: "US,CA" } documents_metadata_filters { key: "user"
+      value: "agent" } ```
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DocumentsMetadataFiltersValue(_messages.Message):
+    r"""Key-value filters on the metadata of documents returned by article
+    suggestion. If specified, article suggestion only returns suggested
+    documents that match all filters in their Document.metadata. Multiple
+    values for a metadata key should be concatenated by comma. For example,
+    filters to match all documents that have 'US' or 'CA' in their market
+    metadata values and 'agent' in their user metadata values will be ```
+    documents_metadata_filters { key: "market" value: "US,CA" }
+    documents_metadata_filters { key: "user" value: "agent" } ```
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        DocumentsMetadataFiltersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        DocumentsMetadataFiltersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DocumentsMetadataFiltersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  documentsMetadataFilters = _messages.MessageField('DocumentsMetadataFiltersValue', 1)
 
 
 class GoogleCloudDialogflowV2AutomatedAgentConfig(_messages.Message):
@@ -10915,7 +11009,27 @@ class GoogleCloudDialogflowV2Participant(_messages.Message):
       conversation. This field must be set during participant creation and is
       then immutable.
 
+  Messages:
+    DocumentsMetadataFiltersValue: Optional. Key-value filters on the metadata
+      of documents returned by article suggestion. If specified, article
+      suggestion only returns suggested documents that match all filters in
+      their Document.metadata. Multiple values for a metadata key should be
+      concatenated by comma. For example, filters to match all documents that
+      have 'US' or 'CA' in their market metadata values and 'agent' in their
+      user metadata values will be ``` documents_metadata_filters { key:
+      "market" value: "US,CA" } documents_metadata_filters { key: "user"
+      value: "agent" } ```
+
   Fields:
+    documentsMetadataFilters: Optional. Key-value filters on the metadata of
+      documents returned by article suggestion. If specified, article
+      suggestion only returns suggested documents that match all filters in
+      their Document.metadata. Multiple values for a metadata key should be
+      concatenated by comma. For example, filters to match all documents that
+      have 'US' or 'CA' in their market metadata values and 'agent' in their
+      user metadata values will be ``` documents_metadata_filters { key:
+      "market" value: "US,CA" } documents_metadata_filters { key: "user"
+      value: "agent" } ```
     name: Optional. The unique identifier of this participant. Format:
       `projects//locations//conversations//participants/`.
     role: Immutable. The role this participant plays in the conversation. This
@@ -10943,9 +11057,43 @@ class GoogleCloudDialogflowV2Participant(_messages.Message):
     AUTOMATED_AGENT = 2
     END_USER = 3
 
-  name = _messages.StringField(1)
-  role = _messages.EnumField('RoleValueValuesEnum', 2)
-  sipRecordingMediaLabel = _messages.StringField(3)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DocumentsMetadataFiltersValue(_messages.Message):
+    r"""Optional. Key-value filters on the metadata of documents returned by
+    article suggestion. If specified, article suggestion only returns
+    suggested documents that match all filters in their Document.metadata.
+    Multiple values for a metadata key should be concatenated by comma. For
+    example, filters to match all documents that have 'US' or 'CA' in their
+    market metadata values and 'agent' in their user metadata values will be
+    ``` documents_metadata_filters { key: "market" value: "US,CA" }
+    documents_metadata_filters { key: "user" value: "agent" } ```
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        DocumentsMetadataFiltersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        DocumentsMetadataFiltersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DocumentsMetadataFiltersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  documentsMetadataFilters = _messages.MessageField('DocumentsMetadataFiltersValue', 1)
+  name = _messages.StringField(2)
+  role = _messages.EnumField('RoleValueValuesEnum', 3)
+  sipRecordingMediaLabel = _messages.StringField(4)
 
 
 class GoogleCloudDialogflowV2QueryInput(_messages.Message):
@@ -11445,23 +11593,29 @@ class GoogleCloudDialogflowV2SpeechToTextConfig(_messages.Message):
   r"""Configures speech transcription for ConversationProfile.
 
   Enums:
-    SpeechModelVariantValueValuesEnum: Optional. The speech model used in
-      speech to text. `SPEECH_MODEL_VARIANT_UNSPECIFIED`, `USE_BEST_AVAILABLE`
-      will be treated as `USE_ENHANCED`. It can be overridden in
-      AnalyzeContentRequest and StreamingAnalyzeContentRequest request.
+    SpeechModelVariantValueValuesEnum: The speech model used in speech to
+      text. `SPEECH_MODEL_VARIANT_UNSPECIFIED`, `USE_BEST_AVAILABLE` will be
+      treated as `USE_ENHANCED`. It can be overridden in AnalyzeContentRequest
+      and StreamingAnalyzeContentRequest request. If enhanced model variant is
+      specified and an enhanced version of the specified model for the
+      language does not exist, then it would emit an error.
 
   Fields:
-    speechModelVariant: Optional. The speech model used in speech to text.
+    speechModelVariant: The speech model used in speech to text.
       `SPEECH_MODEL_VARIANT_UNSPECIFIED`, `USE_BEST_AVAILABLE` will be treated
       as `USE_ENHANCED`. It can be overridden in AnalyzeContentRequest and
-      StreamingAnalyzeContentRequest request.
+      StreamingAnalyzeContentRequest request. If enhanced model variant is
+      specified and an enhanced version of the specified model for the
+      language does not exist, then it would emit an error.
   """
 
   class SpeechModelVariantValueValuesEnum(_messages.Enum):
-    r"""Optional. The speech model used in speech to text.
+    r"""The speech model used in speech to text.
     `SPEECH_MODEL_VARIANT_UNSPECIFIED`, `USE_BEST_AVAILABLE` will be treated
     as `USE_ENHANCED`. It can be overridden in AnalyzeContentRequest and
-    StreamingAnalyzeContentRequest request.
+    StreamingAnalyzeContentRequest request. If enhanced model variant is
+    specified and an enhanced version of the specified model for the language
+    does not exist, then it would emit an error.
 
     Values:
       SPEECH_MODEL_VARIANT_UNSPECIFIED: No model variant specified. In this
@@ -11496,6 +11650,7 @@ class GoogleCloudDialogflowV2SuggestArticlesRequest(_messages.Message):
   r"""The request message for Participants.SuggestArticles.
 
   Fields:
+    assistQueryParams: Parameters for a human assist query.
     contextSize: Max number of messages prior to and including latest_message
       to use as context when compiling the suggestion. By default 20 and at
       most 50.
@@ -11504,8 +11659,9 @@ class GoogleCloudDialogflowV2SuggestArticlesRequest(_messages.Message):
       conversation. Format: `projects//locations//conversations//messages/`.
   """
 
-  contextSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  latestMessage = _messages.StringField(2)
+  assistQueryParams = _messages.MessageField('GoogleCloudDialogflowV2AssistQueryParameters', 1)
+  contextSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  latestMessage = _messages.StringField(3)
 
 
 class GoogleCloudDialogflowV2SuggestArticlesResponse(_messages.Message):
@@ -11530,6 +11686,7 @@ class GoogleCloudDialogflowV2SuggestFaqAnswersRequest(_messages.Message):
   r"""The request message for Participants.SuggestFaqAnswers.
 
   Fields:
+    assistQueryParams: Parameters for a human assist query.
     contextSize: Max number of messages prior to and including
       [latest_message] to use as context when compiling the suggestion. By
       default 20 and at most 50.
@@ -11538,8 +11695,9 @@ class GoogleCloudDialogflowV2SuggestFaqAnswersRequest(_messages.Message):
       conversation. Format: `projects//locations//conversations//messages/`.
   """
 
-  contextSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  latestMessage = _messages.StringField(2)
+  assistQueryParams = _messages.MessageField('GoogleCloudDialogflowV2AssistQueryParameters', 1)
+  contextSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  latestMessage = _messages.StringField(3)
 
 
 class GoogleCloudDialogflowV2SuggestFaqAnswersResponse(_messages.Message):
@@ -11579,10 +11737,12 @@ class GoogleCloudDialogflowV2SuggestionFeature(_messages.Message):
       TYPE_UNSPECIFIED: Unspecified feature type.
       ARTICLE_SUGGESTION: Run article suggestion model.
       FAQ: Run FAQ model.
+      SMART_REPLY: Run smart reply model.
     """
     TYPE_UNSPECIFIED = 0
     ARTICLE_SUGGESTION = 1
     FAQ = 2
+    SMART_REPLY = 3
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
 

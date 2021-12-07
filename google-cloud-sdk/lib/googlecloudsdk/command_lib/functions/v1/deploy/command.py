@@ -316,13 +316,11 @@ def Run(args, track=None, enable_runtime=True):
     max_instances = 0 if args.clear_max_instances else args.max_instances
     function.maxInstances = max_instances
     updated_fields.append('maxInstances')
-  if track in (calliope_base.ReleaseTrack.ALPHA,
-               calliope_base.ReleaseTrack.BETA):
-    if (args.IsSpecified('min_instances') or
-        args.IsSpecified('clear_min_instances')):
-      min_instances = 0 if args.clear_min_instances else args.min_instances
-      function.minInstances = min_instances
-      updated_fields.append('minInstances')
+  if (args.IsSpecified('min_instances') or
+      args.IsSpecified('clear_min_instances')):
+    min_instances = 0 if args.clear_min_instances else args.min_instances
+    function.minInstances = min_instances
+    updated_fields.append('minInstances')
   if enable_runtime:
     if args.IsSpecified('runtime'):
       function.runtime = args.runtime
@@ -384,12 +382,17 @@ def Run(args, track=None, enable_runtime=True):
       function.eventTrigger.failurePolicy = None
   elif function.eventTrigger:
     function.eventTrigger.failurePolicy = None
-  if args.IsSpecified('security_level'):
-    will_have_http_trigger = had_http_trigger or args.trigger_http
+
+  will_have_http_trigger = had_http_trigger or args.trigger_http
+
+  if args.IsSpecified('security_level') or (will_have_http_trigger and
+                                            is_new_function):
     if not will_have_http_trigger:
       raise calliope_exceptions.RequiredArgumentException(
           'trigger-http',
           'Flag `--trigger-http` is required for setting `security-level`.')
+
+    # SecurityLevelValueValuesEnum('SECURE_ALWAYS' | 'SECURE_OPTIONAL')
     security_level_enum = arg_utils.ChoiceEnumMapper(
         arg_name='security_level',
         message_enum=function.httpsTrigger.SecurityLevelValueValuesEnum,

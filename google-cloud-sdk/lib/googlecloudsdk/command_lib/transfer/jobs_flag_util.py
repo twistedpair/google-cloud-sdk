@@ -25,28 +25,36 @@ import enum
 
 from googlecloudsdk.calliope import arg_parsers
 
+_POSIX_SOURCE_OR_DESTINATION_HELP_TEXT = (
+    'POSIX filesystem - Specify the `posix://` scheme followed by the absolute'
+    ' path to the desired directory, starting from the root of the host machine'
+    ' (denoted by a leading slash). For example:\n'
+    '* posix:///path/directory/')
 _SOURCE_HELP_TEXT = (
-    'The source of your data, typically specified by a scheme to show source'
-    ' (e.g., gs:// for a Google Cloud Storage bucket);'
-    ' name of the resource (e.g., bucket or container name);'
-    ' and, if transferring from a folder, the path to the folder.'
-    ' Example formatting:\n\n'
-    'Public clouds:\n'
-    '- Google Cloud Storage - gs://example-bucket/example-folder\n'
-    '- Amazon S3 - s3://examplebucket/example-folder\n'
-    '- Azure Storage - http://examplestorageaccount.blob.core.windows.net/'
-    'examplecontainer/examplefolder\n\n'
+    'The source of your data. Available sources and formatting information:\n\n'
+    'Public clouds - For Google Cloud Storage and Amazon S3, specify the scheme'
+    '  of the source type; name of the resource; and, if transferring from a'
+    '  folder, the path to the folder. For Azure Storage, note the'
+    ' Azure-specific formatting below. For example:\n'
+    '* [Google Cloud Storage] gs://example-bucket/example-folder\n'
+    '* [Amazon S3] s3://examplebucket/example-folder\n'
+    '* [Azure Blob Storage or Data Lake Storage] http://examplestorageaccount.'
+    'blob.core.windows.net/examplecontainer/examplefolder\n\n'
     'POSIX filesystem - Specify the `posix://` scheme followed by the full path'
-    " to the desired directory. Format the path relative to the agents' mount"
-    ' point in the filesystem, not based on where the desired directory is in'
-    ' the machine running gcloud. For example:\n\n'
-    '- posix://example/path/to/directory/\n\n'
-    'Publicly-accessible objects:\n'
-    '- URL list of objects - http://example.com/tsvfile')
+    ' to the desired directory. {}\n\n'
+    'Publicly-accessible objects - Specify the URL of a TSV file containing a'
+    ' list of URLs of publicly-accessible objects. For example:\n'
+    '* http://example.com/tsvfile'
+).format(_POSIX_SOURCE_OR_DESTINATION_HELP_TEXT)
 _DESTINATION_HELP_TEXT = (
-    'The destination for your data in Google Cloud Storage, specified'
-    ' by bucket name and, if transferring to a folder, any subsequent'
-    ' path to the folder. E.g., gs://example-bucket/example-folder')
+    'The destination of your transferred data. Available destinations and '
+    ' formatting information:\n\n'
+    'Google Cloud Storage - Specify the `gs://` scheme; name of the bucket;'
+    ' and, if transferring to a folder, the path to the folder. For example:\n'
+    '* gs://example-bucket/example-folder\n\n'
+    'POSIX filesystem - Specify the `posix://` scheme followed by the full path'
+    ' to the desired directory. {}'
+).format(_POSIX_SOURCE_OR_DESTINATION_HELP_TEXT)
 
 
 class DeleteOption(enum.Enum):

@@ -20,8 +20,11 @@ from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.command_lib.ai import errors
+from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+import six
 
 
 def Get(config):
@@ -68,6 +71,7 @@ def Create(config,
            base_config,
            replicas,
            validate_only,
+           labels=None,
            etag=None):
   """Create instance configs in the project."""
   client = apis.GetClientInstance('spanner', 'v1')
@@ -94,10 +98,18 @@ def Create(config,
         msgs.ReplicaInfo(location=replica['location'], type=replica_type))
   # TODO(b/399093071): Implement --replicas-file option.
 
+  labels_message = {}
+  if labels is not None:
+    labels_message = msgs.InstanceConfig.LabelsValue(additionalProperties=[
+        msgs.InstanceConfig.LabelsValue.AdditionalProperty(
+            key=key, value=value) for key, value in six.iteritems(labels)
+    ])
+
   instance_config = msgs.InstanceConfig(
       name=config_ref.RelativeName(),
       displayName=display_name,
       baseConfig=base_config,
+      labels=labels_message,
       replicas=replica_info)
   if etag:
     instance_config.etag = etag
@@ -108,3 +120,43 @@ def Create(config,
       instanceConfig=instance_config,
       validateOnly=validate_only)
   return client.projects_instanceConfigs.Create(req)
+
+
+def Patch(args):
+  """Update an instance config."""
+  client = apis.GetClientInstance('spanner', 'v1')
+  msgs = apis.GetMessagesModule('spanner', 'v1')
+  ref = resources.REGISTRY.Parse(
+      args.config,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection='spanner.projects.instanceConfigs')
+  instance_config = msgs.InstanceConfig(name=ref.RelativeName())
+
+  update_mask = []
+
+  if args.display_name is not None:
+    instance_config.displayName = args.display_name
+    update_mask.append('display_name')
+
+  if args.etag is not None:
+    instance_config.etag = args.etag
+
+  def GetLabels():
+    req = msgs.SpannerProjectsInstanceConfigsGetRequest(name=ref.RelativeName())
+    return client.projects_instanceConfigs.Get(req).labels
+
+  labels_update = labels_util.ProcessUpdateArgsLazy(
+      args, msgs.InstanceConfig.LabelsValue, GetLabels)
+  if labels_update.needs_update:
+    instance_config.labels = labels_update.labels
+    update_mask.append('labels')
+
+  if not update_mask:
+    raise errors.NoFieldsSpecifiedError('No updates requested.')
+
+  req = msgs.SpannerProjectsInstanceConfigsPatchRequest(
+      name=ref.RelativeName(),
+      instanceConfig=instance_config,
+      updateMask=','.join(update_mask),
+      validateOnly=args.validate_only)
+  return client.projects_instanceConfigs.Patch(req)

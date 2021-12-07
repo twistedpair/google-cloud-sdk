@@ -133,8 +133,8 @@ class ArtifactregistryProjectsLocationsRepositoriesCreateRequest(_messages.Messa
     googleDevtoolsArtifactregistryV1alpha1Repository: A
       GoogleDevtoolsArtifactregistryV1alpha1Repository resource to be passed
       as the request body.
-    parent: The name of the parent resource where the repository will be
-      created.
+    parent: Required. The name of the parent resource where the repository
+      will be created.
     repositoryId: The repository id to use for this repository.
   """
 
@@ -147,7 +147,7 @@ class ArtifactregistryProjectsLocationsRepositoriesDeleteRequest(_messages.Messa
   r"""A ArtifactregistryProjectsLocationsRepositoriesDeleteRequest object.
 
   Fields:
-    name: The name of the repository to delete.
+    name: Required. The name of the repository to delete.
   """
 
   name = _messages.StringField(1, required=True)
@@ -157,7 +157,7 @@ class ArtifactregistryProjectsLocationsRepositoriesGetRequest(_messages.Message)
   r"""A ArtifactregistryProjectsLocationsRepositoriesGetRequest object.
 
   Fields:
-    name: The name of the repository to retrieve.
+    name: Required. The name of the repository to retrieve.
   """
 
   name = _messages.StringField(1, required=True)
@@ -201,11 +201,11 @@ class ArtifactregistryProjectsLocationsRepositoriesListRequest(_messages.Message
   r"""A ArtifactregistryProjectsLocationsRepositoriesListRequest object.
 
   Fields:
-    pageSize: The maximum number of repositories to return. Maximum page size
-      is 10,000.
+    pageSize: The maximum number of repositories to return.
     pageToken: The next_page_token value returned from a previous list
       request, if any.
-    parent: The name of the parent resource whose repositories will be listed.
+    parent: Required. The name of the parent resource whose repositories will
+      be listed.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -517,16 +517,12 @@ class GoogleDevtoolsArtifactregistryV1alpha1Repository(_messages.Message):
   Enums:
     FormatValueValuesEnum: The format of packages that are stored in the
       repository.
-    ModeValueValuesEnum: The mode of the repository.
 
   Messages:
     LabelsValue: Labels with user-defined metadata. This field may contain up
       to 64 entries. Label keys and values may be no longer than 63
       characters. Label keys must begin with a lowercase letter and may only
       contain lowercase letters, numeric characters, underscores, and dashes.
-    UpstreamPoliciesValue: Policies that configure the upstream artifacts
-      distributed by the Virtual Repository. Upstream policies cannot be set
-      on a standard repository.
 
   Fields:
     createTime: The time when the repository was created.
@@ -541,13 +537,9 @@ class GoogleDevtoolsArtifactregistryV1alpha1Repository(_messages.Message):
       entries. Label keys and values may be no longer than 63 characters.
       Label keys must begin with a lowercase letter and may only contain
       lowercase letters, numeric characters, underscores, and dashes.
-    mode: The mode of the repository.
     name: The name of the repository, for example: "projects/p1/locations/us-
       central1/repositories/repo1".
     updateTime: The time when the repository was last updated.
-    upstreamPolicies: Policies that configure the upstream artifacts
-      distributed by the Virtual Repository. Upstream policies cannot be set
-      on a standard repository.
   """
 
   class FormatValueValuesEnum(_messages.Enum):
@@ -569,19 +561,6 @@ class GoogleDevtoolsArtifactregistryV1alpha1Repository(_messages.Message):
     APT = 4
     YUM = 5
     PYTHON = 6
-
-  class ModeValueValuesEnum(_messages.Enum):
-    r"""The mode of the repository.
-
-    Values:
-      MODE_UNSPECIFIED: Unspecified mode.
-      STANDARD_REPOSITORY: A standard repository storing artifacts.
-      VIRTUAL_REPOSITORY: A virtual repository to serve artifacts from one or
-        more sources.
-    """
-    MODE_UNSPECIFIED = 0
-    STANDARD_REPOSITORY = 1
-    VIRTUAL_REPOSITORY = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -610,44 +589,13 @@ class GoogleDevtoolsArtifactregistryV1alpha1Repository(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class UpstreamPoliciesValue(_messages.Message):
-    r"""Policies that configure the upstream artifacts distributed by the
-    Virtual Repository. Upstream policies cannot be set on a standard
-    repository.
-
-    Messages:
-      AdditionalProperty: An additional property for a UpstreamPoliciesValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type
-        UpstreamPoliciesValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a UpstreamPoliciesValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A GoogleDevtoolsArtifactregistryV1alpha1UpstreamPolicy
-          attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1UpstreamPolicy', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   format = _messages.EnumField('FormatValueValuesEnum', 3)
   kmsKeyName = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
-  mode = _messages.EnumField('ModeValueValuesEnum', 6)
-  name = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
-  upstreamPolicies = _messages.MessageField('UpstreamPoliciesValue', 9)
+  name = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactMediaResponse(_messages.Message):
@@ -723,22 +671,6 @@ class GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactResponse(_messages.
   """
 
   yumArtifacts = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1YumArtifact', 1, repeated=True)
-
-
-class GoogleDevtoolsArtifactregistryV1alpha1UpstreamPolicy(_messages.Message):
-  r"""Artifact policy configuration for the repository contents.
-
-  Fields:
-    id: The user-provided ID of the upstream policy.
-    priority: Entries with a greater priority value take precedence in the
-      pull order.
-    repository: A reference to the repository resource, for example:
-      "projects/p1/locations/us-central1/repository/repo1".
-  """
-
-  id = _messages.StringField(1)
-  priority = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  repository = _messages.StringField(3)
 
 
 class GoogleDevtoolsArtifactregistryV1alpha1YumArtifact(_messages.Message):

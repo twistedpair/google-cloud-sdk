@@ -785,7 +785,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the Recommendation Config to get. Acceptable formats: * `projects\/[PROJECT_NUMBER]\/locations\/global\/recommenders\/[RECOMMENDER_ID]\/config` * `projects\/[PROJECT_ID]\/locations\/global\/recommenders\/[RECOMMENDER_ID]\/config`",
+                      "description": "Required. Name of the Recommendation Config to get. Acceptable formats: * `projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\/config` * `projects\/[PROJECT_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\/config` * `organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\/config`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/config$",
                       "location": "path",
                       "required": true,
@@ -1010,7 +1010,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the InsightTypeConfig to get. Acceptable formats: * `projects\/[PROJECT_NUMBER]\/locations\/global\/recommenders\/[INSIGHT_TYPE_ID]\/config` * `projects\/[PROJECT_ID]\/locations\/global\/recommenders\/[INSIGHT_TYPE_ID]\/config`",
+                      "description": "Required. Name of the InsightTypeConfig to get. Acceptable formats: * `projects\/[PROJECT_NUMBER]\/locations\/global\/recommenders\/[INSIGHT_TYPE_ID]\/config` * `projects\/[PROJECT_ID]\/locations\/global\/recommenders\/[INSIGHT_TYPE_ID]\/config` * `organizations\/[ORGANIZATION_ID]\/locations\/global\/recommenders\/[INSIGHT_TYPE_ID]\/config`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/config$",
                       "location": "path",
                       "required": true,
@@ -1723,7 +1723,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the Recommendation Config to get. Acceptable formats: * `projects\/[PROJECT_NUMBER]\/locations\/global\/recommenders\/[RECOMMENDER_ID]\/config` * `projects\/[PROJECT_ID]\/locations\/global\/recommenders\/[RECOMMENDER_ID]\/config`",
+                      "description": "Required. Name of the Recommendation Config to get. Acceptable formats: * `projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\/config` * `projects\/[PROJECT_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\/config` * `organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\/config`",
                       "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/config$",
                       "location": "path",
                       "required": true,
@@ -1948,7 +1948,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the InsightTypeConfig to get. Acceptable formats: * `projects\/[PROJECT_NUMBER]\/locations\/global\/recommenders\/[INSIGHT_TYPE_ID]\/config` * `projects\/[PROJECT_ID]\/locations\/global\/recommenders\/[INSIGHT_TYPE_ID]\/config`",
+                      "description": "Required. Name of the InsightTypeConfig to get. Acceptable formats: * `projects\/[PROJECT_NUMBER]\/locations\/global\/recommenders\/[INSIGHT_TYPE_ID]\/config` * `projects\/[PROJECT_ID]\/locations\/global\/recommenders\/[INSIGHT_TYPE_ID]\/config` * `organizations\/[ORGANIZATION_ID]\/locations\/global\/recommenders\/[INSIGHT_TYPE_ID]\/config`",
                       "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/config$",
                       "location": "path",
                       "required": true,

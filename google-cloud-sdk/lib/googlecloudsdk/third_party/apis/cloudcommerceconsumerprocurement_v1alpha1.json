@@ -1457,6 +1457,10 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        },
+        "financialContract": {
+          "description": "Financial contracts linked to this consent.",
+          "type": "string"
         }
       }
     },
@@ -1478,6 +1482,10 @@
         },
         "languageCode": {
           "description": "The language code is used to find the agreement document if check consent doesn't pass. If this field is set, the method will attempt to locate the agreement document written in that language. If such document cannot be found, the request will fail. If this field is not set, the method will try two strategies in the following order: 1) reuse the language of document associated with the most recent consent, 2) use the document written in the default language, while default language is set by the agreement owner. If neither strategy works, the request will fail. Please follow BCP 47 (https:\/\/www.w3.org\/International\/articles\/bcp47\/) for the language string.",
+          "type": "string"
+        },
+        "financialContract": {
+          "description": "Financial contract this consent applies to. This is a system full resource name. E.g.: \/\/commerceoffercatalog.googleapis.com\/billingAccounts\/{billing_account}\/offers\/{offer-id}",
           "type": "string"
         }
       }

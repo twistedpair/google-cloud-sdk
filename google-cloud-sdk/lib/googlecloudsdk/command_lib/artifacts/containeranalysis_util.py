@@ -36,14 +36,14 @@ class ContainerAnalysisMetadata:
     self.build = BuildSummary()
     self.provenance = ProvenanceSummary()
 
-  def AddOccurrence(self, occ):
+  def AddOccurrence(self, occ, include_build=True):
     """Adds occurrences retrieved from containeranalysis API."""
     messages = ca_requests.GetMessages()
     if occ.kind == messages.Occurrence.KindValueValuesEnum.VULNERABILITY:
       self.vulnerability.AddOccurrence(occ)
     elif occ.kind == messages.Occurrence.KindValueValuesEnum.IMAGE:
       self.image.AddOccurrence(occ)
-    elif occ.kind == messages.Occurrence.KindValueValuesEnum.BUILD and occ.build and occ.build.provenance:
+    elif occ.kind == messages.Occurrence.KindValueValuesEnum.BUILD and occ.build and occ.build.provenance and include_build:
       self.build.AddOccurrence(occ)
     elif occ.kind == messages.Occurrence.KindValueValuesEnum.DEPLOYMENT:
       self.deployment.AddOccurrence(occ)
@@ -208,8 +208,9 @@ def GetContainerAnalysisMetadata(docker_version, args):
   if occ_filter is None:
     return metadata
   occurrences = ca_requests.ListOccurrences(docker_version.project, occ_filter)
+  include_build = args.show_build_details or args.show_all_metadata
   for occ in occurrences:
-    metadata.AddOccurrence(occ)
+    metadata.AddOccurrence(occ, include_build)
 
   if metadata.vulnerability.vulnerabilities:
     vuln_summary = ca_requests.GetVulnerabilitySummary(

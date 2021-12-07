@@ -1097,6 +1097,20 @@
       "properties": {
       }
     },
+    "PausePatchDeploymentRequest": {
+      "id": "PausePatchDeploymentRequest",
+      "description": "A request message for pausing a patch deployment.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ResumePatchDeploymentRequest": {
+      "id": "ResumePatchDeploymentRequest",
+      "description": "A request message for resuming a patch deployment.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "GuestPolicy": {
       "id": "GuestPolicy",
       "description": "An OS Config resource representing a guest configuration policy. These policies represent the desired state for VM instance guest environments including packages to install or remove, package repository configurations, and software to install.",
@@ -2273,6 +2287,62 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Update an OS Config patch deployment."
+            },
+            "pause": {
+              "id": "osconfig.projects.patchDeployments.pause",
+              "path": "v1beta/{+name}:pause",
+              "flatPath": "v1beta/projects/{projectsId}/patchDeployments/{patchDeploymentsId}:pause",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. The resource name of the patch deployment in the form `projects\/*\/patchDeployments\/*`.",
+                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "PausePatchDeploymentRequest"
+              },
+              "response": {
+                "$ref": "PatchDeployment"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Change state of patch deployment to \"PAUSED\". Patch deployment in paused state doesn't generate patch jobs."
+            },
+            "resume": {
+              "id": "osconfig.projects.patchDeployments.resume",
+              "path": "v1beta/{+name}:resume",
+              "flatPath": "v1beta/projects/{projectsId}/patchDeployments/{patchDeploymentsId}:resume",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. The resource name of the patch deployment in the form `projects\/*\/patchDeployments\/*`.",
+                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "ResumePatchDeploymentRequest"
+              },
+              "response": {
+                "$ref": "PatchDeployment"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Change state of patch deployment back to \"ACTIVE\". Patch deployment in active state continues to generate patch jobs."
             }
           }
         },

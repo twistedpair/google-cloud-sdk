@@ -47,6 +47,126 @@ class CategoryHealth(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
+class Cluster(_messages.Message):
+  r"""A cluster instance.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of this cluster. Can
+      be CREATING, READY, UPDATING, DELETING and SUSPENDED
+
+  Messages:
+    RedisConfigsValue: Optional. Redis configuration parameters, according to
+      http://redis.io/topics/config. Currently, the only supported parameters
+      are: Redis version 6.x and newer: * lfu-decay-time * lfu-log-factor *
+      maxmemory-policy
+
+  Fields:
+    clusterUid: Output only. UID of the cluster for use by Pantheon for
+      analytics.
+    createTime: Output only. The timestamp associated with the cluster
+      creation request.
+    customerManagedKey: Input only. The KMS key reference that the customer
+      provides when trying to create the instance.
+    defaultReplicaCount: Optional. The number of replica nodes per shard.
+      Valid range is [1-2] and defaults to 1.
+    displayName: Optional. An arbitrary and optional user-provided name for
+      the cluster.
+    endpoints: Output only. Hostname or IP address and port pairs used to
+      connect to the cluster.
+    name: Required. Unique name of the resource in this scope including
+      project and location using the form:
+      `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
+    privateServiceConnect: Optional. Populate to use private service connect
+      network option.
+    redisConfigs: Optional. Redis configuration parameters, according to
+      http://redis.io/topics/config. Currently, the only supported parameters
+      are: Redis version 6.x and newer: * lfu-decay-time * lfu-log-factor *
+      maxmemory-policy
+    slots: Output only. The slots making up the cluster. Read-only. In future
+      versions this will be writable to allow for heterogeneous clusters.
+    state: Output only. The current state of this cluster. Can be CREATING,
+      READY, UPDATING, DELETING and SUSPENDED
+    totalMemorySizeGb: Optional. Redis memory size in GiB for the entire
+      cluster. Defaults to 32.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of this cluster. Can be CREATING,
+    READY, UPDATING, DELETING and SUSPENDED
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      CREATING: Redis cluster is being created.
+      ACTIVE: Redis cluster has been created and is fully usable.
+      UPDATING: Redis cluster configuration is being updated.
+      DELETING: Redis cluster is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    UPDATING = 3
+    DELETING = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RedisConfigsValue(_messages.Message):
+    r"""Optional. Redis configuration parameters, according to
+    http://redis.io/topics/config. Currently, the only supported parameters
+    are: Redis version 6.x and newer: * lfu-decay-time * lfu-log-factor *
+    maxmemory-policy
+
+    Messages:
+      AdditionalProperty: An additional property for a RedisConfigsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type RedisConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RedisConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  clusterUid = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  customerManagedKey = _messages.StringField(3)
+  defaultReplicaCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  displayName = _messages.StringField(5)
+  endpoints = _messages.MessageField('Endpoint', 6, repeated=True)
+  name = _messages.StringField(7)
+  privateServiceConnect = _messages.MessageField('PrivateServiceConnect', 8)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 9)
+  slots = _messages.MessageField('ClusterSlots', 10, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  totalMemorySizeGb = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+
+
+class ClusterSlots(_messages.Message):
+  r"""A series of slots belonging to a cluster.
+
+  Fields:
+    endSlotsExclusive: Output only. The end of the slots that make up this
+      series.
+    memorySizeGb: Output only. The total size of keyspace this series has.
+    replicaCount: Output only. The number of replicas this series has.
+    startSlotsInclusive: Output only. The start of the slots that make up this
+      series.
+  """
+
+  endSlotsExclusive = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  memorySizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  replicaCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  startSlotsInclusive = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -55,6 +175,21 @@ class Empty(_messages.Message):
   representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class Endpoint(_messages.Message):
+  r"""An endpoint exposed by a cluster. In the future we will add an enum to
+  identify whether this endpoint is read/write or read-only when the feature
+  is ready.
+
+  Fields:
+    host: Output only. Hostname or IP address of the exposed Redis endpoint
+      used by clients to connect to the service.
+    port: Output only. The port number of the exposed Redis endpoint.
+  """
+
+  host = _messages.StringField(1)
+  port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class ExportInstanceRequest(_messages.Message):
@@ -952,6 +1087,22 @@ class PersistenceConfig(_messages.Message):
   rdbNextSnapshotTime = _messages.StringField(2)
   rdbSnapshotPeriod = _messages.EnumField('RdbSnapshotPeriodValueValuesEnum', 3)
   rdbSnapshotStartTime = _messages.StringField(4)
+
+
+class PrivateServiceConnect(_messages.Message):
+  r"""Contains private service connect specific options.
+
+  Fields:
+    pscService: Output only. The address of the Private Service Connect (PSC)
+      service that the customer can use to connect this instance to their
+      local network.
+    pscServiceRoute: Optional. The service route to connect using Private
+      Service Connect. On Instance creation, this will automatically connect
+      this route to this instance.
+  """
+
+  pscService = _messages.StringField(1)
+  pscServiceRoute = _messages.StringField(2)
 
 
 class RedisProjectsLocationsGetRequest(_messages.Message):

@@ -96,7 +96,7 @@ class GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsListRequest(_messages
   Fields:
     pageSize: The maximum number of items to return. If not specified, a
       default value of 50 will be used by the service. Regardless of the
-      pageSize value, the response may include a partial list and a caller
+      pageSize value, the response can include a partial list and a caller
       should only rely on response's nextPageToken to determine if there are
       more instances left to be queried.
     pageToken: The `nextPageToken` value returned from a previous
@@ -126,7 +126,7 @@ class GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsPatchRequest(_message
       Google Cloud resource names, see [Resource
       Names](https://cloud.google.com/apis/design/resource_names)
     updateMask: Required. Mask of fields to update. At least one path must be
-      supplied in this field. The elements of the repeated paths field may
+      supplied in this field. The elements of the repeated paths field can
       only include these fields from AwsNodePool: * `annotations`.
     validateOnly: If set, only validate the request, but don't actually update
       the node pool.
@@ -248,7 +248,7 @@ class GkemulticloudProjectsLocationsAwsClustersListRequest(_messages.Message):
   Fields:
     pageSize: The maximum number of items to return. If not specified, a
       default value of 50 will be used by the service. Regardless of the
-      pageSize value, the response may include a partial list and a caller
+      pageSize value, the response can include a partial list and a caller
       should only rely on response's nextPageToken to determine if there are
       more instances left to be queried.
     pageToken: The `nextPageToken` value returned from a previous
@@ -277,7 +277,7 @@ class GkemulticloudProjectsLocationsAwsClustersPatchRequest(_messages.Message):
       Names](https://cloud.google.com/apis/design/resource_names) for more
       details on GCP resource names.
     updateMask: Required. Mask of fields to update. At least one path must be
-      supplied in this field. The elements of the repeated paths field may
+      supplied in this field. The elements of the repeated paths field can
       only include these fields from AwsCluster: * `description`. *
       `annotations`. * `control_plane.version`.
     validateOnly: If set, only validate the request, but do not actually
@@ -369,7 +369,7 @@ class GkemulticloudProjectsLocationsAzureClientsListRequest(_messages.Message):
   Fields:
     pageSize: The maximum number of items to return. If not specified, a
       default value of 50 will be used by the service. Regardless of the
-      pageSize value, the response may include a partial list and a caller
+      pageSize value, the response can include a partial list and a caller
       should only rely on response's nextPageToken to determine if there are
       more instances left to be queried.
     pageToken: The `nextPageToken` value returned from a previous
@@ -462,7 +462,7 @@ class GkemulticloudProjectsLocationsAzureClustersAzureNodePoolsListRequest(_mess
   Fields:
     pageSize: The maximum number of items to return. If not specified, a
       default value of 50 will be used by the service. Regardless of the
-      pageSize value, the response may include a partial list and a caller
+      pageSize value, the response can include a partial list and a caller
       should only rely on response's nextPageToken to determine if there are
       more instances left to be queried.
     pageToken: The `nextPageToken` value returned from a previous
@@ -492,7 +492,7 @@ class GkemulticloudProjectsLocationsAzureClustersAzureNodePoolsPatchRequest(_mes
       on Google Cloud resource names, see [Resource
       Names](https://cloud.google.com/apis/design/resource_names)
     updateMask: Required. Mask of fields to update. At least one path must be
-      supplied in this field. The elements of the repeated paths field may
+      supplied in this field. The elements of the repeated paths field can
       only include these fields from AzureNodePool: * `description`.
     validateOnly: If set, only validate the request, but don't actually update
       the node pool.
@@ -618,7 +618,7 @@ class GkemulticloudProjectsLocationsAzureClustersListRequest(_messages.Message):
   Fields:
     pageSize: The maximum number of items to return. If not specified, a
       default value of 50 will be used by the service. Regardless of the
-      pageSize value, the response may include a partial list and a caller
+      pageSize value, the response can include a partial list and a caller
       should only rely on response's nextPageToken to determine if there are
       more instances left to be queried.
     pageToken: The `nextPageToken` value returned from a previous
@@ -647,7 +647,7 @@ class GkemulticloudProjectsLocationsAzureClustersPatchRequest(_messages.Message)
       Names](https://cloud.google.com/apis/design/resource_names) for more
       details on GCP resource names.
     updateMask: Required. Mask of fields to update. At least one path must be
-      supplied in this field. The elements of the repeated paths field may
+      supplied in this field. The elements of the repeated paths field can
       only include these fields from AzureCluster: * `description`. *
       `azureClient`. * `control_plane.version`.
     validateOnly: If set, only validate the request, but do not actually
@@ -802,7 +802,7 @@ class GoogleCloudGkemulticloudV1AwsCluster(_messages.Message):
       Cannot be longer than 255 UTF-8 encoded bytes.
     endpoint: Output only. The endpoint of the cluster's API server.
     etag: Allows clients to perform consistent read-modify-writes through
-      optimistic concurrency control. May be sent on update and delete
+      optimistic concurrency control. Can be sent on update and delete
       requests to ensure the client has an up-to-date value before proceeding.
     fleet: Optional. Fleet configuration.
     name: The name of this resource. Cluster names are formatted as
@@ -908,7 +908,8 @@ class GoogleCloudGkemulticloudV1AwsClusterNetworking(_messages.Message):
       is supported. This field cannot be changed after creation.
     serviceLoadBalancerSubnetIds: Required. When creating Kubernetes services
       of type 'Load Balancer', the load balancer will be created in these
-      subnets.
+      subnets. This field is unused. Users are responsible for tagging their
+      own subnets manually.
     vpcId: Required. The VPC associated with the cluster. All component
       clusters (i.e. control plane and node pools) run on a single VPC. This
       field cannot be changed after creation.
@@ -1191,7 +1192,7 @@ class GoogleCloudGkemulticloudV1AwsNodePool(_messages.Message):
     config: Required. The configuration of the node pool.
     createTime: Output only. The time at which this node pool was created.
     etag: Allows clients to perform consistent read-modify-writes through
-      optimistic concurrency control. May be sent on update and delete
+      optimistic concurrency control. Can be sent on update and delete
       requests to ensure the client has an up-to-date value before proceeding.
     maxPodsConstraint: Required. The constraint on the maximum number of pods
       that can be run simultaneously on a node in the node pool.
@@ -1552,9 +1553,10 @@ class GoogleCloudGkemulticloudV1AzureCluster(_messages.Message):
       Cannot be longer than 255 UTF-8 encoded bytes.
     endpoint: Output only. The endpoint of the cluster's API server.
     etag: Allows clients to perform consistent read-modify-writes through
-      optimistic concurrency control. May be sent on update and delete
+      optimistic concurrency control. Can be sent on update and delete
       requests to ensure the client has an up-to-date value before proceeding.
     fleet: Optional. Fleet configuration.
+    managedResources: Output only. Mananged Azure resources for this cluster.
     name: The name of this resource. Cluster names are formatted as
       `projects//locations//azureClusters/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
@@ -1639,14 +1641,15 @@ class GoogleCloudGkemulticloudV1AzureCluster(_messages.Message):
   endpoint = _messages.StringField(9)
   etag = _messages.StringField(10)
   fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 11)
-  name = _messages.StringField(12)
-  networking = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterNetworking', 13)
-  reconciling = _messages.BooleanField(14)
-  resourceGroupId = _messages.StringField(15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  uid = _messages.StringField(17)
-  updateTime = _messages.StringField(18)
-  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 19)
+  managedResources = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterResources', 12)
+  name = _messages.StringField(13)
+  networking = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterNetworking', 14)
+  reconciling = _messages.BooleanField(15)
+  resourceGroupId = _messages.StringField(16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  uid = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
+  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 20)
 
 
 class GoogleCloudGkemulticloudV1AzureClusterNetworking(_messages.Message):
@@ -1663,11 +1666,11 @@ class GoogleCloudGkemulticloudV1AzureClusterNetworking(_messages.Message):
       ranges. Only a single range is supported. This field cannot be changed
       after creating a cluster.
     serviceLoadBalancerSubnetId: Optional. The ARM ID of the subnet where
-      Kubernetes private service type load balancers are deployed, when the
-      Service lacks a subnet annotation. When unspecified, it defaults to
-      AzureControlPlane.subnet_id. Example: "/subscriptions/d00494d6-6f3c-4280
-      -bbb2-899e163d1d30/resourceGroups/anthos_cluster_gkeust4/providers/Micro
-      soft.Network/virtualNetworks/gke-vnet-gkeust4/subnets/subnetid456"
+      Kubernetes private service type load balancers are deployed. When
+      unspecified, it defaults to AzureControlPlane.subnet_id. Example: "/subs
+      criptions/d00494d6-6f3c-4280-bbb2-899e163d1d30/resourceGroups/anthos_clu
+      ster_gkeust4/providers/Microsoft.Network/virtualNetworks/gke-vnet-
+      gkeust4/subnets/subnetid456"
     virtualNetworkId: Required. The Azure Resource Manager (ARM) ID of the
       VNet associated with your cluster. All components in the cluster (i.e.
       control plane and node pools) run on a single VNet. Example: `/subscript
@@ -1679,6 +1682,21 @@ class GoogleCloudGkemulticloudV1AzureClusterNetworking(_messages.Message):
   serviceAddressCidrBlocks = _messages.StringField(2, repeated=True)
   serviceLoadBalancerSubnetId = _messages.StringField(3)
   virtualNetworkId = _messages.StringField(4)
+
+
+class GoogleCloudGkemulticloudV1AzureClusterResources(_messages.Message):
+  r"""Managed Azure resources for the cluster. The values could change and be
+  empty, depending on the state of the cluster.
+
+  Fields:
+    controlPlaneApplicationSecurityGroupId: Output only. The ARM ID of the
+      control plane application security group.
+    networkSecurityGroupId: Output only. The ARM ID of the cluster network
+      security group.
+  """
+
+  controlPlaneApplicationSecurityGroupId = _messages.StringField(1)
+  networkSecurityGroupId = _messages.StringField(2)
 
 
 class GoogleCloudGkemulticloudV1AzureClusterUser(_messages.Message):
@@ -1976,7 +1994,7 @@ class GoogleCloudGkemulticloudV1AzureNodePool(_messages.Message):
     config: Required. The node configuration of the node pool.
     createTime: Output only. The time at which this node pool was created.
     etag: Allows clients to perform consistent read-modify-writes through
-      optimistic concurrency control. May be sent on update and delete
+      optimistic concurrency control. Can be sent on update and delete
       requests to ensure the client has an up-to-date value before proceeding.
     maxPodsConstraint: Required. The constraint on the maximum number of pods
       that can be run simultaneously on a node in the node pool.

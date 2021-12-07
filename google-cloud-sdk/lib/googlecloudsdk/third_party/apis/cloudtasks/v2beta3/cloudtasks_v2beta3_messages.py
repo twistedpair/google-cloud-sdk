@@ -927,8 +927,8 @@ class HttpRequest(_messages.Message):
       partial list of headers that will be ignored or replaced is: * Host:
       This will be computed by Cloud Tasks and derived from HttpRequest.url. *
       Content-Length: This will be computed by Cloud Tasks. * User-Agent: This
-      will be set to `"Google-Cloud-Tasks"`. * X-Google-*: Google use only. *
-      X-AppEngine-*: Google use only. `Content-Type` won't be set by Cloud
+      will be set to `"Google-Cloud-Tasks"`. * `X-Google-*`: Google use only.
+      * `X-AppEngine-*`: Google use only. `Content-Type` won't be set by Cloud
       Tasks. You can explicitly set `Content-Type` to a media type when the
       task is created. For example, `Content-Type` can be set to
       `"application/octet-stream"` or `"application/json"`. Headers which can
@@ -946,8 +946,8 @@ class HttpRequest(_messages.Message):
       partial list of headers that will be ignored or replaced is: * Host:
       This will be computed by Cloud Tasks and derived from HttpRequest.url. *
       Content-Length: This will be computed by Cloud Tasks. * User-Agent: This
-      will be set to `"Google-Cloud-Tasks"`. * X-Google-*: Google use only. *
-      X-AppEngine-*: Google use only. `Content-Type` won't be set by Cloud
+      will be set to `"Google-Cloud-Tasks"`. * `X-Google-*`: Google use only.
+      * `X-AppEngine-*`: Google use only. `Content-Type` won't be set by Cloud
       Tasks. You can explicitly set `Content-Type` to a media type when the
       task is created. For example, `Content-Type` can be set to
       `"application/octet-stream"` or `"application/json"`. Headers which can
@@ -1005,8 +1005,8 @@ class HttpRequest(_messages.Message):
     list of headers that will be ignored or replaced is: * Host: This will be
     computed by Cloud Tasks and derived from HttpRequest.url. * Content-
     Length: This will be computed by Cloud Tasks. * User-Agent: This will be
-    set to `"Google-Cloud-Tasks"`. * X-Google-*: Google use only. *
-    X-AppEngine-*: Google use only. `Content-Type` won't be set by Cloud
+    set to `"Google-Cloud-Tasks"`. * `X-Google-*`: Google use only. *
+    `X-AppEngine-*`: Google use only. `Content-Type` won't be set by Cloud
     Tasks. You can explicitly set `Content-Type` to a media type when the task
     is created. For example, `Content-Type` can be set to `"application/octet-
     stream"` or `"application/json"`. Headers which can have multiple values

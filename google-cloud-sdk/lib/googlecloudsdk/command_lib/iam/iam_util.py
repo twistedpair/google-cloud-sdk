@@ -140,6 +140,13 @@ Examples: `user:test-user@gmail.com`, `group:admins@example.com`,
 `serviceAccount:test123@example.domain.com`, or
 `domain:example.domain.com`.
       """).format(verb=verb)
+  # Adding role bindings for a deleted principal is a very uncommon use case.
+  if 'remove' in verb:
+    help_str += ("""
+Deleted principals have an additional `deleted:` prefix and a `?uid=UID` suffix,
+where ``UID'' is a unique identifier for the principal. Example:
+`deleted:user:test-user@gmail.com?uid=123456789012345678901`.
+      """)
   if not hide_special_member_types:
     help_str += ("""
 Some resources also accept the following special values:

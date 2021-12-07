@@ -1000,31 +1000,31 @@
           "description": "The `WorkerPool` resource to execute the build on. You must have `cloudbuild.workerpools.use` on the project hosting the WorkerPool. Format projects\/{project}\/locations\/{location}\/workerPools\/{workerPoolId}",
           "type": "string"
         },
-        "hybridPoolOption": {
-          "description": "Configuration for a Hybrid Worker Pool.",
-          "$ref": "HybridWorkerConfig"
+        "workerConfig": {
+          "description": "Configuration per workload.",
+          "$ref": "GoogleDevtoolsCloudbuildV1BuildOptionsPoolOptionWorkerConfig"
         }
       }
     },
-    "HybridWorkerConfig": {
-      "id": "HybridWorkerConfig",
-      "description": "These settings can be applied to a user's build operations. Next ID: 4",
+    "GoogleDevtoolsCloudbuildV1BuildOptionsPoolOptionWorkerConfig": {
+      "id": "GoogleDevtoolsCloudbuildV1BuildOptionsPoolOptionWorkerConfig",
+      "description": "Configuration per workload for both Private Pools and Hybrid Pools.",
       "type": "object",
       "properties": {
-        "diskSizeGb": {
-          "description": "The disk size (in GB) which is requested for the build container. Defaults to 10 GB.",
-          "type": "string",
-          "format": "int64"
+        "vcpuCount": {
+          "description": "The number of vCPUs which are requested for the build container. If unset, a value of 1 will be used.",
+          "type": "number",
+          "format": "float"
         },
         "memoryGb": {
-          "description": "The memory (in GB) which is requested for the build container. Defaults to 4 GB.",
+          "description": "The memory (in GB) which is requested for the build container. If unset, a value of 4 GB will be used.",
           "type": "number",
           "format": "float"
         },
-        "vcpuCount": {
-          "description": "The number of vCPUs which are requested for the build container. Defaults to 1.",
-          "type": "number",
-          "format": "float"
+        "diskSizeGb": {
+          "description": "The disk size (in GB) which is requested for the build container. If unset, a value of 10 GB will be used.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -1818,10 +1818,6 @@
           "description": "Optional. The network to be used when reaching out to the Bitbucket Server instance. The VPC network must be enabled for private service connection. This should be set if the Bitbucket Server instance is hosted on-premises and not reachable by public internet. If this field is left empty, no network peering will occur and calls to the Bitbucket Server instance will be made over the public internet. Must be in the format `projects\/{project}\/global\/networks\/{network}`, where {project} is a project number or id and {network} is the name of a VPC network in the project.",
           "type": "string"
         },
-        "displayName": {
-          "description": "Optional. The user assigned display name for the config. Display names must meet the following requirements: + They must contain only alphanumeric characters and dashes. + They can be 1-64 characters long. + They must begin and end with an alphanumeric character.",
-          "type": "string"
-        },
         "sslCa": {
           "description": "Optional. SSL certificate to use for requests to Bitbucket Server. The format should be PEM format but the extension can be one of .pem, .cer, or .crt.",
           "type": "string"
@@ -2249,18 +2245,20 @@
             "`WorkerPool` is being created.",
             "`WorkerPool` is running.",
             "`WorkerPool` is being deleted: cancelling builds and draining workers.",
-            "`WorkerPool` is deleted."
+            "`WorkerPool` is deleted.",
+            "`WorkerPool` is being updated; new builds cannot be run."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "CREATING",
             "RUNNING",
             "DELETING",
-            "DELETED"
+            "DELETED",
+            "UPDATING"
           ]
         },
         "privatePoolV1Config": {
-          "description": "Private Pool using a v1 configuration.",
+          "description": "Legacy Private Pool configuration.",
           "$ref": "PrivatePoolV1Config"
         },
         "hybridPoolConfig": {
@@ -2374,6 +2372,28 @@
         "cachingStorageClass": {
           "description": "Immutable. Used as the Kubernetes storageClassName for builder image caching. This provides the value for the storageClassName field for any PersistentVolumeClaims installed on the cluster. Corresponding field in the Kubernetes API: https:\/\/github.com\/kubernetes\/api\/blob\/2a5dae08c42b1e8fdc1379432d8898efece65363\/core\/v1\/types.go#L354. This field allows Hybrid users to control which storage class is used by persistent volume claims. If unspecified, PersistentVolumeClaims will be created without a storageClassName field during installation. The string must be formatted as a valid Kubernetes ObjectMeta name: https:\/\/github.com\/kubernetes\/apimachinery\/blob\/6c3d2b36a98a4f86d1fb8ee83f78433cd72aefb8\/pkg\/apis\/meta\/v1\/types.go#L124.",
           "type": "string"
+        }
+      }
+    },
+    "HybridWorkerConfig": {
+      "id": "HybridWorkerConfig",
+      "description": "These settings can be applied to a user's build operations. Next ID: 4",
+      "type": "object",
+      "properties": {
+        "diskSizeGb": {
+          "description": "The disk size (in GB) which is requested for the build container. Defaults to 10 GB.",
+          "type": "string",
+          "format": "int64"
+        },
+        "memoryGb": {
+          "description": "The memory (in GB) which is requested for the build container. Defaults to 4 GB.",
+          "type": "number",
+          "format": "float"
+        },
+        "vcpuCount": {
+          "description": "The number of vCPUs which are requested for the build container. Defaults to 1.",
+          "type": "number",
+          "format": "float"
         }
       }
     },

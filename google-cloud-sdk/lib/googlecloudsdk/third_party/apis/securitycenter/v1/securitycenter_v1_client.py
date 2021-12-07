@@ -40,19 +40,25 @@ class SecuritycenterV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.folders_assets = self.FoldersAssetsService(self)
+    self.folders_findings = self.FoldersFindingsService(self)
     self.folders_muteConfigs = self.FoldersMuteConfigsService(self)
+    self.folders_sources_findings_externalSystems = self.FoldersSourcesFindingsExternalSystemsService(self)
     self.folders_sources_findings = self.FoldersSourcesFindingsService(self)
     self.folders_sources = self.FoldersSourcesService(self)
     self.folders = self.FoldersService(self)
     self.organizations_assets = self.OrganizationsAssetsService(self)
+    self.organizations_findings = self.OrganizationsFindingsService(self)
     self.organizations_muteConfigs = self.OrganizationsMuteConfigsService(self)
     self.organizations_notificationConfigs = self.OrganizationsNotificationConfigsService(self)
     self.organizations_operations = self.OrganizationsOperationsService(self)
+    self.organizations_sources_findings_externalSystems = self.OrganizationsSourcesFindingsExternalSystemsService(self)
     self.organizations_sources_findings = self.OrganizationsSourcesFindingsService(self)
     self.organizations_sources = self.OrganizationsSourcesService(self)
     self.organizations = self.OrganizationsService(self)
     self.projects_assets = self.ProjectsAssetsService(self)
+    self.projects_findings = self.ProjectsFindingsService(self)
     self.projects_muteConfigs = self.ProjectsMuteConfigsService(self)
+    self.projects_sources_findings_externalSystems = self.ProjectsSourcesFindingsExternalSystemsService(self)
     self.projects_sources_findings = self.ProjectsSourcesFindingsService(self)
     self.projects_sources = self.ProjectsSourcesService(self)
     self.projects = self.ProjectsService(self)
@@ -145,6 +151,43 @@ class SecuritycenterV1(base_api.BaseApiClient):
         request_field='securityMarks',
         request_type_name='SecuritycenterFoldersAssetsUpdateSecurityMarksRequest',
         response_type_name='SecurityMarks',
+        supports_download=False,
+    )
+
+  class FoldersFindingsService(base_api.BaseApiService):
+    """Service class for the folders_findings resource."""
+
+    _NAME = 'folders_findings'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.FoldersFindingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def BulkMute(self, request, global_params=None):
+      r"""Kicks off an LRO to bulk mute findings for a parent based on a filter. The parent can be either an organization, folder or project. The findings matched by the filter will be muted after the LRO is done.
+
+      Args:
+        request: (SecuritycenterFoldersFindingsBulkMuteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('BulkMute')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BulkMute.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/findings:bulkMute',
+        http_method='POST',
+        method_id='securitycenter.folders.findings.bulkMute',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/findings:bulkMute',
+        request_field='bulkMuteFindingsRequest',
+        request_type_name='SecuritycenterFoldersFindingsBulkMuteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -290,6 +333,43 @@ class SecuritycenterV1(base_api.BaseApiClient):
         request_field='googleCloudSecuritycenterV1MuteConfig',
         request_type_name='SecuritycenterFoldersMuteConfigsPatchRequest',
         response_type_name='GoogleCloudSecuritycenterV1MuteConfig',
+        supports_download=False,
+    )
+
+  class FoldersSourcesFindingsExternalSystemsService(base_api.BaseApiService):
+    """Service class for the folders_sources_findings_externalSystems resource."""
+
+    _NAME = 'folders_sources_findings_externalSystems'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.FoldersSourcesFindingsExternalSystemsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Patch(self, request, global_params=None):
+      r"""Updates external system. This is for a given finding.
+
+      Args:
+        request: (SecuritycenterFoldersSourcesFindingsExternalSystemsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1ExternalSystem) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/sources/{sourcesId}/findings/{findingsId}/externalSystems/{externalSystemsId}',
+        http_method='PATCH',
+        method_id='securitycenter.folders.sources.findings.externalSystems.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudSecuritycenterV1ExternalSystem',
+        request_type_name='SecuritycenterFoldersSourcesFindingsExternalSystemsPatchRequest',
+        response_type_name='GoogleCloudSecuritycenterV1ExternalSystem',
         supports_download=False,
     )
 
@@ -627,6 +707,43 @@ class SecuritycenterV1(base_api.BaseApiClient):
         request_field='securityMarks',
         request_type_name='SecuritycenterOrganizationsAssetsUpdateSecurityMarksRequest',
         response_type_name='SecurityMarks',
+        supports_download=False,
+    )
+
+  class OrganizationsFindingsService(base_api.BaseApiService):
+    """Service class for the organizations_findings resource."""
+
+    _NAME = 'organizations_findings'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.OrganizationsFindingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def BulkMute(self, request, global_params=None):
+      r"""Kicks off an LRO to bulk mute findings for a parent based on a filter. The parent can be either an organization, folder or project. The findings matched by the filter will be muted after the LRO is done.
+
+      Args:
+        request: (SecuritycenterOrganizationsFindingsBulkMuteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('BulkMute')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BulkMute.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/findings:bulkMute',
+        http_method='POST',
+        method_id='securitycenter.organizations.findings.bulkMute',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/findings:bulkMute',
+        request_field='bulkMuteFindingsRequest',
+        request_type_name='SecuritycenterOrganizationsFindingsBulkMuteRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1035,6 +1152,43 @@ class SecuritycenterV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='SecuritycenterOrganizationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsSourcesFindingsExternalSystemsService(base_api.BaseApiService):
+    """Service class for the organizations_sources_findings_externalSystems resource."""
+
+    _NAME = 'organizations_sources_findings_externalSystems'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.OrganizationsSourcesFindingsExternalSystemsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Patch(self, request, global_params=None):
+      r"""Updates external system. This is for a given finding.
+
+      Args:
+        request: (SecuritycenterOrganizationsSourcesFindingsExternalSystemsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1ExternalSystem) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/sources/{sourcesId}/findings/{findingsId}/externalSystems/{externalSystemsId}',
+        http_method='PATCH',
+        method_id='securitycenter.organizations.sources.findings.externalSystems.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudSecuritycenterV1ExternalSystem',
+        request_type_name='SecuritycenterOrganizationsSourcesFindingsExternalSystemsPatchRequest',
+        response_type_name='GoogleCloudSecuritycenterV1ExternalSystem',
         supports_download=False,
     )
 
@@ -1591,6 +1745,43 @@ class SecuritycenterV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsFindingsService(base_api.BaseApiService):
+    """Service class for the projects_findings resource."""
+
+    _NAME = 'projects_findings'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.ProjectsFindingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def BulkMute(self, request, global_params=None):
+      r"""Kicks off an LRO to bulk mute findings for a parent based on a filter. The parent can be either an organization, folder or project. The findings matched by the filter will be muted after the LRO is done.
+
+      Args:
+        request: (SecuritycenterProjectsFindingsBulkMuteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('BulkMute')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BulkMute.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/findings:bulkMute',
+        http_method='POST',
+        method_id='securitycenter.projects.findings.bulkMute',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/findings:bulkMute',
+        request_field='bulkMuteFindingsRequest',
+        request_type_name='SecuritycenterProjectsFindingsBulkMuteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsMuteConfigsService(base_api.BaseApiService):
     """Service class for the projects_muteConfigs resource."""
 
@@ -1733,6 +1924,43 @@ class SecuritycenterV1(base_api.BaseApiClient):
         request_field='googleCloudSecuritycenterV1MuteConfig',
         request_type_name='SecuritycenterProjectsMuteConfigsPatchRequest',
         response_type_name='GoogleCloudSecuritycenterV1MuteConfig',
+        supports_download=False,
+    )
+
+  class ProjectsSourcesFindingsExternalSystemsService(base_api.BaseApiService):
+    """Service class for the projects_sources_findings_externalSystems resource."""
+
+    _NAME = 'projects_sources_findings_externalSystems'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.ProjectsSourcesFindingsExternalSystemsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Patch(self, request, global_params=None):
+      r"""Updates external system. This is for a given finding.
+
+      Args:
+        request: (SecuritycenterProjectsSourcesFindingsExternalSystemsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1ExternalSystem) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/sources/{sourcesId}/findings/{findingsId}/externalSystems/{externalSystemsId}',
+        http_method='PATCH',
+        method_id='securitycenter.projects.sources.findings.externalSystems.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudSecuritycenterV1ExternalSystem',
+        request_type_name='SecuritycenterProjectsSourcesFindingsExternalSystemsPatchRequest',
+        response_type_name='GoogleCloudSecuritycenterV1ExternalSystem',
         supports_download=False,
     )
 

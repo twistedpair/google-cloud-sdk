@@ -126,6 +126,6 @@ class ChannelClientV1(EventarcClientBase):
         updateMask=update_mask)
     return self._service.Patch(patch_req)
 
-  def BuildChannel(self, channel_ref, provider):
+  def BuildChannel(self, channel_ref, provider_ref):
     return self._messages.Channel(
-        name=channel_ref.RelativeName(), provider=provider)
+        name=channel_ref.RelativeName(), provider=provider_ref.RelativeName())

@@ -323,10 +323,9 @@ TARGET_SSL_PROXY_ARG = compute_flags.ResourceArgument(
     resource_name='ssl proxy',
     global_collection='compute.targetSslProxies',
     short_help='Target SSL proxy that receives the traffic.',
-    detailed_help=('Target SSL proxy that receives the traffic. '
-                   'Acceptable values for `--ports` flag are: '
-                   '25, 43, 110, 143, 195, 443, 465, 587, '
-                   '700, 993, 995, 1883, 5222.'))
+    detailed_help=textwrap.dedent("""\
+      Target SSL proxy that receives the traffic. For the acceptable ports, see [Port specifications](https://cloud.google.com/load-balancing/docs/forwarding-rule-concepts#port_specifications).
+      """))
 
 TARGET_TCP_PROXY_ARG = compute_flags.ResourceArgument(
     name='--target-tcp-proxy',
@@ -334,10 +333,9 @@ TARGET_TCP_PROXY_ARG = compute_flags.ResourceArgument(
     resource_name='tcp proxy',
     global_collection='compute.targetTcpProxies',
     short_help='Target TCP proxy that receives the traffic.',
-    detailed_help=('Target TCP proxy that receives the traffic. '
-                   'Acceptable values for --ports flag are: '
-                   '25, 43, 110, 143, 195, 443, 465, 587, '
-                   '700, 993, 995, 1883, 5222.'))
+    detailed_help=textwrap.dedent("""\
+      Target TCP proxy that receives the traffic. For the acceptable ports, see [Port specifications](https://cloud.google.com/load-balancing/docs/forwarding-rule-concepts#port_specifications).
+      """))
 
 TARGET_VPN_GATEWAY_ARG = compute_flags.ResourceArgument(
     name='--target-vpn-gateway',

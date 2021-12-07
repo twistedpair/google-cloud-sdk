@@ -225,8 +225,11 @@ class _BaseInstances(object):
     params = {}
     if limit is not None:
       params['limit'] = limit
-    if batch_size is not None:
-      params['batch_size'] = batch_size
+
+    # High default batch size to avoid excess polling on big projects.
+    default_batch_size = 1000
+    params['batch_size'] = (
+        batch_size if batch_size is not None else default_batch_size)
 
     yielded = list_pager.YieldFromList(
         sql_client.instances,

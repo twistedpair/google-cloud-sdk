@@ -235,6 +235,10 @@ Provided sandbox type '{type}' not supported.
 TPU_SERVING_MODE_ERROR = """\
 Cannot specify --tpu-ipv4-cidr with --enable-tpu-service-networking."""
 
+MAINTENANCE_INTERVAL_TYPE_NOT_SUPPORTED = """\
+Provided maintenance interval type '{type}' not supported.
+"""
+
 MAX_NODES_PER_POOL = 1000
 
 MAX_AUTHORIZED_NETWORKS_CIDRS_PRIVATE = 100
@@ -589,6 +593,7 @@ class CreateClusterOptions(object):
       logging=None,
       monitoring=None,
       enable_managed_prometheus=None,
+      maintenance_interval=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -741,6 +746,7 @@ class CreateClusterOptions(object):
     self.logging = logging
     self.monitoring = monitoring
     self.enable_managed_prometheus = enable_managed_prometheus
+    self.maintenance_interval = maintenance_interval
 
 
 class UpdateClusterOptions(object):
@@ -839,6 +845,7 @@ class UpdateClusterOptions(object):
       enable_image_streaming=None,
       enable_managed_prometheus=None,
       disable_managed_prometheus=None,
+      maintenance_interval=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -932,6 +939,7 @@ class UpdateClusterOptions(object):
     self.enable_image_streaming = enable_image_streaming
     self.enable_managed_prometheus = enable_managed_prometheus
     self.disable_managed_prometheus = disable_managed_prometheus
+    self.maintenance_interval = maintenance_interval
 
 
 class SetMasterAuthOptions(object):
@@ -1011,7 +1019,8 @@ class CreateNodePoolOptions(object):
                enable_blue_green_update=None,
                enable_rolling_update=None,
                node_pool_soak_duration=None,
-               standard_rollout_policy=None):
+               standard_rollout_policy=None,
+               maintenance_interval=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -1067,6 +1076,7 @@ class CreateNodePoolOptions(object):
     self.enable_rolling_update = enable_rolling_update
     self.node_pool_soak_duration = node_pool_soak_duration
     self.standard_rollout_policy = standard_rollout_policy
+    self.maintenance_interval = maintenance_interval
 
 
 class UpdateNodePoolOptions(object):
@@ -1598,6 +1608,15 @@ class APIAdapter(object):
             self.messages.NodeConfigDefaults())
       cluster.nodePoolDefaults.nodeConfigDefaults.gcfsConfig = (
           self.messages.GcfsConfig(enabled=options.enable_image_streaming))
+
+    if options.maintenance_interval:
+      if cluster.nodePoolDefaults is None:
+        cluster.nodePoolDefaults = self.messages.NodePoolDefaults()
+      if cluster.nodePoolDefaults.nodeConfigDefaults is None:
+        cluster.nodePoolDefaults.nodeConfigDefaults = (
+            self.messages.NodeConfigDefaults())
+      cluster.nodePoolDefaults.nodeConfigDefaults.stableFleetConfig = (
+          _GetStableFleetConfig(options, self.messages))
 
     if options.enable_mesh_certificates:
       if not options.workload_pool:
@@ -2481,6 +2500,11 @@ class APIAdapter(object):
           desiredMeshCertificates=self.messages.MeshCertificates(
               enableCertificates=options.enable_mesh_certificates))
 
+    if options.maintenance_interval is not None:
+      update = self.messages.ClusterUpdate(
+          desiredStableFleetConfig=_GetStableFleetConfig(
+              options, self.messages))
+
     return update
 
   def UpdateCluster(self, cluster_ref, options):
@@ -2903,6 +2927,10 @@ class APIAdapter(object):
     if options.gvnic is not None:
       gvnic = self.messages.VirtualNIC(enabled=options.gvnic)
       node_config.gvnic = gvnic
+
+    if options.maintenance_interval:
+      node_config.stableFleetConfig = _GetStableFleetConfig(
+          options, self.messages)
 
     self._AddWorkloadMetadataToNodeConfig(node_config, options, self.messages)
     _AddLinuxNodeConfigToNodeConfig(node_config, options, self.messages)
@@ -4757,6 +4785,29 @@ def _AddSandboxConfigToNodeConfig(node_config, options, messages):
         type=sandbox_types[options.sandbox['type']])
 
 
+def _GetStableFleetConfig(options, messages):
+  """Get StableFleetConfig from options."""
+  if options.maintenance_interval is not None:
+    maintenance_interval_types = {
+        'UNSPECIFIED':
+            messages.StableFleetConfig.MaintenanceIntervalValueValuesEnum
+            .MAINTENANCE_INTERVAL_UNSPECIFIED,
+        'PERIODIC':
+            messages.StableFleetConfig.MaintenanceIntervalValueValuesEnum
+            .PERIODIC,
+        'AS_NEEDED':
+            messages.StableFleetConfig.MaintenanceIntervalValueValuesEnum
+            .AS_NEEDED,
+    }
+    if options.maintenance_interval not in maintenance_interval_types:
+      raise util.Error(
+          MAINTENANCE_INTERVAL_TYPE_NOT_SUPPORTED
+          .FORMAT(type=options.maintenance_interval))
+    return messages.StableFleetConfig(
+        maintenanceInterval=maintenance_interval_types[
+            options.maintenance_interval])
+
+
 def _AddNotificationConfigToCluster(cluster, options, messages):
   """Adds notification config to Cluster."""
   nc = options.notification_config
@@ -4777,17 +4828,18 @@ def _GetFilterFromArg(filter_arg, messages):
   if not filter_arg:
     return None
   flag_event_types_to_enum = {
-      'UpgradeEvent':
+      'upgradeevent':
           messages.Filter.EventTypeValueListEntryValuesEnum.UPGRADE_EVENT,
-      'UpgradeAvailableEvent':
+      'upgradeavailableevent':
           messages.Filter.EventTypeValueListEntryValuesEnum
           .UPGRADE_AVAILABLE_EVENT,
-      'SecurityBulletinEvent':
+      'securitybulletinevent':
           messages.Filter.EventTypeValueListEntryValuesEnum
           .SECURITY_BULLETIN_EVENT
   }
   to_return = messages.Filter()
   for event_type in filter_arg.split('|'):
+    event_type = event_type.lower()
     if flag_event_types_to_enum[event_type]:
       to_return.eventType.append(flag_event_types_to_enum[event_type])
   return to_return

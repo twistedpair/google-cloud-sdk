@@ -880,10 +880,12 @@ class DeliveryPipeline(_messages.Message):
       and size limitations.
     LabelsValue: Labels are attributes that can be set and used by both the
       user and by Google Cloud Deploy. Labels must meet the following
-      constraints: Each resource is limited to 64 labels. Keys must conform to
-      the regexp: `a-zA-Z{0,62}`. Values must conform to the regexp:
-      `[a-zA-Z0-9_-]{0,63}`. Both keys and values are additionally constrained
-      to be <= 128 bytes in size.
+      constraints: * Keys and values can contain only lowercase letters,
+      numeric characters, underscores, and dashes. * All characters must use
+      UTF-8 encoding, and international characters are allowed. * Keys must
+      start with a lowercase letter or international character. * Each
+      resource is limited to a maximum of 64 labels. Both keys and values are
+      additionally constrained to be <= 128 bytes.
 
   Fields:
     annotations: User annotations. These attributes can only be set and used
@@ -900,10 +902,12 @@ class DeliveryPipeline(_messages.Message):
       client has an up-to-date value before proceeding.
     labels: Labels are attributes that can be set and used by both the user
       and by Google Cloud Deploy. Labels must meet the following constraints:
-      Each resource is limited to 64 labels. Keys must conform to the regexp:
-      `a-zA-Z{0,62}`. Values must conform to the regexp:
-      `[a-zA-Z0-9_-]{0,63}`. Both keys and values are additionally constrained
-      to be <= 128 bytes in size.
+      * Keys and values can contain only lowercase letters, numeric
+      characters, underscores, and dashes. * All characters must use UTF-8
+      encoding, and international characters are allowed. * Keys must start
+      with a lowercase letter or international character. * Each resource is
+      limited to a maximum of 64 labels. Both keys and values are additionally
+      constrained to be <= 128 bytes.
     name: Optional. Name of the `DeliveryPipeline`. Format is
       projects/{project}/ locations/{location}/deliveryPipelines/a-z{0,62}.
     serialPipeline: SerialPipeline defines a sequential set of stages for a
@@ -944,11 +948,13 @@ class DeliveryPipeline(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Labels are attributes that can be set and used by both the user and by
-    Google Cloud Deploy. Labels must meet the following constraints: Each
-    resource is limited to 64 labels. Keys must conform to the regexp:
-    `a-zA-Z{0,62}`. Values must conform to the regexp: `[a-zA-Z0-9_-]{0,63}`.
-    Both keys and values are additionally constrained to be <= 128 bytes in
-    size.
+    Google Cloud Deploy. Labels must meet the following constraints: * Keys
+    and values can contain only lowercase letters, numeric characters,
+    underscores, and dashes. * All characters must use UTF-8 encoding, and
+    international characters are allowed. * Keys must start with a lowercase
+    letter or international character. * Each resource is limited to a maximum
+    of 64 labels. Both keys and values are additionally constrained to be <=
+    128 bytes.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1514,10 +1520,12 @@ class Release(_messages.Message):
       and size limitations.
     LabelsValue: Labels are attributes that can be set and used by both the
       user and by Google Cloud Deploy. Labels must meet the following
-      constraints: Each resource is limited to 64 labels. Keys must conform to
-      the regexp: `a-zA-Z{0,62}`. Values must conform to the regexp:
-      `[a-zA-Z0-9_-]{0,63}`. Both keys and values are additionally constrained
-      to be <= 128 bytes in size.
+      constraints: * Keys and values can contain only lowercase letters,
+      numeric characters, underscores, and dashes. * All characters must use
+      UTF-8 encoding, and international characters are allowed. * Keys must
+      start with a lowercase letter or international character. * Each
+      resource is limited to a maximum of 64 labels. Both keys and values are
+      additionally constrained to be <= 128 bytes.
     TargetArtifactsValue: Output only. Map from target ID to the target
       artifacts created during the render operation.
     TargetRendersValue: Output only. Map from target ID to details of the
@@ -1538,10 +1546,12 @@ class Release(_messages.Message):
       client has an up-to-date value before proceeding.
     labels: Labels are attributes that can be set and used by both the user
       and by Google Cloud Deploy. Labels must meet the following constraints:
-      Each resource is limited to 64 labels. Keys must conform to the regexp:
-      `a-zA-Z{0,62}`. Values must conform to the regexp:
-      `[a-zA-Z0-9_-]{0,63}`. Both keys and values are additionally constrained
-      to be <= 128 bytes in size.
+      * Keys and values can contain only lowercase letters, numeric
+      characters, underscores, and dashes. * All characters must use UTF-8
+      encoding, and international characters are allowed. * Keys must start
+      with a lowercase letter or international character. * Each resource is
+      limited to a maximum of 64 labels. Both keys and values are additionally
+      constrained to be <= 128 bytes.
     name: Optional. Name of the `Release`. Format is projects/{project}/
       locations/{location}/deliveryPipelines/{deliveryPipeline}/
       releases/a-z{0,62}.
@@ -1611,11 +1621,13 @@ class Release(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Labels are attributes that can be set and used by both the user and by
-    Google Cloud Deploy. Labels must meet the following constraints: Each
-    resource is limited to 64 labels. Keys must conform to the regexp:
-    `a-zA-Z{0,62}`. Values must conform to the regexp: `[a-zA-Z0-9_-]{0,63}`.
-    Both keys and values are additionally constrained to be <= 128 bytes in
-    size.
+    Google Cloud Deploy. Labels must meet the following constraints: * Keys
+    and values can contain only lowercase letters, numeric characters,
+    underscores, and dashes. * All characters must use UTF-8 encoding, and
+    international characters are allowed. * Keys must start with a lowercase
+    letter or international character. * Each resource is limited to a maximum
+    of 64 labels. Both keys and values are additionally constrained to be <=
+    128 bytes.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1725,10 +1737,12 @@ class Rollout(_messages.Message):
       and size limitations.
     LabelsValue: Labels are attributes that can be set and used by both the
       user and by Google Cloud Deploy. Labels must meet the following
-      constraints: Each resource is limited to 64 labels. Keys must conform to
-      the regexp: `a-zA-Z{0,62}`. Values must conform to the regexp:
-      `[a-zA-Z0-9_-]{0,63}`. Both keys and values are additionally constrained
-      to be <= 128 bytes in size.
+      constraints: * Keys and values can contain only lowercase letters,
+      numeric characters, underscores, and dashes. * All characters must use
+      UTF-8 encoding, and international characters are allowed. * Keys must
+      start with a lowercase letter or international character. * Each
+      resource is limited to a maximum of 64 labels. Both keys and values are
+      additionally constrained to be <= 128 bytes.
 
   Fields:
     annotations: User annotations. These attributes can only be set and used
@@ -1755,10 +1769,12 @@ class Rollout(_messages.Message):
       succeeded.
     labels: Labels are attributes that can be set and used by both the user
       and by Google Cloud Deploy. Labels must meet the following constraints:
-      Each resource is limited to 64 labels. Keys must conform to the regexp:
-      `a-zA-Z{0,62}`. Values must conform to the regexp:
-      `[a-zA-Z0-9_-]{0,63}`. Both keys and values are additionally constrained
-      to be <= 128 bytes in size.
+      * Keys and values can contain only lowercase letters, numeric
+      characters, underscores, and dashes. * All characters must use UTF-8
+      encoding, and international characters are allowed. * Keys must start
+      with a lowercase letter or international character. * Each resource is
+      limited to a maximum of 64 labels. Both keys and values are additionally
+      constrained to be <= 128 bytes.
     name: Optional. Name of the `Rollout`. Format is projects/{project}/
       locations/{location}/deliveryPipelines/{deliveryPipeline}/
       releases/{release}/rollouts/a-z{0,62}.
@@ -1839,11 +1855,13 @@ class Rollout(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Labels are attributes that can be set and used by both the user and by
-    Google Cloud Deploy. Labels must meet the following constraints: Each
-    resource is limited to 64 labels. Keys must conform to the regexp:
-    `a-zA-Z{0,62}`. Values must conform to the regexp: `[a-zA-Z0-9_-]{0,63}`.
-    Both keys and values are additionally constrained to be <= 128 bytes in
-    size.
+    Google Cloud Deploy. Labels must meet the following constraints: * Keys
+    and values can contain only lowercase letters, numeric characters,
+    underscores, and dashes. * All characters must use UTF-8 encoding, and
+    international characters are allowed. * Keys must start with a lowercase
+    letter or international character. * Each resource is limited to a maximum
+    of 64 labels. Both keys and values are additionally constrained to be <=
+    128 bytes.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2068,10 +2086,12 @@ class Target(_messages.Message):
       and size limitations.
     LabelsValue: Optional. Labels are attributes that can be set and used by
       both the user and by Google Cloud Deploy. Labels must meet the following
-      constraints: Each resource is limited to 64 labels. Keys must conform to
-      the regexp: `a-zA-Z{0,62}`. Values must conform to the regexp:
-      `[a-zA-Z0-9_-]{0,63}`. Both keys and values are additionally constrained
-      to be <= 128 bytes in size.
+      constraints: * Keys and values can contain only lowercase letters,
+      numeric characters, underscores, and dashes. * All characters must use
+      UTF-8 encoding, and international characters are allowed. * Keys must
+      start with a lowercase letter or international character. * Each
+      resource is limited to a maximum of 64 labels. Both keys and values are
+      additionally constrained to be <= 128 bytes.
 
   Fields:
     annotations: Optional. User annotations. These attributes can only be set
@@ -2094,10 +2114,12 @@ class Target(_messages.Message):
     gke: Information specifying a GKE Cluster.
     labels: Optional. Labels are attributes that can be set and used by both
       the user and by Google Cloud Deploy. Labels must meet the following
-      constraints: Each resource is limited to 64 labels. Keys must conform to
-      the regexp: `a-zA-Z{0,62}`. Values must conform to the regexp:
-      `[a-zA-Z0-9_-]{0,63}`. Both keys and values are additionally constrained
-      to be <= 128 bytes in size.
+      constraints: * Keys and values can contain only lowercase letters,
+      numeric characters, underscores, and dashes. * All characters must use
+      UTF-8 encoding, and international characters are allowed. * Keys must
+      start with a lowercase letter or international character. * Each
+      resource is limited to a maximum of 64 labels. Both keys and values are
+      additionally constrained to be <= 128 bytes.
     name: Optional. Name of the `Target`. Format is
       projects/{project}/locations/{location}/
       deliveryPipelines/{deliveryPipeline}/targets/a-z{0,62}.
@@ -2140,10 +2162,12 @@ class Target(_messages.Message):
   class LabelsValue(_messages.Message):
     r"""Optional. Labels are attributes that can be set and used by both the
     user and by Google Cloud Deploy. Labels must meet the following
-    constraints: Each resource is limited to 64 labels. Keys must conform to
-    the regexp: `a-zA-Z{0,62}`. Values must conform to the regexp:
-    `[a-zA-Z0-9_-]{0,63}`. Both keys and values are additionally constrained
-    to be <= 128 bytes in size.
+    constraints: * Keys and values can contain only lowercase letters, numeric
+    characters, underscores, and dashes. * All characters must use UTF-8
+    encoding, and international characters are allowed. * Keys must start with
+    a lowercase letter or international character. * Each resource is limited
+    to a maximum of 64 labels. Both keys and values are additionally
+    constrained to be <= 128 bytes.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

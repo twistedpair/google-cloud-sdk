@@ -128,6 +128,18 @@ tcpRoute:
     attribute_name: tcp_route
     help: Id of the tcp route.
 
+tlsRoute:
+  name: tls route
+  collection: networkservices.projects.locations.tlsRoutes
+  request_id_field: tlsRouteId
+  attributes:
+  - *project
+  - *location
+  - &tlsRoute
+    parameter_name: tlsRoutesId
+    attribute_name: tls_route
+    help: Id of the tls route.
+
 serviceBinding:
   name: service binding
   collection: networkservices.projects.locations.serviceBindings

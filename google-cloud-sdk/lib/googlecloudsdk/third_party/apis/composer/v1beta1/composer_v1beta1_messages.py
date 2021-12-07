@@ -266,9 +266,7 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       greater than or equal to 3 must be provided in the `config.nodeCount`
       field. Supported for Cloud Composer environments in versions
       composer-1.*.*-airflow-*.*.*. * `config.webServerNetworkAccessControl` *
-      Replace the environment's current WebServerNetworkAccessControl.
-      Supported for Cloud Composer environments in versions
-      composer-1.*.*-airflow-*.*.*. *
+      Replace the environment's current WebServerNetworkAccessControl. *
       `config.softwareConfig.airflowConfigOverrides` * Replace all Apache
       Airflow config overrides. If a replacement config overrides map is not
       included in `environment`, all config overrides are cleared. It is an
@@ -568,9 +566,7 @@ class EnvironmentConfig(_messages.Message):
       supported for Cloud Composer environments in versions
       composer-1.*.*-airflow-*.*.*.
     encryptionConfig: Optional. The encryption options for the Cloud Composer
-      environment and its dependencies. Cannot be updated. This field is
-      supported for Cloud Composer environments in versions
-      composer-1.*.*-airflow-*.*.*.
+      environment and its dependencies. Cannot be updated.
     environmentSize: Optional. The size of the Cloud Composer environment.
       This field is supported for Cloud Composer environments in versions
       composer-2.*.*-airflow-*.*.* and newer.
@@ -603,8 +599,7 @@ class EnvironmentConfig(_messages.Message):
       environments in versions composer-1.*.*-airflow-*.*.*.
     webServerNetworkAccessControl: Optional. The network-level access control
       policy for the Airflow web server. If unspecified, no network-level
-      access restrictions will be applied. This field is supported for Cloud
-      Composer environments in versions composer-1.*.*-airflow-*.*.*.
+      access restrictions will be applied.
     workloadsConfig: Optional. The workloads configuration settings for the
       GKE cluster associated with the Cloud Composer environment. The GKE
       cluster runs Airflow scheduler, web server and workers workloads. This
@@ -1048,6 +1043,7 @@ class OperationMetadata(_messages.Message):
       UPDATE: A resource update operation.
       CHECK: A resource check operation.
       STORE_STATE: Stores the state of the resource operation.
+      LOAD_STATE: Loads the state of the resource operation.
     """
     TYPE_UNSPECIFIED = 0
     CREATE = 1
@@ -1055,6 +1051,7 @@ class OperationMetadata(_messages.Message):
     UPDATE = 3
     CHECK = 4
     STORE_STATE = 5
+    LOAD_STATE = 6
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current operation state.
@@ -1107,6 +1104,10 @@ class PrivateEnvironmentConfig(_messages.Message):
   Composer environment.
 
   Fields:
+    cloudComposerConnectionSubnetwork: Optional. When specified, the
+      environment will use Private Service Connect instead of VPC peerings to
+      connect to Cloud SQL in the Tenant Project, and the PSC endpoint in the
+      Customer Project will use an IP address from this subnetwork.
     cloudComposerNetworkIpv4CidrBlock: Optional. The CIDR block from which IP
       range for Cloud Composer Network in tenant project will be reserved.
       Needs to be disjoint from private_cluster_config.master_ipv4_cidr_block
@@ -1140,14 +1141,15 @@ class PrivateEnvironmentConfig(_messages.Message):
       Composer environments in versions composer-1.*.*-airflow-*.*.*.
   """
 
-  cloudComposerNetworkIpv4CidrBlock = _messages.StringField(1)
-  cloudComposerNetworkIpv4ReservedRange = _messages.StringField(2)
-  cloudSqlIpv4CidrBlock = _messages.StringField(3)
-  enablePrivateEnvironment = _messages.BooleanField(4)
-  enablePrivatelyUsedPublicIps = _messages.BooleanField(5)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 6)
-  webServerIpv4CidrBlock = _messages.StringField(7)
-  webServerIpv4ReservedRange = _messages.StringField(8)
+  cloudComposerConnectionSubnetwork = _messages.StringField(1)
+  cloudComposerNetworkIpv4CidrBlock = _messages.StringField(2)
+  cloudComposerNetworkIpv4ReservedRange = _messages.StringField(3)
+  cloudSqlIpv4CidrBlock = _messages.StringField(4)
+  enablePrivateEnvironment = _messages.BooleanField(5)
+  enablePrivatelyUsedPublicIps = _messages.BooleanField(6)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 7)
+  webServerIpv4CidrBlock = _messages.StringField(8)
+  webServerIpv4ReservedRange = _messages.StringField(9)
 
 
 class RestartWebServerRequest(_messages.Message):
@@ -1519,8 +1521,6 @@ class WebServerConfig(_messages.Message):
 
 class WebServerNetworkAccessControl(_messages.Message):
   r"""Network-level access control policy for the Airflow web server.
-  Supported for Cloud Composer environments in versions
-  composer-1.*.*-airflow-*.*.*.
 
   Fields:
     allowedIpRanges: A collection of allowed IP ranges with descriptions.

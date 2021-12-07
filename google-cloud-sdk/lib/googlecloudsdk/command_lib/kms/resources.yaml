@@ -16,7 +16,7 @@ location:
     attribute_name: location
     help: The location of the key.
 
-keyring:
+key_ring:
   name: keyring
   collection: cloudkms.projects.locations.keyRings
   attributes:

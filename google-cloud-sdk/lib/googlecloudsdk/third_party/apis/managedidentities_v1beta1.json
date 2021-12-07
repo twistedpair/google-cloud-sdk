@@ -258,7 +258,7 @@
     },
     "Domain": {
       "id": "Domain",
-      "description": "If the domain is being changed, it will be placed into the UPDATING state, which indicates that the resource is being reconciled. At this point, Get will reflect an intermediate state. Represents a managed Microsoft Active Directory domain.",
+      "description": "Represents a managed Microsoft Active Directory domain. If the domain is being changed, it will be placed into the UPDATING state, which indicates that the resource is being reconciled. At this point, Get will reflect an intermediate state.",
       "type": "object",
       "properties": {
         "name": {

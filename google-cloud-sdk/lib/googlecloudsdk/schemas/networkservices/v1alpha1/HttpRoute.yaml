@@ -33,12 +33,36 @@ properties:
     description: |-
       A free-text description of the resource. Max length 1024 characters.
     type: string
+  gateways:
+    description: |-
+      Gateways defines a list of gateways this HttpRoute is attached to, as one
+      of the routing rules to route the requests served by the gateway. Each
+      gateway reference should match the pattern:
+      `projects/*/locations/global/gateways/`
+    type: array
+    items:
+      type: string
   hostnames:
     description: |-
-      Hostnames define a set of hosts that should match against the HTTP host
-      header to select a HttpRoute to process the request. Hostname is the fully
-      qualified domain name of a network host, as defined by RFC 3986. Wildcard
-      hosts are supported in prefix form or suffix form.
+      Hostnames define a set of hosts that should match against the HTTP
+      host header to select a HttpRoute to process the request. Hostname is
+      the fully qualified domain name of a network host, as defined by RFC
+      1123 with the exception that ip addresses are not allowed. Wildcard
+      hosts are supported as "*" (no prefix or suffix allowed).
+    type: array
+    items:
+      type: string
+  labels:
+    description: |-
+      Set of label tags associated with the HttpRoute resource.
+    $ref: LabelsValue.yaml
+  meshes:
+    description: |-
+      Meshes defines a list of meshes this HttpRoute is attached to, as
+      one of the routing rules to route the requests served by the mesh.
+      Each mesh reference should match the pattern:
+      `projects/*/locations/global/meshes/` The attached Mesh should be
+      of a type SIDECAR
     type: array
     items:
       type: string
@@ -49,15 +73,16 @@ properties:
     type: string
   routers:
     description: |-
-      Routers define a list of routers this HttpRoute should be served by.
-      Each router reference should match the pattern:
-      `projects/*/locations/global/routers/` The attached Router should be
-      of a type PROXY
+      Routers define a list of routers this HttpRoute should be
+      served by. Each router reference should match the pattern:
+      `projects/*/locations/global/routers/` The attached Router
+      should be of a type PROXY
     type: array
     items:
       type: string
   rules:
-    description: Rules that define how traffic is routed and handled.
+    description: |-
+      Rules that define how traffic is routed and handled.
     type: array
     items:
       $ref: HttpRouteRouteRule.yaml

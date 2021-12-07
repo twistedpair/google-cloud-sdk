@@ -1770,6 +1770,13 @@
           "description": "The timestamp for when the vulnerability was last modified.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "items": {
+          "description": "List of items affected by the vulnerability.",
+          "type": "array",
+          "items": {
+            "$ref": "VulnerabilityReportVulnerabilityItem"
+          }
         }
       }
     },
@@ -1965,6 +1972,29 @@
         },
         "source": {
           "description": "The source of the reference e.g. NVD.",
+          "type": "string"
+        }
+      }
+    },
+    "VulnerabilityReportVulnerabilityItem": {
+      "id": "VulnerabilityReportVulnerabilityItem",
+      "description": "OS inventory item that is affected by a vulnerability or fixed as a result of a vulnerability.",
+      "type": "object",
+      "properties": {
+        "installedInventoryItemId": {
+          "description": "Corresponds to the `INSTALLED_PACKAGE` inventory item on the VM. This field displays the inventory items affected by this vulnerability. If the vulnerability report was not updated after the VM inventory update, these values might not display in VM inventory. For some operating systems, this field might be empty.",
+          "type": "string"
+        },
+        "availableInventoryItemId": {
+          "description": "Corresponds to the `AVAILABLE_PACKAGE` inventory item on the VM. If the vulnerability report was not updated after the VM inventory update, these values might not display in VM inventory. If there is no available fix, the field is empty. The `inventory_item` value specifies the latest `SoftwarePackage` available to the VM that fixes the vulnerability.",
+          "type": "string"
+        },
+        "fixedCpeUri": {
+          "description": "The recommended [CPE URI](https:\/\/cpe.mitre.org\/specification\/) update that contains a fix for this vulnerability.",
+          "type": "string"
+        },
+        "upstreamFix": {
+          "description": "The upstream OS patch, packages or KB that fixes the vulnerability.",
           "type": "string"
         }
       }

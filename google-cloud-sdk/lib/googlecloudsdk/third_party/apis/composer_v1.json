@@ -284,7 +284,7 @@
           "$ref": "PrivateEnvironmentConfig"
         },
         "webServerNetworkAccessControl": {
-          "description": "Optional. The network-level access control policy for the Airflow web server. If unspecified, no network-level access restrictions will be applied. This field is supported for Cloud Composer environments in versions composer-1.*.*-airflow-*.*.*.",
+          "description": "Optional. The network-level access control policy for the Airflow web server. If unspecified, no network-level access restrictions will be applied.",
           "$ref": "WebServerNetworkAccessControl"
         },
         "databaseConfig": {
@@ -296,8 +296,12 @@
           "$ref": "WebServerConfig"
         },
         "encryptionConfig": {
-          "description": "Optional. The encryption options for the Cloud Composer environment and its dependencies. Cannot be updated. This field is supported for Cloud Composer environments in versions composer-1.*.*-airflow-*.*.*.",
+          "description": "Optional. The encryption options for the Cloud Composer environment and its dependencies. Cannot be updated.",
           "$ref": "EncryptionConfig"
+        },
+        "maintenanceWindow": {
+          "description": "Optional. The maintenance window is the period when Cloud Composer components may undergo maintenance. It is defined so that maintenance is not executed during peak hours or critical time periods. The system will not be under maintenance for every occurrence of this window, but when maintenance is planned, it will be scheduled during the window. The maintenance window period must encompass at least 12 hours per week. This may be split into multiple chunks, each with a size of at least 4 hours. If this value is omitted, the default value for maintenance window will be applied. The default value is Saturday and Sunday 00-06 GMT.",
+          "$ref": "MaintenanceWindow"
         },
         "workloadsConfig": {
           "description": "Optional. The workloads configuration settings for the GKE cluster associated with the Cloud Composer environment. The GKE cluster runs Airflow scheduler, web server and workers workloads. This field is supported for Cloud Composer environments in versions composer-2.*.*-airflow-*.*.* and newer.",
@@ -502,7 +506,7 @@
     },
     "WebServerNetworkAccessControl": {
       "id": "WebServerNetworkAccessControl",
-      "description": "Network-level access control policy for the Airflow web server. Supported for Cloud Composer environments in versions composer-1.*.*-airflow-*.*.*.",
+      "description": "Network-level access control policy for the Airflow web server.",
       "type": "object",
       "properties": {
         "allowedIpRanges": {
@@ -558,6 +562,27 @@
       "properties": {
         "kmsKeyName": {
           "description": "Optional. Customer-managed Encryption Key available through Google's Key Management Service. Cannot be updated. If not specified, Google-managed key will be used.",
+          "type": "string"
+        }
+      }
+    },
+    "MaintenanceWindow": {
+      "id": "MaintenanceWindow",
+      "description": "The configuration settings for Cloud Composer maintenance window. The following example: ``` { \"startTime\":\"2019-08-01T01:00:00Z\" \"endTime\":\"2019-08-01T07:00:00Z\" \"recurrence\":\"FREQ=WEEKLY;BYDAY=TU,WE\" } ``` would define a maintenance window between 01 and 07 hours UTC during each Tuesday and Wednesday.",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "Required. Start time of the first recurrence of the maintenance window.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Required. Maintenance window end time. It is used only to calculate the duration of the maintenance window. The value for end-time must be in the future, relative to `start_time`.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "recurrence": {
+          "description": "Required. Maintenance window recurrence. Format is a subset of [RFC-5545](https:\/\/tools.ietf.org\/html\/rfc5545) `RRULE`. The only allowed values for `FREQ` field are `FREQ=DAILY` and `FREQ=WEEKLY;BYDAY=...` Example values: `FREQ=WEEKLY;BYDAY=TU,WE`, `FREQ=DAILY`.",
           "type": "string"
         }
       }
@@ -788,7 +813,8 @@
             "A resource deletion operation.",
             "A resource update operation.",
             "A resource check operation.",
-            "Stores the state of the resource operation."
+            "Stores the state of the resource operation.",
+            "Loads the state of the resource operation."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
@@ -796,7 +822,8 @@
             "DELETE",
             "UPDATE",
             "CHECK",
-            "STORE_STATE"
+            "STORE_STATE",
+            "LOAD_STATE"
           ]
         },
         "resource": {

@@ -28,3 +28,15 @@ cluster:
     parameter_name: clustersId
     attribute_name: cluster
     help: The name of the cluster
+
+node_pool:
+  name: node pool
+  collection: container.projects.locations.clusters.nodePools
+  attributes:
+  - *project
+  - *location
+  - *cluster
+  - &node_pool
+    parameter_name: nodePoolsId
+    attribute_name: node_pool
+    help: The name of the node pool

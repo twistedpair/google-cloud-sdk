@@ -116,7 +116,7 @@ def AddShareSettingArgToParser(parser):
   group.add_argument(
       '--share-setting',
       required=True,
-      choices=['projects'],
+      choices=['projects', 'organization'],
       help="""
 Specify if this node group is shared; and if so, the type of sharing:
 share with specific projects or folders.

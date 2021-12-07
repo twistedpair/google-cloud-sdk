@@ -27,11 +27,14 @@ class AcceleratorConfig(_messages.Message):
       are described in the NVIDIA [mig user
       guide](https://docs.nvidia.com/datacenter/tesla/mig-user-
       guide/#partitioning).
+    maxTimeSharedClientsPerGpu: The number of time-shared GPU resources to
+      expose for each physical GPU.
   """
 
   acceleratorCount = _messages.IntegerField(1)
   acceleratorType = _messages.StringField(2)
   gpuPartitionSize = _messages.StringField(3)
+  maxTimeSharedClientsPerGpu = _messages.IntegerField(4)
 
 
 class AddonsConfig(_messages.Message):
@@ -581,6 +584,9 @@ class Cluster(_messages.Message):
       for hosting containers. This is provisioned from within the
       `container_ipv4_cidr` range. This field will only be set when cluster is
       in route-based network mode.
+    nodePoolAutoConfig: node pool configs that apply to all auto-provisioned
+      node pools in autopilot clusters and node auto-provisioning enabled
+      clusters
     nodePoolDefaults: Default NodePool settings for the entire cluster. These
       settings are overridden if specified on the specific NodePool object.
     nodePools: The node pools associated with this cluster. This field should
@@ -755,33 +761,34 @@ class Cluster(_messages.Message):
   networkPolicy = _messages.MessageField('NetworkPolicy', 50)
   nodeConfig = _messages.MessageField('NodeConfig', 51)
   nodeIpv4CidrSize = _messages.IntegerField(52, variant=_messages.Variant.INT32)
-  nodePoolDefaults = _messages.MessageField('NodePoolDefaults', 53)
-  nodePools = _messages.MessageField('NodePool', 54, repeated=True)
-  nodeSchedulingStrategy = _messages.EnumField('NodeSchedulingStrategyValueValuesEnum', 55)
-  notificationConfig = _messages.MessageField('NotificationConfig', 56)
-  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 57)
-  privateCluster = _messages.BooleanField(58)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 59)
-  releaseChannel = _messages.MessageField('ReleaseChannel', 60)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 61)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 62)
-  resourceVersion = _messages.StringField(63)
-  securityProfile = _messages.MessageField('SecurityProfile', 64)
-  selfLink = _messages.StringField(65)
-  servicesIpv4Cidr = _messages.StringField(66)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 67)
-  status = _messages.EnumField('StatusValueValuesEnum', 68)
-  statusMessage = _messages.StringField(69)
-  subnetwork = _messages.StringField(70)
-  tpuConfig = _messages.MessageField('TpuConfig', 71)
-  tpuIpv4CidrBlock = _messages.StringField(72)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 73)
-  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 74)
-  workloadCertificates = _messages.MessageField('WorkloadCertificates', 75)
-  workloadConfig = _messages.MessageField('WorkloadConfig', 76)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 77)
-  workloadMonitoringEnabledEap = _messages.BooleanField(78)
-  zone = _messages.StringField(79)
+  nodePoolAutoConfig = _messages.MessageField('NodePoolAutoConfig', 53)
+  nodePoolDefaults = _messages.MessageField('NodePoolDefaults', 54)
+  nodePools = _messages.MessageField('NodePool', 55, repeated=True)
+  nodeSchedulingStrategy = _messages.EnumField('NodeSchedulingStrategyValueValuesEnum', 56)
+  notificationConfig = _messages.MessageField('NotificationConfig', 57)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 58)
+  privateCluster = _messages.BooleanField(59)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 60)
+  releaseChannel = _messages.MessageField('ReleaseChannel', 61)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 62)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 63)
+  resourceVersion = _messages.StringField(64)
+  securityProfile = _messages.MessageField('SecurityProfile', 65)
+  selfLink = _messages.StringField(66)
+  servicesIpv4Cidr = _messages.StringField(67)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 68)
+  status = _messages.EnumField('StatusValueValuesEnum', 69)
+  statusMessage = _messages.StringField(70)
+  subnetwork = _messages.StringField(71)
+  tpuConfig = _messages.MessageField('TpuConfig', 72)
+  tpuIpv4CidrBlock = _messages.StringField(73)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 74)
+  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 75)
+  workloadCertificates = _messages.MessageField('WorkloadCertificates', 76)
+  workloadConfig = _messages.MessageField('WorkloadConfig', 77)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 78)
+  workloadMonitoringEnabledEap = _messages.BooleanField(79)
+  zone = _messages.StringField(80)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -892,7 +899,9 @@ class ClusterUpdate(_messages.Message):
     desiredDnsConfig: DNSConfig contains clusterDNS config for this cluster.
     desiredEnableGvnic: to be deprecated TODO(b/192680711), replaced with
       UpdateNodePoolRequest.Gvnic = 29
-    desiredGcfsConfig: The desired GCFS config for the cluster
+    desiredEnablePrivateEndpoint: Enable/Disable private endpoint for the
+      cluster.
+    desiredGcfsConfig: The desired GCFS config for the cluster.
     desiredGkeOidcConfig: Security message for security related configuration
     desiredIdentityServiceConfig: The desired Identity Service component
       configuration.
@@ -947,6 +956,9 @@ class ClusterUpdate(_messages.Message):
     desiredNodeNetworkPolicy: NodeNetworkPolicy specifies the config for the
       node firewall feature. This feature is only supported with
       DatapathProvider=ADVANCED_DATAPATH.
+    desiredNodePoolAutoConfigNetworkTags: The desired network tags that apply
+      to all auto-provisioned node pools in autopilot clusters and node auto-
+      provisioning enabled clusters.
     desiredNodePoolAutoscaling: Autoscaler configuration for the node pool
       specified in desired_node_pool_id. If there is only one pool in the
       cluster and desired_node_pool_id is not provided then the change applies
@@ -978,6 +990,8 @@ class ClusterUpdate(_messages.Message):
     desiredServiceExternalIpsConfig: ServiceExternalIPsConfig specifies the
       config for the use of Services with ExternalIPs field.
     desiredShieldedNodes: Configuration for Shielded Nodes.
+    desiredStableFleetConfig: StableFleetConfig contains the desired stable
+      fleet config for the cluster.
     desiredTpuConfig: The desired Cloud TPU configuration.
     desiredVerticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
       configuration.
@@ -1039,46 +1053,49 @@ class ClusterUpdate(_messages.Message):
   desiredDefaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 13)
   desiredDnsConfig = _messages.MessageField('DNSConfig', 14)
   desiredEnableGvnic = _messages.BooleanField(15)
-  desiredGcfsConfig = _messages.MessageField('GcfsConfig', 16)
-  desiredGkeOidcConfig = _messages.MessageField('GkeOidcConfig', 17)
-  desiredIdentityServiceConfig = _messages.MessageField('IdentityServiceConfig', 18)
-  desiredImage = _messages.StringField(19)
-  desiredImageProject = _messages.StringField(20)
-  desiredImageType = _messages.StringField(21)
-  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 22)
-  desiredKubernetesObjectsExportConfig = _messages.MessageField('KubernetesObjectsExportConfig', 23)
-  desiredL4ilbSubsettingConfig = _messages.MessageField('ILBSubsettingConfig', 24)
-  desiredLocations = _messages.StringField(25, repeated=True)
-  desiredLoggingConfig = _messages.MessageField('LoggingConfig', 26)
-  desiredLoggingService = _messages.StringField(27)
-  desiredMaster = _messages.MessageField('Master', 28)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 29)
-  desiredMasterVersion = _messages.StringField(30)
-  desiredMeshCertificates = _messages.MessageField('MeshCertificates', 31)
-  desiredMonitoringConfig = _messages.MessageField('MonitoringConfig', 32)
-  desiredMonitoringService = _messages.StringField(33)
-  desiredNodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 34)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 35)
-  desiredNodePoolId = _messages.StringField(36)
-  desiredNodeVersion = _messages.StringField(37)
-  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 38)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 39)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 40)
-  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 41)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 42)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 43)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 44)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 45)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 46)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 47)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 48)
-  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 49)
-  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 50)
-  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 51)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 52)
-  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 53)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 54)
-  securityProfile = _messages.MessageField('SecurityProfile', 55)
+  desiredEnablePrivateEndpoint = _messages.BooleanField(16)
+  desiredGcfsConfig = _messages.MessageField('GcfsConfig', 17)
+  desiredGkeOidcConfig = _messages.MessageField('GkeOidcConfig', 18)
+  desiredIdentityServiceConfig = _messages.MessageField('IdentityServiceConfig', 19)
+  desiredImage = _messages.StringField(20)
+  desiredImageProject = _messages.StringField(21)
+  desiredImageType = _messages.StringField(22)
+  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 23)
+  desiredKubernetesObjectsExportConfig = _messages.MessageField('KubernetesObjectsExportConfig', 24)
+  desiredL4ilbSubsettingConfig = _messages.MessageField('ILBSubsettingConfig', 25)
+  desiredLocations = _messages.StringField(26, repeated=True)
+  desiredLoggingConfig = _messages.MessageField('LoggingConfig', 27)
+  desiredLoggingService = _messages.StringField(28)
+  desiredMaster = _messages.MessageField('Master', 29)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 30)
+  desiredMasterVersion = _messages.StringField(31)
+  desiredMeshCertificates = _messages.MessageField('MeshCertificates', 32)
+  desiredMonitoringConfig = _messages.MessageField('MonitoringConfig', 33)
+  desiredMonitoringService = _messages.StringField(34)
+  desiredNodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 35)
+  desiredNodePoolAutoConfigNetworkTags = _messages.MessageField('NetworkTags', 36)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 37)
+  desiredNodePoolId = _messages.StringField(38)
+  desiredNodeVersion = _messages.StringField(39)
+  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 40)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 41)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 42)
+  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 43)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 44)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 45)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 46)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 47)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 48)
+  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 49)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 50)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 51)
+  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 52)
+  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 53)
+  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 54)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 55)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 56)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 57)
+  securityProfile = _messages.MessageField('SecurityProfile', 58)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -2149,6 +2166,30 @@ class IPAllocationPolicy(_messages.Message):
     subnetworkName: A custom subnetwork name to be used if `create_subnetwork`
       is true. If this field is empty, then an automatic name will be chosen
       for the new subnetwork.
+    targetNodeIpv4Range: The target IP address range of the node IPs in this
+      cluster. This is applicable only if `create_subnetwork` is true. This
+      setting works in conjunction with `node_ipv4_cidr_block`. When
+      `node_ipv4_cidr_block` specifies an IP mask length then the
+      corresponding range will be auto assigned from within the CIDR block
+      specified here. Set to blank to use the default range (10.0.0.0/8). Set
+      to a [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
+      notation (e.g. `100.64.0.0/16`) to pick a specific range to use.
+    targetPodIpv4Range: The target IP address range of the pod IPs in this
+      cluster. This setting works in conjunction with
+      `cluster_ipv4_cidr_block`. When `cluster_ipv4_cidr_block` specifies an
+      IP mask length then the corresponding range will be auto assigned from
+      within the CIDR block specified here. Set to blank to use the default
+      range (10.0.0.0/8). Set to a
+      [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
+      notation (e.g. `240.0.0.0/8`) to pick a specific range to use.
+    targetServiceIpv4Range: The target IP address range of the services IPs in
+      this cluster. This setting works in conjunction with
+      `services_ipv4_cidr_block`. When `services_ipv4_cidr_block` specifies an
+      IP mask length then the corresponding range will be auto assigned from
+      within the CIDR block specified here. Set to blank to use the default
+      range (10.0.0.0/8). Set to a
+      [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
+      notation (e.g. `192.168.0.0/16`) to pick a specific range to use.
     tpuIpv4CidrBlock: The IP address range of the Cloud TPUs in this cluster.
       If unspecified, a range will be automatically chosen with the default
       size. This field is only applicable when `use_ip_aliases` is true, and
@@ -2214,10 +2255,13 @@ class IPAllocationPolicy(_messages.Message):
   servicesSecondaryRangeName = _messages.StringField(11)
   stackType = _messages.EnumField('StackTypeValueValuesEnum', 12)
   subnetworkName = _messages.StringField(13)
-  tpuIpv4CidrBlock = _messages.StringField(14)
-  tpuUseServiceNetworking = _messages.BooleanField(15)
-  useIpAliases = _messages.BooleanField(16)
-  useRoutes = _messages.BooleanField(17)
+  targetNodeIpv4Range = _messages.StringField(14)
+  targetPodIpv4Range = _messages.StringField(15)
+  targetServiceIpv4Range = _messages.StringField(16)
+  tpuIpv4CidrBlock = _messages.StringField(17)
+  tpuUseServiceNetworking = _messages.BooleanField(18)
+  useIpAliases = _messages.BooleanField(19)
+  useRoutes = _messages.BooleanField(20)
 
 
 class IdentityServiceConfig(_messages.Message):
@@ -2989,6 +3033,48 @@ class NetworkConfig(_messages.Message):
   subnetwork = _messages.StringField(14)
 
 
+class NetworkPerformanceConfig(_messages.Message):
+  r"""Configuration of all network bandwidth tiers
+
+  Enums:
+    ExternalIpEgressBandwidthTierValueValuesEnum: Specifies the network
+      bandwidth tier for the NodePool for traffic to external/public IP
+      addresses.
+    TotalEgressBandwidthTierValueValuesEnum: Specifies the total network
+      bandwidth tier for the NodePool.
+
+  Fields:
+    externalIpEgressBandwidthTier: Specifies the network bandwidth tier for
+      the NodePool for traffic to external/public IP addresses.
+    totalEgressBandwidthTier: Specifies the total network bandwidth tier for
+      the NodePool.
+  """
+
+  class ExternalIpEgressBandwidthTierValueValuesEnum(_messages.Enum):
+    r"""Specifies the network bandwidth tier for the NodePool for traffic to
+    external/public IP addresses.
+
+    Values:
+      TIER_UNSPECIFIED: Default value
+      TIER_1: Higher bandwidth, actual values based on VM size.
+    """
+    TIER_UNSPECIFIED = 0
+    TIER_1 = 1
+
+  class TotalEgressBandwidthTierValueValuesEnum(_messages.Enum):
+    r"""Specifies the total network bandwidth tier for the NodePool.
+
+    Values:
+      TIER_UNSPECIFIED: Default value
+      TIER_1: Higher bandwidth, actual values based on VM size.
+    """
+    TIER_UNSPECIFIED = 0
+    TIER_1 = 1
+
+  externalIpEgressBandwidthTier = _messages.EnumField('ExternalIpEgressBandwidthTierValueValuesEnum', 1)
+  totalEgressBandwidthTier = _messages.EnumField('TotalEgressBandwidthTierValueValuesEnum', 2)
+
+
 class NetworkPolicy(_messages.Message):
   r"""Configuration options for the NetworkPolicy feature.
   https://kubernetes.io/docs/concepts/services-networking/networkpolicies/
@@ -3305,8 +3391,8 @@ class NodeKubeletConfig(_messages.Message):
       duration.
     cpuManagerPolicy: Control the CPU management policy on the node. See
       https://kubernetes.io/docs/tasks/administer-cluster/cpu-management-
-      policies/ The following values are allowed. - "none": the default, which
-      represents the existing scheduling behavior. - "static": allows pods
+      policies/ The following values are allowed. * "none": the default, which
+      represents the existing scheduling behavior. * "static": allows pods
       with certain resource characteristics to be granted increased CPU
       affinity and exclusivity on the node. The default value is 'none' if
       unspecified.
@@ -3389,6 +3475,7 @@ class NodeNetworkConfig(_messages.Message):
     enablePrivateNodes: Whether nodes have internal IP addresses only. If
       enable_private_nodes is not specified, then the value is derived from
       cluster.privateClusterConfig.enablePrivateNodes
+    networkPerformanceConfig: Network bandwidth tier configuration.
     nodeIpv4CidrBlock: A string attribute.
     podIpv4CidrBlock: The IP address range for pod IPs in this node pool. Only
       applicable if `create_pod_range` is true. Set to blank to have a range
@@ -3404,18 +3491,25 @@ class NodeNetworkConfig(_messages.Message):
       `ip_allocation_policy.use_ip_aliases` is true. This field cannot be
       changed after the node pool has been created.
     subnetwork: A string attribute.
-    tiers: Network bandwidth tier configuration.
+    targetPodIpv4Range: The target IP address range of the pod IPs in this
+      node pool. This setting works in conjunction with `pod_ipv4_cidr_block`.
+      When `pod_ipv4_cidr_block` specifies an IP mask length then the
+      corresponding range will be auto assigned from within the CIDR block
+      specified here. Set to blank to use the default range (10.0.0.0/8). Set
+      to a [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
+      notation (e.g. `240.0.0.0/8`) to pick a specific range to use.
   """
 
   createPodRange = _messages.BooleanField(1)
   createSubnetwork = _messages.BooleanField(2)
   enableEndpointsliceProxying = _messages.BooleanField(3)
   enablePrivateNodes = _messages.BooleanField(4)
-  nodeIpv4CidrBlock = _messages.StringField(5)
-  podIpv4CidrBlock = _messages.StringField(6)
-  podRange = _messages.StringField(7)
-  subnetwork = _messages.StringField(8)
-  tiers = _messages.MessageField('Tiers', 9)
+  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 5)
+  nodeIpv4CidrBlock = _messages.StringField(6)
+  podIpv4CidrBlock = _messages.StringField(7)
+  podRange = _messages.StringField(8)
+  subnetwork = _messages.StringField(9)
+  targetPodIpv4Range = _messages.StringField(10)
 
 
 class NodeNetworkPolicy(_messages.Message):
@@ -3542,6 +3636,20 @@ class NodePool(_messages.Message):
   updateInfo = _messages.MessageField('UpdateInfo', 17)
   upgradeSettings = _messages.MessageField('UpgradeSettings', 18)
   version = _messages.StringField(19)
+
+
+class NodePoolAutoConfig(_messages.Message):
+  r"""node pool configs that apply to all auto-provisioned node pools in
+  autopilot clusters and node auto-provisioning enabled clusters
+
+  Fields:
+    networkTags: The list of instance tags applied to all nodes. Tags are used
+      to identify valid sources or targets for network firewalls and are
+      specified by the client during cluster creation. Each tag within the
+      list must comply with RFC1035.
+  """
+
+  networkTags = _messages.MessageField('NetworkTags', 1)
 
 
 class NodePoolAutoscaling(_messages.Message):
@@ -4972,48 +5080,6 @@ class StatusCondition(_messages.Message):
   message = _messages.StringField(3)
 
 
-class Tiers(_messages.Message):
-  r"""Configuration of all network bandwidth tiers
-
-  Enums:
-    ExternalIpEgressBandwidthTierValueValuesEnum: Specifies the network
-      bandwidth tier for the NodePool for traffic to external/public IP
-      addresses.
-    TotalEgressBandwidthTierValueValuesEnum: Specifies the total network
-      bandwidth tier for the NodePool.
-
-  Fields:
-    externalIpEgressBandwidthTier: Specifies the network bandwidth tier for
-      the NodePool for traffic to external/public IP addresses.
-    totalEgressBandwidthTier: Specifies the total network bandwidth tier for
-      the NodePool.
-  """
-
-  class ExternalIpEgressBandwidthTierValueValuesEnum(_messages.Enum):
-    r"""Specifies the network bandwidth tier for the NodePool for traffic to
-    external/public IP addresses.
-
-    Values:
-      TIER_UNSPECIFIED: Default value
-      TIER_1: Higher bandwidth, actual values based on VM size.
-    """
-    TIER_UNSPECIFIED = 0
-    TIER_1 = 1
-
-  class TotalEgressBandwidthTierValueValuesEnum(_messages.Enum):
-    r"""Specifies the total network bandwidth tier for the NodePool.
-
-    Values:
-      TIER_UNSPECIFIED: Default value
-      TIER_1: Higher bandwidth, actual values based on VM size.
-    """
-    TIER_UNSPECIFIED = 0
-    TIER_1 = 1
-
-  externalIpEgressBandwidthTier = _messages.EnumField('ExternalIpEgressBandwidthTierValueValuesEnum', 1)
-  totalEgressBandwidthTier = _messages.EnumField('TotalEgressBandwidthTierValueValuesEnum', 2)
-
-
 class TimeWindow(_messages.Message):
   r"""Represents an arbitrary window of time.
 
@@ -5194,44 +5260,6 @@ class UpdateNodePoolRequest(_messages.Message):
   upgradeSettings = _messages.MessageField('UpgradeSettings', 19)
   workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 20)
   zone = _messages.StringField(21)
-
-
-class UpgradeEvent(_messages.Message):
-  r"""UpgradeEvent is a notification sent to customers by the cluster server
-  when a resource is upgrading.
-
-  Enums:
-    ResourceTypeValueValuesEnum: The resource type that is upgrading.
-
-  Fields:
-    currentVersion: The current version before the upgrade.
-    operation: The operation associated with this upgrade.
-    operationStartTime: The time when the operation was started.
-    resource: Optional relative path to the resource. For example in node pool
-      upgrades, the relative path of the node pool.
-    resourceType: The resource type that is upgrading.
-    targetVersion: The target version for the upgrade.
-  """
-
-  class ResourceTypeValueValuesEnum(_messages.Enum):
-    r"""The resource type that is upgrading.
-
-    Values:
-      UPGRADE_RESOURCE_TYPE_UNSPECIFIED: Default value. This shouldn't be
-        used.
-      MASTER: Master / control plane
-      NODE_POOL: Node pool
-    """
-    UPGRADE_RESOURCE_TYPE_UNSPECIFIED = 0
-    MASTER = 1
-    NODE_POOL = 2
-
-  currentVersion = _messages.StringField(1)
-  operation = _messages.StringField(2)
-  operationStartTime = _messages.StringField(3)
-  resource = _messages.StringField(4)
-  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 5)
-  targetVersion = _messages.StringField(6)
 
 
 class UpgradeSettings(_messages.Message):

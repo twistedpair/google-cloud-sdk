@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
@@ -113,6 +114,7 @@ def GetRouteResourceSpec(resource_name='route'):
 
 def AddConnectionProfileResourceArg(parser,
                                     verb,
+                                    release_track,
                                     positional=True,
                                     required=True):
   """Add a resource argument for a Datastream connection profile.
@@ -120,6 +122,8 @@ def AddConnectionProfileResourceArg(parser,
   Args:
     parser: the parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
+    release_track: Some arguments are added based on the command release
+        track.
     positional: bool, if True, means that the resource is a positional rather
       than a flag.
     required: bool, if True, means that a flag is required.
@@ -134,8 +138,11 @@ def AddConnectionProfileResourceArg(parser,
       '--static-ip-connectivity',
       action='store_true',
       help="""use static ip connectivity""")
-  connectivity_parser.add_argument(
-      '--no-connectivity', action='store_true', help="""no connectivity""")
+
+  if release_track == base.ReleaseTrack.BETA:
+    connectivity_parser.add_argument(
+        '--no-connectivity', action='store_true', help="""no connectivity""")
+
   forward_ssh_parser = connectivity_parser.add_group()
   forward_ssh_parser.add_argument(
       '--forward-ssh-hostname',
@@ -158,6 +165,11 @@ def AddConnectionProfileResourceArg(parser,
   password_group.add_argument(
       '--forward-ssh-private-key', help='SSH private key..')
 
+  # TODO(b/207467120): deprecate BETA client.
+  private_connection_flag_name = 'private-connection'
+  if release_track == base.ReleaseTrack.BETA:
+    private_connection_flag_name = 'private-connection-name'
+
   resource_specs = [
       presentation_specs.ResourcePresentationSpec(
           name,
@@ -165,7 +177,7 @@ def AddConnectionProfileResourceArg(parser,
           'The connection profile {}.'.format(verb),
           required=True),
       presentation_specs.ResourcePresentationSpec(
-          '--private-connection-name',
+          '--%s' % private_connection_flag_name,
           GetPrivateConnectionResourceSpec(),
           'Resource ID of the private connection.',
           flag_name_overrides={'location': ''},
@@ -174,7 +186,7 @@ def AddConnectionProfileResourceArg(parser,
   concept_parsers.ConceptParser(
       resource_specs,
       command_level_fallthroughs={
-          '--private-connection-name.location': ['--location'],
+          '--%s.location' % private_connection_flag_name: ['--location'],
       }).AddToParser(parser)
 
 
@@ -409,4 +421,3 @@ def AddRouteResourceArg(parser, verb, positional=True):
   ]
   concept_parsers.ConceptParser(
       resource_specs).AddToParser(parser)
-

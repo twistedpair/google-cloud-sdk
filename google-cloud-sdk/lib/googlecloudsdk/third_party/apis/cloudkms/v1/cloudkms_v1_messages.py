@@ -97,9 +97,8 @@ class AsymmetricSignRequest(_messages.Message):
   r"""Request message for KeyManagementService.AsymmetricSign.
 
   Fields:
-    data: Optional. This field will only be honored for RAW_PKCS1 keys. The
-      data to sign. A digest is computed over the data that will be signed,
-      PKCS #1 padding is applied to the digest directly and then encrypted.
+    data: Optional. The data to sign. It can't be supplied if
+      AsymmetricSignRequest.digest is supplied.
     dataCrc32c: Optional. An optional CRC32C checksum of the
       AsymmetricSignRequest.data. If specified, KeyManagementService will
       verify the integrity of the received AsymmetricSignRequest.data using
@@ -114,7 +113,8 @@ class AsymmetricSignRequest(_messages.Message):
       safely downconverted to uint32 in languages that support this type.
     digest: Optional. The digest of the data to sign. The digest must be
       produced with the same digest algorithm as specified by the key
-      version's algorithm.
+      version's algorithm. This field may not be supplied if
+      AsymmetricSignRequest.data is supplied.
     digestCrc32c: Optional. An optional CRC32C checksum of the
       AsymmetricSignRequest.digest. If specified, KeyManagementService will
       verify the integrity of the received AsymmetricSignRequest.digest using
@@ -330,6 +330,62 @@ class CertificateChains(_messages.Message):
   caviumCerts = _messages.StringField(1, repeated=True)
   googleCardCerts = _messages.StringField(2, repeated=True)
   googlePartitionCerts = _messages.StringField(3, repeated=True)
+
+
+class CloudkmsProjectsLocationsEkmConnectionsGetIamPolicyRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsEkmConnectionsGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class CloudkmsProjectsLocationsEkmConnectionsSetIamPolicyRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsEkmConnectionsSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class CloudkmsProjectsLocationsEkmConnectionsTestIamPermissionsRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsEkmConnectionsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class CloudkmsProjectsLocationsGenerateRandomBytesRequest(_messages.Message):

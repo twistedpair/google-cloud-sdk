@@ -131,16 +131,6 @@ class ArgAdder(object):
     )
     return self
 
-  def AddClusterNodes(self, in_instance=False, required=None, default=None):
-    is_required = required if required is not None else not in_instance
-    self.parser.add_argument(
-        '--cluster-num-nodes' if in_instance else '--num-nodes',
-        help='Number of nodes to serve.',
-        default=default,
-        required=is_required,
-        type=int)
-    return self
-
   def AddDeprecatedClusterNodes(self):
     """Add deprecated cluster nodes argument."""
     self.parser.add_argument(
@@ -365,9 +355,10 @@ class ArgAdder(object):
             },
             required_keys=['id', 'zone'],
             max_length=7),
-        # TODO(b/192707501): unhide autoscaling properties, add it to metavar
-        # and help-text
-        metavar='id=ID,zone=ZONE,nodes=NODES,kms-key=KMS_KEY',
+        metavar='id=ID,zone=ZONE,nodes=NODES,kms-key=KMS_KEY,'
+        'autoscaling-min-nodes=AUTOSCALING_MIN_NODES,'
+        'autoscaling-max-nodes=AUTOSCALING_MAX_NODES,'
+        'autoscaling-cpu-target=AUTOSCALING_CPU_TARGET',
         help=textwrap.dedent("""\
         *Repeatable*. Specify cluster config as a key-value dictionary.
 
@@ -397,7 +388,6 @@ class ArgAdder(object):
                      add_disable_autoscaling=False,
                      require_all_autoscaling_args=False):
     """Add scaling related arguments."""
-    # TODO(b/192707501): unhide autoscaling arguments for GA.
     scaling_group = self.parser.add_mutually_exclusive_group(required=required)
     manual_scaling_group = scaling_group.add_group('Manual Scaling')
     manual_scaling_group.add_argument(
@@ -410,16 +400,16 @@ class ArgAdder(object):
     if add_disable_autoscaling:
       manual_scaling_group.add_argument(
           '--disable-autoscaling',
-          help='Set to disable autoscaling. If not set, no-op whether autoscaling is enabled or not.',
+          help='Set this flag and --num-nodes to disable autoscaling. If autoscaling is currently not enabled, setting this flag does nothing.',
           action='store_true',
           default=False,
           required=False,
-          hidden=True)
+          hidden=False)
 
-    autoscaling_group = scaling_group.add_group('Autoscaling', hidden=True)
+    autoscaling_group = scaling_group.add_group('Autoscaling', hidden=False)
     autoscaling_group.add_argument(
         '--autoscaling-min-nodes',
-        help='The minimum number of nodes for autoscaling. Must be between 10 and 80.',
+        help='The minimum number of nodes for autoscaling.',
         default=None,
         required=require_all_autoscaling_args,
         type=int,
@@ -433,7 +423,7 @@ class ArgAdder(object):
         metavar='AUTOSCALING_MAX_NODES')
     autoscaling_group.add_argument(
         '--autoscaling-cpu-target',
-        help='The target CPU utilization percent for autoscaling.',
+        help='The target CPU utilization percent for autoscaling. Accepted values are from 10 to 80.',
         default=None,
         required=require_all_autoscaling_args,
         type=int,

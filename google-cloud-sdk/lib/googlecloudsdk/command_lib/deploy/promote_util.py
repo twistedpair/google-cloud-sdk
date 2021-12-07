@@ -108,13 +108,21 @@ def GetToTargetID(release_obj, is_create):
   # The order of target snapshots represents the promotion sequence.
   # E.g. test->stage->prod. Here we start with the last stage.
   reversed_snapshots = list(reversed(release_obj.targetSnapshots))
+  release_dict = release_ref.AsDict()
   for i, snapshot in enumerate(reversed_snapshots):
     target_ref = target_util.TargetReferenceFromName(snapshot.name)
     # Starting with the last target in the promotion sequence per above, find
     # the last successfully deployed rollout to that target.
-    _, current_rollout = target_util.GetReleasesAndCurrentRollout(
+    current_rollout = target_util.GetCurrentRollout(
         target_ref,
-        release_ref.AsDict()['deliveryPipelinesId'])
+        resources.REGISTRY.Parse(
+            None,
+            collection='clouddeploy.projects.locations.deliveryPipelines',
+            params={
+                'projectsId': release_dict['projectsId'],
+                'locationsId': release_dict['locationsId'],
+                'deliveryPipelinesId': release_dict['deliveryPipelinesId']
+            }))
 
     if current_rollout:
       current_rollout_ref = resources.REGISTRY.Parse(
@@ -128,12 +136,10 @@ def GetToTargetID(release_obj, is_create):
           to_target = reversed_snapshots[i - 1].name
         else:
           log.status.Print(
-              _LAST_TARGET_IN_SEQUENCE.format(
-                  release_ref.Name(), target_ref.Name(),
-                  release_util.ResourceNameProjectNumberToId(
-                      release_ref.RelativeName()),
-                  release_util.ResourceNameProjectNumberToId(
-                      target_ref.RelativeName())))
+              _LAST_TARGET_IN_SEQUENCE.format(release_ref.Name(),
+                                              target_ref.Name(),
+                                              release_ref.RelativeName(),
+                                              target_ref.RelativeName()))
           to_target = target_ref.RelativeName()
           # Once a target to promote to is found break out of the loop
         break

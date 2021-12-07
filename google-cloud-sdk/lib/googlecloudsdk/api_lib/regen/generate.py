@@ -99,6 +99,33 @@ def _CamelCase(snake_case):
   return ''.join(x.capitalize() for x in snake_case.split('_'))
 
 
+def _MakeApitoolsClientDef(root_package, api_name, api_version):
+  """Makes an ApitoolsClientDef."""
+  class_path = '.'.join([root_package, api_name, api_version])
+  # TODO(b/142448542) Roll back the hack
+  if api_name == 'admin' and api_version == 'v1':
+    client_classpath = 'admin_v1_client.AdminDirectoryV1'
+  else:
+    client_classpath = '.'.join([
+        '_'.join([api_name, api_version, 'client']),
+        _CamelCase(api_name) + _CamelCase(api_version)])
+
+  messages_modulepath = '_'.join([api_name, api_version, 'messages'])
+  return api_def.ApitoolsClientDef(
+      class_path=class_path,
+      client_classpath=client_classpath,
+      messages_modulepath=messages_modulepath)
+
+
+def _MakeGapicClientDef(root_package, api_name, api_version):
+  """Makes a GapicClientDef."""
+  gapic_root_package = '.'.join(root_package.split('.')[:-1])
+  class_path = '.'.join(
+      [gapic_root_package, 'gapic_wrappers', api_name, api_version])
+  return api_def.GapicClientDef(
+      class_path=class_path)
+
+
 def _MakeApiMap(root_package, api_config):
   """Converts a map of api_config into ApiDef.
 
@@ -119,27 +146,24 @@ def _MakeApiMap(root_package, api_config):
     api_versions_map = apis_map.setdefault(api_name, {})
     has_default = False
     for api_version, api_config in six.iteritems(api_version_config):
+      if api_config.get('gcloud_gapic_library'):
+        gapic_client = _MakeGapicClientDef(root_package, api_name, api_version)
+      else:
+        gapic_client = None
+
       default = api_config.get('default', len(api_version_config) == 1)
       if has_default and default:
         raise NoDefaultApiError(
             'Multiple default client versions found for [{}]!'
             .format(api_name))
       has_default = has_default or default
-      version = api_config.get('version', api_version)
-      # TODO(b/142448542) Roll back the hacky
-      if api_name == 'admin' and version == 'v1':
-        client_classpath = 'admin_v1_client.AdminDirectoryV1'
-      else:
-        client_classpath = '.'.join([
-            '_'.join([api_name, version, 'client']),
-            _CamelCase(api_name) + _CamelCase(version)])
 
-      messages_modulepath = '_'.join([api_name, version, 'messages'])
       enable_mtls = api_config.get('enable_mtls', True)
       mtls_endpoint_override = api_config.get('mtls_endpoint_override', '')
       api_versions_map[api_version] = api_def.APIDef(
-          '.'.join([root_package, api_name, api_version]), client_classpath,
-          messages_modulepath, default, enable_mtls, mtls_endpoint_override)
+          _MakeApitoolsClientDef(root_package, api_name, api_version),
+          gapic_client,
+          default, enable_mtls, mtls_endpoint_override)
     if has_default:
       apis_with_default.add(api_name)
 
@@ -166,6 +190,7 @@ def GenerateApiMap(base_dir, root_dir, api_config):
                                                 'template.tpl'))
   api_map_file = os.path.join(base_dir, root_dir, 'apis_map.py')
   logging.debug('Generating api map at %s', api_map_file)
+
   api_map = _MakeApiMap(root_dir.replace('/', '.'), api_config)
   logging.debug('Creating following api map %s', api_map)
   with files.FileWriter(api_map_file) as apis_map_file:

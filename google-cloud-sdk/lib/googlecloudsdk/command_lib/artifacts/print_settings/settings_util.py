@@ -180,6 +180,30 @@ def _IsServiceAccountCredentials(cred):
         cred) == creds.CredentialTypeGoogleAuth.SERVICE_ACCOUNT
 
 
+def IsPublicRepo(project, location, repo):
+  """Determine if a repository is public.
+
+  Args:
+    project: Project name.
+    location: Repository location.
+    repo: Repository name.
+
+  Returns:
+    bool, True if repository is public.
+  """
+  iam_policy = ar_requests.GetIamPolicy(
+      "projects/{}/locations/{}/repositories/{}".format(
+          project, location, repo))
+
+  if hasattr(iam_policy, "bindings"):
+    for binding in iam_policy.bindings:
+      if ("allUsers" in binding.members
+          and "artifactregistry.reader" in binding.role):
+        return True
+
+  return False
+
+
 def GetAptSettingsSnippet(args):
   """Forms an apt settings snippet to add to the sources.list.d directory.
 
@@ -203,7 +227,10 @@ def GetAptSettingsSnippet(args):
       "repo_path": repo_path
   }
 
-  apt_setting_template = apt.DEFAULT_TEMPLATE
+  if IsPublicRepo(project, location, repo):
+    apt_setting_template = apt.PUBLIC_TEMPLATE
+  else:
+    apt_setting_template = apt.DEFAULT_TEMPLATE
   return apt_setting_template.format(**data)
 
 
@@ -221,10 +248,15 @@ def GetYumSettingsSnippet(args):
   location, repo_path = _GetLocationAndRepoPath(
       args, messages.Repository.FormatValueValuesEnum.YUM)
   repo = _GetRequiredRepoValue(args)
+  project = _GetRequiredProjectValue(args)
 
   data = {"location": location, "repo": repo, "repo_path": repo_path}
 
-  yum_setting_template = yum.DEFAULT_TEMPLATE
+  if IsPublicRepo(project, location, repo):
+    yum_setting_template = yum.PUBLIC_TEMPLATE
+  else:
+    yum_setting_template = yum.DEFAULT_TEMPLATE
+
   return yum_setting_template.format(**data)
 
 

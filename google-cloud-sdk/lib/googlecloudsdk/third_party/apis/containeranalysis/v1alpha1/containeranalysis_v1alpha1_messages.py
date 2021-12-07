@@ -165,7 +165,12 @@ class BuildDetails(_messages.Message):
   r"""Message encapsulating build provenance details.
 
   Fields:
-    intotoProvenance: In-toto Provenance representation as defined in spec.
+    intotoProvenance: Deprecated. See InTotoStatement for the replacement. In-
+      toto Provenance representation as defined in spec.
+    intotoStatement: In-toto Statement representation as defined in spec. The
+      intoto_statement can contain any type of provenance. The serialized
+      payload of the statement can be stored and signed in the Occurrence's
+      envelope.
     provenance: The actual provenance
     provenanceBytes: Serialized JSON representation of the provenance, used in
       generating the `BuildSignature` in the corresponding Result. After
@@ -179,8 +184,9 @@ class BuildDetails(_messages.Message):
   """
 
   intotoProvenance = _messages.MessageField('InTotoProvenance', 1)
-  provenance = _messages.MessageField('BuildProvenance', 2)
-  provenanceBytes = _messages.StringField(3)
+  intotoStatement = _messages.MessageField('InTotoStatement', 2)
+  provenance = _messages.MessageField('BuildProvenance', 3)
+  provenanceBytes = _messages.StringField(4)
 
 
 class BuildProvenance(_messages.Message):

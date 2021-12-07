@@ -665,14 +665,15 @@ class Address(_messages.Message):
       of a VPC network) - VPC_PEERING for global internal IP addresses used
       for private services access allocated ranges. - NAT_AUTO for the
       regional external IP addresses used by Cloud NAT when allocating
-      addresses using . - IPSEC_INTERCONNECT for addresses created from a
-      private IP range that are reserved for a VLAN attachment in an *IPsec-
-      encrypted Cloud Interconnect* configuration. These addresses are
-      regional resources. Not currently available publicly. -
-      `SHARED_LOADBALANCER_VIP` for an internal IP address that is assigned to
-      multiple internal forwarding rules. - `PRIVATE_SERVICE_CONNECT` for a
-      private network address that is used to configure Private Service
-      Connect. Only global internal addresses can use this purpose.
+      addresses using automatic NAT IP address allocation. -
+      IPSEC_INTERCONNECT for addresses created from a private IP range that
+      are reserved for a VLAN attachment in an *IPsec-encrypted Cloud
+      Interconnect* configuration. These addresses are regional resources. Not
+      currently available publicly. - `SHARED_LOADBALANCER_VIP` for an
+      internal IP address that is assigned to multiple internal forwarding
+      rules. - `PRIVATE_SERVICE_CONNECT` for a private network address that is
+      used to configure Private Service Connect. Only global internal
+      addresses can use this purpose.
     StatusValueValuesEnum: [Output Only] The status of the address, which can
       be one of RESERVING, RESERVED, or IN_USE. An address that is RESERVING
       is currently in the process of being reserved. A RESERVED address is
@@ -733,14 +734,14 @@ class Address(_messages.Message):
       VPC network) - VPC_PEERING for global internal IP addresses used for
       private services access allocated ranges. - NAT_AUTO for the regional
       external IP addresses used by Cloud NAT when allocating addresses using
-      . - IPSEC_INTERCONNECT for addresses created from a private IP range
-      that are reserved for a VLAN attachment in an *IPsec-encrypted Cloud
-      Interconnect* configuration. These addresses are regional resources. Not
-      currently available publicly. - `SHARED_LOADBALANCER_VIP` for an
-      internal IP address that is assigned to multiple internal forwarding
-      rules. - `PRIVATE_SERVICE_CONNECT` for a private network address that is
-      used to configure Private Service Connect. Only global internal
-      addresses can use this purpose.
+      automatic NAT IP address allocation. - IPSEC_INTERCONNECT for addresses
+      created from a private IP range that are reserved for a VLAN attachment
+      in an *IPsec-encrypted Cloud Interconnect* configuration. These
+      addresses are regional resources. Not currently available publicly. -
+      `SHARED_LOADBALANCER_VIP` for an internal IP address that is assigned to
+      multiple internal forwarding rules. - `PRIVATE_SERVICE_CONNECT` for a
+      private network address that is used to configure Private Service
+      Connect. Only global internal addresses can use this purpose.
     region: [Output Only] The URL of the region where a regional address
       resides. For regional addresses, you must specify the region as a path
       parameter in the HTTP request URL. *This field is not applicable to
@@ -815,14 +816,15 @@ class Address(_messages.Message):
     addresses (regional internal IP address in a subnet of a VPC network) -
     VPC_PEERING for global internal IP addresses used for private services
     access allocated ranges. - NAT_AUTO for the regional external IP addresses
-    used by Cloud NAT when allocating addresses using . - IPSEC_INTERCONNECT
-    for addresses created from a private IP range that are reserved for a VLAN
-    attachment in an *IPsec-encrypted Cloud Interconnect* configuration. These
-    addresses are regional resources. Not currently available publicly. -
-    `SHARED_LOADBALANCER_VIP` for an internal IP address that is assigned to
-    multiple internal forwarding rules. - `PRIVATE_SERVICE_CONNECT` for a
-    private network address that is used to configure Private Service Connect.
-    Only global internal addresses can use this purpose.
+    used by Cloud NAT when allocating addresses using automatic NAT IP address
+    allocation. - IPSEC_INTERCONNECT for addresses created from a private IP
+    range that are reserved for a VLAN attachment in an *IPsec-encrypted Cloud
+    Interconnect* configuration. These addresses are regional resources. Not
+    currently available publicly. - `SHARED_LOADBALANCER_VIP` for an internal
+    IP address that is assigned to multiple internal forwarding rules. -
+    `PRIVATE_SERVICE_CONNECT` for a private network address that is used to
+    configure Private Service Connect. Only global internal addresses can use
+    this purpose.
 
     Values:
       DNS_RESOLVER: DNS resolver address in the subnetwork.
@@ -1602,7 +1604,8 @@ class AttachedDisk(_messages.Message):
       disks.source is required except for local SSD. If desired, you can also
       attach existing non-root persistent disks using this property. This
       field is only applicable for persistent disks. Note that for
-      InstanceTemplate, specify the disk name, not the URL for the disk.
+      InstanceTemplate, specify the disk name for zonal disk, and the URL for
+      regional disk.
     type: Specifies the type of the disk, either SCRATCH or PERSISTENT. If not
       specified, the default is PERSISTENT.
     userLicenses: [Output Only] A list of user provided licenses. It
@@ -3672,7 +3675,8 @@ class BackendService(_messages.Message):
       configurable failover: [Internal TCP/UDP Load
       Balancing](https://cloud.google.com/load-
       balancing/docs/internal/failover-overview) and [external TCP/UDP Load
-      Balancing](/network/networklb-failover-overview).
+      Balancing](https://cloud.google.com/load-
+      balancing/docs/network/networklb-failover-overview).
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a BackendService. An up-to-date
@@ -4509,14 +4513,14 @@ class BackendServiceFailoverPolicy(_messages.Message):
   r"""For load balancers that have configurable failover: [Internal TCP/UDP
   Load Balancing](https://cloud.google.com/load-
   balancing/docs/internal/failover-overview) and [external TCP/UDP Load
-  Balancing](/network/networklb-failover-overview). On failover or failback,
-  this field indicates whether connection draining will be honored. Google
-  Cloud has a fixed connection draining timeout of 10 minutes. A setting of
-  true terminates existing TCP connections to the active pool during failover
-  and failback, immediately draining traffic. A setting of false allows
-  existing TCP connections to persist, even on VMs no longer in the active
-  pool, for up to the duration of the connection draining timeout (10
-  minutes).
+  Balancing](https://cloud.google.com/load-balancing/docs/network/networklb-
+  failover-overview). On failover or failback, this field indicates whether
+  connection draining will be honored. Google Cloud has a fixed connection
+  draining timeout of 10 minutes. A setting of true terminates existing TCP
+  connections to the active pool during failover and failback, immediately
+  draining traffic. A setting of false allows existing TCP connections to
+  persist, even on VMs no longer in the active pool, for up to the duration of
+  the connection draining timeout (10 minutes).
 
   Fields:
     disableConnectionDrainOnFailover: This can be set to true only if the
@@ -4528,7 +4532,9 @@ class BackendServiceFailoverPolicy(_messages.Message):
       that have configurable failover: [Internal TCP/UDP Load
       Balancing](https://cloud.google.com/load-
       balancing/docs/internal/failover-overview) and [external TCP/UDP Load
-      Balancing](/network/networklb-failover-overview). The default is false.
+      Balancing](https://cloud.google.com/load-
+      balancing/docs/network/networklb-failover-overview). The default is
+      false.
     failoverRatio: The value of the field must be in the range [0, 1]. If the
       value is 0, the load balancer performs a failover when the number of
       healthy primary VMs equals zero. For all other values, the load balancer
@@ -4536,7 +4542,8 @@ class BackendServiceFailoverPolicy(_messages.Message):
       than this ratio. For load balancers that have configurable failover:
       [Internal TCP/UDP Load Balancing](https://cloud.google.com/load-
       balancing/docs/internal/failover-overview) and [external TCP/UDP Load
-      Balancing](/network/networklb-failover-overview).
+      Balancing](https://cloud.google.com/load-
+      balancing/docs/network/networklb-failover-overview).
   """
 
   disableConnectionDrainOnFailover = _messages.BooleanField(1)
@@ -5435,6 +5442,12 @@ class Commitment(_messages.Message):
       accelerator optimized machines.
 
   Fields:
+    autoRenew: Specifies whether to enable automatic renewal for the
+      commitment. The default value is false if not specified. The field can
+      be updated until the day of the commitment expiration at 12:00am PST. If
+      the field is set to true, the commitment will be automatically renewed
+      for either one or three years according to the terms of the existing
+      commitment.
     category: The category of the commitment. Category MACHINE specifies
       commitments composed of machine resources such as VCPU or MEMORY, listed
       in resources. Category LICENSE specifies commitments composed of
@@ -5556,23 +5569,24 @@ class Commitment(_messages.Message):
     MEMORY_OPTIMIZED = 8
     TYPE_UNSPECIFIED = 9
 
-  category = _messages.EnumField('CategoryValueValuesEnum', 1)
-  creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  endTimestamp = _messages.StringField(4)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default='compute#commitment')
-  licenseResource = _messages.MessageField('LicenseResourceCommitment', 7)
-  name = _messages.StringField(8)
-  plan = _messages.EnumField('PlanValueValuesEnum', 9)
-  region = _messages.StringField(10)
-  reservations = _messages.MessageField('Reservation', 11, repeated=True)
-  resources = _messages.MessageField('ResourceCommitment', 12, repeated=True)
-  selfLink = _messages.StringField(13)
-  startTimestamp = _messages.StringField(14)
-  status = _messages.EnumField('StatusValueValuesEnum', 15)
-  statusMessage = _messages.StringField(16)
-  type = _messages.EnumField('TypeValueValuesEnum', 17)
+  autoRenew = _messages.BooleanField(1)
+  category = _messages.EnumField('CategoryValueValuesEnum', 2)
+  creationTimestamp = _messages.StringField(3)
+  description = _messages.StringField(4)
+  endTimestamp = _messages.StringField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default='compute#commitment')
+  licenseResource = _messages.MessageField('LicenseResourceCommitment', 8)
+  name = _messages.StringField(9)
+  plan = _messages.EnumField('PlanValueValuesEnum', 10)
+  region = _messages.StringField(11)
+  reservations = _messages.MessageField('Reservation', 12, repeated=True)
+  resources = _messages.MessageField('ResourceCommitment', 13, repeated=True)
+  selfLink = _messages.StringField(14)
+  startTimestamp = _messages.StringField(15)
+  status = _messages.EnumField('StatusValueValuesEnum', 16)
+  statusMessage = _messages.StringField(17)
+  type = _messages.EnumField('TypeValueValuesEnum', 18)
 
 
 class CommitmentAggregatedList(_messages.Message):
@@ -9690,8 +9704,7 @@ class ComputeGlobalPublicDelegatedPrefixesDeleteRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
   """
 
   project = _messages.StringField(1, required=True)
@@ -9728,8 +9741,7 @@ class ComputeGlobalPublicDelegatedPrefixesInsertRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
   """
 
   project = _messages.StringField(1, required=True)
@@ -9809,8 +9821,7 @@ class ComputeGlobalPublicDelegatedPrefixesPatchRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
   """
 
   project = _messages.StringField(1, required=True)
@@ -16725,8 +16736,7 @@ class ComputePublicAdvertisedPrefixesDeleteRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
   """
 
   project = _messages.StringField(1, required=True)
@@ -16763,8 +16773,7 @@ class ComputePublicAdvertisedPrefixesInsertRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
   """
 
   project = _messages.StringField(1, required=True)
@@ -16844,8 +16853,7 @@ class ComputePublicAdvertisedPrefixesPatchRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
   """
 
   project = _messages.StringField(1, required=True)
@@ -16933,8 +16941,7 @@ class ComputePublicDelegatedPrefixesDeleteRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
   """
 
   project = _messages.StringField(1, required=True)
@@ -16975,8 +16982,7 @@ class ComputePublicDelegatedPrefixesInsertRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
   """
 
   project = _messages.StringField(1, required=True)
@@ -17060,8 +17066,7 @@ class ComputePublicDelegatedPrefixesPatchRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
   """
 
   project = _messages.StringField(1, required=True)
@@ -17681,6 +17686,39 @@ class ComputeRegionCommitmentsTestIamPermissionsRequest(_messages.Message):
   region = _messages.StringField(2, required=True)
   resource = _messages.StringField(3, required=True)
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
+class ComputeRegionCommitmentsUpdateRequest(_messages.Message):
+  r"""A ComputeRegionCommitmentsUpdateRequest object.
+
+  Fields:
+    commitment: Name of the commitment for which auto renew is being updated.
+    commitmentResource: A Commitment resource to be passed as the request
+      body.
+    paths: A string attribute.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    updateMask: update_mask indicates fields to be updated as part of this
+      request.
+  """
+
+  commitment = _messages.StringField(1, required=True)
+  commitmentResource = _messages.MessageField('Commitment', 2)
+  paths = _messages.StringField(3, repeated=True)
+  project = _messages.StringField(4, required=True)
+  region = _messages.StringField(5, required=True)
+  requestId = _messages.StringField(6)
+  updateMask = _messages.StringField(7)
 
 
 class ComputeRegionCommitmentsUpdateReservationsRequest(_messages.Message):
@@ -19584,8 +19622,7 @@ class ComputeRegionNotificationEndpointsDeleteRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
   """
 
   notificationEndpoint = _messages.StringField(1, required=True)
@@ -19625,8 +19662,7 @@ class ComputeRegionNotificationEndpointsInsertRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
   """
 
   notificationEndpoint = _messages.MessageField('NotificationEndpoint', 1)
@@ -19825,8 +19861,7 @@ class ComputeRegionSslCertificatesDeleteRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     sslCertificate: Name of the SslCertificate resource to delete.
   """
 
@@ -19865,8 +19900,7 @@ class ComputeRegionSslCertificatesInsertRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     sslCertificate: A SslCertificate resource to be passed as the request
       body.
   """
@@ -20131,8 +20165,7 @@ class ComputeRegionTargetHttpsProxiesDeleteRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     targetHttpsProxy: Name of the TargetHttpsProxy resource to delete.
   """
 
@@ -20171,8 +20204,7 @@ class ComputeRegionTargetHttpsProxiesInsertRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     targetHttpsProxy: A TargetHttpsProxy resource to be passed as the request
       body.
   """
@@ -20257,8 +20289,7 @@ class ComputeRegionTargetHttpsProxiesSetSslCertificatesRequest(_messages.Message
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     targetHttpsProxy: Name of the TargetHttpsProxy resource to set an
       SslCertificates resource for.
   """
@@ -20285,8 +20316,7 @@ class ComputeRegionTargetHttpsProxiesSetUrlMapRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     targetHttpsProxy: Name of the TargetHttpsProxy to set a URL map for.
     urlMapReference: A UrlMapReference resource to be passed as the request
       body.
@@ -21944,8 +21974,7 @@ class ComputeServiceAttachmentsDeleteRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     serviceAttachment: Name of the ServiceAttachment resource to delete.
   """
 
@@ -22000,8 +22029,7 @@ class ComputeServiceAttachmentsInsertRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     serviceAttachment: A ServiceAttachment resource to be passed as the
       request body.
   """
@@ -22083,8 +22111,7 @@ class ComputeServiceAttachmentsPatchRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     serviceAttachment: The resource id of the ServiceAttachment to patch. It
       should conform to RFC1035 resource name or be a string form on an
       unsigned long number.
@@ -22380,8 +22407,7 @@ class ComputeSslCertificatesDeleteRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     sslCertificate: Name of the SslCertificate resource to delete.
   """
 
@@ -22416,8 +22442,7 @@ class ComputeSslCertificatesInsertRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     sslCertificate: A SslCertificate resource to be passed as the request
       body.
   """
@@ -23103,8 +23128,7 @@ class ComputeTargetGrpcProxiesDeleteRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     targetGrpcProxy: Name of the TargetGrpcProxy resource to delete.
   """
 
@@ -23139,8 +23163,7 @@ class ComputeTargetGrpcProxiesInsertRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     targetGrpcProxy: A TargetGrpcProxy resource to be passed as the request
       body.
   """
@@ -23218,8 +23241,7 @@ class ComputeTargetGrpcProxiesPatchRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     targetGrpcProxy: Name of the TargetGrpcProxy resource to patch.
     targetGrpcProxyResource: A TargetGrpcProxy resource to be passed as the
       request body.
@@ -23435,8 +23457,7 @@ class ComputeTargetHttpProxiesPatchRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     targetHttpProxy: Name of the TargetHttpProxy resource to patch.
     targetHttpProxyResource: A TargetHttpProxy resource to be passed as the
       request body.
@@ -23678,8 +23699,7 @@ class ComputeTargetHttpsProxiesPatchRequest(_messages.Message):
       received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000). end_interface:
-      MixerMutationRequestBuilder
+      ( 00000000-0000-0000-0000-000000000000).
     targetHttpsProxy: Name of the TargetHttpsProxy resource to patch.
     targetHttpsProxyResource: A TargetHttpsProxy resource to be passed as the
       request body.
@@ -29316,7 +29336,7 @@ class ForwardingRule(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     serviceDirectoryRegistrations: Service Directory resources to register
       this forwarding rule with. Currently, only supports a single Service
-      Directory resource. It is only supported for internal load balancing.
+      Directory resource.
     serviceLabel: An optional prefix to the service name for this Forwarding
       Rule. If specified, the prefix is the first label of the fully qualified
       service name. The label must be 1-63 characters long, and comply with
@@ -33096,6 +33116,8 @@ class Instance(_messages.Message):
       network services, such as connecting to the internet. Multiple
       interfaces are supported per instance.
     networkPerformanceConfig: A NetworkPerformanceConfig attribute.
+    params: Input only. [Input Only] Additional params passed with the
+      request, but not persisted as part of resource payload.
     postKeyRevocationActionType: PostKeyRevocationActionType of the instance.
     privateIpv6GoogleAccess: The private IPv6 google access type for the VM.
       If not specified, use INHERIT_FROM_SUBNETWORK as default.
@@ -33255,25 +33277,26 @@ class Instance(_messages.Message):
   name = _messages.StringField(24)
   networkInterfaces = _messages.MessageField('NetworkInterface', 25, repeated=True)
   networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 26)
-  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 27)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 28)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 29)
-  resourcePolicies = _messages.StringField(30, repeated=True)
-  satisfiesPzs = _messages.BooleanField(31)
-  scheduling = _messages.MessageField('Scheduling', 32)
-  selfLink = _messages.StringField(33)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 34, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 35)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 36)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 37)
-  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 38)
-  sourceMachineImage = _messages.StringField(39)
-  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 40)
-  startRestricted = _messages.BooleanField(41)
-  status = _messages.EnumField('StatusValueValuesEnum', 42)
-  statusMessage = _messages.StringField(43)
-  tags = _messages.MessageField('Tags', 44)
-  zone = _messages.StringField(45)
+  params = _messages.MessageField('InstanceParams', 27)
+  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 28)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 29)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 30)
+  resourcePolicies = _messages.StringField(31, repeated=True)
+  satisfiesPzs = _messages.BooleanField(32)
+  scheduling = _messages.MessageField('Scheduling', 33)
+  selfLink = _messages.StringField(34)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 35, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 36)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 37)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 38)
+  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 39)
+  sourceMachineImage = _messages.StringField(40)
+  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 41)
+  startRestricted = _messages.BooleanField(42)
+  status = _messages.EnumField('StatusValueValuesEnum', 43)
+  statusMessage = _messages.StringField(44)
+  tags = _messages.MessageField('Tags', 45)
+  zone = _messages.StringField(46)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -35998,6 +36021,56 @@ class InstanceMoveRequest(_messages.Message):
   targetInstance = _messages.StringField(2)
 
 
+class InstanceParams(_messages.Message):
+  r"""Additional instance params.
+
+  Messages:
+    ResourceManagerTagsValue: Resource manager tags to be bound to the
+      instance. Tag keys and values have the same definition as resource
+      manager tags. Keys must be in the format `tagKeys/{tag_key_id}`, and
+      values are in the format `tagValues/456`. The field is ignored (both PUT
+      & PATCH) when empty.
+
+  Fields:
+    resourceManagerTags: Resource manager tags to be bound to the instance.
+      Tag keys and values have the same definition as resource manager tags.
+      Keys must be in the format `tagKeys/{tag_key_id}`, and values are in the
+      format `tagValues/456`. The field is ignored (both PUT & PATCH) when
+      empty.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceManagerTagsValue(_messages.Message):
+    r"""Resource manager tags to be bound to the instance. Tag keys and values
+    have the same definition as resource manager tags. Keys must be in the
+    format `tagKeys/{tag_key_id}`, and values are in the format
+    `tagValues/456`. The field is ignored (both PUT & PATCH) when empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ResourceManagerTagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ResourceManagerTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceManagerTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 1)
+
+
 class InstanceProperties(_messages.Message):
   r"""A InstanceProperties object.
 
@@ -36011,6 +36084,11 @@ class InstanceProperties(_messages.Message):
   Messages:
     LabelsValue: Labels to apply to instances that are created from these
       properties.
+    ResourceManagerTagsValue: Resource manager tags to be bound to the
+      instance. Tag keys and values have the same definition as resource
+      manager tags. Keys must be in the format `tagKeys/{tag_key_id}`, and
+      values are in the format `tagValues/456`. The field is ignored (both PUT
+      & PATCH) when empty.
 
   Fields:
     advancedMachineFeatures: Controls for advanced machine-related behavior
@@ -36055,6 +36133,11 @@ class InstanceProperties(_messages.Message):
       MachineImage, this is not supported yet.
     reservationAffinity: Specifies the reservations that instances can consume
       from. Note that for MachineImage, this is not supported yet.
+    resourceManagerTags: Resource manager tags to be bound to the instance.
+      Tag keys and values have the same definition as resource manager tags.
+      Keys must be in the format `tagKeys/{tag_key_id}`, and values are in the
+      format `tagValues/456`. The field is ignored (both PUT & PATCH) when
+      empty.
     resourcePolicies: Resource policies (names, not ULRs) applied to instances
       created from these properties. Note that for MachineImage, this is not
       supported yet.
@@ -36132,6 +36215,35 @@ class InstanceProperties(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceManagerTagsValue(_messages.Message):
+    r"""Resource manager tags to be bound to the instance. Tag keys and values
+    have the same definition as resource manager tags. Keys must be in the
+    format `tagKeys/{tag_key_id}`, and values are in the format
+    `tagValues/456`. The field is ignored (both PUT & PATCH) when empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ResourceManagerTagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ResourceManagerTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceManagerTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   advancedMachineFeatures = _messages.MessageField('AdvancedMachineFeatures', 1)
   canIpForward = _messages.BooleanField(2)
   confidentialInstanceConfig = _messages.MessageField('ConfidentialInstanceConfig', 3)
@@ -36148,12 +36260,13 @@ class InstanceProperties(_messages.Message):
   postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 14)
   privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 15)
   reservationAffinity = _messages.MessageField('ReservationAffinity', 16)
-  resourcePolicies = _messages.StringField(17, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 18)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 19, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 20)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 21)
-  tags = _messages.MessageField('Tags', 22)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 17)
+  resourcePolicies = _messages.StringField(18, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 19)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 20, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 21)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 22)
+  tags = _messages.MessageField('Tags', 23)
 
 
 class InstanceReference(_messages.Message):
@@ -37072,6 +37185,11 @@ class InterconnectAttachment(_messages.Message):
       take one of the following values: - OS_ACTIVE: The attachment has been
       turned up and is ready to use. - OS_UNPROVISIONED: The attachment is not
       ready to use yet, because turnup is not complete.
+    StackTypeValueValuesEnum: The stack type for this interconnect attachment
+      to identify whether the IPv6 feature is enabled or not. If not
+      specified, IPV4_ONLY will be used. This field can be both set at
+      interconnect attachments creation and update interconnect attachment
+      operations.
     StateValueValuesEnum: [Output Only] The current state of this attachment's
       functionality. Enum values ACTIVE and UNPROVISIONED are shared by
       DEDICATED/PRIVATE, PARTNER, and PARTNER_PROVIDER interconnect
@@ -37112,6 +37230,14 @@ class InterconnectAttachment(_messages.Message):
       BPS_200M: 200 Mbit/s - BPS_300M: 300 Mbit/s - BPS_400M: 400 Mbit/s -
       BPS_500M: 500 Mbit/s - BPS_1G: 1 Gbit/s - BPS_2G: 2 Gbit/s - BPS_5G: 5
       Gbit/s - BPS_10G: 10 Gbit/s - BPS_20G: 20 Gbit/s - BPS_50G: 50 Gbit/s
+    candidateIpv6Subnets: Up to 16 candidate prefixes that control the
+      allocation of cloudRouterIpv6Address and customerRouterIpv6Address for
+      this attachment. Each prefix must be in the Global Unique Address (GUA)
+      space. It is highly recommended that it be in a range owned by the
+      requestor. A GUA in a range owned by Google will cause the request to
+      fail. Google will select an available prefix from the supplied
+      candidates or fail the request. If not supplied, a /125 from a Google-
+      owned GUA block will be selected.
     candidateSubnets: Up to 16 candidate prefixes that can be used to restrict
       the allocation of cloudRouterIpAddress and customerRouterIpAddress for
       this attachment. All prefixes must be within link-local address space
@@ -37122,11 +37248,24 @@ class InterconnectAttachment(_messages.Message):
       link-local space.
     cloudRouterIpAddress: [Output Only] IPv4 address + prefix length to be
       configured on Cloud Router Interface for this interconnect attachment.
+    cloudRouterIpv6Address: [Output Only] IPv6 address + prefix length to be
+      configured on Cloud Router Interface for this interconnect attachment.
+    cloudRouterIpv6InterfaceId: If supplied, the interface id (index within
+      the subnet) to be used for the cloud router address. The id must be in
+      the range of 1 to 6. If a subnet mask is supplied, it must be /125, and
+      the subnet should either be 0 or match the selected subnet.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     customerRouterIpAddress: [Output Only] IPv4 address + prefix length to be
       configured on the customer router subinterface for this interconnect
       attachment.
+    customerRouterIpv6Address: [Output Only] IPv6 address + prefix length to
+      be configured on the customer router subinterface for this interconnect
+      attachment.
+    customerRouterIpv6InterfaceId: If supplied, the interface id (index within
+      the subnet) to be used for the customer router address. The id must be
+      in the range of 1 to 6. If a subnet mask is supplied, it must be /125,
+      and the subnet should either be 0 or match the selected subnet.
     dataplaneVersion: [Output only for types PARTNER and DEDICATED. Not
       present for PARTNER_PROVIDER.] Dataplane version for this
       InterconnectAttachment. This field is only present for Dataplane version
@@ -37227,6 +37366,10 @@ class InterconnectAttachment(_messages.Message):
       separation organization policy constraints and false otherwise. Defaults
       to false if the field is not present.
     selfLink: [Output Only] Server-defined URL for the resource.
+    stackType: The stack type for this interconnect attachment to identify
+      whether the IPv6 feature is enabled or not. If not specified, IPV4_ONLY
+      will be used. This field can be both set at interconnect attachments
+      creation and update interconnect attachment operations.
     state: [Output Only] The current state of this attachment's functionality.
       Enum values ACTIVE and UNPROVISIONED are shared by DEDICATED/PRIVATE,
       PARTNER, and PARTNER_PROVIDER interconnect attachments, while enum
@@ -37352,6 +37495,21 @@ class InterconnectAttachment(_messages.Message):
     OS_ACTIVE = 0
     OS_UNPROVISIONED = 1
 
+  class StackTypeValueValuesEnum(_messages.Enum):
+    r"""The stack type for this interconnect attachment to identify whether
+    the IPv6 feature is enabled or not. If not specified, IPV4_ONLY will be
+    used. This field can be both set at interconnect attachments creation and
+    update interconnect attachment operations.
+
+    Values:
+      IPV4_IPV6: The interconnect attachment can have both IPv4 and IPv6
+        addresses.
+      IPV4_ONLY: The interconnect attachment will only be assigned IPv4
+        addresses.
+    """
+    IPV4_IPV6 = 0
+    IPV4_ONLY = 1
+
   class StateValueValuesEnum(_messages.Enum):
     r"""[Output Only] The current state of this attachment's functionality.
     Enum values ACTIVE and UNPROVISIONED are shared by DEDICATED/PRIVATE,
@@ -37441,35 +37599,41 @@ class InterconnectAttachment(_messages.Message):
 
   adminEnabled = _messages.BooleanField(1)
   bandwidth = _messages.EnumField('BandwidthValueValuesEnum', 2)
-  candidateSubnets = _messages.StringField(3, repeated=True)
-  cloudRouterIpAddress = _messages.StringField(4)
-  creationTimestamp = _messages.StringField(5)
-  customerRouterIpAddress = _messages.StringField(6)
-  dataplaneVersion = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  description = _messages.StringField(8)
-  edgeAvailabilityDomain = _messages.EnumField('EdgeAvailabilityDomainValueValuesEnum', 9)
-  encryption = _messages.EnumField('EncryptionValueValuesEnum', 10)
-  googleReferenceId = _messages.StringField(11)
-  id = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
-  interconnect = _messages.StringField(13)
-  ipsecInternalAddresses = _messages.StringField(14, repeated=True)
-  kind = _messages.StringField(15, default='compute#interconnectAttachment')
-  labelFingerprint = _messages.BytesField(16)
-  labels = _messages.MessageField('LabelsValue', 17)
-  mtu = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  name = _messages.StringField(19)
-  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 20)
-  pairingKey = _messages.StringField(21)
-  partnerAsn = _messages.IntegerField(22)
-  partnerMetadata = _messages.MessageField('InterconnectAttachmentPartnerMetadata', 23)
-  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 24)
-  region = _messages.StringField(25)
-  router = _messages.StringField(26)
-  satisfiesPzs = _messages.BooleanField(27)
-  selfLink = _messages.StringField(28)
-  state = _messages.EnumField('StateValueValuesEnum', 29)
-  type = _messages.EnumField('TypeValueValuesEnum', 30)
-  vlanTag8021q = _messages.IntegerField(31, variant=_messages.Variant.INT32)
+  candidateIpv6Subnets = _messages.StringField(3, repeated=True)
+  candidateSubnets = _messages.StringField(4, repeated=True)
+  cloudRouterIpAddress = _messages.StringField(5)
+  cloudRouterIpv6Address = _messages.StringField(6)
+  cloudRouterIpv6InterfaceId = _messages.StringField(7)
+  creationTimestamp = _messages.StringField(8)
+  customerRouterIpAddress = _messages.StringField(9)
+  customerRouterIpv6Address = _messages.StringField(10)
+  customerRouterIpv6InterfaceId = _messages.StringField(11)
+  dataplaneVersion = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  description = _messages.StringField(13)
+  edgeAvailabilityDomain = _messages.EnumField('EdgeAvailabilityDomainValueValuesEnum', 14)
+  encryption = _messages.EnumField('EncryptionValueValuesEnum', 15)
+  googleReferenceId = _messages.StringField(16)
+  id = _messages.IntegerField(17, variant=_messages.Variant.UINT64)
+  interconnect = _messages.StringField(18)
+  ipsecInternalAddresses = _messages.StringField(19, repeated=True)
+  kind = _messages.StringField(20, default='compute#interconnectAttachment')
+  labelFingerprint = _messages.BytesField(21)
+  labels = _messages.MessageField('LabelsValue', 22)
+  mtu = _messages.IntegerField(23, variant=_messages.Variant.INT32)
+  name = _messages.StringField(24)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 25)
+  pairingKey = _messages.StringField(26)
+  partnerAsn = _messages.IntegerField(27)
+  partnerMetadata = _messages.MessageField('InterconnectAttachmentPartnerMetadata', 28)
+  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 29)
+  region = _messages.StringField(30)
+  router = _messages.StringField(31)
+  satisfiesPzs = _messages.BooleanField(32)
+  selfLink = _messages.StringField(33)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 34)
+  state = _messages.EnumField('StateValueValuesEnum', 35)
+  type = _messages.EnumField('TypeValueValuesEnum', 36)
+  vlanTag8021q = _messages.IntegerField(37, variant=_messages.Variant.INT32)
 
 
 class InterconnectAttachmentAggregatedList(_messages.Message):
@@ -47400,6 +47564,7 @@ class Quota(_messages.Message):
       EXTERNAL_VPN_GATEWAYS: <no description>
       FIREWALLS: <no description>
       FORWARDING_RULES: <no description>
+      GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES: <no description>
       GLOBAL_INTERNAL_ADDRESSES: <no description>
       GPUS_ALL_REGIONS: <no description>
       HEALTH_CHECKS: <no description>
@@ -47527,94 +47692,95 @@ class Quota(_messages.Message):
     EXTERNAL_VPN_GATEWAYS = 35
     FIREWALLS = 36
     FORWARDING_RULES = 37
-    GLOBAL_INTERNAL_ADDRESSES = 38
-    GPUS_ALL_REGIONS = 39
-    HEALTH_CHECKS = 40
-    IMAGES = 41
-    INSTANCES = 42
-    INSTANCE_GROUPS = 43
-    INSTANCE_GROUP_MANAGERS = 44
-    INSTANCE_TEMPLATES = 45
-    INTERCONNECTS = 46
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 47
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 48
-    INTERCONNECT_TOTAL_GBPS = 49
-    INTERNAL_ADDRESSES = 50
-    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 51
-    IN_PLACE_SNAPSHOTS = 52
-    IN_USE_ADDRESSES = 53
-    IN_USE_BACKUP_SCHEDULES = 54
-    IN_USE_SNAPSHOT_SCHEDULES = 55
-    LOCAL_SSD_TOTAL_GB = 56
-    M1_CPUS = 57
-    M2_CPUS = 58
-    MACHINE_IMAGES = 59
-    N2A_CPUS = 60
-    N2D_CPUS = 61
-    N2_CPUS = 62
-    NETWORKS = 63
-    NETWORK_ENDPOINT_GROUPS = 64
-    NETWORK_FIREWALL_POLICIES = 65
-    NODE_GROUPS = 66
-    NODE_TEMPLATES = 67
-    NVIDIA_A100_GPUS = 68
-    NVIDIA_K80_GPUS = 69
-    NVIDIA_P100_GPUS = 70
-    NVIDIA_P100_VWS_GPUS = 71
-    NVIDIA_P4_GPUS = 72
-    NVIDIA_P4_VWS_GPUS = 73
-    NVIDIA_T4_GPUS = 74
-    NVIDIA_T4_VWS_GPUS = 75
-    NVIDIA_V100_GPUS = 76
-    PACKET_MIRRORINGS = 77
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 78
-    PREEMPTIBLE_CPUS = 79
-    PREEMPTIBLE_LOCAL_SSD_GB = 80
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 81
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 82
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 83
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 84
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 85
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 86
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 87
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 88
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 89
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 90
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 91
-    PSC_INTERNAL_LB_FORWARDING_RULES = 92
-    PUBLIC_ADVERTISED_PREFIXES = 93
-    PUBLIC_DELEGATED_PREFIXES = 94
-    REGIONAL_AUTOSCALERS = 95
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 96
-    RESERVATIONS = 97
-    RESOURCE_POLICIES = 98
-    ROUTERS = 99
-    ROUTES = 100
-    SECURITY_POLICIES = 101
-    SECURITY_POLICIES_PER_REGION = 102
-    SECURITY_POLICY_CEVAL_RULES = 103
-    SECURITY_POLICY_RULES = 104
-    SECURITY_POLICY_RULES_PER_REGION = 105
-    SERVICE_ATTACHMENTS = 106
-    SNAPSHOTS = 107
-    SSD_TOTAL_GB = 108
-    SSL_CERTIFICATES = 109
-    STATIC_ADDRESSES = 110
-    STATIC_BYOIP_ADDRESSES = 111
-    SUBNETWORKS = 112
-    T2A_CPUS = 113
-    T2D_CPUS = 114
-    TARGET_HTTPS_PROXIES = 115
-    TARGET_HTTP_PROXIES = 116
-    TARGET_INSTANCES = 117
-    TARGET_POOLS = 118
-    TARGET_SSL_PROXIES = 119
-    TARGET_TCP_PROXIES = 120
-    TARGET_VPN_GATEWAYS = 121
-    URL_MAPS = 122
-    VPN_GATEWAYS = 123
-    VPN_TUNNELS = 124
-    XPN_SERVICE_PROJECTS = 125
+    GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES = 38
+    GLOBAL_INTERNAL_ADDRESSES = 39
+    GPUS_ALL_REGIONS = 40
+    HEALTH_CHECKS = 41
+    IMAGES = 42
+    INSTANCES = 43
+    INSTANCE_GROUPS = 44
+    INSTANCE_GROUP_MANAGERS = 45
+    INSTANCE_TEMPLATES = 46
+    INTERCONNECTS = 47
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 48
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 49
+    INTERCONNECT_TOTAL_GBPS = 50
+    INTERNAL_ADDRESSES = 51
+    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 52
+    IN_PLACE_SNAPSHOTS = 53
+    IN_USE_ADDRESSES = 54
+    IN_USE_BACKUP_SCHEDULES = 55
+    IN_USE_SNAPSHOT_SCHEDULES = 56
+    LOCAL_SSD_TOTAL_GB = 57
+    M1_CPUS = 58
+    M2_CPUS = 59
+    MACHINE_IMAGES = 60
+    N2A_CPUS = 61
+    N2D_CPUS = 62
+    N2_CPUS = 63
+    NETWORKS = 64
+    NETWORK_ENDPOINT_GROUPS = 65
+    NETWORK_FIREWALL_POLICIES = 66
+    NODE_GROUPS = 67
+    NODE_TEMPLATES = 68
+    NVIDIA_A100_GPUS = 69
+    NVIDIA_K80_GPUS = 70
+    NVIDIA_P100_GPUS = 71
+    NVIDIA_P100_VWS_GPUS = 72
+    NVIDIA_P4_GPUS = 73
+    NVIDIA_P4_VWS_GPUS = 74
+    NVIDIA_T4_GPUS = 75
+    NVIDIA_T4_VWS_GPUS = 76
+    NVIDIA_V100_GPUS = 77
+    PACKET_MIRRORINGS = 78
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 79
+    PREEMPTIBLE_CPUS = 80
+    PREEMPTIBLE_LOCAL_SSD_GB = 81
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 82
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 83
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 84
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 85
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 86
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 87
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 88
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 89
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 90
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 91
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 92
+    PSC_INTERNAL_LB_FORWARDING_RULES = 93
+    PUBLIC_ADVERTISED_PREFIXES = 94
+    PUBLIC_DELEGATED_PREFIXES = 95
+    REGIONAL_AUTOSCALERS = 96
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 97
+    RESERVATIONS = 98
+    RESOURCE_POLICIES = 99
+    ROUTERS = 100
+    ROUTES = 101
+    SECURITY_POLICIES = 102
+    SECURITY_POLICIES_PER_REGION = 103
+    SECURITY_POLICY_CEVAL_RULES = 104
+    SECURITY_POLICY_RULES = 105
+    SECURITY_POLICY_RULES_PER_REGION = 106
+    SERVICE_ATTACHMENTS = 107
+    SNAPSHOTS = 108
+    SSD_TOTAL_GB = 109
+    SSL_CERTIFICATES = 110
+    STATIC_ADDRESSES = 111
+    STATIC_BYOIP_ADDRESSES = 112
+    SUBNETWORKS = 113
+    T2A_CPUS = 114
+    T2D_CPUS = 115
+    TARGET_HTTPS_PROXIES = 116
+    TARGET_HTTP_PROXIES = 117
+    TARGET_INSTANCES = 118
+    TARGET_POOLS = 119
+    TARGET_SSL_PROXIES = 120
+    TARGET_TCP_PROXIES = 121
+    TARGET_VPN_GATEWAYS = 122
+    URL_MAPS = 123
+    VPN_GATEWAYS = 124
+    VPN_TUNNELS = 125
+    XPN_SERVICE_PROJECTS = 126
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -51537,9 +51703,13 @@ class RouterBgpPeer(_messages.Message):
       session with the peer is terminated and all associated routing
       information is removed. If set to TRUE, the peer connection can be
       established with routing information. The default is TRUE.
+    enableIpv6: Enable IPv6 traffic over BGP Peer. If not specified, it is
+      disabled by default.
     interfaceName: Name of the interface the BGP peer is associated with.
     ipAddress: IP address of the interface inside Google Cloud Platform. Only
       IPv4 is supported.
+    ipv6NexthopAddress: IPv6 address of the interface inside Google Cloud
+      Platform.
     managementType: [Output Only] The resource that configures and manages
       this BGP peer. - MANAGED_BY_USER is the default value and can be managed
       by you or other users - MANAGED_BY_ATTACHMENT is a BGP peer that is
@@ -51557,6 +51727,8 @@ class RouterBgpPeer(_messages.Message):
       use a different value.
     peerIpAddress: IP address of the BGP interface outside Google Cloud
       Platform. Only IPv4 is supported.
+    peerIpv6NexthopAddress: IPv6 address of the BGP interface outside Google
+      Cloud Platform.
     routerApplianceInstance: URI of the VM instance that is used as third-
       party router appliances such as Next Gen Firewalls, Virtual Routers, or
       Router Appliances. The VM instance must be located in zones contained in
@@ -51625,13 +51797,16 @@ class RouterBgpPeer(_messages.Message):
   advertisedRoutePriority = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
   bfd = _messages.MessageField('RouterBgpPeerBfd', 5)
   enable = _messages.EnumField('EnableValueValuesEnum', 6)
-  interfaceName = _messages.StringField(7)
-  ipAddress = _messages.StringField(8)
-  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 9)
-  name = _messages.StringField(10)
-  peerAsn = _messages.IntegerField(11, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(12)
-  routerApplianceInstance = _messages.StringField(13)
+  enableIpv6 = _messages.BooleanField(7)
+  interfaceName = _messages.StringField(8)
+  ipAddress = _messages.StringField(9)
+  ipv6NexthopAddress = _messages.StringField(10)
+  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 11)
+  name = _messages.StringField(12)
+  peerAsn = _messages.IntegerField(13, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(14)
+  peerIpv6NexthopAddress = _messages.StringField(15)
+  routerApplianceInstance = _messages.StringField(16)
 
 
 class RouterBgpPeerBfd(_messages.Message):
@@ -52918,8 +53093,11 @@ class Scheduling(_messages.Message):
 
     Values:
       SPOT: Heavily discounted, no guaranteed runtime.
+      STANDARD: Standard provisioning with user controlled runtime, no
+        discounts.
     """
     SPOT = 0
+    STANDARD = 1
 
   automaticRestart = _messages.BooleanField(1)
   hostErrorTimeoutSeconds = _messages.IntegerField(2, variant=_messages.Variant.INT32)
@@ -53068,6 +53246,7 @@ class SecurityPolicy(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     parent: [Output Only] The parent of the security policy.
+    recaptchaOptionsConfig: A SecurityPolicyRecaptchaOptionsConfig attribute.
     ruleTupleCount: [Output Only] Total count of all security policy rule
       tuples. A security policy can not exceed a set number of tuples.
     rules: A list of rules that belong to this policy. There must always be a
@@ -53145,11 +53324,12 @@ class SecurityPolicy(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 11)
   name = _messages.StringField(12)
   parent = _messages.StringField(13)
-  ruleTupleCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  rules = _messages.MessageField('SecurityPolicyRule', 15, repeated=True)
-  selfLink = _messages.StringField(16)
-  selfLinkWithId = _messages.StringField(17)
-  type = _messages.EnumField('TypeValueValuesEnum', 18)
+  recaptchaOptionsConfig = _messages.MessageField('SecurityPolicyRecaptchaOptionsConfig', 14)
+  ruleTupleCount = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  rules = _messages.MessageField('SecurityPolicyRule', 16, repeated=True)
+  selfLink = _messages.StringField(17)
+  selfLinkWithId = _messages.StringField(18)
+  type = _messages.EnumField('TypeValueValuesEnum', 19)
 
 
 class SecurityPolicyAdaptiveProtectionConfig(_messages.Message):
@@ -53392,6 +53572,21 @@ class SecurityPolicyList(_messages.Message):
   kind = _messages.StringField(3, default='compute#securityPolicyList')
   nextPageToken = _messages.StringField(4)
   warning = _messages.MessageField('WarningValue', 5)
+
+
+class SecurityPolicyRecaptchaOptionsConfig(_messages.Message):
+  r"""A SecurityPolicyRecaptchaOptionsConfig object.
+
+  Fields:
+    redirectSiteKey: An optional field to supply a reCAPTCHA site key to be
+      used for all the rules using the redirect action with the type of
+      GOOGLE_RECAPTCHA under the security policy. The specified site key needs
+      to be created from the reCAPTCHA API. The user is responsible for the
+      validity of the specified site key. If not specified, a Google-managed
+      site key is used.
+  """
+
+  redirectSiteKey = _messages.StringField(1)
 
 
 class SecurityPolicyReference(_messages.Message):
@@ -53645,9 +53840,14 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       key types: HTTP_HEADER -- Name of the HTTP header whose value is taken
       as the key value. HTTP_COOKIE -- Name of the HTTP cookie whose value is
       taken as the key value.
-    exceedAction: When a request is denied, returns the HTTP response code
-      specified. Valid options are "deny()" where valid values for status are
-      403, 404, 429, and 502.
+    exceedAction: Action to take for requests that are above the configured
+      rate limit threshold, to either deny with a specified HTTP response
+      code, or redirect to a different endpoint. Valid options are "deny()"
+      where valid values for status are 403, 404, 429, and 502, and "redirect"
+      where the redirect parameters come from exceed_redirect_options below.
+    exceedRedirectOptions: Parameters defining the redirect action that is
+      used as the exceed action. Cannot be specified if the exceed action is
+      not redirect.
     rateLimitThreshold: Threshold at which to begin ratelimiting.
   """
 
@@ -53689,7 +53889,8 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
   enforceOnKey = _messages.EnumField('EnforceOnKeyValueValuesEnum', 4)
   enforceOnKeyName = _messages.StringField(5)
   exceedAction = _messages.StringField(6)
-  rateLimitThreshold = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsThreshold', 7)
+  exceedRedirectOptions = _messages.MessageField('SecurityPolicyRuleRedirectOptions', 7)
+  rateLimitThreshold = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsThreshold', 8)
 
 
 class SecurityPolicyRuleRateLimitOptionsThreshold(_messages.Message):
@@ -62427,6 +62628,11 @@ class VpnGateway(_messages.Message):
   in a single region. For more information about Cloud HA VPN solutions, see
   Cloud VPN topologies .
 
+  Enums:
+    StackTypeValueValuesEnum: The stack type for this VPN gateway to identify
+      the IP protocols that are enabled. If not specified, IPV4_ONLY will be
+      used.
+
   Messages:
     LabelsValue: Labels for this resource. These can only be added or modified
       by the setLabels method. Each label key/value pair must comply with
@@ -62463,9 +62669,22 @@ class VpnGateway(_messages.Message):
       Provided by the client when the VPN gateway is created.
     region: [Output Only] URL of the region where the VPN gateway resides.
     selfLink: [Output Only] Server-defined URL for the resource.
+    stackType: The stack type for this VPN gateway to identify the IP
+      protocols that are enabled. If not specified, IPV4_ONLY will be used.
     vpnInterfaces: The list of VPN interfaces associated with this VPN
       gateway.
   """
+
+  class StackTypeValueValuesEnum(_messages.Enum):
+    r"""The stack type for this VPN gateway to identify the IP protocols that
+    are enabled. If not specified, IPV4_ONLY will be used.
+
+    Values:
+      IPV4_IPV6: Enable VPN gateway with both IPv4 and IPv6 protocols.
+      IPV4_ONLY: Enable VPN gateway with only IPv4 protocol.
+    """
+    IPV4_IPV6 = 0
+    IPV4_ONLY = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -62503,7 +62722,8 @@ class VpnGateway(_messages.Message):
   network = _messages.StringField(8)
   region = _messages.StringField(9)
   selfLink = _messages.StringField(10)
-  vpnInterfaces = _messages.MessageField('VpnGatewayVpnGatewayInterface', 11, repeated=True)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 11)
+  vpnInterfaces = _messages.MessageField('VpnGatewayVpnGatewayInterface', 12, repeated=True)
 
 
 class VpnGatewayAggregatedList(_messages.Message):

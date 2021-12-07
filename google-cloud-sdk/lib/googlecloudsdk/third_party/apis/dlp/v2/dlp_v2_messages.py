@@ -2454,6 +2454,7 @@ class GooglePrivacyDlpV2BigQueryOptions(_messages.Message):
       the values of columns specified here are available in the output table
       under `location.content_locations.record_location.record_key.id_values`.
       Nested fields such as `person.birthdate.year` are allowed.
+    includedFields: Limit scanning only to these fields.
     rowsLimit: Max number of rows to scan. If the table has more rows than
       this value, the rest of the rows are omitted. If not set, or if set to
       0, all rows will be scanned. Only one of rows_limit and
@@ -2484,10 +2485,11 @@ class GooglePrivacyDlpV2BigQueryOptions(_messages.Message):
 
   excludedFields = _messages.MessageField('GooglePrivacyDlpV2FieldId', 1, repeated=True)
   identifyingFields = _messages.MessageField('GooglePrivacyDlpV2FieldId', 2, repeated=True)
-  rowsLimit = _messages.IntegerField(3)
-  rowsLimitPercent = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  sampleMethod = _messages.EnumField('SampleMethodValueValuesEnum', 5)
-  tableReference = _messages.MessageField('GooglePrivacyDlpV2BigQueryTable', 6)
+  includedFields = _messages.MessageField('GooglePrivacyDlpV2FieldId', 3, repeated=True)
+  rowsLimit = _messages.IntegerField(4)
+  rowsLimitPercent = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  sampleMethod = _messages.EnumField('SampleMethodValueValuesEnum', 6)
+  tableReference = _messages.MessageField('GooglePrivacyDlpV2BigQueryTable', 7)
 
 
 class GooglePrivacyDlpV2BigQueryTable(_messages.Message):
@@ -5387,6 +5389,8 @@ class GooglePrivacyDlpV2PrimitiveTransformation(_messages.Message):
     fixedSizeBucketingConfig: Fixed size bucketing
     redactConfig: Redact
     replaceConfig: Replace with a specified value.
+    replaceDictionaryConfig: Replace with a value randomly drawn (with
+      replacement) from a dictionary.
     replaceWithInfoTypeConfig: Replace with infotype
     timePartConfig: Time extraction
   """
@@ -5400,8 +5404,9 @@ class GooglePrivacyDlpV2PrimitiveTransformation(_messages.Message):
   fixedSizeBucketingConfig = _messages.MessageField('GooglePrivacyDlpV2FixedSizeBucketingConfig', 7)
   redactConfig = _messages.MessageField('GooglePrivacyDlpV2RedactConfig', 8)
   replaceConfig = _messages.MessageField('GooglePrivacyDlpV2ReplaceValueConfig', 9)
-  replaceWithInfoTypeConfig = _messages.MessageField('GooglePrivacyDlpV2ReplaceWithInfoTypeConfig', 10)
-  timePartConfig = _messages.MessageField('GooglePrivacyDlpV2TimePartConfig', 11)
+  replaceDictionaryConfig = _messages.MessageField('GooglePrivacyDlpV2ReplaceDictionaryConfig', 10)
+  replaceWithInfoTypeConfig = _messages.MessageField('GooglePrivacyDlpV2ReplaceWithInfoTypeConfig', 11)
+  timePartConfig = _messages.MessageField('GooglePrivacyDlpV2TimePartConfig', 12)
 
 
 class GooglePrivacyDlpV2PrivacyMetric(_messages.Message):
@@ -5740,6 +5745,19 @@ class GooglePrivacyDlpV2ReidentifyContentResponse(_messages.Message):
 
   item = _messages.MessageField('GooglePrivacyDlpV2ContentItem', 1)
   overview = _messages.MessageField('GooglePrivacyDlpV2TransformationOverview', 2)
+
+
+class GooglePrivacyDlpV2ReplaceDictionaryConfig(_messages.Message):
+  r"""Replace each input value with a value randomly selected from the
+  dictionary.
+
+  Fields:
+    wordList: A list of words to select from for random replacement. The
+      [limits](https://cloud.google.com/dlp/limits) page contains details
+      about the size limits of dictionaries.
+  """
+
+  wordList = _messages.MessageField('GooglePrivacyDlpV2WordList', 1)
 
 
 class GooglePrivacyDlpV2ReplaceValueConfig(_messages.Message):

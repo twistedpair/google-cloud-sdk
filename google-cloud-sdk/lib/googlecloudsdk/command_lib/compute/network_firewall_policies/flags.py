@@ -343,3 +343,58 @@ def AddDestAddressGroups(parser):
           'Can only be specified if DIRECTION is engress.'
       ))
 
+
+def AddSrcFqdns(parser):
+  """Adds source fqdns to this rule."""
+  parser.add_argument(
+      '--src-fqdns',
+      type=arg_parsers.ArgList(),
+      metavar='SOURCE_FQDNS',
+      required=False,
+      hidden=True,
+      help=(
+          'Source FQDNs to match for this rule. '
+          'Can only be specified if DIRECTION is `ingress`.'
+      ))
+
+
+def AddDestFqdns(parser):
+  """Adds destination fqdns to this rule."""
+  parser.add_argument(
+      '--dest-fqdns',
+      type=arg_parsers.ArgList(),
+      metavar='DEST_FQDNS',
+      required=False,
+      hidden=True,
+      help=(
+          'Dest FQDNs to match for this rule. '
+          'Can only be specified if DIRECTION is `egress`.'
+      ))
+
+
+def AddSrcRegionCodes(parser):
+  """Adds a source region code to this rule."""
+  parser.add_argument(
+      '--src-region-codes',
+      type=arg_parsers.ArgList(),
+      metavar='SOURCE_REGION_CODES',
+      required=False,
+      hidden=True,
+      help=(
+          'Source Region Code to match for this rule. '
+          'Can only be specified if DIRECTION is `ingress`.'
+      ))
+
+
+def AddDestRegionCodes(parser):
+  """Adds a destination region code to this rule."""
+  parser.add_argument(
+      '--dest-region-codes',
+      type=arg_parsers.ArgList(),
+      metavar='DEST_REGION_CODES',
+      required=False,
+      hidden=True,
+      help=(
+          'Dest Region Code to match for this rule. '
+          'Can only be specified if DIRECTION is `egress`.'
+      ))

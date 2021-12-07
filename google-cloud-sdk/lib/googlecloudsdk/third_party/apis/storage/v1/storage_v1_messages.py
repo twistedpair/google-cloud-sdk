@@ -201,7 +201,7 @@ class Bucket(_messages.Message):
         recommend using the uniformBucketLevelAccess field to enable and
         disable the feature.
       publicAccessPrevention: The bucket's Public Access Prevention
-        configuration. Currently, 'unspecified' and 'enforced' are supported.
+        configuration. Currently, 'inherited' and 'enforced' are supported.
       uniformBucketLevelAccess: The bucket's uniform bucket-level access
         configuration.
     """

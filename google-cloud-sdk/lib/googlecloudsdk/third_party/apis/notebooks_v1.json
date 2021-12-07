@@ -1493,6 +1493,34 @@
         }
       }
     },
+    "UpdateInstanceMetadataItemsRequest": {
+      "id": "UpdateInstanceMetadataItemsRequest",
+      "description": "Request for adding\/changing metadata items for an instance.",
+      "type": "object",
+      "properties": {
+        "items": {
+          "description": "Metadata items to add\/update for the instance.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "UpdateInstanceMetadataItemsResponse": {
+      "id": "UpdateInstanceMetadataItemsResponse",
+      "description": "Response for adding\/changing metadata items for an instance.",
+      "type": "object",
+      "properties": {
+        "items": {
+          "description": "Map of items that were added\/updated to\/in the metadata.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "StartInstanceRequest": {
       "id": "StartInstanceRequest",
       "description": "Request for starting a notebook instance",
@@ -3008,6 +3036,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Replaces all the labels of an Instance."
+                },
+                "updateMetadataItems": {
+                  "id": "notebooks.projects.locations.instances.updateMetadataItems",
+                  "path": "v1/{+name}:updateMetadataItems",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:updateMetadataItems",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "UpdateInstanceMetadataItemsRequest"
+                  },
+                  "response": {
+                    "$ref": "UpdateInstanceMetadataItemsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Add\/update metadata items for an instance."
                 },
                 "delete": {
                   "id": "notebooks.projects.locations.instances.delete",

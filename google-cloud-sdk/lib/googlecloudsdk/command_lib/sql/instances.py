@@ -526,6 +526,8 @@ class _BaseInstances(object):
       if args.audit_bucket_path is not None:
         settings.sqlServerAuditConfig = (
             reducers.SqlServerAuditConfig(sql_messages, args.audit_bucket_path))
+      if args.maintenance_version:
+        settings.maintenanceVersion = args.maintenance_version
 
     return settings
 
@@ -660,9 +662,8 @@ class _BaseInstances(object):
     instance_resource = cls._ConstructBaseInstanceFromArgs(
         sql_messages, args, original, instance_ref)
 
-    if _IsAlpha(release_track):
-      instance_resource.databaseVersion = _ParseDatabaseVersion(
-          sql_messages, args.database_version)
+    instance_resource.databaseVersion = _ParseDatabaseVersion(
+        sql_messages, args.database_version)
 
     instance_resource.settings = cls._ConstructPatchSettingsFromArgs(
         sql_messages, args, original, release_track)

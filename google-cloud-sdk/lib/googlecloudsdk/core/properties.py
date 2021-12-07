@@ -293,6 +293,8 @@ class _Sections(object):
       SDK.
     datafusion: Section, The section containing datafusion properties for the
       Cloud SDK.
+    datapipelines: Section, The section containing datapipelines properties for
+      the cloud SDK.
     dataplex: Section, The section containing dataplex properties for the Cloud
       SDK.
     declarative: Section, The section containing properties for declarative
@@ -403,6 +405,7 @@ class _Sections(object):
     self.dataproc = _SectionDataproc()
     self.dataflow = _SectionDataflow()
     self.datafusion = _SectionDatafusion()
+    self.datapipelines = _SectionDataPipelines()
     self.dataplex = _SectionDataplex()
     self.declarative = _SectionDeclarative()
     self.deployment_manager = _SectionDeploymentManager()
@@ -471,6 +474,7 @@ class _Sections(object):
         self.dataproc,
         self.dataflow,
         self.datafusion,
+        self.datapipelines,
         self.dataplex,
         self.deploy,
         self.deployment_manager,
@@ -994,6 +998,8 @@ class _SectionApiEndpointOverrides(_Section):
     self.datamigration = self._Add(
         'datamigration', command='gcloud database-migration')
     self.datapol = self._Add('datapol', hidden=True)
+    self.datapipelines = self._Add(
+        'datapipelines', command='gcloud datapipelines')
     self.dataplex = self._Add('dataplex', command='gcloud dataplex')
     self.dataproc = self._Add('dataproc', command='gcloud dataproc')
     self.datastore = self._Add('datastore', command='gcloud datastore')
@@ -1062,7 +1068,7 @@ class _SectionApiEndpointOverrides(_Section):
         'recaptchaenterprise', command='gcloud recaptcha')
     self.redis = self._Add('redis', command='gcloud redis')
     self.run = self._Add('run', command='gcloud run')
-    self.run_apps = self._Add('run_apps', hidden=True)
+    self.runapps = self._Add('runapps', hidden=True)
     self.scc = self._Add('securitycenter', command='gcloud scc')
     self.servicemanagement = self._Add(
         'servicemanagement', command='gcloud endpoints')
@@ -1873,6 +1879,22 @@ class _SectionCore(_Section):
         'credentialed_hosted_repo_domains', hidden=True)
 
 
+class _SectionDataPipelines(_Section):
+  """Contains the properties for the 'datapipelines' section."""
+
+  def __init__(self):
+    super(_SectionDataPipelines, self).__init__('datapipelines')
+    self.disable_public_ips = self._AddBool(
+        'disable_public_ips',
+        help_text='Specifies that Cloud Dataflow workers '
+        'must not use public IP addresses.',
+        default=False)
+    self.enable_streaming_engine = self._AddBool(
+        'enable_streaming_engine',
+        help_text='Set this to true to enable Streaming Engine for the job.',
+        default=False)
+
+
 class _SectionDataflow(_Section):
   """Contains the properties for the 'dataflow' section."""
 
@@ -2198,6 +2220,13 @@ class _SectionGkebackup(_Section):
             'Default backup ID to use when working with Backup for GKE '
             'Services resources. When a `--backup` flag is required but not '
             'provided, the command will fall back to this value.'))
+    self.restore = self._Add(
+        'restore_plan',
+        default='-',
+        help_text=(
+            'Default restore plan ID to use when working with Backup for GKE '
+            'Services resources. When a `--restore-plan` flag is required but '
+            'not provided, the command will fall back to this value.'))
     self.restore = self._Add(
         'restore',
         default='-',

@@ -13,6 +13,22 @@ from apitools.base.py import extra_types
 package = 'gkehub'
 
 
+class AnthosObservabilityMembershipSpec(_messages.Message):
+  r"""**Anthosobservability**: Per-Membership Feature spec.
+
+  Fields:
+    doNotOptimizeMetrics: use full of metrics rather than optimized metrics.
+      See https://cloud.google.com/anthos/clusters/docs/on-
+      prem/1.8/concepts/logging-and-
+      monitoring#optimized_metrics_default_metrics
+    enableStackdriverOnApplications: enable collecting and reporting metrics
+      and logs from user apps See go/onyx-application-metrics-logs-user-guide
+  """
+
+  doNotOptimizeMetrics = _messages.BooleanField(1)
+  enableStackdriverOnApplications = _messages.BooleanField(2)
+
+
 class ApigeeMembershipSpec(_messages.Message):
   r"""**Apigee**: Per-Membership Feature spec.
 
@@ -915,6 +931,18 @@ class ConnectAgentResource(_messages.Message):
 
   manifest = _messages.StringField(1)
   type = _messages.MessageField('TypeMeta', 2)
+
+
+class EdgeCluster(_messages.Message):
+  r"""EdgeCluster contains information specific to Google Edge Clusters.
+
+  Fields:
+    resourceLink: Immutable. Self-link of the GCP resource for the Edge
+      Cluster. For example: //edgecontainer.googleapis.com/projects/my-
+      project/locations/us-west1-a/clusters/my-cluster
+  """
+
+  resourceLink = _messages.StringField(1)
 
 
 class Empty(_messages.Message):
@@ -2558,6 +2586,7 @@ class MembershipEndpoint(_messages.Message):
   API, endpoint and any additional Kubernetes metadata.
 
   Fields:
+    edgeCluster: Optional. Specific information for a Google Edge cluster.
     gkeCluster: Optional. Specific information for a GKE-on-GCP cluster.
     kubernetesMetadata: Output only. Useful Kubernetes-specific metadata.
     kubernetesResource: Optional. The in-cluster Kubernetes Resources that
@@ -2573,11 +2602,12 @@ class MembershipEndpoint(_messages.Message):
       this field, it should have a nil "type" instead.
   """
 
-  gkeCluster = _messages.MessageField('GkeCluster', 1)
-  kubernetesMetadata = _messages.MessageField('KubernetesMetadata', 2)
-  kubernetesResource = _messages.MessageField('KubernetesResource', 3)
-  multiCloudCluster = _messages.MessageField('MultiCloudCluster', 4)
-  onPremCluster = _messages.MessageField('OnPremCluster', 5)
+  edgeCluster = _messages.MessageField('EdgeCluster', 1)
+  gkeCluster = _messages.MessageField('GkeCluster', 2)
+  kubernetesMetadata = _messages.MessageField('KubernetesMetadata', 3)
+  kubernetesResource = _messages.MessageField('KubernetesResource', 4)
+  multiCloudCluster = _messages.MessageField('MultiCloudCluster', 5)
+  onPremCluster = _messages.MessageField('OnPremCluster', 6)
 
 
 class MembershipFeatureSpec(_messages.Message):
@@ -2585,6 +2615,7 @@ class MembershipFeatureSpec(_messages.Message):
   Membership.
 
   Fields:
+    anthosobservability: Anthos Observability-specific spec
     apigee: Apigee-specific spec.
     configmanagement: Config Management-specific spec.
     helloworld: Hello World-specific spec.
@@ -2592,11 +2623,12 @@ class MembershipFeatureSpec(_messages.Message):
     mesh: Anthos Service Mesh-specific spec
   """
 
-  apigee = _messages.MessageField('ApigeeMembershipSpec', 1)
-  configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 2)
-  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 3)
-  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 4)
-  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 5)
+  anthosobservability = _messages.MessageField('AnthosObservabilityMembershipSpec', 1)
+  apigee = _messages.MessageField('ApigeeMembershipSpec', 2)
+  configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 3)
+  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 4)
+  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 5)
+  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 6)
 
 
 class MembershipFeatureState(_messages.Message):
@@ -2976,13 +3008,18 @@ class ResourceOptions(_messages.Message):
       connect_resources. Defaults to the latest GKE Connect version. The
       version must be a currently supported version, obsolete versions will be
       rejected.
+    k8sVersion: Optional. Major version of the Kubernetes cluster. This is
+      only used to determine which version to use for the
+      CustomResourceDefinition resources, `apiextensions/v1beta1`
+      or`apiextensions/v1`.
     v1beta1Crd: Optional. Use `apiextensions/v1beta1` instead of
       `apiextensions/v1` for CustomResourceDefinition resources. This option
       should be set for clusters with Kubernetes apiserver versions <1.16.
   """
 
   connectVersion = _messages.StringField(1)
-  v1beta1Crd = _messages.BooleanField(2)
+  k8sVersion = _messages.StringField(2)
+  v1beta1Crd = _messages.BooleanField(3)
 
 
 class ServiceMeshAnalysisMessage(_messages.Message):

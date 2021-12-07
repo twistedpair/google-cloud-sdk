@@ -257,8 +257,12 @@
           }
         },
         "hub": {
-          "description": "Required. GKE Hub configuration.",
+          "description": "Optional. GKE Hub configuration. DEPRECATED Use fleet instead.",
           "$ref": "Hub"
+        },
+        "fleet": {
+          "description": "Optional. Fleet configuration.",
+          "$ref": "Fleet"
         },
         "networking": {
           "description": "Required. Cluster-wide networking configuration.",
@@ -287,11 +291,27 @@
     },
     "Hub": {
       "id": "Hub",
-      "description": "GKE Hub configuration.",
+      "description": "GKE Hub configuration. DEPRECATED Use Fleet instead.",
       "type": "object",
       "properties": {
         "membership": {
           "description": "Required. The resource name of the membership resource to use when registering this cluster to GKE Hub e.g. projects\/{project}\/locations\/global\/memberships\/{membership}.",
+          "type": "string"
+        }
+      }
+    },
+    "Fleet": {
+      "id": "Fleet",
+      "description": "Fleet related configuration. Fleets are a Google Cloud concept for logically organizing clusters, letting you use and manage multi-cluster capabilities and apply consistent policies across your systems.",
+      "type": "object",
+      "properties": {
+        "project": {
+          "description": "Required. The name of the Fleet host project where this cluster will be registered. Project names are formatted as `projects\/`.",
+          "type": "string"
+        },
+        "membership": {
+          "description": "Output only. The name of the managed Hub Membership resource associated to this cluster. Membership names are formatted as `projects\/\/locations\/global\/membership\/`.",
+          "readOnly": true,
           "type": "string"
         }
       }

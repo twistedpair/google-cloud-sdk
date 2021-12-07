@@ -17,8 +17,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.calliope import arg_parsers
-
 
 def AddAccountArg(parser):
   parser.add_argument(
@@ -31,10 +29,10 @@ def AddAccountArg(parser):
 def AddAudienceArg(parser):
   parser.add_argument(
       '--audiences',
-      type=arg_parsers.ArgList(),
+      type=str,
       metavar='AUDIENCES',
-      help=('Comma-separated list of audiences which are the intended '
-            'recipients of the token.'))
+      help='Intended recipient of the token. '
+           'Currently, only one audience can be specified.')
 
 
 def AddIncludeEmailArg(parser):

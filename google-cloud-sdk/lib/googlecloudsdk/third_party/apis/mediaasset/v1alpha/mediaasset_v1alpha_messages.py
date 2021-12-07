@@ -783,6 +783,58 @@ class AssetType(_messages.Message):
   updateTime = _messages.StringField(11)
 
 
+class AssetTypeConfig(_messages.Message):
+  r"""Catalog search item that includes the asset type and it's configuration.
+
+  Messages:
+    IndexedFieldConfigsValue: A map between user-defined key and
+      IndexedFieldConfig, where the key is indexed with the value configured
+      by IndexedFieldConfig and customers can use the key as search operator
+      if the expression is nonempty. If the expression in
+      CatalogIndexedFieldConfig is empty, the key must be "".
+
+  Fields:
+    assetType: The asset type name that this catalog item configured.
+    indexedFieldConfigs: A map between user-defined key and
+      IndexedFieldConfig, where the key is indexed with the value configured
+      by IndexedFieldConfig and customers can use the key as search operator
+      if the expression is nonempty. If the expression in
+      CatalogIndexedFieldConfig is empty, the key must be "".
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class IndexedFieldConfigsValue(_messages.Message):
+    r"""A map between user-defined key and IndexedFieldConfig, where the key
+    is indexed with the value configured by IndexedFieldConfig and customers
+    can use the key as search operator if the expression is nonempty. If the
+    expression in CatalogIndexedFieldConfig is empty, the key must be "".
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        IndexedFieldConfigsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        IndexedFieldConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a IndexedFieldConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A CatalogIndexedFieldConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('CatalogIndexedFieldConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  assetType = _messages.StringField(1)
+  indexedFieldConfigs = _messages.MessageField('IndexedFieldConfigsValue', 2)
+
+
 class AuthorizationLoggingOptions(_messages.Message):
   r"""Authorization-related information used by Cloud Audit Logging.
 
@@ -829,18 +881,48 @@ class Catalog(_messages.Message):
   r"""A catalog specifies a search index for a collection of assets.
 
   Messages:
+    AssetTypeConfigsValue: A map between asset type name and its configuration
+      within this catalog.
     LabelsValue: The labels associated with this resource. Each label is a
       key-value pair.
 
   Fields:
+    assetTypeConfigs: A map between asset type name and its configuration
+      within this catalog.
     createTime: Output only. The creation time of the catalog.
-    items: List of asset types and their configurations within this catalog.
     labels: The labels associated with this resource. Each label is a key-
       value pair.
     name: The resource name of the catalog, in the following form:
       `projects/{project}/locations/{location}/catalogs/{catalog}`.
     updateTime: Output only. The last-modified time of the catalog.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AssetTypeConfigsValue(_messages.Message):
+    r"""A map between asset type name and its configuration within this
+    catalog.
+
+    Messages:
+      AdditionalProperty: An additional property for a AssetTypeConfigsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AssetTypeConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AssetTypeConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A AssetTypeConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('AssetTypeConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -867,8 +949,8 @@ class Catalog(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  items = _messages.MessageField('Item', 2, repeated=True)
+  assetTypeConfigs = _messages.MessageField('AssetTypeConfigsValue', 1)
+  createTime = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
   updateTime = _messages.StringField(5)
@@ -886,13 +968,13 @@ class CatalogConfig(_messages.Message):
 
 
 class CatalogIndexedFieldConfig(_messages.Message):
-  r"""CatalogIndexedFieldConfig configured the asset type's metadata fields
+  r"""CatalogIndexedFieldConfig configures the asset type's metadata fields
   that need to be included in catalog's search result.
 
   Fields:
     expression: The expression that points to the indexed field in the asset.
-      If it's empty, the default is metadata.word, where the word is the
-      search operator that this field is mapped to.
+      If it's empty, the default is metadata.key, and the key will not be used
+      as search operator.
   """
 
   expression = _messages.StringField(1)
@@ -1746,53 +1828,6 @@ class Input(_messages.Message):
 
   required = _messages.BooleanField(1)
   type = _messages.StringField(2)
-
-
-class Item(_messages.Message):
-  r"""Catalog search item that includes the asset type and it's configuration.
-
-  Messages:
-    IndexedFieldConfigsValue: A map between user-defined word and
-      IndexedFieldConfig, where the word is indexed with the value configured
-      by IndexedFieldConfig and customers can use the word as search operator.
-
-  Fields:
-    assetType: The asset type name that this catalog item configured.
-    indexedFieldConfigs: A map between user-defined word and
-      IndexedFieldConfig, where the word is indexed with the value configured
-      by IndexedFieldConfig and customers can use the word as search operator.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class IndexedFieldConfigsValue(_messages.Message):
-    r"""A map between user-defined word and IndexedFieldConfig, where the word
-    is indexed with the value configured by IndexedFieldConfig and customers
-    can use the word as search operator.
-
-    Messages:
-      AdditionalProperty: An additional property for a
-        IndexedFieldConfigsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type
-        IndexedFieldConfigsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a IndexedFieldConfigsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A CatalogIndexedFieldConfig attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('CatalogIndexedFieldConfig', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  assetType = _messages.StringField(1)
-  indexedFieldConfigs = _messages.MessageField('IndexedFieldConfigsValue', 2)
 
 
 class LinkConfig(_messages.Message):
@@ -4217,12 +4252,14 @@ class TransformationStatus(_messages.Message):
       RUNNING: Transformation is in running state.
       COMPLETED: Transformation has been completed.
       CANCELLED: Transformation has been cancelled.
+      CANCELLING: Transformation is in cancelling state.
     """
     STATE_UNSPECIFIED = 0
     QUEUED = 1
     RUNNING = 2
     COMPLETED = 3
     CANCELLED = 4
+    CANCELLING = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ProgressReportValue(_messages.Message):

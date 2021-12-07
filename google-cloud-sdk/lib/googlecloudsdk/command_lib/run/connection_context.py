@@ -37,7 +37,7 @@ from googlecloudsdk.command_lib.run import platforms
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import transport
 from googlecloudsdk.core.util import files
-import httplib2
+import requests
 import six
 from six.moves.urllib import parse as urlparse
 
@@ -50,7 +50,7 @@ _MANAGED_EVENTS_API_VERSION = 'v1beta1'
 _MANAGED_EVENTS_ALPHA_API_NAME = global_methods.SERVERLESS_API_NAME
 _MANAGED_EVENTS_ALPHA_API_VERSION = 'v1alpha1'
 
-_RUN_APPS_API_NAME = 'run_apps'
+_RUN_APPS_API_NAME = 'runapps'
 _RUN_APPS_API_VERSION = 'v1alpha1'
 
 
@@ -261,7 +261,8 @@ class KubeconfigConnectionContext(ConnectionInfo):
           self.endpoint = 'https://{}/'.format(self.raw_hostname)
           with _OverrideEndpointOverrides(self._api_name, self.endpoint):
             yield self
-      except httplib2.HttpLib2Error as e:
+      # SSL Exceptions raised by the http2lib and requests library
+      except (ssl.SSLError, requests.exceptions.SSLError) as e:
         if 'CERTIFICATE_VERIFY_FAILED' in six.text_type(e):
           raise gke.NoCaCertError(
               'Missing or invalid [certificate-authority] or '
@@ -278,12 +279,13 @@ class KubeconfigConnectionContext(ConnectionInfo):
     if self.client_cert_domain:
       # Import http only when needed, as it depends on credential infrastructure
       # which is not needed in all cases.
-      from googlecloudsdk.core import http as http_core  # pylint: disable=g-import-not-at-top
-      http_client = http_core.Http(
+      from googlecloudsdk.core import transports  # pylint: disable=g-import-not-at-top
+      http_client = transports.GetApitoolsTransport(
           response_encoding=transport.ENCODING,
-          ca_certs=self.ca_certs)
-      http_client.add_certificate(
-          self.client_key, self.client_cert, self.client_cert_domain)
+          ca_certs=self.ca_certs,
+          client_certificate=self.client_cert,
+          client_key=self.client_key,
+          client_cert_domain=self.client_cert_domain)
       return http_client
     from googlecloudsdk.core.credentials import transports  # pylint: disable=g-import-not-at-top
     http_client = transports.GetApitoolsTransport(
@@ -354,7 +356,9 @@ class KubeconfigConnectionContext(ConnectionInfo):
       parsed_server = urlparse.urlparse(self.cluster['cluster']['server'])
       self.raw_hostname = parsed_server.hostname
       self.user = self.kubeconfig.users[self.curr_ctx['context']['user']]
-      self.client_key = self.user.get('client-key', None)
+      self.client_key = self.user['user'].get('client-key', None)
+      self.client_key_data = None
+      self.client_cert_data = None
       if not self.client_key:
         self.client_key_data = self.user['user'].get('client-key-data', None)
       self.client_cert = self.user['user'].get('client-certificate', None)

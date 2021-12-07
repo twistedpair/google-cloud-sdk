@@ -30,9 +30,7 @@ properties:
       The specification for allowing client side cross-origin requests.
     $ref: HttpRouteCorsPolicy.yaml
   destinations:
-    description: |-
-      The destination to which traffic should be forwarded. Only one of
-      destinations, redirect, original_destination can be set.
+    description: The destination to which traffic should be forwarded.
     type: array
     items:
       $ref: HttpRouteDestination.yaml
@@ -47,17 +45,9 @@ properties:
       be ignored by clients that are configured with a
       fault_injection_policy
     $ref: HttpRouteFaultInjectionPolicy.yaml
-  originalDestination:
-    description: |-
-      If true, the matched traffic will use the destination ip and port of
-      the original connection (as it was not processed by proxy) as the
-      destination of the request. Only one of destinations, redirect,
-      original_destination can be set.
-    type: boolean
   redirect:
     description: |-
-      If set, the request is directed as configured by this field. Only one
-      of destinations, redirect, original_destination can be set.
+      If set, the request is directed as configured by this field.
     $ref: HttpRouteRedirect.yaml
   requestHeaderModifier:
     description: |-

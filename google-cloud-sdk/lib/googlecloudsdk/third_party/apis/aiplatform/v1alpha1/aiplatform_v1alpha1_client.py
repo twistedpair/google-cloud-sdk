@@ -5411,7 +5411,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a Model. Model can only be deleted if there are no DeployedModels created from it.
+      r"""Deletes a Model. A model cannot be deleted if any Endpoint resource has a DeployedModel based on the model in its deployed_models field.
 
       Args:
         request: (AiplatformProjectsLocationsModelsDeleteRequest) input message

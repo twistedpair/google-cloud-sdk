@@ -12,14 +12,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Utils for generating API-specific RequestConfig objects."""
+"""Utils for generating API-specific RequestConfig objects.
+
+RequestConfig is provider neutral and should be subclassed into a
+provider-specific class (e.g. GcsRequestConfig) by the factory method.
+
+RequestConfig can hold a BucketConfig or ObjectConfig. These classes also
+have provider-specific subclasses (e.g. S3ObjectConfig).
+"""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.storage import encryption_util
-
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.core.util import debug_output
 
@@ -27,126 +33,32 @@ from googlecloudsdk.core.util import debug_output
 DEFAULT_CONTENT_TYPE = 'application/octet-stream'
 
 
-class UserBucketArgs:
-  """Contains user flag values affecting cloud bucket settings."""
-
-  def __init__(self,
-               default_encryption_key=None,
-               default_storage_class=None,
-               location=None,
-               retention_period=None,
-               uniform_bucket_level_access=None,
-               versioning=None,
-               web_error_page=None,
-               web_main_page_suffix=None):
-    """Initializes class, binding flag values to it."""
-    self.default_encryption_key = default_encryption_key
-    self.default_storage_class = default_storage_class
-    self.location = location
-    self.retention_period = retention_period
-    self.uniform_bucket_level_access = uniform_bucket_level_access
-    self.versioning = versioning
-    self.web_error_page = web_error_page
-    self.web_main_page_suffix = web_main_page_suffix
+# TODO (b/203088491): Implement bucket config fields.
+class _BucketConfig(object):
 
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
-    return (self.default_encryption_key == other.default_encryption_key and
-            self.default_storage_class == other.default_storage_class and
-            self.location == other.location and
-            self.retention_period == other.retention_period and
-            self.uniform_bucket_level_access
-            == other.uniform_bucket_level_access and
-            self.versioning == other.versioning and
-            self.web_error_page == other.web_error_page and
-            self.web_main_page_suffix == other.web_main_page_suffix)
+    return True
 
   def __repr__(self):
     return debug_output.generic_repr(self)
 
 
-class UserRequestArgs:
-  """Class contains user flags and should be passed to RequestConfig factory.
-
-  Should not be mutated while being passed around. See RequestConfig classes
-  for "Attributes" docstring. Specifics depend on API client.
-  """
-
-  def __init__(self,
-               cache_control=None,
-               content_disposition=None,
-               content_encoding=None,
-               content_language=None,
-               content_type=None,
-               custom_metadata=None,
-               custom_time=None,
-               max_bytes_per_call=None,
-               md5_hash=None,
-               precondition_generation_match=None,
-               precondition_metageneration_match=None,
-               predefined_acl_string=None,
-               predefined_default_acl_string=None):
-    """Sets properties."""
-    self.cache_control = cache_control
-    self.content_disposition = content_disposition
-    self.content_encoding = content_encoding
-    self.content_language = content_language
-    self.content_type = content_type
-    self.custom_metadata = custom_metadata
-    self.custom_time = custom_time
-    self.max_bytes_per_call = max_bytes_per_call
-    self.md5_hash = md5_hash
-    self.precondition_generation_match = precondition_generation_match
-    self.precondition_metageneration_match = precondition_metageneration_match
-    self.predefined_acl_string = predefined_acl_string
-    self.predefined_default_acl_string = predefined_default_acl_string
-
-  def __eq__(self, other):
-    if not isinstance(other, type(self)):
-      return NotImplemented
-    return (self.cache_control == other.cache_control and
-            self.content_disposition == other.content_disposition and
-            self.content_encoding == other.content_encoding and
-            self.content_language == other.content_language and
-            self.content_type == other.content_type and
-            self.custom_metadata == other.custom_metadata and
-            self.custom_time == other.custom_time and
-            self.max_bytes_per_call == other.max_bytes_per_call and
-            self.md5_hash == other.md5_hash and
-            self.precondition_generation_match
-            == other.precondition_generation_match and
-            self.precondition_metageneration_match
-            == other.precondition_metageneration_match and
-            self.predefined_acl_string == other.predefined_acl_string and
-            self.predefined_default_acl_string
-            == other.predefined_default_acl_string)
-
-  def __repr__(self):
-    return debug_output.generic_repr(self)
+# TODO (b/203088491): Implement bucket config for GCS.
+class _GcsBucketConfig(_BucketConfig):
+  pass
 
 
-def get_user_request_args_from_command_args(args):
-  """Returns UserRequestArgs from a command's Run method "args" parameter."""
-  return UserRequestArgs(
-      cache_control=getattr(args, 'cache_control', None),
-      content_disposition=getattr(args, 'content_disposition', None),
-      content_encoding=getattr(args, 'content_encoding', None),
-      content_language=getattr(args, 'content_language', None),
-      content_type=getattr(args, 'content_type', None),
-      custom_metadata=getattr(args, 'custom_metadata', None),
-      custom_time=getattr(args, 'custom_time', None),
-      md5_hash=getattr(args, 'content_md5', None),
-      precondition_generation_match=getattr(args, 'if_generation_match', None),
-      precondition_metageneration_match=getattr(args, 'if_metageneration_match',
-                                                None),
-  )
+# TODO (b/203088491): Implement bucket config for S3.
+class _S3BucketConfig(_BucketConfig):
+  pass
 
 
-class _RequestConfig(object):
-  """Arguments object for parameters shared between cloud providers.
+class _ObjectConfig(object):
+  """Holder for storage object settings shared between cloud providers.
 
-  Subclasses may add more attributes.
+  Provider-specific subclasses may add more attributes.
 
   Attributes:
     cache_control (str|None): Influences how backend caches requests and
@@ -155,16 +67,14 @@ class _RequestConfig(object):
       displayed.
     content_encoding (str|None): How content is encoded (e.g. "gzip").
     content_language (str|None): Content's language (e.g. "en" = "English).
-    content_type (str|None): Type of data contained in content
-      (e.g. "text/html").
+    content_type (str|None): Type of data contained in content (e.g.
+      "text/html").
     custom_metadata (dict|None): Custom metadata fields set by user.
     decryption_key (encryption_util.EncryptionKey): The key that should be used
       to decrypt information in GCS.
     encryption_key (encryption_util.EncryptionKey): The key that should be used
       to encrypt information in GCS.
     md5_hash (str|None): MD5 digest to use for validation.
-    predefined_acl_string (str|None): ACL to set on resource.
-    predefined_default_acl_string (str|None): Default ACL to set on resources.
     size (int|None): Object size in bytes.
   """
 
@@ -178,8 +88,6 @@ class _RequestConfig(object):
                decryption_key=None,
                encryption_key=None,
                md5_hash=None,
-               predefined_acl_string=None,
-               predefined_default_acl_string=None,
                size=None):
     self.cache_control = cache_control
     self.content_disposition = content_disposition
@@ -190,8 +98,6 @@ class _RequestConfig(object):
     self.decryption_key = decryption_key
     self.encryption_key = encryption_key
     self.md5_hash = md5_hash
-    self.predefined_acl_string = predefined_acl_string
-    self.predefined_default_acl_string = predefined_default_acl_string
     self.size = size
 
   def __eq__(self, other):
@@ -205,17 +111,13 @@ class _RequestConfig(object):
             self.custom_metadata == other.custom_metadata and
             self.decryption_key == other.decryption_key and
             self.encryption_key == other.encryption_key and
-            self.md5_hash == other.md5_hash and
-            self.predefined_acl_string == other.predefined_acl_string and
-            self.predefined_default_acl_string
-            == other.predefined_default_acl_string and self.size == other.size)
+            self.md5_hash == other.md5_hash and self.size == other.size)
 
   def __repr__(self):
     return debug_output.generic_repr(self)
 
 
-# pylint:disable=g-missing-from-attributes
-class _GcsRequestConfig(_RequestConfig):
+class _GcsObjectConfig(_ObjectConfig):
   """Arguments object for requests with custom GCS parameters.
 
   See super class for additional attributes.
@@ -224,12 +126,6 @@ class _GcsRequestConfig(_RequestConfig):
     custom_time (datetime|None): Custom time user can set.
     gzip_encoded (bool|None): Whether to use gzip transport encoding for the
       upload.
-    max_bytes_per_call (int|None): Integer describing maximum number of bytes to
-      write per service call.
-    precondition_generation_match (int|None): Perform request only if generation
-      of target object matches the given integer. Ignored for bucket requests.
-    precondition_metageneration_match (int|None): Perform request only if
-      metageneration of target object/bucket matches the given integer.
   """
   # pylint:enable=g-missing-from-attributes
 
@@ -244,12 +140,7 @@ class _GcsRequestConfig(_RequestConfig):
                decryption_key=None,
                encryption_key=None,
                gzip_encoded=False,
-               max_bytes_per_call=None,
                md5_hash=None,
-               precondition_generation_match=None,
-               precondition_metageneration_match=None,
-               predefined_acl_string=None,
-               predefined_default_acl_string=None,
                size=None):
     super().__init__(
         cache_control=cache_control,
@@ -261,11 +152,81 @@ class _GcsRequestConfig(_RequestConfig):
         decryption_key=decryption_key,
         encryption_key=encryption_key,
         md5_hash=md5_hash,
-        predefined_acl_string=predefined_acl_string,
-        predefined_default_acl_string=predefined_default_acl_string,
         size=size)
     self.custom_time = custom_time
     self.gzip_encoded = gzip_encoded
+
+  def __eq__(self, other):
+    if not isinstance(other, type(self)):
+      return NotImplemented
+    return (super().__eq__(other) and self.custom_time == other.custom_time and
+            self.gzip_encoded == other.gzip_encoded)
+
+
+class _S3ObjectConfig(_ObjectConfig):
+  """We currently do not support any S3-specific object configurations."""
+
+
+class _RequestConfig(object):
+  """Holder for parameters shared between cloud providers.
+
+  Provider-specific subclasses may add more attributes.
+
+  Attributes:
+    predefined_acl_string (str|None): ACL to set on resource.
+    predefined_default_acl_string (str|None): Default ACL to set on resources.
+    resource_args (_BucketConfig|_ObjectConfig|None): Holds settings for a cloud
+      resource.
+  """
+
+  def __init__(self,
+               predefined_acl_string=None,
+               predefined_default_acl_string=None,
+               resource_args=None):
+    self.predefined_acl_string = predefined_acl_string
+    self.predefined_default_acl_string = predefined_default_acl_string
+    self.resource_args = resource_args
+
+  def __eq__(self, other):
+    if not isinstance(other, type(self)):
+      return NotImplemented
+    return (self.predefined_acl_string == other.predefined_acl_string and
+            self.predefined_default_acl_string
+            == other.predefined_default_acl_string and
+            self.resource_args == other.resource_args)
+
+  def __repr__(self):
+    return debug_output.generic_repr(self)
+
+
+# pylint:disable=g-missing-from-attributes
+class _GcsRequestConfig(_RequestConfig):
+  """Holder for GCS-specific API request parameters.
+
+  See super class for additional attributes.
+
+  Attributes:
+    max_bytes_per_call (int|None): Integer describing maximum number of bytes to
+      write per service call.
+    precondition_generation_match (int|None): Perform request only if generation
+      of target object matches the given integer. Ignored for bucket requests.
+    precondition_metageneration_match (int|None): Perform request only if
+      metageneration of target object/bucket matches the given integer.
+  """
+
+  # pylint:enable=g-missing-from-attributes
+
+  def __init__(self,
+               max_bytes_per_call=None,
+               precondition_generation_match=None,
+               precondition_metageneration_match=None,
+               predefined_acl_string=None,
+               predefined_default_acl_string=None,
+               resource_args=None):
+    super().__init__(
+        predefined_acl_string=predefined_acl_string,
+        predefined_default_acl_string=predefined_default_acl_string,
+        resource_args=resource_args)
     self.max_bytes_per_call = max_bytes_per_call
     self.precondition_generation_match = precondition_generation_match
     self.precondition_metageneration_match = precondition_metageneration_match
@@ -273,8 +234,7 @@ class _GcsRequestConfig(_RequestConfig):
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
-    return (super().__eq__(other) and self.custom_time == other.custom_time and
-            self.gzip_encoded == other.gzip_encoded and
+    return (super().__eq__(other) and
             self.max_bytes_per_call == other.max_bytes_per_call and
             self.precondition_generation_match
             == other.precondition_generation_match and
@@ -282,45 +242,73 @@ class _GcsRequestConfig(_RequestConfig):
             == other.precondition_metageneration_match)
 
 
-# pylint:disable=g-missing-from-attributes
 class _S3RequestConfig(_RequestConfig):
-  """Arguments object for requests with custom S3 parameters.
+  """Holder for S3-specific API request parameters.
 
-  See super class for attributes.
+  Currently just meant for use with S3ObjectConfig and S3BucketConfig in
+  the parent class "resource_args" field.
   """
-  # pylint:enable=g-missing-from-attributes
 
-  def __init__(self,
-               cache_control=None,
-               content_disposition=None,
-               content_encoding=None,
-               content_language=None,
-               content_type=None,
-               custom_metadata=None,
-               decryption_key=None,
-               encryption_key=None,
-               md5_hash=None,
-               predefined_acl_string=None,
-               predefined_default_acl_string=None,
-               size=None):
-    super().__init__(
-        cache_control=cache_control,
-        content_disposition=content_disposition,
-        content_encoding=content_encoding,
-        content_language=content_language,
-        content_type=content_type,
-        custom_metadata=custom_metadata,
-        decryption_key=decryption_key,
-        encryption_key=encryption_key,
-        md5_hash=md5_hash,
-        predefined_acl_string=predefined_acl_string,
-        predefined_default_acl_string=predefined_default_acl_string,
-        size=size)
 
-  def __eq__(self, other):
-    if not isinstance(other, type(self)):
-      return NotImplemented
-    return super().__eq__(other)
+def _get_request_config_resource_args(url,
+                                      content_type=None,
+                                      decryption_key_hash=None,
+                                      md5_hash=None,
+                                      size=None,
+                                      user_request_args=None):
+  """Generates metadata for API calls to storage buckets and objects."""
+  if not isinstance(url, storage_url.CloudUrl):
+    return None
+  user_resource_args = getattr(user_request_args, 'resource_args', None)
+  new_resource_args = None
+
+  if url.is_bucket():
+    if url.scheme == storage_url.ProviderPrefix.GCS:
+      new_resource_args = _GcsBucketConfig()
+    elif url.scheme == storage_url.ProviderPrefix.S3:
+      new_resource_args = _S3BucketConfig()
+    else:
+      new_resource_args = _BucketConfig()
+
+  elif url.is_object():
+    if url.scheme == storage_url.ProviderPrefix.GCS:
+      new_resource_args = _GcsObjectConfig()
+      if user_resource_args:
+        new_resource_args.custom_time = user_resource_args.custom_time
+
+    elif url.scheme == storage_url.ProviderPrefix.S3:
+      new_resource_args = _S3ObjectConfig()
+
+    else:
+      new_resource_args = _ObjectConfig()
+
+    new_resource_args.content_type = content_type
+    new_resource_args.md5_hash = md5_hash
+    new_resource_args.size = size
+
+    new_resource_args.encryption_key = encryption_util.get_encryption_key()
+    if decryption_key_hash:
+      new_resource_args.decryption_key = encryption_util.get_decryption_key(
+          decryption_key_hash)
+
+    if user_resource_args:
+      # User args should override existing settings.
+      if user_resource_args.content_type is not None:
+        if user_resource_args.content_type:
+          new_resource_args.content_type = user_resource_args.content_type
+        else:  # Empty string or other falsey value but not completely unset.
+          new_resource_args.content_type = DEFAULT_CONTENT_TYPE
+
+      if user_resource_args.md5_hash is not None:
+        new_resource_args.md5_hash = user_resource_args.md5_hash
+
+      new_resource_args.cache_control = user_resource_args.cache_control
+      new_resource_args.content_disposition = user_resource_args.content_disposition
+      new_resource_args.content_encoding = user_resource_args.content_encoding
+      new_resource_args.content_language = user_resource_args.content_language
+      new_resource_args.custom_metadata = user_resource_args.custom_metadata
+
+  return new_resource_args
 
 
 def get_request_config(url,
@@ -330,26 +318,14 @@ def get_request_config(url,
                        size=None,
                        user_request_args=None):
   """Generates API-specific RequestConfig. See output classes for arg info."""
+  resource_args = _get_request_config_resource_args(url, content_type,
+                                                    decryption_key_hash,
+                                                    md5_hash, size,
+                                                    user_request_args)
+
   if url.scheme == storage_url.ProviderPrefix.GCS:
-    request_config = _GcsRequestConfig()
-  elif url.scheme == storage_url.ProviderPrefix.S3:
-    request_config = _S3RequestConfig()
-  else:
-    request_config = _RequestConfig()
-
-  request_config.content_type = content_type
-  request_config.md5_hash = md5_hash
-  request_config.size = size
-
-  request_config.encryption_key = encryption_util.get_encryption_key()
-  if decryption_key_hash:
-    request_config.decryption_key = encryption_util.get_decryption_key(
-        decryption_key_hash)
-
-  if user_request_args:
-    if url.scheme == storage_url.ProviderPrefix.GCS:
-      request_config.custom_time = user_request_args.custom_time
-
+    request_config = _GcsRequestConfig(resource_args=resource_args)
+    if user_request_args:
       if user_request_args.max_bytes_per_call:
         request_config.max_bytes_per_call = int(
             user_request_args.max_bytes_per_call)
@@ -359,22 +335,14 @@ def get_request_config(url,
       if user_request_args.precondition_metageneration_match:
         request_config.precondition_metageneration_match = int(
             user_request_args.precondition_metageneration_match)
+  elif url.scheme == storage_url.ProviderPrefix.S3:
+    request_config = _S3RequestConfig(resource_args=resource_args)
+  else:
+    request_config = _RequestConfig(resource_args=resource_args)
 
-    request_config.cache_control = user_request_args.cache_control
-    request_config.content_disposition = user_request_args.content_disposition
-    request_config.content_encoding = user_request_args.content_encoding
-    request_config.content_language = user_request_args.content_language
-    request_config.custom_metadata = user_request_args.custom_metadata
-    request_config.predefined_acl_string = user_request_args.predefined_acl_string
-    request_config.predefined_default_acl_string = (
-        user_request_args.predefined_default_acl_string)
-
-    if user_request_args.content_type is not None:
-      if not user_request_args.content_type:
-        request_config.content_type = DEFAULT_CONTENT_TYPE
-      else:
-        request_config.content_type = user_request_args.content_type
-    if user_request_args.md5_hash is not None:
-      request_config.md5_hash = user_request_args.md5_hash
+  request_config.predefined_acl_string = getattr(user_request_args,
+                                                 'predefined_acl_string', None)
+  request_config.predefined_default_acl_string = getattr(
+      user_request_args, 'predefined_default_acl_string', None)
 
   return request_config

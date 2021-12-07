@@ -228,26 +228,32 @@ The default Kubernetes version is available using the following command.
 
 def AddNotificationConfigFlag(parser, hidden=False):
   """Adds a --notification-config flag to the given parser."""
-  # TODO(b/188853565) Add filter to help text here
 
   help_text = """\
 The notification configuration of the cluster. GKE supports publishing
 cluster upgrade notifications to any Pub/Sub topic you created in the same
 project. Create a subscription for the topic specified to receive notification
 messages. See https://cloud.google.com/pubsub/docs/admin on how to manage
-Pub/Sub topics and subscriptions.
+Pub/Sub topics and subscriptions. You can also use the filter option to
+specify which event types you'd like to receive from the following options:
+SecurityBulletinEvent, UpgradeEvent, UpgradeAvailableEvent.
 
 Examples:
 
   $ {command} example-cluster --notification-config=pubsub=ENABLED,pubsub-topic=projects/{project}/topics/{topic-name}
+  $ {command} example-cluster --notification-config=pubsub=ENABLED,pubsub-topic=projects/{project}/topics/{topic-name},filter=SecurityBulletinEvent|UpgradeEvent
 
 The project of the Pub/Sub topic must be the same one as the cluster. It can
 be either the project ID or the project number.
 """
-  # TODO(b/188853565) Re-add spec here once filter is public
   return parser.add_argument(
       '--notification-config',
-      type=arg_parsers.ArgDict(required_keys=['pubsub']),
+      type=arg_parsers.ArgDict(
+          spec={
+              'pubsub': str,
+              'pubsub-topic': str,
+              'filter': str,
+          }, required_keys=['pubsub']),
       metavar='pubsub=ENABLED|DISABLED,pubsub-topic=TOPIC',
       help=help_text,
       hidden=hidden)
@@ -930,7 +936,10 @@ def AddEnableWorkloadMonitoringEapFlag(parser):
 
 def AddManagedPrometheusFlags(parser, for_create=False):
   """Adds --enable-managed-prometheus and --disable-managed-prometheus flags to parser."""
-  help_text = """Enable/Disable Prometheus Managed Collection."""
+  enable_help_text = """Enable managed collection for Managed Service for
+  Prometheus."""
+  disable_help_text = """Disable managed collection for Managed Service for
+  Prometheus."""
 
   # Create can only enable the component.
   if for_create:
@@ -938,24 +947,21 @@ def AddManagedPrometheusFlags(parser, for_create=False):
         '--enable-managed-prometheus',
         action='store_true',
         default=None,
-        help=help_text,
-        hidden=True,
+        help=enable_help_text,
     )
   else:
-    group = parser.add_group(hidden=True, mutex=True)
+    group = parser.add_group(mutex=True)
     group.add_argument(
         '--enable-managed-prometheus',
         action='store_true',
         default=None,
-        help=help_text,
-        hidden=True,
+        help=enable_help_text,
     )
     group.add_argument(
         '--disable-managed-prometheus',
         action='store_true',
         default=None,
-        help=help_text,
-        hidden=True,
+        help=disable_help_text,
     )
 
 
@@ -1366,6 +1372,37 @@ def AddPlacementTypeFlag(parser, for_node_pool=False, hidden=True):
       choices=api_adapter.PLACEMENT_OPTIONS,
       help=help_text,
       hidden=hidden)
+
+
+def AddMaintenanceIntervalFlag(parser, for_node_pool=False, hidden=True):
+  """Adds a --maintenance-interval flag to the given parser."""
+  type_validator = arg_parsers.RegexpValidator(r'^PERIODIC$',
+                                               'Type must be "PERIODIC"')
+  if for_node_pool:
+    help_text = """\
+Specify the frequency of planned maintenance events in the new nodepool
+
+Examples:
+
+  $ {command} node-pool-1 example-cluster --maintenance-interval=PERIODIC
+
+The only supported type is 'PERIODIC'
+"""
+  else:
+    help_text = """\
+Specify the frequency of planned maintenance events in the new cluster
+
+Examples:
+
+  $ {command} example-cluster --maintenance-interval=PERIODIC
+
+The only supported type is 'PERIODIC'
+"""
+  parser.add_argument(
+      '--maintenance-interval',
+      type=type_validator,
+      hidden=hidden,
+      help=help_text)
 
 
 def AddNodePoolNameArg(parser, help_text):
@@ -3340,13 +3377,6 @@ def ValidateSurgeUpgradeSettings(args):
 def ValidateNotificationConfigFlag(args):
   """Raise exception if validation of notification config fails."""
   if 'notification_config' in args._specified_args:
-    # TODO(b/188853565): Remove this in favor of spec once filter is public
-    for option in args.notification_config.keys():
-      if option not in ['pubsub', 'pubsub-topic', 'filter']:
-        raise exceptions.InvalidArgumentException(
-            '--notification_config',
-            'valid keys are [pubsub, pubsub-topic]; received {0}'.format(
-                option))
     if 'pubsub' in args.notification_config:
       pubsub = args.notification_config['pubsub']
       if pubsub != 'ENABLED' and pubsub != 'DISABLED':
@@ -3361,11 +3391,14 @@ def ValidateNotificationConfigFlag(args):
       known_event_types = [
           'UpgradeEvent', 'UpgradeAvailableEvent', 'SecurityBulletinEvent'
       ]
+      lower_known_event_types = []
+      for event_type in known_event_types:
+        lower_known_event_types.append(event_type.lower())
       filter_opt = args.notification_config['filter']
       inputted_types = filter_opt.split('|')
 
       for inputted_type in inputted_types:
-        if inputted_type not in known_event_types:
+        if inputted_type.lower() not in lower_known_event_types:
           raise exceptions.InvalidArgumentException(
               '--notification_config',
               'valid keys for filter are {0}; received \'{1}\''.format(

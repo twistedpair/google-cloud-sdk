@@ -198,8 +198,8 @@ class OsloginUsersProjectsDeleteRequest(_messages.Message):
   operatingSystemType = _messages.EnumField('OperatingSystemTypeValueValuesEnum', 2)
 
 
-class OsloginUsersSshPublicKeyCreateRequest(_messages.Message):
-  r"""A OsloginUsersSshPublicKeyCreateRequest object.
+class OsloginUsersSshPublicKeysCreateRequest(_messages.Message):
+  r"""A OsloginUsersSshPublicKeysCreateRequest object.
 
   Fields:
     parent: Required. The unique ID for the user in format `users/{user}`.

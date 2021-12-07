@@ -241,6 +241,31 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class BulkMuteFindingsRequest(_messages.Message):
+  r"""Request message for bulk findings update. Note: 1. If multiple bulk
+  update requests match the same resource, the order in which they get
+  executed is not defined. 2. Once a bulk operation is started, there is no
+  way to stop it.
+
+  Fields:
+    filter: Expression that identifies findings that should be updated. The
+      expression is a list of zero or more restrictions combined via logical
+      operators `AND` and `OR`. Parentheses are supported, and `OR` has higher
+      precedence than `AND`. Restrictions have the form ` ` and may have a `-`
+      character in front of them to indicate negation. The fields map to those
+      defined in the corresponding resource. The supported operators are: *
+      `=` for all value types. * `>`, `<`, `>=`, `<=` for integer values. *
+      `:`, meaning substring matching, for strings. The supported value types
+      are: * string literals in quotes. * integer literals without quotes. *
+      boolean literals `true` and `false` without quotes.
+    muteAnnotation: This can be a mute configuration name or any identifier
+      for mute/unmute of findings based on the filter.
+  """
+
+  filter = _messages.StringField(1)
+  muteAnnotation = _messages.StringField(2)
+
+
 class Cve(_messages.Message):
   r"""CVE stands for Common Vulnerabilities and Exposures. More information:
   https://cve.mitre.org
@@ -532,6 +557,9 @@ class Finding(_messages.Message):
     StateValueValuesEnum: The state of the finding.
 
   Messages:
+    ExternalSystemsValue: Output only. Third party SIEM/SOAR fields within
+      SCC, contains external system information and external system finding
+      fields.
     SourcePropertiesValue: Source specific properties. These properties are
       managed by the source that writes the finding. The key names in the
       source_properties map must be between 1 and 255 characters, and must
@@ -557,6 +585,8 @@ class Finding(_messages.Message):
       were to be resolved afterward, this time would reflect when the finding
       was resolved. Must not be set to a value greater than the current
       timestamp.
+    externalSystems: Output only. Third party SIEM/SOAR fields within SCC,
+      contains external system information and external system finding fields.
     externalUri: The URI that, if available, points to a web page outside of
       Security Command Center where additional information about the finding
       can be found. This field is guaranteed to be either empty or a well
@@ -574,6 +604,8 @@ class Finding(_messages.Message):
     muteInitiator: First known as mute_annotation. Records additional
       information about the mute operation e.g. mute config that muted the
       finding, user who muted the finding, etc.
+    muteUpdateTime: Output only. The most recent time this finding was muted
+      or unmuted.
     name: The relative resource name of this finding. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
       me Example: "organizations/{organization_id}/sources/{source_id}/finding
@@ -703,6 +735,32 @@ class Finding(_messages.Message):
     INACTIVE = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExternalSystemsValue(_messages.Message):
+    r"""Output only. Third party SIEM/SOAR fields within SCC, contains
+    external system information and external system finding fields.
+
+    Messages:
+      AdditionalProperty: An additional property for a ExternalSystemsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ExternalSystemsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExternalSystemsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudSecuritycenterV1ExternalSystem attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudSecuritycenterV1ExternalSystem', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class SourcePropertiesValue(_messages.Message):
     r"""Source specific properties. These properties are managed by the source
     that writes the finding. The key names in the source_properties map must
@@ -735,20 +793,22 @@ class Finding(_messages.Message):
   category = _messages.StringField(2)
   createTime = _messages.StringField(3)
   eventTime = _messages.StringField(4)
-  externalUri = _messages.StringField(5)
-  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 6)
-  indicator = _messages.MessageField('Indicator', 7)
-  mute = _messages.EnumField('MuteValueValuesEnum', 8)
-  muteAnnotation = _messages.StringField(9)
-  muteInitiator = _messages.StringField(10)
-  name = _messages.StringField(11)
-  parent = _messages.StringField(12)
-  resourceName = _messages.StringField(13)
-  securityMarks = _messages.MessageField('SecurityMarks', 14)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 15)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 16)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  vulnerability = _messages.MessageField('Vulnerability', 18)
+  externalSystems = _messages.MessageField('ExternalSystemsValue', 5)
+  externalUri = _messages.StringField(6)
+  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 7)
+  indicator = _messages.MessageField('Indicator', 8)
+  mute = _messages.EnumField('MuteValueValuesEnum', 9)
+  muteAnnotation = _messages.StringField(10)
+  muteInitiator = _messages.StringField(11)
+  muteUpdateTime = _messages.StringField(12)
+  name = _messages.StringField(13)
+  parent = _messages.StringField(14)
+  resourceName = _messages.StringField(15)
+  securityMarks = _messages.MessageField('SecurityMarks', 16)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 17)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  vulnerability = _messages.MessageField('Vulnerability', 20)
 
 
 class Folder(_messages.Message):
@@ -797,6 +857,35 @@ class GetPolicyOptions(_messages.Message):
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudSecuritycenterV1BulkMuteFindingsResponse(_messages.Message):
+  r"""The response to a BulkMute request. Contains the LRO information."""
+
+
+class GoogleCloudSecuritycenterV1ExternalSystem(_messages.Message):
+  r"""Representation of third party SIEM/SOAR fields within SCC.
+
+  Fields:
+    assignees: References primary/secondary etc assignees in the external
+      system.
+    externalSystemUpdateTime: The most recent time when the corresponding
+      finding's ticket/tracker was updated in the external system.
+    externalUid: Identifier that's used to track the given finding in the
+      external system.
+    name: External System Name e.g. jira, demisto, etc. e.g.:
+      organizations/1234/sources/5678/findings/123456/externalSystems/jira
+      folders/1234/sources/5678/findings/123456/externalSystems/jira
+      projects/1234/sources/5678/findings/123456/externalSystems/jira
+    status: Most recent status of the corresponding finding's ticket/tracker
+      in the external system.
+  """
+
+  assignees = _messages.StringField(1, repeated=True)
+  externalSystemUpdateTime = _messages.StringField(2)
+  externalUid = _messages.StringField(3)
+  name = _messages.StringField(4)
+  status = _messages.StringField(5)
+
+
 class GoogleCloudSecuritycenterV1MuteConfig(_messages.Message):
   r"""A mute config is a Cloud SCC resource that contains the configuration to
   mute create/update events of findings.
@@ -813,7 +902,7 @@ class GoogleCloudSecuritycenterV1MuteConfig(_messages.Message):
       E.g., If a filter contains project = X but is created under the project
       = Y scope, it might not match any findings. The following field and
       operator combinations are supported: * severity: `=`, `:` * category:
-      `=`, `:` * resource_name: `=`, `:` * resource.project_name: `=`, `:` *
+      `=`, `:` * resource.name: `=`, `:` * resource.project_name: `=`, `:` *
       resource.project_display_name: `=`, `:` *
       resource.folders.resource_folder: `=`, `:` * resource.parent_name: `=`,
       `:` * resource.parent_display_name: `=`, `:` * resource.type: `=`, `:` *
@@ -2201,6 +2290,21 @@ class SecuritycenterFoldersAssetsUpdateSecurityMarksRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class SecuritycenterFoldersFindingsBulkMuteRequest(_messages.Message):
+  r"""A SecuritycenterFoldersFindingsBulkMuteRequest object.
+
+  Fields:
+    bulkMuteFindingsRequest: A BulkMuteFindingsRequest resource to be passed
+      as the request body.
+    parent: Required. The parent, at which bulk action needs to be applied.
+      Its format is "organizations/[organization_id]", "folders/[folder_id]",
+      "projects/[project_id]".
+  """
+
+  bulkMuteFindingsRequest = _messages.MessageField('BulkMuteFindingsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class SecuritycenterFoldersMuteConfigsCreateRequest(_messages.Message):
   r"""A SecuritycenterFoldersMuteConfigsCreateRequest object.
 
@@ -2286,6 +2390,27 @@ class SecuritycenterFoldersMuteConfigsPatchRequest(_messages.Message):
   """
 
   googleCloudSecuritycenterV1MuteConfig = _messages.MessageField('GoogleCloudSecuritycenterV1MuteConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class SecuritycenterFoldersSourcesFindingsExternalSystemsPatchRequest(_messages.Message):
+  r"""A SecuritycenterFoldersSourcesFindingsExternalSystemsPatchRequest
+  object.
+
+  Fields:
+    googleCloudSecuritycenterV1ExternalSystem: A
+      GoogleCloudSecuritycenterV1ExternalSystem resource to be passed as the
+      request body.
+    name: External System Name e.g. jira, demisto, etc. e.g.:
+      organizations/1234/sources/5678/findings/123456/externalSystems/jira
+      folders/1234/sources/5678/findings/123456/externalSystems/jira
+      projects/1234/sources/5678/findings/123456/externalSystems/jira
+    updateMask: The FieldMask to use when updating the external system
+      resource. If empty all mutable fields will be updated.
+  """
+
+  googleCloudSecuritycenterV1ExternalSystem = _messages.MessageField('GoogleCloudSecuritycenterV1ExternalSystem', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
 
@@ -2654,6 +2779,21 @@ class SecuritycenterOrganizationsAssetsUpdateSecurityMarksRequest(_messages.Mess
   updateMask = _messages.StringField(4)
 
 
+class SecuritycenterOrganizationsFindingsBulkMuteRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsFindingsBulkMuteRequest object.
+
+  Fields:
+    bulkMuteFindingsRequest: A BulkMuteFindingsRequest resource to be passed
+      as the request body.
+    parent: Required. The parent, at which bulk action needs to be applied.
+      Its format is "organizations/[organization_id]", "folders/[folder_id]",
+      "projects/[project_id]".
+  """
+
+  bulkMuteFindingsRequest = _messages.MessageField('BulkMuteFindingsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class SecuritycenterOrganizationsGetOrganizationSettingsRequest(_messages.Message):
   r"""A SecuritycenterOrganizationsGetOrganizationSettingsRequest object.
 
@@ -2906,6 +3046,27 @@ class SecuritycenterOrganizationsSourcesFindingsCreateRequest(_messages.Message)
   finding = _messages.MessageField('Finding', 1)
   findingId = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class SecuritycenterOrganizationsSourcesFindingsExternalSystemsPatchRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsSourcesFindingsExternalSystemsPatchRequest
+  object.
+
+  Fields:
+    googleCloudSecuritycenterV1ExternalSystem: A
+      GoogleCloudSecuritycenterV1ExternalSystem resource to be passed as the
+      request body.
+    name: External System Name e.g. jira, demisto, etc. e.g.:
+      organizations/1234/sources/5678/findings/123456/externalSystems/jira
+      folders/1234/sources/5678/findings/123456/externalSystems/jira
+      projects/1234/sources/5678/findings/123456/externalSystems/jira
+    updateMask: The FieldMask to use when updating the external system
+      resource. If empty all mutable fields will be updated.
+  """
+
+  googleCloudSecuritycenterV1ExternalSystem = _messages.MessageField('GoogleCloudSecuritycenterV1ExternalSystem', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class SecuritycenterOrganizationsSourcesFindingsGroupRequest(_messages.Message):
@@ -3350,6 +3511,21 @@ class SecuritycenterProjectsAssetsUpdateSecurityMarksRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class SecuritycenterProjectsFindingsBulkMuteRequest(_messages.Message):
+  r"""A SecuritycenterProjectsFindingsBulkMuteRequest object.
+
+  Fields:
+    bulkMuteFindingsRequest: A BulkMuteFindingsRequest resource to be passed
+      as the request body.
+    parent: Required. The parent, at which bulk action needs to be applied.
+      Its format is "organizations/[organization_id]", "folders/[folder_id]",
+      "projects/[project_id]".
+  """
+
+  bulkMuteFindingsRequest = _messages.MessageField('BulkMuteFindingsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class SecuritycenterProjectsMuteConfigsCreateRequest(_messages.Message):
   r"""A SecuritycenterProjectsMuteConfigsCreateRequest object.
 
@@ -3435,6 +3611,27 @@ class SecuritycenterProjectsMuteConfigsPatchRequest(_messages.Message):
   """
 
   googleCloudSecuritycenterV1MuteConfig = _messages.MessageField('GoogleCloudSecuritycenterV1MuteConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class SecuritycenterProjectsSourcesFindingsExternalSystemsPatchRequest(_messages.Message):
+  r"""A SecuritycenterProjectsSourcesFindingsExternalSystemsPatchRequest
+  object.
+
+  Fields:
+    googleCloudSecuritycenterV1ExternalSystem: A
+      GoogleCloudSecuritycenterV1ExternalSystem resource to be passed as the
+      request body.
+    name: External System Name e.g. jira, demisto, etc. e.g.:
+      organizations/1234/sources/5678/findings/123456/externalSystems/jira
+      folders/1234/sources/5678/findings/123456/externalSystems/jira
+      projects/1234/sources/5678/findings/123456/externalSystems/jira
+    updateMask: The FieldMask to use when updating the external system
+      resource. If empty all mutable fields will be updated.
+  """
+
+  googleCloudSecuritycenterV1ExternalSystem = _messages.MessageField('GoogleCloudSecuritycenterV1ExternalSystem', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
 

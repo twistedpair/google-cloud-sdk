@@ -32,4 +32,20 @@ sudo apt install apt-transport-artifact-registry
 # command:
 
 echo "deb ar+https://{location}-apt.pkg.dev/projects/{project} {repo} main" | sudo tee -a /etc/apt/sources.list.d/artifact-registry.list
+
+# Update Apt:
+sudo apt update
+"""
+
+
+PUBLIC_TEMPLATE = """\
+# To configure your package manager with this repository:
+
+# Configure your VM to access Artifact Registry packages using the following
+# command:
+
+echo "deb https://{location}-apt.pkg.dev/projects/{project} {repo} main" | sudo tee -a /etc/apt/sources.list.d/artifact-registry.list
+
+# Update Apt:
+sudo apt update
 """

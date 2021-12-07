@@ -153,6 +153,14 @@ def GetDescriptionArg(noun):
       help='Description of the {noun}.'.format(noun=noun))
 
 
+def GetUserSpecifiedIdArg(noun):
+  return base.Argument(
+      '--{noun}-id'.format(noun=noun),
+      required=False,
+      default=None,
+      help='User-specified ID of the {noun}.'.format(noun=noun))
+
+
 def GetEndpointNetworkArg():
   return base.Argument(
       '--network',

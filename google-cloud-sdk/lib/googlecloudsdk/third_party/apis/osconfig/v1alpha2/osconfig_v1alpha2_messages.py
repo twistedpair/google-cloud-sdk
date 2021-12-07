@@ -929,6 +929,34 @@ class OsconfigProjectsPatchDeploymentsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class OsconfigProjectsPatchDeploymentsPauseRequest(_messages.Message):
+  r"""A OsconfigProjectsPatchDeploymentsPauseRequest object.
+
+  Fields:
+    name: Required. The resource name of the patch deployment in the form
+      `projects/*/patchDeployments/*`.
+    pausePatchDeploymentRequest: A PausePatchDeploymentRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pausePatchDeploymentRequest = _messages.MessageField('PausePatchDeploymentRequest', 2)
+
+
+class OsconfigProjectsPatchDeploymentsResumeRequest(_messages.Message):
+  r"""A OsconfigProjectsPatchDeploymentsResumeRequest object.
+
+  Fields:
+    name: Required. The resource name of the patch deployment in the form
+      `projects/*/patchDeployments/*`.
+    resumePatchDeploymentRequest: A ResumePatchDeploymentRequest resource to
+      be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  resumePatchDeploymentRequest = _messages.MessageField('ResumePatchDeploymentRequest', 2)
+
+
 class OsconfigProjectsPatchJobsCancelRequest(_messages.Message):
   r"""A OsconfigProjectsPatchJobsCancelRequest object.
 
@@ -1518,6 +1546,10 @@ class PatchRollout(_messages.Message):
   mode = _messages.EnumField('ModeValueValuesEnum', 2)
 
 
+class PausePatchDeploymentRequest(_messages.Message):
+  r"""A request message for pausing a patch deployment."""
+
+
 class RecurringSchedule(_messages.Message):
   r"""Represents a recurring schedule for patch job executions.
 
@@ -1568,6 +1600,10 @@ class RecurringSchedule(_messages.Message):
   timeOfDay = _messages.MessageField('TimeOfDay', 7)
   timeZone = _messages.MessageField('TimeZone', 8)
   weekly = _messages.MessageField('WeeklySchedule', 9)
+
+
+class ResumePatchDeploymentRequest(_messages.Message):
+  r"""A request message for resuming a patch deployment."""
 
 
 class RetryStrategy(_messages.Message):

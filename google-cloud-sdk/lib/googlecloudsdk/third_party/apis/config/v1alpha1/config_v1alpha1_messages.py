@@ -754,12 +754,19 @@ class Function(_messages.Message):
   Messages:
     ConfigValue: Optional. KRM resource passed to the function as input. The
       entire resource must be no larger than 1024 bytes.
+    InlineConfigValue: Optional. KRM resource passed to the function as
+      inlined input. The entire resource must be no larger than 1024 bytes.
 
   Fields:
     config: Optional. KRM resource passed to the function as input. The entire
       resource must be no larger than 1024 bytes.
+    gcsConfig: Optional. A Cloud Storage link referencing a KRM yaml file to
+      use as input to the function. There are no size limitations on this
+      field. Format: gs://my-bucket/my-directory/my-function-config.yaml
     image: Required. Container image to run. Example: `gcr.io/kpt-fn/set-
       label`
+    inlineConfig: Optional. KRM resource passed to the function as inlined
+      input. The entire resource must be no larger than 1024 bytes.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -787,8 +794,36 @@ class Function(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InlineConfigValue(_messages.Message):
+    r"""Optional. KRM resource passed to the function as inlined input. The
+    entire resource must be no larger than 1024 bytes.
+
+    Messages:
+      AdditionalProperty: An additional property for a InlineConfigValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InlineConfigValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   config = _messages.MessageField('ConfigValue', 1)
-  image = _messages.StringField(2)
+  gcsConfig = _messages.StringField(2)
+  image = _messages.StringField(3)
+  inlineConfig = _messages.MessageField('InlineConfigValue', 4)
 
 
 class GitSource(_messages.Message):

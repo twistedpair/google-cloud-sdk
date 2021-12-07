@@ -45,9 +45,9 @@ class _Upload:
       http_client: An httplib2.Http-like object.
       source_stream (io.IOBase): Yields bytes to upload.
       destination_resource (resource_reference.ObjectResource|UnknownResource):
-          Metadata for the destination object.
+        Metadata for the destination object.
       request_config (gcs_api.GcsRequestConfig): Tracks additional request
-          preferences.
+        preferences.
     """
     self._gcs_api = gcs_api
     self._http_client = http_client
@@ -93,11 +93,12 @@ class SimpleUpload(_Upload):
   """Uploads objects with a single request."""
 
   def run(self):
+    resource_args = self._request_config.resource_args
     apitools_upload = transfer.Upload(
         self._source_stream,
-        self._request_config.content_type,
-        gzip_encoded=self._request_config.gzip_encoded,
-        total_size=self._request_config.size)
+        getattr(resource_args, 'content_type', None),
+        gzip_encoded=getattr(resource_args, 'gzip_encoded', None),
+        total_size=getattr(resource_args, 'size', None))
     apitools_upload.bytes_http = self._http_client
     apitools_upload.strategy = transfer.SIMPLE_UPLOAD
 
@@ -132,6 +133,10 @@ class ResumableUpload(_Upload):
 
   def run(self):
     max_retries = properties.VALUES.storage.max_retries.GetInt()
+    resource_args = self._request_config.resource_args
+    content_type = getattr(resource_args, 'content_type', None)
+    gzip_encoded = getattr(resource_args, 'gzip_encoded', None)
+    size = getattr(resource_args, 'size', None)
     if self._serialization_data is not None:
       # FromData implicitly sets strategy as RESUMABLE.
       apitools_upload = transfer.Upload.FromData(
@@ -139,17 +144,17 @@ class ResumableUpload(_Upload):
           json.dumps(self._serialization_data),
           self._gcs_api.client.http,
           auto_transfer=False,
-          gzip_encoded=self._request_config.gzip_encoded,
+          gzip_encoded=gzip_encoded,
           num_retries=max_retries)
     else:
       apitools_upload = transfer.Upload(
           self._source_stream,
-          self._request_config.content_type,
+          content_type,
           auto_transfer=False,
           chunksize=scaled_integer.ParseInteger(
               properties.VALUES.storage.upload_chunk_size.Get()),
-          gzip_encoded=self._request_config.gzip_encoded,
-          total_size=self._request_config.size,
+          gzip_encoded=gzip_encoded,
+          total_size=size,
           num_retries=max_retries)
       apitools_upload.strategy = transfer.RESUMABLE_UPLOAD
     apitools_upload.bytes_http = self._http_client
@@ -168,7 +173,7 @@ class ResumableUpload(_Upload):
     # and updating the attempts requires manipulating state.retrial.
     while True:
       try:
-        if self._request_config.gzip_encoded:
+        if gzip_encoded:
           http_response = apitools_upload.StreamInChunks()
         else:
           http_response = apitools_upload.StreamMedia()

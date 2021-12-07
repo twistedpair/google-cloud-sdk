@@ -722,6 +722,33 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class LocationMetadata(_messages.Message):
+  r"""Metadata about locations
+
+  Enums:
+    LocationFeaturesValueListEntryValuesEnum:
+
+  Fields:
+    locationFeatures: List of supported features
+  """
+
+  class LocationFeaturesValueListEntryValuesEnum(_messages.Enum):
+    r"""LocationFeaturesValueListEntryValuesEnum enum type.
+
+    Values:
+      LOCATION_FEATURE_UNSPECIFIED: No publicly supported feature in this
+        location
+      SITE_TO_CLOUD_SPOKES: Site-to-cloud spokes are supported in this
+        location
+      SITE_TO_SITE_SPOKES: Site-to-site spokes are supported in this location
+    """
+    LOCATION_FEATURE_UNSPECIFIED = 0
+    SITE_TO_CLOUD_SPOKES = 1
+    SITE_TO_SITE_SPOKES = 2
+
+  locationFeatures = _messages.EnumField('LocationFeaturesValueListEntryValuesEnum', 1, repeated=True)
+
+
 class NetworkconnectivityProjectsLocationsGetRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsGetRequest object.
 
@@ -737,7 +764,7 @@ class NetworkconnectivityProjectsLocationsGlobalHubsCreateRequest(_messages.Mess
 
   Fields:
     hub: A Hub resource to be passed as the request body.
-    hubId: Optional. A unique identifier for the hub.
+    hubId: Required. A unique identifier for the hub.
     parent: Required. The parent resource.
     requestId: Optional. A unique request ID (optional). If you specify this
       ID, you can use it in cases when you need to retry your request. When
@@ -1146,7 +1173,7 @@ class NetworkconnectivityProjectsLocationsSpokesCreateRequest(_messages.Message)
       valid UUID, with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
     spoke: A Spoke resource to be passed as the request body.
-    spokeId: Optional. Unique id for the spoke to create.
+    spokeId: Required. Unique id for the spoke to create.
   """
 
   parent = _messages.StringField(1, required=True)

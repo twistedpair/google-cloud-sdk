@@ -434,14 +434,22 @@ class AiplatformProjectsLocationsEndpointsCreateRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsEndpointsCreateRequest object.
 
   Fields:
+    endpointId: Immutable. The ID to use for endpoint, which will become the
+      final component of the endpoint resource name. If not provided, Vertex
+      AI will generate a value for this ID. This value should be 1-10
+      characters, and valid characters are /[0-9]/. When using HTTP/JSON, this
+      field is populated based on a query string argument, such as
+      `?endpoint_id=12345`. This is the fallback for fields that are not
+      included in either the URI or the body.
     googleCloudAiplatformV1Endpoint: A GoogleCloudAiplatformV1Endpoint
       resource to be passed as the request body.
     parent: Required. The resource name of the Location to create the Endpoint
       in. Format: `projects/{project}/locations/{location}`
   """
 
-  googleCloudAiplatformV1Endpoint = _messages.MessageField('GoogleCloudAiplatformV1Endpoint', 1)
-  parent = _messages.StringField(2, required=True)
+  endpointId = _messages.StringField(1)
+  googleCloudAiplatformV1Endpoint = _messages.MessageField('GoogleCloudAiplatformV1Endpoint', 2)
+  parent = _messages.StringField(3, required=True)
 
 
 class AiplatformProjectsLocationsEndpointsDeleteRequest(_messages.Message):
@@ -2511,16 +2519,17 @@ class AiplatformProjectsLocationsPipelineJobsListRequest(_messages.Message):
       comparisons. * `display_name`: Supports `=`, `!=` comparisons, and `:`
       wildcard. * `pipeline_job_user_id`: Supports `=`, `!=` comparisons, and
       `:` wildcard. for example, can check if pipeline's display_name contains
-      *step* by doing display_name:\"*step*\" * `create_time`: Supports `=`,
-      `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339
-      format. * `update_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=`
-      comparisons. Values must be in RFC 3339 format. * `end_time`: Supports
-      `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC
-      3339 format. * `labels`: Supports key-value equality and key presence.
-      Filter expressions can be combined together using logical operators
-      (`AND` & `OR`). For example: `pipeline_name="test" AND
-      create_time>"2020-05-18T13:30:00Z"`. The syntax to define filter
-      expression is based on https://google.aip.dev/160. Examples: *
+      *step* by doing display_name:\"*step*\" * `state`: Supports `=` and `!=`
+      comparisons. * `create_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and
+      `>=` comparisons. Values must be in RFC 3339 format. * `update_time`:
+      Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be
+      in RFC 3339 format. * `end_time`: Supports `=`, `!=`, `<`, `>`, `<=`,
+      and `>=` comparisons. Values must be in RFC 3339 format. * `labels`:
+      Supports key-value equality and key presence. Filter expressions can be
+      combined together using logical operators (`AND` & `OR`). For example:
+      `pipeline_name="test" AND create_time>"2020-05-18T13:30:00Z"`. The
+      syntax to define filter expression is based on
+      https://google.aip.dev/160. Examples: *
       `create_time>"2021-05-18T00:00:00Z" OR
       update_time>"2020-05-18T00:00:00Z"` PipelineJobs created or updated
       after 2020-05-18 00:00:00 UTC. * `labels.env = "prod"` PipelineJobs with
@@ -3718,7 +3727,7 @@ class GoogleCloudAiplatformV1Artifact(_messages.Message):
   Enums:
     StateValueValuesEnum: The state of this Artifact. This is a property of
       the Artifact, and does not imply or capture any ongoing process. This
-      property is managed by clients (such as Vertex Pipelines), and the
+      property is managed by clients (such as Vertex AI Pipelines), and the
       system does not prescribe or check the validity of state transitions.
 
   Messages:
@@ -3757,8 +3766,8 @@ class GoogleCloudAiplatformV1Artifact(_messages.Message):
       schemas within the local metadata store.
     state: The state of this Artifact. This is a property of the Artifact, and
       does not imply or capture any ongoing process. This property is managed
-      by clients (such as Vertex Pipelines), and the system does not prescribe
-      or check the validity of state transitions.
+      by clients (such as Vertex AI Pipelines), and the system does not
+      prescribe or check the validity of state transitions.
     updateTime: Output only. Timestamp when this Artifact was last updated.
     uri: The uniform resource identifier of the artifact file. May be empty if
       there is no actual artifact file.
@@ -3767,13 +3776,13 @@ class GoogleCloudAiplatformV1Artifact(_messages.Message):
   class StateValueValuesEnum(_messages.Enum):
     r"""The state of this Artifact. This is a property of the Artifact, and
     does not imply or capture any ongoing process. This property is managed by
-    clients (such as Vertex Pipelines), and the system does not prescribe or
-    check the validity of state transitions.
+    clients (such as Vertex AI Pipelines), and the system does not prescribe
+    or check the validity of state transitions.
 
     Values:
       STATE_UNSPECIFIED: Unspecified state for the Artifact.
-      PENDING: A state used by systems like Vertex Pipelines to indicate that
-        the underlying data item represented by this Artifact is being
+      PENDING: A state used by systems like Vertex AI Pipelines to indicate
+        that the underlying data item represented by this Artifact is being
         created.
       LIVE: A state indicating that the Artifact should exist, unless
         something external to the system deletes it.
@@ -5123,6 +5132,9 @@ class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
       account. If unspecified, the [Vertex AI Custom Code Service
       Agent](https://cloud.google.com/vertex-ai/docs/general/access-
       control#service-agents) for the CustomJob's project is used.
+    tensorboard: Optional. The name of a Vertex AI Tensorboard resource to
+      which this CustomJob will upload Tensorboard logs. Format:
+      `projects/{project}/locations/{location}/tensorboards/{tensorboard}`
     workerPoolSpecs: Required. The spec of the worker pools including machine
       type and Docker image. All worker pools except the first one are
       optional and can be skipped by providing an empty value.
@@ -5133,7 +5145,8 @@ class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
   network = _messages.StringField(3)
   scheduling = _messages.MessageField('GoogleCloudAiplatformV1Scheduling', 4)
   serviceAccount = _messages.StringField(5)
-  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1WorkerPoolSpec', 6, repeated=True)
+  tensorboard = _messages.StringField(6)
+  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1WorkerPoolSpec', 7, repeated=True)
 
 
 class GoogleCloudAiplatformV1DataItem(_messages.Message):
@@ -5945,6 +5958,9 @@ class GoogleCloudAiplatformV1Endpoint(_messages.Message):
     description: The description of the Endpoint.
     displayName: Required. The display name of the Endpoint. The name can be
       up to 128 characters long and can be consist of any UTF-8 characters.
+    enablePrivateServiceConnect: If true, expose the Endpoint via private
+      service connect. Only one of the fields, network or
+      enable_private_service_connect, can be set.
     encryptionSpec: Customer-managed encryption key spec for an Endpoint. If
       set, this Endpoint and all sub-resources of this Endpoint will be
       secured by this key.
@@ -5965,10 +5981,11 @@ class GoogleCloudAiplatformV1Endpoint(_messages.Message):
       [network](https://cloud.google.com//compute/docs/networks-and-
       firewalls#networks) to which the Endpoint should be peered. Private
       services access must already be configured for the network. If left
-      unspecified, the Endpoint is not peered with any network. [Format](https
-      ://cloud.google.com/compute/docs/reference/rest/v1/networks/insert):
-      `projects/{project}/global/networks/{network}`. Where `{project}` is a
-      project number, as in `12345`, and `{network}` is network name.
+      unspecified, the Endpoint is not peered with any network. Only one of
+      the fields, network or enable_private_service_connect, can be set. [Form
+      at](https://cloud.google.com/compute/docs/reference/rest/v1/networks/ins
+      ert): `projects/{project}/global/networks/{network}`. Where `{project}`
+      is a project number, as in `12345`, and `{network}` is network name.
     trafficSplit: A map from a DeployedModel's ID to the percentage of this
       Endpoint's traffic that should be forwarded to that DeployedModel. If a
       DeployedModel's ID is not listed in this map, then it receives no
@@ -6038,14 +6055,15 @@ class GoogleCloudAiplatformV1Endpoint(_messages.Message):
   deployedModels = _messages.MessageField('GoogleCloudAiplatformV1DeployedModel', 2, repeated=True)
   description = _messages.StringField(3)
   displayName = _messages.StringField(4)
-  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1EncryptionSpec', 5)
-  etag = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  modelDeploymentMonitoringJob = _messages.StringField(8)
-  name = _messages.StringField(9)
-  network = _messages.StringField(10)
-  trafficSplit = _messages.MessageField('TrafficSplitValue', 11)
-  updateTime = _messages.StringField(12)
+  enablePrivateServiceConnect = _messages.BooleanField(5)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1EncryptionSpec', 6)
+  etag = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  modelDeploymentMonitoringJob = _messages.StringField(9)
+  name = _messages.StringField(10)
+  network = _messages.StringField(11)
+  trafficSplit = _messages.MessageField('TrafficSplitValue', 12)
+  updateTime = _messages.StringField(13)
 
 
 class GoogleCloudAiplatformV1EntityType(_messages.Message):
@@ -6235,8 +6253,8 @@ class GoogleCloudAiplatformV1Execution(_messages.Message):
   Enums:
     StateValueValuesEnum: The state of this Execution. This is a property of
       the Execution, and does not imply or capture any ongoing process. This
-      property is managed by clients (such as Vertex Pipelines) and the system
-      does not prescribe or check the validity of state transitions.
+      property is managed by clients (such as Vertex AI Pipelines) and the
+      system does not prescribe or check the validity of state transitions.
 
   Messages:
     LabelsValue: The labels with user-defined metadata to organize your
@@ -6274,7 +6292,7 @@ class GoogleCloudAiplatformV1Execution(_messages.Message):
       schemas within the local metadata store.
     state: The state of this Execution. This is a property of the Execution,
       and does not imply or capture any ongoing process. This property is
-      managed by clients (such as Vertex Pipelines) and the system does not
+      managed by clients (such as Vertex AI Pipelines) and the system does not
       prescribe or check the validity of state transitions.
     updateTime: Output only. Timestamp when this Execution was last updated.
   """
@@ -6282,7 +6300,7 @@ class GoogleCloudAiplatformV1Execution(_messages.Message):
   class StateValueValuesEnum(_messages.Enum):
     r"""The state of this Execution. This is a property of the Execution, and
     does not imply or capture any ongoing process. This property is managed by
-    clients (such as Vertex Pipelines) and the system does not prescribe or
+    clients (such as Vertex AI Pipelines) and the system does not prescribe or
     check the validity of state transitions.
 
     Values:
@@ -7466,9 +7484,9 @@ class GoogleCloudAiplatformV1FeatureValueMetadata(_messages.Message):
 
 
 class GoogleCloudAiplatformV1Featurestore(_messages.Message):
-  r"""Vertex Feature Store provides a centralized repository for organizing,
-  storing, and serving ML features. The Featurestore is a top-level container
-  for your features and their values.
+  r"""Vertex AI Feature Store provides a centralized repository for
+  organizing, storing, and serving ML features. The Featurestore is a top-
+  level container for your features and their values.
 
   Enums:
     StateValueValuesEnum: Output only. State of the featurestore.
@@ -8126,6 +8144,9 @@ class GoogleCloudAiplatformV1IndexEndpoint(_messages.Message):
     description: The description of the IndexEndpoint.
     displayName: Required. The display name of the IndexEndpoint. The name can
       be up to 128 characters long and can consist of any UTF-8 characters.
+    enablePrivateServiceConnect: Optional. If true, expose the IndexEndpoint
+      via private service connect. Only one of the fields, network or
+      enable_private_service_connect, can be set.
     etag: Used to perform consistent read-modify-write updates. If not set, a
       blind "overwrite" update happens.
     labels: The labels with user-defined metadata to organize your
@@ -8135,13 +8156,14 @@ class GoogleCloudAiplatformV1IndexEndpoint(_messages.Message):
       allowed. See https://goo.gl/xmQnxf for more information and examples of
       labels.
     name: Output only. The resource name of the IndexEndpoint.
-    network: Required. Immutable. The full name of the Google Compute Engine
+    network: Optional. The full name of the Google Compute Engine
       [network](https://cloud.google.com/compute/docs/networks-and-
       firewalls#networks) to which the IndexEndpoint should be peered. Private
       services access must already be configured for the network. If left
-      unspecified, the Endpoint is not peered with any network. [Format](https
-      ://cloud.google.com/compute/docs/reference/rest/v1/networks/insert):
-      projects/{project}/global/networks/{network}. Where {project} is a
+      unspecified, the Endpoint is not peered with any network. Only one of
+      the fields, network or enable_private_service_connect, can be set. [Form
+      at](https://cloud.google.com/compute/docs/reference/rest/v1/networks/ins
+      ert): projects/{project}/global/networks/{network}. Where {project} is a
       project number, as in '12345', and {network} is network name.
     updateTime: Output only. Timestamp when this IndexEndpoint was last
       updated. This timestamp is not updated when the endpoint's
@@ -8181,23 +8203,30 @@ class GoogleCloudAiplatformV1IndexEndpoint(_messages.Message):
   deployedIndexes = _messages.MessageField('GoogleCloudAiplatformV1DeployedIndex', 2, repeated=True)
   description = _messages.StringField(3)
   displayName = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  network = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  enablePrivateServiceConnect = _messages.BooleanField(5)
+  etag = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  network = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class GoogleCloudAiplatformV1IndexPrivateEndpoints(_messages.Message):
   r"""IndexPrivateEndpoints proto is used to provide paths for users to send
-  requests via private services access.
+  requests via private endpoints (e.g. private service access, private service
+  connect). To send request via private service access, use
+  match_grpc_address. To send request via private service connect, use
+  service_attachment.
 
   Fields:
     matchGrpcAddress: Output only. The ip address used to send match gRPC
       requests.
+    serviceAttachment: Output only. The name of the service attachment
+      resource. Populated if private service connect is enabled.
   """
 
   matchGrpcAddress = _messages.StringField(1)
+  serviceAttachment = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1InputDataConfig(_messages.Message):
@@ -9597,9 +9626,9 @@ class GoogleCloudAiplatformV1ModelDeploymentMonitoringJob(_messages.Message):
       and can be consist of any UTF-8 characters. Display name of a
       ModelDeploymentMonitoringJob.
     enableMonitoringPipelineLogs: If true, the scheduled monitoring pipeline
-      status logs are sent to Google Cloud Logging. Please note the logs incur
-      cost, which are subject to [Cloud Logging
-      pricing](https://cloud.google.com/logging#pricing).
+      logs are sent to Google Cloud Logging, including pipeline status and
+      anomalies detected. Please note the logs incur cost, which are subject
+      to [Cloud Logging pricing](https://cloud.google.com/logging#pricing).
     encryptionSpec: Customer-managed encryption key spec for a
       ModelDeploymentMonitoringJob. If set, this ModelDeploymentMonitoringJob
       and all sub-resources of this ModelDeploymentMonitoringJob will be
@@ -9908,7 +9937,7 @@ class GoogleCloudAiplatformV1ModelExportFormat(_messages.Message):
 
 
 class GoogleCloudAiplatformV1ModelMonitoringAlertConfig(_messages.Message):
-  r"""Next ID: 2
+  r"""Next ID: 3
 
   Fields:
     emailAlertConfig: Email alert config.
@@ -9931,7 +9960,7 @@ class GoogleCloudAiplatformV1ModelMonitoringObjectiveConfig(_messages.Message):
   r"""Next ID: 6
 
   Fields:
-    explanationConfig: The config for integrated with Explainable AI.
+    explanationConfig: The config for integrating with Vertex Explainable AI.
     predictionDriftDetectionConfig: The config for drift of prediction data.
     trainingDataset: Training dataset for models. This field has to be set
       only if TrainingPredictionSkewDetectionConfig is specified.
@@ -9946,14 +9975,14 @@ class GoogleCloudAiplatformV1ModelMonitoringObjectiveConfig(_messages.Message):
 
 
 class GoogleCloudAiplatformV1ModelMonitoringObjectiveConfigExplanationConfig(_messages.Message):
-  r"""The config for integrated with Explainable AI. Only applicable if the
-  Model has explanation_spec populated.
+  r"""The config for integrating with Vertex Explainable AI. Only applicable
+  if the Model has explanation_spec populated.
 
   Fields:
-    enableFeatureAttributes: If want to analyze the Explainable AI feature
-      attribute scores or not. If set to true, Vertex AI will log the feature
-      attributions from explain response and do the skew/drift detection for
-      them.
+    enableFeatureAttributes: If want to analyze the Vertex Explainable AI
+      feature attribute scores or not. If set to true, Vertex AI will log the
+      feature attributions from explain response and do the skew/drift
+      detection for them.
     explanationBaseline: Predictions generated by the BatchPredictionJob using
       baseline dataset.
   """
@@ -10514,10 +10543,15 @@ class GoogleCloudAiplatformV1PipelineJobRuntimeConfig(_messages.Message):
   Messages:
     ParameterValuesValue: The runtime parameters of the PipelineJob. The
       parameters will be passed into PipelineJob.pipeline_spec to replace the
-      placeholders at runtime.
-    ParametersValue: Deprecated. Use [RuntimeConfig.parameter_values] instead.
+      placeholders at runtime. This field is used by pipelines built using
+      `PipelineJob.pipeline_spec.schema_version` 2.1.0, such as pipelines
+      built using Kubeflow Pipelines SDK 1.9 or higher and the v2 DSL.
+    ParametersValue: Deprecated. Use RuntimeConfig.parameter_values instead.
       The runtime parameters of the PipelineJob. The parameters will be passed
       into PipelineJob.pipeline_spec to replace the placeholders at runtime.
+      This field is used by pipelines built using
+      `PipelineJob.pipeline_spec.schema_version` 2.0.0 or lower, such as
+      pipelines built using Kubeflow Pipelines SDK 1.8 or lower.
 
   Fields:
     gcsOutputDirectory: Required. A path in a Cloud Storage bucket, which will
@@ -10529,17 +10563,24 @@ class GoogleCloudAiplatformV1PipelineJobRuntimeConfig(_messages.Message):
       `storage.objects.create` permissions for this bucket.
     parameterValues: The runtime parameters of the PipelineJob. The parameters
       will be passed into PipelineJob.pipeline_spec to replace the
-      placeholders at runtime.
-    parameters: Deprecated. Use [RuntimeConfig.parameter_values] instead. The
+      placeholders at runtime. This field is used by pipelines built using
+      `PipelineJob.pipeline_spec.schema_version` 2.1.0, such as pipelines
+      built using Kubeflow Pipelines SDK 1.9 or higher and the v2 DSL.
+    parameters: Deprecated. Use RuntimeConfig.parameter_values instead. The
       runtime parameters of the PipelineJob. The parameters will be passed
       into PipelineJob.pipeline_spec to replace the placeholders at runtime.
+      This field is used by pipelines built using
+      `PipelineJob.pipeline_spec.schema_version` 2.0.0 or lower, such as
+      pipelines built using Kubeflow Pipelines SDK 1.8 or lower.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParameterValuesValue(_messages.Message):
     r"""The runtime parameters of the PipelineJob. The parameters will be
     passed into PipelineJob.pipeline_spec to replace the placeholders at
-    runtime.
+    runtime. This field is used by pipelines built using
+    `PipelineJob.pipeline_spec.schema_version` 2.1.0, such as pipelines built
+    using Kubeflow Pipelines SDK 1.9 or higher and the v2 DSL.
 
     Messages:
       AdditionalProperty: An additional property for a ParameterValuesValue
@@ -10564,9 +10605,12 @@ class GoogleCloudAiplatformV1PipelineJobRuntimeConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParametersValue(_messages.Message):
-    r"""Deprecated. Use [RuntimeConfig.parameter_values] instead. The runtime
+    r"""Deprecated. Use RuntimeConfig.parameter_values instead. The runtime
     parameters of the PipelineJob. The parameters will be passed into
-    PipelineJob.pipeline_spec to replace the placeholders at runtime.
+    PipelineJob.pipeline_spec to replace the placeholders at runtime. This
+    field is used by pipelines built using
+    `PipelineJob.pipeline_spec.schema_version` 2.0.0 or lower, such as
+    pipelines built using Kubeflow Pipelines SDK 1.8 or lower.
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.
@@ -10927,18 +10971,23 @@ class GoogleCloudAiplatformV1PredictSchemata(_messages.Message):
 
 
 class GoogleCloudAiplatformV1PrivateEndpoints(_messages.Message):
-  r"""PrivateEndpoints is used to provide paths for users to send requests via
-  private services access.
+  r"""PrivateEndpoints proto is used to provide paths for users to send
+  requests privately. To send request via private service access, use
+  predict_http_uri, explain_http_uri or health_http_uri. To send request via
+  private service connect, use service_attachment.
 
   Fields:
     explainHttpUri: Output only. Http(s) path to send explain requests.
     healthHttpUri: Output only. Http(s) path to send health check requests.
     predictHttpUri: Output only. Http(s) path to send prediction requests.
+    serviceAttachment: Output only. The name of the service attachment
+      resource. Populated if private service connect is enabled.
   """
 
   explainHttpUri = _messages.StringField(1)
   healthHttpUri = _messages.StringField(2)
   predictHttpUri = _messages.StringField(3)
+  serviceAttachment = _messages.StringField(4)
 
 
 class GoogleCloudAiplatformV1PurgeArtifactsMetadata(_messages.Message):
@@ -13984,7 +14033,7 @@ class GoogleCloudAiplatformV1StringArray(_messages.Message):
 
 
 class GoogleCloudAiplatformV1Study(_messages.Message):
-  r"""A message representing a Study.
+  r"""LINT.IfChange A message representing a Study.
 
   Enums:
     StateValueValuesEnum: Output only. The detailed state of a Study.
@@ -14032,8 +14081,8 @@ class GoogleCloudAiplatformV1StudySpec(_messages.Message):
     MeasurementSelectionTypeValueValuesEnum: Describe which measurement
       selection type will be used
     ObservationNoiseValueValuesEnum: The observation noise level of the study.
-      Currently only supported by the Vizier service. Not supported by
-      HyperparamterTuningJob or TrainingPipeline.
+      Currently only supported by the Vertex AI Vizier service. Not supported
+      by HyperparamterTuningJob or TrainingPipeline.
 
   Fields:
     algorithm: The search algorithm specified for the Study.
@@ -14045,8 +14094,8 @@ class GoogleCloudAiplatformV1StudySpec(_messages.Message):
       median rule.
     metrics: Required. Metric specs for the Study.
     observationNoise: The observation noise level of the study. Currently only
-      supported by the Vizier service. Not supported by HyperparamterTuningJob
-      or TrainingPipeline.
+      supported by the Vertex AI Vizier service. Not supported by
+      HyperparamterTuningJob or TrainingPipeline.
     parameters: Required. The set of parameters to tune.
   """
 
@@ -14056,7 +14105,7 @@ class GoogleCloudAiplatformV1StudySpec(_messages.Message):
     Values:
       ALGORITHM_UNSPECIFIED: The default algorithm used by Vertex AI for
         [hyperparameter tuning](https://cloud.google.com/vertex-
-        ai/docs/training/hyperparameter-tuning-overview) and [Vertex
+        ai/docs/training/hyperparameter-tuning-overview) and [Vertex AI
         Vizier](https://cloud.google.com/vertex-ai/docs/vizier).
       GRID_SEARCH: Simple grid search within the feasible space. To use grid
         search, all parameters must be `INTEGER`, `CATEGORICAL`, or
@@ -14082,7 +14131,7 @@ class GoogleCloudAiplatformV1StudySpec(_messages.Message):
 
   class ObservationNoiseValueValuesEnum(_messages.Enum):
     r"""The observation noise level of the study. Currently only supported by
-    the Vizier service. Not supported by HyperparamterTuningJob or
+    the Vertex AI Vizier service. Not supported by HyperparamterTuningJob or
     TrainingPipeline.
 
     Values:
@@ -14312,8 +14361,9 @@ class GoogleCloudAiplatformV1StudySpecParameterSpecDoubleValueSpec(_messages.Mes
   Fields:
     defaultValue: A default value for a `DOUBLE` parameter that is assumed to
       be a relatively good starting point. Unset value signals that there is
-      no offered starting point. Currently only supported by the Vizier
-      service. Not supported by HyperparamterTuningJob or TrainingPipeline.
+      no offered starting point. Currently only supported by the Vertex AI
+      Vizier service. Not supported by HyperparamterTuningJob or
+      TrainingPipeline.
     maxValue: Required. Inclusive maximum value of the parameter.
     minValue: Required. Inclusive minimum value of the parameter.
   """
@@ -14329,8 +14379,9 @@ class GoogleCloudAiplatformV1StudySpecParameterSpecIntegerValueSpec(_messages.Me
   Fields:
     defaultValue: A default value for an `INTEGER` parameter that is assumed
       to be a relatively good starting point. Unset value signals that there
-      is no offered starting point. Currently only supported by the Vizier
-      service. Not supported by HyperparamterTuningJob or TrainingPipeline.
+      is no offered starting point. Currently only supported by the Vertex AI
+      Vizier service. Not supported by HyperparamterTuningJob or
+      TrainingPipeline.
     maxValue: Required. Inclusive maximum value of the parameter.
     minValue: Required. Inclusive minimum value of the parameter.
   """
@@ -15083,12 +15134,12 @@ class GoogleCloudAiplatformV1Trial(_messages.Message):
   Fields:
     clientId: Output only. The identifier of the client that originally
       requested this Trial. Each client is identified by a unique client_id.
-      When a client asks for a suggestion, Vizier will assign it a Trial. The
-      client should evaluate the Trial, complete it, and report back to
-      Vizier. If suggestion is asked again by same client_id before the Trial
-      is completed, the same Trial will be returned. Multiple clients with
-      different client_ids can ask for suggestions simultaneously, each of
-      them will get their own Trial.
+      When a client asks for a suggestion, Vertex AI Vizier will assign it a
+      Trial. The client should evaluate the Trial, complete it, and report
+      back to Vertex AI Vizier. If suggestion is asked again by same client_id
+      before the Trial is completed, the same Trial will be returned. Multiple
+      clients with different client_ids can ask for suggestions
+      simultaneously, each of them will get their own Trial.
     customJob: Output only. The CustomJob name linked to the Trial. It's set
       for a HyperparameterTuningJob's Trial.
     endTime: Output only. Time when the Trial's status changed to `SUCCEEDED`
@@ -16995,14 +17046,20 @@ class GoogleCloudAiplatformV1beta1ImportFeatureValuesResponse(_messages.Message)
 
 class GoogleCloudAiplatformV1beta1IndexPrivateEndpoints(_messages.Message):
   r"""IndexPrivateEndpoints proto is used to provide paths for users to send
-  requests via private services access.
+  requests via private endpoints (e.g. private service access, private service
+  connect). To send request via private service access, use
+  match_grpc_address. To send request via private service connect, use
+  service_attachment.
 
   Fields:
     matchGrpcAddress: Output only. The ip address used to send match gRPC
       requests.
+    serviceAttachment: Output only. The name of the service attachment
+      resource. Populated if private service connect is enabled.
   """
 
   matchGrpcAddress = _messages.StringField(1)
+  serviceAttachment = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1beta1IntegratedGradientsAttribution(_messages.Message):
@@ -17411,18 +17468,23 @@ class GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadataRecordEr
 
 
 class GoogleCloudAiplatformV1beta1PrivateEndpoints(_messages.Message):
-  r"""PrivateEndpoints is used to provide paths for users to send requests via
-  private services access.
+  r"""PrivateEndpoints proto is used to provide paths for users to send
+  requests privately. To send request via private service access, use
+  predict_http_uri, explain_http_uri or health_http_uri. To send request via
+  private service connect, use service_attachment.
 
   Fields:
     explainHttpUri: Output only. Http(s) path to send explain requests.
     healthHttpUri: Output only. Http(s) path to send health check requests.
     predictHttpUri: Output only. Http(s) path to send prediction requests.
+    serviceAttachment: Output only. The name of the service attachment
+      resource. Populated if private service connect is enabled.
   """
 
   explainHttpUri = _messages.StringField(1)
   healthHttpUri = _messages.StringField(2)
   predictHttpUri = _messages.StringField(3)
+  serviceAttachment = _messages.StringField(4)
 
 
 class GoogleCloudAiplatformV1beta1PurgeArtifactsMetadata(_messages.Message):
@@ -20039,8 +20101,8 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
     MeasurementSelectionTypeValueValuesEnum: Describe which measurement
       selection type will be used
     ObservationNoiseValueValuesEnum: The observation noise level of the study.
-      Currently only supported by the Vizier service. Not supported by
-      HyperparamterTuningJob or TrainingPipeline.
+      Currently only supported by the Vertex AI Vizier service. Not supported
+      by HyperparamterTuningJob or TrainingPipeline.
 
   Fields:
     algorithm: The search algorithm specified for the Study.
@@ -20054,8 +20116,8 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
       median rule.
     metrics: Required. Metric specs for the Study.
     observationNoise: The observation noise level of the study. Currently only
-      supported by the Vizier service. Not supported by HyperparamterTuningJob
-      or TrainingPipeline.
+      supported by the Vertex AI Vizier service. Not supported by
+      HyperparamterTuningJob or TrainingPipeline.
     parameters: Required. The set of parameters to tune.
   """
 
@@ -20065,7 +20127,7 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
     Values:
       ALGORITHM_UNSPECIFIED: The default algorithm used by Vertex AI for
         [hyperparameter tuning](https://cloud.google.com/vertex-
-        ai/docs/training/hyperparameter-tuning-overview) and [Vertex
+        ai/docs/training/hyperparameter-tuning-overview) and [Vertex AI
         Vizier](https://cloud.google.com/vertex-ai/docs/vizier).
       GRID_SEARCH: Simple grid search within the feasible space. To use grid
         search, all parameters must be `INTEGER`, `CATEGORICAL`, or
@@ -20091,7 +20153,7 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
 
   class ObservationNoiseValueValuesEnum(_messages.Enum):
     r"""The observation noise level of the study. Currently only supported by
-    the Vizier service. Not supported by HyperparamterTuningJob or
+    the Vertex AI Vizier service. Not supported by HyperparamterTuningJob or
     TrainingPipeline.
 
     Values:
@@ -20359,8 +20421,9 @@ class GoogleCloudAiplatformV1beta1StudySpecParameterSpecDoubleValueSpec(_message
   Fields:
     defaultValue: A default value for a `DOUBLE` parameter that is assumed to
       be a relatively good starting point. Unset value signals that there is
-      no offered starting point. Currently only supported by the Vizier
-      service. Not supported by HyperparamterTuningJob or TrainingPipeline.
+      no offered starting point. Currently only supported by the Vertex AI
+      Vizier service. Not supported by HyperparamterTuningJob or
+      TrainingPipeline.
     maxValue: Required. Inclusive maximum value of the parameter.
     minValue: Required. Inclusive minimum value of the parameter.
   """
@@ -20376,8 +20439,9 @@ class GoogleCloudAiplatformV1beta1StudySpecParameterSpecIntegerValueSpec(_messag
   Fields:
     defaultValue: A default value for an `INTEGER` parameter that is assumed
       to be a relatively good starting point. Unset value signals that there
-      is no offered starting point. Currently only supported by the Vizier
-      service. Not supported by HyperparamterTuningJob or TrainingPipeline.
+      is no offered starting point. Currently only supported by the Vertex AI
+      Vizier service. Not supported by HyperparamterTuningJob or
+      TrainingPipeline.
     maxValue: Required. Inclusive maximum value of the parameter.
     minValue: Required. Inclusive minimum value of the parameter.
   """
@@ -20458,12 +20522,12 @@ class GoogleCloudAiplatformV1beta1Trial(_messages.Message):
   Fields:
     clientId: Output only. The identifier of the client that originally
       requested this Trial. Each client is identified by a unique client_id.
-      When a client asks for a suggestion, Vizier will assign it a Trial. The
-      client should evaluate the Trial, complete it, and report back to
-      Vizier. If suggestion is asked again by same client_id before the Trial
-      is completed, the same Trial will be returned. Multiple clients with
-      different client_ids can ask for suggestions simultaneously, each of
-      them will get their own Trial.
+      When a client asks for a suggestion, Vertex AI Vizier will assign it a
+      Trial. The client should evaluate the Trial, complete it, and report
+      back to Vertex AI Vizier. If suggestion is asked again by same client_id
+      before the Trial is completed, the same Trial will be returned. Multiple
+      clients with different client_ids can ask for suggestions
+      simultaneously, each of them will get their own Trial.
     customJob: Output only. The CustomJob name linked to the Trial. It's set
       for a HyperparameterTuningJob's Trial.
     endTime: Output only. Time when the Trial's status changed to `SUCCEEDED`

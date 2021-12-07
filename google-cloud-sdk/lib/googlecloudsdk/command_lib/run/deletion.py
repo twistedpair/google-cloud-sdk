@@ -44,7 +44,8 @@ class DeletionPoller(waiter.OperationPoller):
     return self._ret
 
   def GetMessage(self):
-    if self._ret and self._ret.conditions:
+    if (self._ret and self._ret.conditions and
+        not self._ret.conditions.IsReady()):
       return self._ret.conditions.DescriptiveMessage() or ''
     return ''
 

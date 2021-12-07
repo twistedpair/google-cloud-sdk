@@ -821,6 +821,9 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1CheckConsentRequest(_message
   Fields:
     agreement: Required. Agreement to be checked against. A valid format would
       be - agreements/{agreement_id}
+    financialContract: Financial contract this consent applies to. This is a
+      system full resource name. E.g.: //commerceoffercatalog.googleapis.com/b
+      illingAccounts/{billing_account}/offers/{offer-id}
     languageCode: The language code is used to find the agreement document if
       check consent doesn't pass. If this field is set, the method will
       attempt to locate the agreement document written in that language. If
@@ -835,7 +838,8 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1CheckConsentRequest(_message
   """
 
   agreement = _messages.StringField(1)
-  languageCode = _messages.StringField(2)
+  financialContract = _messages.StringField(2)
+  languageCode = _messages.StringField(3)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1CheckConsentResponse(_messages.Message):
@@ -861,6 +865,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Consent(_messages.Message):
       eapis.com/billingAccounts/{billing_account}/offers/{offer_id}/agreements
       /{agreement_id}/documents/{document_id}
     createTime: Output only. The creation time of current consent.
+    financialContract: Financial contracts linked to this consent.
     name: The resource name of a consent. An examples of valid names would be
       in the format of: -
       "billingAccounts/{billing_account}/consents/{consent}".
@@ -883,9 +888,10 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Consent(_messages.Message):
 
   agreementDocument = _messages.StringField(1)
   createTime = _messages.StringField(2)
-  name = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  updateTime = _messages.StringField(5)
+  financialContract = _messages.StringField(3)
+  name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  updateTime = _messages.StringField(6)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1CreateAccountMetadata(_messages.Message):

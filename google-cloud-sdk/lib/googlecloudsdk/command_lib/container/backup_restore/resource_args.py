@@ -73,17 +73,25 @@ def AddRestoreArg(parser):
       can't be changed. This must be 63 or fewer characters long and must be
       unique within the project and location. The name may be provided either as
       a relative name, e.g.
-      `projects/<project>/locations/<location>/restores/<restore>`
+      `projects/<project>/locations/<location>/restorePlans/<restorePlan>/restores/<restore>`
       or as a single ID name (with the parent resources provided via options or
       through properties), e.g.
-      `<restore> --project=<project>`.
+      `<restore> --project=<project> --location=<location> --restore-plan=<restorePlan>`.
       """,
       required=True).AddToParser(parser)
 
 
 def GetRestoreResourceSpec(resource_name='restore'):
   return concepts.ResourceSpec(
-      'gkebackup.projects.locations.restores',
+      'gkebackup.projects.locations.restorePlans.restores',
+      api_version='v1',
       resource_name=resource_name,
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      locationsId=LOCATION_RESOURCE_PARAMETER_ATTRIBUTE)
+      locationsId=LOCATION_RESOURCE_PARAMETER_ATTRIBUTE,
+      restorePlansId=concepts.ResourceParameterAttributeConfig(
+          name='restore-plan',
+          fallthroughs=[
+              deps.PropertyFallthrough(
+                  properties.VALUES.gkebackup.Property('restore_plan')),
+          ],
+          help_text='Restore Plan name.'))

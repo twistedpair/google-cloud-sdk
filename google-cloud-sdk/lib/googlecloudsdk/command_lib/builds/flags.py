@@ -175,13 +175,18 @@ def AddWorkerPoolFlag(parser, hidden=False):
   Args:
     parser: The argparse parser to add the arg to.
     hidden: If true, retain help but do not display it.
+
+  Returns:
+    worker pool flag group
   """
-  parser.add_argument(
+  worker_pools = parser.add_argument_group('Worker pool only flags.')
+  worker_pools.add_argument(
       '--worker-pool',
       hidden=hidden,
       help='Specify a worker pool for the build to run in. Format: '
-      'projects/{project}/locations/{region}/workerPools/{workerPool}. This '
-      'field is restricted to custom workers beta users.')
+      'projects/{project}/locations/{region}/workerPools/{workerPool}.')
+
+  return worker_pools
 
 
 def AddTimeoutFlag(parser):
@@ -247,20 +252,18 @@ def AddConfigFlags(parser):
   )
 
 
-def AddConfigFlagsAlpha(parser):
+def AddConfigFlagsAlpha(worker_pools):
   """Add config flags."""
-  build_cluster = parser.add_group(required=False, hidden=True)
-  build_cluster.add_argument(
-      '--cluster',
-      required=True,
+  worker_pools.add_argument(
+      '--memory',
+      type=arg_parsers.BinarySize(default_unit='GB'),
       hidden=True,
-      help='Name of the cluster on which to execute the build. '
-      'The cluster should have the Cloud Build add-on enabled.')
-  build_cluster.add_argument(
-      '--cluster-location',
-      required=True,
+      help='Machine memory required to run a build.')
+  worker_pools.add_argument(
+      '--vcpu-count',
+      type=float,
       hidden=True,
-      help='Zone or region in which the cluster is located.')
+      help='Machine vCPU count required to run a build.')
 
 
 def GetMachineType(machine_type_flag):

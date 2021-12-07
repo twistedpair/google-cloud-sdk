@@ -30,7 +30,7 @@ class ConfigExportTest(test_base.ConfigExportTestMixin,
 
   def SetUp(self):
     command = '${test_command_string}'
-    resource_args = ['${test_command_arguments}']
+    resource_args = ['${test_command_arguments}']${pylint_disable}
     self.ConfigureTests(
         track=calliope_base.ReleaseTrack.ALPHA,
         collection='${full_collection_name}',

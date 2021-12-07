@@ -100,7 +100,12 @@ class EndpointsClient(object):
         constants.AI_PLATFORM_API_VERSION[version])
     self.messages = messages or self.client.MESSAGES_MODULE
 
-  def Create(self, location_ref, display_name, labels, description=None):
+  def Create(self,
+             location_ref,
+             display_name,
+             labels,
+             description=None,
+             endpoint_id=None):
     """Creates a new endpoint using v1 API.
 
     Args:
@@ -108,12 +113,14 @@ class EndpointsClient(object):
       display_name: str, the display name of the new endpoint.
       labels: list, the labels to organize the new endpoint.
       description: str or None, the description of the new endpoint.
+      endpoint_id: str or None, the id of the new endpoint.
 
     Returns:
       A long-running operation for Create.
     """
     req = self.messages.AiplatformProjectsLocationsEndpointsCreateRequest(
         parent=location_ref.RelativeName(),
+        endpointId=endpoint_id,
         googleCloudAiplatformV1Endpoint=self.messages
         .GoogleCloudAiplatformV1Endpoint(
             displayName=display_name, description=description, labels=labels))
@@ -124,7 +131,8 @@ class EndpointsClient(object):
                  display_name,
                  labels,
                  description=None,
-                 network=None):
+                 network=None,
+                 endpoint_id=None):
     """Creates a new endpoint using v1beta1 API.
 
     Args:
@@ -133,12 +141,14 @@ class EndpointsClient(object):
       labels: list, the labels to organize the new endpoint.
       description: str or None, the description of the new endpoint.
       network: str, the full name of the Google Compute Engine network.
+      endpoint_id: str or None, the id of the new endpoint.
 
     Returns:
       A long-running operation for Create.
     """
     req = self.messages.AiplatformProjectsLocationsEndpointsCreateRequest(
         parent=location_ref.RelativeName(),
+        endpointId=endpoint_id,
         googleCloudAiplatformV1beta1Endpoint=self.messages
         .GoogleCloudAiplatformV1beta1Endpoint(
             displayName=display_name,
@@ -380,7 +390,8 @@ class EndpointsClient(object):
                   enable_access_logging=False,
                   disable_container_logging=False,
                   service_account=None,
-                  traffic_split=None):
+                  traffic_split=None,
+                  deployed_model_id=None):
     """Deploys a model to an existing endpoint using v1 API.
 
     Args:
@@ -400,6 +411,7 @@ class EndpointsClient(object):
       service_account: str or None, the service account that the deployed model
         runs as.
       traffic_split: dict or None, the new traffic split of the endpoint.
+      deployed_model_id: str or None, id of the deployed model.
 
     Returns:
       A long-running operation for DeployModel.
@@ -450,6 +462,9 @@ class EndpointsClient(object):
     if service_account is not None:
       deployed_model.serviceAccount = service_account
 
+    if deployed_model_id is not None:
+      deployed_model.id = deployed_model_id
+
     deployed_model_req = \
         self.messages.GoogleCloudAiplatformV1DeployModelRequest(
             deployedModel=deployed_model)
@@ -481,7 +496,8 @@ class EndpointsClient(object):
                       enable_access_logging=False,
                       enable_container_logging=False,
                       service_account=None,
-                      traffic_split=None):
+                      traffic_split=None,
+                      deployed_model_id=None):
     """Deploys a model to an existing endpoint using v1beta1 API.
 
     Args:
@@ -504,6 +520,7 @@ class EndpointsClient(object):
       service_account: str or None, the service account that the deployed model
         runs as.
       traffic_split: dict or None, the new traffic split of the endpoint.
+      deployed_model_id: str or None, id of the deployed model.
 
     Returns:
       A long-running operation for DeployModel.
@@ -562,6 +579,9 @@ class EndpointsClient(object):
 
     if service_account is not None:
       deployed_model.serviceAccount = service_account
+
+    if deployed_model_id is not None:
+      deployed_model.id = deployed_model_id
 
     deployed_model_req = \
         self.messages.GoogleCloudAiplatformV1beta1DeployModelRequest(

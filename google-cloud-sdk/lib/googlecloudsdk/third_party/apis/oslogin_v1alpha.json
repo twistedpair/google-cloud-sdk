@@ -433,12 +433,12 @@
       }
       ,
       "resources": {
-        "sshPublicKey": {
+        "sshPublicKeys": {
           "methods": {
             "create": {
-              "id": "oslogin.users.sshPublicKey.create",
-              "path": "v1alpha/{+parent}/sshPublicKey",
-              "flatPath": "v1alpha/users/{usersId}/sshPublicKey",
+              "id": "oslogin.users.sshPublicKeys.create",
+              "path": "v1alpha/{+parent}/sshPublicKeys",
+              "flatPath": "v1alpha/users/{usersId}/sshPublicKeys",
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
@@ -463,56 +463,7 @@
                 "https://www.googleapis.com/auth/compute"
               ],
               "description": "Create an SSH public key"
-            }
-          }
-        },
-        "projects": {
-          "methods": {
-            "delete": {
-              "id": "oslogin.users.projects.delete",
-              "path": "v1alpha/{+name}",
-              "flatPath": "v1alpha/users/{usersId}/projects/{projectsId}",
-              "httpMethod": "DELETE",
-              "parameters": {
-                "name": {
-                  "description": "Required. A reference to the POSIX account to update. POSIX accounts are identified by the project ID they are associated with. A reference to the POSIX account is in format `users\/{user}\/projects\/{project}`.",
-                  "pattern": "^users\/[^\/]+\/projects\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "operatingSystemType": {
-                  "description": "The type of operating system associated with the account.",
-                  "location": "query",
-                  "type": "string",
-                  "enumDescriptions": [
-                    "The operating system type associated with the user account information is unspecified.",
-                    "Linux user account information.",
-                    "Windows user account information."
-                  ],
-                  "enum": [
-                    "OPERATING_SYSTEM_TYPE_UNSPECIFIED",
-                    "LINUX",
-                    "WINDOWS"
-                  ]
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "Empty"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
-              ],
-              "description": "Deletes a POSIX account."
-            }
-          }
-        },
-        "sshPublicKeys": {
-          "methods": {
+            },
             "delete": {
               "id": "oslogin.users.sshPublicKeys.delete",
               "path": "v1alpha/{+name}",
@@ -599,6 +550,51 @@
                 "https://www.googleapis.com/auth/compute"
               ],
               "description": "Updates an SSH public key and returns the profile information. This method supports patch semantics."
+            }
+          }
+        },
+        "projects": {
+          "methods": {
+            "delete": {
+              "id": "oslogin.users.projects.delete",
+              "path": "v1alpha/{+name}",
+              "flatPath": "v1alpha/users/{usersId}/projects/{projectsId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "name": {
+                  "description": "Required. A reference to the POSIX account to update. POSIX accounts are identified by the project ID they are associated with. A reference to the POSIX account is in format `users\/{user}\/projects\/{project}`.",
+                  "pattern": "^users\/[^\/]+\/projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "operatingSystemType": {
+                  "description": "The type of operating system associated with the account.",
+                  "location": "query",
+                  "type": "string",
+                  "enumDescriptions": [
+                    "The operating system type associated with the user account information is unspecified.",
+                    "Linux user account information.",
+                    "Windows user account information."
+                  ],
+                  "enum": [
+                    "OPERATING_SYSTEM_TYPE_UNSPECIFIED",
+                    "LINUX",
+                    "WINDOWS"
+                  ]
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/compute"
+              ],
+              "description": "Deletes a POSIX account."
             }
           }
         }

@@ -5,6 +5,234 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 366.0.0 (2021-12-07)
+
+### Breaking Changes
+
+*   **(Cloud Composer)** Added requirement to provide one of `--web-server-allow-ip`, `--web-server-allow-all`, `--web-server-deny-all` flags in `gcloud composer environments create` when creating a private IP Cloud Composer 2 environment.
+*   **(Cloud Datastore)** Modified `gcloud beta datastream` to use Datastream v1 API, which effects the client structured output.
+*   **(Cloud Functions)** Modified `gcloud functions deploy` flag `--security-level` to default to
+  SECURE_ALWAYS instead of SECURE_OPTIONAL. **SECURE_ALWAYS** enforces the
+  created function to support HTTPS only, instead of both HTTPS and HTTP.
+  * To override this behavior, use `--security-level=SECURE_OPTIONAL`.
+
+
+### Cloud SDK
+
+* Added support for environment variable completion to the "gcloud command-line tool".
+
+### AI
+
+* Added `--endpoint-id` flag to `gcloud ai endpoints create` and `gcloud beta ai endpoints create`.
+* Added `--deployed-model-id` flag to `gcloud ai endpoints deploy-model` and `gcloud beta ai endpoints deploy-model`.
+* Modified `--region` flag of `gcloud ai endpoints` to include new online
+  prediction regions.
+* Modified `--region` flag of `gcloud ai models` to include new online
+  prediction regions.
+
+### App Engine
+
+* Updated the Java SDK to version 1.9.93.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/java/release-notes>.
+
+### BigQuery
+
+* Added support for CLOUD_RESOURCE as a connection_type.
+* Added `--trial_id` flag to extract to support exporting an individual trial of an ML model trained with Hyperparameter Tuning.
+* Added support for Device Certificate Authentication via Mutual TLS. See `gcloud topic client-certificate`.
+* Added support for creating a linked dataset.
+* Minor bug fixes.
+
+### Certificate Authority Service
+
+* Added `--kms-key-version` to `gcloud privateca certificates`, which allows
+  creating certificates backed by a KMS key version.
+
+### Cloud Access Context Manager
+
+* Promoted `--scopes` flag of `gcloud access-context-manager policies` to GA.
+* Promoted `gcloud access-context-manager policies add-iam-policy-binding` to
+  GA.
+* Promoted `gcloud access-context-manager policiesremove iam-policy-binding` to
+  GA.
+* Promoted `gcloud access-context-manager policies set-iam-policy` to GA.
+* Promoted `ggcloud access-context-manager policies get-iam-policy` to GA.
+
+### Cloud Bigtable
+
+*  Added `--autoscaling-min-nodes`, `--autoscaling-max-nodes`, and
+`--autoscaling-cpu-target` flags to `gcloud bigtable clusters create` for alpha,
+ beta and GA to let users create autoscaling clusters.
+*  Added key `autoscaling-min-nodes`, `autoscaling-max-nodes` and
+ `autoscaling-cpu-target` to `--cluster-config` flag of
+ `gcloud bigtable instances create` for alpha, beta and GA to let users create
+ autoscaling clusters.
+*  Added `--autoscaling-min-nodes`, `--autoscaling-max-nodes`,
+ `--autoscaling-cpu-target` and `disable-autoscaling` flags to
+ `gcloud bigtable clusters update` for alpha, beta and GA to let users configure
+ autoscaling when updating clusters.
+
+### Cloud Composer
+
+* Allowed `--web-server-allow-ip`, `--web-server-deny-all`, `--web-server-allow-all` flags in `gcloud composer environments create` to be used with Cloud Composer 2.
+* Added support for `kubernetes` Airflow CLI commands to `gcloud composer environments run` for Cloud Composer environments that use Airflow 2.1.4+.
+* Added `--connection-subnetwork` flag to `gcloud beta composer environments create` command to enable using Private Service Connect for internal communication.
+* Promoted  `--maintenance-window-start`, `--maintenance-window-end` and `--maintenance-window-recurrence` flags of `gcloud composer environments create` to GA.
+* Added support for `--kms-key` flag in `gcloud composer environments create` command when creating Cloud Composer 2 environments.
+* Added `--environment-size` and `composer-network-ipv4-cidr` flags in `gcloud composer environments create` and `gcloud composer environments update` to be used with Cloud Composer 2.
+* Added `--scheduler-cpu`, `--scheduler-memory`, `--scheduler-storage`, `--scheduler-count`, `--worker-cpu`, `--worker-memory`, `--worker-storage`, `--min-workers`, `--max-workers`, `--web-server-cpu`, `--web-server-memory`, `--web-server-storage` flags in `gcloud composer environments create` and `gcloud composer environments update` to be used with Cloud Composer 2.
+
+### Cloud DNS
+
+* Promoted `gcloud dns response-policies` command group to GA.
+
+### Cloud Data Catalog
+
+*   Added `gcloud data-catalog entries star` and `gcloud data-catalog entries unstar` which allows users to star and unstar their favorite Data Catalog entries respectively.
+
+### Cloud DataPipelines
+
+* Added `gcloud beta datapipelines pipeline` command with support for `create`, `list`, `update`, `describe`, `delete`, `run` and `stop`.
+
+### Cloud Datastream
+
+* Modified `gcloud beta datastream stream create` and `gcloud beta datastream stream update` validation flags (`--validate-only`, `--force`) to be mutually exclusive.
+* Promoted `gcloud datastream connection-profiles` to GA.
+    * RDBMS files now use the v1 API field names (e.g. 'schema' instead of 'schema_name', etc..).
+    * Renamed `--bucket-name` flag to bucket.
+    * Renamed `--private-connection-name` flag to `--private-connection`.
+    * Removed `--no-connectivity` flag.
+    * Added `--force validation` flag.
+
+### Cloud Filestore
+
+*   Added `--force` flag to `gcloud filestore instances delete` command
+    to allow users to delete Filestore instances with child resources.
+*   Added `gcloud filestore instances snapshots` command group, which is used to create and manage Filestore snapshots.
+*   Added `connect-mode` param to `--network` flag of `gcloud filestore instances create` for GA.
+*   Added `--kms-key` flag to `gcloud filestore instances create` command
+    to specify the customer-managed KMS key name to use for encrypting the
+    filestore instance.
+
+### Cloud Functions
+
+*   Promoted `--min-instances` and `--clear-min-instances` flags of `gcloud functions` to GA.
+
+### Cloud Pub/Sub
+
+*   Increased upper bound for `--message-retention-duration` flag of `gcloud pubsub topics create` from 7 days to 31 days.
+*   Increased upper bound for `--message-retention-duration` flag of `gcloud pubsub topics update` from 7 days to 31 days.
+
+### Cloud SQL
+
+*   Added `--database-version` flag to `gcloud sql instance patch` enable minor version upgrade for cloud sql instances.
+*   Modified `gcloud sql instances clone` to support `--point-in-time` flag for MySQL too.
+
+### Compute Engine
+
+* Added update command to `gcloud compute os-config patch-deployments` on alpha, beta and GA tracks.
+* Promoted `gcloud compute snapshots create` command to GA.
+* Promoted flags `--connection-persistence-on-unhealthy-backends`, `--idle-timeout-sec`, and `--tracking-mode` of `gcloud compute backend-services create` and `gcloud compute backend-services update` to GA.
+* Promoted `--service-bindings` flag of `gcloud compute backend-services create|update` commands to beta.
+
+### Compute OS Config
+
+* Added log to remind user how to check operation status for  `gcloud compute os-config os-policy-assignment create` in `--async` mode.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.68.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Declarative Workflows
+
+* Promoted `gcloud beta resource-config bulk-export` to beta with improved support for export to Terraform HCL format  (via. `--resource-format=terraform`).
+* Added `config export` commands for the following command surfaces to alpha, enabling export of the related Google Cloud resources to KRM and Terraform HCL:
+  * memcache instances
+  * access-context-manager policies
+  * access-context-manager perimeters
+  * access-context-manager levels
+  * secrets
+  * secrets versions
+  * iam service-accounts
+  * iam service-accounts keys
+  * transfer jobs
+  * dns managed-zones
+  * dns policies
+  * spanner databases
+  * spanner instances
+  * artifacts repositories
+  * bq jobs
+  * bq datasets
+  * bq tables
+  * pubsub topics
+  * pubsub subscriptions
+  * source repos
+  * kms keys
+  * kms keyrings
+  * builds triggers
+  * dataflow jobs
+  * monitoring channels
+  * monitoring policies
+  * redis instances
+  * sql instances
+  * sql databases
+  * identity groups*
+  * storage buckets
+  * bigtable app-profiles
+  * bigtable instances tables
+  * bigtable instances
+  * resource-manager liens
+  * container node-pools
+  * container clusters
+  * compute url-maps
+  * compute target-grpc-proxies
+  * compute instances
+  * compute target-instances
+  * compute target-ssl-proxies
+  * compute target-pools
+  * compute disks
+  * compute target-http-proxies
+  * compute target-https-proxies
+  * compute ssl-policies
+  * compute addresses
+  * compute backend-buckets
+  * compute firewall-rules
+  * compute target-tcp-proxies
+  * compute target-vpn-gateways
+  * compute networks subnets
+  * compute vpn-tunnels
+  * compute vpn-gateways
+  * compute forwarding-rules
+* Added `gcloud beta resource-config terraform generate-import` to beta, adding support for generating a shell script to adopt exported Terraform HCL files into Terraform state.
+* Added `gcloud beta resource-config terraform init-provider` to beta, adding support for initializing the Google Cloud Platform Terraform provider from the gcloud command-line tool.
+
+### Kubernetes Engine
+
+*   Added `filter` option to `notification-config` flag on `gcloud container
+    clusters create` and `gcloud container clutsers update` commands to specify
+    specific pubsub message types to receive.
+*   Added `--enable-managed-prometheus` flag to `gcloud beta container clusters create`
+    and `gcloud beta container clutsers update` to deploy Google Cloud Managed
+    Service for Prometheus managed collection to a Kubernetes cluster.
+*   Added `--disable-managed-prometheus` flag to `gcloud beta container clusters update`
+    to tear down Google Cloud Managed Service for Prometheus managed collection
+    on a Kubernetes cluster with managed collection already deployed.
+*   Added a deprecation warning on `--enable-pod-security-policy` flag to `create` and `update` commands of `gcloud beta container clusters`.
+
+### Network Services
+
+* Promoted `gcloud network-services service-bindings` to beta.
+
+### Transcoder
+
+* Promoted `gcloud transcoder` command group to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 365.0.1 (2021-11-22)
 
 ### BigQuery

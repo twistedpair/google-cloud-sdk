@@ -41,6 +41,39 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_APPGATEWAYS = (
+      'projects.locations.appGateways',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/appGateways/'
+              '{appGatewaysId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_CLIENTCONNECTORSERVICES = (
+      'projects.locations.clientConnectorServices',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'clientConnectorServices/{clientConnectorServicesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_CLIENTGATEWAYS = (
+      'projects.locations.clientGateways',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/clientGateways/'
+              '{clientGatewaysId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_CONNECTIONS = (
       'projects.locations.connections',
       '{+name}',

@@ -106,7 +106,8 @@ class _ReadableStream:
   """A read-only stream that reads from the buffer queue."""
 
   def __init__(self, buffer_queue, buffer_condition, shutdown_event,
-               end_position, progress_callback=None):
+               end_position, restart_download_callback,
+               progress_callback=None):
     """Initializes ReadableStream.
 
     Args:
@@ -118,6 +119,8 @@ class _ReadableStream:
         terminate.
       end_position (int): Position at which the stream reading stops. This is
         usually the total size of the data that gets read.
+      restart_download_callback (func): This must be the
+        BufferController.restart_download function.
       progress_callback (progress_callbacks.FilesAndBytesProgressCallback):
         Accepts processed bytes and submits progress info for aggregation.
     """
@@ -128,7 +131,14 @@ class _ReadableStream:
     self._position = 0
     self._unused_data_from_previous_read = b''
     self._progress_callback = progress_callback
+    self._restart_download_callback = restart_download_callback
     self._bytes_read_since_last_progress_callback = 0
+
+  def _restart_download(self, offset):
+    self._restart_download_callback(offset)
+    self._unused_data_from_previous_read = b''
+    self._bytes_read_since_last_progress_callback = 0
+    self._position = offset
 
   def read(self, size=-1):
     """Reads size bytes from the buffer queue and returns it.
@@ -211,20 +221,21 @@ class _ReadableStream:
     return result_data
 
   def seek(self, offset, whence=os.SEEK_SET):
-    """Checks if seek was requested for the last position.
+    """Seek to the given offset position.
 
-    Ideally, seek changes the stream position to the given byte offset. Since
-    this stream is a non-seekable stream, seek is actually not required.
-    We implement this method as a hacky way to provide additional
-    integrity checking.
+    Ideally, seek changes the stream position to the given byte offset.
+    But we only handle resumable retry for S3 to GCS transfers at this time,
+    which means, seek will be called only by the Apitools library.
+    Since Apitools calls seek only for limited cases, we avoid implementing
+    seek for all possible cases here in order to avoid unnecessary complexity
+    in the code.
 
-    Apitools by default calls seek at the end of the transfer
+    Following are the cases where Apitools calls seek:
+    1) At the end of the transfer
     https://github.com/google/apitools/blob/ca2094556531d61e741dc2954fdfccbc650cdc32/apitools/base/py/transfer.py#L986
     to determine if it has read everything from the stream.
-
-    This method will raise an error if seek was called for any position except
-    for the last position and hence will fail if all the bytes were not
-    copied over as expected.
+    2) For any transient errors during uploads to seek back to a particular
+    position. This call is always made with whence == os.SEEK_SET.
 
     Args:
       offset (int): Defines the position realative to the `whence` where the
@@ -238,13 +249,12 @@ class _ReadableStream:
       (int) The current position.
 
     Raises:
-      ValueError: If seek is not called for the last position.
+      ValueError:
+        If seek is called with whence == os.SEEK_END for offset not
+        equal to the last position.
+        If seek is called with whence == os.SEEK_CUR.
 
     """
-    if self._position != self._end_position:
-      raise ValueError(
-          'Seek called before all the bytes were read. Current positon: {},'
-          ' Last position {}.'.format(self._position, self._end_position))
     if whence == os.SEEK_END:
       if offset:
         raise ValueError('Non-zero offset from os.SEEK_END is not allowed.'
@@ -252,20 +262,17 @@ class _ReadableStream:
     elif whence == os.SEEK_SET:
       # Relative to the start of the stream, the offset should be the size
       # of the stream
-      if offset != self._end_position:
-        raise ValueError(
-            'Seek relative to the beginning is only allowed for the last'
-            ' position {}. Offset: {}. Current position: {}.'.format(
-                self._end_position, offset, self._position))
+      if offset != self._position:
+        self._restart_download(offset)
     else:
       raise ValueError('Seek is only supported for os.SEEK_END and'
                        ' os.SEEK_SET.')
     return self._position
 
   def seekable(self):
-    """Returns False, since this stream is not meant to be seekable."""
+    """Returns True, since the stream is seekable."""
     del self  # Unused.
-    return False
+    return True
 
   def tell(self):
     """Returns the current position."""
@@ -322,6 +329,7 @@ class BufferController:
         self.buffer_condition,
         self.shutdown_event,
         self._source_resource.size,
+        restart_download_callback=self.restart_download,
         progress_callback=progress_callback,
     )
     self._download_thread = None

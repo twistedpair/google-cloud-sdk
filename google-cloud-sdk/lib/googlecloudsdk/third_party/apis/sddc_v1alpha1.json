@@ -472,11 +472,11 @@
     },
     "ListClusterGroupBackupsResponse": {
       "id": "ListClusterGroupBackupsResponse",
-      "description": "A list of private cloud cluster group backups.",
+      "description": "A list of cluster group backups.",
       "type": "object",
       "properties": {
         "clusterGroupBackups": {
-          "description": "A list of private cloud cluster group backups.",
+          "description": "A list of cluster group backups.",
           "type": "array",
           "items": {
             "$ref": "ClusterGroupBackup"
@@ -535,7 +535,7 @@
       "type": "object",
       "properties": {
         "clusterGroups": {
-          "description": "A list of private cloud cluster groups.",
+          "description": "A list of cluster groups.",
           "type": "array",
           "items": {
             "$ref": "ClusterGroup"
@@ -2905,7 +2905,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The parent ClusterGroup or PrivateCloud of which the IpAddresses belong to. For example: projects\/PROJECT-NUMBER \/locations\/us-central1\/clusterGroups\/MY-GROUP",
+                          "description": "Required. The parent ClusterGroup of which the IpAddresses belong to. For example: projects\/PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/ MY-GROUP",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2971,7 +2971,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The ClusterGroup or private cloud in which the `IpAddress` will be created. For example, projects\/PROJECT-NUMBER \/locations\/us-central1\/clusterGroups\/MY-GROUP",
+                          "description": "Required. The ClusterGroup in which the `IpAddress` will be created. For example, projects\/PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/ MY-GROUP",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
                           "location": "path",
                           "required": true,

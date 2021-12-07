@@ -465,8 +465,12 @@
           "type": "string"
         },
         "intotoProvenance": {
-          "description": "In-toto Provenance representation as defined in spec.",
+          "description": "Deprecated. See InTotoStatement for the replacement. In-toto Provenance representation as defined in spec.",
           "$ref": "InTotoProvenance"
+        },
+        "intotoStatement": {
+          "description": "In-toto Statement representation as defined in spec. The intoto_statement can contain any type of provenance. The serialized payload of the statement can be stored and signed in the Occurrence's envelope.",
+          "$ref": "InTotoStatement"
         }
       }
     },
@@ -965,6 +969,193 @@
         "materials": {
           "description": "If true, the builder claims that materials are complete, usually through some controls to prevent network access. Sometimes called \"hermetic\".",
           "type": "boolean"
+        }
+      }
+    },
+    "InTotoStatement": {
+      "id": "InTotoStatement",
+      "description": "Spec defined at https:\/\/github.com\/in-toto\/attestation\/tree\/main\/spec#statement The serialized InTotoStatement will be stored as Envelope.payload. Envelope.payloadType is always \"application\/vnd.in-toto+json\".",
+      "type": "object",
+      "properties": {
+        "_type": {
+          "description": "Always \"https:\/\/in-toto.io\/Statement\/v0.1\".",
+          "type": "string"
+        },
+        "subject": {
+          "description": "subject is the subjects of the intoto statement",
+          "type": "array",
+          "items": {
+            "$ref": "Subject"
+          }
+        },
+        "predicateType": {
+          "description": "\"https:\/\/slsa.dev\/provenance\/v0.1\" for SlsaProvenance.",
+          "type": "string"
+        },
+        "provenance": {
+          "description": "provenance is a predicate of type intotoprovenance",
+          "$ref": "InTotoProvenance"
+        },
+        "slsaProvenance": {
+          "description": "slsa_provenance is a predicate of type slsaProvenance",
+          "$ref": "SlsaProvenance"
+        }
+      }
+    },
+    "Subject": {
+      "id": "Subject",
+      "description": "Subject refers to the subject of the intoto statement",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "name is the name of the Subject used here",
+          "type": "string"
+        },
+        "digest": {
+          "description": "\"\": \"\" Algorithms can be e.g. sha256, sha512 See https:\/\/github.com\/in-toto\/attestation\/blob\/main\/spec\/field_types.md#DigestSet",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "SlsaProvenance": {
+      "id": "SlsaProvenance",
+      "description": "SlsaProvenance is the slsa provenance as defined by the slsa spec.",
+      "type": "object",
+      "properties": {
+        "builder": {
+          "description": "builder is the builder of this provenance",
+          "$ref": "SlsaBuilder"
+        },
+        "recipe": {
+          "description": "Identifies the configuration used for the build. When combined with materials, this SHOULD fully describe the build, such that re-running this recipe results in bit-for-bit identical output (if the build is reproducible).",
+          "$ref": "SlsaRecipe"
+        },
+        "metadata": {
+          "description": "metadata is the metadata of the provenance",
+          "$ref": "SlsaMetadata"
+        },
+        "materials": {
+          "description": "The collection of artifacts that influenced the build including sources, dependencies, build tools, base images, and so on. This is considered to be incomplete unless metadata.completeness.materials is true. Unset or null is equivalent to empty.",
+          "type": "array",
+          "items": {
+            "$ref": "Material"
+          }
+        }
+      }
+    },
+    "SlsaBuilder": {
+      "id": "SlsaBuilder",
+      "description": "SlsaBuilder encapsulates the identity of the builder of this provenance.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "id is the id of the slsa provenance builder",
+          "type": "string"
+        }
+      }
+    },
+    "SlsaRecipe": {
+      "id": "SlsaRecipe",
+      "description": "Steps taken to build the artifact. For a TaskRun, typically each container corresponds to one step in the recipe.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "URI indicating what type of recipe was performed. It determines the meaning of recipe.entryPoint, recipe.arguments, recipe.environment, and materials.",
+          "type": "string"
+        },
+        "definedInMaterial": {
+          "description": "Index in materials containing the recipe steps that are not implied by recipe.type. For example, if the recipe type were \"make\", then this would point to the source containing the Makefile, not the make program itself. Set to -1 if the recipe doesn't come from a material, as zero is default unset value for int64.",
+          "type": "string",
+          "format": "int64"
+        },
+        "entryPoint": {
+          "description": "String identifying the entry point into the build. This is often a path to a configuration file and\/or a target label within that file. The syntax and meaning are defined by recipe.type. For example, if the recipe type were \"make\", then this would reference the directory in which to run make as well as which target to use.",
+          "type": "string"
+        },
+        "arguments": {
+          "description": "Collection of all external inputs that influenced the build on top of recipe.definedInMaterial and recipe.entryPoint. For example, if the recipe type were \"make\", then this might be the flags passed to make aside from the target, which is captured in recipe.entryPoint. Depending on the recipe Type, the structure may be different.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "environment": {
+          "description": "Any other builder-controlled inputs necessary for correctly evaluating the recipe. Usually only needed for reproducing the build but not evaluated as part of policy. Depending on the recipe Type, the structure may be different.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "SlsaMetadata": {
+      "id": "SlsaMetadata",
+      "description": "Other properties of the build.",
+      "type": "object",
+      "properties": {
+        "buildInvocationId": {
+          "description": "Identifies the particular build invocation, which can be useful for finding associated logs or other ad-hoc analysis. The value SHOULD be globally unique, per in-toto Provenance spec.",
+          "type": "string"
+        },
+        "buildStartedOn": {
+          "description": "The timestamp of when the build started.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "buildFinishedOn": {
+          "description": "The timestamp of when the build completed.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "completeness": {
+          "description": "Indicates that the builder claims certain fields in this message to be complete.",
+          "$ref": "SlsaCompleteness"
+        },
+        "reproducible": {
+          "description": "If true, the builder claims that running the recipe on materials will produce bit-for-bit identical output.",
+          "type": "boolean"
+        }
+      }
+    },
+    "SlsaCompleteness": {
+      "id": "SlsaCompleteness",
+      "description": "Indicates that the builder claims certain fields in this message to be complete.",
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "description": "If true, the builder claims that recipe.arguments is complete, meaning that all external inputs are properly captured in the recipe.",
+          "type": "boolean"
+        },
+        "environment": {
+          "description": "If true, the builder claims that recipe.environment is claimed to be complete.",
+          "type": "boolean"
+        },
+        "materials": {
+          "description": "If true, the builder claims that materials are complete, usually through some controls to prevent network access. Sometimes called \"hermetic\".",
+          "type": "boolean"
+        }
+      }
+    },
+    "Material": {
+      "id": "Material",
+      "description": "Material is a material used in the generation of the provenance",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "uri is the uri of the material",
+          "type": "string"
+        },
+        "digest": {
+          "description": "digest is a map from a hash algorithm (e.g. sha256) to the value in the material",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1726,193 +1917,6 @@
         "keyid": {
           "description": "A reference id to the key being used for signing",
           "type": "string"
-        }
-      }
-    },
-    "InTotoStatement": {
-      "id": "InTotoStatement",
-      "description": "Spec defined at https:\/\/github.com\/in-toto\/attestation\/tree\/main\/spec#statement The serialized InTotoStatement will be stored as Envelope.payload. Envelope.payloadType is always \"application\/vnd.in-toto+json\".",
-      "type": "object",
-      "properties": {
-        "_type": {
-          "description": "Always \"https:\/\/in-toto.io\/Statement\/v0.1\".",
-          "type": "string"
-        },
-        "subject": {
-          "description": "subject is the subjects of the intoto statement",
-          "type": "array",
-          "items": {
-            "$ref": "Subject"
-          }
-        },
-        "predicateType": {
-          "description": "\"https:\/\/slsa.dev\/provenance\/v0.1\" for SlsaProvenance.",
-          "type": "string"
-        },
-        "provenance": {
-          "description": "provenance is a predicate of type intotoprovenance",
-          "$ref": "InTotoProvenance"
-        },
-        "slsaProvenance": {
-          "description": "slsa_provenance is a predicate of type slsaProvenance",
-          "$ref": "SlsaProvenance"
-        }
-      }
-    },
-    "Subject": {
-      "id": "Subject",
-      "description": "Subject refers to the subject of the intoto statement",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "name is the name of the Subject used here",
-          "type": "string"
-        },
-        "digest": {
-          "description": "\"\": \"\" Algorithms can be e.g. sha256, sha512 See https:\/\/github.com\/in-toto\/attestation\/blob\/main\/spec\/field_types.md#DigestSet",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "SlsaProvenance": {
-      "id": "SlsaProvenance",
-      "description": "SlsaProvenance is the slsa provenance as defined by the slsa spec.",
-      "type": "object",
-      "properties": {
-        "builder": {
-          "description": "builder is the builder of this provenance",
-          "$ref": "SlsaBuilder"
-        },
-        "recipe": {
-          "description": "Identifies the configuration used for the build. When combined with materials, this SHOULD fully describe the build, such that re-running this recipe results in bit-for-bit identical output (if the build is reproducible).",
-          "$ref": "SlsaRecipe"
-        },
-        "metadata": {
-          "description": "metadata is the metadata of the provenance",
-          "$ref": "SlsaMetadata"
-        },
-        "materials": {
-          "description": "The collection of artifacts that influenced the build including sources, dependencies, build tools, base images, and so on. This is considered to be incomplete unless metadata.completeness.materials is true. Unset or null is equivalent to empty.",
-          "type": "array",
-          "items": {
-            "$ref": "Material"
-          }
-        }
-      }
-    },
-    "SlsaBuilder": {
-      "id": "SlsaBuilder",
-      "description": "SlsaBuilder encapsulates the identity of the builder of this provenance.",
-      "type": "object",
-      "properties": {
-        "id": {
-          "description": "id is the id of the slsa provenance builder",
-          "type": "string"
-        }
-      }
-    },
-    "SlsaRecipe": {
-      "id": "SlsaRecipe",
-      "description": "Steps taken to build the artifact. For a TaskRun, typically each container corresponds to one step in the recipe.",
-      "type": "object",
-      "properties": {
-        "type": {
-          "description": "URI indicating what type of recipe was performed. It determines the meaning of recipe.entryPoint, recipe.arguments, recipe.environment, and materials.",
-          "type": "string"
-        },
-        "definedInMaterial": {
-          "description": "Index in materials containing the recipe steps that are not implied by recipe.type. For example, if the recipe type were \"make\", then this would point to the source containing the Makefile, not the make program itself. Set to -1 if the recipe doesn't come from a material, as zero is default unset value for int64.",
-          "type": "string",
-          "format": "int64"
-        },
-        "entryPoint": {
-          "description": "String identifying the entry point into the build. This is often a path to a configuration file and\/or a target label within that file. The syntax and meaning are defined by recipe.type. For example, if the recipe type were \"make\", then this would reference the directory in which to run make as well as which target to use.",
-          "type": "string"
-        },
-        "arguments": {
-          "description": "Collection of all external inputs that influenced the build on top of recipe.definedInMaterial and recipe.entryPoint. For example, if the recipe type were \"make\", then this might be the flags passed to make aside from the target, which is captured in recipe.entryPoint. Depending on the recipe Type, the structure may be different.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        },
-        "environment": {
-          "description": "Any other builder-controlled inputs necessary for correctly evaluating the recipe. Usually only needed for reproducing the build but not evaluated as part of policy. Depending on the recipe Type, the structure may be different.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        }
-      }
-    },
-    "SlsaMetadata": {
-      "id": "SlsaMetadata",
-      "description": "Other properties of the build.",
-      "type": "object",
-      "properties": {
-        "buildInvocationId": {
-          "description": "Identifies the particular build invocation, which can be useful for finding associated logs or other ad-hoc analysis. The value SHOULD be globally unique, per in-toto Provenance spec.",
-          "type": "string"
-        },
-        "buildStartedOn": {
-          "description": "The timestamp of when the build started.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "buildFinishedOn": {
-          "description": "The timestamp of when the build completed.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "completeness": {
-          "description": "Indicates that the builder claims certain fields in this message to be complete.",
-          "$ref": "SlsaCompleteness"
-        },
-        "reproducible": {
-          "description": "If true, the builder claims that running the recipe on materials will produce bit-for-bit identical output.",
-          "type": "boolean"
-        }
-      }
-    },
-    "SlsaCompleteness": {
-      "id": "SlsaCompleteness",
-      "description": "Indicates that the builder claims certain fields in this message to be complete.",
-      "type": "object",
-      "properties": {
-        "arguments": {
-          "description": "If true, the builder claims that recipe.arguments is complete, meaning that all external inputs are properly captured in the recipe.",
-          "type": "boolean"
-        },
-        "environment": {
-          "description": "If true, the builder claims that recipe.environment is claimed to be complete.",
-          "type": "boolean"
-        },
-        "materials": {
-          "description": "If true, the builder claims that materials are complete, usually through some controls to prevent network access. Sometimes called \"hermetic\".",
-          "type": "boolean"
-        }
-      }
-    },
-    "Material": {
-      "id": "Material",
-      "description": "Material is a material used in the generation of the provenance",
-      "type": "object",
-      "properties": {
-        "uri": {
-          "description": "uri is the uri of the material",
-          "type": "string"
-        },
-        "digest": {
-          "description": "digest is a map from a hash algorithm (e.g. sha256) to the value in the material",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
         }
       }
     },

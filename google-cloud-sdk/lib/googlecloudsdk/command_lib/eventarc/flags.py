@@ -36,9 +36,9 @@ def LocationAttributeConfig():
       fallthroughs=[
           deps.PropertyFallthrough(properties.FromString('eventarc/location'))
       ],
-      help_text="The location for the Eventarc {resource}, which should be "
+      help_text='The location for the Eventarc {resource}, which should be '
       "either ``global'' or one of the supported regions. Alternatively, set "
-      "the [eventarc/location] property.")
+      'the [eventarc/location] property.')
 
 
 def TriggerAttributeConfig():
@@ -49,6 +49,11 @@ def TriggerAttributeConfig():
 def ChannelAttributeConfig():
   """Builds an AttributeConfig for the channel resource."""
   return concepts.ResourceParameterAttributeConfig(name='channel')
+
+
+def ChannelConnectionAttributeConfig():
+  """Builds an AttributeConfig for the channel connection resource."""
+  return concepts.ResourceParameterAttributeConfig(name='channel-connection')
 
 
 def ProviderAttributeConfig():
@@ -77,6 +82,16 @@ def ChannelResourceSpec():
       'eventarc.projects.locations.channels',
       resource_name='channel',
       channelsId=ChannelAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
+def ChannelConnectionResourceSpec():
+  """Builds a ResourceSpec for channel connection resource."""
+  return concepts.ResourceSpec(
+      'eventarc.projects.locations.channelConnections',
+      resource_name='channel connection',
+      channelConnectionsId=ChannelConnectionAttributeConfig(),
       locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
@@ -162,6 +177,15 @@ def AddChannelResourceArg(parser, group_help_text, required=False):
       required=required).AddToParser(parser)
 
 
+def AddChannelConnectionResourceArg(parser, group_help_text):
+  """Adds a resource argument for an Eventarc channel connection."""
+  concept_parsers.ConceptParser.ForResource(
+      'channelConnection',
+      ChannelConnectionResourceSpec(),
+      group_help_text,
+      required=True).AddToParser(parser)
+
+
 def AddProviderResourceArg(parser, group_help_text, required=False):
   """Adds a resource argument for an Eventarc provider."""
   concept_parsers.ConceptParser.ForResource(
@@ -183,19 +207,19 @@ def AddEventFiltersArg(parser, release_track, required=False):
     flag = '--event-filters'
     help_text = (
         "The trigger's list of filters that apply to CloudEvents attributes. "
-        "This flag can be repeated to add more filters to the list. Only "
-        "events that match all these filters will be sent to the destination. "
+        'This flag can be repeated to add more filters to the list. Only '
+        'events that match all these filters will be sent to the destination. '
         "The filters must include the ``type'' attribute, as well as any other "
-        "attributes that are expected for the chosen type.")
+        'attributes that are expected for the chosen type.')
   else:
     flag = '--matching-criteria'
     help_text = (
-        "The criteria by which events are filtered for the trigger, specified "
-        "as a comma-separated list of CloudEvents attribute names and values. "
-        "This flag can also be repeated to add more criteria to the list. Only "
-        "events that match with this criteria will be sent to the destination. "
+        'The criteria by which events are filtered for the trigger, specified '
+        'as a comma-separated list of CloudEvents attribute names and values. '
+        'This flag can also be repeated to add more criteria to the list. Only '
+        'events that match with this criteria will be sent to the destination. '
         "The criteria must include the ``type'' attribute, as well as any "
-        "other attributes that are expected for the chosen type.")
+        'other attributes that are expected for the chosen type.')
   parser.add_argument(
       flag,
       action=arg_parsers.UpdateAction,
@@ -205,12 +229,39 @@ def AddEventFiltersArg(parser, release_track, required=False):
       metavar='ATTRIBUTE=VALUE')
 
 
+def AddEventFiltersPathPatternArg(parser,
+                                  release_track,
+                                  required=False,
+                                  hidden=True):
+  """Adds an argument for the trigger's event filters in path pattern format."""
+  if release_track == base.ReleaseTrack.GA:
+    parser.add_argument(
+        '--event-filters-path-pattern',
+        action=arg_parsers.UpdateAction,
+        type=arg_parsers.ArgDict(),
+        hidden=hidden,
+        required=required,
+        help="The trigger's list of filters in path pattern format that apply "
+        'to CloudEvent attributes. This flag can be repeated to add more '
+        'filters to the list. Only events that match all these filters will be '
+        'sent to the destination. Currently, path pattern format is only '
+        'available for the resourceName attribute for Cloud Audit Log events.',
+        metavar='ATTRIBUTE=PATH_PATTERN')
+
+
 def GetEventFiltersArg(args, release_track):
   """Gets the event filters from the arguments."""
   if release_track == base.ReleaseTrack.GA:
     return args.event_filters
   else:
     return args.matching_criteria
+
+
+def GetEventFiltersPathPatternArg(args, release_track):
+  """Gets the event filters with path pattern from the arguments."""
+  if release_track == base.ReleaseTrack.GA:
+    return args.event_filters_path_pattern
+  return None
 
 
 def GetChannelArg(args, release_track):
@@ -261,8 +312,7 @@ def _AddCreateWorkflowDestinationArgs(parser, required=False, hidden=False):
   workflow_group = parser.add_group(
       required=required,
       hidden=hidden,
-      help='Flags for specifying a Workflow destination.'
-      )
+      help='Flags for specifying a Workflow destination.')
   _AddDestinationWorkflowArg(workflow_group, required=True)
   _AddDestinationWorkflowLocationArg(workflow_group)
 
@@ -377,8 +427,7 @@ def _AddDestinationGKEServiceArg(parser, required=False):
       '--destination-gke-service',
       required=required,
       help='Name of the destination GKE service that receives the events '
-      'for the trigger.'
-  )
+      'for the trigger.')
 
 
 def _AddDestinationGKEPathArg(parser, required=False):
@@ -454,10 +503,23 @@ def AddServiceNameArg(parser, required=False):
       help='The value of the serviceName CloudEvents attribute.')
 
 
-# TODO(b/188207212): Switch to resource argument when provider discovery is done
-def AddProviderArg(parser, required=False):
-  """Adds and argument to for the 3P provider."""
-  parser.add_argument(
-      '--provider',
-      required=required,
-      help='Flag for specifying the provider id associated with the channel.')
+def AddCreateChannelArg(parser):
+  concept_parsers.ConceptParser(
+      [
+          presentation_specs.ResourcePresentationSpec(
+              'channel',
+              ChannelResourceSpec(),
+              'Channel to create',
+              required=True),
+          presentation_specs.ResourcePresentationSpec(
+              '--provider',
+              ProviderResourceSpec(),
+              'Provider to use for the channel.',
+              flag_name_overrides={'location': ''},
+              required=True)
+      ],
+      # This configures the fallthrough from the provider's location to the
+      # primary flag for the channel's location
+      command_level_fallthroughs={
+          '--provider.location': ['channel.location']
+      }).AddToParser(parser)

@@ -1464,7 +1464,8 @@ class RecommenderOrganizationsLocationsInsightTypesGetConfigRequest(_messages.Me
     name: Required. Name of the InsightTypeConfig to get. Acceptable formats:
       * `projects/[PROJECT_NUMBER]/locations/global/recommenders/[INSIGHT_TYPE
       _ID]/config` * `projects/[PROJECT_ID]/locations/global/recommenders/[INS
-      IGHT_TYPE_ID]/config`
+      IGHT_TYPE_ID]/config` * `organizations/[ORGANIZATION_ID]/locations/globa
+      l/recommenders/[INSIGHT_TYPE_ID]/config`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1560,9 +1561,10 @@ class RecommenderOrganizationsLocationsRecommendersGetConfigRequest(_messages.Me
 
   Fields:
     name: Required. Name of the Recommendation Config to get. Acceptable
-      formats: * `projects/[PROJECT_NUMBER]/locations/global/recommenders/[REC
-      OMMENDER_ID]/config` * `projects/[PROJECT_ID]/locations/global/recommend
-      ers/[RECOMMENDER_ID]/config`
+      formats: * `projects/[PROJECT_NUMBER]/locations/[LOCATION]/recommenders/
+      [RECOMMENDER_ID]/config` * `projects/[PROJECT_ID]/locations/[LOCATION]/r
+      ecommenders/[RECOMMENDER_ID]/config` * `organizations/[ORGANIZATION_ID]/
+      locations/[LOCATION]/recommenders/[RECOMMENDER_ID]/config`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1670,7 +1672,8 @@ class RecommenderProjectsLocationsInsightTypesGetConfigRequest(_messages.Message
     name: Required. Name of the InsightTypeConfig to get. Acceptable formats:
       * `projects/[PROJECT_NUMBER]/locations/global/recommenders/[INSIGHT_TYPE
       _ID]/config` * `projects/[PROJECT_ID]/locations/global/recommenders/[INS
-      IGHT_TYPE_ID]/config`
+      IGHT_TYPE_ID]/config` * `organizations/[ORGANIZATION_ID]/locations/globa
+      l/recommenders/[INSIGHT_TYPE_ID]/config`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1763,9 +1766,10 @@ class RecommenderProjectsLocationsRecommendersGetConfigRequest(_messages.Message
 
   Fields:
     name: Required. Name of the Recommendation Config to get. Acceptable
-      formats: * `projects/[PROJECT_NUMBER]/locations/global/recommenders/[REC
-      OMMENDER_ID]/config` * `projects/[PROJECT_ID]/locations/global/recommend
-      ers/[RECOMMENDER_ID]/config`
+      formats: * `projects/[PROJECT_NUMBER]/locations/[LOCATION]/recommenders/
+      [RECOMMENDER_ID]/config` * `projects/[PROJECT_ID]/locations/[LOCATION]/r
+      ecommenders/[RECOMMENDER_ID]/config` * `organizations/[ORGANIZATION_ID]/
+      locations/[LOCATION]/recommenders/[RECOMMENDER_ID]/config`
   """
 
   name = _messages.StringField(1, required=True)

@@ -156,10 +156,17 @@ def get_object_resource_from_metadata(metadata):
       bucket_name=metadata.bucket,
       object_name=metadata.name,
       generation=generation)
+
+  if metadata.customerEncryption:
+    key_hash = metadata.customerEncryption.keySha256
+  else:
+    key_hash = None
+
   return gcs_resource_reference.GcsObjectResource(
       url,
       content_type=metadata.contentType,
       creation_time=metadata.timeCreated,
+      decryption_key_hash=key_hash,
       etag=metadata.etag,
       crc32c_hash=metadata.crc32c,
       md5_hash=metadata.md5Hash,
@@ -170,33 +177,34 @@ def get_object_resource_from_metadata(metadata):
 
 def update_object_metadata_from_request_config(object_metadata, request_config):
   """Sets Apitools Object fields based on RequestValue metadata."""
-  if request_config.cache_control is not None:
-    object_metadata.cacheControl = request_config.cache_control
-  if request_config.content_disposition is not None:
-    object_metadata.contentDisposition = request_config.content_disposition
-  if request_config.content_encoding is not None:
-    object_metadata.contentEncoding = request_config.content_encoding
-  if request_config.content_language is not None:
-    object_metadata.contentLanguage = request_config.content_language
-  if request_config.custom_time is not None:
-    object_metadata.customTime = request_config.custom_time
-  if request_config.content_type is not None:
-    object_metadata.contentType = request_config.content_type
-  if request_config.md5_hash is not None:
-    object_metadata.md5Hash = request_config.md5_hash
+  resource_args = request_config.resource_args
+  if not resource_args:
+    return
+  if resource_args.cache_control is not None:
+    object_metadata.cacheControl = resource_args.cache_control
+  if resource_args.content_disposition is not None:
+    object_metadata.contentDisposition = resource_args.content_disposition
+  if resource_args.content_encoding is not None:
+    object_metadata.contentEncoding = resource_args.content_encoding
+  if resource_args.content_language is not None:
+    object_metadata.contentLanguage = resource_args.content_language
+  if resource_args.custom_time is not None:
+    object_metadata.customTime = resource_args.custom_time
+  if resource_args.content_type is not None:
+    object_metadata.contentType = resource_args.content_type
+  if resource_args.md5_hash is not None:
+    object_metadata.md5Hash = resource_args.md5_hash
 
-  if (
-      request_config.encryption_key
-      and request_config.encryption_key.type == encryption_util.KeyType.CMEK
-  ):
-    object_metadata.kmsKeyName = request_config.encryption_key.key
+  if (resource_args.encryption_key and
+      resource_args.encryption_key.type == encryption_util.KeyType.CMEK):
+    object_metadata.kmsKeyName = resource_args.encryption_key.key
 
-  if request_config.custom_metadata:
+  if resource_args.custom_metadata:
     messages = apis.GetMessagesModule('storage', 'v1')
 
     if not object_metadata.metadata:
       object_metadata.metadata = messages.Object.MetadataValue()
-    for key, value in request_config.custom_metadata.items():
+    for key, value in resource_args.custom_metadata.items():
       object_metadata.metadata.additionalProperties.append(
           messages.Object.MetadataValue.AdditionalProperty(
               key=key, value=value))

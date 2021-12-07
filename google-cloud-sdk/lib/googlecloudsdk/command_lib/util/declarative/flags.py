@@ -146,22 +146,33 @@ def AddTerraformGenerateImportArgs(parser):
       'Path to a Terrafrom formatted (.tf) resource file or directory of files '
       'exported via. `gcloud alpha resource-config bulk-export` or '
       'resource surface specific `config export` command.')
-  input_path = calliope_base.Argument('INPUT_PATH',
-                                      type=files.ExpandHomeAndVars,
-                                      help=input_path_help)
+  input_path = calliope_base.Argument(
+      'INPUT_PATH', type=files.ExpandHomeAndVars, help=input_path_help)
 
   output_args = calliope_base.ArgumentGroup(
       category='OUTPUT DESTINATION',
       mutex=True,
       help='Specify the destination of the generated script.')
 
-  output_args.AddArgument(calliope_base.Argument(
-      '--output-file',
+  file_spec_group = calliope_base.ArgumentGroup(
+      help='Specify the exact filenames for the output import script and module files.'
+  )
+
+  file_spec_group.AddArgument(calliope_base.Argument(
+      '--output-script-file',
       required=False,
       type=files.ExpandHomeAndVars,
       help=('Specify the full path path for generated import script. If '
             'not set, a default filename of the form '
             '`terraform_import_YYYYMMDD-HH-MM-SS.sh|cmd` will be generated.')))
+  file_spec_group.AddArgument(calliope_base.Argument(
+      '--output-module-file',
+      required=False,
+      type=files.ExpandHomeAndVars,
+      help=('Specify the full path path for generated terraform module file. If '
+            'not set, a default filename of '
+            '`gcloud-export-modules.tf` will be generated.')))
+  output_args.AddArgument(file_spec_group)
   output_args.AddArgument(calliope_base.Argument(
       '--output-dir',
       required=False,
@@ -173,3 +184,48 @@ def AddTerraformGenerateImportArgs(parser):
   input_path.AddToParser(parser)
   output_args.AddToParser(parser)
 
+
+def AddInitProviderArgs(parser):
+  """Add args for init provider."""
+  zone = calliope_base.Argument(
+      '--zone',
+      required=False,
+      help="""Default Google Cloud Zone for Zonal Resources.
+        If not specified the current `compute/zone` property will be used.""")
+
+  region = calliope_base.Argument(
+      '--region',
+      required=False,
+      help="""Default Google Cloud Region for Regional Resources.
+      If not specified the current `compute/region` property will be used.""")
+
+  billing_group = parser.add_group(
+      help="""The below flags specify how the optional `user_project_override` and `billing_project` settings are configured for the Google Terraform Provider.
+      See the [Google Terraform Provider Config Reference](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#user_project_override) for more details.""",
+      required=False,
+      mutex=True)
+
+  billing_group.add_argument(
+      '--use-gcloud-billing-project',
+      action='store_true',
+      help="""If specified, will set `user_project_override` value in the Terrafom provider config to `true` and
+      set `billing_project` to the current gcloud `billing/quota_project` property.""",
+      default=False,
+      required=False)
+
+  billing_account_group = billing_group.add_group(
+      help='Account Override Flags.')
+  billing_account_group.add_argument(
+      '--tf-user-project-override',
+      action='store_true',
+      help="""If specified, sets the `user_project_override` value in the Terraform provider config to `true`.""",
+      default=False,
+      required=True)
+
+  billing_account_group.add_argument(
+      '--tf-billing-project',
+      help="""If specified, sets the `billing_project` value in the Terraform provider config.""",
+      required=False)
+
+  zone.AddToParser(parser)
+  region.AddToParser(parser)

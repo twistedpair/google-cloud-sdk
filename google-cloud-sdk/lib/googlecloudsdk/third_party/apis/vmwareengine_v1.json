@@ -359,6 +359,11 @@
           "description": "Required. Number of nodes in this cluster.",
           "type": "integer",
           "format": "int32"
+        },
+        "nodeCustomCoreCount": {
+          "description": "Optional. Customized number of cores available to each node of the cluster. This number must always be one of `NodeType.available_custom_core_counts`. If zero is provided max value from `NodeType.available_custom_core_counts` will be used.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -588,6 +593,11 @@
           "type": "integer",
           "format": "int32"
         },
+        "nodeCustomCoreCount": {
+          "description": "Optional. Customized number of cores available to each node of the cluster. This number must always be one of `NodeType.available_custom_core_counts`. If zero is provided max value from `NodeType.available_custom_core_counts` will be used.",
+          "type": "integer",
+          "format": "int32"
+        },
         "uid": {
           "description": "Output only. System-generated unique identifier for the resource.",
           "readOnly": true,
@@ -657,6 +667,15 @@
           "readOnly": true,
           "type": "integer",
           "format": "int32"
+        },
+        "availableCustomCoreCounts": {
+          "description": "Output only. List of possible values of custom core count.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
         }
       }
     },
@@ -1403,7 +1422,7 @@
                       "type": "string"
                     },
                     "validateOnly": {
-                      "description": "Optional. When true, the request is validated only, but not executed.",
+                      "description": "Optional. True if you want the request to be validated and not executed; false otherwise.",
                       "location": "query",
                       "type": "boolean"
                     }
@@ -1823,7 +1842,7 @@
                           "type": "string"
                         },
                         "validateOnly": {
-                          "description": "Optional. When true, the request is validated only, but not executed.",
+                          "description": "Optional. True if you want the request to be validated and not executed; false otherwise.",
                           "location": "query",
                           "type": "boolean"
                         }
@@ -1867,7 +1886,7 @@
                           "type": "string"
                         },
                         "validateOnly": {
-                          "description": "Optional. When true, the request is validated only, but not executed.",
+                          "description": "Optional. True if you want the request to be validated and not executed; false otherwise.",
                           "location": "query",
                           "type": "boolean"
                         }

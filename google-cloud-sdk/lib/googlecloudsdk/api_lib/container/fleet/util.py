@@ -59,7 +59,6 @@ def FleetResourceName(project,
 
 
 def FleetParentName(project,
-                    fleet='default',
                     location='global',
                     release_track=base.ReleaseTrack.ALPHA):
   # See command_lib/container/fleet/resources.yaml
@@ -68,8 +67,11 @@ def FleetParentName(project,
       params={
           'projectsId': project,
           'locationsId': location,
-          'fleetsId': fleet,
       },
-      collection='gkehub.projects.locations.fleets',
+      collection='gkehub.projects.locations',
       api_version=VERSION_MAP[release_track]
   ).RelativeName()
+
+
+def FleetOrgParentName(organization, location='global'):
+  return 'organizations/{0}/locations/{1}'.format(organization, location)

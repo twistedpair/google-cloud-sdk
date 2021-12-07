@@ -18,16 +18,18 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from apitools.base.py import encoding
 from enum import Enum
-from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.calliope import base
-from googlecloudsdk.command_lib.util.args import common_args
+
+from apitools.base.py import encoding
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.util.args import common_args
+from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
-from googlecloudsdk.core import exceptions as core_exceptions
 import six
 
 
@@ -140,6 +142,21 @@ def GetApiVersion(args):
     return 'v1beta'
   elif release_track == base.ReleaseTrack.GA:
     return 'v1'
+  else:
+    raise core_exceptions.UnsupportedReleaseTrackError(release_track)
+
+
+def GetOperationDescribeCommandFormat(args):
+  """Returns api version for the corresponding release track."""
+  release_track = args.calliope_command.ReleaseTrack()
+
+  if release_track == base.ReleaseTrack.ALPHA:
+    return ('To check operation status, run: gcloud alpha compute os-config '
+            'os-policy-assignments operations describe {}')
+  elif release_track == base.ReleaseTrack.GA:
+    return (
+        'To check operation status, run: gcloud compute os-config '
+        'os-policy-assignments operations describe {}')
   else:
     raise core_exceptions.UnsupportedReleaseTrackError(release_track)
 
@@ -272,3 +289,19 @@ def ParseOSConfigAssignmentFile(ref, args, req):
   if 'update' in args.command_path:
     req.updateMask = ','.join(update_fields)
   return req
+
+
+def LogOutOperationCommandForAsyncResponse(response, args):
+  """Reminds user of the command to check operation status.
+
+  Args:
+    response: Response from CreateOsPolicyAssignment
+    args: gcloud args
+
+  Returns:
+    The original response
+  """
+  if args.async_:
+    log.out.Print(
+        GetOperationDescribeCommandFormat(args).format(response.name))
+  return response

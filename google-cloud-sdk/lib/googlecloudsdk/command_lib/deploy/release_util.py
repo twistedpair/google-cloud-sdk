@@ -30,9 +30,7 @@ from googlecloudsdk.calliope import exceptions as c_exceptions
 from googlecloudsdk.command_lib.deploy import exceptions
 from googlecloudsdk.command_lib.deploy import staging_bucket_util
 from googlecloudsdk.command_lib.deploy import target_util
-from googlecloudsdk.command_lib.projects import util
 from googlecloudsdk.core import log
-from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_transform
@@ -266,8 +264,7 @@ def DiffSnappedPipeline(release_ref, release_obj, to_target=None):
       resource_created.append(target_ref.RelativeName())
 
   for obj in release_obj.targetSnapshots:
-    # PRD requires to output project ID.
-    target_name = ResourceNameProjectNumberToId(obj.name)
+    target_name = obj.name
     # Check if the snapped targets still exist.
     try:
       target_obj = target_util.GetTarget(
@@ -278,7 +275,7 @@ def DiffSnappedPipeline(release_ref, release_obj, to_target=None):
     except apitools_exceptions.HttpError as error:
       log.debug('Failed to get target {}: {}'.format(target_name, error))
       log.status.Print('Unable to get target {}\n'.format(target_name))
-      resource_not_found.append(ResourceNameProjectNumberToId(target_name))
+      resource_not_found.append(target_name)
 
   name = release_obj.deliveryPipelineSnapshot.name
   # Checks if the pipeline exists.
@@ -308,52 +305,28 @@ def PrintDiff(release_ref, release_obj, target_id=None, prompt=''):
       release_ref, release_obj, target_id)
 
   if resource_created:
-    prompt += RESOURCE_CREATED.format('\n'.join(
-        BulletedList(resource_created, ResourceNameProjectNumberToId)))
+    prompt += RESOURCE_CREATED.format('\n'.join(BulletedList(resource_created)))
   if resource_not_found:
     prompt += RESOURCE_NOT_FOUND.format('\n'.join(
-        BulletedList(resource_not_found, ResourceNameProjectNumberToId)))
+        BulletedList(resource_not_found)))
   if resource_changed:
-    prompt += RESOURCE_CHANGED.format('\n'.join(
-        BulletedList(resource_changed, ResourceNameProjectNumberToId)))
+    prompt += RESOURCE_CHANGED.format('\n'.join(BulletedList(resource_changed)))
 
   log.status.Print(prompt)
 
 
-def ResourceNameProjectNumberToId(name):
-  """Replaces the project number in resource name with project ID.
-
-  e.g. projects/my-project/locations/ will become projects/12321/locations/
-
-  Args:
-    name: str, resource name.
-
-  Returns:
-    transformed resource name.
-  """
-  template = 'projects/{}/locations/'
-  project_id = properties.VALUES.core.project.GetOrFail()
-  project_num = util.GetProjectNumber(project_id)
-  project_id_str = template.format(project_id)
-  project_num_str = template.format(project_num)
-  return name.replace(project_num_str, project_id_str)
-
-
-def BulletedList(str_list, trans_func=None):
+def BulletedList(str_list):
   """Converts a list of string to a bulleted list.
 
   The returned list looks like ['- string1','- string2'].
 
   Args:
     str_list: [str], list to be converted.
-    trans_func: string transformation function.
 
   Returns:
     list of the transformed strings.
   """
   for i in range(len(str_list)):
-    if trans_func:
-      str_list[i] = trans_func(str_list[i])
     str_list[i] = '- ' + str_list[i]
 
   return str_list

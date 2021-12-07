@@ -1224,7 +1224,7 @@ class SpannerV1(base_api.BaseApiClient):
     )
 
     def DropDatabase(self, request, global_params=None):
-      r"""Drops (aka deletes) a Cloud Spanner database. Completed backups for the database will be retained according to their `expire_time`.
+      r"""Drops (aka deletes) a Cloud Spanner database. Completed backups for the database will be retained according to their `expire_time`. Note: Cloud Spanner might continue to accept requests for a few seconds after the database has been deleted.
 
       Args:
         request: (SpannerProjectsInstancesDatabasesDropDatabaseRequest) input message

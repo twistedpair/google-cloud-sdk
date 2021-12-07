@@ -158,6 +158,15 @@ def AddArchitectureFlag(parser, messages):
           'different machine architectures.'))
 
 
+def AddLocationHintArg(parser):
+  parser.add_argument(
+      '--location-hint',
+      hidden=True,
+      help="""\
+      Used by internal tools to control sub-zone location of the disk.
+      """)
+
+
 SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     resource_name='snapshot',
     completer=SnapshotsCompleter,

@@ -51,6 +51,7 @@ class StreamsClient(object):
       return self._messages.BackfillAllStrategy(
           mysqlExcludedObjects=util.ParseMysqlRdbmsFile(
               self._messages, args.mysql_excluded_objects))
+    return self._messages.BackfillAllStrategy()
 
   def _ParseOracleSourceConfig(self, oracle_source_config_file):
     """Parses a oracle_sorce_config into the OracleSourceConfig message."""
@@ -73,7 +74,7 @@ class StreamsClient(object):
         self._messages, rejectlist_raw)
 
     oracle_sourec_config_msg = self._messages.OracleSourceConfig(
-        allowlist=allowlist_data, rejectlist=rejectlist_data)
+        includeObjects=allowlist_data, excludeObjects=rejectlist_data)
     return oracle_sourec_config_msg
 
   def _ParseMysqlSourceConfig(self, mysql_source_config_file):
@@ -98,7 +99,7 @@ class StreamsClient(object):
         self._messages, rejectlist_raw)
 
     mysql_sourec_config_msg = self._messages.MysqlSourceConfig(
-        allowlist=allowlist_data, rejectlist=rejectlist_data)
+        includeObjects=allowlist_data, excludeObjects=rejectlist_data)
     return mysql_sourec_config_msg
 
   def _ParseGcsDestinationConfig(self, gcs_destination_config_file):
@@ -143,7 +144,7 @@ class StreamsClient(object):
 
     stream_source_config = self._messages.SourceConfig()
     source_connection_profile_ref = args.CONCEPTS.source_name.Parse()
-    stream_source_config.sourceConnectionProfileName = (
+    stream_source_config.sourceConnectionProfile = (
         source_connection_profile_ref.RelativeName())
     if args.oracle_source_config:
       stream_source_config.oracleSourceConfig = self._ParseOracleSourceConfig(
@@ -155,7 +156,7 @@ class StreamsClient(object):
 
     stream_destination_config = self._messages.DestinationConfig()
     destination_connection_profile_ref = args.CONCEPTS.destination_name.Parse()
-    stream_destination_config.destinationConnectionProfileName = (
+    stream_destination_config.destinationConnectionProfile = (
         destination_connection_profile_ref.RelativeName())
     if args.gcs_destination_config:
       stream_destination_config.gcsDestinationConfig = (
@@ -209,6 +210,8 @@ class StreamsClient(object):
     update_fields = []
     user_update_mask = args.update_mask or ''
     user_update_mask_list = user_update_mask.split(',')
+    user_update_mask_list = util.UpdateV1alpha1ToV1MaskFields(
+        user_update_mask_list)
     update_fields.extend(user_update_mask_list)
 
     if args.IsSpecified('display_name'):
@@ -216,11 +219,11 @@ class StreamsClient(object):
 
     if args.IsSpecified('source_name'):
       source_connection_profile_ref = args.CONCEPTS.source_name.Parse()
-      stream.sourceConfig.sourceConnectionProfileName = (
+      stream.sourceConfig.sourceConnectionProfile = (
           source_connection_profile_ref.RelativeName())
       if 'source_name' in update_fields:
         update_fields.remove('source_name')
-        update_fields.append('source_config.source_connection_profile_name')
+        update_fields.append('source_config.source_connection_profile')
 
     if args.IsSpecified('oracle_source_config'):
       stream.sourceConfig.oracleSourceConfig = self._ParseOracleSourceConfig(
@@ -238,12 +241,12 @@ class StreamsClient(object):
     if args.IsSpecified('destination_name'):
       destination_connection_profile_ref = (
           args.CONCEPTS.destination_name.Parse())
-      stream.destinationConfig.destinationConnectionProfileName = (
+      stream.destinationConfig.destinationConnectionProfile = (
           destination_connection_profile_ref.RelativeName())
       if 'destination_name' in update_fields:
         update_fields.remove('destination_name')
         update_fields.append(
-            'destination_config.destination_connection_profile_name')
+            'destination_config.destination_connection_profile')
 
     if args.IsSpecified('gcs_destination_config'):
       stream.destinationConfig.gcsDestinationConfig = (
@@ -327,4 +330,3 @@ class StreamsClient(object):
       update_req.updateMask = ','.join(update_fields)
 
     return self._service.Patch(update_req)
-

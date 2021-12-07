@@ -15,3 +15,12 @@ organization:
     attribute_name: organization
     help: |
       The ID of the organization.
+
+lien:
+  name: lien
+  collection: cloudresourcemanager.liens
+  attributes:
+  - parameter_name: liensId
+    attribute_name: lien
+    help: |
+      The ID of the lien.

@@ -902,6 +902,33 @@ class CloudidentityV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetSecuritySettings(self, request, global_params=None):
+      r"""Get Security Settings.
+
+      Args:
+        request: (CloudidentityGroupsGetSecuritySettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecuritySettings) The response message.
+      """
+      config = self.GetMethodConfig('GetSecuritySettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetSecuritySettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/groups/{groupsId}/securitySettings',
+        http_method='GET',
+        method_id='cloudidentity.groups.getSecuritySettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['readMask'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='CloudidentityGroupsGetSecuritySettingsRequest',
+        response_type_name='SecuritySettings',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists the `Group` resources under a customer or namespace.
 
@@ -1004,5 +1031,32 @@ class CloudidentityV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='CloudidentityGroupsSearchRequest',
         response_type_name='SearchGroupsResponse',
+        supports_download=False,
+    )
+
+    def UpdateSecuritySettings(self, request, global_params=None):
+      r"""Update Security Settings.
+
+      Args:
+        request: (CloudidentityGroupsUpdateSecuritySettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateSecuritySettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateSecuritySettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/groups/{groupsId}/securitySettings',
+        http_method='PATCH',
+        method_id='cloudidentity.groups.updateSecuritySettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='securitySettings',
+        request_type_name='CloudidentityGroupsUpdateSecuritySettingsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )

@@ -890,6 +890,16 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class QosPolicy(_messages.Message):
+  r"""QOS policy parameters.
+
+  Fields:
+    bandwidthGbps: The bandwidth permitted by the QOS policy, in gbps.
+  """
+
+  bandwidthGbps = _messages.FloatField(1)
+
+
 class ResetInstanceRequest(_messages.Message):
   r"""Message requesting to reset a server."""
 
@@ -1072,11 +1082,10 @@ class VRF(_messages.Message):
     StateValueValuesEnum: The possible state of VRF.
 
   Fields:
-    autonomousSystemNumber: The autonomous system number of the VRF.
-    juniperAlias: The Juniper alias of the VRF.
     name: The name of the VRF.
-    routeTarget: The route target of the VRF.
+    qosPolicy: The QOS policy applied to this VRF.
     state: The possible state of VRF.
+    vlanAttachments: The list of VLAN attachments for the VRF.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1091,11 +1100,24 @@ class VRF(_messages.Message):
     PROVISIONING = 1
     PROVISIONED = 2
 
-  autonomousSystemNumber = _messages.StringField(1)
-  juniperAlias = _messages.StringField(2)
-  name = _messages.StringField(3)
-  routeTarget = _messages.IntegerField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
+  name = _messages.StringField(1)
+  qosPolicy = _messages.MessageField('QosPolicy', 2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  vlanAttachments = _messages.MessageField('VlanAttachment', 4, repeated=True)
+
+
+class VlanAttachment(_messages.Message):
+  r"""VLAN attachment details.
+
+  Fields:
+    peerIp: The peer IP of the attachment.
+    peerVlanId: The peer vlan ID of the attachment.
+    routerIp: The router IP of the attachment.
+  """
+
+  peerIp = _messages.StringField(1)
+  peerVlanId = _messages.IntegerField(2)
+  routerIp = _messages.StringField(3)
 
 
 class Volume(_messages.Message):

@@ -169,7 +169,8 @@ class _BaseTriggersClient(EventarcClientBase):
 class _TriggersClient(_BaseTriggersClient):
   """Client for Triggers service in the Eventarc GA API."""
 
-  def BuildTriggerMessage(self, trigger_ref, event_filters, service_account,
+  def BuildTriggerMessage(self, trigger_ref, event_filters,
+                          event_filters_path_pattern, service_account,
                           destination_message, transport_topic_ref,
                           channel_ref):
     """Builds a Trigger message with the given data.
@@ -177,6 +178,8 @@ class _TriggersClient(_BaseTriggersClient):
     Args:
       trigger_ref: Resource, the Trigger to create.
       event_filters: dict or None, the Trigger's event filters.
+      event_filters_path_pattern: dict or None, the Trigger's event filters in
+        path pattern format.
       service_account: str or None, the Trigger's service account.
       destination_message: Destination message or None, the Trigger's
         destination.
@@ -190,6 +193,12 @@ class _TriggersClient(_BaseTriggersClient):
         self._messages.EventFilter(attribute=key, value=value)
         for key, value in event_filters.items()
     ]
+    if event_filters_path_pattern is not None:
+      for key, value in event_filters_path_pattern.items():
+        filter_messages.append(
+            self._messages.EventFilter(
+                attribute=key, value=value, operator='match-path-pattern'))
+
     transport_topic_name = transport_topic_ref.RelativeName(
     ) if transport_topic_ref else None
 
@@ -271,15 +280,18 @@ class _TriggersClient(_BaseTriggersClient):
         project_id, destination_workflow_location, destination_workflow)
     return self._messages.Destination(workflow=workflow_message)
 
-  def BuildUpdateMask(self, event_filters, service_account,
-                      destination_run_service, destination_run_path,
-                      destination_run_region, destination_gke_namespace,
-                      destination_gke_service, destination_gke_path,
-                      destination_workflow, destination_workflow_location):
+  def BuildUpdateMask(self, event_filters, event_filters_path_pattern,
+                      service_account, destination_run_service,
+                      destination_run_path, destination_run_region,
+                      destination_gke_namespace, destination_gke_service,
+                      destination_gke_path, destination_workflow,
+                      destination_workflow_location):
     """Builds an update mask for updating a Cloud Run trigger.
 
     Args:
       event_filters: bool, whether to update the event filters.
+      event_filters_path_pattern: bool, whether to update the event filters with
+        path pattern syntax.
       service_account: bool, whether to update the service account.
       destination_run_service: bool, whether to update the destination Cloud Run
         service.
@@ -317,7 +329,7 @@ class _TriggersClient(_BaseTriggersClient):
       update_mask.append('destination.gke.path')
     if destination_workflow or destination_workflow_location:
       update_mask.append('destination.workflow')
-    if event_filters:
+    if event_filters or event_filters_path_pattern:
       update_mask.append('eventFilters')
     if service_account:
       update_mask.append('serviceAccount')
@@ -333,7 +345,8 @@ class _TriggersClient(_BaseTriggersClient):
 class _TriggersClientBeta(_BaseTriggersClient):
   """Client for Triggers service in the Eventarc beta API."""
 
-  def BuildTriggerMessage(self, trigger_ref, event_filters, service_account,
+  def BuildTriggerMessage(self, trigger_ref, event_filters,
+                          event_filters_path_pattern, service_account,
                           destination_message, transport_topic_ref,
                           channel_ref):
     """Builds a Trigger message with the given data.
@@ -341,6 +354,8 @@ class _TriggersClientBeta(_BaseTriggersClient):
     Args:
       trigger_ref: Resource, the Trigger to create.
       event_filters: dict or None, the Trigger's event filters.
+      event_filters_path_pattern: dict or None, the Trigger's event filters in
+        path pattern format. Ignored in Beta.
       service_account: str or None, the Trigger's service account.
       destination_message: Destination message or None, the Trigger's
         destination.

@@ -1097,6 +1097,20 @@
       "properties": {
       }
     },
+    "PausePatchDeploymentRequest": {
+      "id": "PausePatchDeploymentRequest",
+      "description": "A request message for pausing a patch deployment.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ResumePatchDeploymentRequest": {
+      "id": "ResumePatchDeploymentRequest",
+      "description": "A request message for resuming a patch deployment.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "Operation": {
       "id": "Operation",
       "description": "This resource represents a long-running operation that is the result of a network API call.",
@@ -2487,6 +2501,13 @@
           "description": "The timestamp for when the vulnerability was last modified.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "items": {
+          "description": "List of items affected by the vulnerability.",
+          "type": "array",
+          "items": {
+            "$ref": "VulnerabilityReportVulnerabilityItem"
+          }
         }
       }
     },
@@ -2682,6 +2703,29 @@
         },
         "source": {
           "description": "The source of the reference e.g. NVD.",
+          "type": "string"
+        }
+      }
+    },
+    "VulnerabilityReportVulnerabilityItem": {
+      "id": "VulnerabilityReportVulnerabilityItem",
+      "description": "OS inventory item that is affected by a vulnerability or fixed as a result of a vulnerability.",
+      "type": "object",
+      "properties": {
+        "installedInventoryItemId": {
+          "description": "Corresponds to the `INSTALLED_PACKAGE` inventory item on the VM. This field displays the inventory items affected by this vulnerability. If the vulnerability report was not updated after the VM inventory update, these values might not display in VM inventory. For some operating systems, this field might be empty.",
+          "type": "string"
+        },
+        "availableInventoryItemId": {
+          "description": "Corresponds to the `AVAILABLE_PACKAGE` inventory item on the VM. If the vulnerability report was not updated after the VM inventory update, these values might not display in VM inventory. If there is no available fix, the field is empty. The `inventory_item` value specifies the latest `SoftwarePackage` available to the VM that fixes the vulnerability.",
+          "type": "string"
+        },
+        "fixedCpeUri": {
+          "description": "The recommended [CPE URI](https:\/\/cpe.mitre.org\/specification\/) update that contains a fix for this vulnerability.",
+          "type": "string"
+        },
+        "upstreamFix": {
+          "description": "The upstream OS patch, packages or KB that fixes the vulnerability.",
           "type": "string"
         }
       }
@@ -3146,6 +3190,62 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Update an OS Config patch deployment."
+            },
+            "pause": {
+              "id": "osconfig.projects.patchDeployments.pause",
+              "path": "v1/{+name}:pause",
+              "flatPath": "v1/projects/{projectsId}/patchDeployments/{patchDeploymentsId}:pause",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. The resource name of the patch deployment in the form `projects\/*\/patchDeployments\/*`.",
+                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "PausePatchDeploymentRequest"
+              },
+              "response": {
+                "$ref": "PatchDeployment"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Change state of patch deployment to \"PAUSED\". Patch deployment in paused state doesn't generate patch jobs."
+            },
+            "resume": {
+              "id": "osconfig.projects.patchDeployments.resume",
+              "path": "v1/{+name}:resume",
+              "flatPath": "v1/projects/{projectsId}/patchDeployments/{patchDeploymentsId}:resume",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. The resource name of the patch deployment in the form `projects\/*\/patchDeployments\/*`.",
+                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "ResumePatchDeploymentRequest"
+              },
+              "response": {
+                "$ref": "PatchDeployment"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Change state of patch deployment back to \"ACTIVE\". Patch deployment in active state continues to generate patch jobs."
             }
           }
         },

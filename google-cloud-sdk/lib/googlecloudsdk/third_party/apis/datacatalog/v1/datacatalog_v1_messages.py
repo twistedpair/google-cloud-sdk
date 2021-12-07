@@ -207,6 +207,38 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesListRequest(_messages.Messag
   readMask = _messages.StringField(4)
 
 
+class DatacatalogProjectsLocationsEntryGroupsEntriesModifyEntryContactsRequest(_messages.Message):
+  r"""A
+  DatacatalogProjectsLocationsEntryGroupsEntriesModifyEntryContactsRequest
+  object.
+
+  Fields:
+    googleCloudDatacatalogV1ModifyEntryContactsRequest: A
+      GoogleCloudDatacatalogV1ModifyEntryContactsRequest resource to be passed
+      as the request body.
+    name: Required. The full resource name of the entry.
+  """
+
+  googleCloudDatacatalogV1ModifyEntryContactsRequest = _messages.MessageField('GoogleCloudDatacatalogV1ModifyEntryContactsRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class DatacatalogProjectsLocationsEntryGroupsEntriesModifyEntryOverviewRequest(_messages.Message):
+  r"""A
+  DatacatalogProjectsLocationsEntryGroupsEntriesModifyEntryOverviewRequest
+  object.
+
+  Fields:
+    googleCloudDatacatalogV1ModifyEntryOverviewRequest: A
+      GoogleCloudDatacatalogV1ModifyEntryOverviewRequest resource to be passed
+      as the request body.
+    name: Required. The full resource name of the entry.
+  """
+
+  googleCloudDatacatalogV1ModifyEntryOverviewRequest = _messages.MessageField('GoogleCloudDatacatalogV1ModifyEntryOverviewRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class DatacatalogProjectsLocationsEntryGroupsEntriesPatchRequest(_messages.Message):
   r"""A DatacatalogProjectsLocationsEntryGroupsEntriesPatchRequest object.
 
@@ -231,6 +263,20 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesPatchRequest(_messages.Messa
   googleCloudDatacatalogV1Entry = _messages.MessageField('GoogleCloudDatacatalogV1Entry', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class DatacatalogProjectsLocationsEntryGroupsEntriesStarRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsEntryGroupsEntriesStarRequest object.
+
+  Fields:
+    googleCloudDatacatalogV1StarEntryRequest: A
+      GoogleCloudDatacatalogV1StarEntryRequest resource to be passed as the
+      request body.
+    name: Required. The name of the entry to mark as starred.
+  """
+
+  googleCloudDatacatalogV1StarEntryRequest = _messages.MessageField('GoogleCloudDatacatalogV1StarEntryRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class DatacatalogProjectsLocationsEntryGroupsEntriesTagsCreateRequest(_messages.Message):
@@ -315,6 +361,20 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesTestIamPermissionsRequest(_m
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class DatacatalogProjectsLocationsEntryGroupsEntriesUnstarRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsEntryGroupsEntriesUnstarRequest object.
+
+  Fields:
+    googleCloudDatacatalogV1UnstarEntryRequest: A
+      GoogleCloudDatacatalogV1UnstarEntryRequest resource to be passed as the
+      request body.
+    name: Required. The name of the entry to mark as **not** starred.
+  """
+
+  googleCloudDatacatalogV1UnstarEntryRequest = _messages.MessageField('GoogleCloudDatacatalogV1UnstarEntryRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class DatacatalogProjectsLocationsEntryGroupsGetIamPolicyRequest(_messages.Message):
@@ -639,10 +699,9 @@ class DatacatalogProjectsLocationsTagTemplatesPatchRequest(_messages.Message):
       overwritten. If this parameter is absent or empty, all modifiable fields
       are overwritten. If such fields are non-required and omitted in the
       request body, their values are emptied. Note: Updating the
-      ``is_publicly_readable`` field may require up to 12 hours to take effect
+      `is_publicly_readable` field may require up to 12 hours to take effect
       in search results. Additionally, it also requires the
-      ``tagTemplates.getIamPolicy`` and ``tagTemplates.setIamPolicy``
-      permissions.
+      `tagTemplates.getIamPolicy` and `tagTemplates.setIamPolicy` permissions.
   """
 
   googleCloudDatacatalogV1TagTemplate = _messages.MessageField('GoogleCloudDatacatalogV1TagTemplate', 1)
@@ -1139,6 +1198,19 @@ class GoogleCloudDatacatalogV1BigQueryTableSpec(_messages.Message):
   viewSpec = _messages.MessageField('GoogleCloudDatacatalogV1ViewSpec', 3)
 
 
+class GoogleCloudDatacatalogV1BusinessContext(_messages.Message):
+  r"""Business Context of the entry.
+
+  Fields:
+    contacts: Contact people for the entry.
+    entryOverview: Entry overview fields for rich text descriptions of
+      entries.
+  """
+
+  contacts = _messages.MessageField('GoogleCloudDatacatalogV1Contacts', 1)
+  entryOverview = _messages.MessageField('GoogleCloudDatacatalogV1EntryOverview', 2)
+
+
 class GoogleCloudDatacatalogV1CloudSqlBigQueryConnectionSpec(_messages.Message):
   r"""Specification for the BigQuery connection to a Cloud SQL instance.
 
@@ -1203,6 +1275,28 @@ class GoogleCloudDatacatalogV1ColumnSchema(_messages.Message):
   mode = _messages.StringField(3)
   subcolumns = _messages.MessageField('GoogleCloudDatacatalogV1ColumnSchema', 4, repeated=True)
   type = _messages.StringField(5)
+
+
+class GoogleCloudDatacatalogV1Contacts(_messages.Message):
+  r"""Contact people for the entry.
+
+  Fields:
+    people: The list of contact people for the entry.
+  """
+
+  people = _messages.MessageField('GoogleCloudDatacatalogV1ContactsPerson', 1, repeated=True)
+
+
+class GoogleCloudDatacatalogV1ContactsPerson(_messages.Message):
+  r"""A contact person for the entry.
+
+  Fields:
+    designation: Designation of the person, for example, Data Steward.
+    email: Email of the person, the format should be either `` or `John Doe`.
+  """
+
+  designation = _messages.StringField(1)
+  email = _messages.StringField(2)
 
 
 class GoogleCloudDatacatalogV1CrossRegionalSource(_messages.Message):
@@ -1323,6 +1417,7 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       tables#partitioning_versus_sharding).
     bigqueryTableSpec: Specification that applies to a BigQuery table. Valid
       only for entries with the `TABLE` type.
+    businessContext: Business Context of the entry.
     clusterSpec: Additional specification of a cluster. Present only on the
       entries that represent clusters.
     dataSource: Output only. Physical location of the entry.
@@ -1373,6 +1468,8 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
     name: Output only. The resource name of an entry in URL format. Note: The
       entry itself and its child resources might not be stored in the location
       specified in its name.
+    personalDetails: Output only. Additional information related to the entry.
+      Private to the current user.
     routineSpec: Specification that applies to a user-defined function or
       procedure. Valid only for entries with the `ROUTINE` type.
     schema: Schema of the entry. An entry might not have any schema attached
@@ -1480,26 +1577,28 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
 
   bigqueryDateShardedSpec = _messages.MessageField('GoogleCloudDatacatalogV1BigQueryDateShardedSpec', 1)
   bigqueryTableSpec = _messages.MessageField('GoogleCloudDatacatalogV1BigQueryTableSpec', 2)
-  clusterSpec = _messages.MessageField('GoogleCloudDatacatalogV1ClusterSpec', 3)
-  dataSource = _messages.MessageField('GoogleCloudDatacatalogV1DataSource', 4)
-  dataSourceConnectionSpec = _messages.MessageField('GoogleCloudDatacatalogV1DataSourceConnectionSpec', 5)
-  dataStreamSpec = _messages.MessageField('GoogleCloudDatacatalogV1DataStreamSpec', 6)
-  databaseTableSpec = _messages.MessageField('GoogleCloudDatacatalogV1DatabaseTableSpec', 7)
-  description = _messages.StringField(8)
-  displayName = _messages.StringField(9)
-  fullyQualifiedName = _messages.StringField(10)
-  gcsFilesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1GcsFilesetSpec', 11)
-  integratedSystem = _messages.EnumField('IntegratedSystemValueValuesEnum', 12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  linkedResource = _messages.StringField(14)
-  name = _messages.StringField(15)
-  routineSpec = _messages.MessageField('GoogleCloudDatacatalogV1RoutineSpec', 16)
-  schema = _messages.MessageField('GoogleCloudDatacatalogV1Schema', 17)
-  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 18)
-  type = _messages.EnumField('TypeValueValuesEnum', 19)
-  usageSignal = _messages.MessageField('GoogleCloudDatacatalogV1UsageSignal', 20)
-  userSpecifiedSystem = _messages.StringField(21)
-  userSpecifiedType = _messages.StringField(22)
+  businessContext = _messages.MessageField('GoogleCloudDatacatalogV1BusinessContext', 3)
+  clusterSpec = _messages.MessageField('GoogleCloudDatacatalogV1ClusterSpec', 4)
+  dataSource = _messages.MessageField('GoogleCloudDatacatalogV1DataSource', 5)
+  dataSourceConnectionSpec = _messages.MessageField('GoogleCloudDatacatalogV1DataSourceConnectionSpec', 6)
+  dataStreamSpec = _messages.MessageField('GoogleCloudDatacatalogV1DataStreamSpec', 7)
+  databaseTableSpec = _messages.MessageField('GoogleCloudDatacatalogV1DatabaseTableSpec', 8)
+  description = _messages.StringField(9)
+  displayName = _messages.StringField(10)
+  fullyQualifiedName = _messages.StringField(11)
+  gcsFilesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1GcsFilesetSpec', 12)
+  integratedSystem = _messages.EnumField('IntegratedSystemValueValuesEnum', 13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  linkedResource = _messages.StringField(15)
+  name = _messages.StringField(16)
+  personalDetails = _messages.MessageField('GoogleCloudDatacatalogV1PersonalDetails', 17)
+  routineSpec = _messages.MessageField('GoogleCloudDatacatalogV1RoutineSpec', 18)
+  schema = _messages.MessageField('GoogleCloudDatacatalogV1Schema', 19)
+  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 20)
+  type = _messages.EnumField('TypeValueValuesEnum', 21)
+  usageSignal = _messages.MessageField('GoogleCloudDatacatalogV1UsageSignal', 22)
+  userSpecifiedSystem = _messages.StringField(23)
+  userSpecifiedType = _messages.StringField(24)
 
 
 class GoogleCloudDatacatalogV1EntryGroup(_messages.Message):
@@ -1523,6 +1622,20 @@ class GoogleCloudDatacatalogV1EntryGroup(_messages.Message):
   description = _messages.StringField(2)
   displayName = _messages.StringField(3)
   name = _messages.StringField(4)
+
+
+class GoogleCloudDatacatalogV1EntryOverview(_messages.Message):
+  r"""Entry overview fields for rich text descriptions of entries.
+
+  Fields:
+    overview: Entry overview with support for rich text. The overview must
+      only contain Unicode characters, and should be formatted using HTML. The
+      maximum length is 10 MiB as this value holds HTML descriptions including
+      encoded images. The maximum length of the text without images is 100
+      KiB.
+  """
+
+  overview = _messages.StringField(1)
 
 
 class GoogleCloudDatacatalogV1ExportTaxonomiesResponse(_messages.Message):
@@ -1772,6 +1885,38 @@ class GoogleCloudDatacatalogV1ListTaxonomiesResponse(_messages.Message):
   taxonomies = _messages.MessageField('GoogleCloudDatacatalogV1Taxonomy', 2, repeated=True)
 
 
+class GoogleCloudDatacatalogV1ModifyEntryContactsRequest(_messages.Message):
+  r"""Request message for ModifyEntryContacts.
+
+  Fields:
+    contacts: Required. The new value for the Contacts.
+  """
+
+  contacts = _messages.MessageField('GoogleCloudDatacatalogV1Contacts', 1)
+
+
+class GoogleCloudDatacatalogV1ModifyEntryOverviewRequest(_messages.Message):
+  r"""Request message for ModifyEntryOverview.
+
+  Fields:
+    entryOverview: Required. The new value for the Entry Overview.
+  """
+
+  entryOverview = _messages.MessageField('GoogleCloudDatacatalogV1EntryOverview', 1)
+
+
+class GoogleCloudDatacatalogV1PersonalDetails(_messages.Message):
+  r"""Entry metadata relevant only to the user and private to them.
+
+  Fields:
+    starTime: Set if the entry is starred; unset otherwise.
+    starred: True if the entry is starred by the user; false otherwise.
+  """
+
+  starTime = _messages.StringField(1)
+  starred = _messages.BooleanField(2)
+
+
 class GoogleCloudDatacatalogV1PhysicalSchema(_messages.Message):
   r"""Native schema used by a resource represented as an entry. Used by query
   engines for deserializing and parsing source data.
@@ -1994,7 +2139,8 @@ class GoogleCloudDatacatalogV1SearchCatalogRequest(_messages.Message):
     orderBy: Specifies the order of results. Currently supported case-
       sensitive values are: * `relevance` that can only be descending *
       `last_modified_timestamp [asc|desc]` with descending (`desc`) as default
-      If this parameter is omitted, it defaults to the descending `relevance`.
+      * `default` that can only be descending If this parameter is omitted, it
+      defaults to the descending `relevance`.
     pageSize: Number of results to return in a single search page. Can't be
       negative or 0, defaults to 10 in this case. The maximum number is 1000.
       If exceeded, throws an "invalid argument" exception.
@@ -2004,10 +2150,11 @@ class GoogleCloudDatacatalogV1SearchCatalogRequest(_messages.Message):
       response to a previous SearchCatalogRequest call.
     query: Optional. The query string with a minimum of 3 characters and
       specific syntax. For more information, see [Data Catalog search
-      syntax](/data-catalog/docs/how-to/search-reference). An empty query
-      string returns all data assets (in the specified scope) that you have
-      access to. A query string can be a simple `xyz` or qualified by
-      predicates: * `name:x` * `column:y` * `description:z`
+      syntax](https://cloud.google.com/data-catalog/docs/how-to/search-
+      reference). An empty query string returns all data assets (in the
+      specified scope) that you have access to. A query string can be a simple
+      `xyz` or qualified by predicates: * `name:x` * `column:y` *
+      `description:z`
     scope: Required. The scope of this search request. The `scope` is invalid
       if `include_org_ids`, `include_project_ids` are empty AND
       `include_gcp_public_datasets` is set to `false`. In this case, the
@@ -2037,9 +2184,9 @@ class GoogleCloudDatacatalogV1SearchCatalogRequestScope(_messages.Message):
     includePublicTagTemplates: Optional. If `true`, include public tag
       templates in the search results. By default, they are included only if
       you have explicit permissions on them to view them. For example, if you
-      are the owner. Other scope fields, for example, ``include_org_ids``,
-      still restrict the returned public tag templates and at least one of
-      them is required.
+      are the owner. Other scope fields, for example, `include_org_ids`, still
+      restrict the returned public tag templates and at least one of them is
+      required.
     restrictedLocations: Optional. The list of locations to search within. If
       empty, all locations are searched. Returns an error if any location in
       the list isn't one of the [Supported
@@ -2049,6 +2196,8 @@ class GoogleCloudDatacatalogV1SearchCatalogRequestScope(_messages.Message):
       `SearchCatalogResponse.unreachable` field. To get additional information
       on the error, repeat the search request and set the location name as the
       value of this parameter.
+    starredOnly: Optional. If `true`, search only among starred entries. By
+      default, all results are returned, starred or not.
   """
 
   includeGcpPublicDatasets = _messages.BooleanField(1)
@@ -2056,6 +2205,7 @@ class GoogleCloudDatacatalogV1SearchCatalogRequestScope(_messages.Message):
   includeProjectIds = _messages.StringField(3, repeated=True)
   includePublicTagTemplates = _messages.BooleanField(4)
   restrictedLocations = _messages.StringField(5, repeated=True)
+  starredOnly = _messages.BooleanField(6)
 
 
 class GoogleCloudDatacatalogV1SearchCatalogResponse(_messages.Message):
@@ -2214,6 +2364,14 @@ class GoogleCloudDatacatalogV1SerializedTaxonomy(_messages.Message):
   description = _messages.StringField(2)
   displayName = _messages.StringField(3)
   policyTags = _messages.MessageField('GoogleCloudDatacatalogV1SerializedPolicyTag', 4, repeated=True)
+
+
+class GoogleCloudDatacatalogV1StarEntryRequest(_messages.Message):
+  r"""Request message for StarEntry."""
+
+
+class GoogleCloudDatacatalogV1StarEntryResponse(_messages.Message):
+  r"""Response message for StarEntry. Empty for now"""
 
 
 class GoogleCloudDatacatalogV1SystemTimestamps(_messages.Message):
@@ -2519,6 +2677,14 @@ class GoogleCloudDatacatalogV1Taxonomy(_messages.Message):
   name = _messages.StringField(4)
   policyTagCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   taxonomyTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 6)
+
+
+class GoogleCloudDatacatalogV1UnstarEntryRequest(_messages.Message):
+  r"""Request message for UnstarEntry."""
+
+
+class GoogleCloudDatacatalogV1UnstarEntryResponse(_messages.Message):
+  r"""Response message for UnstarEntry. Empty for now"""
 
 
 class GoogleCloudDatacatalogV1UsageSignal(_messages.Message):

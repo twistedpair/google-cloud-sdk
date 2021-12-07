@@ -135,7 +135,7 @@ class DatapipelinesV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a pipeline. If successful, the updated [Pipeline] is returned. Returns `NOT_FOUND` if the pipeline doesn't exist. If UpdatePipeline does not return successfully, you can retry the UpdatePipeline request until you receive a successful response.
+      r"""Updates a pipeline. If successful, the updated Pipeline is returned. Returns `NOT_FOUND` if the pipeline doesn't exist. If UpdatePipeline does not return successfully, you can retry the UpdatePipeline request until you receive a successful response.
 
       Args:
         request: (DatapipelinesProjectsLocationsPipelinesPatchRequest) input message
@@ -162,7 +162,7 @@ class DatapipelinesV1(base_api.BaseApiClient):
     )
 
     def Run(self, request, global_params=None):
-      r"""Creates a job for the specified pipeline directly. You can use this method when the internal scheduler is not configured and you want to trigger the job directly or through an external system. Returns a "NOT_FOUND" error if the pipeline doesn't exist. Returns a "FOBIDDEN" error if the user doesn't have permission to access the pipeline or run jobs for the pipeline.
+      r"""Creates a job for the specified pipeline directly. You can use this method when the internal scheduler is not configured and you want to trigger the job directly or through an external system. Returns a "NOT_FOUND" error if the pipeline doesn't exist. Returns a "FORBIDDEN" error if the user doesn't have permission to access the pipeline or run jobs for the pipeline.
 
       Args:
         request: (DatapipelinesProjectsLocationsPipelinesRunRequest) input message
@@ -189,7 +189,7 @@ class DatapipelinesV1(base_api.BaseApiClient):
     )
 
     def Stop(self, request, global_params=None):
-      r"""Freezes pipeline execution permanently. If there's a corresponding scheduler entry, it's deleted, and the pipeline state is changed to "ARCHIVED". However, pipeline metadata is retained. Upon success, the pipeline state is updated to ARCHIVED.
+      r"""Freezes pipeline execution permanently. If there's a corresponding scheduler entry, it's deleted, and the pipeline state is changed to "ARCHIVED". However, pipeline metadata is retained.
 
       Args:
         request: (DatapipelinesProjectsLocationsPipelinesStopRequest) input message
@@ -226,7 +226,7 @@ class DatapipelinesV1(base_api.BaseApiClient):
           }
 
     def ListPipelines(self, request, global_params=None):
-      r"""Lists pipelines. Returns a "NOT_FOUND" error if the list is empty. Returns a "FORBIDDEN" error if the caller doesn't have permission to access it.
+      r"""Lists pipelines. Returns a "FORBIDDEN" error if the caller doesn't have permission to access it.
 
       Args:
         request: (DatapipelinesProjectsLocationsListPipelinesRequest) input message

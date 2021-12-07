@@ -48,6 +48,17 @@ class Collections(enum.Enum):
       ['organizationsId'],
       True
   )
+  ORGANIZATIONS_CUSTOMCONSTRAINTS = (
+      'organizations.customConstraints',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/customConstraints/'
+              '{customConstraintsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_POLICIES = (
       'organizations.policies',
       '{+name}',

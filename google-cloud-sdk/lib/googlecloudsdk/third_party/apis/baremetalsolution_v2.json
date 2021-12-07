@@ -454,19 +454,6 @@
           "description": "The name of the VRF.",
           "type": "string"
         },
-        "juniperAlias": {
-          "description": "The Juniper alias of the VRF.",
-          "type": "string"
-        },
-        "routeTarget": {
-          "description": "The route target of the VRF.",
-          "type": "string",
-          "format": "int64"
-        },
-        "autonomousSystemNumber": {
-          "description": "The autonomous system number of the VRF.",
-          "type": "string"
-        },
         "state": {
           "description": "The possible state of VRF.",
           "type": "string",
@@ -480,6 +467,49 @@
             "PROVISIONING",
             "PROVISIONED"
           ]
+        },
+        "qosPolicy": {
+          "description": "The QOS policy applied to this VRF.",
+          "$ref": "QosPolicy"
+        },
+        "vlanAttachments": {
+          "description": "The list of VLAN attachments for the VRF.",
+          "type": "array",
+          "items": {
+            "$ref": "VlanAttachment"
+          }
+        }
+      }
+    },
+    "QosPolicy": {
+      "id": "QosPolicy",
+      "description": "QOS policy parameters.",
+      "type": "object",
+      "properties": {
+        "bandwidthGbps": {
+          "description": "The bandwidth permitted by the QOS policy, in gbps.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "VlanAttachment": {
+      "id": "VlanAttachment",
+      "description": "VLAN attachment details.",
+      "type": "object",
+      "properties": {
+        "peerVlanId": {
+          "description": "The peer vlan ID of the attachment.",
+          "type": "string",
+          "format": "int64"
+        },
+        "peerIp": {
+          "description": "The peer IP of the attachment.",
+          "type": "string"
+        },
+        "routerIp": {
+          "description": "The router IP of the attachment.",
+          "type": "string"
         }
       }
     },

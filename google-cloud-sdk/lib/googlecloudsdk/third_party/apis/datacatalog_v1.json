@@ -120,7 +120,7 @@
           "$ref": "GoogleCloudDatacatalogV1SearchCatalogRequestScope"
         },
         "query": {
-          "description": "Optional. The query string with a minimum of 3 characters and specific syntax. For more information, see [Data Catalog search syntax](\/data-catalog\/docs\/how-to\/search-reference). An empty query string returns all data assets (in the specified scope) that you have access to. A query string can be a simple `xyz` or qualified by predicates: * `name:x` * `column:y` * `description:z`",
+          "description": "Optional. The query string with a minimum of 3 characters and specific syntax. For more information, see [Data Catalog search syntax](https:\/\/cloud.google.com\/data-catalog\/docs\/how-to\/search-reference). An empty query string returns all data assets (in the specified scope) that you have access to. A query string can be a simple `xyz` or qualified by predicates: * `name:x` * `column:y` * `description:z`",
           "type": "string"
         },
         "pageSize": {
@@ -133,7 +133,7 @@
           "type": "string"
         },
         "orderBy": {
-          "description": "Specifies the order of results. Currently supported case-sensitive values are: * `relevance` that can only be descending * `last_modified_timestamp [asc|desc]` with descending (`desc`) as default If this parameter is omitted, it defaults to the descending `relevance`.",
+          "description": "Specifies the order of results. Currently supported case-sensitive values are: * `relevance` that can only be descending * `last_modified_timestamp [asc|desc]` with descending (`desc`) as default * `default` that can only be descending If this parameter is omitted, it defaults to the descending `relevance`.",
           "type": "string"
         }
       }
@@ -168,8 +168,12 @@
             "type": "string"
           }
         },
+        "starredOnly": {
+          "description": "Optional. If `true`, search only among starred entries. By default, all results are returned, starred or not.",
+          "type": "boolean"
+        },
         "includePublicTagTemplates": {
-          "description": "Optional. If `true`, include public tag templates in the search results. By default, they are included only if you have explicit permissions on them to view them. For example, if you are the owner. Other scope fields, for example, ``include_org_ids``, still restrict the returned public tag templates and at least one of them is required.",
+          "description": "Optional. If `true`, include public tag templates in the search results. By default, they are included only if you have explicit permissions on them to view them. For example, if you are the owner. Other scope fields, for example, `include_org_ids`, still restrict the returned public tag templates and at least one of them is required.",
           "type": "boolean"
         }
       }
@@ -455,6 +459,10 @@
           "description": "Entry description that can consist of several sentences or paragraphs that describe entry contents. The description must not contain Unicode non-characters as well as C0 and C1 control codes except tabs (HT), new lines (LF), carriage returns (CR), and page breaks (FF). The maximum size is 2000 bytes when encoded in UTF-8. Default value is an empty string.",
           "type": "string"
         },
+        "businessContext": {
+          "description": "Business Context of the entry.",
+          "$ref": "GoogleCloudDatacatalogV1BusinessContext"
+        },
         "schema": {
           "description": "Schema of the entry. An entry might not have any schema attached to it.",
           "$ref": "GoogleCloudDatacatalogV1Schema"
@@ -479,6 +487,11 @@
           "description": "Output only. Physical location of the entry.",
           "readOnly": true,
           "$ref": "GoogleCloudDatacatalogV1DataSource"
+        },
+        "personalDetails": {
+          "description": "Output only. Additional information related to the entry. Private to the current user.",
+          "readOnly": true,
+          "$ref": "GoogleCloudDatacatalogV1PersonalDetails"
         }
       }
     },
@@ -835,6 +848,61 @@
         }
       }
     },
+    "GoogleCloudDatacatalogV1BusinessContext": {
+      "id": "GoogleCloudDatacatalogV1BusinessContext",
+      "description": "Business Context of the entry.",
+      "type": "object",
+      "properties": {
+        "entryOverview": {
+          "description": "Entry overview fields for rich text descriptions of entries.",
+          "$ref": "GoogleCloudDatacatalogV1EntryOverview"
+        },
+        "contacts": {
+          "description": "Contact people for the entry.",
+          "$ref": "GoogleCloudDatacatalogV1Contacts"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1EntryOverview": {
+      "id": "GoogleCloudDatacatalogV1EntryOverview",
+      "description": "Entry overview fields for rich text descriptions of entries.",
+      "type": "object",
+      "properties": {
+        "overview": {
+          "description": "Entry overview with support for rich text. The overview must only contain Unicode characters, and should be formatted using HTML. The maximum length is 10 MiB as this value holds HTML descriptions including encoded images. The maximum length of the text without images is 100 KiB.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1Contacts": {
+      "id": "GoogleCloudDatacatalogV1Contacts",
+      "description": "Contact people for the entry.",
+      "type": "object",
+      "properties": {
+        "people": {
+          "description": "The list of contact people for the entry.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDatacatalogV1ContactsPerson"
+          }
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1ContactsPerson": {
+      "id": "GoogleCloudDatacatalogV1ContactsPerson",
+      "description": "A contact person for the entry.",
+      "type": "object",
+      "properties": {
+        "designation": {
+          "description": "Designation of the person, for example, Data Steward.",
+          "type": "string"
+        },
+        "email": {
+          "description": "Email of the person, the format should be either `` or `John Doe`.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudDatacatalogV1Schema": {
       "id": "GoogleCloudDatacatalogV1Schema",
       "description": "Represents a schema, for example, a BigQuery, GoogleSQL, or Avro schema.",
@@ -1039,6 +1107,22 @@
         }
       }
     },
+    "GoogleCloudDatacatalogV1PersonalDetails": {
+      "id": "GoogleCloudDatacatalogV1PersonalDetails",
+      "description": "Entry metadata relevant only to the user and private to them.",
+      "type": "object",
+      "properties": {
+        "starred": {
+          "description": "True if the entry is starred by the user; false otherwise.",
+          "type": "boolean"
+        },
+        "starTime": {
+          "description": "Set if the entry is starred; unset otherwise.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
     "GoogleCloudDatacatalogV1ListEntriesResponse": {
       "id": "GoogleCloudDatacatalogV1ListEntriesResponse",
       "description": "Response message for ListEntries.",
@@ -1054,6 +1138,28 @@
         "nextPageToken": {
           "description": "Pagination token of the next results page. Empty if there are no more items in results.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1ModifyEntryOverviewRequest": {
+      "id": "GoogleCloudDatacatalogV1ModifyEntryOverviewRequest",
+      "description": "Request message for ModifyEntryOverview.",
+      "type": "object",
+      "properties": {
+        "entryOverview": {
+          "description": "Required. The new value for the Entry Overview.",
+          "$ref": "GoogleCloudDatacatalogV1EntryOverview"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1ModifyEntryContactsRequest": {
+      "id": "GoogleCloudDatacatalogV1ModifyEntryContactsRequest",
+      "description": "Request message for ModifyEntryContacts.",
+      "type": "object",
+      "properties": {
+        "contacts": {
+          "description": "Required. The new value for the Contacts.",
+          "$ref": "GoogleCloudDatacatalogV1Contacts"
         }
       }
     },
@@ -1293,6 +1399,34 @@
           "description": "Pagination token of the next results page. Empty if there are no more items in results.",
           "type": "string"
         }
+      }
+    },
+    "GoogleCloudDatacatalogV1StarEntryRequest": {
+      "id": "GoogleCloudDatacatalogV1StarEntryRequest",
+      "description": "Request message for StarEntry.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudDatacatalogV1StarEntryResponse": {
+      "id": "GoogleCloudDatacatalogV1StarEntryResponse",
+      "description": "Response message for StarEntry. Empty for now",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudDatacatalogV1UnstarEntryRequest": {
+      "id": "GoogleCloudDatacatalogV1UnstarEntryRequest",
+      "description": "Request message for UnstarEntry.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudDatacatalogV1UnstarEntryResponse": {
+      "id": "GoogleCloudDatacatalogV1UnstarEntryResponse",
+      "description": "Response message for UnstarEntry. Empty for now",
+      "type": "object",
+      "properties": {
       }
     },
     "SetIamPolicyRequest": {
@@ -2126,6 +2260,118 @@
                       ],
                       "description": "Lists entries. Note: Currently, this method can list only custom entries. To get a list of both custom and automatically created entries, use SearchCatalog."
                     },
+                    "modifyEntryOverview": {
+                      "id": "datacatalog.projects.locations.entryGroups.entries.modifyEntryOverview",
+                      "path": "v1/{+name}:modifyEntryOverview",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}:modifyEntryOverview",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The full resource name of the entry.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudDatacatalogV1ModifyEntryOverviewRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudDatacatalogV1EntryOverview"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Modifies Entry Overview, part of the Business Context of an Entry. To call this method, you must have the Google IAM permission `datacatalog.entries.updateOverview`"
+                    },
+                    "modifyEntryContacts": {
+                      "id": "datacatalog.projects.locations.entryGroups.entries.modifyEntryContacts",
+                      "path": "v1/{+name}:modifyEntryContacts",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}:modifyEntryContacts",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The full resource name of the entry.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudDatacatalogV1ModifyEntryContactsRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudDatacatalogV1Contacts"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Modifies Contacts, part of the Business Context of an Entry. To call this method, you must have the Google IAM permission `datacatalog.entries.updateContacts`"
+                    },
+                    "star": {
+                      "id": "datacatalog.projects.locations.entryGroups.entries.star",
+                      "path": "v1/{+name}:star",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}:star",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the entry to mark as starred.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudDatacatalogV1StarEntryRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudDatacatalogV1StarEntryResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Marks an Entry as starred by the current user. Starring information is private to each user."
+                    },
+                    "unstar": {
+                      "id": "datacatalog.projects.locations.entryGroups.entries.unstar",
+                      "path": "v1/{+name}:unstar",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}:unstar",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the entry to mark as **not** starred.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudDatacatalogV1UnstarEntryRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudDatacatalogV1UnstarEntryResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Marks an Entry as NOT starred by the current user. Starring information is private to each user."
+                    },
                     "getIamPolicy": {
                       "id": "datacatalog.projects.locations.entryGroups.entries.getIamPolicy",
                       "path": "v1/{+resource}:getIamPolicy",
@@ -2213,7 +2459,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Creates a tag and assigns it to: * An Entry if the method name is ``projects.locations.entryGroups.entries.tags.create``. * Or EntryGroupif the method name is ``projects.locations.entryGroups.tags.create``. Note: The project identified by the `parent` parameter for the [tag] (https:\/\/cloud.google.com\/data-catalog\/docs\/reference\/rest\/v1\/projects.locations.entryGroups.entries.tags\/create#path-parameters) and the [tag template] (https:\/\/cloud.google.com\/data-catalog\/docs\/reference\/rest\/v1\/projects.locations.tagTemplates\/create#path-parameters) used to create the tag must be in the same organization."
+                          "description": "Creates a tag and assigns it to: * An Entry if the method name is `projects.locations.entryGroups.entries.tags.create`. * Or EntryGroupif the method name is `projects.locations.entryGroups.tags.create`. Note: The project identified by the `parent` parameter for the [tag] (https:\/\/cloud.google.com\/data-catalog\/docs\/reference\/rest\/v1\/projects.locations.entryGroups.entries.tags\/create#path-parameters) and the [tag template] (https:\/\/cloud.google.com\/data-catalog\/docs\/reference\/rest\/v1\/projects.locations.tagTemplates\/create#path-parameters) used to create the tag must be in the same organization."
                         },
                         "patch": {
                           "id": "datacatalog.projects.locations.entryGroups.entries.tags.patch",
@@ -2342,7 +2588,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates a tag and assigns it to: * An Entry if the method name is ``projects.locations.entryGroups.entries.tags.create``. * Or EntryGroupif the method name is ``projects.locations.entryGroups.tags.create``. Note: The project identified by the `parent` parameter for the [tag] (https:\/\/cloud.google.com\/data-catalog\/docs\/reference\/rest\/v1\/projects.locations.entryGroups.entries.tags\/create#path-parameters) and the [tag template] (https:\/\/cloud.google.com\/data-catalog\/docs\/reference\/rest\/v1\/projects.locations.tagTemplates\/create#path-parameters) used to create the tag must be in the same organization."
+                      "description": "Creates a tag and assigns it to: * An Entry if the method name is `projects.locations.entryGroups.entries.tags.create`. * Or EntryGroupif the method name is `projects.locations.entryGroups.tags.create`. Note: The project identified by the `parent` parameter for the [tag] (https:\/\/cloud.google.com\/data-catalog\/docs\/reference\/rest\/v1\/projects.locations.entryGroups.entries.tags\/create#path-parameters) and the [tag template] (https:\/\/cloud.google.com\/data-catalog\/docs\/reference\/rest\/v1\/projects.locations.tagTemplates\/create#path-parameters) used to create the tag must be in the same organization."
                     },
                     "patch": {
                       "id": "datacatalog.projects.locations.entryGroups.tags.patch",
@@ -2517,7 +2763,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Names of fields whose values to overwrite on a tag template. Currently, only `display_name` and `is_publicly_readable` can be overwritten. If this parameter is absent or empty, all modifiable fields are overwritten. If such fields are non-required and omitted in the request body, their values are emptied. Note: Updating the ``is_publicly_readable`` field may require up to 12 hours to take effect in search results. Additionally, it also requires the ``tagTemplates.getIamPolicy`` and ``tagTemplates.setIamPolicy`` permissions.",
+                      "description": "Names of fields whose values to overwrite on a tag template. Currently, only `display_name` and `is_publicly_readable` can be overwritten. If this parameter is absent or empty, all modifiable fields are overwritten. If such fields are non-required and omitted in the request body, their values are emptied. Note: Updating the `is_publicly_readable` field may require up to 12 hours to take effect in search results. Additionally, it also requires the `tagTemplates.getIamPolicy` and `tagTemplates.setIamPolicy` permissions.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"

@@ -208,6 +208,17 @@ def GetRepository(repo):
   return get_repo_res
 
 
+def GetIamPolicy(repo_res):
+  """Gets the IAM policy for the specified repository."""
+  client = GetClient()
+  messages = GetMessages()
+  get_iam_policy_req = messages.ArtifactregistryProjectsLocationsRepositoriesGetIamPolicyRequest(
+      resource=repo_res)
+  get_iam_policy_res = client.projects_locations_repositories.GetIamPolicy(
+      get_iam_policy_req)
+  return get_iam_policy_res
+
+
 def CreateRepository(project, location, repository):
   """Creates the repository given its parent.
 
@@ -335,3 +346,4 @@ def SetUpgradeRedirectionState(project_id, redirection_state):
       projectSettings=project_settings,
       updateMask=update_mask)
   return client.projects.UpdateProjectSettings(update_settings_req)
+

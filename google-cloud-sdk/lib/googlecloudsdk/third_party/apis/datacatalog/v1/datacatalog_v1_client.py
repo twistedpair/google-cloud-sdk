@@ -136,7 +136,7 @@ class DatacatalogV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a tag and assigns it to: * An Entry if the method name is ``projects.locations.entryGroups.entries.tags.create``. * Or EntryGroupif the method name is ``projects.locations.entryGroups.tags.create``. Note: The project identified by the `parent` parameter for the [tag] (https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters) and the [tag template] (https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters) used to create the tag must be in the same organization.
+      r"""Creates a tag and assigns it to: * An Entry if the method name is `projects.locations.entryGroups.entries.tags.create`. * Or EntryGroupif the method name is `projects.locations.entryGroups.tags.create`. Note: The project identified by the `parent` parameter for the [tag] (https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters) and the [tag template] (https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters) used to create the tag must be in the same organization.
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsEntriesTagsCreateRequest) input message
@@ -388,6 +388,60 @@ class DatacatalogV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ModifyEntryContacts(self, request, global_params=None):
+      r"""Modifies Contacts, part of the Business Context of an Entry. To call this method, you must have the Google IAM permission `datacatalog.entries.updateContacts`.
+
+      Args:
+        request: (DatacatalogProjectsLocationsEntryGroupsEntriesModifyEntryContactsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1Contacts) The response message.
+      """
+      config = self.GetMethodConfig('ModifyEntryContacts')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ModifyEntryContacts.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}:modifyEntryContacts',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.entryGroups.entries.modifyEntryContacts',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:modifyEntryContacts',
+        request_field='googleCloudDatacatalogV1ModifyEntryContactsRequest',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsEntriesModifyEntryContactsRequest',
+        response_type_name='GoogleCloudDatacatalogV1Contacts',
+        supports_download=False,
+    )
+
+    def ModifyEntryOverview(self, request, global_params=None):
+      r"""Modifies Entry Overview, part of the Business Context of an Entry. To call this method, you must have the Google IAM permission `datacatalog.entries.updateOverview`.
+
+      Args:
+        request: (DatacatalogProjectsLocationsEntryGroupsEntriesModifyEntryOverviewRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1EntryOverview) The response message.
+      """
+      config = self.GetMethodConfig('ModifyEntryOverview')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ModifyEntryOverview.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}:modifyEntryOverview',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.entryGroups.entries.modifyEntryOverview',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:modifyEntryOverview',
+        request_field='googleCloudDatacatalogV1ModifyEntryOverviewRequest',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsEntriesModifyEntryOverviewRequest',
+        response_type_name='GoogleCloudDatacatalogV1EntryOverview',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates an existing entry. You must enable the Data Catalog API in the project identified by the `entry.name` parameter. For more information, see [Data Catalog resource project](https://cloud.google.com/data-catalog/docs/concepts/resource-project).
 
@@ -412,6 +466,33 @@ class DatacatalogV1(base_api.BaseApiClient):
         request_field='googleCloudDatacatalogV1Entry',
         request_type_name='DatacatalogProjectsLocationsEntryGroupsEntriesPatchRequest',
         response_type_name='GoogleCloudDatacatalogV1Entry',
+        supports_download=False,
+    )
+
+    def Star(self, request, global_params=None):
+      r"""Marks an Entry as starred by the current user. Starring information is private to each user.
+
+      Args:
+        request: (DatacatalogProjectsLocationsEntryGroupsEntriesStarRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1StarEntryResponse) The response message.
+      """
+      config = self.GetMethodConfig('Star')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Star.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}:star',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.entryGroups.entries.star',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:star',
+        request_field='googleCloudDatacatalogV1StarEntryRequest',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsEntriesStarRequest',
+        response_type_name='GoogleCloudDatacatalogV1StarEntryResponse',
         supports_download=False,
     )
 
@@ -442,6 +523,33 @@ class DatacatalogV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Unstar(self, request, global_params=None):
+      r"""Marks an Entry as NOT starred by the current user. Starring information is private to each user.
+
+      Args:
+        request: (DatacatalogProjectsLocationsEntryGroupsEntriesUnstarRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1UnstarEntryResponse) The response message.
+      """
+      config = self.GetMethodConfig('Unstar')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Unstar.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}:unstar',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.entryGroups.entries.unstar',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:unstar',
+        request_field='googleCloudDatacatalogV1UnstarEntryRequest',
+        request_type_name='DatacatalogProjectsLocationsEntryGroupsEntriesUnstarRequest',
+        response_type_name='GoogleCloudDatacatalogV1UnstarEntryResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsEntryGroupsTagsService(base_api.BaseApiService):
     """Service class for the projects_locations_entryGroups_tags resource."""
 
@@ -453,7 +561,7 @@ class DatacatalogV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a tag and assigns it to: * An Entry if the method name is ``projects.locations.entryGroups.entries.tags.create``. * Or EntryGroupif the method name is ``projects.locations.entryGroups.tags.create``. Note: The project identified by the `parent` parameter for the [tag] (https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters) and the [tag template] (https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters) used to create the tag must be in the same organization.
+      r"""Creates a tag and assigns it to: * An Entry if the method name is `projects.locations.entryGroups.entries.tags.create`. * Or EntryGroupif the method name is `projects.locations.entryGroups.tags.create`. Note: The project identified by the `parent` parameter for the [tag] (https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters) and the [tag template] (https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters) used to create the tag must be in the same organization.
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsTagsCreateRequest) input message

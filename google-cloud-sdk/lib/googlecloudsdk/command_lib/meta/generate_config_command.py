@@ -44,7 +44,9 @@ _BRANDING_NAMES = {
     'cloudidentity': 'Cloud Identity',
     'cloudkms': 'Cloud KMS',
     'cloudresourcemanager': 'Cloud Resource Manager',
-    'compute': 'Compute Engine'
+    'compute': 'Compute Engine',
+    'pubsub': 'Pub/Sub',
+    'sourcerepo': 'Cloud Source'
 }
 
 
@@ -74,7 +76,7 @@ def WriteConfigYaml(collection, output_root, resource_data, release_tracks,
   collection_info = resources.REGISTRY.GetCollectionInfo(collection)
   _RenderSurfaceSpecFiles(output_root, resource_data,
                           collection_info, release_tracks, enable_overwrites)
-  _RenderCommandGroupInitFile(output_root, resource_data.home_directory,
+  _RenderCommandGroupInitFile(output_root, resource_data,
                               collection_info, release_tracks,
                               enable_overwrites)
   _RenderCommandFile(output_root, resource_data, collection_info,
@@ -128,12 +130,14 @@ def _BuildTemplate(template_file_name):
   return file_template
 
 
-def _RenderCommandGroupInitFile(output_root, home_directory, collection_info,
+def _RenderCommandGroupInitFile(output_root, resource_data, collection_info,
                                 release_tracks, enable_overwrites):
   file_path = _BuildFilePath(output_root, _COMMAND_PATH_COMPONENTS,
-                             home_directory, 'config', '__init__.py')
+                             resource_data.home_directory, 'config',
+                             '__init__.py')
   file_template = _BuildTemplate('command_group_init_template.tpl')
-  context = _BuildCommandGroupInitContext(collection_info, release_tracks)
+  context = _BuildCommandGroupInitContext(collection_info, release_tracks,
+                                          resource_data)
   _RenderFile(file_path, file_template, context, enable_overwrites)
 
 
@@ -191,7 +195,8 @@ def _RenderTestFiles(output_root, resource_data, collection_info,
   _RenderFile(test_path, test_template, context, enable_overwrites)
 
 
-def _BuildCommandGroupInitContext(collection_info, release_tracks):
+def _BuildCommandGroupInitContext(collection_info, release_tracks,
+                                  resource_data):
   """Makes context dictionary for config init file template rendering."""
   init_dict = {}
   init_dict['utf_encoding'] = '-*- coding: utf-8 -*- #'
@@ -210,6 +215,10 @@ def _BuildCommandGroupInitContext(collection_info, release_tracks):
       release_track_string += ', '
 
   init_dict['release_tracks'] = release_track_string
+
+  if 'group_category' in resource_data:
+    init_dict['group_category'] = resource_data.group_category
+
   return init_dict
 
 
@@ -309,6 +318,9 @@ def _BuildTestContext(collection_info, resource_data):
   resource_arg_positional = _MakeResourceArgName(collection_info.name)
   test_dict['test_command_arguments'] = ' '.join(
       [resource_arg_positional, resource_arg_flags])
+  test_dict['pylint_disable'] = ''
+  if len(test_dict['test_command_arguments']) > 56:
+    test_dict['pylint_disable'] = '  # pylint:disable=line-too-long'
   test_dict['full_collection_name'] = '.'.join(
       [collection_info.api_name, collection_info.name])
   test_dict['test_command_string'] = _MakeTestCommandString(

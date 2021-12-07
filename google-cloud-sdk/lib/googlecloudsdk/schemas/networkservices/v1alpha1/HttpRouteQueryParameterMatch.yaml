@@ -33,7 +33,7 @@ properties:
     type: string
   presentMatch:
     description: |-
-      Specifies that the QueryParameterMatcher matches is request cotains query
+      Specifies that the QueryParameterMatcher matches if request contains query
       parameter, irrespective of whether the parameter has a value or not. Only
       one of exact_match, regex_match, or present_match must be set.
     type: boolean

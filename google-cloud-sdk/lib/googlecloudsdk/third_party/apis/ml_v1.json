@@ -1031,6 +1031,10 @@
         "smoothGradConfig": {
           "description": "Config for SmoothGrad approximation of gradients. When enabled, the gradients are approximated by averaging the gradients from noisy samples in the vicinity of the inputs. Adding noise can help improve the computed gradients, see here for why: https:\/\/arxiv.org\/pdf\/1706.03825.pdf",
           "$ref": "GoogleCloudMlV1__SmoothGradConfig"
+        },
+        "blurBaselineConfig": {
+          "description": "Config for IG with blur baseline. When enabled, a linear path from the maximally blurred image to the input image is created. Using a blurred baseline instead of zero (black image) is motivated by the BlurIG approach explained here: https:\/\/arxiv.org\/abs\/2004.03383",
+          "$ref": "GoogleCloudMlV1__BlurBaselineConfig"
         }
       }
     },
@@ -1085,6 +1089,18 @@
         }
       }
     },
+    "GoogleCloudMlV1__BlurBaselineConfig": {
+      "id": "GoogleCloudMlV1__BlurBaselineConfig",
+      "description": "Config for blur baseline. When enabled, a linear path from the maximally blurred image to the input image is created. Using a blurred baseline instead of zero (black image) is motivated by the BlurIG approach explained here: https:\/\/arxiv.org\/abs\/2004.03383",
+      "type": "object",
+      "properties": {
+        "maxBlurSigma": {
+          "description": "The standard deviation of the blur kernel for the blurred baseline. The same blurring parameter is used for both the height and the width dimension. If not set, the method defaults to the zero (i.e. black for images) baseline.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
     "GoogleCloudMlV1__SampledShapleyAttribution": {
       "id": "GoogleCloudMlV1__SampledShapleyAttribution",
       "description": "An attribution method that approximates Shapley values for features that contribute to the label being predicted. A sampling strategy is used to approximate the value rather than considering all subsets of features.",
@@ -1110,6 +1126,10 @@
         "smoothGradConfig": {
           "description": "Config for SmoothGrad approximation of gradients. When enabled, the gradients are approximated by averaging the gradients from noisy samples in the vicinity of the inputs. Adding noise can help improve the computed gradients, see here for why: https:\/\/arxiv.org\/pdf\/1706.03825.pdf",
           "$ref": "GoogleCloudMlV1__SmoothGradConfig"
+        },
+        "blurBaselineConfig": {
+          "description": "Config for XRAI with blur baseline. When enabled, a linear path from the maximally blurred image to the input image is created. Using a blurred baseline instead of zero (black image) is motivated by the BlurIG approach explained here: https:\/\/arxiv.org\/abs\/2004.03383",
+          "$ref": "GoogleCloudMlV1__BlurBaselineConfig"
         }
       }
     },

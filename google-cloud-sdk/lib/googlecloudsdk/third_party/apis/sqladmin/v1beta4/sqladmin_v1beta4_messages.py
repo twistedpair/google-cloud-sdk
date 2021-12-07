@@ -495,9 +495,8 @@ class DatabaseInstance(_messages.Message):
       **settings** object to determine the database type.
     DatabaseVersionValueValuesEnum: The database engine type and version. The
       **databaseVersion** field cannot be changed after instance creation.
-    InstalledVersionValueValuesEnum: installed_version stores the current
-      fully resolved database version including minor version such as
-      MYSQL_5_6_50
+    InstalledVersionValueValuesEnum: Stores the current database version
+      including minor version such as **MYSQL_8_0_18**.
     InstanceTypeValueValuesEnum: The instance type.
     StateValueValuesEnum: The current serving state of the Cloud SQL instance.
     SuspensionReasonValueListEntryValuesEnum:
@@ -521,9 +520,9 @@ class DatabaseInstance(_messages.Message):
       Monitoring API instead. Please see [this
       announcement](https://groups.google.com/d/msg/google-cloud-sql-
       announce/I_7-F9EBhT0/BtvFtdFeAgAJ) for details.
-    databaseInstalledVersion: Output only. The databaseInstalledVersion stores
-      the current fully resolved database version running on the instance
-      including minor version such as MYSQL_5_6_50
+    databaseInstalledVersion: Output only. Stores the current database version
+      running on the instance including minor version such as
+      **MYSQL_8_0_18**.
     databaseVersion: The database engine type and version. The
       **databaseVersion** field cannot be changed after instance creation.
     diskEncryptionConfiguration: Disk encryption configuration specific to an
@@ -535,9 +534,9 @@ class DatabaseInstance(_messages.Message):
     gceZone: The Compute Engine zone that the instance is currently serving
       from. This value could be different from the zone that was specified
       when the instance was created if the instance has failed over to its
-      secondary zone.
-    installedVersion: installed_version stores the current fully resolved
-      database version including minor version such as MYSQL_5_6_50
+      secondary zone. WARNING: Changing this might restart the instance.
+    installedVersion: Stores the current database version including minor
+      version such as **MYSQL_8_0_18**.
     instanceType: The instance type.
     ipAddresses: The assigned IP addresses for the instance.
     ipv6Address: The IPv6 address assigned to the instance. (Deprecated) This
@@ -662,8 +661,8 @@ class DatabaseInstance(_messages.Message):
     SQLSERVER_2019_WEB = 22
 
   class InstalledVersionValueValuesEnum(_messages.Enum):
-    r"""installed_version stores the current fully resolved database version
-    including minor version such as MYSQL_5_6_50
+    r"""Stores the current database version including minor version such as
+    **MYSQL_8_0_18**.
 
     Values:
       SQL_DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
@@ -1529,7 +1528,7 @@ class IpConfiguration(_messages.Message):
       regular expression `[a-z]([-a-z0-9]*[a-z0-9])?.`
     authorizedNetworks: The list of external networks that are allowed to
       connect to the instance using the IP. In 'CIDR' notation, also known as
-      'slash' notation (for example: **192.168.100.0/24**).
+      'slash' notation (for example: **157.197.200.0/24**).
     ipv4Enabled: Whether the instance is assigned a public IP address or not.
     privateNetwork: The resource link for the VPC network from which the Cloud
       SQL instance is accessible for private IP. For example,
@@ -1610,13 +1609,14 @@ class LocationPreference(_messages.Message):
 
   Fields:
     followGaeApplication: The App Engine application to follow, it must be in
-      the same region as the Cloud SQL instance.
+      the same region as the Cloud SQL instance. WARNING: Changing this might
+      restart the instance.
     kind: This is always **sql#locationPreference**.
     secondaryZone: The preferred Compute Engine zone for the
       secondary/failover (for example: us-central1-a, us-central1-b, etc.).
       Reserved for future use.
     zone: The preferred Compute Engine zone (for example: us-central1-a, us-
-      central1-b, etc.).
+      central1-b, etc.). WARNING: Changing this might restart the instance.
   """
 
   followGaeApplication = _messages.StringField(1)
@@ -2144,7 +2144,8 @@ class Settings(_messages.Message):
       Not used for First Generation instances.
     databaseFlags: The database flags passed to the instance at startup.
     databaseReplicationEnabled: Configuration specific to read replica
-      instances. Indicates whether replication is enabled or not.
+      instances. Indicates whether replication is enabled or not. WARNING:
+      Changing this restarts the instance.
     denyMaintenancePeriods: Deny maintenance periods
     insightsConfig: Insights configuration, for now relevant only for
       Postgres.
@@ -2158,8 +2159,7 @@ class Settings(_messages.Message):
       instance to be located as near as possible to either an App Engine app
       or Compute Engine zone for better performance. App Engine co-location
       was only applicable to First Generation instances.
-    maintenanceVersion: The current software version the instance is running
-      on.
+    maintenanceVersion: The current software version on the instance.
     maintenanceWindow: The maintenance window for this instance. This
       specifies when the instance can be restarted for maintenance purposes.
     passwordValidationPolicy: The local user password validation policy of the
@@ -2181,7 +2181,7 @@ class Settings(_messages.Message):
       automatically increased. The default value is 0, which specifies that
       there is no limit.
     tier: The tier (or machine type) for this instance, for example **db-
-      custom-1-3840**.
+      custom-1-3840**. WARNING: Changing this restarts the instance.
     userLabels: User-provided labels, represented as a dictionary where each
       label is a single key value pair.
   """

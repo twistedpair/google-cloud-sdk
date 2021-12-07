@@ -16,8 +16,42 @@ package = 'gkehub'
 class AnthosObservabilityFeatureSpec(_messages.Message):
   r"""Spec for Anthos Observability. This is required since Feature proto
   requires a spec.
+
+  Messages:
+    MembershipSpecsValue: Per-membership spec that determines the spec in
+      Stackdriver CR
+
+  Fields:
+    membershipSpecs: Per-membership spec that determines the spec in
+      Stackdriver CR
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MembershipSpecsValue(_messages.Message):
+    r"""Per-membership spec that determines the spec in Stackdriver CR
+
+    Messages:
+      AdditionalProperty: An additional property for a MembershipSpecsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type MembershipSpecsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MembershipSpecsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A AnthosObservabilityMembershipSpec attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('AnthosObservabilityMembershipSpec', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  membershipSpecs = _messages.MessageField('MembershipSpecsValue', 1)
 
 
 class AnthosObservabilityFeatureState(_messages.Message):
@@ -25,6 +59,22 @@ class AnthosObservabilityFeatureState(_messages.Message):
   FeatureStateDetails requires a state.
   """
 
+
+
+class AnthosObservabilityMembershipSpec(_messages.Message):
+  r"""**Anthosobservability**: Per-Membership Feature spec.
+
+  Fields:
+    doNotOptimizeMetrics: use full of metrics rather than optimized metrics.
+      See https://cloud.google.com/anthos/clusters/docs/on-
+      prem/1.8/concepts/logging-and-
+      monitoring#optimized_metrics_default_metrics
+    enableStackdriverOnApplications: enable collecting and reporting metrics
+      and logs from user apps See go/onyx-application-metrics-logs-user-guide
+  """
+
+  doNotOptimizeMetrics = _messages.BooleanField(1)
+  enableStackdriverOnApplications = _messages.BooleanField(2)
 
 
 class ApigeeFeatureSpec(_messages.Message):

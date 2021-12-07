@@ -43,7 +43,7 @@ VM_BOOT_MESSAGE = (
 
 KERNEL_PANIC_PATTERNS = [
     'Kernel panic - not syncing: Attempted to kill init!',
-    'Kernel panic - not syncing: fatal exception',
+    'Kernel panic - not syncing: Fatal exception',
     'Kernel panic - not syncing: No working init found.',
     'Kernel panic - not syncing: VFS: Unable to mount root fs on unknown-block',
 ]
@@ -90,7 +90,7 @@ class VMBootTroubleshooter(ssh_troubleshooter.SshTroubleshooter):
     if ssh_troubleshooter_utils.SearchPatternErrorInLog(KERNEL_PANIC_PATTERNS,
                                                         sc_log):
       self.issues['kernel_panic'] = KERNEL_PANIC_MESSAGE
-    log.status.Print('VM boot: {0} issue(s) found.'.format(len(self.issues)))
+    log.status.Print('VM boot: {0} issue(s) found.\n'.format(len(self.issues)))
     # Prompt appropriate messages to user.
     for message in self.issues.values():
       log.status.Print(message)

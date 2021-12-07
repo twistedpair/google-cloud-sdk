@@ -66,7 +66,8 @@ class Cluster(_messages.Message):
       a maximum value is not specified explicitly for a node pool in this
       cluster. If unspecified, the Kubernetes default value will be used.
     endpoint: Output only. The IP address of the Kubernetes API server.
-    hub: Required. GKE Hub configuration.
+    fleet: Optional. Fleet configuration.
+    hub: Optional. GKE Hub configuration. DEPRECATED Use fleet instead.
     labels: Labels associated with this resource.
     name: Required. The resource name of the cluster.
     networking: Required. Cluster-wide networking configuration.
@@ -102,11 +103,12 @@ class Cluster(_messages.Message):
   createTime = _messages.StringField(3)
   defaultMaxPodsPerNode = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   endpoint = _messages.StringField(5)
-  hub = _messages.MessageField('Hub', 6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  networking = _messages.MessageField('ClusterNetworking', 9)
-  updateTime = _messages.StringField(10)
+  fleet = _messages.MessageField('Fleet', 6)
+  hub = _messages.MessageField('Hub', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  networking = _messages.MessageField('ClusterNetworking', 10)
+  updateTime = _messages.StringField(11)
 
 
 class ClusterNetworking(_messages.Message):
@@ -539,6 +541,23 @@ class Empty(_messages.Message):
 
 
 
+class Fleet(_messages.Message):
+  r"""Fleet related configuration. Fleets are a Google Cloud concept for
+  logically organizing clusters, letting you use and manage multi-cluster
+  capabilities and apply consistent policies across your systems.
+
+  Fields:
+    membership: Output only. The name of the managed Hub Membership resource
+      associated to this cluster. Membership names are formatted as
+      `projects//locations/global/membership/`.
+    project: Required. The name of the Fleet host project where this cluster
+      will be registered. Project names are formatted as `projects/`.
+  """
+
+  membership = _messages.StringField(1)
+  project = _messages.StringField(2)
+
+
 class GenerateAccessTokenResponse(_messages.Message):
   r"""An access token for a cluster.
 
@@ -552,7 +571,7 @@ class GenerateAccessTokenResponse(_messages.Message):
 
 
 class Hub(_messages.Message):
-  r"""GKE Hub configuration.
+  r"""GKE Hub configuration. DEPRECATED Use Fleet instead.
 
   Fields:
     membership: Required. The resource name of the membership resource to use

@@ -33,13 +33,12 @@ properties:
     type: string
   failoverOrigin:
     description: |-
-      The Origin resource to try when the current origin cannot be reached.
-      After maxAttempts is reached, the configured failoverOrigin will be used
-      to fulfil the request. For example, the following are both valid URLs to
-      an EdgeCacheOrigin resource: - networks
-      ervices/v1alpha1/projects/project/global/edgeCacheOrigins/yourOrigin -
-      /global/edgeCacheOrigins/yourOrigin The value of
-      timeout.maxAttemptsTimeout dictates the timeout across all origins.
+      The EdgeCacheOrigin resource to try when the current origin cannot be
+      reached. After maxAttempts is reached, the configured failoverOrigin will
+      be used to fulfil the request. The following are both valid paths to an
+      EdgeCacheOrigin resource: * projects/my-
+      project/locations/global/edgeCacheOrigins/my-origin * my- origin The value
+      of timeout.maxAttemptsTimeout dictates the timeout across all origins.
     type: string
   labels:
     description: Set of label tags associated with the EdgeCache resource.

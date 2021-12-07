@@ -1640,11 +1640,11 @@ class FieldMetadata(_messages.Message):
       "Address.String". For "choice" types (those defined in the FHIR spec
       with the form: field[x]), use two separate components. For example,
       "deceasedAge.unit" is matched by "Deceased.Age.unit". Supported types
-      are: AdministrativeGenderCode, Code, Date, DateTime, Decimal, HumanName,
-      Id, LanguageCode, Markdown, Oid, String, Uri, Uuid, Xhtml. Base64Binary
-      is also supported, but may only be kept as-is or have all the content
-      removed. The sub-type for HumanName(for example HumanName.given,
-      HumanName.family) can be omitted.
+      are: AdministrativeGenderCode, Base64Binary, Boolean, Code, Date,
+      DateTime, Decimal, HumanName, Id, Instant, Integer, LanguageCode,
+      Markdown, Oid, PositiveInt, String, UnsignedInt, Uri, Uuid, Xhtml. The
+      sub-type for HumanName(for example HumanName.given, HumanName.family)
+      can be omitted.
   """
 
   class ActionValueValuesEnum(_messages.Enum):

@@ -55,6 +55,13 @@ class Collections(enum.Enum):
       ['organizationsId', 'assetsId'],
       True
   )
+  ORGANIZATIONS_FINDINGS = (
+      'organizations.findings',
+      'organizations/{organizationsId}/findings/{findingId}',
+      {},
+      ['organizationsId', 'findingId'],
+      True
+  )
   ORGANIZATIONS_MUTECONFIGS = (
       'organizations.muteConfigs',
       '{+name}',

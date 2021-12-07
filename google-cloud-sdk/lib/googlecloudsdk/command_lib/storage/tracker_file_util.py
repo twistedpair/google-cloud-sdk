@@ -292,8 +292,8 @@ def hash_gcs_rewrite_parameters_for_tracker_file(
       bucket, name, and metadata.
     destination_metadata (messages.Object|None): Separated from
       destination_object_resource since UnknownResource does not have metadata.
-    request_config (gcs_api.GcsRequestConfig|None): Contains a variety of API
-      arguments.
+    request_config (request_config_factory._RequestConfig|None): Contains a
+      variety of API arguments.
     source_decyrption_key_sha256 (str|None): Optional SHA256 hash string of
       decryption key for source object.
     destination_encryption_key_sha256 (str|None): Optional SHA256 hash string of

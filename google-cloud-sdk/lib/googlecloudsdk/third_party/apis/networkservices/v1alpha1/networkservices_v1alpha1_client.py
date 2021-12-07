@@ -54,6 +54,7 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
     self.projects_locations_routers = self.ProjectsLocationsRoutersService(self)
     self.projects_locations_serviceBindings = self.ProjectsLocationsServiceBindingsService(self)
     self.projects_locations_tcpRoutes = self.ProjectsLocationsTcpRoutesService(self)
+    self.projects_locations_tlsRoutes = self.ProjectsLocationsTlsRoutesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -3227,6 +3228,178 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+resource}:testIamPermissions',
         request_field='testIamPermissionsRequest',
         request_type_name='NetworkservicesProjectsLocationsTcpRoutesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsTlsRoutesService(base_api.BaseApiService):
+    """Service class for the projects_locations_tlsRoutes resource."""
+
+    _NAME = 'projects_locations_tlsRoutes'
+
+    def __init__(self, client):
+      super(NetworkservicesV1alpha1.ProjectsLocationsTlsRoutesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new TlsRoute in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsTlsRoutesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tlsRoutes',
+        http_method='POST',
+        method_id='networkservices.projects.locations.tlsRoutes.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['tlsRouteId'],
+        relative_path='v1alpha1/{+parent}/tlsRoutes',
+        request_field='tlsRoute',
+        request_type_name='NetworkservicesProjectsLocationsTlsRoutesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single TlsRoute.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsTlsRoutesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tlsRoutes/{tlsRoutesId}',
+        http_method='DELETE',
+        method_id='networkservices.projects.locations.tlsRoutes.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsTlsRoutesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single TlsRoute.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsTlsRoutesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TlsRoute) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tlsRoutes/{tlsRoutesId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.tlsRoutes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsTlsRoutesGetRequest',
+        response_type_name='TlsRoute',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists TlsRoute in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsTlsRoutesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListTlsRoutesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tlsRoutes',
+        http_method='GET',
+        method_id='networkservices.projects.locations.tlsRoutes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/tlsRoutes',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsTlsRoutesListRequest',
+        response_type_name='ListTlsRoutesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single TlsRoute.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsTlsRoutesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tlsRoutes/{tlsRoutesId}',
+        http_method='PATCH',
+        method_id='networkservices.projects.locations.tlsRoutes.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='tlsRoute',
+        request_type_name='NetworkservicesProjectsLocationsTlsRoutesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsTlsRoutesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tlsRoutes/{tlsRoutesId}:testIamPermissions',
+        http_method='POST',
+        method_id='networkservices.projects.locations.tlsRoutes.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='NetworkservicesProjectsLocationsTlsRoutesTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )

@@ -228,9 +228,7 @@ def AddMigInstanceRedistributionTypeFlag(parser):
       help="""\
       Specifies the type of the instance redistribution policy. An instance
       redistribution type lets you enable or disable automatic instance
-      redistribution across zones to meet the target distribution. The target
-      distribution is a state of a regional managed instance group where all
-      instances are spread out evenly across all target zones.
+      redistribution across zones to meet the group's target distribution shape.
 
       An instance redistribution type can be specified only for a non-autoscaled
       regional managed instance group. By default it is set to PROACTIVE.

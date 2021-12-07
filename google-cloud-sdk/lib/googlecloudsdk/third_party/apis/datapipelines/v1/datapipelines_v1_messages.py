@@ -23,12 +23,10 @@ class DatapipelinesProjectsLocationsListPipelinesRequest(_messages.Message):
       unspecified, all pipelines will be returned. Multiple filters can be
       applied and must be comma separated. Fields eligible for filtering are:
       + `type`: The type of the pipeline (streaming or batch). Allowed values
-      are `ALL`, `BATCH`, and `STREAMING`. + `executor_type`: The type of
-      pipeline execution layer. This is always Dataflow for now, but more
-      executors may be added later. Allowed values are `ALL` and `DATAFLOW`. +
-      `status`: The activity status of the pipeline. Allowed values are `ALL`,
-      `ACTIVE`, `ARCHIVED`, and `PAUSED`. For example, to limit results to
-      active batch processing pipelines: type:BATCH,status:ACTIVE
+      are `ALL`, `BATCH`, and `STREAMING`. + `status`: The activity status of
+      the pipeline. Allowed values are `ALL`, `ACTIVE`, `ARCHIVED`, and
+      `PAUSED`. For example, to limit results to active batch processing
+      pipelines: type:BATCH,status:ACTIVE
     pageSize: The maximum number of entities to return. The service may return
       fewer than this value, even if there are additional pages. If
       unspecified, the max limit is yet to be determined by the backend
@@ -76,7 +74,7 @@ class DatapipelinesProjectsLocationsPipelinesGetRequest(_messages.Message):
   r"""A DatapipelinesProjectsLocationsPipelinesGetRequest object.
 
   Fields:
-    name: Required. The pipeeline name. For example:
+    name: Required. The pipeline name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID/pipelines/PIPELINE_ID`.
   """
 
@@ -94,12 +92,13 @@ class DatapipelinesProjectsLocationsPipelinesPatchRequest(_messages.Message):
       `PROJECT_ID` can contain letters ([A-Za-z]), numbers ([0-9]), hyphens
       (-), colons (:), and periods (.). For more information, see [Identifying
       projects](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects#identifying_projects) * `LOCATION_ID` is the canonical
-      ID for the pipeline's location. The list of available locations can be
-      obtained by calling ListLocations. Note that the Data Pipelines service
-      is not available in all regions. It depends on Cloud Scheduler, an App
-      Engine application, so it's only available in [App Engine
-      regions](https://cloud.google.com/about/locations#region). *
+      managing-projects#identifying_projects). * `LOCATION_ID` is the
+      canonical ID for the pipeline's location. The list of available
+      locations can be obtained by calling
+      `google.cloud.location.Locations.ListLocations`. Note that the Data
+      Pipelines service is not available in all regions. It depends on Cloud
+      Scheduler, an App Engine application, so it's only available in [App
+      Engine regions](https://cloud.google.com/about/locations#region). *
       `PIPELINE_ID` is the ID of the pipeline. Must be unique for the selected
       project and location.
     updateMask: The list of fields to be updated.
@@ -631,8 +630,8 @@ class GoogleCloudDatapipelinesV1ListPipelinesResponse(_messages.Message):
 
 
 class GoogleCloudDatapipelinesV1Pipeline(_messages.Message):
-  r"""The main pipeline entity and all the needed metadata to launch and
-  manage linked jobs.
+  r"""The main pipeline entity and all the necessary metadata for launching
+  and managing linked jobs.
 
   Enums:
     StateValueValuesEnum: Required. The state of the pipeline. When the
@@ -663,12 +662,13 @@ class GoogleCloudDatapipelinesV1Pipeline(_messages.Message):
       `PROJECT_ID` can contain letters ([A-Za-z]), numbers ([0-9]), hyphens
       (-), colons (:), and periods (.). For more information, see [Identifying
       projects](https://cloud.google.com/resource-manager/docs/creating-
-      managing-projects#identifying_projects) * `LOCATION_ID` is the canonical
-      ID for the pipeline's location. The list of available locations can be
-      obtained by calling ListLocations. Note that the Data Pipelines service
-      is not available in all regions. It depends on Cloud Scheduler, an App
-      Engine application, so it's only available in [App Engine
-      regions](https://cloud.google.com/about/locations#region). *
+      managing-projects#identifying_projects). * `LOCATION_ID` is the
+      canonical ID for the pipeline's location. The list of available
+      locations can be obtained by calling
+      `google.cloud.location.Locations.ListLocations`. Note that the Data
+      Pipelines service is not available in all regions. It depends on Cloud
+      Scheduler, an App Engine application, so it's only available in [App
+      Engine regions](https://cloud.google.com/about/locations#region). *
       `PIPELINE_ID` is the ID of the pipeline. Must be unique for the selected
       project and location.
     pipelineSources: Immutable. The sources of the pipeline (for example,

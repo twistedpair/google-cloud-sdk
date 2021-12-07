@@ -21,18 +21,15 @@ from __future__ import unicode_literals
 
 import os
 import re
-import ssl
 import stat
 import tarfile
 
-from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import local_file_adapter
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import requests as core_requests
 from googlecloudsdk.core import transport
-from googlecloudsdk.core import url_opener
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import exceptions as creds_exceptions
 from googlecloudsdk.core.credentials import store
@@ -42,7 +39,6 @@ from googlecloudsdk.core.util import retry
 
 import requests
 import six
-from six.moves import urllib
 
 
 UPDATE_MANAGER_COMMAND_PATH = 'UPDATE_MANAGER'
@@ -84,92 +80,6 @@ class UnsupportedSourceError(Error):
 
 
 def MakeRequest(url, command_path):
-  """Gets the request object for the given URL.
-
-  If the URL is for cloud storage and we get a 403, this will try to load the
-  active credentials and use them to authenticate the download.
-
-  Args:
-    url: str, The URL to download.
-    command_path: the command path to include in the User-Agent header if the
-      URL is HTTP
-
-  Raises:
-    AuthenticationError: If this download requires authentication and there
-      are no credentials or the credentials do not have access.
-
-  Returns:
-    urllib2.Request, The request.
-  """
-  if url.startswith(ComponentInstaller.GCS_BROWSER_DL_URL):
-    url = url.replace(ComponentInstaller.GCS_BROWSER_DL_URL,
-                      ComponentInstaller.GCS_API_DL_URL,
-                      1)
-
-  headers = {
-      b'Cache-Control': b'no-cache',
-      b'User-Agent': http_encoding.Encode(
-          transport.MakeUserAgentString(command_path))
-  }
-  timeout = TIMEOUT_IN_SEC
-  if command_path == UPDATE_MANAGER_COMMAND_PATH:
-    timeout = UPDATE_MANAGER_TIMEOUT_IN_SEC
-  try:
-    req = urllib.request.Request(url, headers=headers)
-    return _RawRequest(req, timeout=timeout)
-  except urllib.error.HTTPError as e:
-    if e.code != 403 or not url.startswith(ComponentInstaller.GCS_API_DL_URL):
-      raise e
-    try:
-      creds = store.LoadFreshCredential(use_google_auth=True)
-      creds.apply(headers)
-    except creds_exceptions.Error as e:
-      # If we fail here, it is because there are no active credentials or the
-      # credentials are bad.
-      raise AuthenticationError(
-          'This component requires valid credentials to install.', e)
-    try:
-      # Retry the download using the credentials.
-      req = urllib.request.Request(url, headers=headers)
-      return _RawRequest(req, timeout=timeout)
-    except urllib.error.HTTPError as e:
-      if e.code != 403:
-        raise e
-      # If we fail again with a 403, that means we used the credentials, but
-      # they didn't have access to the resource.
-      raise AuthenticationError(
-          """\
-Account [{account}] does not have permission to install this component.  Please
-ensure that this account should have access or run:
-
-$ gcloud config set account `ACCOUNT`
-
-to choose another account.""".format(
-    account=properties.VALUES.core.account.Get()), e)
-
-
-def _RawRequest(*args, **kwargs):
-  """Executes an HTTP request."""
-  def RetryIf(exc_type, exc_value, unused_traceback, unused_state):
-    return exc_type == urllib.error.HTTPError and exc_value.code == 404
-
-  def StatusUpdate(unused_result, unused_state):
-    log.debug('Retrying request...')
-
-  retryer = retry.Retryer(max_retrials=3, exponential_sleep_multiplier=2,
-                          jitter_ms=100, status_update_func=StatusUpdate)
-  try:
-    return retryer.RetryOnException(
-        url_opener.urlopen, args, kwargs,
-        should_retry_if=RetryIf, sleep_ms=500)
-  except retry.RetryException as e:
-    # last_result is (return value, sys.exc_info)
-    if e.last_result[1]:
-      exceptions.reraise(e.last_result[1][1], tb=e.last_result[1][2])
-    raise
-
-
-def MakeRequestViaRequests(url, command_path):
   """Gets the request object for the given URL using the requests library.
 
   If the URL is for cloud storage and we get a 403, this will try to load the
@@ -201,7 +111,7 @@ def MakeRequestViaRequests(url, command_path):
     timeout = UPDATE_MANAGER_TIMEOUT_IN_SEC
 
   try:
-    return _RawRequestViaRequests(url, headers=headers, timeout=timeout)
+    return _RawRequest(url, headers=headers, timeout=timeout)
   except requests.exceptions.HTTPError as e:
     if e.response.status_code != 403 or not e.response.url.startswith(
         ComponentInstaller.GCS_API_DL_URL):
@@ -216,7 +126,7 @@ def MakeRequestViaRequests(url, command_path):
           'This component requires valid credentials to install.', e)
     try:
       # Retry the download using the credentials.
-      return _RawRequestViaRequests(url, headers=headers, timeout=timeout)
+      return _RawRequest(url, headers=headers, timeout=timeout)
     except requests.exceptions.HTTPError as e:
       if e.response.status_code != 403:
         raise e
@@ -233,7 +143,7 @@ to choose another account.""".format(
     account=properties.VALUES.core.account.Get()), e)
 
 
-def _RawRequestViaRequests(*args, **kwargs):
+def _RawRequest(*args, **kwargs):
   """Executes an HTTP request."""
 
   def RetryIf(exc_type, exc_value, unused_traceback, unused_state):
@@ -314,49 +224,18 @@ def DownloadAndExtractTar(url, download_dir, extract_dir,
   (download_callback, install_callback) = (
       console_io.SplitProgressBar(progress_callback, [1, 1]))
 
-  if base.UseRequests():
-    try:
-      response = MakeRequestViaRequests(url, command_path)
-      with file_utils.BinaryFileWriter(download_file_path) as fp:
-        total_written = 0
-        total_size = len(response.content)
-        for chunk in response.iter_content(chunk_size=WRITE_BUFFER_SIZE):
-          fp.write(chunk)
-          total_written += len(chunk)
-          download_callback(total_written / total_size)
-      download_callback(1)
-    except (requests.exceptions.HTTPError, OSError) as e:
-      raise URLFetchError(e)
-  else:
-    try:
-      req = MakeRequest(url, command_path)
-      try:
-        total_size = float(req.info().get('Content-length', '0'))
-      # pylint: disable=broad-except, We never want progress bars to block an
-      # update.
-      except Exception:
-        total_size = 0
-
-      with file_utils.BinaryFileWriter(download_file_path) as fp:
-        # This is the buffer size that shutil.copyfileobj uses.
-        buf_size = WRITE_BUFFER_SIZE
-        total_written = 0
-
-        while True:
-          buf = req.read(buf_size)
-          if not buf:
-            break
-          fp.write(buf)
-          total_written += len(buf)
-          if total_size:
-            download_callback(total_written / total_size)
-
-      download_callback(1)
-
-    except (urllib.error.HTTPError,
-            urllib.error.URLError,
-            ssl.SSLError) as e:
-      raise URLFetchError(e)
+  try:
+    response = MakeRequest(url, command_path)
+    with file_utils.BinaryFileWriter(download_file_path) as fp:
+      total_written = 0
+      total_size = len(response.content)
+      for chunk in response.iter_content(chunk_size=WRITE_BUFFER_SIZE):
+        fp.write(chunk)
+        total_written += len(chunk)
+        download_callback(total_written / total_size)
+    download_callback(1)
+  except (requests.exceptions.HTTPError, OSError) as e:
+    raise URLFetchError(e)
 
   with tarfile.open(name=download_file_path) as tar:
     members = tar.getmembers()
