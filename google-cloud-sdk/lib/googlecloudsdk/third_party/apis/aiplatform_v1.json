@@ -845,6 +845,10 @@
         "smoothGradConfig": {
           "description": "Config for SmoothGrad approximation of gradients. When enabled, the gradients are approximated by averaging the gradients from noisy samples in the vicinity of the inputs. Adding noise can help improve the computed gradients. Refer to this paper for more details: https:\/\/arxiv.org\/pdf\/1706.03825.pdf",
           "$ref": "GoogleCloudAiplatformV1SmoothGradConfig"
+        },
+        "blurBaselineConfig": {
+          "description": "Config for IG with blur baseline. When enabled, a linear path from the maximally blurred image to the input image is created. Using a blurred baseline instead of zero (black image) is motivated by the BlurIG approach explained here: https:\/\/arxiv.org\/abs\/2004.03383",
+          "$ref": "GoogleCloudAiplatformV1BlurBaselineConfig"
         }
       }
     },
@@ -899,6 +903,18 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1BlurBaselineConfig": {
+      "id": "GoogleCloudAiplatformV1BlurBaselineConfig",
+      "description": "Config for blur baseline. When enabled, a linear path from the maximally blurred image to the input image is created. Using a blurred baseline instead of zero (black image) is motivated by the BlurIG approach explained here: https:\/\/arxiv.org\/abs\/2004.03383",
+      "type": "object",
+      "properties": {
+        "maxBlurSigma": {
+          "description": "The standard deviation of the blur kernel for the blurred baseline. The same blurring parameter is used for both the height and the width dimension. If not set, the method defaults to the zero (i.e. black for images) baseline.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1XraiAttribution": {
       "id": "GoogleCloudAiplatformV1XraiAttribution",
       "description": "An explanation method that redistributes Integrated Gradients attributions to segmented regions, taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1906.02825 Supported only by image Models.",
@@ -912,6 +928,10 @@
         "smoothGradConfig": {
           "description": "Config for SmoothGrad approximation of gradients. When enabled, the gradients are approximated by averaging the gradients from noisy samples in the vicinity of the inputs. Adding noise can help improve the computed gradients. Refer to this paper for more details: https:\/\/arxiv.org\/pdf\/1706.03825.pdf",
           "$ref": "GoogleCloudAiplatformV1SmoothGradConfig"
+        },
+        "blurBaselineConfig": {
+          "description": "Config for XRAI with blur baseline. When enabled, a linear path from the maximally blurred image to the input image is created. Using a blurred baseline instead of zero (black image) is motivated by the BlurIG approach explained here: https:\/\/arxiv.org\/abs\/2004.03383",
+          "$ref": "GoogleCloudAiplatformV1BlurBaselineConfig"
         }
       }
     },
@@ -1999,8 +2019,12 @@
       "type": "object",
       "properties": {
         "snapshotExport": {
-          "description": "Exports Feature values of all entities of the EntityType as of a snapshot time.",
+          "description": "Exports the latest Feature values of all entities of the EntityType within a time range.",
           "$ref": "GoogleCloudAiplatformV1ExportFeatureValuesRequestSnapshotExport"
+        },
+        "fullExport": {
+          "description": "Exports all historical values of all entities of the EntityType within a time range",
+          "$ref": "GoogleCloudAiplatformV1ExportFeatureValuesRequestFullExport"
         },
         "destination": {
           "description": "Required. Specifies destination location and format.",
@@ -2021,10 +2045,32 @@
     },
     "GoogleCloudAiplatformV1ExportFeatureValuesRequestSnapshotExport": {
       "id": "GoogleCloudAiplatformV1ExportFeatureValuesRequestSnapshotExport",
-      "description": "Describes exporting Feature values as of the snapshot timestamp.",
+      "description": "Describes exporting the latest Feature values of all entities of the EntityType between [start_time, snapshot_time].",
       "type": "object",
       "properties": {
         "snapshotTime": {
+          "description": "Exports Feature values as of this timestamp. If not set, retrieve values as of now. Timestamp, if present, must not have higher than millisecond precision.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "startTime": {
+          "description": "Excludes Feature values with feature generation timestamp before this timestamp. If not set, retrieve oldest values kept in Feature Store. Timestamp, if present, must not have higher than millisecond precision.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1ExportFeatureValuesRequestFullExport": {
+      "id": "GoogleCloudAiplatformV1ExportFeatureValuesRequestFullExport",
+      "description": "Describes exporting all historical Feature values of all entities of the EntityType between [start_time, end_time].",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "Excludes Feature values with feature generation timestamp before this timestamp. If not set, retrieve oldest values kept in Feature Store. Timestamp, if present, must not have higher than millisecond precision.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
           "description": "Exports Feature values as of this timestamp. If not set, retrieve values as of now. Timestamp, if present, must not have higher than millisecond precision.",
           "type": "string",
           "format": "google-datetime"
@@ -2466,7 +2512,7 @@
           "type": "string"
         },
         "network": {
-          "description": "The full name of the Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Job should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in `12345`, and {network} is a network name. Private services access must already be configured for the network. If left unspecified, the job is not peered with any network.",
+          "description": "The full name of the Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Job should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in `12345`, and {network} is a network name. To specify this field, you must have already [configured VPC Network Peering for Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/general\/vpc-peering). If this field is left unspecified, the job is not peered with any network.",
           "type": "string"
         },
         "baseOutputDirectory": {
@@ -3518,8 +3564,12 @@
           "type": "string"
         },
         "model": {
-          "description": "Required. The name of the Model that produces the predictions via this job, must share the same ancestor Location. Starting this job has no impact on any existing deployments of the Model and their resources.",
+          "description": "The name of the Model resoure that produces the predictions via this job, must share the same ancestor Location. Starting this job has no impact on any existing deployments of the Model and their resources. Exactly one of model and unmanaged_container_model must be set.",
           "type": "string"
+        },
+        "unmanagedContainerModel": {
+          "description": "Contains model information necessary to perform batch prediction without requiring uploading to model registry. Exactly one of model and unmanaged_container_model must be set.",
+          "$ref": "GoogleCloudAiplatformV1UnmanagedContainerModel"
         },
         "inputConfig": {
           "description": "Required. Input configuration of the instances on which predictions are performed. The schema of any single instance may be specified via the Model's PredictSchemata's instance_schema_uri.",
@@ -3640,6 +3690,103 @@
         "encryptionSpec": {
           "description": "Customer-managed encryption key options for a BatchPredictionJob. If this is set, then all resources created by the BatchPredictionJob will be encrypted with the provided encryption key.",
           "$ref": "GoogleCloudAiplatformV1EncryptionSpec"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1UnmanagedContainerModel": {
+      "id": "GoogleCloudAiplatformV1UnmanagedContainerModel",
+      "description": "Contains model information necessary to perform batch prediction without requiring a full model import.",
+      "type": "object",
+      "properties": {
+        "artifactUri": {
+          "description": "The path to the directory containing the Model artifact and any of its supporting files.",
+          "type": "string"
+        },
+        "predictSchemata": {
+          "description": "Contains the schemata used in Model's predictions and explanations",
+          "$ref": "GoogleCloudAiplatformV1PredictSchemata"
+        },
+        "containerSpec": {
+          "description": "Input only. The specification of the container that is to be used when deploying this Model.",
+          "$ref": "GoogleCloudAiplatformV1ModelContainerSpec"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1PredictSchemata": {
+      "id": "GoogleCloudAiplatformV1PredictSchemata",
+      "description": "Contains the schemata used in Model's predictions and explanations via PredictionService.Predict, PredictionService.Explain and BatchPredictionJob.",
+      "type": "object",
+      "properties": {
+        "instanceSchemaUri": {
+          "description": "Immutable. Points to a YAML file stored on Google Cloud Storage describing the format of a single instance, which are used in PredictRequest.instances, ExplainRequest.instances and BatchPredictionJob.input_config. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/github.com\/OAI\/OpenAPI-Specification\/blob\/main\/versions\/3.0.2.md#schemaObject). AutoML Models always have this field populated by Vertex AI. Note: The URI given on output will be immutable and probably different, including the URI scheme, than the one given on input. The output URI will point to a location where the user only has a read access.",
+          "type": "string"
+        },
+        "parametersSchemaUri": {
+          "description": "Immutable. Points to a YAML file stored on Google Cloud Storage describing the parameters of prediction and explanation via PredictRequest.parameters, ExplainRequest.parameters and BatchPredictionJob.model_parameters. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/github.com\/OAI\/OpenAPI-Specification\/blob\/main\/versions\/3.0.2.md#schemaObject). AutoML Models always have this field populated by Vertex AI, if no parameters are supported, then it is set to an empty string. Note: The URI given on output will be immutable and probably different, including the URI scheme, than the one given on input. The output URI will point to a location where the user only has a read access.",
+          "type": "string"
+        },
+        "predictionSchemaUri": {
+          "description": "Immutable. Points to a YAML file stored on Google Cloud Storage describing the format of a single prediction produced by this Model, which are returned via PredictResponse.predictions, ExplainResponse.explanations, and BatchPredictionJob.output_config. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/github.com\/OAI\/OpenAPI-Specification\/blob\/main\/versions\/3.0.2.md#schemaObject). AutoML Models always have this field populated by Vertex AI. Note: The URI given on output will be immutable and probably different, including the URI scheme, than the one given on input. The output URI will point to a location where the user only has a read access.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1ModelContainerSpec": {
+      "id": "GoogleCloudAiplatformV1ModelContainerSpec",
+      "description": "Specification of a container for serving predictions. Some fields in this message correspond to fields in the [Kubernetes Container v1 core specification](https:\/\/v1-18.docs.kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.18\/#container-v1-core).",
+      "type": "object",
+      "properties": {
+        "imageUri": {
+          "description": "Required. Immutable. URI of the Docker image to be used as the custom container for serving predictions. This URI must identify an image in Artifact Registry or Container Registry. Learn more about the [container publishing requirements](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#publishing), including permissions requirements for the Vertex AI Service Agent. The container image is ingested upon ModelService.UploadModel, stored internally, and this original path is afterwards not used. To learn about the requirements for the Docker image itself, see [Custom container requirements](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#). You can use the URI to one of Vertex AI's [pre-built container images for prediction](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/pre-built-containers) in this field.",
+          "type": "string"
+        },
+        "command": {
+          "description": "Immutable. Specifies the command that runs when the container starts. This overrides the container's [ENTRYPOINT](https:\/\/docs.docker.com\/engine\/reference\/builder\/#entrypoint). Specify this field as an array of executable and arguments, similar to a Docker `ENTRYPOINT`'s \"exec\" form, not its \"shell\" form. If you do not specify this field, then the container's `ENTRYPOINT` runs, in conjunction with the args field or the container's [`CMD`](https:\/\/docs.docker.com\/engine\/reference\/builder\/#cmd), if either exists. If this field is not specified and the container does not have an `ENTRYPOINT`, then refer to the Docker documentation about [how `CMD` and `ENTRYPOINT` interact](https:\/\/docs.docker.com\/engine\/reference\/builder\/#understand-how-cmd-and-entrypoint-interact). If you specify this field, then you can also specify the `args` field to provide additional arguments for this command. However, if you specify this field, then the container's `CMD` is ignored. See the [Kubernetes documentation about how the `command` and `args` fields interact with a container's `ENTRYPOINT` and `CMD`](https:\/\/kubernetes.io\/docs\/tasks\/inject-data-application\/define-command-argument-container\/#notes). In this field, you can reference [environment variables set by Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#aip-variables) and environment variables set in the env field. You cannot reference environment variables set in the Docker image. In order for environment variables to be expanded, reference them by using the following syntax: $( VARIABLE_NAME) Note that this differs from Bash variable expansion, which does not use parentheses. If a variable cannot be resolved, the reference in the input string is used unchanged. To avoid variable expansion, you can escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field corresponds to the `command` field of the Kubernetes Containers [v1 core API](https:\/\/v1-18.docs.kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.18\/#container-v1-core).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "args": {
+          "description": "Immutable. Specifies arguments for the command that runs when the container starts. This overrides the container's [`CMD`](https:\/\/docs.docker.com\/engine\/reference\/builder\/#cmd). Specify this field as an array of executable and arguments, similar to a Docker `CMD`'s \"default parameters\" form. If you don't specify this field but do specify the command field, then the command from the `command` field runs without any additional arguments. See the [Kubernetes documentation about how the `command` and `args` fields interact with a container's `ENTRYPOINT` and `CMD`](https:\/\/kubernetes.io\/docs\/tasks\/inject-data-application\/define-command-argument-container\/#notes). If you don't specify this field and don't specify the `command` field, then the container's [`ENTRYPOINT`](https:\/\/docs.docker.com\/engine\/reference\/builder\/#cmd) and `CMD` determine what runs based on their default behavior. See the Docker documentation about [how `CMD` and `ENTRYPOINT` interact](https:\/\/docs.docker.com\/engine\/reference\/builder\/#understand-how-cmd-and-entrypoint-interact). In this field, you can reference [environment variables set by Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#aip-variables) and environment variables set in the env field. You cannot reference environment variables set in the Docker image. In order for environment variables to be expanded, reference them by using the following syntax: $( VARIABLE_NAME) Note that this differs from Bash variable expansion, which does not use parentheses. If a variable cannot be resolved, the reference in the input string is used unchanged. To avoid variable expansion, you can escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field corresponds to the `args` field of the Kubernetes Containers [v1 core API](https:\/\/v1-18.docs.kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.18\/#container-v1-core).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "env": {
+          "description": "Immutable. List of environment variables to set in the container. After the container starts running, code running in the container can read these environment variables. Additionally, the command and args fields can reference these variables. Later entries in this list can also reference earlier entries. For example, the following example sets the variable `VAR_2` to have the value `foo bar`: ```json [ { \"name\": \"VAR_1\", \"value\": \"foo\" }, { \"name\": \"VAR_2\", \"value\": \"$(VAR_1) bar\" } ] ``` If you switch the order of the variables in the example, then the expansion does not occur. This field corresponds to the `env` field of the Kubernetes Containers [v1 core API](https:\/\/v1-18.docs.kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.18\/#container-v1-core).",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1EnvVar"
+          }
+        },
+        "ports": {
+          "description": "Immutable. List of ports to expose from the container. Vertex AI sends any prediction requests that it receives to the first port on this list. Vertex AI also sends [liveness and health checks](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#liveness) to this port. If you do not specify this field, it defaults to following value: ```json [ { \"containerPort\": 8080 } ] ``` Vertex AI does not use ports other than the first one listed. This field corresponds to the `ports` field of the Kubernetes Containers [v1 core API](https:\/\/v1-18.docs.kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.18\/#container-v1-core).",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1Port"
+          }
+        },
+        "predictRoute": {
+          "description": "Immutable. HTTP path on the container to send prediction requests to. Vertex AI forwards requests sent using projects.locations.endpoints.predict to this path on the container's IP address and port. Vertex AI then returns the container's response in the API response. For example, if you set this field to `\/foo`, then when Vertex AI receives a prediction request, it forwards the request body in a POST request to the `\/foo` path on the port of your container specified by the first value of this `ModelContainerSpec`'s ports field. If you don't specify this field, it defaults to the following value when you deploy this Model to an Endpoint: \/v1\/endpoints\/ENDPOINT\/deployedModels\/DEPLOYED_MODEL:predict The placeholders in this value are replaced as follows: * ENDPOINT: The last segment (following `endpoints\/`)of the Endpoint.name][] field of the Endpoint where this Model has been deployed. (Vertex AI makes this value available to your container code as the [`AIP_ENDPOINT_ID` environment variable](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#aip-variables).) * DEPLOYED_MODEL: DeployedModel.id of the `DeployedModel`. (Vertex AI makes this value available to your container code as the [`AIP_DEPLOYED_MODEL_ID` environment variable](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#aip-variables).)",
+          "type": "string"
+        },
+        "healthRoute": {
+          "description": "Immutable. HTTP path on the container to send health checks to. Vertex AI intermittently sends GET requests to this path on the container's IP address and port to check that the container is healthy. Read more about [health checks](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#health). For example, if you set this field to `\/bar`, then Vertex AI intermittently sends a GET request to the `\/bar` path on the port of your container specified by the first value of this `ModelContainerSpec`'s ports field. If you don't specify this field, it defaults to the following value when you deploy this Model to an Endpoint: \/v1\/endpoints\/ENDPOINT\/deployedModels\/ DEPLOYED_MODEL:predict The placeholders in this value are replaced as follows: * ENDPOINT: The last segment (following `endpoints\/`)of the Endpoint.name][] field of the Endpoint where this Model has been deployed. (Vertex AI makes this value available to your container code as the [`AIP_ENDPOINT_ID` environment variable](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#aip-variables).) * DEPLOYED_MODEL: DeployedModel.id of the `DeployedModel`. (Vertex AI makes this value available to your container code as the [`AIP_DEPLOYED_MODEL_ID` environment variable](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#aip-variables).)",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1Port": {
+      "id": "GoogleCloudAiplatformV1Port",
+      "description": "Represents a network port in a container.",
+      "type": "object",
+      "properties": {
+        "containerPort": {
+          "description": "The number of the port to expose on the pod's IP address. Must be a valid port number, between 1 and 65535 inclusive.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -4161,6 +4308,10 @@
         "emailAlertConfig": {
           "description": "Email alert config.",
           "$ref": "GoogleCloudAiplatformV1ModelMonitoringAlertConfigEmailAlertConfig"
+        },
+        "enableLogging": {
+          "description": "Dump the anomalies to Cloud Logging. The anomalies will be put to json payload encoded from proto google.cloud.aiplatform.logging.ModelMonitoringAnomaliesLogEntry. This can be further sinked to Pub\/Sub or any other services supported by Cloud Logging.",
+          "type": "boolean"
         }
       }
     },
@@ -5454,25 +5605,6 @@
         }
       }
     },
-    "GoogleCloudAiplatformV1PredictSchemata": {
-      "id": "GoogleCloudAiplatformV1PredictSchemata",
-      "description": "Contains the schemata used in Model's predictions and explanations via PredictionService.Predict, PredictionService.Explain and BatchPredictionJob.",
-      "type": "object",
-      "properties": {
-        "instanceSchemaUri": {
-          "description": "Immutable. Points to a YAML file stored on Google Cloud Storage describing the format of a single instance, which are used in PredictRequest.instances, ExplainRequest.instances and BatchPredictionJob.input_config. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/github.com\/OAI\/OpenAPI-Specification\/blob\/main\/versions\/3.0.2.md#schemaObject). AutoML Models always have this field populated by Vertex AI. Note: The URI given on output will be immutable and probably different, including the URI scheme, than the one given on input. The output URI will point to a location where the user only has a read access.",
-          "type": "string"
-        },
-        "parametersSchemaUri": {
-          "description": "Immutable. Points to a YAML file stored on Google Cloud Storage describing the parameters of prediction and explanation via PredictRequest.parameters, ExplainRequest.parameters and BatchPredictionJob.model_parameters. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/github.com\/OAI\/OpenAPI-Specification\/blob\/main\/versions\/3.0.2.md#schemaObject). AutoML Models always have this field populated by Vertex AI, if no parameters are supported, then it is set to an empty string. Note: The URI given on output will be immutable and probably different, including the URI scheme, than the one given on input. The output URI will point to a location where the user only has a read access.",
-          "type": "string"
-        },
-        "predictionSchemaUri": {
-          "description": "Immutable. Points to a YAML file stored on Google Cloud Storage describing the format of a single prediction produced by this Model, which are returned via PredictResponse.predictions, ExplainResponse.explanations, and BatchPredictionJob.output_config. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/github.com\/OAI\/OpenAPI-Specification\/blob\/main\/versions\/3.0.2.md#schemaObject). AutoML Models always have this field populated by Vertex AI. Note: The URI given on output will be immutable and probably different, including the URI scheme, than the one given on input. The output URI will point to a location where the user only has a read access.",
-          "type": "string"
-        }
-      }
-    },
     "GoogleCloudAiplatformV1ModelExportFormat": {
       "id": "GoogleCloudAiplatformV1ModelExportFormat",
       "description": "Represents export format supported by the Model. All formats export to Google Cloud Storage.",
@@ -5500,65 +5632,6 @@
               "IMAGE"
             ]
           }
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1ModelContainerSpec": {
-      "id": "GoogleCloudAiplatformV1ModelContainerSpec",
-      "description": "Specification of a container for serving predictions. Some fields in this message correspond to fields in the [Kubernetes Container v1 core specification](https:\/\/v1-18.docs.kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.18\/#container-v1-core).",
-      "type": "object",
-      "properties": {
-        "imageUri": {
-          "description": "Required. Immutable. URI of the Docker image to be used as the custom container for serving predictions. This URI must identify an image in Artifact Registry or Container Registry. Learn more about the [container publishing requirements](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#publishing), including permissions requirements for the Vertex AI Service Agent. The container image is ingested upon ModelService.UploadModel, stored internally, and this original path is afterwards not used. To learn about the requirements for the Docker image itself, see [Custom container requirements](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#). You can use the URI to one of Vertex AI's [pre-built container images for prediction](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/pre-built-containers) in this field.",
-          "type": "string"
-        },
-        "command": {
-          "description": "Immutable. Specifies the command that runs when the container starts. This overrides the container's [ENTRYPOINT](https:\/\/docs.docker.com\/engine\/reference\/builder\/#entrypoint). Specify this field as an array of executable and arguments, similar to a Docker `ENTRYPOINT`'s \"exec\" form, not its \"shell\" form. If you do not specify this field, then the container's `ENTRYPOINT` runs, in conjunction with the args field or the container's [`CMD`](https:\/\/docs.docker.com\/engine\/reference\/builder\/#cmd), if either exists. If this field is not specified and the container does not have an `ENTRYPOINT`, then refer to the Docker documentation about [how `CMD` and `ENTRYPOINT` interact](https:\/\/docs.docker.com\/engine\/reference\/builder\/#understand-how-cmd-and-entrypoint-interact). If you specify this field, then you can also specify the `args` field to provide additional arguments for this command. However, if you specify this field, then the container's `CMD` is ignored. See the [Kubernetes documentation about how the `command` and `args` fields interact with a container's `ENTRYPOINT` and `CMD`](https:\/\/kubernetes.io\/docs\/tasks\/inject-data-application\/define-command-argument-container\/#notes). In this field, you can reference [environment variables set by Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#aip-variables) and environment variables set in the env field. You cannot reference environment variables set in the Docker image. In order for environment variables to be expanded, reference them by using the following syntax: $( VARIABLE_NAME) Note that this differs from Bash variable expansion, which does not use parentheses. If a variable cannot be resolved, the reference in the input string is used unchanged. To avoid variable expansion, you can escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field corresponds to the `command` field of the Kubernetes Containers [v1 core API](https:\/\/v1-18.docs.kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.18\/#container-v1-core).",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "args": {
-          "description": "Immutable. Specifies arguments for the command that runs when the container starts. This overrides the container's [`CMD`](https:\/\/docs.docker.com\/engine\/reference\/builder\/#cmd). Specify this field as an array of executable and arguments, similar to a Docker `CMD`'s \"default parameters\" form. If you don't specify this field but do specify the command field, then the command from the `command` field runs without any additional arguments. See the [Kubernetes documentation about how the `command` and `args` fields interact with a container's `ENTRYPOINT` and `CMD`](https:\/\/kubernetes.io\/docs\/tasks\/inject-data-application\/define-command-argument-container\/#notes). If you don't specify this field and don't specify the `command` field, then the container's [`ENTRYPOINT`](https:\/\/docs.docker.com\/engine\/reference\/builder\/#cmd) and `CMD` determine what runs based on their default behavior. See the Docker documentation about [how `CMD` and `ENTRYPOINT` interact](https:\/\/docs.docker.com\/engine\/reference\/builder\/#understand-how-cmd-and-entrypoint-interact). In this field, you can reference [environment variables set by Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#aip-variables) and environment variables set in the env field. You cannot reference environment variables set in the Docker image. In order for environment variables to be expanded, reference them by using the following syntax: $( VARIABLE_NAME) Note that this differs from Bash variable expansion, which does not use parentheses. If a variable cannot be resolved, the reference in the input string is used unchanged. To avoid variable expansion, you can escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field corresponds to the `args` field of the Kubernetes Containers [v1 core API](https:\/\/v1-18.docs.kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.18\/#container-v1-core).",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "env": {
-          "description": "Immutable. List of environment variables to set in the container. After the container starts running, code running in the container can read these environment variables. Additionally, the command and args fields can reference these variables. Later entries in this list can also reference earlier entries. For example, the following example sets the variable `VAR_2` to have the value `foo bar`: ```json [ { \"name\": \"VAR_1\", \"value\": \"foo\" }, { \"name\": \"VAR_2\", \"value\": \"$(VAR_1) bar\" } ] ``` If you switch the order of the variables in the example, then the expansion does not occur. This field corresponds to the `env` field of the Kubernetes Containers [v1 core API](https:\/\/v1-18.docs.kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.18\/#container-v1-core).",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudAiplatformV1EnvVar"
-          }
-        },
-        "ports": {
-          "description": "Immutable. List of ports to expose from the container. Vertex AI sends any prediction requests that it receives to the first port on this list. Vertex AI also sends [liveness and health checks](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#liveness) to this port. If you do not specify this field, it defaults to following value: ```json [ { \"containerPort\": 8080 } ] ``` Vertex AI does not use ports other than the first one listed. This field corresponds to the `ports` field of the Kubernetes Containers [v1 core API](https:\/\/v1-18.docs.kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.18\/#container-v1-core).",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudAiplatformV1Port"
-          }
-        },
-        "predictRoute": {
-          "description": "Immutable. HTTP path on the container to send prediction requests to. Vertex AI forwards requests sent using projects.locations.endpoints.predict to this path on the container's IP address and port. Vertex AI then returns the container's response in the API response. For example, if you set this field to `\/foo`, then when Vertex AI receives a prediction request, it forwards the request body in a POST request to the `\/foo` path on the port of your container specified by the first value of this `ModelContainerSpec`'s ports field. If you don't specify this field, it defaults to the following value when you deploy this Model to an Endpoint: \/v1\/endpoints\/ENDPOINT\/deployedModels\/DEPLOYED_MODEL:predict The placeholders in this value are replaced as follows: * ENDPOINT: The last segment (following `endpoints\/`)of the Endpoint.name][] field of the Endpoint where this Model has been deployed. (Vertex AI makes this value available to your container code as the [`AIP_ENDPOINT_ID` environment variable](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#aip-variables).) * DEPLOYED_MODEL: DeployedModel.id of the `DeployedModel`. (Vertex AI makes this value available to your container code as the [`AIP_DEPLOYED_MODEL_ID` environment variable](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#aip-variables).)",
-          "type": "string"
-        },
-        "healthRoute": {
-          "description": "Immutable. HTTP path on the container to send health checks to. Vertex AI intermittently sends GET requests to this path on the container's IP address and port to check that the container is healthy. Read more about [health checks](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#health). For example, if you set this field to `\/bar`, then Vertex AI intermittently sends a GET request to the `\/bar` path on the port of your container specified by the first value of this `ModelContainerSpec`'s ports field. If you don't specify this field, it defaults to the following value when you deploy this Model to an Endpoint: \/v1\/endpoints\/ENDPOINT\/deployedModels\/ DEPLOYED_MODEL:predict The placeholders in this value are replaced as follows: * ENDPOINT: The last segment (following `endpoints\/`)of the Endpoint.name][] field of the Endpoint where this Model has been deployed. (Vertex AI makes this value available to your container code as the [`AIP_ENDPOINT_ID` environment variable](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#aip-variables).) * DEPLOYED_MODEL: DeployedModel.id of the `DeployedModel`. (Vertex AI makes this value available to your container code as the [`AIP_DEPLOYED_MODEL_ID` environment variable](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#aip-variables).)",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1Port": {
-      "id": "GoogleCloudAiplatformV1Port",
-      "description": "Represents a network port in a container.",
-      "type": "object",
-      "properties": {
-        "containerPort": {
-          "description": "The number of the port to expose on the pod's IP address. Must be a valid port number, between 1 and 65535 inclusive.",
-          "type": "integer",
-          "format": "int32"
         }
       }
     },
@@ -8642,6 +8715,10 @@
         "smoothGradConfig": {
           "description": "Config for SmoothGrad approximation of gradients. When enabled, the gradients are approximated by averaging the gradients from noisy samples in the vicinity of the inputs. Adding noise can help improve the computed gradients. Refer to this paper for more details: https:\/\/arxiv.org\/pdf\/1706.03825.pdf",
           "$ref": "GoogleCloudAiplatformV1beta1SmoothGradConfig"
+        },
+        "blurBaselineConfig": {
+          "description": "Config for IG with blur baseline. When enabled, a linear path from the maximally blurred image to the input image is created. Using a blurred baseline instead of zero (black image) is motivated by the BlurIG approach explained here: https:\/\/arxiv.org\/abs\/2004.03383",
+          "$ref": "GoogleCloudAiplatformV1beta1BlurBaselineConfig"
         }
       }
     },
@@ -8696,6 +8773,18 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1beta1BlurBaselineConfig": {
+      "id": "GoogleCloudAiplatformV1beta1BlurBaselineConfig",
+      "description": "Config for blur baseline. When enabled, a linear path from the maximally blurred image to the input image is created. Using a blurred baseline instead of zero (black image) is motivated by the BlurIG approach explained here: https:\/\/arxiv.org\/abs\/2004.03383",
+      "type": "object",
+      "properties": {
+        "maxBlurSigma": {
+          "description": "The standard deviation of the blur kernel for the blurred baseline. The same blurring parameter is used for both the height and the width dimension. If not set, the method defaults to the zero (i.e. black for images) baseline.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1beta1XraiAttribution": {
       "id": "GoogleCloudAiplatformV1beta1XraiAttribution",
       "description": "An explanation method that redistributes Integrated Gradients attributions to segmented regions, taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1906.02825 Supported only by image Models.",
@@ -8709,6 +8798,10 @@
         "smoothGradConfig": {
           "description": "Config for SmoothGrad approximation of gradients. When enabled, the gradients are approximated by averaging the gradients from noisy samples in the vicinity of the inputs. Adding noise can help improve the computed gradients. Refer to this paper for more details: https:\/\/arxiv.org\/pdf\/1706.03825.pdf",
           "$ref": "GoogleCloudAiplatformV1beta1SmoothGradConfig"
+        },
+        "blurBaselineConfig": {
+          "description": "Config for XRAI with blur baseline. When enabled, a linear path from the maximally blurred image to the input image is created. Using a blurred baseline instead of zero (black image) is motivated by the BlurIG approach explained here: https:\/\/arxiv.org\/abs\/2004.03383",
+          "$ref": "GoogleCloudAiplatformV1beta1BlurBaselineConfig"
         }
       }
     },
@@ -9249,11 +9342,11 @@
     },
     "GoogleCloudAiplatformV1beta1ImportFeatureValuesOperationMetadata": {
       "id": "GoogleCloudAiplatformV1beta1ImportFeatureValuesOperationMetadata",
-      "description": "Details of operations that perform import feature values.",
+      "description": "Details of operations that perform import Feature values.",
       "type": "object",
       "properties": {
         "genericMetadata": {
-          "description": "Operation metadata for Featurestore import feature values.",
+          "description": "Operation metadata for Featurestore import Feature values.",
           "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
         },
         "importedEntityCount": {
@@ -9262,7 +9355,7 @@
           "format": "int64"
         },
         "importedFeatureValueCount": {
-          "description": "Number of feature values that have been imported by the operation.",
+          "description": "Number of Feature values that have been imported by the operation.",
           "type": "string",
           "format": "int64"
         },
@@ -9292,6 +9385,32 @@
           "description": "The number of rows in input source that weren't imported due to either * Not having any featureValues. * Having a null entityId. * Having a null timestamp. * Not being parsable (applicable for CSV sources).",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1MutateDeployedIndexOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1MutateDeployedIndexOperationMetadata",
+      "description": "Runtime operation information for IndexEndpointService.MutateDeployedIndex.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        },
+        "deployedIndexId": {
+          "description": "The unique index id specified by user",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1MutateDeployedIndexResponse": {
+      "id": "GoogleCloudAiplatformV1beta1MutateDeployedIndexResponse",
+      "description": "Response message for IndexEndpointService.MutateDeployedIndex.",
+      "type": "object",
+      "properties": {
+        "deployedIndex": {
+          "description": "The DeployedIndex that had been updated in the IndexEndpoint.",
+          "$ref": "GoogleCloudAiplatformV1beta1DeployedIndex"
         }
       }
     },
@@ -10234,6 +10353,22 @@
           "description": "The regression value.",
           "type": "number",
           "format": "float"
+        },
+        "quantileValues": {
+          "description": "Quantile values.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        },
+        "quantilePredictions": {
+          "description": "Quantile predictions, in 1-1 correspondence with quantile_values.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
         }
       }
     },
@@ -11242,7 +11377,7 @@
           "type": "string"
         },
         "network": {
-          "description": "The full name of the Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Job should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in `12345`, and {network} is a network name. Private services access must already be configured for the network. If left unspecified, the job is not peered with any network.",
+          "description": "The full name of the Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Job should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in `12345`, and {network} is a network name. To specify this field, you must have already [configured VPC Network Peering for Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/general\/vpc-peering). If this field is left unspecified, the job is not peered with any network.",
           "type": "string"
         },
         "baseOutputDirectory": {
@@ -13030,11 +13165,11 @@
     },
     "GoogleCloudAiplatformV1ImportFeatureValuesOperationMetadata": {
       "id": "GoogleCloudAiplatformV1ImportFeatureValuesOperationMetadata",
-      "description": "Details of operations that perform import feature values.",
+      "description": "Details of operations that perform import Feature values.",
       "type": "object",
       "properties": {
         "genericMetadata": {
-          "description": "Operation metadata for Featurestore import feature values.",
+          "description": "Operation metadata for Featurestore import Feature values.",
           "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
         },
         "importedEntityCount": {
@@ -13043,7 +13178,7 @@
           "format": "int64"
         },
         "importedFeatureValueCount": {
-          "description": "Number of feature values that have been imported by the operation.",
+          "description": "Number of Feature values that have been imported by the operation.",
           "type": "string",
           "format": "int64"
         },
@@ -13073,6 +13208,32 @@
           "description": "The number of rows in input source that weren't imported due to either * Not having any featureValues. * Having a null entityId. * Having a null timestamp. * Not being parsable (applicable for CSV sources).",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1MutateDeployedIndexOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1MutateDeployedIndexOperationMetadata",
+      "description": "Runtime operation information for IndexEndpointService.MutateDeployedIndex.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        },
+        "deployedIndexId": {
+          "description": "The unique index id specified by user",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1MutateDeployedIndexResponse": {
+      "id": "GoogleCloudAiplatformV1MutateDeployedIndexResponse",
+      "description": "Response message for IndexEndpointService.MutateDeployedIndex.",
+      "type": "object",
+      "properties": {
+        "deployedIndex": {
+          "description": "The DeployedIndex that had been updated in the IndexEndpoint.",
+          "$ref": "GoogleCloudAiplatformV1DeployedIndex"
         }
       }
     },
@@ -13816,6 +13977,22 @@
           "description": "The regression value.",
           "type": "number",
           "format": "float"
+        },
+        "quantileValues": {
+          "description": "Quantile values.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        },
+        "quantilePredictions": {
+          "description": "Quantile predictions, in 1-1 correspondence with quantile_values.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
         }
       }
     },
@@ -17496,6 +17673,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Undeploys an Index from an IndexEndpoint, removing a DeployedIndex from it, and freeing all resources it's using."
+                },
+                "mutateDeployedIndex": {
+                  "id": "aiplatform.projects.locations.indexEndpoints.mutateDeployedIndex",
+                  "path": "v1/{+indexEndpoint}:mutateDeployedIndex",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/indexEndpoints/{indexEndpointsId}:mutateDeployedIndex",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "indexEndpoint": {
+                      "description": "Required. The name of the IndexEndpoint resource into which to deploy an Index. Format: `projects\/{project}\/locations\/{location}\/indexEndpoints\/{index_endpoint}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/indexEndpoints\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "indexEndpoint"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1DeployedIndex"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Update an existing DeployedIndex under an IndexEndpoint."
                 }
               }
             },
@@ -19612,7 +19817,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a Model. Model can only be deleted if there are no DeployedModels created from it."
+                  "description": "Deletes a Model. A model cannot be deleted if any Endpoint resource has a DeployedModel based on the model in its deployed_models field."
                 },
                 "export": {
                   "id": "aiplatform.projects.locations.models.export",

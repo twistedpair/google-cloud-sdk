@@ -34,6 +34,7 @@ class _UserBucketArgs:
   def __init__(self,
                cors_file_path=None,
                default_encryption_key=None,
+               default_event_based_hold=None,
                default_storage_class=None,
                labels_file_path=None,
                lifecycle_file_path=None,
@@ -46,6 +47,7 @@ class _UserBucketArgs:
     """Initializes class, binding flag values to it."""
     self.cors_file_path = cors_file_path
     self.default_encryption_key = default_encryption_key
+    self.default_event_based_hold = default_event_based_hold
     self.default_storage_class = default_storage_class
     self.labels_file_path = labels_file_path
     self.lifecycle_file_path = lifecycle_file_path
@@ -61,6 +63,7 @@ class _UserBucketArgs:
       return NotImplemented
     return (self.cors_file_path == other.cors_file_path and
             self.default_encryption_key == other.default_encryption_key and
+            self.default_event_based_hold == other.default_event_based_hold and
             self.default_storage_class == other.default_storage_class and
             self.labels_file_path == other.labels_file_path and
             self.lifecycle_file_path == other.lifecycle_file_path and
@@ -163,6 +166,8 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
       resource_args = _UserBucketArgs(
           cors_file_path=getattr(args, 'cors_file', None),
           default_encryption_key=getattr(args, 'default_encryption_key', None),
+          default_event_based_hold=getattr(args, 'default_event_based_hold',
+                                           None),
           default_storage_class=getattr(args, 'default_storage_class', None),
           labels_file_path=getattr(args, 'labels_file', None),
           lifecycle_file_path=getattr(args, 'lifecycle_file', None),

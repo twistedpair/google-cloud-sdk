@@ -15,6 +15,30 @@ from apitools.base.py import extra_types
 package = 'securitycenter'
 
 
+class Access(_messages.Message):
+  r"""Represents an access event.
+
+  Fields:
+    callerIp: Caller's IP address, such as "1.1.1.1".
+    callerIpGeo: The caller IP's geolocation, which identifies where the call
+      came from.
+    methodName: The method that the service account called, e.g.
+      "SetIamPolicy".
+    principalEmail: Associated email, such as "foo@google.com".
+    serviceName: This is the API service that the service account made a call
+      to, e.g. "iam.googleapis.com"
+    userAgentFamily: What kind of user agent is associated, e.g. operating
+      system shells, embedded or stand-alone applications, etc.
+  """
+
+  callerIp = _messages.StringField(1)
+  callerIpGeo = _messages.MessageField('Geolocation', 2)
+  methodName = _messages.StringField(3)
+  principalEmail = _messages.StringField(4)
+  serviceName = _messages.StringField(5)
+  userAgentFamily = _messages.StringField(6)
+
+
 class Config(_messages.Message):
   r"""Configuration of a module.
 
@@ -522,6 +546,8 @@ class Finding(_messages.Message):
       only.
 
   Fields:
+    access: Access details associated to the Finding, such as more information
+      on the caller, which method was accessed, from where, etc.
     canonicalName: The canonical name of the finding. It's either "organizatio
       ns/{organization_id}/sources/{source_id}/findings/{finding_id}",
       "folders/{folder_id}/sources/{source_id}/findings/{finding_id}" or
@@ -552,6 +578,8 @@ class Finding(_messages.Message):
       or in an operating system that, with high confidence, indicates a
       computer intrusion. Reference:
       https://en.wikipedia.org/wiki/Indicator_of_compromise
+    mitreAttack: MITRE ATT&CK tactics and techniques related to this finding.
+      See: https://attack.mitre.org
     mute: Indicates the mute state of a finding (either unspecified, muted,
       unmuted or undefined).
     muteInitiator: First known as mute_annotation. Records additional
@@ -742,25 +770,27 @@ class Finding(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  canonicalName = _messages.StringField(1)
-  category = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  eventTime = _messages.StringField(4)
-  externalSystems = _messages.MessageField('ExternalSystemsValue', 5)
-  externalUri = _messages.StringField(6)
-  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 7)
-  indicator = _messages.MessageField('Indicator', 8)
-  mute = _messages.EnumField('MuteValueValuesEnum', 9)
-  muteInitiator = _messages.StringField(10)
-  muteUpdateTime = _messages.StringField(11)
-  name = _messages.StringField(12)
-  parent = _messages.StringField(13)
-  resourceName = _messages.StringField(14)
-  securityMarks = _messages.MessageField('SecurityMarks', 15)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 16)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  vulnerability = _messages.MessageField('Vulnerability', 19)
+  access = _messages.MessageField('Access', 1)
+  canonicalName = _messages.StringField(2)
+  category = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  eventTime = _messages.StringField(5)
+  externalSystems = _messages.MessageField('ExternalSystemsValue', 6)
+  externalUri = _messages.StringField(7)
+  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 8)
+  indicator = _messages.MessageField('Indicator', 9)
+  mitreAttack = _messages.MessageField('MitreAttack', 10)
+  mute = _messages.EnumField('MuteValueValuesEnum', 11)
+  muteInitiator = _messages.StringField(12)
+  muteUpdateTime = _messages.StringField(13)
+  name = _messages.StringField(14)
+  parent = _messages.StringField(15)
+  resourceName = _messages.StringField(16)
+  securityMarks = _messages.MessageField('SecurityMarks', 17)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 18)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  vulnerability = _messages.MessageField('Vulnerability', 21)
 
 
 class Folder(_messages.Message):
@@ -775,6 +805,16 @@ class Folder(_messages.Message):
 
   resourceFolder = _messages.StringField(1)
   resourceFolderDisplayName = _messages.StringField(2)
+
+
+class Geolocation(_messages.Message):
+  r"""Represents a geographical location for a given access.
+
+  Fields:
+    regionCode: A CLDR.
+  """
+
+  regionCode = _messages.StringField(1)
 
 
 class GoogleCloudSecuritycenterV1BulkMuteFindingsResponse(_messages.Message):
@@ -1266,6 +1306,234 @@ class Indicator(_messages.Message):
 
   domains = _messages.StringField(1, repeated=True)
   ipAddresses = _messages.StringField(2, repeated=True)
+
+
+class MitreAttack(_messages.Message):
+  r"""MITRE ATT&CK tactics and techniques related to this finding. See:
+  https://attack.mitre.org
+
+  Enums:
+    AdditionalTacticsValueListEntryValuesEnum:
+    AdditionalTechniquesValueListEntryValuesEnum:
+    PrimaryTacticValueValuesEnum: The MITRE ATT&CK tactic most closely
+      represented by this finding, if any.
+    PrimaryTechniquesValueListEntryValuesEnum:
+
+  Fields:
+    additionalTactics: Additional MITRE ATT&CK tactics related to this
+      finding, if any.
+    additionalTechniques: Additional MITRE ATT&CK techniques related to this
+      finding, if any, along with any of their respective parent techniques.
+    primaryTactic: The MITRE ATT&CK tactic most closely represented by this
+      finding, if any.
+    primaryTechniques: The MITRE ATT&CK technique most closely represented by
+      this finding, if any. primary_techniques is a repeated field because
+      there are multiple levels of MITRE ATT&CK techniques. If the technique
+      most closely represented by this finding is a sub-technique (e.g.
+      SCANNING_IP_BLOCKS), both the sub-technique and its parent technique(s)
+      will be listed (e.g. SCANNING_IP_BLOCKS, ACTIVE_SCANNING).
+    version: The MITRE ATT&CK version referenced by the above fields. E.g.
+      "8".
+  """
+
+  class AdditionalTacticsValueListEntryValuesEnum(_messages.Enum):
+    r"""AdditionalTacticsValueListEntryValuesEnum enum type.
+
+    Values:
+      TACTIC_UNSPECIFIED: Unspecified value.
+      RECONNAISSANCE: TA0043
+      RESOURCE_DEVELOPMENT: TA0042
+      INITIAL_ACCESS: TA0001
+      EXECUTION: TA0002
+      PERSISTENCE: TA0003
+      PRIVILEGE_ESCALATION: TA0004
+      DEFENSE_EVASION: TA0005
+      CREDENTIAL_ACCESS: TA0006
+      DISCOVERY: TA0007
+      LATERAL_MOVEMENT: TA0008
+      COLLECTION: TA0009
+      COMMAND_AND_CONTROL: TA0011
+      EXFILTRATION: TA0010
+      IMPACT: TA0040
+    """
+    TACTIC_UNSPECIFIED = 0
+    RECONNAISSANCE = 1
+    RESOURCE_DEVELOPMENT = 2
+    INITIAL_ACCESS = 3
+    EXECUTION = 4
+    PERSISTENCE = 5
+    PRIVILEGE_ESCALATION = 6
+    DEFENSE_EVASION = 7
+    CREDENTIAL_ACCESS = 8
+    DISCOVERY = 9
+    LATERAL_MOVEMENT = 10
+    COLLECTION = 11
+    COMMAND_AND_CONTROL = 12
+    EXFILTRATION = 13
+    IMPACT = 14
+
+  class AdditionalTechniquesValueListEntryValuesEnum(_messages.Enum):
+    r"""AdditionalTechniquesValueListEntryValuesEnum enum type.
+
+    Values:
+      TECHNIQUE_UNSPECIFIED: Unspecified value.
+      ACTIVE_SCANNING: T1595
+      SCANNING_IP_BLOCKS: T1595.001
+      INGRESS_TOOL_TRANSFER: T1105
+      NATIVE_API: T1106
+      SHARED_MODULES: T1129
+      COMMAND_AND_SCRIPTING_INTERPRETER: T1059
+      UNIX_SHELL: T1059.004
+      RESOURCE_HIJACKING: T1496
+      PROXY: T1090
+      EXTERNAL_PROXY: T1090.002
+      MULTI_HOP_PROXY: T1090.003
+      DYNAMIC_RESOLUTION: T1568
+      UNSECURED_CREDENTIALS: T1552
+      VALID_ACCOUNTS: T1078
+      LOCAL_ACCOUNTS: T1078.003
+      CLOUD_ACCOUNTS: T1078.004
+      NETWORK_DENIAL_OF_SERVICE: T1498
+      PERMISSION_GROUPS_DISCOVERY: T1069
+      CLOUD_GROUPS: T1069.003
+      EXFILTRATION_OVER_WEB_SERVICE: T1567
+      EXFILTRATION_TO_CLOUD_STORAGE: T1567.002
+      ACCOUNT_MANIPULATION: T1098
+      SSH_AUTHORIZED_KEYS: T1098.004
+      CREATE_OR_MODIFY_SYSTEM_PROCESS: T1543
+      STEAL_WEB_SESSION_COOKIE: T1539
+      MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE: T1578
+    """
+    TECHNIQUE_UNSPECIFIED = 0
+    ACTIVE_SCANNING = 1
+    SCANNING_IP_BLOCKS = 2
+    INGRESS_TOOL_TRANSFER = 3
+    NATIVE_API = 4
+    SHARED_MODULES = 5
+    COMMAND_AND_SCRIPTING_INTERPRETER = 6
+    UNIX_SHELL = 7
+    RESOURCE_HIJACKING = 8
+    PROXY = 9
+    EXTERNAL_PROXY = 10
+    MULTI_HOP_PROXY = 11
+    DYNAMIC_RESOLUTION = 12
+    UNSECURED_CREDENTIALS = 13
+    VALID_ACCOUNTS = 14
+    LOCAL_ACCOUNTS = 15
+    CLOUD_ACCOUNTS = 16
+    NETWORK_DENIAL_OF_SERVICE = 17
+    PERMISSION_GROUPS_DISCOVERY = 18
+    CLOUD_GROUPS = 19
+    EXFILTRATION_OVER_WEB_SERVICE = 20
+    EXFILTRATION_TO_CLOUD_STORAGE = 21
+    ACCOUNT_MANIPULATION = 22
+    SSH_AUTHORIZED_KEYS = 23
+    CREATE_OR_MODIFY_SYSTEM_PROCESS = 24
+    STEAL_WEB_SESSION_COOKIE = 25
+    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 26
+
+  class PrimaryTacticValueValuesEnum(_messages.Enum):
+    r"""The MITRE ATT&CK tactic most closely represented by this finding, if
+    any.
+
+    Values:
+      TACTIC_UNSPECIFIED: Unspecified value.
+      RECONNAISSANCE: TA0043
+      RESOURCE_DEVELOPMENT: TA0042
+      INITIAL_ACCESS: TA0001
+      EXECUTION: TA0002
+      PERSISTENCE: TA0003
+      PRIVILEGE_ESCALATION: TA0004
+      DEFENSE_EVASION: TA0005
+      CREDENTIAL_ACCESS: TA0006
+      DISCOVERY: TA0007
+      LATERAL_MOVEMENT: TA0008
+      COLLECTION: TA0009
+      COMMAND_AND_CONTROL: TA0011
+      EXFILTRATION: TA0010
+      IMPACT: TA0040
+    """
+    TACTIC_UNSPECIFIED = 0
+    RECONNAISSANCE = 1
+    RESOURCE_DEVELOPMENT = 2
+    INITIAL_ACCESS = 3
+    EXECUTION = 4
+    PERSISTENCE = 5
+    PRIVILEGE_ESCALATION = 6
+    DEFENSE_EVASION = 7
+    CREDENTIAL_ACCESS = 8
+    DISCOVERY = 9
+    LATERAL_MOVEMENT = 10
+    COLLECTION = 11
+    COMMAND_AND_CONTROL = 12
+    EXFILTRATION = 13
+    IMPACT = 14
+
+  class PrimaryTechniquesValueListEntryValuesEnum(_messages.Enum):
+    r"""PrimaryTechniquesValueListEntryValuesEnum enum type.
+
+    Values:
+      TECHNIQUE_UNSPECIFIED: Unspecified value.
+      ACTIVE_SCANNING: T1595
+      SCANNING_IP_BLOCKS: T1595.001
+      INGRESS_TOOL_TRANSFER: T1105
+      NATIVE_API: T1106
+      SHARED_MODULES: T1129
+      COMMAND_AND_SCRIPTING_INTERPRETER: T1059
+      UNIX_SHELL: T1059.004
+      RESOURCE_HIJACKING: T1496
+      PROXY: T1090
+      EXTERNAL_PROXY: T1090.002
+      MULTI_HOP_PROXY: T1090.003
+      DYNAMIC_RESOLUTION: T1568
+      UNSECURED_CREDENTIALS: T1552
+      VALID_ACCOUNTS: T1078
+      LOCAL_ACCOUNTS: T1078.003
+      CLOUD_ACCOUNTS: T1078.004
+      NETWORK_DENIAL_OF_SERVICE: T1498
+      PERMISSION_GROUPS_DISCOVERY: T1069
+      CLOUD_GROUPS: T1069.003
+      EXFILTRATION_OVER_WEB_SERVICE: T1567
+      EXFILTRATION_TO_CLOUD_STORAGE: T1567.002
+      ACCOUNT_MANIPULATION: T1098
+      SSH_AUTHORIZED_KEYS: T1098.004
+      CREATE_OR_MODIFY_SYSTEM_PROCESS: T1543
+      STEAL_WEB_SESSION_COOKIE: T1539
+      MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE: T1578
+    """
+    TECHNIQUE_UNSPECIFIED = 0
+    ACTIVE_SCANNING = 1
+    SCANNING_IP_BLOCKS = 2
+    INGRESS_TOOL_TRANSFER = 3
+    NATIVE_API = 4
+    SHARED_MODULES = 5
+    COMMAND_AND_SCRIPTING_INTERPRETER = 6
+    UNIX_SHELL = 7
+    RESOURCE_HIJACKING = 8
+    PROXY = 9
+    EXTERNAL_PROXY = 10
+    MULTI_HOP_PROXY = 11
+    DYNAMIC_RESOLUTION = 12
+    UNSECURED_CREDENTIALS = 13
+    VALID_ACCOUNTS = 14
+    LOCAL_ACCOUNTS = 15
+    CLOUD_ACCOUNTS = 16
+    NETWORK_DENIAL_OF_SERVICE = 17
+    PERMISSION_GROUPS_DISCOVERY = 18
+    CLOUD_GROUPS = 19
+    EXFILTRATION_OVER_WEB_SERVICE = 20
+    EXFILTRATION_TO_CLOUD_STORAGE = 21
+    ACCOUNT_MANIPULATION = 22
+    SSH_AUTHORIZED_KEYS = 23
+    CREATE_OR_MODIFY_SYSTEM_PROCESS = 24
+    STEAL_WEB_SESSION_COOKIE = 25
+    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 26
+
+  additionalTactics = _messages.EnumField('AdditionalTacticsValueListEntryValuesEnum', 1, repeated=True)
+  additionalTechniques = _messages.EnumField('AdditionalTechniquesValueListEntryValuesEnum', 2, repeated=True)
+  primaryTactic = _messages.EnumField('PrimaryTacticValueValuesEnum', 3)
+  primaryTechniques = _messages.EnumField('PrimaryTechniquesValueListEntryValuesEnum', 4, repeated=True)
+  version = _messages.StringField(5)
 
 
 class Reference(_messages.Message):

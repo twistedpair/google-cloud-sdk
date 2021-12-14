@@ -23,11 +23,9 @@ from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.ai import constants
 
 
-def GetClientInstance(
-    version=constants.AI_PLATFORM_API_VERSION[constants.BETA_VERSION],
-    no_http=False):
+def GetClientInstance(api_version=None, no_http=False):
   return apis.GetClientInstance(
-      constants.AI_PLATFORM_API_NAME, version, no_http=no_http)
+      constants.AI_PLATFORM_API_NAME, api_version, no_http=no_http)
 
 
 class AiPlatformOperationPoller(waiter.CloudOperationPoller):
@@ -53,8 +51,12 @@ class AiPlatformOperationPoller(waiter.CloudOperationPoller):
 class OperationsClient(object):
   """High-level client for the AI Platform operations surface."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or GetClientInstance()
+  def __init__(self,
+               client=None,
+               messages=None,
+               version=constants.BETA_VERSION):
+    self.client = client or GetClientInstance(
+        constants.AI_PLATFORM_API_VERSION[version])
     self.messages = messages or self.client.MESSAGES_MODULE
 
   def Get(self, operation_ref):
@@ -67,8 +69,8 @@ class OperationsClient(object):
 
     Args:
       operation: The operation resource to wait on
-      operation_ref: The operation reference to the operation resource. It's
-        the result by calling resources.REGISTRY.Parse
+      operation_ref: The operation reference to the operation resource. It's the
+        result by calling resources.REGISTRY.Parse
       message: str, the message to print while waiting.
 
     Returns:

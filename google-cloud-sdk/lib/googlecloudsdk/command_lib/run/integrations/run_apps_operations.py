@@ -154,18 +154,25 @@ class RunAppsOperations(object):
     app_dict = encoding.MessageToDict(application)
     app_dict.setdefault(_CONFIG_KEY, {})
     app_dict[_CONFIG_KEY].setdefault(_RESOURCES_KEY, {})
+    resources_map = app_dict[_CONFIG_KEY][_RESOURCES_KEY]
     if not name:
-      name = self.NewIntegrationName(integration_type, service, app_dict)
+      name = self._NewIntegrationName(integration_type, service, parameters,
+                                      app_dict)
 
-    if name in app_dict[_CONFIG_KEY][_RESOURCES_KEY]:
+    resource_type = self._GetResourceType(integration_type)
+
+    if name in resources_map:
       raise exceptions.ArgumentError(
           'Integration with name [{}] already exists.'.format(name))
 
-    resource_config = self._GetResourceConfig(integration_type, parameters,
+    resource_config = self._GetResourceConfig(resource_type, parameters,
                                               service, None, {})
-    app_dict[_CONFIG_KEY][_RESOURCES_KEY][name] = resource_config
+    resources_map[name] = resource_config
+    match_type_names = [{'type': resource_type, 'name': name}]
+    if service:
+      self._EnsureServiceConfig(resources_map, service)
+      match_type_names.append({'type': 'service', 'name': service})
     application = encoding.DictToMessage(app_dict, self.messages.Application)
-    match_type_names = [{'type': integration_type, 'name': name}]
     return self.ApplyAppConfig(
         appname=_DEFAULT_APP_NAME,
         appconfig=application.config,
@@ -198,8 +205,9 @@ class RunAppsOperations(object):
       raise exceptions.IntegrationNotFoundError(
           'Integration [{}] cannot be found'.format(name))
     app_dict = encoding.MessageToDict(application)
-    existing_resource = app_dict.get(_CONFIG_KEY, {}).get(_RESOURCES_KEY,
-                                                          {}).get(name)
+    app_dict.setdefault(_CONFIG_KEY, {})
+    resources_map = app_dict[_CONFIG_KEY].setdefault(_RESOURCES_KEY, {})
+    existing_resource = resources_map.get(name)
     if existing_resource is None:
       raise exceptions.IntegrationNotFoundError(
           'Integration [{}] cannot be found'.format(name))
@@ -207,14 +215,17 @@ class RunAppsOperations(object):
     # which translated as the only key in the resource dict.
     keys = list(existing_resource.keys())
     assert len(keys) == 1
-    integration_type = keys[0]
+    resource_type = keys[0]
 
-    resource_config = self._GetResourceConfig(integration_type, parameters,
+    resource_config = self._GetResourceConfig(resource_type, parameters,
                                               add_service, remove_service,
                                               existing_resource)
-    app_dict[_CONFIG_KEY][_RESOURCES_KEY][name] = resource_config
+    resources_map[name] = resource_config
+    match_type_names = [{'type': resource_type, 'name': name}]
+    if add_service:
+      self._EnsureServiceConfig(resources_map, add_service)
+      match_type_names.append({'type': 'service', 'name': add_service})
     application = encoding.DictToMessage(app_dict, self.messages.Application)
-    match_type_names = [{'type': integration_type, 'name': name}]
     return self.ApplyAppConfig(
         appname=_DEFAULT_APP_NAME,
         appconfig=application.config,
@@ -264,22 +275,37 @@ class RunAppsOperations(object):
     raise exceptions.ArgumentError(
         'Unsupported integration type [{}]'.format(int_type))
 
-  def NewIntegrationName(self, integration_type, service, app_dict):
+  def _EnsureServiceConfig(self, resources_map, service_name):
+    if service_name not in resources_map:
+      resources_map[service_name] = {'service': {}}
+
+  def _GetResourceType(self, integration_type):
+    if integration_type == 'custom-domain':
+      return 'router'
+    return integration_type
+
+  def _NewIntegrationName(self, integration_type, service, parameters,
+                          app_dict):
     """Returns a new name for an integration.
 
     It makes sure the new name does not exist in the given app_dict.
 
     Args:
       integration_type:  str, type of the integration.
-      service: str, name of the service
-      app_dict: dict, the dictionary that represents the application
+      service: str, name of the service.
+      parameters: parameter dictionary from args.
+      app_dict: dict, the dictionary that represents the application.
 
     Returns:
       str, the new name.
 
     """
-    if integration_type == 'router':
-      name = 'default-router'
+    if integration_type == 'custom-domain':
+      domain = parameters['domain']
+      if not domain:
+        raise exceptions.ArgumentError('domain is required in "PARAMETERS" '
+                                       'for integration type "custom-domain"')
+      name = 'domain-{}'.format(domain.replace('.', '-'))
     else:
       name = '{}-{}'.format(integration_type, service)
     while name in app_dict[_CONFIG_KEY][_RESOURCES_KEY]:

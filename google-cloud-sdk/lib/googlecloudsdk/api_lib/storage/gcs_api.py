@@ -274,8 +274,10 @@ class GcsApi(cloud_api.CloudApi):
   @_catch_http_error_raise_gcs_api_error()
   def create_bucket(self,
                     bucket_resource,
+                    request_config,
                     fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""
+    del request_config  # Unused. TODO(b/203088483): Extract values.
     projection = self._get_projection(fields_scope,
                                       self.messages.StorageBucketsInsertRequest)
     if not bucket_resource.metadata:

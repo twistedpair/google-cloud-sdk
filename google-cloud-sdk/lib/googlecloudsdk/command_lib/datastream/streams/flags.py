@@ -39,18 +39,18 @@ def AddStateFlag(parser):
   parser.add_argument('--state', help=help_text)
 
 
-def AddValidationGroup(parser):
+def AddValidationGroup(parser, verb):
   """Adds a --validate-only or --force flag to the given parser."""
   validation_group = parser.add_group(mutex=True)
   validation_group.add_argument(
       '--validate-only',
-      help="""Only validate the stream, but do not create any resources.
-      The default is false.""",
+      help="""Only validate the stream, but do not %s any resources.
+      The default is false.""" % verb.lower(),
       action='store_true',
       default=False)
   validation_group.add_argument(
       '--force',
-      help="""Create the stream without validating it.""",
+      help="""%s the stream without validating it.""" % verb,
       action='store_true',
       default=False)
 
@@ -75,4 +75,3 @@ def AddBackfillStrategyGroup(parser, required=True):
   backfill_all_excluded_objects.add_argument(
       '--mysql-excluded-objects',
       help="""MySQL data source objects to avoid backfilling.""")
-

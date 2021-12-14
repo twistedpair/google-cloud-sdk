@@ -85,8 +85,9 @@ class S3Api(cloud_api.CloudApi):
           endpoint_url=properties.VALUES.storage.s3_endpoint_url.Get())
 
   @_catch_client_error_raise_s3_api_error()
-  def create_bucket(self, bucket_resource, fields_scope=None):
+  def create_bucket(self, bucket_resource, request_config, fields_scope=None):
     """See super class."""
+    del request_config  # Unused. TODO(b/203088483): Extract values.
     del fields_scope  # Unused in S3 client.
 
     if bucket_resource.retention_period:

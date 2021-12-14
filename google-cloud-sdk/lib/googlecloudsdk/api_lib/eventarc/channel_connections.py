@@ -38,7 +38,7 @@ class ChannelConnectionClientV1(EventarcClientBase):
   def __init__(self):
     super(ChannelConnectionClientV1,
           self).__init__(common.API_NAME, common.API_VERSION_1,
-                         'channelConnection')
+                         'Channel Connection')
     client = apis.GetClientInstance(common.API_NAME, common.API_VERSION_1)
     self._messages = client.MESSAGES_MODULE
     self._service = client.projects_locations_channelConnections

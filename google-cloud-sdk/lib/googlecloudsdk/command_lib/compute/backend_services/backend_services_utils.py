@@ -575,7 +575,14 @@ def ApplyCdnPolicyArgs(client,
                                                      backend_service)
   if negative_caching_policy is not None:
     cdn_policy.negativeCachingPolicy = negative_caching_policy
-  if args.negative_caching_policy:
+  if args.negative_caching_policy and not cdn_policy.negativeCaching:
+    # TODO (b/209813007): Replace implicit config change with warning that
+    # negative caching is disabled and a prompt to enable it with
+    # --negative-caching
+    log.warning(
+        'Setting a negative cache policy also enabled negative caching. If ' +
+        'this was not intended, disable negative caching with ' +
+        '`--no-negative-caching`.')
     cdn_policy.negativeCaching = True
 
   if is_update:

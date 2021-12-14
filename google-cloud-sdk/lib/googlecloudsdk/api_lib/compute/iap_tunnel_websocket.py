@@ -293,6 +293,17 @@ class IapTunnelWebSocket(object):
         else:
           raise
 
+  def _MaybeSendAck(self):
+    # Using these extra variables because the line is too long otherwise
+    total_bytes = self._total_bytes_received
+    bytes_recv_and_ackd = self._total_bytes_received_and_acked
+    window_size = utils.SUBPROTOCOL_MAX_DATA_FRAME_SIZE
+    # Following this doc: go/delayed-ack-message the recommended is to wait
+    # at least 2x the window size before we send ack messages,
+    # to avoid wasting cpu cycles on both ends
+    if total_bytes - bytes_recv_and_ackd > 2 * window_size:
+      self._SendAck()
+
   def _SendDataAndReconnectWebSocket(self):
     """Main function for send_and_reconnect_thread."""
     def SendData():
@@ -320,6 +331,7 @@ class IapTunnelWebSocket(object):
     """Send data that is sitting in the unsent data queue."""
     try:
       while not self._stopping:
+        self._MaybeSendAck()
         # This is a blocking call in case the queue is empty. The timeout is
         # there so we can unblock and send acks if no message arrive after a few
         # seconds

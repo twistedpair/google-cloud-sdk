@@ -61,6 +61,60 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AddItems(self, request, global_params=None):
+      r"""Add items to the AddressGroup.
+
+      Args:
+        request: (NetworksecurityOrganizationsLocationsAddressGroupsAddItemsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddItems')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddItems.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/organizations/{organizationsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:addItems',
+        http_method='POST',
+        method_id='networksecurity.organizations.locations.addressGroups.addItems',
+        ordered_params=['addressGroup'],
+        path_params=['addressGroup'],
+        query_params=[],
+        relative_path='v1alpha1/{+addressGroup}:addItems',
+        request_field='addItemsRequest',
+        request_type_name='NetworksecurityOrganizationsLocationsAddressGroupsAddItemsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def CloneItems(self, request, global_params=None):
+      r"""Clone items to the AddressGroup from another address group.
+
+      Args:
+        request: (NetworksecurityOrganizationsLocationsAddressGroupsCloneItemsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CloneItems')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CloneItems.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/organizations/{organizationsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:cloneItems',
+        http_method='POST',
+        method_id='networksecurity.organizations.locations.addressGroups.cloneItems',
+        ordered_params=['addressGroup'],
+        path_params=['addressGroup'],
+        query_params=[],
+        relative_path='v1alpha1/{+addressGroup}:cloneItems',
+        request_field='cloneItemsRequest',
+        request_type_name='NetworksecurityOrganizationsLocationsAddressGroupsCloneItemsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a new AddressGroup in a given project and location.
 
@@ -192,6 +246,33 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='addressGroup',
         request_type_name='NetworksecurityOrganizationsLocationsAddressGroupsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def RemoveItems(self, request, global_params=None):
+      r"""Remove items from the AddressGroup.
+
+      Args:
+        request: (NetworksecurityOrganizationsLocationsAddressGroupsRemoveItemsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RemoveItems')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveItems.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/organizations/{organizationsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:removeItems',
+        http_method='POST',
+        method_id='networksecurity.organizations.locations.addressGroups.removeItems',
+        ordered_params=['addressGroup'],
+        path_params=['addressGroup'],
+        query_params=[],
+        relative_path='v1alpha1/{+addressGroup}:removeItems',
+        request_field='removeItemsRequest',
+        request_type_name='NetworksecurityOrganizationsLocationsAddressGroupsRemoveItemsRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -343,6 +424,60 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
       super(NetworksecurityV1alpha1.ProjectsLocationsAddressGroupsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def AddItems(self, request, global_params=None):
+      r"""Add items to the AddressGroup.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsAddressGroupsAddItemsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddItems')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddItems.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:addItems',
+        http_method='POST',
+        method_id='networksecurity.projects.locations.addressGroups.addItems',
+        ordered_params=['addressGroup'],
+        path_params=['addressGroup'],
+        query_params=[],
+        relative_path='v1alpha1/{+addressGroup}:addItems',
+        request_field='addItemsRequest',
+        request_type_name='NetworksecurityProjectsLocationsAddressGroupsAddItemsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def CloneItems(self, request, global_params=None):
+      r"""Clone items to the AddressGroup from another address group.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsAddressGroupsCloneItemsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CloneItems')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CloneItems.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:cloneItems',
+        http_method='POST',
+        method_id='networksecurity.projects.locations.addressGroups.cloneItems',
+        ordered_params=['addressGroup'],
+        path_params=['addressGroup'],
+        query_params=[],
+        relative_path='v1alpha1/{+addressGroup}:cloneItems',
+        request_field='cloneItemsRequest',
+        request_type_name='NetworksecurityProjectsLocationsAddressGroupsCloneItemsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
     def Create(self, request, global_params=None):
       r"""Creates a new AddressGroup in a given project and location.
@@ -502,6 +637,33 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='addressGroup',
         request_type_name='NetworksecurityProjectsLocationsAddressGroupsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def RemoveItems(self, request, global_params=None):
+      r"""Remove items from the AddressGroup.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsAddressGroupsRemoveItemsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RemoveItems')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveItems.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:removeItems',
+        http_method='POST',
+        method_id='networksecurity.projects.locations.addressGroups.removeItems',
+        ordered_params=['addressGroup'],
+        path_params=['addressGroup'],
+        query_params=[],
+        relative_path='v1alpha1/{+addressGroup}:removeItems',
+        request_field='removeItemsRequest',
+        request_type_name='NetworksecurityProjectsLocationsAddressGroupsRemoveItemsRequest',
         response_type_name='Operation',
         supports_download=False,
     )

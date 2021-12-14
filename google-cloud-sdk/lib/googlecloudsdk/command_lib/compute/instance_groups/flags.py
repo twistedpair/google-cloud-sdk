@@ -486,8 +486,8 @@ STATEFUL_METADATA_HELP_UPDATE = """
       """
 
 STATEFUL_IPS_HELP_BASE = """
-      Managed instance groups preserve and reattach stateful IPs on
-      VM autohealing, update, and recreate events.
+      Managed instance groups preserve stateful IPs on VM autohealing, update,
+      and recreate events.
       """
 
 STATEFUL_IPS_HELP_TEMPLATE = """
@@ -510,8 +510,8 @@ STATEFUL_IPS_HELP_INSTANCE_CONFIGS_UPDATE = (
       Use this argument multiple times to update multiple IPs.
 
       If a stateful IP with the given network interface name exists in the
-      current per-instance configuration, its properties will be replaced by
-      the newly provided ones. Otherwise, a new stateful IP definition will be
+      current per-instance configuration, its properties are replaced by
+      the newly provided ones. Otherwise, a new stateful IP definition is
       added to the per-instance configuration.
       """)
 
@@ -531,18 +531,13 @@ STATEFUL_IP_INTERFACE_NAME_ARG_WITH_ENABLED_HELP = """
 
 
 STATEFUL_IP_INTERFACE_NAME_ARG_WITH_ADDRESS_HELP = """
-      *interface-name*::: (Optional) Network interface name. Can be omitted
-      when ``address'' is provided. If omitted, the default network interface
-      named ``nic0'' is assumed.
+      *interface-name*::: (Optional) Network interface name. If omitted,
+      the default network interface named ``nic0'' is assumed.
       """
 
-
-STATEFUL_IP_ADDRESS_ARG_HELP = """
-      *address*::: Static IP address to assign to the instance in one of
-      the following formats:
-
+STATEFUL_IP_ADDRESS_ARG_HELP_INFIX = """
       + Address: URL of a static IP address reservation. For example:
-      ``/projects/example-project/regions/us-east1/addresses/example-ip-name''.
+      ``projects/example-project/regions/us-east1/addresses/example-ip-name''.
 
       + Literal: For example: ``130.211.181.55''.
 
@@ -552,7 +547,16 @@ STATEFUL_IP_ADDRESS_ARG_HELP = """
       the instance.
       """
 
-STATEFUL_IP_ADDRESS_ARG_OPTIONAL_HELP = STATEFUL_IP_ADDRESS_ARG_HELP + """
+
+STATEFUL_IP_ADDRESS_ARG_HELP = """
+        *address*::: Static IP address to assign to the instance in one of
+        the following formats:
+        """ + STATEFUL_IP_ADDRESS_ARG_HELP_INFIX
+
+STATEFUL_IP_ADDRESS_ARG_OPTIONAL_HELP = """
+      *address*::: (Optional) Static IP address to assign to the instance in
+      one of the following formats:
+      """ + STATEFUL_IP_ADDRESS_ARG_HELP_INFIX + """
       The ``address'' flag is optional if an address is already defined in
       the instance's per-instance configuration. Otherwise it is required.
 
@@ -566,8 +570,8 @@ STATEFUL_IP_AUTO_DELETE_ARG_HELP = """
       always preserved on instance autohealing, update, and recreation
       operations. The following options are available:
       - ``never'': (Default) Never delete the static IP address. Instead,
-          unassign the address when its instance is deleted and keep the address
-          reserved.
+          unassign the address when its instance is permanently deleted and
+          keep the address reserved.
       - ``on-permanent-instance-deletion'': Delete the static IP
           address reservation when the instance that it's assigned to is
           permanently deleted from the instance group; for example, when the

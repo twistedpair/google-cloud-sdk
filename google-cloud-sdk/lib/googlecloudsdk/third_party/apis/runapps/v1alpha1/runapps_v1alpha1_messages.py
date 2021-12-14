@@ -309,7 +309,7 @@ class Deployment(_messages.Message):
     etag: Output only. A system-generated fingerprint for this version of the
       resource. May be used to detect modification conflict during updates.
     labels: Labels as key value pairs
-    name: name of resource
+    name: Output only. Canonical name of resource
     reconciling: Output only. Indicates whether the resource's reconciliation
       is still in progress.
     render: If specified, the configurations for the deployment will be output

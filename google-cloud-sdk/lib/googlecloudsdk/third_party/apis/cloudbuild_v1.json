@@ -1433,7 +1433,7 @@
           "type": "string"
         },
         "eventType": {
-          "description": "Optional. EventType allows the user to explicitly set the type of event to which this BuildTrigger should respond. This field is optional but will be validated against the rest of the configuration if it is set.",
+          "description": "EventType allows the user to explicitly set the type of event to which this BuildTrigger should respond. This field will be validated against the rest of the configuration if it is set.",
           "type": "string",
           "enumDescriptions": [
             "EVENT_TYPE_UNSPECIFIED event_types are ignored.",
@@ -1451,7 +1451,7 @@
           ]
         },
         "includeBuildLogs": {
-          "description": "Optional. If set to INCLUDE_BUILD_LOGS_WITH_STATUS, log url will be shown on GitHub page when build status is final. Setting this field to INCLUDE_BUILD_LOGS_WITH_STATUS for non GitHub triggers results in INVALID_ARGUMENT error.",
+          "description": "If set to INCLUDE_BUILD_LOGS_WITH_STATUS, log url will be shown on GitHub page when build status is final. Setting this field to INCLUDE_BUILD_LOGS_WITH_STATUS for non GitHub triggers results in INVALID_ARGUMENT error.",
           "type": "string",
           "enumDescriptions": [
             "Build logs will not be shown on GitHub.",
@@ -1808,7 +1808,8 @@
           "type": "string"
         },
         "connectedRepositories": {
-          "description": "Connected Bitbucket Server repositories for this config.",
+          "description": "Output only. Connected Bitbucket Server repositories for this config.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "BitbucketServerRepositoryId"
@@ -2115,6 +2116,51 @@
         }
       }
     },
+    "ListBitbucketServerRepositoriesResponse": {
+      "id": "ListBitbucketServerRepositoriesResponse",
+      "description": "RPC response object returned by the ListBitbucketServerRepositories RPC method.",
+      "type": "object",
+      "properties": {
+        "bitbucketServerRepositories": {
+          "description": "List of Bitbucket Server repositories.",
+          "type": "array",
+          "items": {
+            "$ref": "BitbucketServerRepository"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token that can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "BitbucketServerRepository": {
+      "id": "BitbucketServerRepository",
+      "description": "BitbucketServerRepository represents a repository hosted on a Bitbucket Server.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the repository.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Display name of the repository.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of the repository.",
+          "type": "string"
+        },
+        "browseUri": {
+          "description": "Link to the browse repo page on the Bitbucket Server instance.",
+          "type": "string"
+        },
+        "repoId": {
+          "description": "Identifier for a repository hosted on a Bitbucket Server.",
+          "$ref": "BitbucketServerRepositoryId"
+        }
+      }
+    },
     "AddBitbucketServerConnectedRepositoryRequest": {
       "id": "AddBitbucketServerConnectedRepositoryRequest",
       "description": "RPC request object accepted by the AddBitbucketServerConnectedRepository RPC method.",
@@ -2149,6 +2195,55 @@
         "connectedRepository": {
           "description": "The connected repository to remove.",
           "$ref": "BitbucketServerRepositoryId"
+        }
+      }
+    },
+    "BatchCreateBitbucketServerConnectedRepositoriesRequest": {
+      "id": "BatchCreateBitbucketServerConnectedRepositoriesRequest",
+      "description": "RPC request object accepted by BatchCreateBitbucketServerConnectedRepositories RPC method.",
+      "type": "object",
+      "properties": {
+        "requests": {
+          "description": "Required. Requests to connect Bitbucket Server repositories.",
+          "type": "array",
+          "items": {
+            "$ref": "CreateBitbucketServerConnectedRepositoryRequest"
+          }
+        }
+      }
+    },
+    "CreateBitbucketServerConnectedRepositoryRequest": {
+      "id": "CreateBitbucketServerConnectedRepositoryRequest",
+      "description": "Request to connect a repository from a connected Bitbucket Server host.",
+      "type": "object",
+      "properties": {
+        "parent": {
+          "description": "Required. The name of the `BitbucketServerConfig` that added connected repository. Format: `projects\/{project}\/locations\/{location}\/bitbucketServerConfigs\/{config}`",
+          "type": "string"
+        },
+        "bitbucketServerConnectedRepository": {
+          "description": "Required. The Bitbucket Server repository to connect.",
+          "$ref": "BitbucketServerConnectedRepository"
+        }
+      }
+    },
+    "BitbucketServerConnectedRepository": {
+      "id": "BitbucketServerConnectedRepository",
+      "description": "\/ BitbucketServerConnectedRepository represents a connected Bitbucket Server \/ repository.",
+      "type": "object",
+      "properties": {
+        "parent": {
+          "description": "The name of the `BitbucketServerConfig` that added connected repository. Format: `projects\/{project}\/locations\/{location}\/bitbucketServerConfigs\/{config}`",
+          "type": "string"
+        },
+        "repo": {
+          "description": "The Bitbucket Server repositories to connect.",
+          "$ref": "BitbucketServerRepositoryId"
+        },
+        "status": {
+          "description": "Output only. The status of the repo connection request.",
+          "readOnly": true,
+          "$ref": "Status"
         }
       }
     },
@@ -2341,22 +2436,8 @@
           "description": "Default settings which will be applied to builds on this worker pool if they are not specified in the build request.",
           "$ref": "HybridWorkerConfig"
         },
-        "dockerSecurityPolicy": {
-          "description": "Immutable. Specify the security policy for the hybrid worker pool. Once created, this setting cannot be changed on the hybrid worker pool, as we are unable to guarantee that the cluster has not been altered by misuse of privileged Docker daemon.",
-          "type": "string",
-          "enumDescriptions": [
-            "Unspecified - the default value will be used.",
-            "Users can only run builds using a non-privileged Docker daemon. This is suitable for most cases.",
-            "Users are allowed to run builds using a privileged Docker daemon. This setting should be used with caution, as using a privileged Docker daemon introduces a security risk."
-          ],
-          "enum": [
-            "DOCKER_SECURITY_POLICY_UNSPECIFIED",
-            "NON_PRIVILEGED_ONLY",
-            "PRIVILEGED_PERMITTED"
-          ]
-        },
         "builderImageCaching": {
-          "description": "Immutable. Controls how the worker pool caches images. If unspecified during worker pool creation, this field is defaulted to VOLUME_CACHING.",
+          "description": "Immutable. Controls how the worker pool caches images. If unspecified during worker pool creation, this field is defaulted to CACHING_DISABLED.",
           "type": "string",
           "enumDescriptions": [
             "Default enum type. This should not be used.",
@@ -2368,10 +2449,6 @@
             "CACHING_DISABLED",
             "VOLUME_CACHING"
           ]
-        },
-        "cachingStorageClass": {
-          "description": "Immutable. Used as the Kubernetes storageClassName for builder image caching. This provides the value for the storageClassName field for any PersistentVolumeClaims installed on the cluster. Corresponding field in the Kubernetes API: https:\/\/github.com\/kubernetes\/api\/blob\/2a5dae08c42b1e8fdc1379432d8898efece65363\/core\/v1\/types.go#L354. This field allows Hybrid users to control which storage class is used by persistent volume claims. If unspecified, PersistentVolumeClaims will be created without a storageClassName field during installation. The string must be formatted as a valid Kubernetes ObjectMeta name: https:\/\/github.com\/kubernetes\/apimachinery\/blob\/6c3d2b36a98a4f86d1fb8ee83f78433cd72aefb8\/pkg\/apis\/meta\/v1\/types.go#L124.",
-          "type": "string"
         }
       }
     },
@@ -2598,6 +2675,83 @@
       "properties": {
         "config": {
           "description": "The name of the `BitbucketServerConfig` that added connected repositories. Format: `projects\/{project}\/locations\/{location}\/bitbucketServerConfigs\/{config}`",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Time the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "completeTime": {
+          "description": "Time the operation was completed.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "BatchCreateBitbucketServerConnectedRepositoriesResponse": {
+      "id": "BatchCreateBitbucketServerConnectedRepositoriesResponse",
+      "description": "Response of BatchCreateBitbucketServerConnectedRepositories RPC method including all successfully connected Bitbucket Server repositories.",
+      "type": "object",
+      "properties": {
+        "bitbucketServerConnectedRepositories": {
+          "description": "The connected Bitbucket Server repositories.",
+          "type": "array",
+          "items": {
+            "$ref": "BitbucketServerConnectedRepository"
+          }
+        }
+      }
+    },
+    "CreateBitbucketServerConfigOperationMetadata": {
+      "id": "CreateBitbucketServerConfigOperationMetadata",
+      "description": "Metadata for `CreateBitbucketServerConfig` operation.",
+      "type": "object",
+      "properties": {
+        "bitbucketServerConfig": {
+          "description": "The resource name of the BitbucketServerConfig to be created. Format: `projects\/{project}\/locations\/{location}\/bitbucketServerConfigs\/{id}`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Time the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "completeTime": {
+          "description": "Time the operation was completed.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "UpdateBitbucketServerConfigOperationMetadata": {
+      "id": "UpdateBitbucketServerConfigOperationMetadata",
+      "description": "Metadata for `UpdateBitbucketServerConfig` operation.",
+      "type": "object",
+      "properties": {
+        "bitbucketServerConfig": {
+          "description": "The resource name of the BitbucketServerConfig to be updated. Format: `projects\/{project}\/locations\/{location}\/bitbucketServerConfigs\/{id}`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Time the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "completeTime": {
+          "description": "Time the operation was completed.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "DeleteBitbucketServerConfigOperationMetadata": {
+      "id": "DeleteBitbucketServerConfigOperationMetadata",
+      "description": "Metadata for `DeleteBitbucketServerConfig` operation.",
+      "type": "object",
+      "properties": {
+        "bitbucketServerConfig": {
+          "description": "The resource name of the BitbucketServerConfig to be deleted. Format: `projects\/{project}\/locations\/{location}\/bitbucketServerConfigs\/{id}`.",
           "type": "string"
         },
         "createTime": {
@@ -3767,7 +3921,7 @@
                     "$ref": "BitbucketServerConfig"
                   },
                   "response": {
-                    "$ref": "BitbucketServerConfig"
+                    "$ref": "Operation"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
@@ -3801,7 +3955,7 @@
                     "$ref": "BitbucketServerConfig"
                   },
                   "response": {
-                    "$ref": "BitbucketServerConfig"
+                    "$ref": "Operation"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
@@ -3887,7 +4041,7 @@
                     "name"
                   ],
                   "response": {
-                    "$ref": "Empty"
+                    "$ref": "Operation"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
@@ -3949,6 +4103,81 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Remove a Bitbucket Server repository from an given BitbucketServerConfig\u2019s connected repositories. This API is experimental."
+                }
+              }
+              ,
+              "resources": {
+                "repos": {
+                  "methods": {
+                    "list": {
+                      "id": "cloudbuild.projects.locations.bitbucketServerConfigs.repos.list",
+                      "path": "v1/{+parent}/repos",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/bitbucketServerConfigs/{bitbucketServerConfigsId}/repos",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Name of the parent resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bitbucketServerConfigs\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of configs to return. The service may return fewer than this value. If unspecified, at most 50 configs will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A page token, received from a previous `ListBitbucketServerRepositoriesRequest` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListBitbucketServerConfigsRequest` must match the call that provided the page token.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListBitbucketServerRepositoriesResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "List all repositories for a given `BitbucketServerConfig`. This API is experimental."
+                    }
+                  }
+                },
+                "connectedRepositories": {
+                  "methods": {
+                    "batchCreate": {
+                      "id": "cloudbuild.projects.locations.bitbucketServerConfigs.connectedRepositories.batchCreate",
+                      "path": "v1/{+parent}/connectedRepositories:batchCreate",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/bitbucketServerConfigs/{bitbucketServerConfigsId}/connectedRepositories:batchCreate",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the `BitbucketServerConfig` that added connected repository. Format: `projects\/{project}\/locations\/{location}\/bitbucketServerConfigs\/{config}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/bitbucketServerConfigs\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "BatchCreateBitbucketServerConnectedRepositoriesRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Batch connecting Bitbucket Server repositories to Cloud Build."
+                    }
+                  }
                 }
               }
             },

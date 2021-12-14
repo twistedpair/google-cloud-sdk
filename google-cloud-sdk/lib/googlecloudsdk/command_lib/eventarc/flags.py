@@ -180,7 +180,7 @@ def AddChannelResourceArg(parser, group_help_text, required=False):
 def AddChannelConnectionResourceArg(parser, group_help_text):
   """Adds a resource argument for an Eventarc channel connection."""
   concept_parsers.ConceptParser.ForResource(
-      'channelConnection',
+      'channel_connection',
       ChannelConnectionResourceSpec(),
       group_help_text,
       required=True).AddToParser(parser)

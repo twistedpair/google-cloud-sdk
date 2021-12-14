@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.datastream import util
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core import resources
 
 
@@ -38,23 +39,31 @@ class PrivateConnectionsClient(object):
     self._service = self._client.projects_locations_privateConnections
     self._resource_parser = util.GetResourceParser()
 
-  def _GetPrivateConnection(self, private_connection_id, args):
+  def _GetPrivateConnection(self, private_connection_id, release_track, args):
     """Returns a private connection object."""
     private_connection_obj = self._messages.PrivateConnection(
         name=private_connection_id, labels={}, displayName=args.display_name)
-    vpc_peering_ref = args.CONCEPTS.vpc_name.Parse()
+
+    # TODO(b/207467120): use only vpc flag.
+    if release_track == base.ReleaseTrack.BETA:
+      vpc_peering_ref = args.CONCEPTS.vpc_name.Parse()
+    else:
+      vpc_peering_ref = args.CONCEPTS.vpc.Parse()
+
     private_connection_obj.vpcPeeringConfig = self._messages.VpcPeeringConfig(
         vpc=vpc_peering_ref.RelativeName(), subnet=args.subnet)
 
     return private_connection_obj
 
-  def Create(self, parent_ref, private_connection_id, args=None):
+  def Create(self, parent_ref, private_connection_id, release_track, args=None):
     """Creates a private connection.
 
     Args:
       parent_ref: a Resource reference to a parent datastream.projects.locations
         resource for this private connection.
       private_connection_id: str, the name of the resource to create.
+      release_track: Some arguments are added based on the command release
+        track.
       args: argparse.Namespace, The arguments that this command was invoked
         with.
 
@@ -62,7 +71,8 @@ class PrivateConnectionsClient(object):
       Operation: the operation for creating the private connection.
     """
 
-    private_connection = self._GetPrivateConnection(private_connection_id, args)
+    private_connection = self._GetPrivateConnection(private_connection_id,
+                                                    release_track, args)
 
     request_id = util.GenerateRequestId()
     create_req_type = self._messages.DatastreamProjectsLocationsPrivateConnectionsCreateRequest

@@ -38,7 +38,7 @@ _UPDATE_MASK_FIELD_TRANSLATION_V1ALPHA1_TO_V1 = {
     'destination_connection_profile_name': 'destination_connection_profile',
     'vpc_name': 'vpc',
 }
-_RDBMS_FIELD_NAME_BY_RELEASE_TRACK = {
+RDBMS_FIELD_NAME_BY_RELEASE_TRACK = {
     'schema': {
         base.ReleaseTrack.BETA: 'schema_name',
         base.ReleaseTrack.GA: 'schema'
@@ -55,6 +55,14 @@ _RDBMS_FIELD_NAME_BY_RELEASE_TRACK = {
         base.ReleaseTrack.BETA: 'column_name',
         base.ReleaseTrack.GA: 'column'
     },
+    'allowlist': {
+        base.ReleaseTrack.BETA: 'allowlist',
+        base.ReleaseTrack.GA: 'include_objects'
+    },
+    'rejectlist': {
+        base.ReleaseTrack.BETA: 'rejectlist',
+        base.ReleaseTrack.GA: 'exclude_objects'
+    }
 }
 
 
@@ -279,6 +287,12 @@ def UpdateV1alpha1ToV1MaskFields(field_mask):
   return updated_field_mask
 
 
+# TODO(b/207467120): deprecate BETA client.
+def GetRDBMSV1alpha1ToV1FieldName(field, release_track):
+  return RDBMS_FIELD_NAME_BY_RELEASE_TRACK.get(field,
+                                               {}).get(release_track, field)
+
+
 def _GetRDBMSFieldName(field, release_track):
-  return _RDBMS_FIELD_NAME_BY_RELEASE_TRACK.get(field,
-                                                {}).get(release_track, field)
+  return RDBMS_FIELD_NAME_BY_RELEASE_TRACK.get(field,
+                                               {}).get(release_track, field)

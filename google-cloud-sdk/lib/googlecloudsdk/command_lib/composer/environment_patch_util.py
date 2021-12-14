@@ -40,13 +40,13 @@ def Patch(env_resource,
 
   Args:
     env_resource: googlecloudsdk.core.resources.Resource, Resource representing
-        the Environment to be patched
+      the Environment to be patched
     field_mask: str, a field mask string containing comma-separated paths to be
-        patched
+      patched
     patch: Environment, a patch Environment containing updated values to apply
     is_async: bool, whether or not to perform the patch asynchronously
     release_track: base.ReleaseTrack, the release track of command. Will dictate
-        which Composer client library will be used.
+      which Composer client library will be used.
 
   Returns:
     an Operation corresponding to the Patch call if `is_async` is True;
@@ -114,12 +114,14 @@ def ConstructPatch(is_composer_v1,
                    maintenance_window_end=None,
                    maintenance_window_recurrence=None,
                    environment_size=None,
+                   master_authorized_networks_enabled=None,
+                   master_authorized_networks=None,
                    release_track=base.ReleaseTrack.GA):
   """Constructs an environment patch.
 
   Args:
-    is_composer_v1: boolean representing if patch request is for Composer
-      1.*.* Environment.
+    is_composer_v1: boolean representing if patch request is for Composer 1.*.*
+      Environment.
     env_ref: resource argument, Environment resource argument for environment
       being updated.
     node_count: int, the desired node count
@@ -141,23 +143,23 @@ def ConstructPatch(is_composer_v1,
       names and values to set.
     clear_env_variables: bool, whether to clear the environment variables
       dictionary.
-    remove_env_variables: iterable(string), Iterable of environment variables
-      to remove.
-    update_env_variables: {string: string}, dict of environment variable
-      names and values to set.
+    remove_env_variables: iterable(string), Iterable of environment variables to
+      remove.
+    update_env_variables: {string: string}, dict of environment variable names
+      and values to set.
     update_image_version: string, image version to use for environment upgrade
     update_web_server_access_control: [{string: string}], Webserver access
-        control to set
+      control to set
     cloud_sql_machine_type: str or None, Cloud SQL machine type used by the
-        Airflow database.
+      Airflow database.
     web_server_machine_type: str or None, machine type used by the Airflow web
-        server
-    scheduler_cpu: float or None, CPU allocated to Airflow scheduler.
-        Can be specified only in Composer 2.0.0.
-    worker_cpu: float or None, CPU allocated to each Airflow worker.
-        Can be specified only in Composer 2.0.0.
-    web_server_cpu: float or None, CPU allocated to Airflow web server.
-        Can be specified only in Composer 2.0.0.
+      server
+    scheduler_cpu: float or None, CPU allocated to Airflow scheduler. Can be
+      specified only in Composer 2.0.0.
+    worker_cpu: float or None, CPU allocated to each Airflow worker. Can be
+      specified only in Composer 2.0.0.
+    web_server_cpu: float or None, CPU allocated to Airflow web server. Can be
+      specified only in Composer 2.0.0.
     scheduler_memory_gb: float or None, memory allocated to Airflow scheduler.
       Can be specified only in Composer 2.0.0.
     worker_memory_gb: float or None, memory allocated to each Airflow worker.
@@ -168,23 +170,27 @@ def ConstructPatch(is_composer_v1,
       Can be specified only in Composer 2.0.0.
     worker_storage_gb: float or None, storage allocated to each Airflow worker.
       Can be specified only in Composer 2.0.0.
-    web_server_storage_gb: float or None, storage allocated to Airflow
-      web server. Can be specified only in Composer 2.0.0.
-    min_workers: int or None, minimum number of workers
-        in the Environment. Can be specified only in Composer 2.0.0.
-    max_workers: int or None, maximumn number of workers
-        in the Environment. Can be specified only in Composer 2.0.0.
-    scheduler_count: int or None, number of schedulers
-        in the Environment. Can be specified only in Composer 2.0.0.
+    web_server_storage_gb: float or None, storage allocated to Airflow web
+      server. Can be specified only in Composer 2.0.0.
+    min_workers: int or None, minimum number of workers in the Environment. Can
+      be specified only in Composer 2.0.0.
+    max_workers: int or None, maximumn number of workers in the Environment. Can
+      be specified only in Composer 2.0.0.
+    scheduler_count: int or None, number of schedulers in the Environment. Can
+      be specified only in Composer 2.0.0.
     maintenance_window_start: Datetime or None, a starting date of the
-        maintenance window.
+      maintenance window.
     maintenance_window_end: Datetime or None, an ending date of the maintenance
-        window.
+      window.
     maintenance_window_recurrence: str or None, recurrence RRULE for the
-        maintenance window.
+      maintenance window.
     environment_size: str or None, one of small, medium and large.
+    master_authorized_networks_enabled: bool or None, whether the feature should
+      be enabled
+    master_authorized_networks: iterable(string) or None, iterable of master
+      authorized networks.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
-        which Composer client library will be used.
+      which Composer client library will be used.
 
   Returns:
     (str, Environment), the field mask and environment to use for update.
@@ -237,6 +243,10 @@ def ConstructPatch(is_composer_v1,
   if web_server_machine_type:
     return _ConstructWebServerMachineTypePatch(
         web_server_machine_type, release_track=release_track)
+  if master_authorized_networks_enabled is not None:
+    return _ConstructMasterAuthorizedNetworksTypePatch(
+        master_authorized_networks_enabled, master_authorized_networks,
+        release_track)
   if is_composer_v1 and scheduler_count:
     return _ConstructSoftwareConfigurationSchedulerCountPatch(
         scheduler_count=scheduler_count, release_track=release_track)
@@ -279,7 +289,7 @@ def _ConstructNodeCountPatch(node_count, release_track=base.ReleaseTrack.GA):
   Args:
     node_count: int, the desired node count
     release_track: base.ReleaseTrack, the release track of command. Will dictate
-        which Composer client library will be used.
+      which Composer client library will be used.
 
   Returns:
     (str, Environment), the field mask and environment to use for update.
@@ -316,10 +326,10 @@ def _ConstructPyPiPackagesPatch(clear_pypi_packages,
     clear_pypi_packages: bool, whether to clear the PyPI packages dictionary.
     remove_pypi_packages: iterable(string), Iterable of PyPI package names to
       remove.
-    update_pypi_packages: {string: string}, dict mapping PyPI package name
-      to optional extras and version specifier.
+    update_pypi_packages: {string: string}, dict mapping PyPI package name to
+      optional extras and version specifier.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
-        which Composer client library will be used.
+      which Composer client library will be used.
 
   Returns:
     (str, Environment), the field mask and environment to use for update.
@@ -351,7 +361,7 @@ def _ConstructLabelsPatch(clear_labels,
     remove_labels: iterable(string), Iterable of label names to remove.
     update_labels: {string: string}, dict of label names and values to set.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
-        which Composer client library will be used.
+      which Composer client library will be used.
 
   Returns:
     (str, Environment), the field mask and environment to use for update.
@@ -382,7 +392,7 @@ def _ConstructAirflowConfigsPatch(clear_airflow_configs,
     update_airflow_configs: {string: string}, dict of Airflow config property
       names and values to set.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
-        which Composer client library will be used.
+      which Composer client library will be used.
 
   Returns:
     (str, Environment), the field mask and environment to use for update.
@@ -431,7 +441,7 @@ def _ConstructEnvVariablesPatch(env_ref,
     update_env_variables: {string: string}, dict of environment variable names
       and values to set.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
-        which Composer client library will be used.
+      which Composer client library will be used.
 
   Returns:
     (str, Environment), the field mask and environment to use for update.
@@ -454,9 +464,11 @@ def _ConstructEnvVariablesPatch(env_ref,
     return env_cls(config=config)
 
   return ('config.software_config.env_variables',
-          command_util.BuildFullMapUpdate(
-              clear_env_variables, remove_env_variables, update_env_variables,
-              initial_env_var_list, entry_cls, _BuildEnv))
+          command_util.BuildFullMapUpdate(clear_env_variables,
+                                          remove_env_variables,
+                                          update_env_variables,
+                                          initial_env_var_list, entry_cls,
+                                          _BuildEnv))
 
 
 def _ConstructImageVersionPatch(update_image_version,
@@ -540,6 +552,31 @@ def _ConstructWebServerMachineTypePatch(web_server_machine_type, release_track):
       config=config)
 
 
+def _ConstructMasterAuthorizedNetworksTypePatch(enabled, networks,
+                                                release_track):
+  """Constructs an environment patch for Master authorized networks feature.
+
+  Args:
+    enabled: bool, whether master authorized networks should be enabled.
+    networks: Iterable(string), master authorized networks.
+    release_track: base.ReleaseTrack, the release track of command. It dictates
+      which Composer client library is used.
+
+  Returns:
+    (str, Environment), the field mask and environment to use for update.
+  """
+  messages = api_util.GetMessagesModule(release_track=release_track)
+  config = messages.EnvironmentConfig()
+  networks = [] if networks is None else networks
+  config.masterAuthorizedNetworksConfig = messages.MasterAuthorizedNetworksConfig(
+      enabled=enabled,
+      cidrBlocks=[
+          messages.CidrBlock(cidrBlock=network) for network in networks
+      ])
+  return 'config.master_authorized_networks_config', messages.Environment(
+      config=config)
+
+
 def _ConstructAutoscalingPatch(scheduler_cpu, worker_cpu, web_server_cpu,
                                scheduler_memory_gb, worker_memory_gb,
                                web_server_memory_gb, scheduler_storage_gb,
@@ -549,30 +586,30 @@ def _ConstructAutoscalingPatch(scheduler_cpu, worker_cpu, web_server_cpu,
   """Constructs an environment patch for Airflow web server machine type.
 
   Args:
-    scheduler_cpu: float or None, CPU allocated to Airflow scheduler.
-        Can be specified only in Composer 2.0.0.
-    worker_cpu: float or None, CPU allocated to each Airflow worker.
-        Can be specified only in Composer 2.0.0.
-    web_server_cpu: float or None, CPU allocated to Airflow web server.
-        Can be specified only in Composer 2.0.0.
+    scheduler_cpu: float or None, CPU allocated to Airflow scheduler. Can be
+      specified only in Composer 2.0.0.
+    worker_cpu: float or None, CPU allocated to each Airflow worker. Can be
+      specified only in Composer 2.0.0.
+    web_server_cpu: float or None, CPU allocated to Airflow web server. Can be
+      specified only in Composer 2.0.0.
     scheduler_memory_gb: float or None, memory allocated to Airflow scheduler.
-        Can be specified only in Composer 2.0.0.
+      Can be specified only in Composer 2.0.0.
     worker_memory_gb: float or None, memory allocated to each Airflow worker.
-        Can be specified only in Composer 2.0.0.
+      Can be specified only in Composer 2.0.0.
     web_server_memory_gb: float or None, memory allocated to Airflow web server.
-        Can be specified only in Composer 2.0.0.
+      Can be specified only in Composer 2.0.0.
     scheduler_storage_gb: float or None, storage allocated to Airflow scheduler.
-        Can be specified only in Composer 2.0.0.
+      Can be specified only in Composer 2.0.0.
     worker_storage_gb: float or None, storage allocated to each Airflow worker.
-        Can be specified only in Composer 2.0.0.
-    web_server_storage_gb: float or None, storage allocated to Airflow
-        web server. Can be specified only in Composer 2.0.0.
-    worker_min_count: int or None, minimum number of workers
-        in the Environment. Can be specified only in Composer 2.0.0.
-    worker_max_count: int or None, maximumn number of workers
-        in the Environment. Can be specified only in Composer 2.0.0.
-    scheduler_count: int or None, number of schedulers
-        in the Environment. Can be specified only in Composer 2.0.0.
+      Can be specified only in Composer 2.0.0.
+    web_server_storage_gb: float or None, storage allocated to Airflow web
+      server. Can be specified only in Composer 2.0.0.
+    worker_min_count: int or None, minimum number of workers in the Environment.
+      Can be specified only in Composer 2.0.0.
+    worker_max_count: int or None, maximumn number of workers in the
+      Environment. Can be specified only in Composer 2.0.0.
+    scheduler_count: int or None, number of schedulers in the Environment. Can
+      be specified only in Composer 2.0.0.
     release_track: base.ReleaseTrack, the release track of command. It dictates
       which Composer client library is used.
 

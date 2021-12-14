@@ -168,6 +168,14 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_INDEXENDPOINTS_OPERATIONS = (
+      'projects.locations.indexEndpoints.operations',
+      'projects/{projectsId}/locations/{locationsId}/indexEndpoints/'
+      '{indexEndpointsId}/operations/{operationsId}',
+      {},
+      ['projectsId', 'locationsId', 'indexEndpointsId', 'operationsId'],
+      True
+  )
   PROJECTS_LOCATIONS_INDEXES = (
       'projects.locations.indexes',
       '{+name}',

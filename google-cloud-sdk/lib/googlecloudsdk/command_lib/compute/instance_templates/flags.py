@@ -115,11 +115,13 @@ def AddServiceProxyConfigArgs(parser, hide_arguments=False,
   configuration for the service proxy.
   """)
 
-  if release_track == base.ReleaseTrack.ALPHA:
+  if (release_track == base.ReleaseTrack.ALPHA or
+      release_track == base.ReleaseTrack.BETA):
     service_proxy_spec.update({
         'intercept-all-outbound-traffic': None,
         'exclude-outbound-ip-ranges': str,
-        'exclude-outbound-port-ranges': str
+        'exclude-outbound-port-ranges': str,
+        'scope': str,
     })
     service_proxy_help += textwrap.dedent("""
     *intercept-all-outbound-traffic*::: Enables interception of all outgoing
@@ -142,6 +144,12 @@ def AddServiceProxyConfigArgs(parser, hide_arguments=False,
     For example:
 
          exclude-outbound-port-ranges="81;8080-8090"
+
+    *scope*::: Scope defines a logical configuration boundary for Mesh resource.
+    On the VM boot up, service proxy will reach the Traffic Director to
+    retrieve the routing information corresponding to the routes attached to the
+    mesh with this scope name. When `scope` is specified, `network` value is
+    ignored.
     """)
 
   service_proxy_group.add_argument(

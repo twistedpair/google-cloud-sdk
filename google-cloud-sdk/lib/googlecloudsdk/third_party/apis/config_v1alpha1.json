@@ -332,6 +332,10 @@
           "description": "Required. Config Controller instance to deploy to. Format: `projects\/{project}\/locations\/{location}\/krmApiHosts\/{instance}`.",
           "type": "string"
         },
+        "createConfigController": {
+          "description": "Optional. If set, then a Config Controller instance with a default, well-known name will be created as part of the deployment, if it does not already exist. Note that Blueprints Controller does not manage this Config Controller instance and only creates it.",
+          "type": "boolean"
+        },
         "gitTarget": {
           "description": "Optional. If set, then the hydrated blueprint will be uploaded to the specified Git repository.",
           "$ref": "GitTarget"
@@ -717,6 +721,14 @@
         "configController": {
           "description": "The Config Controller instance to preview configurations against. Format: `projects\/{project}\/locations\/{location}\/krmApiHosts\/{instance}`.",
           "type": "string"
+        },
+        "createConfigController": {
+          "description": "Optional. If set, then a Config Controller instance with a default, well-known name will be created as part of the deployment, if it does not already exist. Note that Blueprints Controller does not manage this Config Controller instance and only creates it.",
+          "type": "boolean"
+        },
+        "pipelineOnly": {
+          "description": "Optional. If set, then only the Pipeline will run. The rendered content will still be uploaded to Cloud Storage. No dry-run will occur, and no preview diff artifacts will be generated.",
+          "type": "boolean"
         }
       }
     },

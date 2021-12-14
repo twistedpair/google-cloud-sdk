@@ -339,6 +339,57 @@
         }
       }
     },
+    "AddItemsRequest": {
+      "id": "AddItemsRequest",
+      "description": "Request used by the AddItems method.",
+      "type": "object",
+      "properties": {
+        "items": {
+          "description": "Required. List of items to add.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "requestId": {
+          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+          "type": "string"
+        }
+      }
+    },
+    "RemoveItemsRequest": {
+      "id": "RemoveItemsRequest",
+      "description": "Request used by the RemoveItems method.",
+      "type": "object",
+      "properties": {
+        "items": {
+          "description": "Required. List of items to remove.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "requestId": {
+          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+          "type": "string"
+        }
+      }
+    },
+    "CloneItemsRequest": {
+      "id": "CloneItemsRequest",
+      "description": "Request used by the CloneItems method.",
+      "type": "object",
+      "properties": {
+        "sourceAddressGroup": {
+          "description": "Required. Source address group to clone items from.",
+          "type": "string"
+        },
+        "requestId": {
+          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+          "type": "string"
+        }
+      }
+    },
     "ListAuthorizationPoliciesResponse": {
       "id": "ListAuthorizationPoliciesResponse",
       "description": "Response returned by the ListAuthorizationPolicies method.",
@@ -1271,6 +1322,90 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Updates the parameters of a single AddressGroup."
+                },
+                "addItems": {
+                  "id": "networksecurity.projects.locations.addressGroups.addItems",
+                  "path": "v1alpha1/{+addressGroup}:addItems",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:addItems",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "addressGroup": {
+                      "description": "Required. A name of the AddressGroup to add items to. Must be in the format `projects|organization\/*\/locations\/{location}\/addressGroups\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "addressGroup"
+                  ],
+                  "request": {
+                    "$ref": "AddItemsRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Add items to the AddressGroup"
+                },
+                "removeItems": {
+                  "id": "networksecurity.projects.locations.addressGroups.removeItems",
+                  "path": "v1alpha1/{+addressGroup}:removeItems",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:removeItems",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "addressGroup": {
+                      "description": "Required. A name of the AddressGroup to remove items from. Must be in the format `projects|organization\/*\/locations\/{location}\/addressGroups\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "addressGroup"
+                  ],
+                  "request": {
+                    "$ref": "RemoveItemsRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Remove items from the AddressGroup"
+                },
+                "cloneItems": {
+                  "id": "networksecurity.projects.locations.addressGroups.cloneItems",
+                  "path": "v1alpha1/{+addressGroup}:cloneItems",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:cloneItems",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "addressGroup": {
+                      "description": "Required. A name of the AddressGroup to clone items to. Must be in the format `projects|organization\/*\/locations\/{location}\/addressGroups\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "addressGroup"
+                  ],
+                  "request": {
+                    "$ref": "CloneItemsRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Clone items to the AddressGroup from another address group."
                 },
                 "delete": {
                   "id": "networksecurity.projects.locations.addressGroups.delete",
@@ -2393,6 +2528,90 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Updates the parameters of a single AddressGroup."
+                },
+                "addItems": {
+                  "id": "networksecurity.organizations.locations.addressGroups.addItems",
+                  "path": "v1alpha1/{+addressGroup}:addItems",
+                  "flatPath": "v1alpha1/organizations/{organizationsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:addItems",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "addressGroup": {
+                      "description": "Required. A name of the AddressGroup to add items to. Must be in the format `projects|organization\/*\/locations\/{location}\/addressGroups\/*`.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "addressGroup"
+                  ],
+                  "request": {
+                    "$ref": "AddItemsRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Add items to the AddressGroup"
+                },
+                "removeItems": {
+                  "id": "networksecurity.organizations.locations.addressGroups.removeItems",
+                  "path": "v1alpha1/{+addressGroup}:removeItems",
+                  "flatPath": "v1alpha1/organizations/{organizationsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:removeItems",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "addressGroup": {
+                      "description": "Required. A name of the AddressGroup to remove items from. Must be in the format `projects|organization\/*\/locations\/{location}\/addressGroups\/*`.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "addressGroup"
+                  ],
+                  "request": {
+                    "$ref": "RemoveItemsRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Remove items from the AddressGroup"
+                },
+                "cloneItems": {
+                  "id": "networksecurity.organizations.locations.addressGroups.cloneItems",
+                  "path": "v1alpha1/{+addressGroup}:cloneItems",
+                  "flatPath": "v1alpha1/organizations/{organizationsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:cloneItems",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "addressGroup": {
+                      "description": "Required. A name of the AddressGroup to clone items to. Must be in the format `projects|organization\/*\/locations\/{location}\/addressGroups\/*`.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "addressGroup"
+                  ],
+                  "request": {
+                    "$ref": "CloneItemsRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Clone items to the AddressGroup from another address group."
                 },
                 "delete": {
                   "id": "networksecurity.organizations.locations.addressGroups.delete",

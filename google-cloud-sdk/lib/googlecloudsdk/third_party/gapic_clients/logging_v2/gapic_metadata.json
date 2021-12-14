@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "ConfigServiceV2Client",
           "rpcs": {
+            "CopyLogEntries": {
+              "methods": [
+                "copy_log_entries"
+              ]
+            },
             "CreateBucket": {
               "methods": [
                 "create_bucket"
@@ -130,6 +135,11 @@
         "grpc-async": {
           "libraryClient": "ConfigServiceV2AsyncClient",
           "rpcs": {
+            "CopyLogEntries": {
+              "methods": [
+                "copy_log_entries"
+              ]
+            },
             "CreateBucket": {
               "methods": [
                 "create_bucket"

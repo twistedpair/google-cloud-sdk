@@ -23,6 +23,119 @@ from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
+_MYSQL_SOURCE_CONFIG_HELP_TEXT_BETA = """\
+  Path to a YAML (or JSON) file containing the configuration for Mysql Source Config.
+
+  The JSON file is formatted as follows, with snake_case field naming:
+
+  ```
+    {
+      "allowlist": {},
+      "rejectlist":  {
+        "mysql_databases": [
+            {
+              "database_name":"sample_database",
+              "mysql_tables": [
+                {
+                  "table_name": "sample_table",
+                  "mysql_columns": [
+                    {
+                      "column_name": "sample_column",
+                    }
+                   ]
+                }
+              ]
+            }
+          ]
+        }
+    }
+  ```
+"""
+_MYSQL_SOURCE_CONFIG_HELP_TEXT = """\
+  Path to a YAML (or JSON) file containing the configuration for Mysql Source Config.
+
+  The JSON file is formatted as follows, with snake_case field naming:
+
+  ```
+    {
+      "include_objects": {},
+      "exclude_objects":  {
+        "mysql_databases": [
+            {
+              "database":"sample_database",
+              "mysql_tables": [
+                {
+                  "table": "sample_table",
+                  "mysql_columns": [
+                    {
+                      "column": "sample_column",
+                    }
+                   ]
+                }
+              ]
+            }
+          ]
+        }
+    }
+  ```
+"""
+_ORACLE_SOURCE_CONFIG_HELP_TEXT_BETA = """\
+  Path to a YAML (or JSON) file containing the configuration for Oracle Source Config.
+
+  The JSON file is formatted as follows, with snake_case field naming:
+
+  ```
+    {
+      "allowlist": {},
+      "rejectlist": {
+        "oracle_schemas": [
+          {
+            "schema_name": "SAMPLE",
+            "oracle_tables": [
+              {
+                "table_name": "SAMPLE_TABLE",
+                "oracle_columns": [
+                  {
+                    "column_name": "COL",
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ```
+"""
+_ORACLE_SOURCE_CONFIG_HELP_TEXT = """\
+  Path to a YAML (or JSON) file containing the configuration for Oracle Source Config.
+
+  The JSON file is formatted as follows, with snake_case field naming:
+
+  ```
+    {
+      "include_objects": {},
+      "exclude_objects": {
+        "oracle_schemas": [
+          {
+            "schema": "SAMPLE",
+            "oracle_tables": [
+              {
+                "table": "SAMPLE_TABLE",
+                "oracle_columns": [
+                  {
+                    "column": "COL",
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ```
+"""
+
 
 def ConnectionProfileAttributeConfig(name='connection_profile'):
   return concepts.ResourceParameterAttributeConfig(
@@ -235,12 +348,17 @@ def GetVpcResourceSpec():
       project=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
-def AddPrivateConnectionResourceArg(parser, verb, positional=True):
+def AddPrivateConnectionResourceArg(parser,
+                                    verb,
+                                    release_track,
+                                    positional=True):
   """Add a resource argument for a Datastream private connection.
 
   Args:
     parser: the parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
+    release_track: Some arguments are added based on the command release
+      track.
     positional: bool, if True, means that the resource is a positional rather
       than a flag.
   """
@@ -256,6 +374,11 @@ def AddPrivateConnectionResourceArg(parser, verb, positional=True):
       help="""A free subnet for peering. (CIDR of /29).""",
       required=True)
 
+  # TODO(b/207467120): use only vpc flag.
+  vpc_field_name = 'vpc'
+  if release_track == base.ReleaseTrack.BETA:
+    vpc_field_name = 'vpc-name'
+
   resource_specs = [
       presentation_specs.ResourcePresentationSpec(
           name,
@@ -263,21 +386,24 @@ def AddPrivateConnectionResourceArg(parser, verb, positional=True):
           'The private connection {}.'.format(verb),
           required=True),
       presentation_specs.ResourcePresentationSpec(
-          '--vpc-name',
+          '--%s' % vpc_field_name,
           GetVpcResourceSpec(),
           'Resource ID of the private connection.',
-          group=vpc_peering_config_parser, required=True)
+          group=vpc_peering_config_parser,
+          required=True)
   ]
   concept_parsers.ConceptParser(
       resource_specs).AddToParser(parser)
 
 
-def AddStreamResourceArg(parser, verb, required=True):
+def AddStreamResourceArg(parser, verb, release_track, required=True):
   """Add resource arguments for creating/updating a stream.
 
   Args:
     parser: argparse.ArgumentParser, the parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
+    release_track: base.ReleaseTrack, some arguments are added based on the
+        command release track.
     required: bool, if True, means that a flag is required.
   """
   source_parser = parser.add_group(required=required)
@@ -285,66 +411,12 @@ def AddStreamResourceArg(parser, verb, required=True):
       required=required, mutex=True)
   source_config_parser_group.add_argument(
       '--oracle-source-config',
-      help="""\
-          Path to a YAML (or JSON) file containing the configuration for Oracle Source Config.
-
-          The JSON file is formatted as follows, with snake_case field naming:
-
-          ```
-            {
-              "allowlist": {},
-              "rejectlist": {
-                "oracle_schemas": [
-                  {
-                    "schema_name": "SAMPLE",
-                    "oracle_tables": [
-                      {
-                        "table_name": "SAMPLE_TABLE",
-                        "oracle_columns": [
-                          {
-                            "column_name": "COL",
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ```
-       """
-      )
+      help=_ORACLE_SOURCE_CONFIG_HELP_TEXT_BETA if release_track
+      == base.ReleaseTrack.BETA else _ORACLE_SOURCE_CONFIG_HELP_TEXT)
   source_config_parser_group.add_argument(
       '--mysql-source-config',
-      help="""\
-          Path to a YAML (or JSON) file containing the configuration for Mysql Source Config.
-
-          The JSON file is formatted as follows, with snake_case field naming:
-
-          ```
-            {
-              "allowlist": {},
-              "rejectlist":  {
-                "mysql_databases": [
-                    {
-                      "database_name":"sample_database",
-                      "mysql_tables": [
-                        {
-                          "table_name": "sample_table",
-                          "mysql_columns": [
-                            {
-                              "column_name": "sample_column",
-                            }
-                           ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-            }
-          ```
-       """
-      )
+      help=_MYSQL_SOURCE_CONFIG_HELP_TEXT_BETA if release_track
+      == base.ReleaseTrack.BETA else _MYSQL_SOURCE_CONFIG_HELP_TEXT)
 
   destination_parser = parser.add_group(required=required)
   destination_config_parser_group = destination_parser.add_group(
@@ -366,35 +438,38 @@ def AddStreamResourceArg(parser, verb, required=True):
       ```
         """)
 
+  source_field = 'source'
+  destination_field = 'destination'
+  if release_track == base.ReleaseTrack.BETA:
+    source_field = 'source-name'
+    destination_field = 'destination-name'
+
   resource_specs = [
       presentation_specs.ResourcePresentationSpec(
           'stream',
           GetStreamResourceSpec(),
           'The stream {}.'.format(verb),
-          required=True
-      ),
+          required=True),
       presentation_specs.ResourcePresentationSpec(
-          '--source-name',
+          '--%s' % source_field,
           GetConnectionProfileResourceSpec(),
           'Resource ID of the source connection profile.',
           required=required,
           flag_name_overrides={'location': ''},
-          group=source_parser
-      ),
+          group=source_parser),
       presentation_specs.ResourcePresentationSpec(
-          '--destination-name',
+          '--%s' % destination_field,
           GetConnectionProfileResourceSpec(),
           'Resource ID of the destination connection profile.',
           required=required,
           flag_name_overrides={'location': ''},
-          group=destination_parser
-      )
+          group=destination_parser)
   ]
   concept_parsers.ConceptParser(
       resource_specs,
       command_level_fallthroughs={
-          '--source-name.location': ['--location'],
-          '--destination-name.location': ['--location']
+          '--%s.location' % source_field: ['--location'],
+          '--%s.location' % destination_field: ['--location']
       }).AddToParser(parser)
 
 

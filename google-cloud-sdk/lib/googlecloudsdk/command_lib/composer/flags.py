@@ -277,6 +277,9 @@ AUTOSCALING_FLAG_GROUP_DESCRIPTION = (
     'or greater (--scheduler-count flag is available for '
     'Composer 1.X as well).')
 
+MASTER_AUTHORIZED_NETWORKS_GROUP_DESCRIPTION = (
+    'Group of arguments for setting master authorized networks configuration.')
+
 CLEAR_PYPI_PACKAGES_FLAG = base.Argument(
     '--clear-pypi-packages',
     action='store_true',
@@ -334,6 +337,37 @@ ENABLE_IP_ALIAS_FLAG = base.Argument(
     for Pod IPs. This will require at least two secondary ranges in the
     subnetwork, one for the pod IPs and another to reserve space for the
     services range.
+    """)
+
+DISABLE_MASTER_AUTHORIZED_NETWORKS_FLAG = base.Argument(
+    '--disable-master-authorized-networks',
+    default=None,
+    action='store_true',
+    help="""\
+    Disable Master Authorized Networks feature
+    (https://cloud.google.com/kubernetes-engine/docs/how-to/authorized-networks/)
+    in the Composer Environment's GKE cluster.
+    """)
+
+ENABLE_MASTER_AUTHORIZED_NETWORKS_FLAG = base.Argument(
+    '--enable-master-authorized-networks',
+    default=None,
+    action='store_true',
+    help="""\
+    Enable Master Authorized Networks feature
+    (https://cloud.google.com/kubernetes-engine/docs/how-to/authorized-networks/)
+    in the Composer Environment's GKE cluster.
+    """)
+
+MASTER_AUTHORIZED_NETWORKS_FLAG = base.Argument(
+    '--master-authorized-networks',
+    default=None,
+    metavar='NETWORK',
+    type=arg_parsers.ArgList(),
+    help="""
+    Comma separated Master Authorized Networks specified in CIDR notation.
+
+    Cannot be specified unless '--enable-master-authorized-networks' is also specified.
     """)
 
 CLUSTER_SECONDARY_RANGE_NAME_FLAG = base.Argument(
@@ -894,7 +928,7 @@ def AddImportSourceFlag(parser, folder):
   Args:
     parser: argparse.ArgumentParser, the parser to which to add the flag
     folder: str, the top-level folder in the bucket into which the import
-        command will write. Should not contain any slashes. For example, 'dags'.
+      command will write. Should not contain any slashes. For example, 'dags'.
   """
   base.Argument(
       '--source',
@@ -912,7 +946,7 @@ def AddImportDestinationFlag(parser, folder):
   Args:
     parser: argparse.ArgumentParser, the parser to which to add the flag
     folder: str, the top-level folder in the bucket into which the import
-        command will write. Should not contain any slashes. For example, 'dags'.
+      command will write. Should not contain any slashes. For example, 'dags'.
   """
   base.Argument(
       '--destination',
@@ -933,7 +967,7 @@ def AddExportSourceFlag(parser, folder):
   Args:
     parser: argparse.ArgumentParser, the parser to which to add the flag
     folder: str, the top-level folder in the bucket from which the export
-        command will read. Should not contain any slashes. For example, 'dags'.
+      command will read. Should not contain any slashes. For example, 'dags'.
   """
   base.Argument(
       '--source',
@@ -1025,8 +1059,8 @@ def ValidateDiskSize(parameter_name, disk_size):
   """Validates that a disk size is a multiple of some number of GB.
 
   Args:
-    parameter_name: parameter_name, the name of the parameter, formatted as
-        it would be in help text (e.g., '--disk-size' or 'DISK_SIZE')
+    parameter_name: parameter_name, the name of the parameter, formatted as it
+      would be in help text (e.g., '--disk-size' or 'DISK_SIZE')
     disk_size: int, the disk size in bytes, or None for default value
 
   Raises:
@@ -1051,8 +1085,8 @@ def _AddPartialDictUpdateFlagsToGroup(update_type_group,
     remove_flag: flag, the flag to remove values from dictionary.
     update_flag: flag, the flag to add or update values in dictionary.
     group_help_text: (optional) str, the help info to apply to the created
-        argument group. If not provided, then no help text will be applied to
-        group.
+      argument group. If not provided, then no help text will be applied to
+      group.
   """
   group = update_type_group.add_argument_group(help=group_help_text)
   remove_group = group.add_mutually_exclusive_group(
@@ -1084,7 +1118,7 @@ def AddIpAliasEnvironmentFlags(update_type_group, support_max_pods_per_node):
   Args:
     update_type_group: argument group, the group to which flag should be added.
     support_max_pods_per_node: bool, if specifying maximum number of pods is
-                         supported.
+      supported.
   """
   group = update_type_group.add_group(help='IP Alias (VPC-native)')
   ENABLE_IP_ALIAS_FLAG.AddToParser(group)
@@ -1127,9 +1161,9 @@ def AddPypiUpdateFlagsToGroup(update_type_group):
   group = update_type_group.add_mutually_exclusive_group(
       PYPI_PACKAGES_FLAG_GROUP_DESCRIPTION)
   UPDATE_PYPI_FROM_FILE_FLAG.AddToParser(group)
-  _AddPartialDictUpdateFlagsToGroup(
-      group, CLEAR_PYPI_PACKAGES_FLAG, REMOVE_PYPI_PACKAGES_FLAG,
-      UPDATE_PYPI_PACKAGE_FLAG)
+  _AddPartialDictUpdateFlagsToGroup(group, CLEAR_PYPI_PACKAGES_FLAG,
+                                    REMOVE_PYPI_PACKAGES_FLAG,
+                                    UPDATE_PYPI_PACKAGE_FLAG)
 
 
 def AddEnvVariableUpdateFlagsToGroup(update_type_group):
@@ -1209,6 +1243,19 @@ def AddAutoscalingUpdateFlagsToGroup(update_type_group, release_track):
   # Note: this flag is available for patching of both Composer 1.*.* and 2.*.*
   # environments.
   NUM_SCHEDULERS.AddToParser(update_group)
+
+
+def AddMasterAuthorizedNetworksUpdateFlagsToGroup(update_type_group):
+  """Adds flag group for master authorized networks.
+
+  Args:
+    update_type_group: argument group, the group to which flags should be added.
+  """
+  update_group = update_type_group.add_argument_group(
+      MASTER_AUTHORIZED_NETWORKS_GROUP_DESCRIPTION)
+  MASTER_AUTHORIZED_NETWORKS_FLAG.AddToParser(update_group)
+  ENABLE_MASTER_AUTHORIZED_NETWORKS_FLAG.AddToParser(update_group)
+  DISABLE_MASTER_AUTHORIZED_NETWORKS_FLAG.AddToParser(update_group)
 
 
 def AddMaintenanceWindowFlagsGroup(update_type_group):

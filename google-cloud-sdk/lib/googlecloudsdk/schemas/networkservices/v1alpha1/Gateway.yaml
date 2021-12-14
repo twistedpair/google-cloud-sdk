@@ -7,7 +7,7 @@ required:
 - name
 - type
 - scope
-- addresses
+- ports
 additionalProperties: false
 properties:
   COMMENT:
@@ -55,15 +55,13 @@ properties:
     enum:
     - OPEN_MESH
     - TYPE_UNSPECIFIED
-  addresses:
+  ports:
     description: |-
-      One or more addresses with ports in format of "<ip>:<port>" that the
-      Gateway must receive traffic on. The proxy binds to the ports specified.
-      IP address can be anything that is allowed by the underlying
-      infrastructure (auto-allocation, static IP, BYOIP).
+      One or more ports that the Gateway must receive traffic on.
+      The proxy binds to the ports specified. Gateway listen on 0.0.0.0 on the ports specified
     type: array
     items:
-      type: string
+      type: integer
   server_tls_policy:
     description: |-
       A fully-qualified ServerTLSPolicy URL reference. Specifies how TLS

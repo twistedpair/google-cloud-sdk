@@ -19,10 +19,15 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+import sys
 
 
 _SEVERITY_ERROR = 'Error'
 _SEVERITY_WARNING = 'Warning'
+
+collections_abc = collections
+if sys.version_info > (3, 8):
+  collections_abc = collections.abc
 
 
 def GetNonTerminalMessages(conditions, ignore_retry=False):
@@ -53,7 +58,7 @@ def GetNonTerminalMessages(conditions, ignore_retry=False):
   return messages
 
 
-class Conditions(collections.Mapping):
+class Conditions(collections_abc.Mapping):
   """Represents the status Conditions of a resource in a dict-like way.
 
   Resource means a Cloud Run resource, e.g: Configuration.

@@ -629,7 +629,8 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "name of resource",
+          "description": "Output only. Canonical name of resource",
+          "readOnly": true,
           "type": "string"
         },
         "createTime": {

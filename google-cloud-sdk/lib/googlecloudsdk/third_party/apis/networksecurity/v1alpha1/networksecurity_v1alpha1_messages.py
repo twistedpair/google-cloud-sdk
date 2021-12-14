@@ -13,6 +13,28 @@ from apitools.base.py import extra_types
 package = 'networksecurity'
 
 
+class AddItemsRequest(_messages.Message):
+  r"""Request used by the AddItems method.
+
+  Fields:
+    items: Required. List of items to add.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  items = _messages.StringField(1, repeated=True)
+  requestId = _messages.StringField(2)
+
+
 class AddressGroup(_messages.Message):
   r"""AddressGroup is a resource that specifies how a collection of IP/DNS
   used in Firewall Policy.
@@ -249,6 +271,28 @@ class ClientTlsPolicy(_messages.Message):
   serverValidationCa = _messages.MessageField('ValidationCA', 6, repeated=True)
   sni = _messages.StringField(7)
   updateTime = _messages.StringField(8)
+
+
+class CloneItemsRequest(_messages.Message):
+  r"""Request used by the CloneItems method.
+
+  Fields:
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    sourceAddressGroup: Required. Source address group to clone items from.
+  """
+
+  requestId = _messages.StringField(1)
+  sourceAddressGroup = _messages.StringField(2)
 
 
 class Destination(_messages.Message):
@@ -784,6 +828,38 @@ class MTLSPolicy(_messages.Message):
   clientValidationCa = _messages.MessageField('ValidationCA', 1, repeated=True)
 
 
+class NetworksecurityOrganizationsLocationsAddressGroupsAddItemsRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsAddressGroupsAddItemsRequest
+  object.
+
+  Fields:
+    addItemsRequest: A AddItemsRequest resource to be passed as the request
+      body.
+    addressGroup: Required. A name of the AddressGroup to add items to. Must
+      be in the format
+      `projects|organization/*/locations/{location}/addressGroups/*`.
+  """
+
+  addItemsRequest = _messages.MessageField('AddItemsRequest', 1)
+  addressGroup = _messages.StringField(2, required=True)
+
+
+class NetworksecurityOrganizationsLocationsAddressGroupsCloneItemsRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsAddressGroupsCloneItemsRequest
+  object.
+
+  Fields:
+    addressGroup: Required. A name of the AddressGroup to clone items to. Must
+      be in the format
+      `projects|organization/*/locations/{location}/addressGroups/*`.
+    cloneItemsRequest: A CloneItemsRequest resource to be passed as the
+      request body.
+  """
+
+  addressGroup = _messages.StringField(1, required=True)
+  cloneItemsRequest = _messages.MessageField('CloneItemsRequest', 2)
+
+
 class NetworksecurityOrganizationsLocationsAddressGroupsCreateRequest(_messages.Message):
   r"""A NetworksecurityOrganizationsLocationsAddressGroupsCreateRequest
   object.
@@ -899,6 +975,22 @@ class NetworksecurityOrganizationsLocationsAddressGroupsPatchRequest(_messages.M
   updateMask = _messages.StringField(4)
 
 
+class NetworksecurityOrganizationsLocationsAddressGroupsRemoveItemsRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsAddressGroupsRemoveItemsRequest
+  object.
+
+  Fields:
+    addressGroup: Required. A name of the AddressGroup to remove items from.
+      Must be in the format
+      `projects|organization/*/locations/{location}/addressGroups/*`.
+    removeItemsRequest: A RemoveItemsRequest resource to be passed as the
+      request body.
+  """
+
+  addressGroup = _messages.StringField(1, required=True)
+  removeItemsRequest = _messages.MessageField('RemoveItemsRequest', 2)
+
+
 class NetworksecurityOrganizationsLocationsOperationsCancelRequest(_messages.Message):
   r"""A NetworksecurityOrganizationsLocationsOperationsCancelRequest object.
 
@@ -946,6 +1038,36 @@ class NetworksecurityOrganizationsLocationsOperationsListRequest(_messages.Messa
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsAddItemsRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsAddItemsRequest object.
+
+  Fields:
+    addItemsRequest: A AddItemsRequest resource to be passed as the request
+      body.
+    addressGroup: Required. A name of the AddressGroup to add items to. Must
+      be in the format
+      `projects|organization/*/locations/{location}/addressGroups/*`.
+  """
+
+  addItemsRequest = _messages.MessageField('AddItemsRequest', 1)
+  addressGroup = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsCloneItemsRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsCloneItemsRequest object.
+
+  Fields:
+    addressGroup: Required. A name of the AddressGroup to clone items to. Must
+      be in the format
+      `projects|organization/*/locations/{location}/addressGroups/*`.
+    cloneItemsRequest: A CloneItemsRequest resource to be passed as the
+      request body.
+  """
+
+  addressGroup = _messages.StringField(1, required=True)
+  cloneItemsRequest = _messages.MessageField('CloneItemsRequest', 2)
 
 
 class NetworksecurityProjectsLocationsAddressGroupsCreateRequest(_messages.Message):
@@ -1085,6 +1207,22 @@ class NetworksecurityProjectsLocationsAddressGroupsPatchRequest(_messages.Messag
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsRemoveItemsRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsRemoveItemsRequest
+  object.
+
+  Fields:
+    addressGroup: Required. A name of the AddressGroup to remove items from.
+      Must be in the format
+      `projects|organization/*/locations/{location}/addressGroups/*`.
+    removeItemsRequest: A RemoveItemsRequest resource to be passed as the
+      request body.
+  """
+
+  addressGroup = _messages.StringField(1, required=True)
+  removeItemsRequest = _messages.MessageField('RemoveItemsRequest', 2)
 
 
 class NetworksecurityProjectsLocationsAddressGroupsSetIamPolicyRequest(_messages.Message):
@@ -1761,6 +1899,28 @@ class OperationMetadata(_messages.Message):
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class RemoveItemsRequest(_messages.Message):
+  r"""Request used by the RemoveItems method.
+
+  Fields:
+    items: Required. List of items to remove.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  items = _messages.StringField(1, repeated=True)
+  requestId = _messages.StringField(2)
 
 
 class Rule(_messages.Message):

@@ -51,6 +51,7 @@ def CreateAssuredWorkload(display_name=None,
                           etag=None,
                           provisioned_resources_parent=None,
                           resource_settings=None,
+                          enable_sovereign_controls=None,
                           release_track=ReleaseTrack.GA):
   """Construct an Assured Workload message for Assured Workloads Beta API requests.
 
@@ -70,9 +71,11 @@ def CreateAssuredWorkload(display_name=None,
       for example: folders/{FOLDER_ID}
     resource_settings: list of key=value pairs to set customized resource
       settings, which can be one of the following: consumer-project-id,
-      consumer-project-name, encryption-keys-project-id,
+        consumer-project-name, encryption-keys-project-id,
       encryption-keys-project-name or keyring-id, for example:
-      consumer-project-id={ID1},encryption-keys-project-id={ID2}
+        consumer-project-id={ID1},encryption-keys-project-id={ID2}
+    enable_sovereign_controls: bool, whether to enable sovereign controls for
+      the Assured Workloads environment.
     release_track: ReleaseTrack, gcloud release track being used
 
   Returns:
@@ -100,6 +103,8 @@ def CreateAssuredWorkload(display_name=None,
   if resource_settings:
     workload.resourceSettings = CreateResourceSettingsList(
         resource_settings, release_track)
+  if enable_sovereign_controls:
+    workload.enableSovereignControls = enable_sovereign_controls
   return workload
 
 

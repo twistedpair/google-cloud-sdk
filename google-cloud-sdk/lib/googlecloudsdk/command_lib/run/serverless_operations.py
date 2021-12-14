@@ -1074,7 +1074,7 @@ class ServerlessOperations(object):
       tracker.StartStage(stages.UPLOAD_SOURCE)
       tracker.UpdateHeaderMessage('Uploading sources.')
       build_messages = cloudbuild_util.GetMessagesModule()
-      build_config = submit_util.CreateBuildConfigAlpha(
+      build_config = submit_util.CreateBuildConfig(
           build_image,
           False,
           build_messages,
@@ -1083,8 +1083,6 @@ class ServerlessOperations(object):
           True,
           False,
           build_source,
-          None,
-          None,
           None,
           None,
           None,

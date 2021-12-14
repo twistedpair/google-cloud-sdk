@@ -29,6 +29,7 @@ spec:
     enabled: false
     sourceFormat: hierarchy
     policyDir:
+    preventDrift: false
     httpsProxy:
     secretType: none|ssh|cookiefile|token|gcenode
     syncBranch: master
@@ -53,6 +54,7 @@ spec:
 CONFIG_SYNC = 'configSync'
 POLICY_CONTROLLER = 'policyController'
 HNC = 'hierarchyController'
+PREVENT_DRIFT_VERSION = '1.10.0'
 
 
 def versions_for_member(feature, membership):
@@ -84,3 +86,21 @@ def versions_for_member(feature, membership):
       break
 
   return (spec_version or '', state_version or '')
+
+
+def get_backfill_version_from_feature(feature, membership_id):
+  """Get the value the version field in FeatureSpec should be set to.
+
+  Args:
+    feature: the feature obtained from hub API.
+    membership_id: The membership short name whose Spec will be backfilled.
+
+  Returns:
+    version: A string denoting the version field in MembershipConfig
+  """
+  spec_version, state_version = versions_for_member(feature, membership_id)
+
+  if spec_version:
+    return spec_version
+  # backfill non-specified spec version with current state_version
+  return state_version

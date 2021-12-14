@@ -69,6 +69,7 @@ class CreateWorkload(base.CreateCommand):
           labels=args.labels,
           provisioned_resources_parent=args.provisioned_resources_parent,
           resource_settings=args.resource_settings,
+          enable_sovereign_controls=args.enable_sovereign_controls,
           release_track=self.ReleaseTrack())
       client = apis.WorkloadsClient(release_track=self.ReleaseTrack())
       self.created_resource = client.Create(

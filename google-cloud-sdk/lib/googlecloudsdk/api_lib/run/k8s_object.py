@@ -482,7 +482,7 @@ class LazyListWrapper(collections_abc.MutableSequence):
     self._l.insert(i, v)
 
 
-class ListAsReadOnlyDictionaryWrapper(collections.Mapping):
+class ListAsReadOnlyDictionaryWrapper(collections_abc.Mapping):
   """Wraps repeated messages field with name in a dict-like object.
 
   This class is a simplified version of ListAsDictionaryWrapper for when there

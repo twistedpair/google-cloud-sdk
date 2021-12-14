@@ -893,6 +893,21 @@
         "rollout": {
           "description": "Optional. Rollout strategy of the patch job.",
           "$ref": "PatchRollout"
+        },
+        "state": {
+          "description": "Output only. Current state of the patch deployment.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The default value. This value is used if the state is omitted.",
+            "Active value means that patch deployment generates Patch Jobs.",
+            "Paused value means that patch deployment does not generate Patch jobs. Requires user action to move in and out from this state."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "PAUSED"
+          ]
         }
       }
     },

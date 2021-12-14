@@ -123,6 +123,12 @@ def AddCreateWorkloadFlags(parser, release_track):
       '--provisioned-resources-parent',
       help=('The parent of the provisioned projects, for example, '
             'folders/{FOLDER_ID}'))
+  parser.add_argument(
+      '--enable-sovereign-controls',
+      type=bool,
+      default=False,
+      help=('If true, enable sovereign controls for the new Assured Workloads '
+            'environment, currently only supported by EU_REGIONS_AND_SUPPORT'))
   _AddResourceSettingsFlag(parser, release_track)
 
 

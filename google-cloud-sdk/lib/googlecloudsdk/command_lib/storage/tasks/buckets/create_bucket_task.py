@@ -39,4 +39,6 @@ class CreateBucketTask(task.Task):
   def execute(self, task_status_queue=None):
     log.status.Print('Creating {}...'.format(self._bucket_resource))
     provider = self._bucket_resource.storage_url.scheme
-    api_factory.get_api(provider).create_bucket(self._bucket_resource)
+    # TODO(b/203088483): Pass in request config.
+    api_factory.get_api(provider).create_bucket(
+        self._bucket_resource, request_config=None)

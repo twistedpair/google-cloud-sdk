@@ -98,8 +98,8 @@ class ArtifactregistryProjectsLocationsRepositoriesCreateRequest(_messages.Messa
   r"""A ArtifactregistryProjectsLocationsRepositoriesCreateRequest object.
 
   Fields:
-    parent: The name of the parent resource where the repository will be
-      created.
+    parent: Required. The name of the parent resource where the repository
+      will be created.
     repository: A Repository resource to be passed as the request body.
     repositoryId: The repository id to use for this repository.
   """
@@ -113,7 +113,7 @@ class ArtifactregistryProjectsLocationsRepositoriesDeleteRequest(_messages.Messa
   r"""A ArtifactregistryProjectsLocationsRepositoriesDeleteRequest object.
 
   Fields:
-    name: The name of the repository to delete.
+    name: Required. The name of the repository to delete.
   """
 
   name = _messages.StringField(1, required=True)
@@ -183,7 +183,7 @@ class ArtifactregistryProjectsLocationsRepositoriesGetRequest(_messages.Message)
   r"""A ArtifactregistryProjectsLocationsRepositoriesGetRequest object.
 
   Fields:
-    name: The name of the repository to retrieve.
+    name: Required. The name of the repository to retrieve.
   """
 
   name = _messages.StringField(1, required=True)
@@ -196,7 +196,8 @@ class ArtifactregistryProjectsLocationsRepositoriesListRequest(_messages.Message
     pageSize: The maximum number of repositories to return.
     pageToken: The next_page_token value returned from a previous list
       request, if any.
-    parent: The name of the parent resource whose repositories will be listed.
+    parent: Required. The name of the parent resource whose repositories will
+      be listed.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -209,7 +210,7 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesDeleteRequest(_messag
   object.
 
   Fields:
-    name: The name of the package to delete.
+    name: Required. The name of the package to delete.
   """
 
   name = _messages.StringField(1, required=True)
@@ -220,7 +221,7 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesGetRequest(_messages.
   object.
 
   Fields:
-    name: The name of the package to retrieve.
+    name: Required. The name of the package to retrieve.
   """
 
   name = _messages.StringField(1, required=True)
@@ -234,7 +235,8 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesListRequest(_messages
     pageSize: The maximum number of packages to return.
     pageToken: The next_page_token value returned from a previous list
       request, if any.
-    parent: The name of the parent resource whose packages will be listed.
+    parent: Required. The name of the parent resource whose packages will be
+      listed.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1079,7 +1081,6 @@ class Repository(_messages.Message):
       DOCKER: Docker package format.
       MAVEN: Maven package format.
       NPM: NPM package format.
-      PYPI: PyPI package format. Deprecated, use PYTHON instead.
       APT: APT package format.
       YUM: YUM package format.
       PYTHON: Python package format.
@@ -1088,10 +1089,9 @@ class Repository(_messages.Message):
     DOCKER = 1
     MAVEN = 2
     NPM = 3
-    PYPI = 4
-    APT = 5
-    YUM = 6
-    PYTHON = 7
+    APT = 4
+    YUM = 5
+    PYTHON = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

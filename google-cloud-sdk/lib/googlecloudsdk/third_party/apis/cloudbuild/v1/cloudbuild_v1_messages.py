@@ -173,6 +173,29 @@ class Artifacts(_messages.Message):
   objects = _messages.MessageField('ArtifactObjects', 2)
 
 
+class BatchCreateBitbucketServerConnectedRepositoriesRequest(_messages.Message):
+  r"""RPC request object accepted by
+  BatchCreateBitbucketServerConnectedRepositories RPC method.
+
+  Fields:
+    requests: Required. Requests to connect Bitbucket Server repositories.
+  """
+
+  requests = _messages.MessageField('CreateBitbucketServerConnectedRepositoryRequest', 1, repeated=True)
+
+
+class BatchCreateBitbucketServerConnectedRepositoriesResponse(_messages.Message):
+  r"""Response of BatchCreateBitbucketServerConnectedRepositories RPC method
+  including all successfully connected Bitbucket Server repositories.
+
+  Fields:
+    bitbucketServerConnectedRepositories: The connected Bitbucket Server
+      repositories.
+  """
+
+  bitbucketServerConnectedRepositories = _messages.MessageField('BitbucketServerConnectedRepository', 1, repeated=True)
+
+
 class BatchCreateBitbucketServerConnectedRepositoriesResponseMetadata(_messages.Message):
   r"""Metadata for `BatchCreateBitbucketServerConnectedRepositories`
   operation.
@@ -198,8 +221,8 @@ class BitbucketServerConfig(_messages.Message):
     apiKey: Required. Immutable. API Key that will be attached to webhook.
       Once this field has been set, it cannot be changed. If you need to
       change it, please create another BitbucketServerConfig.
-    connectedRepositories: Connected Bitbucket Server repositories for this
-      config.
+    connectedRepositories: Output only. Connected Bitbucket Server
+      repositories for this config.
     createTime: Time when the config was created.
     hostUri: Required. Immutable. The URI of the Bitbucket Server host. Once
       this field has been set, it cannot be changed. If you need to change it,
@@ -234,6 +257,42 @@ class BitbucketServerConfig(_messages.Message):
   sslCa = _messages.StringField(8)
   username = _messages.StringField(9)
   webhookKey = _messages.StringField(10)
+
+
+class BitbucketServerConnectedRepository(_messages.Message):
+  r"""/ BitbucketServerConnectedRepository represents a connected Bitbucket
+  Server / repository.
+
+  Fields:
+    parent: The name of the `BitbucketServerConfig` that added connected
+      repository. Format: `projects/{project}/locations/{location}/bitbucketSe
+      rverConfigs/{config}`
+    repo: The Bitbucket Server repositories to connect.
+    status: Output only. The status of the repo connection request.
+  """
+
+  parent = _messages.StringField(1)
+  repo = _messages.MessageField('BitbucketServerRepositoryId', 2)
+  status = _messages.MessageField('Status', 3)
+
+
+class BitbucketServerRepository(_messages.Message):
+  r"""BitbucketServerRepository represents a repository hosted on a Bitbucket
+  Server.
+
+  Fields:
+    browseUri: Link to the browse repo page on the Bitbucket Server instance.
+    description: Description of the repository.
+    displayName: Display name of the repository.
+    name: The resource name of the repository.
+    repoId: Identifier for a repository hosted on a Bitbucket Server.
+  """
+
+  browseUri = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  name = _messages.StringField(4)
+  repoId = _messages.MessageField('BitbucketServerRepositoryId', 5)
 
 
 class BitbucketServerRepositoryId(_messages.Message):
@@ -864,15 +923,13 @@ class BuildTrigger(_messages.Message):
   changes.
 
   Enums:
-    EventTypeValueValuesEnum: Optional. EventType allows the user to
-      explicitly set the type of event to which this BuildTrigger should
-      respond. This field is optional but will be validated against the rest
-      of the configuration if it is set.
-    IncludeBuildLogsValueValuesEnum: Optional. If set to
-      INCLUDE_BUILD_LOGS_WITH_STATUS, log url will be shown on GitHub page
-      when build status is final. Setting this field to
-      INCLUDE_BUILD_LOGS_WITH_STATUS for non GitHub triggers results in
-      INVALID_ARGUMENT error.
+    EventTypeValueValuesEnum: EventType allows the user to explicitly set the
+      type of event to which this BuildTrigger should respond. This field will
+      be validated against the rest of the configuration if it is set.
+    IncludeBuildLogsValueValuesEnum: If set to INCLUDE_BUILD_LOGS_WITH_STATUS,
+      log url will be shown on GitHub page when build status is final. Setting
+      this field to INCLUDE_BUILD_LOGS_WITH_STATUS for non GitHub triggers
+      results in INVALID_ARGUMENT error.
 
   Messages:
     SubstitutionsValue: Substitutions for Build resource. The keys must match
@@ -894,10 +951,9 @@ class BuildTrigger(_messages.Message):
       build whenever a Cloud Scheduler event is received.
     description: Human-readable description of this trigger.
     disabled: If true, the trigger will never automatically execute a build.
-    eventType: Optional. EventType allows the user to explicitly set the type
-      of event to which this BuildTrigger should respond. This field is
-      optional but will be validated against the rest of the configuration if
-      it is set.
+    eventType: EventType allows the user to explicitly set the type of event
+      to which this BuildTrigger should respond. This field will be validated
+      against the rest of the configuration if it is set.
     filename: Path, from the source root, to the build configuration file
       (i.e. cloudbuild.yaml).
     filter: A Common Expression Language string.
@@ -914,10 +970,10 @@ class BuildTrigger(_messages.Message):
       ignored_files is not empty, then we ignore any files that match any of
       the ignored_file globs. If the change has no files that are outside of
       the ignored_files globs, then we do not trigger a build.
-    includeBuildLogs: Optional. If set to INCLUDE_BUILD_LOGS_WITH_STATUS, log
-      url will be shown on GitHub page when build status is final. Setting
-      this field to INCLUDE_BUILD_LOGS_WITH_STATUS for non GitHub triggers
-      results in INVALID_ARGUMENT error.
+    includeBuildLogs: If set to INCLUDE_BUILD_LOGS_WITH_STATUS, log url will
+      be shown on GitHub page when build status is final. Setting this field
+      to INCLUDE_BUILD_LOGS_WITH_STATUS for non GitHub triggers results in
+      INVALID_ARGUMENT error.
     includedFiles: If any of the files altered in the commit pass the
       ignored_files filter and included_files is empty, then as far as this
       filter is concerned, we should trigger the build. If any of the files
@@ -958,9 +1014,9 @@ class BuildTrigger(_messages.Message):
   """
 
   class EventTypeValueValuesEnum(_messages.Enum):
-    r"""Optional. EventType allows the user to explicitly set the type of
-    event to which this BuildTrigger should respond. This field is optional
-    but will be validated against the rest of the configuration if it is set.
+    r"""EventType allows the user to explicitly set the type of event to which
+    this BuildTrigger should respond. This field will be validated against the
+    rest of the configuration if it is set.
 
     Values:
       EVENT_TYPE_UNSPECIFIED: EVENT_TYPE_UNSPECIFIED event_types are ignored.
@@ -976,8 +1032,8 @@ class BuildTrigger(_messages.Message):
     MANUAL = 4
 
   class IncludeBuildLogsValueValuesEnum(_messages.Enum):
-    r"""Optional. If set to INCLUDE_BUILD_LOGS_WITH_STATUS, log url will be
-    shown on GitHub page when build status is final. Setting this field to
+    r"""If set to INCLUDE_BUILD_LOGS_WITH_STATUS, log url will be shown on
+    GitHub page when build status is final. Setting this field to
     INCLUDE_BUILD_LOGS_WITH_STATUS for non GitHub triggers results in
     INVALID_ARGUMENT error.
 
@@ -1551,6 +1607,23 @@ class CloudbuildProjectsLocationsBitbucketServerConfigsAddBitbucketServerConnect
   config = _messages.StringField(2, required=True)
 
 
+class CloudbuildProjectsLocationsBitbucketServerConfigsConnectedRepositoriesBatchCreateRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsBitbucketServerConfigsConnectedRepositories
+  BatchCreateRequest object.
+
+  Fields:
+    batchCreateBitbucketServerConnectedRepositoriesRequest: A
+      BatchCreateBitbucketServerConnectedRepositoriesRequest resource to be
+      passed as the request body.
+    parent: The name of the `BitbucketServerConfig` that added connected
+      repository. Format: `projects/{project}/locations/{location}/bitbucketSe
+      rverConfigs/{config}`
+  """
+
+  batchCreateBitbucketServerConnectedRepositoriesRequest = _messages.MessageField('BatchCreateBitbucketServerConnectedRepositoriesRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class CloudbuildProjectsLocationsBitbucketServerConfigsCreateRequest(_messages.Message):
   r"""A CloudbuildProjectsLocationsBitbucketServerConfigsCreateRequest object.
 
@@ -1644,6 +1717,28 @@ class CloudbuildProjectsLocationsBitbucketServerConfigsRemoveBitbucketServerConn
 
   config = _messages.StringField(1, required=True)
   removeBitbucketServerConnectedRepositoryRequest = _messages.MessageField('RemoveBitbucketServerConnectedRepositoryRequest', 2)
+
+
+class CloudbuildProjectsLocationsBitbucketServerConfigsReposListRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsBitbucketServerConfigsReposListRequest
+  object.
+
+  Fields:
+    pageSize: The maximum number of configs to return. The service may return
+      fewer than this value. If unspecified, at most 50 configs will be
+      returned. The maximum value is 1000; values above 1000 will be coerced
+      to 1000.
+    pageToken: A page token, received from a previous
+      `ListBitbucketServerRepositoriesRequest` call. Provide this to retrieve
+      the subsequent page. When paginating, all other parameters provided to
+      `ListBitbucketServerConfigsRequest` must match the call that provided
+      the page token.
+    parent: Required. Name of the parent resource.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class CloudbuildProjectsLocationsBuildsApproveRequest(_messages.Message):
@@ -2316,6 +2411,37 @@ class ClusterOptions(_messages.Message):
   name = _messages.StringField(1)
 
 
+class CreateBitbucketServerConfigOperationMetadata(_messages.Message):
+  r"""Metadata for `CreateBitbucketServerConfig` operation.
+
+  Fields:
+    bitbucketServerConfig: The resource name of the BitbucketServerConfig to
+      be created. Format:
+      `projects/{project}/locations/{location}/bitbucketServerConfigs/{id}`.
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+  """
+
+  bitbucketServerConfig = _messages.StringField(1)
+  completeTime = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+
+
+class CreateBitbucketServerConnectedRepositoryRequest(_messages.Message):
+  r"""Request to connect a repository from a connected Bitbucket Server host.
+
+  Fields:
+    bitbucketServerConnectedRepository: Required. The Bitbucket Server
+      repository to connect.
+    parent: Required. The name of the `BitbucketServerConfig` that added
+      connected repository. Format: `projects/{project}/locations/{location}/b
+      itbucketServerConfigs/{config}`
+  """
+
+  bitbucketServerConnectedRepository = _messages.MessageField('BitbucketServerConnectedRepository', 1)
+  parent = _messages.StringField(2)
+
+
 class CreateGitHubEnterpriseConfigOperationMetadata(_messages.Message):
   r"""Metadata for `CreateGithubEnterpriseConfig` operation.
 
@@ -2371,6 +2497,22 @@ class CronConfig(_messages.Message):
   enterpriseConfigResource = _messages.StringField(1)
   schedule = _messages.StringField(2)
   timeZone = _messages.StringField(3)
+
+
+class DeleteBitbucketServerConfigOperationMetadata(_messages.Message):
+  r"""Metadata for `DeleteBitbucketServerConfig` operation.
+
+  Fields:
+    bitbucketServerConfig: The resource name of the BitbucketServerConfig to
+      be deleted. Format:
+      `projects/{project}/locations/{location}/bitbucketServerConfigs/{id}`.
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+  """
+
+  bitbucketServerConfig = _messages.StringField(1)
+  completeTime = _messages.StringField(2)
+  createTime = _messages.StringField(3)
 
 
 class DeleteGitHubEnterpriseConfigOperationMetadata(_messages.Message):
@@ -2861,33 +3003,14 @@ class HybridPoolConfig(_messages.Message):
   Enums:
     BuilderImageCachingValueValuesEnum: Immutable. Controls how the worker
       pool caches images. If unspecified during worker pool creation, this
-      field is defaulted to VOLUME_CACHING.
-    DockerSecurityPolicyValueValuesEnum: Immutable. Specify the security
-      policy for the hybrid worker pool. Once created, this setting cannot be
-      changed on the hybrid worker pool, as we are unable to guarantee that
-      the cluster has not been altered by misuse of privileged Docker daemon.
+      field is defaulted to CACHING_DISABLED.
 
   Fields:
     builderImageCaching: Immutable. Controls how the worker pool caches
       images. If unspecified during worker pool creation, this field is
-      defaulted to VOLUME_CACHING.
-    cachingStorageClass: Immutable. Used as the Kubernetes storageClassName
-      for builder image caching. This provides the value for the
-      storageClassName field for any PersistentVolumeClaims installed on the
-      cluster. Corresponding field in the Kubernetes API: https://github.com/k
-      ubernetes/api/blob/2a5dae08c42b1e8fdc1379432d8898efece65363/core/v1/type
-      s.go#L354. This field allows Hybrid users to control which storage class
-      is used by persistent volume claims. If unspecified,
-      PersistentVolumeClaims will be created without a storageClassName field
-      during installation. The string must be formatted as a valid Kubernetes
-      ObjectMeta name: https://github.com/kubernetes/apimachinery/blob/6c3d2b3
-      6a98a4f86d1fb8ee83f78433cd72aefb8/pkg/apis/meta/v1/types.go#L124.
+      defaulted to CACHING_DISABLED.
     defaultWorkerConfig: Default settings which will be applied to builds on
       this worker pool if they are not specified in the build request.
-    dockerSecurityPolicy: Immutable. Specify the security policy for the
-      hybrid worker pool. Once created, this setting cannot be changed on the
-      hybrid worker pool, as we are unable to guarantee that the cluster has
-      not been altered by misuse of privileged Docker daemon.
     membership: Required. Immutable. The Anthos/GKE Hub membership of the
       cluster which will run the actual build operations. Example:
       projects/{project}/locations/{location}/memberships/{cluster_name}
@@ -2895,7 +3018,7 @@ class HybridPoolConfig(_messages.Message):
 
   class BuilderImageCachingValueValuesEnum(_messages.Enum):
     r"""Immutable. Controls how the worker pool caches images. If unspecified
-    during worker pool creation, this field is defaulted to VOLUME_CACHING.
+    during worker pool creation, this field is defaulted to CACHING_DISABLED.
 
     Values:
       BUILDER_IMAGE_CACHING_UNSPECIFIED: Default enum type. This should not be
@@ -2908,30 +3031,9 @@ class HybridPoolConfig(_messages.Message):
     CACHING_DISABLED = 1
     VOLUME_CACHING = 2
 
-  class DockerSecurityPolicyValueValuesEnum(_messages.Enum):
-    r"""Immutable. Specify the security policy for the hybrid worker pool.
-    Once created, this setting cannot be changed on the hybrid worker pool, as
-    we are unable to guarantee that the cluster has not been altered by misuse
-    of privileged Docker daemon.
-
-    Values:
-      DOCKER_SECURITY_POLICY_UNSPECIFIED: Unspecified - the default value will
-        be used.
-      NON_PRIVILEGED_ONLY: Users can only run builds using a non-privileged
-        Docker daemon. This is suitable for most cases.
-      PRIVILEGED_PERMITTED: Users are allowed to run builds using a privileged
-        Docker daemon. This setting should be used with caution, as using a
-        privileged Docker daemon introduces a security risk.
-    """
-    DOCKER_SECURITY_POLICY_UNSPECIFIED = 0
-    NON_PRIVILEGED_ONLY = 1
-    PRIVILEGED_PERMITTED = 2
-
   builderImageCaching = _messages.EnumField('BuilderImageCachingValueValuesEnum', 1)
-  cachingStorageClass = _messages.StringField(2)
-  defaultWorkerConfig = _messages.MessageField('HybridWorkerConfig', 3)
-  dockerSecurityPolicy = _messages.EnumField('DockerSecurityPolicyValueValuesEnum', 4)
-  membership = _messages.StringField(5)
+  defaultWorkerConfig = _messages.MessageField('HybridWorkerConfig', 2)
+  membership = _messages.StringField(3)
 
 
 class HybridWorkerConfig(_messages.Message):
@@ -3048,6 +3150,20 @@ class ListBitbucketServerConfigsResponse(_messages.Message):
   """
 
   bitbucketServerConfigs = _messages.MessageField('BitbucketServerConfig', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListBitbucketServerRepositoriesResponse(_messages.Message):
+  r"""RPC response object returned by the ListBitbucketServerRepositories RPC
+  method.
+
+  Fields:
+    bitbucketServerRepositories: List of Bitbucket Server repositories.
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  bitbucketServerRepositories = _messages.MessageField('BitbucketServerRepository', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -4090,6 +4206,22 @@ class TimeSpan(_messages.Message):
 
   endTime = _messages.StringField(1)
   startTime = _messages.StringField(2)
+
+
+class UpdateBitbucketServerConfigOperationMetadata(_messages.Message):
+  r"""Metadata for `UpdateBitbucketServerConfig` operation.
+
+  Fields:
+    bitbucketServerConfig: The resource name of the BitbucketServerConfig to
+      be updated. Format:
+      `projects/{project}/locations/{location}/bitbucketServerConfigs/{id}`.
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+  """
+
+  bitbucketServerConfig = _messages.StringField(1)
+  completeTime = _messages.StringField(2)
+  createTime = _messages.StringField(3)
 
 
 class UpdateGitHubEnterpriseConfigOperationMetadata(_messages.Message):

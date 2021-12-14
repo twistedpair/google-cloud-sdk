@@ -24,14 +24,12 @@ from apitools.base.py import extra_types
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.ai.models import client as model_client
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.ai import constants
 from googlecloudsdk.command_lib.ai import errors
 from googlecloudsdk.command_lib.ai import flags
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-from googlecloudsdk.core.credentials import http
 from googlecloudsdk.core.credentials import requests
 from six.moves import http_client
 
@@ -79,16 +77,9 @@ def _GetModelDeploymentResourceType(model_ref, client):
 
 def _DoHttpPost(url, headers, body):
   """Makes an http POST request."""
-  if base.UseRequests():
-    response = requests.GetSession().request(
-        'POST', url, data=body, headers=headers)
-    return getattr(response, 'status_code'), getattr(response,
-                                                     'headers'), getattr(
-                                                         response, 'content')
-  else:
-    response, response_body = http.Http().request(
-        uri=url, method='POST', body=body, headers=headers)
-    return int(response.get('status')), response, response_body
+  response = requests.GetSession().request(
+      'POST', url, data=body, headers=headers)
+  return response.status_code, response.headers, response.content
 
 
 class EndpointsClient(object):

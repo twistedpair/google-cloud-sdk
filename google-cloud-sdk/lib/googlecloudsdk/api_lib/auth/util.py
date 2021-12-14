@@ -28,10 +28,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.credentials import flow as c_flow
 from googlecloudsdk.core.credentials import google_auth_credentials as c_google_auth
-from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.core.util import files
-
-from oauth2client import client
 
 
 # Client ID from project "usable-auth-library", configured for
@@ -126,49 +123,6 @@ def DoInstalledAppBrowserFlowGoogleAuth(launch_browser,
     return c_google_auth.Credentials.FromGoogleAuthUserCredentials(
         user_creds)
   except c_flow.Error as e:
-    if context_aware.IsContextAwareAccessDeniedError(e):
-      msg = context_aware.CONTEXT_AWARE_ACCESS_HELP_MSG
-    else:
-      msg = 'There was a problem with web authentication.'
-      if launch_browser:
-        msg += ' Try running again with --no-launch-browser.'
-    log.error(msg)
-    raise
-
-
-def DoInstalledAppBrowserFlow(launch_browser, scopes, client_id_file=None,
-                              client_id=None, client_secret=None):
-  """Launches a browser to get credentials.
-
-  Args:
-    launch_browser: bool, True to do a browser flow, false to allow the user to
-      type in a token from a different browser.
-    scopes: [str], The list of scopes to authorize.
-    client_id_file: str, The path to a file containing the client id and secret
-      to use for the flow.  If None, the default client id for the Cloud SDK is
-      used.
-    client_id: str, An alternate client id to use.  This is ignored if you give
-      a client id file.  If None, the default client id for the Cloud SDK is
-      used.
-    client_secret: str, The secret to go along with client_id if specified.
-
-  Returns:
-    The clients obtained from the web flow.
-  """
-  try:
-    if client_id_file:
-      AssertClientSecretIsInstalledType(client_id_file)
-      webflow = client.flow_from_clientsecrets(
-          filename=client_id_file,
-          scope=scopes)
-      return c_store.RunWebFlow(webflow, launch_browser=launch_browser)
-    else:
-      return c_store.AcquireFromWebFlow(
-          launch_browser=launch_browser,
-          scopes=scopes,
-          client_id=client_id,
-          client_secret=client_secret)
-  except c_store.FlowError as e:
     if context_aware.IsContextAwareAccessDeniedError(e):
       msg = context_aware.CONTEXT_AWARE_ACCESS_HELP_MSG
     else:

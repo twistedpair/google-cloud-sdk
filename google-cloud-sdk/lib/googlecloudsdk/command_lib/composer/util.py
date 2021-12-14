@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import collections
 import contextlib
 import io
+import ipaddress
 import os
 import re
 
@@ -212,7 +213,7 @@ def ExtractGkeClusterLocationId(env_object):
 
   Args:
     env_object: Environment, the environment, likely returned by an API call,
-        whose cluster location to extract
+      whose cluster location to extract
 
   Raises:
     Error: if Kubernetes cluster is not found.
@@ -222,11 +223,11 @@ def ExtractGkeClusterLocationId(env_object):
     running the environment
   """
   if env_object.config.nodeConfig.location:
-    return env_object.config.nodeConfig.location[
-        env_object.config.nodeConfig.location.rfind('/') + 1:]
+    return env_object.config.nodeConfig.location[env_object.config.nodeConfig
+                                                 .location.rfind('/') + 1:]
 
-  gke_cluster = env_object.config.gkeCluster[
-      env_object.config.gkeCluster.rfind('/') + 1:]
+  gke_cluster = env_object.config.gkeCluster[env_object.config.gkeCluster
+                                             .rfind('/') + 1:]
 
   gke_api = gke_api_adapter.NewAPIAdapter(GKE_API_VERSION)
   # GKE is in the middle of deprecating zones in favor of locations, so we
@@ -246,8 +247,7 @@ def ExtractGkeClusterLocationId(env_object):
   return cluster_zones[console_io.PromptChoice(
       ['[{}]'.format(z) for z in cluster_zones],
       default=0,
-      message=
-      'Cluster found in more than one location. Please select the desired '
+      message='Cluster found in more than one location. Please select the desired '
       'location:')]
 
 
@@ -268,7 +268,7 @@ def GetGkePod(pod_substr=None, kubectl_namespace=None):
 
   Args:
     pod_substr: string, a filter to apply to pods. The returned pod name must
-        contain pod_substr (if it is not None).
+      contain pod_substr (if it is not None).
     kubectl_namespace: string or None, namespace to query for gke pods
 
   Raises:
@@ -335,12 +335,12 @@ def RunKubectlCommand(args, out_func=None, err_func=None, namespace=None):
 
   Args:
     args: list of strings, command line arguments to pass to the kubectl
-        command. Should omit the kubectl command itself. For example, to
-        execute 'kubectl get pods', provide ['get', 'pods'].
+      command. Should omit the kubectl command itself. For example, to execute
+      'kubectl get pods', provide ['get', 'pods'].
     out_func: str->None, a function to call with the stdout of the kubectl
-        command
+      command
     err_func: str->None, a function to call with the stderr of the kubectl
-        command
+      command
     namespace: str or None, the kubectl namespace to apply to the command
 
   Raises:
@@ -493,8 +493,9 @@ def ParseRequirementsFile(requirements_file_path):
       return requirements
   except (files.Error, storage_api.Error, storage_util.Error):
     # Raise error when it fails to read requirements file.
-    core_exceptions.reraise(Error(
-        'Unable to read requirements file {0}'.format(requirements_file_path)))
+    core_exceptions.reraise(
+        Error('Unable to read requirements file {0}'.format(
+            requirements_file_path)))
 
 
 def SplitRequirementSpecifier(requirement_specifier):
@@ -544,11 +545,10 @@ def BuildPartialUpdate(clear, remove_keys, set_entries, field_mask_prefix,
     set_entries: {string: string}, Dict containing entries to set.
     field_mask_prefix: string, The prefix defining the path to the base of the
       proto map to be patched.
-    entry_cls: AdditionalProperty, The AdditionalProperty class for the type
-      of entry being updated.
+    entry_cls: AdditionalProperty, The AdditionalProperty class for the type of
+      entry being updated.
     env_builder: [AdditionalProperty] -> Environment, A function which produces
       a patch Environment with the given list of entry_cls properties.
-
 
   Returns:
     (string, Environment), a 2-tuple of the field mask defined by the arguments
@@ -601,11 +601,10 @@ def BuildFullMapUpdate(clear, remove_keys, set_entries, initial_entries,
     set_entries: {string: string}, Dict containing entries to set.
     initial_entries: [AdditionalProperty], list of AdditionalProperty class with
       key and value fields, representing starting dict to update from.
-    entry_cls: AdditionalProperty, The AdditionalProperty class for the type
-      of entry being updated.
+    entry_cls: AdditionalProperty, The AdditionalProperty class for the type of
+      entry being updated.
     env_builder: [AdditionalProperty] -> Environment, A function which produces
       a patch Environment with the given list of entry_cls properties.
-
 
   Returns:
     Environment, a patch environment produced by env_builder.
@@ -637,13 +636,29 @@ def IsInRunningState(environment, release_track=base.ReleaseTrack.GA):
   """Returns whether an environment currently is in the RUNNING state.
 
   Args:
-    environment: Environment, an object returned by an API call representing
-        the environment to check.
+    environment: Environment, an object returned by an API call representing the
+      environment to check.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
-        which Composer client library will be used.
+      which Composer client library will be used.
   """
   running_state = (
       api_util.GetMessagesModule(
           release_track=release_track).Environment.StateValueValuesEnum.RUNNING)
 
   return environment.state == running_state
+
+
+def ValidateMasterAuthorizedNetworks(networks):
+  """Validates given master authorized networks.
+
+  Args:
+    networks: Iterable(string) or None. List of networks in CIDR notation.
+  """
+  if networks is None:
+    return
+  for network in networks:
+    try:
+      ipaddress.IPv4Network(network)
+    except Exception as e:
+      raise InvalidUserInputError(
+          'Invalid master authorized network: {}'.format(e))

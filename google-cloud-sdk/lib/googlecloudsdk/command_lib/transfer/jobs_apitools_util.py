@@ -33,6 +33,11 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import times
 
 
+def _raise_no_scheme_error(url):
+  raise errors.InvalidUrlError('Did you mean "posix://{}"'.format(
+      url.object_name))
+
+
 def _create_or_modify_transfer_options(transfer_spec, args, messages):
   """Creates or modifies TransferOptions object based on args."""
   if not (args.overwrite_when or args.delete_from):
@@ -122,21 +127,6 @@ def _create_or_modify_transfer_spec(job, args, messages):
   if not job.transferSpec:
     job.transferSpec = messages.TransferSpec()
 
-  if args.destination:
-    # Clear any existing destination to make space for new one.
-    job.transferSpec.posixDataSink = None
-    job.transferSpec.gcsDataSink = None
-
-    destination_url = storage_url.storage_url_from_string(args.destination)
-    if destination_url.scheme is storage_url.ProviderPrefix.GCS:
-      job.transferSpec.gcsDataSink = messages.GcsData(
-          bucketName=destination_url.bucket_name,
-          path=destination_url.object_name,
-      )
-    elif destination_url.scheme is storage_url.ProviderPrefix.POSIX:
-      job.transferSpec.posixDataSink = messages.PosixFilesystem(
-          rootDirectory=destination_url.object_name)
-
   if args.source:
     # Clear any existing source to make space for new one.
     job.transferSpec.httpDataSource = None
@@ -154,7 +144,9 @@ def _create_or_modify_transfer_spec(job, args, messages):
       else:
         raise
     else:
-      if source_url.scheme is storage_url.ProviderPrefix.POSIX:
+      if source_url.scheme is storage_url.ProviderPrefix.FILE:
+        _raise_no_scheme_error(source_url)
+      elif source_url.scheme is storage_url.ProviderPrefix.POSIX:
         job.transferSpec.posixDataSource = messages.PosixFilesystem(
             rootDirectory=source_url.object_name)
       elif source_url.scheme is storage_url.ProviderPrefix.GCS:
@@ -174,6 +166,23 @@ def _create_or_modify_transfer_spec(job, args, messages):
                 path=source_url.object_name,
                 storageAccount=source_url.account,
             ))
+
+  if args.destination:
+    # Clear any existing destination to make space for new one.
+    job.transferSpec.posixDataSink = None
+    job.transferSpec.gcsDataSink = None
+
+    destination_url = storage_url.storage_url_from_string(args.destination)
+    if destination_url.scheme is storage_url.ProviderPrefix.FILE:
+      _raise_no_scheme_error(destination_url)
+    elif destination_url.scheme is storage_url.ProviderPrefix.GCS:
+      job.transferSpec.gcsDataSink = messages.GcsData(
+          bucketName=destination_url.bucket_name,
+          path=destination_url.object_name,
+      )
+    elif destination_url.scheme is storage_url.ProviderPrefix.POSIX:
+      job.transferSpec.posixDataSink = messages.PosixFilesystem(
+          rootDirectory=destination_url.object_name)
 
   if args.destination_agent_pool:
     job.transferSpec.sinkAgentPoolName = name_util.add_agent_pool_prefix(

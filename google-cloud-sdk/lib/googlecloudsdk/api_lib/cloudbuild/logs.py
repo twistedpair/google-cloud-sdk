@@ -28,17 +28,14 @@ from apitools.base.py import exceptions as api_exceptions
 
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.logging import common
-from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_attr_os
-from googlecloudsdk.core.credentials import http
 from googlecloudsdk.core.credentials import requests as creds_requests
 from googlecloudsdk.core.util import encoding
 
-import httplib2
 import requests
 
 LOG_STREAM_HELP_TEXT = """
@@ -75,21 +72,6 @@ class DefaultLogsBucketIsOutsideSecurityPerimeterException(exceptions.Error):
 Response = collections.namedtuple('Response', ['status', 'headers', 'body'])
 
 
-class Httplib2LogTailer(object):
-  """LogTailer transport to make HTTP requests using httplib2."""
-
-  def __init__(self):
-    self.http = http.Http()
-
-  def Request(self, url, cursor):
-    try:
-      (res, body) = self.http.request(
-          url, method='GET', headers={'Range': 'bytes={0}-'.format(cursor)})
-      return Response(res.status, res, body)
-    except httplib2.HttpLib2Error as e:
-      raise api_exceptions.CommunicationError('Failed to connect: %s' % e)
-
-
 class RequestsLogTailer(object):
   """LogTailer transport to make HTTP requests using requests."""
 
@@ -103,13 +85,6 @@ class RequestsLogTailer(object):
       return Response(response.status_code, response.headers, response.content)
     except requests.exceptions.RequestException as e:
       raise api_exceptions.CommunicationError('Failed to connect: %s' % e)
-
-
-def GetGCSLogTailerTransport():
-  """Return a GCS LogTailer transport."""
-  if base.UseRequests():
-    return RequestsLogTailer()
-  return Httplib2LogTailer()
 
 
 def GetGCLLogTailer():
@@ -295,7 +270,7 @@ class GCSLogTailer(TailerBase):
       'https://www.googleapis.com/storage/v1/b/{bucket}/o/{obj}?alt=media')
 
   def __init__(self, bucket, obj, out=log.status, url_pattern=None):
-    self.transport = GetGCSLogTailerTransport()
+    self.transport = RequestsLogTailer()
     url_pattern = url_pattern or self.GCS_URL_PATTERN
     self.url = url_pattern.format(bucket=bucket, obj=obj)
     log.debug('GCS logfile url is ' + self.url)

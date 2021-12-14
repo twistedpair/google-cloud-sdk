@@ -5,6 +5,119 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 367.0.0 (2021-12-14)
+
+### Breaking Changes
+
+*   **(Cloud Datastream)** Modified `gcloud beta datastream streams create` and `gcloud beta datastream streams update` `--force` & `--validate-only` flags to be mutually exclusive.
+
+
+### App Engine
+
+* Updated the Go SDK to version 1.9.72.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/go/release-notes>.
+
+### Assured Workloads
+
+*   Added `--enable-sovereign-controls` flag to `gcloud assured workloads
+    create` command.
+
+### Bare Metal Solution
+
+* Promoted `gcloud bms networks` to GA.
+* Promoted `gcloud bms snapshot-schedule-policies` to GA.
+* Promoted `gcloud bms volumes` to GA.
+
+### Cloud Bigtable Emulator
+
+*   Added ARM64 support for Linux and macOS.
+
+### Cloud Composer
+
+* Added `--enable-master-authorized-networks` and `--master-authorized-networks` flags to `gcloud beta composer environments create` command.
+* Added `--enable-master-authorized-networks` and `--disable-master-authorized-networks` and `--master-authorized-networks` to `gcloud beta composer environments update` command.
+
+### Cloud Datastream
+
+* Modified `gcloud beta datastream stream create` and `gcloud beta datastream stream update` validation flags (`--validate-only`, `--force`) to be mutually exclusive.
+* Promoted `gcloud datastream connection-profiles` to GA.
+    * RDBMS files now use the v1 API field names (e.g. 'schema' instead of 'schema_name', etc..).
+    * Renamed `--bucket-name` flag to bucket.
+    * Renamed `--private-connection-name` flag to `--private-connection`.
+    * Removed `--no-connectivity` flag.
+    * Added `--force validation` flag.
+* Promoted `gcloud datastream streams` to GA.
+    * For create and update `--force` & `--validate-only` flags are now mutually exclusive.
+    * Renamed `--source-name` flag to `--source`.
+    * Renamed `-destination-name` flag to `--destination`.
+* Promoted `gcloud datastream private-connections` to GA.
+    * Renamed `--vpc-name` flag to `--vpc`.
+* Promoted `gcloud datastream routes` to GA.
+* Promoted `gcloud datastream locations` to GA.
+* Promoted `gcloud datastream operations` to GA.
+
+### Cloud Deploy
+
+* When using `gcloud deploy apply`, manifest files support apiVersion 'deploy.cloud.google.com/v1'.
+
+### Cloud Filestore
+
+*   Added `gcloud beta filestore instances revert` command to revert a filestore
+    instance to specific snapshot.
+
+### Cloud Healthcare
+
+* Added `--resource-type` flag to `gcloud beta healthcare fhir-stores export bq` and `gcloud beta healthcare fhir-stores export gcs` which limits the export to specific types of FHIR resources on export.
+* Added `--since` flag to `gcloud beta healthcare fhir-stores export bq` and `gcloud beta healthcare fhir-stores export gcs` which limits the export to FHIR resources that were updated since the value passed in.
+
+### Cloud Run
+
+* Promoted `--cpu-throttling` of `gcloud run` from beta to GA.
+
+### Cloud Security Command Center
+
+*   Added `gcloud findings bulk-mute` command to support mute features.
+
+### Compute Engine
+
+*   Fixed a bug in `gcloud compute start-iap-tunnel` that was causing remote
+connections to be delayed up to 5 seconds.
+Link to bug: <https://issuetracker.google.com/issues/199408959>.
+* Promoted `--subsetting-subset-size` flag of `gcloud compute backend-services create|update` commands to beta.
+* Promoted the following `--service-proxy` flag parameters of `gcloud compute instance-templates create` to beta:
+  * `intercept-all-outbound-traffic`,
+  * `exclude-outbound-ip-ranges`,
+  * `exclude-outbound-port-ranges`,
+  * `scope`.
+* Promoted `gcloud compute instances|instance-templates create --network-performance-configs` flag to GA.
+* Added the following flags to `gcloud beta compute instance-groups managed create`, `gcloud beta compute instance-groups managed create-instance`, and `gcloud beta compute instance-groups managed instance-configs create`:
+  - `--stateful-internal-ip`,
+  - `--stateful-external-ip`.
+* Add the following flags to `gcloud beta compute instance-groups managed update` and `gcloud beta compute instance-groups managed instance-configs update`:
+  - `--stateful-internal-ip`,
+  - `--remove-stateful-internal-ips`,
+  - `--stateful-external-ip`,
+  - `--remove-stateful-external-ips`.
+
+### Kpt
+
+* Updated `kpt update` to no longer require users to check in changes before invoking kpt pkg update.
+* Updated `kpt update` to accepts empty path with version.
+* Updated `kpt fn` to check presence of function images in local cache only when relevant.
+* Fixed the property names casing issue in the Kptfile schema.
+* Fixed issue where `kpt pkg get` returns an error while adding merge comment.
+
+### Network Connectivity
+
+*   Added `gcloud network-connectivity operations describe` and `gcloud
+    network-connectivity operations list` which return information about
+    long-running operations.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 366.0.0 (2021-12-07)
 
 ### Breaking Changes

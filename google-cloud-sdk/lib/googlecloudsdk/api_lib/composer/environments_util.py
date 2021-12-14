@@ -100,8 +100,8 @@ class CreateEnvironmentFlags():
       specified only in Composer 2.0.0.
     worker_cpu: float or None, CPU allocated to each Airflow worker. Can be
       specified only in Composer 2.0.0.
-    web_server_cpu: float or None, CPU allocated to Airflow web server.
-      Can be specified only in Composer 2.0.0.
+    web_server_cpu: float or None, CPU allocated to Airflow web server. Can be
+      specified only in Composer 2.0.0.
     scheduler_memory_gb: float or None, memory allocated to Airflow scheduler.
       Can be specified only in Composer 2.0.0.
     worker_memory_gb: float or None, memory allocated to each Airflow worker.
@@ -112,8 +112,8 @@ class CreateEnvironmentFlags():
       Can be specified only in Composer 2.0.0.
     worker_storage_gb: float or None, storage allocated to each Airflow worker.
       Can be specified only in Composer 2.0.0.
-    web_server_storage_gb: float or None, storage allocated to Airflow
-      web server. Can be specified only in Composer 2.0.0.
+    web_server_storage_gb: float or None, storage allocated to Airflow web
+      server. Can be specified only in Composer 2.0.0.
     min_workers: int or None, minimum number of workers in the Environment. Can
       be specified only in Composer 2.0.0.
     max_workers: int or None, maximum number of workers in the Environment. Can
@@ -125,6 +125,9 @@ class CreateEnvironmentFlags():
       window
     maintenance_window_recurrence: str or None, the recurrence of the
       maintenance window
+    enable_master_authorized_networks: bool or None, whether master authorized
+      networks should be enabled
+    master_authorized_networks: list(str), master authorized networks
     release_track: base.ReleaseTrack, the release track of command. Will dictate
       which Composer client library will be used.
   """
@@ -180,6 +183,8 @@ class CreateEnvironmentFlags():
                maintenance_window_start=None,
                maintenance_window_end=None,
                maintenance_window_recurrence=None,
+               enable_master_authorized_networks=None,
+               master_authorized_networks=None,
                release_track=base.ReleaseTrack.GA):
     self.node_count = node_count
     self.environment_size = environment_size
@@ -231,6 +236,8 @@ class CreateEnvironmentFlags():
     self.maintenance_window_start = maintenance_window_start
     self.maintenance_window_end = maintenance_window_end
     self.maintenance_window_recurrence = maintenance_window_recurrence
+    self.enable_master_authorized_networks = enable_master_authorized_networks
+    self.master_authorized_networks = master_authorized_networks
     self.release_track = release_track
 
 
@@ -380,6 +387,14 @@ def _CreateConfig(messages, flags, is_composer_v1):
     config.webServerConfig = messages.WebServerConfig(
         machineType=flags.web_server_machine_type)
 
+  if flags.enable_master_authorized_networks:
+    networks = flags.master_authorized_networks if flags.master_authorized_networks else []
+    config.masterAuthorizedNetworksConfig = messages.MasterAuthorizedNetworksConfig(
+        enabled=True,
+        cidrBlocks=[
+            messages.CidrBlock(cidrBlock=network) for network in networks
+        ])
+
   composer_v2_flag_used = (
       flags.scheduler_cpu or flags.worker_cpu or flags.web_server_cpu or
       flags.scheduler_memory_gb or flags.worker_memory_gb or
@@ -413,7 +428,7 @@ def Create(environment_ref, flags, is_composer_v1):
     environment_ref: Resource, the Composer environment resource to create.
     flags: CreateEnvironmentFlags, the flags provided for environment creation.
     is_composer_v1: boolean representing if creation request is for Composer
-    1.*.* image versions.
+      1.*.* image versions.
 
   Returns:
     Operation: the operation corresponding to the creation of the environment
@@ -461,10 +476,9 @@ def Delete(environment_ref, release_track=base.ReleaseTrack.GA):
   """Calls the Composer Environments.Delete method.
 
   Args:
-    environment_ref: Resource, the Composer environment resource to
-        delete.
+    environment_ref: Resource, the Composer environment resource to delete.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
-        which Composer client library will be used.
+      which Composer client library will be used.
 
   Returns:
     Operation: the operation corresponding to the deletion of the environment
@@ -546,13 +560,13 @@ def List(location_refs,
 
   Args:
     location_refs: [core.resources.Resource], a list of resource reference to
-        locations in which to list environments.
+      locations in which to list environments.
     page_size: An integer specifying the maximum number of resources to be
       returned in a single list call.
     limit: An integer specifying the maximum number of environments to list.
-        None if all available environments should be returned.
+      None if all available environments should be returned.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
-        which Composer client library will be used.
+      which Composer client library will be used.
 
   Returns:
     list: a generator over Environments in the locations in `location_refs`
@@ -579,7 +593,8 @@ def Patch(environment_ref,
       with the update_mask.
     update_mask: A field mask defining the patch.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
-        which Composer client library will be used.
+      which Composer client library will be used.
+
   Returns:
     Operation: the operation corresponding to the environment update
   """

@@ -20,12 +20,9 @@ from __future__ import unicode_literals
 
 import json
 
-from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions as core_exceptions
-from googlecloudsdk.core.credentials import http
 from googlecloudsdk.core.credentials import requests
 
-import six
 from six.moves import http_client as httplib
 
 
@@ -39,17 +36,11 @@ class HttpRequestFailError(core_exceptions.Error):
   pass
 
 
-def _GetPrediction(response_encoding, url, body, headers):
+def _GetPrediction(url, body, headers):
   """Make http request to get prediction results."""
-  if base.UseRequests():
-    response = requests.GetSession().request(
-        'POST', url, data=body, headers=headers)
-    return getattr(response, 'status_code'), getattr(response, 'text')
-
-  response, response_body = http.Http(
-      response_encoding=response_encoding).request(
-          uri=url, method='POST', body=body, headers=headers)
-  return response.get('status'), response_body
+  response = requests.GetSession().request(
+      'POST', url, data=body, headers=headers)
+  return response.status_code, response.text
 
 
 def Predict(model_or_version_ref, instances, signature_name=None):
@@ -82,9 +73,7 @@ def Predict(model_or_version_ref, instances, signature_name=None):
                                'because the input is not utf-8 encoded.')
 
   # Workaround since gcloud cannot handle HttpBody properly, see b/31403673
-  # TODO(b/77278279): Decide whether we should always set this or not.
-  encoding = None if six.PY2 else 'utf-8'
-  response_status, response_body = _GetPrediction(encoding, url, body, headers)
+  response_status, response_body = _GetPrediction(url, body, headers)
   if int(response_status) != httplib.OK:
     raise HttpRequestFailError('HTTP request failed. Response: ' +
                                response_body)
@@ -122,9 +111,7 @@ def Explain(model_or_version_ref, instances):
                                'because the input is not utf-8 encoded.')
 
   # Workaround since gcloud cannot handle HttpBody properly, see b/31403673
-  # TODO(b/77278279): Decide whether we should always set this or not.
-  encoding = None if six.PY2 else 'utf-8'
-  response_status, response_body = _GetPrediction(encoding, url, body, headers)
+  response_status, response_body = _GetPrediction(url, body, headers)
   if int(response_status) != httplib.OK:
     raise HttpRequestFailError('HTTP request failed. Response: ' +
                                response_body)

@@ -30,9 +30,17 @@ from googlecloudsdk.command_lib.scc.hooks import GetSourceParentFromResourceName
 from googlecloudsdk.command_lib.scc.hooks import InvalidSCCInputError
 
 
+def BulkMuteFindingsReqHook(ref, args, req):
+  """Bulk mute findings based on a filter."""
+  del ref  # Unused.
+  req.parent = _ValidateAndGetParent(args)
+  args.filter = ""
+  return req
+
+
 def CreateFindingsReqHook(ref, args, req):
   """Generate a finding's name and parent using org, source and finding."""
-  del ref
+  del ref  # Unused.
   _ValidateMutexOnFindingAndSourceAndOrganization(args)
   finding_name = _GetFindingNameForParent(args)
   req.parent = GetSourceParentFromResourceName(finding_name)
@@ -46,7 +54,7 @@ def CreateFindingsReqHook(ref, args, req):
 
 def ListFindingsReqHook(ref, args, req):
   """Generates a finding's parent using org and source and hook up filter."""
-  del ref
+  del ref  # Unused.
   _ValidateMutexOnSourceAndParent(args)
   req.parent = _GetSourceNameForParent(args)
   req.filter = args.filter
@@ -63,7 +71,7 @@ def ListFindingsReqHook(ref, args, req):
 
 def ListFindingsSecurityMarksReqHook(ref, args, req):
   """Generates a finding's parent and adds filter based on finding name."""
-  del ref
+  del ref  # Unused.
   _ValidateMutexOnFindingAndSourceAndOrganization(args)
   finding_name = _GetFindingNameForParent(args)
   req.parent = GetSourceParentFromResourceName(finding_name)
@@ -73,7 +81,7 @@ def ListFindingsSecurityMarksReqHook(ref, args, req):
 
 def GroupFindingsReqHook(ref, args, req):
   """Generate a finding's name and parent using org, source and finding id."""
-  del ref
+  del ref  # Unused.
   _ValidateMutexOnSourceAndParent(args)
   if not req.groupFindingsRequest:
     messages = sc_client.GetMessages()
@@ -91,7 +99,7 @@ def GroupFindingsReqHook(ref, args, req):
 
 def SetMuteReqHook(ref, args, req):
   """"Sets a finding's mute state."""
-  del ref
+  del ref  # Unused.
   parent = _ValidateAndGetParent(args)
   if parent is not None:
     _ValidateSourceAndFindingIdIfParentProvided(args)
@@ -103,7 +111,7 @@ def SetMuteReqHook(ref, args, req):
 
 def UpdateFindingsReqHook(ref, args, req):
   """Generate a finding's name using org, source and finding id."""
-  del ref
+  del ref  # Unused.
   _ValidateMutexOnFindingAndSourceAndOrganization(args)
   req.name = _GetFindingNameForParent(args)
   req.updateMask = CleanUpUserInput(req.updateMask)
@@ -120,7 +128,7 @@ def UpdateFindingsReqHook(ref, args, req):
 
 def UpdateFindingSecurityMarksReqHook(ref, args, req):
   """Generate a security mark's name using org, source and finding id."""
-  del ref
+  del ref  # Unused.
   _ValidateMutexOnFindingAndSourceAndOrganization(args)
   req.name = _GetFindingNameForParent(args) + "/securityMarks"
   if req.updateMask is not None:

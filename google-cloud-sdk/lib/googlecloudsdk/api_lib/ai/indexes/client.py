@@ -32,10 +32,10 @@ from googlecloudsdk.core import yaml
 class IndexesClient(object):
   """High-level client for the AI Platform indexes surface."""
 
-  def __init__(self, client=None, messages=None):
+  def __init__(self, client=None, messages=None, version=None):
     self.client = client or apis.GetClientInstance(
         constants.AI_PLATFORM_API_NAME,
-        constants.AI_PLATFORM_API_VERSION[constants.BETA_VERSION])
+        constants.AI_PLATFORM_API_VERSION[version])
     self.messages = messages or self.client.MESSAGES_MODULE
     self._service = self.client.projects_locations_indexes
 
@@ -80,6 +80,19 @@ class IndexesClient(object):
             labels=labels))
     return self._service.Create(req)
 
+  def Create(self, location_ref, args):
+    """Create a new v1 index."""
+    labels = labels_util.ParseCreateArgs(
+        args, self.messages.GoogleCloudAiplatformV1Index.LabelsValue)
+    req = self.messages.AiplatformProjectsLocationsIndexesCreateRequest(
+        parent=location_ref.RelativeName(),
+        googleCloudAiplatformV1Index=self.messages.GoogleCloudAiplatformV1Index(
+            displayName=args.display_name,
+            description=args.description,
+            metadata=self._ReadIndexMetadata(args.metadata_file),
+            labels=labels))
+    return self._service.Create(req)
+
   def PatchBeta(self, index_ref, args):
     """Update an index."""
     index = self.messages.GoogleCloudAiplatformV1beta1Index()
@@ -113,6 +126,42 @@ class IndexesClient(object):
     request = self.messages.AiplatformProjectsLocationsIndexesPatchRequest(
         name=index_ref.RelativeName(),
         googleCloudAiplatformV1beta1Index=index,
+        updateMask=','.join(update_mask))
+    return self._service.Patch(request)
+
+  def Patch(self, index_ref, args):
+    """Update an v1 index."""
+    index = self.messages.GoogleCloudAiplatformV1Index()
+    update_mask = []
+
+    if args.metadata_file is not None:
+      index.metadata = self._ReadIndexMetadata(args.metadata_file)
+      update_mask.append('metadata')
+    else:
+      if args.display_name is not None:
+        index.displayName = args.display_name
+        update_mask.append('display_name')
+
+      if args.description is not None:
+        index.description = args.description
+        update_mask.append('description')
+
+      def GetLabels():
+        return self.Get(index_ref).labels
+
+      labels_update = labels_util.ProcessUpdateArgsLazy(
+          args, self.messages.GoogleCloudAiplatformV1Index.LabelsValue,
+          GetLabels)
+      if labels_update.needs_update:
+        index.labels = labels_update.labels
+        update_mask.append('labels')
+
+    if not update_mask:
+      raise errors.NoFieldsSpecifiedError('No updates requested.')
+
+    request = self.messages.AiplatformProjectsLocationsIndexesPatchRequest(
+        name=index_ref.RelativeName(),
+        googleCloudAiplatformV1Index=index,
         updateMask=','.join(update_mask))
     return self._service.Patch(request)
 

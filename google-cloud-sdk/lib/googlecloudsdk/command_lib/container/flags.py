@@ -241,7 +241,7 @@ SecurityBulletinEvent, UpgradeEvent, UpgradeAvailableEvent.
 Examples:
 
   $ {command} example-cluster --notification-config=pubsub=ENABLED,pubsub-topic=projects/{project}/topics/{topic-name}
-  $ {command} example-cluster --notification-config=pubsub=ENABLED,pubsub-topic=projects/{project}/topics/{topic-name},filter=SecurityBulletinEvent|UpgradeEvent
+  $ {command} example-cluster --notification-config=pubsub=ENABLED,pubsub-topic=projects/{project}/topics/{topic-name},filter="SecurityBulletinEvent|UpgradeEvent"
 
 The project of the Pub/Sub topic must be the same one as the cluster. It can
 be either the project ID or the project number.
@@ -415,7 +415,9 @@ https://cloud.google.com/compute/docs/disks/customer-managed-encryption"""
       default='')
 
 
-def AddAcceleratorArgs(parser, enable_gpu_partition=False):
+def AddAcceleratorArgs(parser,
+                       enable_gpu_partition=False,
+                       enable_gpu_time_sharing=False):
   """Adds Accelerator-related args."""
 
   spec = {
@@ -425,6 +427,9 @@ def AddAcceleratorArgs(parser, enable_gpu_partition=False):
 
   if enable_gpu_partition:
     spec['gpu-partition-size'] = str
+
+  if enable_gpu_time_sharing:
+    spec['max-time-shared-clients-per-gpu'] = int
 
   parser.add_argument(
       '--accelerator',
@@ -991,7 +996,7 @@ Examples:
           'an upcoming release. Please use `--logging` instead. '
           'For more information, please read: '
           'https://cloud.google.com/stackdriver/docs/solutions/gke/installing.'
-          ),
+      ),
   )
 
   if not for_create:
@@ -1376,8 +1381,8 @@ def AddPlacementTypeFlag(parser, for_node_pool=False, hidden=True):
 
 def AddMaintenanceIntervalFlag(parser, for_node_pool=False, hidden=True):
   """Adds a --maintenance-interval flag to the given parser."""
-  type_validator = arg_parsers.RegexpValidator(r'^PERIODIC$',
-                                               'Type must be "PERIODIC"')
+  type_validator = arg_parsers.RegexpValidator(
+      r'^(PERIODIC|AS_NEEDED)$', 'Type must be either"PERIODIC" or "AS_NEEDED"')
   if for_node_pool:
     help_text = """\
 Specify the frequency of planned maintenance events in the new nodepool
@@ -1386,7 +1391,7 @@ Examples:
 
   $ {command} node-pool-1 example-cluster --maintenance-interval=PERIODIC
 
-The only supported type is 'PERIODIC'
+The maintenance interval type must be either 'PERIODIC' or 'AS_NEEDED'
 """
   else:
     help_text = """\
@@ -1396,7 +1401,7 @@ Examples:
 
   $ {command} example-cluster --maintenance-interval=PERIODIC
 
-The only supported type is 'PERIODIC'
+The maintenance interval type must be either 'PERIODIC' or 'AS_NEEDED'
 """
   parser.add_argument(
       '--maintenance-interval',
@@ -2425,7 +2430,7 @@ service with Kubernetes-native resource model enabled),
           'in an upcoming release. Please use `--logging` instead. '
           'For more information, please read: '
           'https://cloud.google.com/stackdriver/docs/solutions/gke/installing.'
-          ),
+      ),
       help=help_str)
 
 
@@ -2452,7 +2457,7 @@ Monitoring service with Kubernetes-native resource model enabled),
           'removed in an upcoming release. Please use `--monitoring` instead. '
           'For more information, please read: '
           'https://cloud.google.com/stackdriver/docs/solutions/gke/installing.'
-          ),
+      ),
       help=help_str)
 
 

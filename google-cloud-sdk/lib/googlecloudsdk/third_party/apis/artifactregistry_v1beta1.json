@@ -175,58 +175,6 @@
         }
       }
     },
-    "ListLocationsResponse": {
-      "id": "ListLocationsResponse",
-      "description": "The response message for Locations.ListLocations.",
-      "type": "object",
-      "properties": {
-        "locations": {
-          "description": "A list of locations that matches the specified filter in the request.",
-          "type": "array",
-          "items": {
-            "$ref": "Location"
-          }
-        },
-        "nextPageToken": {
-          "description": "The standard List next-page token.",
-          "type": "string"
-        }
-      }
-    },
-    "Location": {
-      "id": "Location",
-      "description": "A resource that represents Google Cloud Platform location.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
-          "type": "string"
-        },
-        "locationId": {
-          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
-          "type": "string"
-        },
-        "displayName": {
-          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
-          "type": "string"
-        },
-        "labels": {
-          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "metadata": {
-          "description": "Service-specific metadata. For example the available capacity at the given location.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        }
-      }
-    },
     "ListRepositoriesResponse": {
       "id": "ListRepositoriesResponse",
       "description": "The response from listing repositories.",
@@ -262,7 +210,6 @@
             "Docker package format.",
             "Maven package format.",
             "NPM package format.",
-            "PyPI package format. Deprecated, use PYTHON instead.",
             "APT package format.",
             "YUM package format.",
             "Python package format."
@@ -272,7 +219,6 @@
             "DOCKER",
             "MAVEN",
             "NPM",
-            "PYPI",
             "APT",
             "YUM",
             "PYTHON"
@@ -623,6 +569,58 @@
           "type": "array",
           "items": {
             "type": "string"
+          }
+        }
+      }
+    },
+    "ListLocationsResponse": {
+      "id": "ListLocationsResponse",
+      "description": "The response message for Locations.ListLocations.",
+      "type": "object",
+      "properties": {
+        "locations": {
+          "description": "A list of locations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Location"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Location": {
+      "id": "Location",
+      "description": "A resource that represents Google Cloud Platform location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "type": "string"
+        },
+        "locationId": {
+          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "metadata": {
+          "description": "Service-specific metadata. For example the available capacity at the given location.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
           }
         }
       }
@@ -986,7 +984,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "The name of the parent resource whose repositories will be listed.",
+                      "description": "Required. The name of the parent resource whose repositories will be listed.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1023,7 +1021,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The name of the repository to retrieve.",
+                      "description": "Required. The name of the repository to retrieve.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1049,7 +1047,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "The name of the parent resource where the repository will be created.",
+                      "description": "Required. The name of the parent resource where the repository will be created.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1116,7 +1114,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "The name of the repository to delete.",
+                      "description": "Required. The name of the repository to delete.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1235,7 +1233,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "The name of the parent resource whose packages will be listed.",
+                          "description": "Required. The name of the parent resource whose packages will be listed.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1272,7 +1270,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "The name of the package to retrieve.",
+                          "description": "Required. The name of the package to retrieve.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/packages\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1298,7 +1296,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "The name of the package to delete.",
+                          "description": "Required. The name of the package to delete.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/packages\/[^\/]+$",
                           "location": "path",
                           "required": true,

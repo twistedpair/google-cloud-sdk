@@ -31,8 +31,7 @@ _UPDATE_FILE_DESC = ('A file that contains updates to the configuration for'
                      ' the worker pool. See %s for options.' % _WP_CONFIG_LINK)
 
 DEFAULT_FLAG_VALUES = {
-    'DOCKER_SECURITY_POLICY': 'PRIVILEGED_PERMITTED',
-    'BUILDER_IMAGE_CACHING': 'VOLUME_CACHING',
+    'BUILDER_IMAGE_CACHING': 'CACHING_DISABLED',
     'DISK_SIZE': '60GB',
     'MEMORY': '4.0GB',
     'VCPU_COUNT': 1.0

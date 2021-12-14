@@ -23,9 +23,11 @@ import google.api_core  # type: ignore
 from google.api_core import exceptions as core_exceptions  # type: ignore
 from google.api_core import gapic_v1    # type: ignore
 from google.api_core import retry as retries  # type: ignore
+from google.api_core import operations_v1  # type: ignore
 from google.auth import credentials as ga_credentials  # type: ignore
 from google.oauth2 import service_account # type: ignore
 
+from google.longrunning import operations_pb2  # type: ignore
 from google.protobuf import empty_pb2  # type: ignore
 from googlecloudsdk.third_party.gapic_clients.logging_v2.types import logging_config
 
@@ -321,7 +323,17 @@ initial=0.1,maximum=60.0,multiplier=1.3,                    predicate=retries.if
                 default_timeout=None,
                 client_info=client_info,
             ),
+            self.copy_log_entries: gapic_v1.method.wrap_method(
+                self.copy_log_entries,
+                default_timeout=None,
+                client_info=client_info,
+            ),
          }
+
+    @property
+    def operations_client(self) -> operations_v1.OperationsClient:
+        """Return the client designed to process long-running operations."""
+        raise NotImplementedError()
 
     @property
     def list_buckets(self) -> Callable[
@@ -527,6 +539,15 @@ initial=0.1,maximum=60.0,multiplier=1.3,                    predicate=retries.if
             Union[
                 logging_config.CmekSettings,
                 Awaitable[logging_config.CmekSettings]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def copy_log_entries(self) -> Callable[
+            [logging_config.CopyLogEntriesRequest],
+            Union[
+                operations_pb2.Operation,
+                Awaitable[operations_pb2.Operation]
             ]]:
         raise NotImplementedError()
 

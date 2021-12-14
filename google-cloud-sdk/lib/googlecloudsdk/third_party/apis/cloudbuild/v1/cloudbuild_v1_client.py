@@ -53,6 +53,8 @@ class CloudbuildV1(base_api.BaseApiClient):
     self.projects_github = self.ProjectsGithubService(self)
     self.projects_githubEnterpriseConfigs = self.ProjectsGithubEnterpriseConfigsService(self)
     self.projects_installations = self.ProjectsInstallationsService(self)
+    self.projects_locations_bitbucketServerConfigs_connectedRepositories = self.ProjectsLocationsBitbucketServerConfigsConnectedRepositoriesService(self)
+    self.projects_locations_bitbucketServerConfigs_repos = self.ProjectsLocationsBitbucketServerConfigsReposService(self)
     self.projects_locations_bitbucketServerConfigs = self.ProjectsLocationsBitbucketServerConfigsService(self)
     self.projects_locations_builds = self.ProjectsLocationsBuildsService(self)
     self.projects_locations_github_installations = self.ProjectsLocationsGithubInstallationsService(self)
@@ -945,6 +947,80 @@ class CloudbuildV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsBitbucketServerConfigsConnectedRepositoriesService(base_api.BaseApiService):
+    """Service class for the projects_locations_bitbucketServerConfigs_connectedRepositories resource."""
+
+    _NAME = 'projects_locations_bitbucketServerConfigs_connectedRepositories'
+
+    def __init__(self, client):
+      super(CloudbuildV1.ProjectsLocationsBitbucketServerConfigsConnectedRepositoriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def BatchCreate(self, request, global_params=None):
+      r"""Batch connecting Bitbucket Server repositories to Cloud Build.
+
+      Args:
+        request: (CloudbuildProjectsLocationsBitbucketServerConfigsConnectedRepositoriesBatchCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('BatchCreate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchCreate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/bitbucketServerConfigs/{bitbucketServerConfigsId}/connectedRepositories:batchCreate',
+        http_method='POST',
+        method_id='cloudbuild.projects.locations.bitbucketServerConfigs.connectedRepositories.batchCreate',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/connectedRepositories:batchCreate',
+        request_field='batchCreateBitbucketServerConnectedRepositoriesRequest',
+        request_type_name='CloudbuildProjectsLocationsBitbucketServerConfigsConnectedRepositoriesBatchCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsBitbucketServerConfigsReposService(base_api.BaseApiService):
+    """Service class for the projects_locations_bitbucketServerConfigs_repos resource."""
+
+    _NAME = 'projects_locations_bitbucketServerConfigs_repos'
+
+    def __init__(self, client):
+      super(CloudbuildV1.ProjectsLocationsBitbucketServerConfigsReposService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""List all repositories for a given `BitbucketServerConfig`. This API is experimental.
+
+      Args:
+        request: (CloudbuildProjectsLocationsBitbucketServerConfigsReposListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBitbucketServerRepositoriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/bitbucketServerConfigs/{bitbucketServerConfigsId}/repos',
+        http_method='GET',
+        method_id='cloudbuild.projects.locations.bitbucketServerConfigs.repos.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/repos',
+        request_field='',
+        request_type_name='CloudbuildProjectsLocationsBitbucketServerConfigsReposListRequest',
+        response_type_name='ListBitbucketServerRepositoriesResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsBitbucketServerConfigsService(base_api.BaseApiService):
     """Service class for the projects_locations_bitbucketServerConfigs resource."""
 
@@ -989,7 +1065,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         request: (CloudbuildProjectsLocationsBitbucketServerConfigsCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (BitbucketServerConfig) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
@@ -1005,7 +1081,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         relative_path='v1/{+parent}/bitbucketServerConfigs',
         request_field='bitbucketServerConfig',
         request_type_name='CloudbuildProjectsLocationsBitbucketServerConfigsCreateRequest',
-        response_type_name='BitbucketServerConfig',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1016,7 +1092,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         request: (CloudbuildProjectsLocationsBitbucketServerConfigsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Empty) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -1032,7 +1108,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='CloudbuildProjectsLocationsBitbucketServerConfigsDeleteRequest',
-        response_type_name='Empty',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1097,7 +1173,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         request: (CloudbuildProjectsLocationsBitbucketServerConfigsPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (BitbucketServerConfig) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
@@ -1113,7 +1189,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='bitbucketServerConfig',
         request_type_name='CloudbuildProjectsLocationsBitbucketServerConfigsPatchRequest',
-        response_type_name='BitbucketServerConfig',
+        response_type_name='Operation',
         supports_download=False,
     )
 

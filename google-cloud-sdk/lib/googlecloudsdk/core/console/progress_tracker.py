@@ -37,6 +37,10 @@ from googlecloudsdk.core.console.style import parser
 
 import six
 
+collections_abc = collections
+if sys.version_info > (3, 8):
+  collections_abc = collections.abc
+
 
 def ProgressTracker(
     message=None,
@@ -648,7 +652,7 @@ class StageCompletionStatus(enum.Enum):
   WARNING = 'warning'
 
 
-class _BaseStagedProgressTracker(collections.Mapping):
+class _BaseStagedProgressTracker(collections_abc.Mapping):
   """Base class for staged progress trackers.
 
   During each tick, the tracker checks if there is a stage being displayed by

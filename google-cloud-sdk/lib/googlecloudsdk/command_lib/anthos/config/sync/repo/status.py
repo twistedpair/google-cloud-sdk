@@ -19,9 +19,11 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+import contextlib
 import datetime
 import fnmatch
 import json
+import signal
 
 from googlecloudsdk.command_lib.anthos.config.sync.repo import utils
 from googlecloudsdk.core import exceptions
@@ -349,6 +351,8 @@ def _AppendReposFromCluster(membership, repos_cross_clusters, cluster_type,
   Raises:
     Error: errors that happen when listing the CRs from the cluster.
   """
+  _GetConfigManagement(membership, cluster_type)
+
   params = []
   if not namespaces or '*' in namespaces:
     params = [['--all-namespaces']]
@@ -374,16 +378,9 @@ def _AppendReposFromCluster(membership, repos_cross_clusters, cluster_type,
         else:
           all_repos += obj['items']
   if errors:
-    if errors[0].startswith('error: the server doesn\'t have a resource type'):
-      raise exceptions.Error(
-          'Error getting RootSync,RepoSync,Resourcegroup CRs: {}\n{}'.format(
-              errors,
-              'Make sure you have setup Connect Gateway for ' + membership +
-              ' https://cloud.google.com/anthos/multicluster-management/gateway/setup'
-          ))
-    else:
-      raise exceptions.Error(
-          'Error getting RootSync,RepoSync CRs: {}'.format(errors))
+    raise exceptions.Error(
+        'Error getting RootSync and RepoSync custom resources: {}'.format(
+            errors))
 
   count = 0
   for repo in all_repos:
@@ -392,7 +389,7 @@ def _AppendReposFromCluster(membership, repos_cross_clusters, cluster_type,
     repos_cross_clusters.AddRepo(membership, repo, None, cluster_type)
     count += 1
   if count > 0:
-    log.status.Print('getting {} RepoSync|RootSync from {}'.format(
+    log.status.Print('getting {} RepoSync and RootSync from {}'.format(
         count, membership))
 
 
@@ -416,6 +413,7 @@ def _AppendReposAndResourceGroups(membership, repos_cross_clusters,
   Raises:
     Error: errors that happen when listing the CRs from the cluster.
   """
+  _GetConfigManagement(membership, cluster_type)
   params = []
   if not namespace:
     params = ['--all-namespaces']
@@ -424,15 +422,9 @@ def _AppendReposAndResourceGroups(membership, repos_cross_clusters,
   repos, err = utils.RunKubectl(
       ['get', 'rootsync,reposync,resourcegroup', '-o', 'json'] + params)
   if err:
-    if err.startswith('error: the server doesn\'t have a resource type'):
-      raise exceptions.Error(
-          'Error getting RootSync,RepoSync,Resourcegroup CRs: {}\n{}'.format(
-              err, 'Make sure you have setup Connect Gateway ' + membership +
-              ' https://cloud.google.com/anthos/multicluster-management/gateway/setup'
-          ))
-    else:
-      raise exceptions.Error(
-          'Error getting RootSync,RepoSync,Resourcegroup CRs: {}'.format(err))
+    raise exceptions.Error(
+        'Error getting RootSync,RepoSync,Resourcegroup custom resources: {}'
+        .format(err))
 
   if not repos:
     return
@@ -464,8 +456,62 @@ def _AppendReposAndResourceGroups(membership, repos_cross_clusters,
     repos_cross_clusters.AddRepo(membership, repo, rg, cluster_type)
     count += 1
   if count > 0:
-    log.status.Print('getting {} RepoSync|RootSync from {}'.format(
+    log.status.Print('getting {} RepoSync and RootSync from {}'.format(
         count, membership))
+
+
+def _GetConfigManagement(membership, cluster_type):
+  """Get ConfigManagement to check if multi-repo is enabled.
+
+  Args:
+    membership: The membership name or cluster name of the current cluster.
+    cluster_type: The type of the current cluster. It is either a Fleet-cluster
+      or a Config-controller cluster.
+
+  Returns:
+    None
+
+  Raises:
+    Error: errors that happen when getting the object from the cluster.
+  """
+  config_management = None
+  err = None
+  timed_out = True
+  with Timeout(5):
+    config_management, err = utils.RunKubectl([
+        'get', 'configmanagements.configmanagement.gke.io/config-management',
+        '-o', 'json'
+    ])
+    timed_out = False
+  if timed_out and cluster_type != 'Config Controller':
+    raise exceptions.Error(
+        'Timed out getting ConfigManagement object. ' +
+        'Make sure you have setup Connect Gateway for ' + membership +
+        ' following the instruction from https://cloud.google.com/anthos/multicluster-management/gateway/setup'
+    )
+  if timed_out:
+    raise exceptions.Error('Timed out getting ConfigManagement object from ' +
+                           membership)
+
+  if err:
+    raise exceptions.Error(
+        'Error getting ConfigManagement object from {}: {}\n'.format(
+            membership, err))
+  config_management_obj = json.loads(config_management)
+  if 'enableMultiRepo' not in config_management_obj[
+      'spec'] or not config_management_obj['spec']['enableMultiRepo']:
+    raise exceptions.Error(
+        'Legacy mode is used in {}. Please enable the multi-repo feature to use this command.'
+        .format(membership))
+  if 'status' not in config_management_obj:
+    log.status.Print(
+        'The ConfigManagement object is not reconciled in {}. Please check if the Config Management is running on it.'
+        .format(membership))
+  errors = config_management_obj.get('status', {}).get('errors')
+  if errors:
+    log.status.Print(
+        'The ConfigManagement object contains errors in{}:\n{}'.format(
+            membership, errors))
 
 
 class DetailedStatus:
@@ -752,3 +798,30 @@ def _GetErrorMessages(errors):
 def _TimeFromString(timestamp):
   """return the datetime from a timestamp string."""
   return datetime.datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%SZ')
+
+
+@contextlib.contextmanager
+def Timeout(time):
+  """set timeout for a python function."""
+  # Register a function to raise a TimeoutError on the signal.
+  signal.signal(signal.SIGALRM, RaiseTimeout)
+  # Schedule the signal to be sent after ``time``
+  signal.alarm(time)
+
+  try:
+    yield
+  except KubectlTimeOutError:
+    pass
+  finally:
+    # Unregister the signal so it won't be triggered
+    # if the timeout is not reached.
+    signal.signal(signal.SIGALRM, signal.SIG_IGN)
+
+
+def RaiseTimeout(signum, frame):
+  """Raise a timeout error."""
+  raise KubectlTimeOutError
+
+
+class KubectlTimeOutError(Exception):
+  pass

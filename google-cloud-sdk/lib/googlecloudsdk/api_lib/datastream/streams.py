@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.datastream import exceptions as ds_exceptions
 from googlecloudsdk.api_lib.datastream import util
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
@@ -42,18 +43,18 @@ class StreamsClient(object):
     self._service = self._client.projects_locations_streams
     self._resource_parser = util.GetResourceParser()
 
-  def _GetBackfillAllStrategy(self, args):
+  def _GetBackfillAllStrategy(self, release_track, args):
     if args.oracle_excluded_objects:
       return self._messages.BackfillAllStrategy(
           oracleExcludedObjects=util.ParseOracleRdbmsFile(
-              self._messages, args.oracle_excluded_objects))
+              self._messages, args.oracle_excluded_objects, release_track))
     elif args.mysql_excluded_objects:
       return self._messages.BackfillAllStrategy(
           mysqlExcludedObjects=util.ParseMysqlRdbmsFile(
-              self._messages, args.mysql_excluded_objects))
+              self._messages, args.mysql_excluded_objects, release_track))
     return self._messages.BackfillAllStrategy()
 
-  def _ParseOracleSourceConfig(self, oracle_source_config_file):
+  def _ParseOracleSourceConfig(self, oracle_source_config_file, release_track):
     """Parses a oracle_sorce_config into the OracleSourceConfig message."""
     data = console_io.ReadFromFileOrStdin(
         oracle_source_config_file, binary=False)
@@ -65,19 +66,22 @@ class StreamsClient(object):
     oracle_sorce_config_data_object = oracle_sorce_config_head_data.get(
         'oracle_source_config')
     oracle_rdbms_data = oracle_sorce_config_data_object if oracle_sorce_config_data_object else oracle_sorce_config_head_data
-    allowlist_raw = oracle_rdbms_data.get('allowlist', {})
-    allowlist_data = util.ParseOracleSchemasListToOracleRdbmsMessage(
-        self._messages, allowlist_raw)
+    include_objects_raw = oracle_rdbms_data.get(
+        util.GetRDBMSV1alpha1ToV1FieldName('allowlist', release_track), {})
+    include_objects_data = util.ParseOracleSchemasListToOracleRdbmsMessage(
+        self._messages, include_objects_raw, release_track)
 
-    rejectlist_raw = oracle_rdbms_data.get('rejectlist', {})
-    rejectlist_data = util.ParseOracleSchemasListToOracleRdbmsMessage(
-        self._messages, rejectlist_raw)
+    exclude_objects_raw = oracle_rdbms_data.get(
+        util.GetRDBMSV1alpha1ToV1FieldName('rejectlist', release_track), {})
+    exclude_objects_data = util.ParseOracleSchemasListToOracleRdbmsMessage(
+        self._messages, exclude_objects_raw, release_track)
 
     oracle_sourec_config_msg = self._messages.OracleSourceConfig(
-        includeObjects=allowlist_data, excludeObjects=rejectlist_data)
+        includeObjects=include_objects_data,
+        excludeObjects=exclude_objects_data)
     return oracle_sourec_config_msg
 
-  def _ParseMysqlSourceConfig(self, mysql_source_config_file):
+  def _ParseMysqlSourceConfig(self, mysql_source_config_file, release_track):
     """Parses a mysql_sorce_config into the MysqlSourceConfig message."""
     data = console_io.ReadFromFileOrStdin(
         mysql_source_config_file, binary=False)
@@ -90,16 +94,19 @@ class StreamsClient(object):
         'mysql_source_config')
     mysql_rdbms_data = mysql_sorce_config_data_object if mysql_sorce_config_data_object else mysql_sorce_config_head_data
 
-    allowlist_raw = mysql_rdbms_data.get('allowlist', {})
-    allowlist_data = util.ParseMysqlSchemasListToMysqlRdbmsMessage(
-        self._messages, allowlist_raw)
+    include_objects_raw = mysql_rdbms_data.get(
+        util.GetRDBMSV1alpha1ToV1FieldName('allowlist', release_track), {})
+    include_objects_data = util.ParseMysqlSchemasListToMysqlRdbmsMessage(
+        self._messages, include_objects_raw, release_track)
 
-    rejectlist_raw = mysql_rdbms_data.get('rejectlist', {})
-    rejectlist_data = util.ParseMysqlSchemasListToMysqlRdbmsMessage(
-        self._messages, rejectlist_raw)
+    exclude_objects_raw = mysql_rdbms_data.get(
+        util.GetRDBMSV1alpha1ToV1FieldName('rejectlist', release_track), {})
+    exclude_objects_data = util.ParseMysqlSchemasListToMysqlRdbmsMessage(
+        self._messages, exclude_objects_raw, release_track)
 
     mysql_sourec_config_msg = self._messages.MysqlSourceConfig(
-        includeObjects=allowlist_data, excludeObjects=rejectlist_data)
+        includeObjects=include_objects_data,
+        excludeObjects=exclude_objects_data)
     return mysql_sourec_config_msg
 
   def _ParseGcsDestinationConfig(self, gcs_destination_config_file):
@@ -135,27 +142,38 @@ class StreamsClient(object):
           'Cannot parse YAML: missing file format.')
     return gcs_dest_config_msg
 
-  def _GetStream(self, stream_id, args):
+  def _GetStream(self, stream_id, release_track, args):
     """Returns a Stream object."""
     labels = labels_util.ParseCreateArgs(
         args, self._messages.Stream.LabelsValue)
     stream_obj = self._messages.Stream(
         name=stream_id, labels=labels, displayName=args.display_name)
 
+    # TODO(b/207467120): use CONCEPTS.source only.
+    if release_track == base.ReleaseTrack.BETA:
+      source_connection_profile_ref = args.CONCEPTS.source_name.Parse()
+    else:
+      source_connection_profile_ref = args.CONCEPTS.source.Parse()
+
     stream_source_config = self._messages.SourceConfig()
-    source_connection_profile_ref = args.CONCEPTS.source_name.Parse()
     stream_source_config.sourceConnectionProfile = (
         source_connection_profile_ref.RelativeName())
     if args.oracle_source_config:
       stream_source_config.oracleSourceConfig = self._ParseOracleSourceConfig(
-          args.oracle_source_config)
+          args.oracle_source_config, release_track)
     elif args.mysql_source_config:
       stream_source_config.mysqlSourceConfig = self._ParseMysqlSourceConfig(
-          args.mysql_source_config)
+          args.mysql_source_config, release_track)
     stream_obj.sourceConfig = stream_source_config
 
+    # TODO(b/207467120): use CONCEPTS.destination only.
+    if release_track == base.ReleaseTrack.BETA:
+      destination_connection_profile_ref = args.CONCEPTS.destination_name.Parse(
+      )
+    else:
+      destination_connection_profile_ref = args.CONCEPTS.destination.Parse()
+
     stream_destination_config = self._messages.DestinationConfig()
-    destination_connection_profile_ref = args.CONCEPTS.destination_name.Parse()
     stream_destination_config.destinationConnectionProfile = (
         destination_connection_profile_ref.RelativeName())
     if args.gcs_destination_config:
@@ -166,7 +184,7 @@ class StreamsClient(object):
     if args.backfill_none:
       stream_obj.backfillNone = self._messages.BackfillNoneStrategy()
     elif args.backfill_all:
-      backfill_all_strategy = self._GetBackfillAllStrategy(args)
+      backfill_all_strategy = self._GetBackfillAllStrategy(release_track, args)
       stream_obj.backfillAll = backfill_all_strategy
 
     return stream_obj
@@ -204,47 +222,62 @@ class StreamsClient(object):
     update_fields.extend(temp_fields)
     return update_fields
 
-  def _GetUpdatedStream(self, stream, args):
+  def _GetUpdatedStream(self, stream, release_track, args):
     """Returns updated stream."""
     # Verify command flag names align with Stream object field names.
     update_fields = []
     user_update_mask = args.update_mask or ''
     user_update_mask_list = user_update_mask.split(',')
-    user_update_mask_list = util.UpdateV1alpha1ToV1MaskFields(
-        user_update_mask_list)
+
+    if release_track == base.ReleaseTrack.BETA:
+      user_update_mask_list = util.UpdateV1alpha1ToV1MaskFields(
+          user_update_mask_list)
+
     update_fields.extend(user_update_mask_list)
 
     if args.IsSpecified('display_name'):
       stream.displayName = args.display_name
 
-    if args.IsSpecified('source_name'):
+    # TODO(b/207467120): use source field only.
+    if release_track == base.ReleaseTrack.BETA:
       source_connection_profile_ref = args.CONCEPTS.source_name.Parse()
+      source_field_name = 'source_name'
+    else:
+      source_connection_profile_ref = args.CONCEPTS.source.Parse()
+      source_field_name = 'source'
+    if args.IsSpecified(source_field_name):
       stream.sourceConfig.sourceConnectionProfile = (
           source_connection_profile_ref.RelativeName())
-      if 'source_name' in update_fields:
-        update_fields.remove('source_name')
+      if source_field_name in update_fields:
+        update_fields.remove(source_field_name)
         update_fields.append('source_config.source_connection_profile')
 
     if args.IsSpecified('oracle_source_config'):
       stream.sourceConfig.oracleSourceConfig = self._ParseOracleSourceConfig(
-          args.oracle_source_config)
+          args.oracle_source_config, release_track)
       # Fix field names in update mask
       update_fields = self._UpdateListWithFieldNamePrefixes(
           update_fields, 'oracle_source_config', 'source_config.')
 
     elif args.IsSpecified('mysql_source_config'):
       stream.sourceConfig.mysqlSourceConfig = self._ParseMysqlSourceConfig(
-          args.mysql_source_config)
+          args.mysql_source_config, release_track)
       update_fields = self._UpdateListWithFieldNamePrefixes(
           update_fields, 'mysql_source_config', 'source_config.')
 
-    if args.IsSpecified('destination_name'):
+    # TODO(b/207467120): use source field only.
+    if release_track == base.ReleaseTrack.BETA:
       destination_connection_profile_ref = (
           args.CONCEPTS.destination_name.Parse())
+      destination_field_name = 'destination_name'
+    else:
+      destination_connection_profile_ref = (args.CONCEPTS.destination.Parse())
+      destination_field_name = 'destination'
+    if args.IsSpecified(destination_field_name):
       stream.destinationConfig.destinationConnectionProfile = (
           destination_connection_profile_ref.RelativeName())
-      if 'destination_name' in update_fields:
-        update_fields.remove('destination_name')
+      if destination_field_name in update_fields:
+        update_fields.remove(destination_field_name)
         update_fields.append(
             'destination_config.destination_connection_profile')
 
@@ -258,7 +291,7 @@ class StreamsClient(object):
       stream.backfillNone = self._messages.BackfillNoneStrategy()
 
     elif args.IsSpecified('backfill_all'):
-      backfill_all_strategy = self._GetBackfillAllStrategy(args)
+      backfill_all_strategy = self._GetBackfillAllStrategy(release_track, args)
       stream.backfillAll = backfill_all_strategy
 
     if args.IsSpecified('state'):
@@ -268,20 +301,22 @@ class StreamsClient(object):
     self._UpdateLabels(stream, args)
     return stream, update_fields
 
-  def Create(self, parent_ref, stream_id, args=None):
+  def Create(self, parent_ref, stream_id, release_track, args=None):
     """Creates a stream.
 
     Args:
       parent_ref: a Resource reference to a parent datastream.projects.locations
         resource for this stream.
       stream_id: str, the name of the resource to create.
+      release_track: Some arguments are added based on the command release
+        track.
       args: argparse.Namespace, The arguments that this command was invoked
         with.
 
     Returns:
       Operation: the operation for creating the stream.
     """
-    stream = self._GetStream(stream_id, args)
+    stream = self._GetStream(stream_id, release_track, args)
     validate_only = args.validate_only
     force = args.force
 
@@ -297,12 +332,14 @@ class StreamsClient(object):
 
     return self._service.Create(create_req)
 
-  def Update(self, name, args=None):
+  def Update(self, name, release_track, args=None):
     """Updates a stream.
 
     Args:
       name: str, the reference of the stream to
           update.
+      release_track: Some arguments are added based on the command release
+        track.
       args: argparse.Namespace, The arguments that this command was
           invoked with.
 
@@ -315,7 +352,7 @@ class StreamsClient(object):
     current_stream = self._GetExistingStream(name)
 
     updated_stream, update_fields = self._GetUpdatedStream(
-        current_stream, args)
+        current_stream, release_track, args)
 
     request_id = util.GenerateRequestId()
     update_req_type = self._messages.DatastreamProjectsLocationsStreamsPatchRequest

@@ -18,3 +18,12 @@ keys:
          attribute_name: key
          help: reCAPTCHA Key
 
+firewall_policies:
+  name: firewall_policy
+  collection: recaptchaenterprise.projects.firewallpolicies
+  attributes:
+  - *project
+  - &firewall_policy
+    parameter_name: firewallpoliciesId
+    attribute_name: firewall_policy
+    help: reCAPTCHA Firewall Policy

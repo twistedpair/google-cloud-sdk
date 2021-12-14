@@ -18,7 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import exceptions
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import resources
 
@@ -44,6 +46,9 @@ class EventarcClientBase(object):
 
     Returns:
       The long-running operation's response.
+
+    Raises:
+      HttpException: when failing to pull the long-running operation's status.
     """
     poller = waiter.CloudOperationPollerNoResources(self._operation_service)
     operation_ref = resources.REGISTRY.Parse(
@@ -57,4 +62,14 @@ class EventarcClientBase(object):
                                        location_name)
     if loading_msg:
       message = '{}, {}'.format(message, loading_msg)
-    return waiter.WaitFor(poller, operation_ref, message)
+    try:
+      return waiter.WaitFor(poller, operation_ref, message)
+    except apitools_exceptions.HttpForbiddenError as e:
+      desc_cmd = 'gcloud eventarc {}s describe {} --location={}'.format(
+          self._resource_label, resource_name, location_name)
+      error_message = (
+          'Failed to poll status of the operation due to {status_message}, but '
+          'the operation may have succeeded. Please fix the permission issue, '
+          'then either check the %s by running `%s`, or rerun the original '
+          'command.') % (self._resource_label, desc_cmd)
+      raise exceptions.HttpException(e, error_format=error_message)

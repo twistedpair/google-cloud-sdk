@@ -2487,6 +2487,9 @@ class PatchDeployment(_messages.Message):
   jobs](https://cloud.google.com/compute/docs/os-patch-management/schedule-
   patch-jobs).
 
+  Enums:
+    StateValueValuesEnum: Output only. Current state of the patch deployment.
+
   Fields:
     createTime: Output only. Time the patch deployment was created. Timestamp
       is in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
@@ -2506,10 +2509,25 @@ class PatchDeployment(_messages.Message):
     patchConfig: Optional. Patch configuration that is applied.
     recurringSchedule: Required. Schedule recurring executions.
     rollout: Optional. Rollout strategy of the patch job.
+    state: Output only. Current state of the patch deployment.
     updateTime: Output only. Time the patch deployment was last updated.
       Timestamp is in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text
       format.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the patch deployment.
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value is used if the state is
+        omitted.
+      ACTIVE: Active value means that patch deployment generates Patch Jobs.
+      PAUSED: Paused value means that patch deployment does not generate Patch
+        jobs. Requires user action to move in and out from this state.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    PAUSED = 2
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
@@ -2521,7 +2539,8 @@ class PatchDeployment(_messages.Message):
   patchConfig = _messages.MessageField('PatchConfig', 8)
   recurringSchedule = _messages.MessageField('RecurringSchedule', 9)
   rollout = _messages.MessageField('PatchRollout', 10)
-  updateTime = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  updateTime = _messages.StringField(12)
 
 
 class PatchInstanceFilter(_messages.Message):

@@ -1202,6 +1202,9 @@ class PatchDeployment(_messages.Message):
   represent configurations that individual patch jobs should be executed with,
   such as the instance filter, package repository settings, and a schedule.
 
+  Enums:
+    StateValueValuesEnum: Output only. Current state of the patch deployment.
+
   Fields:
     createTime: Output only. Time this patch deployment was created.
     description: Optional. Description of the patch deployment. Length of the
@@ -1218,8 +1221,23 @@ class PatchDeployment(_messages.Message):
     patchConfig: Optional. Patch configuration being applied.
     recurringSchedule: Required. Schedule with recurring executions.
     rollout: Optional. Rollout strategy of the patch job.
+    state: Output only. Current state of the patch deployment.
     updateTime: Output only. Time this patch deployment was updated.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the patch deployment.
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value is used if the state is
+        omitted.
+      ACTIVE: Active value means that patch deployment generates Patch Jobs.
+      PAUSED: Paused value means that patch deployment does not generate Patch
+        jobs. Requires user action to move in and out from this state.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    PAUSED = 2
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
@@ -1231,7 +1249,8 @@ class PatchDeployment(_messages.Message):
   patchConfig = _messages.MessageField('PatchConfig', 8)
   recurringSchedule = _messages.MessageField('RecurringSchedule', 9)
   rollout = _messages.MessageField('PatchRollout', 10)
-  updateTime = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  updateTime = _messages.StringField(12)
 
 
 class PatchInstanceFilter(_messages.Message):

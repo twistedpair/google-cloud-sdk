@@ -38,6 +38,9 @@ from .types.logging import WriteLogEntriesRequest
 from .types.logging import WriteLogEntriesResponse
 from .types.logging_config import BigQueryOptions
 from .types.logging_config import CmekSettings
+from .types.logging_config import CopyLogEntriesMetadata
+from .types.logging_config import CopyLogEntriesRequest
+from .types.logging_config import CopyLogEntriesResponse
 from .types.logging_config import CreateBucketRequest
 from .types.logging_config import CreateExclusionRequest
 from .types.logging_config import CreateSinkRequest
@@ -70,6 +73,7 @@ from .types.logging_config import UpdateExclusionRequest
 from .types.logging_config import UpdateSinkRequest
 from .types.logging_config import UpdateViewRequest
 from .types.logging_config import LifecycleState
+from .types.logging_config import OperationState
 from .types.logging_metrics import CreateLogMetricRequest
 from .types.logging_metrics import DeleteLogMetricRequest
 from .types.logging_metrics import GetLogMetricRequest
@@ -85,6 +89,9 @@ __all__ = (
 'BigQueryOptions',
 'CmekSettings',
 'ConfigServiceV2Client',
+'CopyLogEntriesMetadata',
+'CopyLogEntriesRequest',
+'CopyLogEntriesResponse',
 'CreateBucketRequest',
 'CreateExclusionRequest',
 'CreateLogMetricRequest',
@@ -129,6 +136,7 @@ __all__ = (
 'LogView',
 'LoggingServiceV2Client',
 'MetricsServiceV2Client',
+'OperationState',
 'TailLogEntriesRequest',
 'TailLogEntriesResponse',
 'UndeleteBucketRequest',

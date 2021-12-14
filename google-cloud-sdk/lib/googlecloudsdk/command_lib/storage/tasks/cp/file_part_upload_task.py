@@ -32,6 +32,7 @@ from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors as api_errors
 from googlecloudsdk.api_lib.storage import request_config_factory
+from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import progress_callbacks
@@ -169,17 +170,24 @@ class FilePartUploadTask(file_part_task.FilePartTask):
             tracker_file_util.TrackerFileType.UPLOAD,
             component_number=self._component_number)
 
-        # TODO(b/160998052): Validate and use keys from tracker files.
-        encryption_key_sha256 = None
+        encryption_key = encryption_util.get_encryption_key()
+        if encryption_key:
+          encryption_key_hash = encryption_key.sha256
+        else:
+          encryption_key_hash = None
 
         complete = False
         tracker_callback = functools.partial(
             tracker_file_util.write_resumable_upload_tracker_file,
-            tracker_file_path, complete, encryption_key_sha256)
+            tracker_file_path, complete, encryption_key_hash)
 
         tracker_data = tracker_file_util.read_resumable_upload_tracker_file(
             tracker_file_path)
-        if tracker_data is None:
+
+        if (
+            tracker_data is None or
+            tracker_data.encryption_key_sha256 != encryption_key_hash
+        ):
           serialization_data = None
         else:
           # TODO(b/190093425): Print a better message for component uploads once
@@ -188,18 +196,30 @@ class FilePartUploadTask(file_part_task.FilePartTask):
 
           serialization_data = tracker_data.serialization_data
 
-        if tracker_data and tracker_data.complete:
-          try:
-            destination_resource = api.get_object_metadata(
-                destination_url.bucket_name, destination_url.object_name,
-                request_config)
-          except api_errors.CloudApiError:
-            # Any problem fetching existing object metadata can be ignored,
-            # since we'll just reupload the object.
-            pass
-          else:
-            if self._existing_destination_is_valid(destination_resource):
-              return self._get_output(destination_resource)
+          if tracker_data.complete:
+            try:
+              metadata_request_config = request_config_factory.get_request_config(
+                  destination_url,
+                  decryption_key_hash=encryption_key_hash)
+              # Providing a decryption key means the response will include the
+              # object's hash if the keys match, and raise an error if they do
+              # not. This is desirable since we want to re-upload objects with
+              # the wrong key, and need the object's hash for validation.
+              destination_resource = api.get_object_metadata(
+                  destination_url.bucket_name, destination_url.object_name,
+                  metadata_request_config)
+            except api_errors.CloudApiError:
+              # Any problem fetching existing object metadata can be ignored,
+              # since we'll just re-upload the object.
+              pass
+            else:
+              # The API call will not error if we provide an encryption key but
+              # the destination is unencrypted, hence the additional (defensive)
+              # check below.
+              destination_key_hash = destination_resource.decryption_key_hash
+              if (destination_key_hash == encryption_key_hash and
+                  self._existing_destination_is_valid(destination_resource)):
+                return self._get_output(destination_resource)
 
         attempt_upload = functools.partial(
             api.upload_object,

@@ -69,12 +69,14 @@ class CloudApi(object):
   """
   capabilities = set()
 
-  def create_bucket(self, bucket_resource, fields_scope=None):
+  def create_bucket(self, bucket_resource, request_config, fields_scope=None):
     """Creates a new bucket with the specified metadata.
 
     Args:
       bucket_resource (resource_reference.BucketResource):
         Resource containing metadata for new bucket.
+      request_config (RequestConfig): Object containing general API function
+        arguments. Subclasses for specific cloud providers are available.
       fields_scope (FieldsScope): Determines the fields and projection
         parameters of API call.
 

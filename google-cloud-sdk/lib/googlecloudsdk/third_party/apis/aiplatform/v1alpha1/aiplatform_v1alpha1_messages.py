@@ -24317,8 +24317,9 @@ class GoogleCloudAiplatformV1alpha1UploadModelRequest(_messages.Message):
   Fields:
     model: Required. The Model to create.
     modelId: Optional. The ID to use for the uploaded Model, which will become
-      the final component of the model resource name. This value should be
-      1-128 characters, and valid characters are /a-z-/.
+      the final component of the model resource name. This value may be up to
+      63 characters, and valid characters are `[a-z0-9_-]`. The first
+      character cannot be a number or hyphen.
     parentModel: Optional. The resource name of the model into which to upload
       the version. Only specify this field when uploading a new version.
   """

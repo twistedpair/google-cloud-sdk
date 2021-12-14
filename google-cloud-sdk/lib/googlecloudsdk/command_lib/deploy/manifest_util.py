@@ -30,6 +30,7 @@ PIPELINE_UPDATE_MASK = '*'
 DELIVERY_PIPELINE_KIND_V1BETA1 = 'DeliveryPipeline'
 TARGET_KIND_V1BETA1 = 'Target'
 API_VERSION_V1BETA1 = 'deploy.cloud.google.com/v1beta1'
+API_VERSION_V1 = 'deploy.cloud.google.com/v1'
 DELIVERY_PIPELINE_FIELDS = ['description', 'serialPipeline']
 TARGET_FIELDS = ['description', 'requireApproval', 'gke', 'executionConfigs']
 METADATA_FIELDS = ['annotations', 'labels']
@@ -59,19 +60,18 @@ def ParseDeployConfig(messages, manifests, region):
     if manifest.get('kind') is None:
       raise exceptions.CloudDeployConfigError('missing required field .kind')
     api_version = manifest['apiVersion']
-    if api_version == API_VERSION_V1BETA1:
-      _ParseV1Beta1Config(messages, manifest['kind'], manifest, project, region,
-                          resource_dict)
+    if api_version in {API_VERSION_V1BETA1, API_VERSION_V1}:
+      _ParseV1Config(messages, manifest['kind'], manifest, project, region,
+                     resource_dict)
     else:
-      raise exceptions.CloudDeployConfigError(
-          'api version {} not supported'.format(api_version))
+      raise exceptions.CloudDeployConfigError('api version {} not supported'.
+                                              format(api_version))
 
   return resource_dict
 
 
-def _ParseV1Beta1Config(messages, kind, manifest, project, region,
-                        resource_dict):
-  """Parses the Cloud Deploy v1beta1 resource specifications into message.
+def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
+  """Parses the Cloud Deploy v1 and v1beta1 resource specifications into message.
 
        This specification version is KRM complied and should be used after
        private review.
@@ -168,7 +168,7 @@ def ProtoToManifest(resource, resource_ref, kind, fields):
     A dictionary that represents the cloud deploy resource.
   """
   manifest = collections.OrderedDict(
-      apiVersion=API_VERSION_V1BETA1, kind=kind, metadata={})
+      apiVersion=API_VERSION_V1, kind=kind, metadata={})
 
   for k in METADATA_FIELDS:
     v = getattr(resource, k)

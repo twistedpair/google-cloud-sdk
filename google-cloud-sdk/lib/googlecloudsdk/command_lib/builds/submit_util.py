@@ -429,7 +429,7 @@ def CreateBuildConfig(tag, no_cache, messages, substitutions, arg_config,
                       is_specified_source, no_source, source,
                       gcs_source_staging_dir, ignore_file, arg_gcs_log_dir,
                       arg_machine_type, arg_disk_size, arg_worker_pool,
-                      buildpack):
+                      buildpack, hide_logs=False):
   """Returns a build config."""
 
   timeout_str = _GetBuildTimeout()
@@ -438,7 +438,7 @@ def CreateBuildConfig(tag, no_cache, messages, substitutions, arg_config,
                                 buildpack)
   build_config = _SetSource(build_config, messages, is_specified_source,
                             no_source, source, gcs_source_staging_dir,
-                            ignore_file)
+                            ignore_file, hide_logs=hide_logs)
   build_config = _SetLogsBucket(build_config, arg_gcs_log_dir)
   build_config = _SetMachineType(build_config, messages, arg_machine_type)
   build_config = _SetDiskSize(build_config, messages, arg_disk_size)

@@ -35,6 +35,9 @@ from .logging import (
 from .logging_config import (
     BigQueryOptions,
     CmekSettings,
+    CopyLogEntriesMetadata,
+    CopyLogEntriesRequest,
+    CopyLogEntriesResponse,
     CreateBucketRequest,
     CreateExclusionRequest,
     CreateSinkRequest,
@@ -67,6 +70,7 @@ from .logging_config import (
     UpdateSinkRequest,
     UpdateViewRequest,
     LifecycleState,
+    OperationState,
 )
 from .logging_metrics import (
     CreateLogMetricRequest,
@@ -96,6 +100,9 @@ __all__ = (
     'WriteLogEntriesResponse',
     'BigQueryOptions',
     'CmekSettings',
+    'CopyLogEntriesMetadata',
+    'CopyLogEntriesRequest',
+    'CopyLogEntriesResponse',
     'CreateBucketRequest',
     'CreateExclusionRequest',
     'CreateSinkRequest',
@@ -128,6 +135,7 @@ __all__ = (
     'UpdateSinkRequest',
     'UpdateViewRequest',
     'LifecycleState',
+    'OperationState',
     'CreateLogMetricRequest',
     'DeleteLogMetricRequest',
     'GetLogMetricRequest',

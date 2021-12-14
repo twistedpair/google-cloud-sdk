@@ -1772,6 +1772,11 @@ class APIAdapter(object):
       if gpu_partition_size:
         accelerator_config.gpuPartitionSize = gpu_partition_size
 
+      max_time_shared_clients_per_gpu = int(
+          options.accelerators.get('max-time-shared-clients-per-gpu', 0))
+      if max_time_shared_clients_per_gpu:
+        accelerator_config.maxTimeSharedClientsPerGpu = max_time_shared_clients_per_gpu
+
       node_config.accelerators = [
           accelerator_config,
       ]

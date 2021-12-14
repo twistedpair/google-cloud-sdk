@@ -201,7 +201,7 @@ def ArgsForClusterRef(parser,
       a cluster.
       """)
   parser.add_argument(
-      '--main-local-ssd-interface',
+      '--master-local-ssd-interface',
       hidden=True,
       help="""\
       Interface to use while attaching local SSDs to main node(s) in a cluster.
@@ -809,7 +809,7 @@ def GetClusterConfig(args,
           diskConfig=GetDiskConfig(dataproc, args.master_boot_disk_type,
                                    master_boot_disk_size_gb,
                                    args.num_master_local_ssds,
-                                   args.main_local_ssd_interface),
+                                   args.master_local_ssd_interface),
           minCpuPlatform=args.master_min_cpu_platform),
       workerConfig=dataproc.messages.InstanceGroupConfig(
           numInstances=args.num_workers,

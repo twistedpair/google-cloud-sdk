@@ -30,7 +30,7 @@ _INVALID_PROVIDER_PREFIX_MESSAGE = (
         sorted([scheme.value for scheme in storage_url.VALID_CLOUD_SCHEMES]))))
 
 # Module variable for holding one API instance per thread per provider.
-_cloud_api_thread_local_storage = threading.local()
+_cloud_api_thread_local_storage = None
 
 
 def _get_api_class(provider):
@@ -68,7 +68,11 @@ def get_api(provider):
   Raises:
     ValueError: If provider is not a cloud scheme in storage_url.ProviderPrefix.
   """
+  global _cloud_api_thread_local_storage
   if properties.VALUES.storage.use_threading_local.GetBool():
+    if not _cloud_api_thread_local_storage:
+      _cloud_api_thread_local_storage = threading.local()
+
     api_client = getattr(_cloud_api_thread_local_storage, provider.value, None)
     if api_client:
       return api_client

@@ -21,17 +21,27 @@ class ApplyInput(_messages.Message):
     configController: The Config Controller instance to preview configurations
       against. Format:
       `projects/{project}/locations/{location}/krmApiHosts/{instance}`.
+    createConfigController: Optional. If set, then a Config Controller
+      instance with a default, well-known name will be created as part of the
+      deployment, if it does not already exist. Note that Blueprints
+      Controller does not manage this Config Controller instance and only
+      creates it.
     deployment: Deployment to dry-run modification to during preview. For
       preview of new deployment this could be left empty. For preview
       modifications to existing deployment this must match an existing
       deployment, otherwise this will be considered as a new deployment.
       Format:
       `projects/{project}/locations/{location}/deployments/{deployment}`
+    pipelineOnly: Optional. If set, then only the Pipeline will run. The
+      rendered content will still be uploaded to Cloud Storage. No dry-run
+      will occur, and no preview diff artifacts will be generated.
   """
 
   blueprint = _messages.MessageField('Blueprint', 1)
   configController = _messages.StringField(2)
-  deployment = _messages.StringField(3)
+  createConfigController = _messages.BooleanField(3)
+  deployment = _messages.StringField(4)
+  pipelineOnly = _messages.BooleanField(5)
 
 
 class ApplyResults(_messages.Message):
@@ -544,6 +554,11 @@ class Deployment(_messages.Message):
     configController: Required. Config Controller instance to deploy to.
       Format:
       `projects/{project}/locations/{location}/krmApiHosts/{instance}`.
+    createConfigController: Optional. If set, then a Config Controller
+      instance with a default, well-known name will be created as part of the
+      deployment, if it does not already exist. Note that Blueprints
+      Controller does not manage this Config Controller instance and only
+      creates it.
     createTime: Output only. Time the deployment was created.
     deleteResults: Output only. Locations of outputs from delete operation.
     errorCode: Output only. Code describing any errors that may have occurred.
@@ -647,17 +662,18 @@ class Deployment(_messages.Message):
 
   blueprint = _messages.MessageField('Blueprint', 1)
   configController = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  deleteResults = _messages.MessageField('ApplyResults', 4)
-  errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 5)
-  gitTarget = _messages.MessageField('GitTarget', 6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  latestRevision = _messages.StringField(8)
-  name = _messages.StringField(9)
-  reconcileTimeout = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  stateDetail = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  createConfigController = _messages.BooleanField(3)
+  createTime = _messages.StringField(4)
+  deleteResults = _messages.MessageField('ApplyResults', 5)
+  errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 6)
+  gitTarget = _messages.MessageField('GitTarget', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  latestRevision = _messages.StringField(9)
+  name = _messages.StringField(10)
+  reconcileTimeout = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  stateDetail = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class DeploymentOperationMetadata(_messages.Message):

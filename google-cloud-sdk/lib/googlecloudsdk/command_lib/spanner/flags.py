@@ -241,3 +241,88 @@ def Session(positional=True, required=True, text='Cloud Spanner session ID'):
         required=required,
         completer=DatabaseSessionCompleter,
         help=text)
+
+
+def _TransformOperationDone(resource):
+  """Combines done and throttled fields into a single column."""
+  done_cell = '{0}'.format(resource.get('done', False))
+  if resource.get('metadata', {}).get('throttled', False):
+    done_cell += ' (throttled)'
+  return done_cell
+
+
+def _TransformDatabaseId(resource):
+  """Gets database ID depending on operation type."""
+  metadata = resource.get('metadata')
+  base_type = 'type.googleapis.com/google.spanner.admin.database.v1.{}'
+  op_type = metadata.get('@type')
+
+  if op_type == base_type.format(
+      'RestoreDatabaseMetadata') or op_type == base_type.format(
+          'OptimizeRestoredDatabaseMetadata'):
+    return metadata.get('name')
+  return metadata.get('database')
+
+
+def AddCommonListArgs(parser, additional_choices=None):
+  """Add Common flags for the List operation group."""
+  Database(
+      positional=False,
+      required=False,
+      text='For database operations, the name of the database '
+      'the operations are executing on.').AddToParser(parser)
+  Backup(
+      positional=False,
+      required=False,
+      text='For backup operations, the name of the backup '
+      'the operations are executing on.').AddToParser(parser)
+
+  type_choices = {
+      'INSTANCE':
+          'Returns instance operations for the given instance. '
+          'Note, type=INSTANCE does not work with --database or --backup.',
+      'DATABASE':
+          'If only the instance is specified (--instance), returns all '
+          'database operations associated with the databases in the '
+          'instance. When a database is specified (--database), the command '
+          'would return database operations for the given database.',
+      'BACKUP':
+          'If only the instance is specified (--instance), returns all '
+          'backup operations associated with backups in the instance. When '
+          'a backup is specified (--backup), only the backup operations for '
+          'the given backup are returned.',
+      'DATABASE_RESTORE':
+          'Database restore operations are returned for all databases in '
+          'the given instance (--instance only) or only those associated '
+          'with the given database (--database)',
+      'DATABASE_CREATE':
+          'Database create operations are returned for all databases in '
+          'the given instance (--instance only) or only those associated '
+          'with the given database (--database)',
+      'DATABASE_UPDATE_DDL':
+          'Database update DDL operations are returned for all databases in '
+          'the given instance (--instance only) or only those associated '
+          'with the given database (--database)'
+  }
+
+  if additional_choices is not None:
+    type_choices.update(additional_choices)
+
+  parser.add_argument(
+      '--type',
+      default='',
+      type=lambda x: x.upper(),
+      choices=type_choices,
+      help='(optional) List only the operations of the given type.')
+
+  parser.display_info.AddFormat("""
+          table(
+            name.basename():label=OPERATION_ID,
+            metadata.statements.join(sep="\n"),
+            done():label=DONE,
+            metadata.'@type'.split('.').slice(-1:).join()
+          )
+        """)
+  parser.display_info.AddCacheUpdater(None)
+  parser.display_info.AddTransforms({'done': _TransformOperationDone})
+  parser.display_info.AddTransforms({'database': _TransformDatabaseId})

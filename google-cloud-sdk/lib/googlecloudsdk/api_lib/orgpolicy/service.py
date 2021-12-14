@@ -104,6 +104,10 @@ class OrgPolicyApi(object):
     pass
 
   @abc.abstractmethod
+  def UpdateCustomConstraint(self, custom_constraint):
+    pass
+
+  @abc.abstractmethod
   def GetCustomConstraint(self, name):
     pass
 
@@ -223,6 +227,9 @@ class OrgPolicyApiGA(OrgPolicyApi):
     request = self.messages.OrgpolicyOrganizationsCustomConstraintsCreateRequest(
         parent=parent, googleCloudOrgpolicyV2CustomConstraint=custom_constraint)
     return self.client.organizations_customConstraints.Create(request=request)
+
+  def UpdateCustomConstraint(self, custom_constraint):
+    return self.client.organizations_customConstraints.Patch(custom_constraint)
 
   def GetCustomConstraint(self, name):
     request = self.messages.OrgpolicyOrganizationsCustomConstraintsGetRequest(
