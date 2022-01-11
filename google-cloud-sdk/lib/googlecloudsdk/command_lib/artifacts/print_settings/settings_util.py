@@ -86,11 +86,6 @@ def _GetLocationAndRepoPath(args, repo_format):
   project = _GetRequiredProjectValue(args)
   location = _GetRequiredLocationValue(args)
   repo_path = project + "/" + repo
-  location_list = ar_requests.ListLocations(project)
-  if location.lower() not in location_list:
-    raise ar_exceptions.UnsupportedLocationError(
-        "{} is not a valid location. Valid locations are [{}].".format(
-            location, ", ".join(location_list)))
   repo = ar_requests.GetRepository(
       "projects/{}/locations/{}/repositories/{}".format(project, location,
                                                         repo))
@@ -107,11 +102,6 @@ def _GetLocationRepoPathAndMavenConfig(args, repo_format):
   project = _GetRequiredProjectValue(args)
   location = _GetRequiredLocationValue(args)
   repo_path = project + "/" + repo
-  location_list = ar_requests.ListLocations(project)
-  if location.lower() not in location_list:
-    raise ar_exceptions.UnsupportedLocationError(
-        "{} is not a valid location. Valid locations are [{}].".format(
-            location, ", ".join(location_list)))
   repo = ar_requests.GetRepository(
       "projects/{}/locations/{}/repositories/{}".format(project, location,
                                                         repo))

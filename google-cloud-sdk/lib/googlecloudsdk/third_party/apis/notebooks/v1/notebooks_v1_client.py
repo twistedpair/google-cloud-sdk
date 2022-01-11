@@ -448,7 +448,7 @@ class NotebooksV1(base_api.BaseApiClient):
         method_id='notebooks.projects.locations.instances.isUpgradeable',
         ordered_params=['notebookInstance'],
         path_params=['notebookInstance'],
-        query_params=[],
+        query_params=['type'],
         relative_path='v1/{+notebookInstance}:isUpgradeable',
         request_field='',
         request_type_name='NotebooksProjectsLocationsInstancesIsUpgradeableRequest',

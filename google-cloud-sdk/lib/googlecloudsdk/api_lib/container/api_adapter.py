@@ -158,7 +158,7 @@ Flag --enable-stackdriver-kubernetes requires Cloud Logging and Cloud Monitoring
 """
 
 CLOUDRUN_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG = """\
-The CloudRun-on-GKE addon (--addons=CloudRun) requires Cloud Logging and Cloud Monitoring to be enabled via the --enable-stackdriver-kubernetes flag.
+The CloudRun-on-GKE addon (--addons=CloudRun) requires System Logging and Monitoring to be enabled via the --monitoring=SYSTEM and --logging=SYSTEM flags.
 """
 
 CLOUDRUN_INGRESS_KUBERNETES_DISABLED_ERROR_MSG = """\
@@ -166,7 +166,7 @@ The CloudRun-on-GKE addon (--addons=CloudRun) requires HTTP Load Balancing to be
 """
 
 CONFIGCONNECTOR_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG = """\
-The ConfigConnector-on-GKE addon (--addons=ConfigConnector) requires Cloud Logging and Cloud Monitoring to be enabled via the --enable-stackdriver-kubernetes flag.
+The ConfigConnector-on-GKE addon (--addons=ConfigConnector) requires System Logging and Monitoring to be enabled via the --monitoring=SYSTEM and --logging=SYSTEM flags.
 """
 
 CONFIGCONNECTOR_WORKLOAD_IDENTITY_DISABLED_ERROR_MSG = """\
@@ -174,7 +174,7 @@ The ConfigConnector-on-GKE addon (--addons=ConfigConnector) requires workload id
 """
 
 CLOUDBUILD_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG = """\
-Cloud Build for Anthos (--addons=CloudBuild) requires Cloud Logging and Cloud Monitoring to be enabled via the --enable-stackdriver-kubernetes flag.
+Cloud Build for Anthos (--addons=CloudBuild) requires System Logging and Monitoring to be enabled via the --monitoring=SYSTEM and --logging=SYSTEM flags.
 """
 
 BACKUPRESTORE_WORKLOAD_IDENTITY_DISABLED_ERROR_MSG = """\
@@ -1405,7 +1405,10 @@ class APIAdapter(object):
       )
       # CONFIGCONNECTOR is disabled by default.
       if CONFIGCONNECTOR in options.addons:
-        if not options.enable_stackdriver_kubernetes:
+        if not options.enable_stackdriver_kubernetes and (
+            (options.monitoring is not None and
+             SYSTEM not in options.monitoring) or
+            (options.logging is not None and SYSTEM not in options.logging)):
           raise util.Error(
               CONFIGCONNECTOR_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
         if options.workload_pool is None:
@@ -1631,6 +1634,13 @@ class APIAdapter(object):
 
     cluster.loggingConfig = _GetLoggingConfig(options, self.messages)
     cluster.monitoringConfig = _GetMonitoringConfig(options, self.messages)
+
+    if options.enable_service_externalips is not None:
+      if cluster.networkConfig is None:
+        cluster.networkConfig = self.messages.NetworkConfig()
+      cluster.networkConfig.serviceExternalIpsConfig = self.messages.ServiceExternalIPsConfig(
+          enabled=options.enable_service_externalips)
+
     return cluster
 
   def ParseNodeConfig(self, options):
@@ -1995,7 +2005,10 @@ class APIAdapter(object):
     if options.addons:
       # CloudRun is disabled by default.
       if any((v in options.addons) for v in CLOUDRUN_ADDONS):
-        if not options.enable_stackdriver_kubernetes:
+        if not options.enable_stackdriver_kubernetes and (
+            (options.monitoring is not None and
+             SYSTEM not in options.monitoring) or
+            (options.logging is not None and SYSTEM not in options.logging)):
           raise util.Error(CLOUDRUN_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
         if INGRESS not in options.addons:
           raise util.Error(CLOUDRUN_INGRESS_KUBERNETES_DISABLED_ERROR_MSG)
@@ -2509,6 +2522,11 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredStableFleetConfig=_GetStableFleetConfig(
               options, self.messages))
+
+    if options.enable_service_externalips is not None:
+      update = self.messages.ClusterUpdate(
+          desiredServiceExternalIpsConfig=self.messages
+          .ServiceExternalIPsConfig(enabled=options.enable_service_externalips))
 
     return update
 
@@ -3694,7 +3712,10 @@ class V1Beta1Adapter(V1Adapter):
     if options.addons:
       # CloudRun is disabled by default.
       if any((v in options.addons) for v in CLOUDRUN_ADDONS):
-        if not options.enable_stackdriver_kubernetes:
+        if not options.enable_stackdriver_kubernetes and (
+            (options.monitoring is not None and
+             SYSTEM not in options.monitoring) or
+            (options.logging is not None and SYSTEM not in options.logging)):
           raise util.Error(CLOUDRUN_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
         if INGRESS not in options.addons:
           raise util.Error(CLOUDRUN_INGRESS_KUBERNETES_DISABLED_ERROR_MSG)
@@ -3704,7 +3725,10 @@ class V1Beta1Adapter(V1Adapter):
             disabled=False, loadBalancerType=load_balancer_type)
       # CloudBuild is disabled by default.
       if CLOUDBUILD in options.addons:
-        if not options.enable_stackdriver_kubernetes:
+        if not options.enable_stackdriver_kubernetes and (
+            (options.monitoring is not None and
+             SYSTEM not in options.monitoring) or
+            (options.logging is not None and SYSTEM not in options.logging)):
           raise util.Error(CLOUDBUILD_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
         cluster.addonsConfig.cloudBuildConfig = self.messages.CloudBuildConfig(
             enabled=True)
@@ -4177,7 +4201,10 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     if options.addons:
       # CloudRun is disabled by default.
       if any((v in options.addons) for v in CLOUDRUN_ADDONS):
-        if not options.enable_stackdriver_kubernetes:
+        if not options.enable_stackdriver_kubernetes and (
+            (options.monitoring is not None and
+             SYSTEM not in options.monitoring) or
+            (options.logging is not None and SYSTEM not in options.logging)):
           raise util.Error(CLOUDRUN_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
         if INGRESS not in options.addons:
           raise util.Error(CLOUDRUN_INGRESS_KUBERNETES_DISABLED_ERROR_MSG)
@@ -4191,7 +4218,10 @@ class V1Alpha1Adapter(V1Beta1Adapter):
             loadBalancerType=load_balancer_type)
       # Cloud Build is disabled by default.
       if CLOUDBUILD in options.addons:
-        if not options.enable_stackdriver_kubernetes:
+        if not options.enable_stackdriver_kubernetes and (
+            (options.monitoring is not None and
+             SYSTEM not in options.monitoring) or
+            (options.logging is not None and SYSTEM not in options.logging)):
           raise util.Error(CLOUDBUILD_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
         cluster.addonsConfig.cloudBuildConfig = self.messages.CloudBuildConfig(
             enabled=True)

@@ -229,7 +229,7 @@
           }
         },
         "query": {
-          "description": "Optional. A query string, following the BigQuery SQL query syntax. The FROM clause should specify a fully qualified log view corresponding to the log view in the resource_names. For example: SELECT count(*) FROM my_project.logs_my_bucket_US._AllLogs;",
+          "description": "Optional. A query string, following the BigQuery SQL query syntax. The FROM clause should specify a fully qualified log view corresponding to the log view in the resource_names, but should not include the name of the resource container. For example: SELECT count(*) FROM logs_my_bucket_US._AllLogs;",
           "type": "string"
         },
         "resultReference": {
@@ -399,12 +399,18 @@
           "enumDescriptions": [
             "Unspecified state. This is only used\/useful for distinguishing unset values.",
             "The normal and active state.",
-            "The bucket has been marked for deletion by the user."
+            "The resource has been marked for deletion by the user. For some resources (e.g. buckets), this can be reversed by an un-delete operation.",
+            "The resource has been marked for an update by the user. It will remain in this state until the update is complete.",
+            "The resource has been marked for creation by the user. It will remain in this state until the creation is complete.",
+            "The resource is in an INTERNAL error state."
           ],
           "enum": [
             "LIFECYCLE_STATE_UNSPECIFIED",
             "ACTIVE",
-            "DELETE_REQUESTED"
+            "DELETE_REQUESTED",
+            "UPDATING",
+            "CREATING",
+            "FAILED"
           ]
         },
         "analyticsEnabled": {
@@ -872,7 +878,7 @@
       "type": "object",
       "properties": {
         "type": {
-          "description": "Required. The monitored resource type. This field must match the type field of a MonitoredResourceDescriptor object. For example, the type of a Compute Engine VM instance is gce_instance.",
+          "description": "Required. The monitored resource type. This field must match the type field of a MonitoredResourceDescriptor object. For example, the type of a Compute Engine VM instance is gce_instance. Some descriptors include the service name in the type; for example, the type of a Datastream stream is datastream.googleapis.com\/Stream.",
           "type": "string"
         },
         "labels": {

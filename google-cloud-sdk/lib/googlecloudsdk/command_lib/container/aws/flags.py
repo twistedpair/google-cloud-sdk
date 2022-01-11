@@ -45,7 +45,8 @@ def AddIamInstanceProfile(parser):
   parser.add_argument(
       '--iam-instance-profile',
       required=True,
-      help='IAM instance profile associated with the cluster.')
+      # TODO(b/209617878): Update help text when ARN is supported.
+      help='Name of the IAM instance profile associated with the cluster.')
 
 
 def AddInstanceType(parser):
@@ -143,8 +144,7 @@ def AddDatabaseEncryptionKmsKeyArn(parser):
 
 
 def AddConfigEncryptionKmsKeyArn(parser):
-  # TODO(b/202339655): Require config encryption after dropping 1.20 and lower.
-  _AddKmsKeyArn(parser, 'config-encryption', 'user data')
+  _AddKmsKeyArn(parser, 'config-encryption', 'user data', required=True)
 
 
 def AddProxyConfig(parser):

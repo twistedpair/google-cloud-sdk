@@ -1237,8 +1237,8 @@ class InstanceConfig(_messages.Message):
   Fields:
     baseConfig: Base configuration name, e.g. projects//instanceConfigs/nam3,
       based on which this configuration is created. Only set for user managed
-      configurations. base_config must refer to a configuration of type
-      GOOGLE_MANAGED.
+      configurations. `base_config` must refer to a configuration of type
+      GOOGLE_MANAGED in the same project as this configuration.
     configType: Output only. Whether this instance config is a Google or User
       Managed Configuration.
     displayName: The name of this instance configuration as it appears in UIs.

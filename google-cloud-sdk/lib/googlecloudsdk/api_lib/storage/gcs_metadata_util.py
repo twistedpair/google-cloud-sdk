@@ -175,8 +175,17 @@ def get_object_resource_from_metadata(metadata):
       size=metadata.size)
 
 
+def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
+  """Sets Apitools Bucket fields based on values in request_config."""
+  resource_args = request_config.resource_args
+  if not resource_args:
+    return
+  if resource_args.default_storage_class is not None:
+    bucket_metadata.storageClass = resource_args.default_storage_class
+
+
 def update_object_metadata_from_request_config(object_metadata, request_config):
-  """Sets Apitools Object fields based on RequestValue metadata."""
+  """Sets Apitools Object fields based on values in request_config."""
   resource_args = request_config.resource_args
   if not resource_args:
     return

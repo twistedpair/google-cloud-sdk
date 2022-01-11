@@ -287,8 +287,8 @@ class Settings(DataObject):
     """The settings you get with no args or other overrides."""
 
     dir_name = os.path.basename(files.GetCWD())
-    # Service names may not include _ and upper case characters.
-    service_name = dir_name.replace('_', '-').lower()
+    # Service names may not include space, _ and upper case characters.
+    service_name = dir_name.replace('_', '-').replace(' ', '-').lower()
     dockerfile_arg_default = 'Dockerfile'
     builder = DockerfileBuilder(dockerfile=dockerfile_arg_default)
 

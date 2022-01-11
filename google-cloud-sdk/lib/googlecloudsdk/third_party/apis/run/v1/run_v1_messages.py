@@ -1488,18 +1488,30 @@ class RevisionSpec(_messages.Message):
   r"""RevisionSpec holds the desired state of the Revision (from the client).
 
   Fields:
-    containerConcurrency: Optional. ContainerConcurrency specifies the maximum
-      allowed in-flight (concurrent) requests per container instance of the
-      Revision. Cloud Run fully managed: supported, defaults to 80 Cloud Run
-      for Anthos: supported, defaults to 0, which means concurrency to the
-      application is not limited, and the system decides the target
-      concurrency for the autoscaler.
+    containerConcurrency: ContainerConcurrency specifies the maximum allowed
+      in-flight (concurrent) requests per container instance of the Revision.
+      Cloud Run fully managed: supported, defaults to 80 Cloud Run for Anthos:
+      supported, defaults to 0, which means concurrency to the application is
+      not limited, and the system decides the target concurrency for the
+      autoscaler.
     containers: Containers holds the single container that defines the unit of
       execution for this Revision. In the context of a Revision, we disallow a
       number of fields on this Container, including: name and lifecycle. In
       Cloud Run, only a single container may be provided. The runtime contract
       is documented here:
       https://github.com/knative/serving/blob/main/docs/runtime-contract.md
+    enableServiceLinks: Indicates whether information about services should be
+      injected into pod's environment variables, matching the syntax of Docker
+      links. Cloud Run fully managed: Not supported. Cloud Run for Anthos:
+      supported, defaults to true.
+    imagePullSecrets: ImagePullSecrets is a list of references to secrets in
+      the same namespace to use for pulling any images in pods that reference
+      this ServiceAccount. ImagePullSecrets are distinct from Secrets because
+      Secrets can be mounted in the pod, but ImagePullSecrets are only
+      accessed by the kubelet. More info:
+      https://kubernetes.io/docs/concepts/containers/images/#specifying-
+      imagepullsecrets-on-a-pod Cloud Run fully managed: Not supported. Cloud
+      Run for Anthos: supported.
     serviceAccountName: Email address of the IAM service account associated
       with the revision of the service. The service account represents the
       identity of the running revision, and determines what permissions the
@@ -1515,9 +1527,11 @@ class RevisionSpec(_messages.Message):
 
   containerConcurrency = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   containers = _messages.MessageField('Container', 2, repeated=True)
-  serviceAccountName = _messages.StringField(3)
-  timeoutSeconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  volumes = _messages.MessageField('Volume', 5, repeated=True)
+  enableServiceLinks = _messages.BooleanField(3)
+  imagePullSecrets = _messages.MessageField('LocalObjectReference', 4, repeated=True)
+  serviceAccountName = _messages.StringField(5)
+  timeoutSeconds = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  volumes = _messages.MessageField('Volume', 7, repeated=True)
 
 
 class RevisionStatus(_messages.Message):

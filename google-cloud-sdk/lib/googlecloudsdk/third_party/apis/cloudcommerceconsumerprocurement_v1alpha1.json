@@ -1477,7 +1477,7 @@
       "type": "object",
       "properties": {
         "agreement": {
-          "description": "Required. Agreement to be checked against. A valid format would be - agreements\/{agreement_id}",
+          "description": "Required. Agreement to be checked against. A valid format would be - commerceoffercatalog.googleapis.com\/billingAccounts\/{billing_account}\/offers\/{offer_id}\/agreements\/{agreement_id}",
           "type": "string"
         },
         "languageCode": {
@@ -2601,7 +2601,7 @@
                   "type": "string"
                 },
                 "agreement": {
-                  "description": "Leave this field unset will return consents of agreements that user has access to. A valid format would be - agreements\/{agreement_id}",
+                  "description": "Leave this field unset will return consents of agreements that user has access to. A valid format would be - commerceoffercatalog.googleapis.com\/billingAccounts\/{billing_account}\/offers\/{offer_id}\/agreements\/{agreement_id}",
                   "location": "query",
                   "type": "string"
                 }
@@ -2671,6 +2671,11 @@
                 },
                 "pageToken": {
                   "description": "The token for fetching the next page.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "The filter that can be used to limit the list request. The filter is a query string that can match a selected set of attributes with string values. For example `product_external_name=abc`. Supported query attributes are * `product_external_name` * `provider` If the query contains some special characters other than letters, underscore, or digits, the phrase must be quoted with double quotes. For example, `product_external_name=\"foo:bar\"`, where the product external name needs to be quoted because it contains special character colon. Queries can be combined with `OR`, and `NOT` to form more complex queries. They can also be grouped to force a desired evaluation order. For example, `product_external_name=abc OR product_external_name=def`.",
                   "location": "query",
                   "type": "string"
                 }

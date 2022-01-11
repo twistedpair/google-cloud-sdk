@@ -1258,6 +1258,10 @@ apis:
       discovery_doc: mediaasset_v1alpha.json
       default: true
   baremetalsolution:
+    v1:
+      discovery_doc: baremetalsolution_v1.json
+      enable_mtls: false
     v2:
       discovery_doc: baremetalsolution_v2.json
+      default: true
       enable_mtls: false

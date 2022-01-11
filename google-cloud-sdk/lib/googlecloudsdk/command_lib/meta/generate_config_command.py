@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import datetime
 import os.path
 
+from googlecloudsdk.core import branding
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import name_parsing
@@ -33,21 +34,6 @@ _COMMAND_PATH_COMPONENTS = ('third_party', 'py', 'googlecloudsdk', 'surface')
 _SPEC_PATH_COMPONENTS = ('cloud', 'sdk', 'surface_specs', 'gcloud')
 _TEST_PATH_COMPONENTS = ('third_party', 'py', 'googlecloudsdk', 'tests', 'unit',
                          'surface')
-
-
-_BRANDING_NAMES = {
-    'accesscontextmanager': 'Access Context Manager',
-    'artifactregistry': 'Artifact Registry',
-    'bigquery': 'Google BigQuery',
-    'bigtableadmin': 'Cloud Bigtable',
-    'cloudbuild': 'Google Cloud Build',
-    'cloudidentity': 'Cloud Identity',
-    'cloudkms': 'Cloud KMS',
-    'cloudresourcemanager': 'Cloud Resource Manager',
-    'compute': 'Compute Engine',
-    'pubsub': 'Pub/Sub',
-    'sourcerepo': 'Cloud Source'
-}
 
 
 class CollectionNotFoundError(core_exceptions.Error):
@@ -202,7 +188,7 @@ def _BuildCommandGroupInitContext(collection_info, release_tracks,
   init_dict['utf_encoding'] = '-*- coding: utf-8 -*- #'
   init_dict['current_year'] = datetime.datetime.now().year
 
-  init_dict['branded_api_name'] = _BRANDING_NAMES.get(
+  init_dict['branded_api_name'] = branding.Branding().get(
       collection_info.api_name, collection_info.api_name.capitalize())
   init_dict[
       'singular_resource_name_with_spaces'] = name_parsing.convert_collection_name_to_delimited(
@@ -229,7 +215,7 @@ def _BuildCommandContext(collection_info, release_tracks, resource_data):
   # apiname.collectionNames
   command_dict['collection_name'] = collection_info.name
   # Branded service name
-  command_dict['branded_api_name'] = _BRANDING_NAMES.get(
+  command_dict['branded_api_name'] = branding.Branding().get(
       collection_info.api_name, collection_info.api_name.capitalize())
 
   # collection names
@@ -246,23 +232,14 @@ def _BuildCommandContext(collection_info, release_tracks, resource_data):
   command_dict['singular_capitalized_name'] = command_dict[
       'singular_name_with_spaces'].capitalize()
 
-  # collection_name
-  if 'resource_spec_name' in resource_data:
-    resource_spec_name = resource_data.resource_spec_name
+  if 'resource_spec_path' in resource_data:
+    command_dict[
+        'resource_spec_path'] = resource_data.resource_spec_path
   else:
     resource_spec_name = command_dict['singular_name_with_spaces'].replace(
         ' ', '_')
-
-  if 'resource_spec_dir' in resource_data:
-    resource_spec_dir = resource_data.resource_spec_dir
-  else:
     resource_spec_dir = resource_data.home_directory.split('.')[0]
-
-  if 'full_resource_spec_path' in resource_data:
-    command_dict[
-        'full_resource_spec_path'] = resource_data.full_resource_spec_path
-  else:
-    command_dict['full_resource_spec_path'] = '{}.resources:{}'.format(
+    command_dict['resource_spec_path'] = '{}.resources:{}'.format(
         resource_spec_dir, resource_spec_name)
 
   # my-collection-name
@@ -295,12 +272,9 @@ def _BuildSurfaceSpecContext(collection_info, release_tracks, resource_data):
   if 'surface_spec_resource_name' in resource_data:
     surface_spec_dict[
         'surface_spec_resource_arg'] = resource_data.surface_spec_resource_name
-  elif 'resource_spec_name' in resource_data:
+  elif 'resource_spec_path' in resource_data:
     surface_spec_dict[
-        'surface_spec_resource_arg'] = resource_data.resource_spec_name.upper()
-  elif 'full_resource_spec_path' in resource_data:
-    surface_spec_dict[
-        'surface_spec_resource_arg'] = resource_data.full_resource_spec_path.split(
+        'surface_spec_resource_arg'] = resource_data.resource_spec_path.split(
             ':')[-1].upper()
   else:
     surface_spec_dict[

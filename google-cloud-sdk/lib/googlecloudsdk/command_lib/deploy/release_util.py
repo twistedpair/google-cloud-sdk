@@ -18,10 +18,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import datetime
 import os.path
+import tarfile
 import uuid
 
 from apitools.base.py import exceptions as apitools_exceptions
+
 from googlecloudsdk.api_lib.cloudbuild import snapshot
 from googlecloudsdk.api_lib.clouddeploy import client_util
 from googlecloudsdk.api_lib.clouddeploy import delivery_pipeline
@@ -53,6 +56,38 @@ RESOURCE_CHANGED = ('The following snapped releases resources differ from '
                     'were cached when the release was created, but the source '
                     'has changed since then. You should review the differences '
                     'before proceeding.\n')
+_DATE_PATTERN = '$DATE'
+_TIME_PATTERN = '$TIME'
+
+
+def RenderPattern(release_id):
+  """Finds and replaces keywords in the release name.
+
+    When adding to the list of keywords that can be expanded, care must be taken
+    when two words share the same prefix ie. ($D and $DATE). In that case the
+    longer keyword ($DATE) must be processed before the shorter one ($D).
+  Args:
+    release_id: str, the release name template.
+
+  Returns:
+    The formatted release name
+  """
+  time_now = datetime.datetime.utcnow()
+  formatted_id = release_id.replace(_DATE_PATTERN, time_now.strftime('%Y%m%d'))
+  formatted_id = formatted_id.replace(_TIME_PATTERN, time_now.strftime('%H%M'))
+  _CheckForRemainingDollars(formatted_id)
+  return formatted_id
+
+
+def _CheckForRemainingDollars(release_id):
+  """Find and notify user about dollar signs in release name."""
+
+  dollar_positions = []
+  for i in range(len(release_id)):
+    if release_id[i] == '$':
+      dollar_positions.append(six.text_type(i))
+  if dollar_positions:
+    raise exceptions.InvalidReleaseNameError(release_id, dollar_positions)
 
 
 def SetBuildArtifacts(images, messages, release_config):
@@ -100,15 +135,17 @@ def LoadBuildArtifactFile(path):
 
 
 def CreateReleaseConfig(source, gcs_source_staging_dir, ignore_file, images,
-                        build_artifacts, description, skaffold_version):
+                        build_artifacts, description, skaffold_version,
+                        skaffold_file):
   """Returns a build config."""
+  _VerifySkaffoldFileExists(source, skaffold_file)
   messages = client_util.GetMessagesModule(client_util.GetClientInstance())
   release_config = messages.Release()
   release_config.description = description
+  release_config = _SetSkaffoldConfigPath(release_config, skaffold_file)
   release_config = _SetSource(release_config, source, gcs_source_staging_dir,
                               ignore_file, skaffold_version)
   release_config = _SetImages(messages, release_config, images, build_artifacts)
-
   return release_config
 
 
@@ -123,6 +160,7 @@ def _SetSource(release_config,
   default_gcs_source = False
   default_bucket_name = staging_bucket_util.GetDefaultStagingBucket(
       safe_project_id)
+
   if gcs_source_staging_dir is None:
     default_gcs_source = True
     gcs_source_staging_dir = _SOURCE_STAGING_TEMPLATE.format(
@@ -170,9 +208,6 @@ def _SetSource(release_config,
     release_config.skaffoldConfigUri = 'gs://{bucket}/{object}'.format(
         bucket=staged_source_obj.bucket, object=staged_source_obj.name)
   else:
-    if not os.path.exists(source):
-      raise c_exceptions.BadFileException(
-          'could not find source [{src}]'.format(src=source))
     if os.path.isdir(source):
       source_snapshot = snapshot.Snapshot(source, ignore_file=ignore_file)
       size_str = resource_transform.TransformSize(
@@ -190,10 +225,6 @@ def _SetSource(release_config,
       release_config.skaffoldConfigUri = 'gs://{bucket}/{object}'.format(
           bucket=staged_source_obj.bucket, object=staged_source_obj.name)
     elif os.path.isfile(source):
-      _, ext = os.path.splitext(source)
-      if ext not in _ALLOWED_SOURCE_EXT:
-        raise c_exceptions.BadFileException('local file [{src}] is none of ' +
-                                            ', '.join(_ALLOWED_SOURCE_EXT))
       if not hide_logs:
         log.status.Print('Uploading local file [{src}] to '
                          '[gs://{bucket}/{object}].'.format(
@@ -211,12 +242,64 @@ def _SetSource(release_config,
   return release_config
 
 
+def _VerifySkaffoldFileExists(source, skaffold_file):
+  """Checks that the specified source contains a skaffold configuration file."""
+  if not skaffold_file:
+    skaffold_file = 'skaffold.yaml'
+  if source.startswith('gs://'):
+    log.status.Print(
+        'Skipping skaffold file check. Reason: source is not a local archive or directory'
+    )
+  elif not os.path.exists(source):
+    raise c_exceptions.BadFileException(
+        'could not find source [{src}]'.format(src=source))
+  elif os.path.isfile(source):
+    _VerifySkaffoldIsInArchive(source, skaffold_file)
+  else:
+    _VerifySkaffoldIsInFolder(source, skaffold_file)
+
+
+def _VerifySkaffoldIsInArchive(source, skaffold_file):
+  """Checks that the specified source file is a readable archive with skaffold file present."""
+  _, ext = os.path.splitext(source)
+  if ext not in _ALLOWED_SOURCE_EXT:
+    raise c_exceptions.BadFileException('local file [{src}] is none of ' +
+                                        ', '.join(_ALLOWED_SOURCE_EXT))
+  if not tarfile.is_tarfile(source):
+    raise c_exceptions.BadFileException(
+        'Specified source file is not a readable compressed file archive')
+  with tarfile.open(source, mode='r:gz') as archive:
+    try:
+      archive.getmember(skaffold_file)
+    except KeyError:
+      raise c_exceptions.BadFileException(
+          'Could not find skaffold file. File [{skaffold}] does not exist in source archive'
+          .format(skaffold=skaffold_file))
+
+
+def _VerifySkaffoldIsInFolder(source, skaffold_file):
+  """Checks that the specified source folder contains a skaffold configuration file."""
+  path_to_skaffold = os.path.join(source, skaffold_file)
+  if not os.path.exists(path_to_skaffold):
+    raise c_exceptions.BadFileException(
+        'Could not find skaffold file. File [{skaffold}] does not exist'.format(
+            skaffold=path_to_skaffold))
+
+
 def _SetImages(messages, release_config, images, build_artifacts):
   """Set the image substitutions for the release config."""
   if build_artifacts:
     images = LoadBuildArtifactFile(build_artifacts)
 
   return SetBuildArtifacts(images, messages, release_config)
+
+
+def _SetSkaffoldConfigPath(release_config, skaffold_file):
+  """Set the path for skaffold configuration file relative to source directory."""
+  if skaffold_file:
+    release_config.skaffoldConfigPath = skaffold_file
+
+  return release_config
 
 
 def DiffSnappedPipeline(release_ref, release_obj, to_target=None):

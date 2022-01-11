@@ -74,7 +74,7 @@ def _ConstructSingleWorkerPoolSpec(aiplatform_client,
     if command is not None:
       worker_pool_spec.containerSpec.command = command
 
-  if python_package_uri or executor_image_uri or python_module:
+  elif python_package_uri or executor_image_uri or python_module:
     python_package_spec_msg = aiplatform_client.GetMessage('PythonPackageSpec')
     worker_pool_spec.pythonPackageSpec = python_package_spec_msg(
         executorImageUri=executor_image_uri,

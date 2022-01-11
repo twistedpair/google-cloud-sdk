@@ -19,16 +19,16 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
-from distutils import version as distutils_version
 import json
 
 
 from googlecloudsdk.core.docker import client_lib as client_utils
 from googlecloudsdk.core.docker import constants
 from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import semver
 import six
 
-MIN_DOCKER_CONFIG_HELPER_VERSION = distutils_version.LooseVersion('1.13')
+MIN_DOCKER_CONFIG_HELPER_VERSION = semver.LooseVersion('1.13')
 CREDENTIAL_HELPER_KEY = 'credHelpers'
 
 
@@ -72,7 +72,7 @@ class Configuration(object):
   def DockerVersion(self):
     if not self._version:
       version_str = six.text_type(client_utils.GetDockerVersion())
-      self._version = distutils_version.LooseVersion(version_str)
+      self._version = semver.LooseVersion(version_str)
     return self._version
 
   def SupportsRegistryHelpers(self):

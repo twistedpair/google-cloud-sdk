@@ -1637,8 +1637,9 @@ class IamProjectsServiceAccountsKeysGetRequest(_messages.Message):
   r"""A IamProjectsServiceAccountsKeysGetRequest object.
 
   Enums:
-    PublicKeyTypeValueValuesEnum: The output format of the public key
-      requested. X509_PEM is the default output format.
+    PublicKeyTypeValueValuesEnum: Optional. The output format of the public
+      key. The default is `TYPE_NONE`, which means that the public key is not
+      returned.
 
   Fields:
     name: Required. The resource name of the service account key in the
@@ -1647,16 +1648,16 @@ class IamProjectsServiceAccountsKeysGetRequest(_messages.Message):
       as a wildcard for the `PROJECT_ID` will infer the project from the
       account. The `ACCOUNT` value can be the `email` address or the
       `unique_id` of the service account.
-    publicKeyType: The output format of the public key requested. X509_PEM is
-      the default output format.
+    publicKeyType: Optional. The output format of the public key. The default
+      is `TYPE_NONE`, which means that the public key is not returned.
   """
 
   class PublicKeyTypeValueValuesEnum(_messages.Enum):
-    r"""The output format of the public key requested. X509_PEM is the default
-    output format.
+    r"""Optional. The output format of the public key. The default is
+    `TYPE_NONE`, which means that the public key is not returned.
 
     Values:
-      TYPE_NONE: Unspecified. Returns nothing here.
+      TYPE_NONE: Do not return the public key.
       TYPE_X509_PEM_FILE: X509 PEM format.
       TYPE_RAW_PUBLIC_KEY: Raw public key.
     """

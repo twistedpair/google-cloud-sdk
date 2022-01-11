@@ -69,6 +69,15 @@ encoding.AddCustomJsonFieldMapping(
     .PrivatecaProjectsLocationsCertificateTemplatesGetIamPolicyRequest,
     'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 
+clouddeploy_message = core_apis.GetMessagesModule('clouddeploy', 'v1')
+encoding.AddCustomJsonFieldMapping(
+    clouddeploy_message
+    .ClouddeployProjectsLocationsDeliveryPipelinesGetIamPolicyRequest,
+    'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    clouddeploy_message.ClouddeployProjectsLocationsTargetsGetIamPolicyRequest,
+    'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+
 MANAGED_BY = (
     msgs.IamProjectsServiceAccountsKeysListRequest.KeyTypesValueValuesEnum)
 CREATE_KEY_TYPES = (

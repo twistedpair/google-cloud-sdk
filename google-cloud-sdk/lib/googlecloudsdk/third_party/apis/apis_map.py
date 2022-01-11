@@ -405,6 +405,15 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'baremetalsolution': {
+        'v1':
+            APIDef(
+                ApitoolsClientDef(
+                    class_path='googlecloudsdk.third_party.apis.baremetalsolution.v1',
+                    client_classpath='baremetalsolution_v1_client.BaremetalsolutionV1',
+                    messages_modulepath='baremetalsolution_v1_messages'),
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v2':
             APIDef(
                 ApitoolsClientDef(

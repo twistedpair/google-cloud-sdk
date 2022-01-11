@@ -1694,10 +1694,6 @@
       "description": "Contains dataproc metric config.",
       "type": "object",
       "properties": {
-        "enabled": {
-          "description": "Optional. Specifies that dataproc metric is enabled.",
-          "type": "boolean"
-        },
         "metricSources": {
           "description": "Optional. Optional field. If not mentioned all MetricSource are enabled",
           "type": "array",
@@ -1705,13 +1701,13 @@
             "type": "string",
             "enumDescriptions": [
               "Required unspecified metric source",
-              "Monitoring agent metric source, all default monitoring agent metrics are published when we enable a metric agent in cluster VM",
+              "all default monitoring agent metrics that are published with prefix \"agent.googleapis.com\" when we enable a monitoring agent in Compute Engine",
               "Hadoop metric source",
               "Spark metric source"
             ],
             "enum": [
               "METRIC_SOURCE_UNSPECIFIED",
-              "MONITORING_AGENT",
+              "MONITORING_AGENT_DEFAULTS",
               "HADOOP",
               "SPARK"
             ]
@@ -2743,7 +2739,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Optional. The resource name of the session.",
+          "description": "Required. The resource name of the session.",
           "type": "string"
         },
         "uuid": {
@@ -4129,7 +4125,7 @@
                       "type": "string"
                     },
                     "sessionId": {
-                      "description": "Optional. The ID to use for the session, which becomes the final component of the session's resource name.This value must be 4-63 characters. Valid characters are \/a-z-\/.",
+                      "description": "Required. The ID to use for the session, which becomes the final component of the session's resource name.This value must be 4-63 characters. Valid characters are \/a-z-\/.",
                       "location": "query",
                       "type": "string"
                     },

@@ -108,23 +108,6 @@ def MungeBasicAuthFlags(args):
     raise util.Error(constants.USERNAME_PASSWORD_ERROR_MSG)
 
 
-def LogBasicAuthDeprecationWarning(args):
-  """Returns a deprecation warning if basic auth fields are modified.
-
-  Args:
-    args: an argparse namespace. All the arguments that were provided to this
-      command invocation.
-  """
-  if getattr(args, 'username', '') or getattr(args, 'password', '') or getattr(
-      args, 'enable_basic_auth', False):
-    log.warning(
-        'Warning: basic authentication is deprecated, and will be removed in GKE '
-        'control plane versions 1.19 and newer. For a list of recommended '
-        'authentication methods, see: '
-        'https://cloud.google.com/kubernetes-engine/docs/how-to/api-server-authentication'
-    )
-
-
 # TODO(b/28318474): move flags common across commands here.
 def AddImageTypeFlag(parser, target):
   """Adds a --image-type flag to the given parser."""
@@ -1341,7 +1324,7 @@ VM instances."""
       '--spot', action='store_true', help=help_text, hidden=hidden)
 
 
-def AddPlacementTypeFlag(parser, for_node_pool=False, hidden=True):
+def AddPlacementTypeFlag(parser, for_node_pool=False, hidden=False):
   """Adds a --placement-type flag to parser."""
   if for_node_pool:
     help_text = textwrap.dedent("""\
@@ -1937,7 +1920,7 @@ family of flags.
     AddMaintenanceExclusionFlags(group)
 
 
-def AddMaintenanceExclusionFlags(parser, hidden=False, enable_scope=False):
+def AddMaintenanceExclusionFlags(parser, hidden=False, enable_scope=True):
   """Adds flags related to adding a maintenance exclusion to the parser."""
   help_text = """\
 Sets a period of time in which maintenance should not occur. This is compatible
@@ -2760,22 +2743,22 @@ def ValidateIstioConfigUpdateArgs(istio_config_args, disable_addons_args):
 # flag.
 def WarnForUnspecifiedIpAllocationPolicy(args):
   if not args.IsSpecified('enable_ip_alias'):
-    log.warning(
-        'Currently VPC-native is the default mode during cluster creation for '
-        'versions greater than 1.21.0-gke.1500. '
-        'To create advanced routes based clusters, '
-        'please pass the `--no-enable-ip-alias` flag')
+    log.status.Print(
+        'Default change: VPC-native is the default mode during cluster '
+        'creation for versions greater than 1.21.0-gke.1500. To create '
+        'advanced routes based clusters, please pass the '
+        '`--no-enable-ip-alias` flag')
 
 
 def WarnForNodeModification(args, enable_autorepair):
   if (args.image_type or '').lower() != 'ubuntu':
     return
   if enable_autorepair or args.enable_autoupgrade:
-    log.warning('Modifications on the boot disks of node VMs do not persist '
-                'across node recreations. Nodes are recreated during '
-                'manual-upgrade, auto-upgrade, auto-repair, and auto-scaling. '
-                'To preserve modifications across node recreation, use a '
-                'DaemonSet.')
+    log.status.Print(
+        'Note: Modifications on the boot disks of node VMs do not persist '
+        'across node recreations. Nodes are recreated during manual-upgrade, '
+        'auto-upgrade, auto-repair, and auto-scaling. To preserve '
+        'modifications across node recreation, use a DaemonSet.')
 
 
 def WarnForNodeVersionAutoUpgrade(args):
@@ -2784,7 +2767,7 @@ def WarnForNodeVersionAutoUpgrade(args):
   if not hasattr(args, 'enable_autoupgrade'):
     return
   if args.IsSpecified('node_version') and args.enable_autoupgrade:
-    log.warning(util.WARN_NODE_VERSION_WITH_AUTOUPGRADE_ENABLED)
+    log.status.Print('Note: ' + util.WARN_NODE_VERSION_WITH_AUTOUPGRADE_ENABLED)
 
 
 def AddMachineTypeFlag(parser):

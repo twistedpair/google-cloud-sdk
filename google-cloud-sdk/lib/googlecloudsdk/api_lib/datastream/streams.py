@@ -143,7 +143,7 @@ class StreamsClient(object):
     return gcs_dest_config_msg
 
   def _GetStream(self, stream_id, release_track, args):
-    """Returns a Stream object."""
+    """Returns a stream object."""
     labels = labels_util.ParseCreateArgs(
         args, self._messages.Stream.LabelsValue)
     stream_obj = self._messages.Stream(

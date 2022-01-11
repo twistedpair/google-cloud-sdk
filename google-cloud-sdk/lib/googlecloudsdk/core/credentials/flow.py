@@ -21,6 +21,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import abc
 import contextlib
 import json
 import select
@@ -87,10 +88,20 @@ def PromptForAuthCode(message, authorize_url):
   return input('Enter verification code: ').strip()
 
 
-def CreateGoogleAuthFlow(scopes, client_id_file=None):
+def CreateGoogleAuthFlow(launch_browser, scopes, client_id_file=None):
   """Creates a Google auth oauthlib browser flow."""
   client_config = _CreateGoogleAuthClientConfig(client_id_file)
-  return InstalledAppFlow.from_client_config(
+  if launch_browser:
+    try:
+      return FullWebFlow.from_client_config(
+          client_config,
+          scopes,
+          autogenerate_code_verifier=not properties.VALUES.auth
+          .disable_code_verifier.GetBool())
+    except LocalServerCreationError as e:
+      log.warning(e)
+      log.warning('Defaulting to URL copy/paste mode.')
+  return OobFlow.from_client_config(
       client_config,
       scopes,
       autogenerate_code_verifier=not properties.VALUES.auth
@@ -130,45 +141,6 @@ def HandleOauth2FlowErrors():
     six.raise_from(AuthRequestRejectedError(e), e)
   except ValueError as e:
     raise six.raise_from(AuthRequestFailedError(e), e)
-
-
-def _RunGoogleAuthFlowLaunchBrowser(flow):
-  """Runs oauth2 3LO flow and auto launch the browser."""
-  authorization_prompt_msg_launch_browser = (
-      'Your browser has been opened to visit:\n\n    {url}\n')
-  with HandleOauth2FlowErrors():
-    return flow.run_local_server(
-        authorization_prompt_message=authorization_prompt_msg_launch_browser)
-
-
-def _RunGoogleAuthFlowNoLaunchBrowser(flow):
-  """Runs oauth2 3LO flow without auto-launching the browser."""
-  authorization_prompt_msg_no_launch_browser = (
-      'Go to the following link in your browser:\n\n    {url}\n')
-  with HandleOauth2FlowErrors():
-    return flow.run_console(
-        authorization_prompt_message=authorization_prompt_msg_no_launch_browser)
-
-
-def RunGoogleAuthFlow(flow, launch_browser=False):
-  """Runs a Google auth oauthlib web flow.
-
-  Args:
-    flow: InstalledAppFlow, A web flow to run.
-    launch_browser: bool, True to launch the web browser automatically and and
-      use local server to handle the redirect. False to ask users to paste the
-      url in a browser.
-
-  Returns:
-    google.auth.credentials.Credentials, The credentials obtained from the flow.
-  """
-  if launch_browser:
-    try:
-      return _RunGoogleAuthFlowLaunchBrowser(flow)
-    except LocalServerCreationError as e:
-      log.warning(e)
-      log.warning('Defaulting to URL copy/paste mode.')
-  return _RunGoogleAuthFlowNoLaunchBrowser(flow)
 
 
 class WSGIServer(wsgiref.simple_server.WSGIServer):
@@ -251,63 +223,92 @@ class WSGIServer(wsgiref.simple_server.WSGIServer):
       self.shutdown_request(request)
 
 
-class InstalledAppFlow(google_auth_flow.InstalledAppFlow):
-  """Installed app flow.
+class InstalledAppFlow(
+    six.with_metaclass(abc.ABCMeta, google_auth_flow.InstalledAppFlow)):
+  """Base class of authorization flow for installed app.
 
-  This class overrides base class's run_local_server() method to provide
-  customized behaviors for gcloud auth login:
-    1. Try to find an available port for the local server which handles the
-       redirect.
-    2. A WSGI app on the local server which can direct browser to
-       Google's confirmation pages for authentication.
-
-  This class overrides base class's run_console() method so that the auth code
-  fetching step can be easily mocked in login integration testing.
+  Attributes:
+    oauth2session: requests_oauthlib.OAuth2Session, The OAuth 2.0 session from
+      requests_oauthlib.
+    client_type: str, The client type, either "web" or "installed".
+    client_config: The client configuration in the Google client secrets format.
+    autogenerate_code_verifier: bool, If true, auto-generate a code verifier.
+    require_local_server: bool, True if this flow needs a local server to handle
+      redirect.
   """
 
-  def __init__(
-      self, oauth2session, client_type, client_config,
-      redirect_uri=None, code_verifier=None,
-      autogenerate_code_verifier=False):
-    """Initializes a google_auth_flow.InstalledAppFlow.
-
-    Args:
-        oauth2session (requests_oauthlib.OAuth2Session):
-            The OAuth 2.0 session from ``requests-oauthlib``.
-        client_type (str): The client type, either ``web`` or
-            ``installed``.
-        client_config (Mapping[str, Any]): The client
-            configuration in the Google `client secrets`_ format.
-        redirect_uri (str): The OAuth 2.0 redirect URI if known at flow
-            creation time. Otherwise, it will need to be set using
-            :attr:`redirect_uri`.
-        code_verifier (str): random string of 43-128 chars used to verify
-            the key exchange.using PKCE.
-        autogenerate_code_verifier (bool): If true, auto-generate a
-            code_verifier.
-    .. _client secrets:
-        https://developers.google.com/api-client-library/python/guide
-        /aaa_client_secrets
-    """
+  def __init__(self,
+               oauth2session,
+               client_type,
+               client_config,
+               redirect_uri=None,
+               code_verifier=None,
+               autogenerate_code_verifier=False,
+               require_local_server=False):
     session = requests.GetSession(session=oauth2session)
     super(InstalledAppFlow, self).__init__(
-        session, client_type, client_config,
-        redirect_uri, code_verifier,
-        autogenerate_code_verifier)
-    self.app = None
-    self.server = None
-
-  def initialize_server(self):
-    if not self.app or not self.server:
+        session,
+        client_type,
+        client_config,
+        redirect_uri=redirect_uri,
+        code_verifier=code_verifier,
+        autogenerate_code_verifier=autogenerate_code_verifier)
+    self.original_client_config = client_config
+    if require_local_server:
+      self.host = 'localhost'
       self.app = _RedirectWSGIApp()
-      self.server = CreateLocalServer(self.app, _PORT_SEARCH_START,
+      self.server = CreateLocalServer(self.app, self.host, _PORT_SEARCH_START,
                                       _PORT_SEARCH_END)
+      self.redirect_uri = 'http://{}:{}/'.format(self.host,
+                                                 self.server.server_port)
+    else:
+      self.redirect_uri = self._OOB_REDIRECT_URI
 
-  def run_local_server(self,
-                       host='localhost',
-                       authorization_prompt_message=google_auth_flow
-                       .InstalledAppFlow._DEFAULT_AUTH_PROMPT_MESSAGE,
-                       **kwargs):
+  def Run(self):
+    with HandleOauth2FlowErrors():
+      return self._Run()
+
+  @abc.abstractmethod
+  def _Run(self):
+    pass
+
+  @classmethod
+  def FromInstalledAppFlow(cls, source_flow):
+    """Creates an instance of the current flow from an existing flow."""
+    return cls.from_client_config(
+        source_flow.origional_client_config,
+        source_flow.oauth2session.scope,
+        autogenerate_code_verifier=source_flow.autogenerate_code_verifier)
+
+
+class FullWebFlow(InstalledAppFlow):
+  """The complete OAuth 2.0 authorization flow.
+
+  This class supports user account login using "gcloud auth login" with browser.
+  Specifically, it does the following:
+    1. Try to find an available port for the local server which handles the
+       redirect.
+    2. Create a WSGI app on the local server which can direct browser to
+       Google's confirmation pages for authentication.
+  """
+
+  def __init__(self,
+               oauth2session,
+               client_type,
+               client_config,
+               redirect_uri=None,
+               code_verifier=None,
+               autogenerate_code_verifier=False):
+    super(FullWebFlow, self).__init__(
+        oauth2session,
+        client_type,
+        client_config,
+        redirect_uri=redirect_uri,
+        code_verifier=code_verifier,
+        autogenerate_code_verifier=autogenerate_code_verifier,
+        require_local_server=True)
+
+  def _Run(self, **kwargs):
     """Run the flow using the server strategy.
 
     The server strategy instructs the user to open the authorization URL in
@@ -319,12 +320,8 @@ class InstalledAppFlow(google_auth_flow.InstalledAppFlow):
     code is then exchanged for a token.
 
     Args:
-        host: str, The hostname for the local redirect server. This will
-          be served over http, not https.
-        authorization_prompt_message: str, The message to display to tell
-          the user to navigate to the authorization URL.
         **kwargs: Additional keyword arguments passed through to
-          authorization_url`.
+          "authorization_url".
 
     Returns:
         google.oauth2.credentials.Credentials: The OAuth 2.0 credentials
@@ -334,13 +331,12 @@ class InstalledAppFlow(google_auth_flow.InstalledAppFlow):
       LocalServerTimeoutError: If the local server handling redirection timeout
         before receiving the request.
     """
-    self.initialize_server()
-
-    self.redirect_uri = 'http://{}:{}/'.format(host, self.server.server_port)
     auth_url, _ = self.authorization_url(**kwargs)
 
     webbrowser.open(auth_url, new=1, autoraise=True)
 
+    authorization_prompt_message = (
+        'Your browser has been opened to visit:\n\n    {url}\n')
     log.err.Print(authorization_prompt_message.format(url=auth_url))
     self.server.handle_request()
     self.server.server_close()
@@ -359,10 +355,32 @@ class InstalledAppFlow(google_auth_flow.InstalledAppFlow):
 
     return self.credentials
 
-  def run_console(self,
-                  authorization_prompt_message=google_auth_flow.InstalledAppFlow
-                  ._DEFAULT_AUTH_PROMPT_MESSAGE,
-                  **kwargs):
+
+# TODO(b/206804357): Remove OOB flow from gcloud.
+class OobFlow(InstalledAppFlow):
+  """Out-of-band flow.
+
+  This class supports user account login using "gcloud auth login" without
+  browser.
+  """
+
+  def __init__(self,
+               oauth2session,
+               client_type,
+               client_config,
+               redirect_uri=None,
+               code_verifier=None,
+               autogenerate_code_verifier=False):
+    super(OobFlow, self).__init__(
+        oauth2session,
+        client_type,
+        client_config,
+        redirect_uri=redirect_uri,
+        code_verifier=code_verifier,
+        autogenerate_code_verifier=autogenerate_code_verifier,
+        require_local_server=False)
+
+  def _Run(self, **kwargs):
     """Run the flow using the console strategy.
 
     The console strategy instructs the user to open the authorization URL
@@ -371,21 +389,18 @@ class InstalledAppFlow(google_auth_flow.InstalledAppFlow):
     code into the application. The code is then exchanged for a token.
 
     Args:
-        authorization_prompt_message: str, The message to display to tell the
-          user to navigate to the authorization URL.
         **kwargs: Additional keyword arguments passed through to
-          'authorization_url'.
+          "authorization_url".
 
     Returns:
         google.oauth2.credentials.Credentials: The OAuth 2.0 credentials
           for the user.
     """
     kwargs.setdefault('prompt', 'consent')
-
-    self.redirect_uri = self._OOB_REDIRECT_URI
-
     auth_url, _ = self.authorization_url(**kwargs)
 
+    authorization_prompt_message = (
+        'Go to the following link in your browser:\n\n    {url}\n')
     code = PromptForAuthCode(authorization_prompt_message, auth_url)
     # TODO (b/204953716): Remove verify=None
     self.fetch_token(code=code, include_client_id=True, verify=None)
@@ -393,7 +408,7 @@ class InstalledAppFlow(google_auth_flow.InstalledAppFlow):
     return self.credentials
 
 
-def CreateLocalServer(wsgi_app, search_start_port, search_end_port):
+def CreateLocalServer(wsgi_app, host, search_start_port, search_end_port):
   """Creates a local wsgi server.
 
   Finds an available port in the range of [search_start_port, search_end_point)
@@ -401,6 +416,7 @@ def CreateLocalServer(wsgi_app, search_start_port, search_end_port):
 
   Args:
     wsgi_app: A wsgi app running on the local server.
+    host: hostname of the server.
     search_start_port: int, the port where the search starts.
     search_end_port: int, the port where the search ends.
 
@@ -416,7 +432,7 @@ def CreateLocalServer(wsgi_app, search_start_port, search_end_port):
   while not local_server and port < search_end_port:
     try:
       local_server = wsgiref.simple_server.make_server(
-          'localhost',
+          host,
           port,
           wsgi_app,
           server_class=WSGIServer,

@@ -1403,6 +1403,7 @@ class MitreAttack(_messages.Message):
       CREATE_OR_MODIFY_SYSTEM_PROCESS: T1543
       STEAL_WEB_SESSION_COOKIE: T1539
       MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE: T1578
+      EXPLOIT_PUBLIC_FACING_APPLICATION: T1190
     """
     TECHNIQUE_UNSPECIFIED = 0
     ACTIVE_SCANNING = 1
@@ -1431,6 +1432,7 @@ class MitreAttack(_messages.Message):
     CREATE_OR_MODIFY_SYSTEM_PROCESS = 24
     STEAL_WEB_SESSION_COOKIE = 25
     MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 26
+    EXPLOIT_PUBLIC_FACING_APPLICATION = 27
 
   class PrimaryTacticValueValuesEnum(_messages.Enum):
     r"""The MITRE ATT&CK tactic most closely represented by this finding, if
@@ -1500,6 +1502,7 @@ class MitreAttack(_messages.Message):
       CREATE_OR_MODIFY_SYSTEM_PROCESS: T1543
       STEAL_WEB_SESSION_COOKIE: T1539
       MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE: T1578
+      EXPLOIT_PUBLIC_FACING_APPLICATION: T1190
     """
     TECHNIQUE_UNSPECIFIED = 0
     ACTIVE_SCANNING = 1
@@ -1528,6 +1531,7 @@ class MitreAttack(_messages.Message):
     CREATE_OR_MODIFY_SYSTEM_PROCESS = 24
     STEAL_WEB_SESSION_COOKIE = 25
     MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 26
+    EXPLOIT_PUBLIC_FACING_APPLICATION = 27
 
   additionalTactics = _messages.EnumField('AdditionalTacticsValueListEntryValuesEnum', 1, repeated=True)
   additionalTechniques = _messages.EnumField('AdditionalTechniquesValueListEntryValuesEnum', 2, repeated=True)
@@ -1794,6 +1798,21 @@ class SecuritycenterFoldersGetSecurityHealthAnalyticsSettingsRequest(_messages.M
   name = _messages.StringField(1, required=True)
 
 
+class SecuritycenterFoldersGetVirtualMachineThreatDetectionSettingsRequest(_messages.Message):
+  r"""A SecuritycenterFoldersGetVirtualMachineThreatDetectionSettingsRequest
+  object.
+
+  Fields:
+    name: Required. The name of the VirtualMachineThreatDetectionSettings to
+      retrieve. Formats: *
+      organizations/{organization}/virtualMachineThreatDetectionSettings *
+      folders/{folder}/virtualMachineThreatDetectionSettings *
+      projects/{project}/virtualMachineThreatDetectionSettings
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class SecuritycenterFoldersGetWebSecurityScannerSettingsRequest(_messages.Message):
   r"""A SecuritycenterFoldersGetWebSecurityScannerSettingsRequest object.
 
@@ -1880,6 +1899,28 @@ class SecuritycenterFoldersUpdateSecurityHealthAnalyticsSettingsRequest(_message
   updateMask = _messages.StringField(3)
 
 
+class SecuritycenterFoldersUpdateVirtualMachineThreatDetectionSettingsRequest(_messages.Message):
+  r"""A
+  SecuritycenterFoldersUpdateVirtualMachineThreatDetectionSettingsRequest
+  object.
+
+  Fields:
+    name: The resource name of the VirtualMachineThreatDetectionSettings.
+      Formats: *
+      organizations/{organization}/virtualMachineThreatDetectionSettings *
+      folders/{folder}/virtualMachineThreatDetectionSettings *
+      projects/{project}/virtualMachineThreatDetectionSettings
+    updateMask: The list of fields to be updated.
+    virtualMachineThreatDetectionSettings: A
+      VirtualMachineThreatDetectionSettings resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateMask = _messages.StringField(2)
+  virtualMachineThreatDetectionSettings = _messages.MessageField('VirtualMachineThreatDetectionSettings', 3)
+
+
 class SecuritycenterFoldersUpdateWebSecurityScannerSettingsRequest(_messages.Message):
   r"""A SecuritycenterFoldersUpdateWebSecurityScannerSettingsRequest object.
 
@@ -1896,6 +1937,22 @@ class SecuritycenterFoldersUpdateWebSecurityScannerSettingsRequest(_messages.Mes
   name = _messages.StringField(1, required=True)
   updateMask = _messages.StringField(2)
   webSecurityScannerSettings = _messages.MessageField('WebSecurityScannerSettings', 3)
+
+
+class SecuritycenterFoldersVirtualMachineThreatDetectionSettingsCalculateRequest(_messages.Message):
+  r"""A
+  SecuritycenterFoldersVirtualMachineThreatDetectionSettingsCalculateRequest
+  object.
+
+  Fields:
+    name: Required. The name of the VirtualMachineThreatDetectionSettings to
+      calculate. Formats: *
+      organizations/{organization}/virtualMachineThreatDetectionSettings *
+      folders/{folder}/virtualMachineThreatDetectionSettings *
+      projects/{project}/virtualMachineThreatDetectionSettings
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class SecuritycenterFoldersWebSecurityScannerSettingsCalculateRequest(_messages.Message):
@@ -2013,6 +2070,22 @@ class SecuritycenterOrganizationsGetSubscriptionRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class SecuritycenterOrganizationsGetVirtualMachineThreatDetectionSettingsRequest(_messages.Message):
+  r"""A
+  SecuritycenterOrganizationsGetVirtualMachineThreatDetectionSettingsRequest
+  object.
+
+  Fields:
+    name: Required. The name of the VirtualMachineThreatDetectionSettings to
+      retrieve. Formats: *
+      organizations/{organization}/virtualMachineThreatDetectionSettings *
+      folders/{folder}/virtualMachineThreatDetectionSettings *
+      projects/{project}/virtualMachineThreatDetectionSettings
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class SecuritycenterOrganizationsGetWebSecurityScannerSettingsRequest(_messages.Message):
   r"""A SecuritycenterOrganizationsGetWebSecurityScannerSettingsRequest
   object.
@@ -2104,6 +2177,27 @@ class SecuritycenterOrganizationsUpdateSecurityHealthAnalyticsSettingsRequest(_m
   updateMask = _messages.StringField(3)
 
 
+class SecuritycenterOrganizationsUpdateVirtualMachineThreatDetectionSettingsRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsUpdateVirtualMachineThreatDetectionSettings
+  Request object.
+
+  Fields:
+    name: The resource name of the VirtualMachineThreatDetectionSettings.
+      Formats: *
+      organizations/{organization}/virtualMachineThreatDetectionSettings *
+      folders/{folder}/virtualMachineThreatDetectionSettings *
+      projects/{project}/virtualMachineThreatDetectionSettings
+    updateMask: The list of fields to be updated.
+    virtualMachineThreatDetectionSettings: A
+      VirtualMachineThreatDetectionSettings resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateMask = _messages.StringField(2)
+  virtualMachineThreatDetectionSettings = _messages.MessageField('VirtualMachineThreatDetectionSettings', 3)
+
+
 class SecuritycenterOrganizationsUpdateWebSecurityScannerSettingsRequest(_messages.Message):
   r"""A SecuritycenterOrganizationsUpdateWebSecurityScannerSettingsRequest
   object.
@@ -2121,6 +2215,21 @@ class SecuritycenterOrganizationsUpdateWebSecurityScannerSettingsRequest(_messag
   name = _messages.StringField(1, required=True)
   updateMask = _messages.StringField(2)
   webSecurityScannerSettings = _messages.MessageField('WebSecurityScannerSettings', 3)
+
+
+class SecuritycenterOrganizationsVirtualMachineThreatDetectionSettingsCalculateRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsVirtualMachineThreatDetectionSettingsCalcul
+  ateRequest object.
+
+  Fields:
+    name: Required. The name of the VirtualMachineThreatDetectionSettings to
+      calculate. Formats: *
+      organizations/{organization}/virtualMachineThreatDetectionSettings *
+      folders/{folder}/virtualMachineThreatDetectionSettings *
+      projects/{project}/virtualMachineThreatDetectionSettings
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class SecuritycenterOrganizationsWebSecurityScannerSettingsCalculateRequest(_messages.Message):
@@ -2208,6 +2317,21 @@ class SecuritycenterProjectsGetSecurityHealthAnalyticsSettingsRequest(_messages.
       organizations/{organization}/securityHealthAnalyticsSettings *
       folders/{folder}/securityHealthAnalyticsSettings *
       projects/{project}/securityHealthAnalyticsSettings
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterProjectsGetVirtualMachineThreatDetectionSettingsRequest(_messages.Message):
+  r"""A SecuritycenterProjectsGetVirtualMachineThreatDetectionSettingsRequest
+  object.
+
+  Fields:
+    name: Required. The name of the VirtualMachineThreatDetectionSettings to
+      retrieve. Formats: *
+      organizations/{organization}/virtualMachineThreatDetectionSettings *
+      folders/{folder}/virtualMachineThreatDetectionSettings *
+      projects/{project}/virtualMachineThreatDetectionSettings
   """
 
   name = _messages.StringField(1, required=True)
@@ -2355,6 +2479,28 @@ class SecuritycenterProjectsUpdateSecurityHealthAnalyticsSettingsRequest(_messag
   updateMask = _messages.StringField(3)
 
 
+class SecuritycenterProjectsUpdateVirtualMachineThreatDetectionSettingsRequest(_messages.Message):
+  r"""A
+  SecuritycenterProjectsUpdateVirtualMachineThreatDetectionSettingsRequest
+  object.
+
+  Fields:
+    name: The resource name of the VirtualMachineThreatDetectionSettings.
+      Formats: *
+      organizations/{organization}/virtualMachineThreatDetectionSettings *
+      folders/{folder}/virtualMachineThreatDetectionSettings *
+      projects/{project}/virtualMachineThreatDetectionSettings
+    updateMask: The list of fields to be updated.
+    virtualMachineThreatDetectionSettings: A
+      VirtualMachineThreatDetectionSettings resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateMask = _messages.StringField(2)
+  virtualMachineThreatDetectionSettings = _messages.MessageField('VirtualMachineThreatDetectionSettings', 3)
+
+
 class SecuritycenterProjectsUpdateWebSecurityScannerSettingsRequest(_messages.Message):
   r"""A SecuritycenterProjectsUpdateWebSecurityScannerSettingsRequest object.
 
@@ -2371,6 +2517,22 @@ class SecuritycenterProjectsUpdateWebSecurityScannerSettingsRequest(_messages.Me
   name = _messages.StringField(1, required=True)
   updateMask = _messages.StringField(2)
   webSecurityScannerSettings = _messages.MessageField('WebSecurityScannerSettings', 3)
+
+
+class SecuritycenterProjectsVirtualMachineThreatDetectionSettingsCalculateRequest(_messages.Message):
+  r"""A
+  SecuritycenterProjectsVirtualMachineThreatDetectionSettingsCalculateRequest
+  object.
+
+  Fields:
+    name: Required. The name of the VirtualMachineThreatDetectionSettings to
+      calculate. Formats: *
+      organizations/{organization}/virtualMachineThreatDetectionSettings *
+      folders/{folder}/virtualMachineThreatDetectionSettings *
+      projects/{project}/virtualMachineThreatDetectionSettings
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class SecuritycenterProjectsWebSecurityScannerSettingsCalculateRequest(_messages.Message):
@@ -2480,6 +2642,86 @@ class Subscription(_messages.Message):
   details = _messages.MessageField('Details', 1)
   name = _messages.StringField(2)
   tier = _messages.EnumField('TierValueValuesEnum', 3)
+
+
+class VirtualMachineThreatDetectionSettings(_messages.Message):
+  r"""Resource capturing the settings for the Virtual Machine Threat Detection
+  service.
+
+  Enums:
+    ServiceEnablementStateValueValuesEnum: The state of enablement for the
+      service at its level of the resource hierarchy. A DISABLED state will
+      override all module enablement_states to DISABLED.
+
+  Messages:
+    ModulesValue: The configurations including the state of enablement for the
+      service's different modules. The absence of a module in the map implies
+      its configuration is inherited from its parent's.
+
+  Fields:
+    modules: The configurations including the state of enablement for the
+      service's different modules. The absence of a module in the map implies
+      its configuration is inherited from its parent's.
+    name: The resource name of the VirtualMachineThreatDetectionSettings.
+      Formats: *
+      organizations/{organization}/virtualMachineThreatDetectionSettings *
+      folders/{folder}/virtualMachineThreatDetectionSettings *
+      projects/{project}/virtualMachineThreatDetectionSettings
+    serviceAccount: Output only. The service account used by Virtual Machine
+      Threat Detection detectors.
+    serviceEnablementState: The state of enablement for the service at its
+      level of the resource hierarchy. A DISABLED state will override all
+      module enablement_states to DISABLED.
+    updateTime: Output only. The time the settings were last updated.
+  """
+
+  class ServiceEnablementStateValueValuesEnum(_messages.Enum):
+    r"""The state of enablement for the service at its level of the resource
+    hierarchy. A DISABLED state will override all module enablement_states to
+    DISABLED.
+
+    Values:
+      ENABLEMENT_STATE_UNSPECIFIED: Default value. This value is unused.
+      INHERITED: State is inherited from the parent resource.
+      ENABLED: State is enabled.
+      DISABLED: State is disabled.
+    """
+    ENABLEMENT_STATE_UNSPECIFIED = 0
+    INHERITED = 1
+    ENABLED = 2
+    DISABLED = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ModulesValue(_messages.Message):
+    r"""The configurations including the state of enablement for the service's
+    different modules. The absence of a module in the map implies its
+    configuration is inherited from its parent's.
+
+    Messages:
+      AdditionalProperty: An additional property for a ModulesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ModulesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ModulesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A Config attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('Config', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  modules = _messages.MessageField('ModulesValue', 1)
+  name = _messages.StringField(2)
+  serviceAccount = _messages.StringField(3)
+  serviceEnablementState = _messages.EnumField('ServiceEnablementStateValueValuesEnum', 4)
+  updateTime = _messages.StringField(5)
 
 
 class Vulnerability(_messages.Message):

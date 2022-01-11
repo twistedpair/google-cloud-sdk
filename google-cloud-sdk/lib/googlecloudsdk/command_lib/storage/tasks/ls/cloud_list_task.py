@@ -127,7 +127,7 @@ class _ResourceFormatWrapper(_BaseFormatWrapper):
     self._all_versions = all_versions
     self._include_etag = include_etag
     self._readable_sizes = readable_sizes
-    super().__init__(resource, display_detail)
+    super(_ResourceFormatWrapper, self).__init__(resource, display_detail)
 
   def _format_for_list_long(self):
     """Returns string of select properties from resource."""
@@ -214,7 +214,7 @@ class CloudListTask(task.Task):
       recursion_flag (bool): Recurse through all containers and format all
         container headers.
     """
-    super().__init__()
+    super(CloudListTask, self).__init__()
 
     self._cloud_url = cloud_url
     self._all_versions = all_versions

@@ -17,9 +17,11 @@ class GoogleCloudRecaptchaenterpriseV1AccountDefenderAssessment(_messages.Messag
 
   Enums:
     LabelsValueListEntryValuesEnum:
+    RecommendedActionValueValuesEnum: Recommended action after this request.
 
   Fields:
     labels: Labels for this request.
+    recommendedAction: Recommended action after this request.
   """
 
   class LabelsValueListEntryValuesEnum(_messages.Enum):
@@ -44,7 +46,21 @@ class GoogleCloudRecaptchaenterpriseV1AccountDefenderAssessment(_messages.Messag
     SUSPICIOUS_ACCOUNT_CREATION = 3
     RELATED_ACCOUNTS_NUMBER_HIGH = 4
 
+  class RecommendedActionValueValuesEnum(_messages.Enum):
+    r"""Recommended action after this request.
+
+    Values:
+      RECOMMENDED_ACTION_UNSPECIFIED: Default unspecified type.
+      REQUEST_2FA: The customer should probably request 2FA to their user.
+      SKIP_2FA: This is likely an already seen and safe request. 2FA can be
+        skipped.
+    """
+    RECOMMENDED_ACTION_UNSPECIFIED = 0
+    REQUEST_2FA = 1
+    SKIP_2FA = 2
+
   labels = _messages.EnumField('LabelsValueListEntryValuesEnum', 1, repeated=True)
+  recommendedAction = _messages.EnumField('RecommendedActionValueValuesEnum', 2)
 
 
 class GoogleCloudRecaptchaenterpriseV1AndroidKeySettings(_messages.Message):
@@ -114,8 +130,16 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
 
     Values:
       REASON_UNSPECIFIED: Default unspecified reason.
-      CHARGEBACK: Indicates a chargeback for fraud was issued for the
-        transaction associated with the assessment.
+      CHARGEBACK: Indicates a chargeback issued for the transaction with no
+        other details. When possible, specify the type by using
+        CHARGEBACK_FRAUD or CHARGEBACK_DISPUTE instead.
+      CHARGEBACK_FRAUD: Indicates a chargeback related to an alleged
+        unauthorized transaction from the cardholder's perspective (for
+        example, the card number was stolen).
+      CHARGEBACK_DISPUTE: Indicates a chargeback related to the cardholder
+        having provided their card details but allegedly not being satisfied
+        with the purchase (for example, misrepresentation, attempted
+        cancellation).
       PAYMENT_HEURISTICS: Indicates the transaction associated with the
         assessment is suspected of being fraudulent based on the payment
         method, billing details, shipping address or other transaction
@@ -132,12 +156,14 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
     """
     REASON_UNSPECIFIED = 0
     CHARGEBACK = 1
-    PAYMENT_HEURISTICS = 2
-    INITIATED_TWO_FACTOR = 3
-    PASSED_TWO_FACTOR = 4
-    FAILED_TWO_FACTOR = 5
-    CORRECT_PASSWORD = 6
-    INCORRECT_PASSWORD = 7
+    CHARGEBACK_FRAUD = 2
+    CHARGEBACK_DISPUTE = 3
+    PAYMENT_HEURISTICS = 4
+    INITIATED_TWO_FACTOR = 5
+    PASSED_TWO_FACTOR = 6
+    FAILED_TWO_FACTOR = 7
+    CORRECT_PASSWORD = 8
+    INCORRECT_PASSWORD = 9
 
   annotation = _messages.EnumField('AnnotationValueValuesEnum', 1)
   hashedAccountId = _messages.BytesField(2)
@@ -370,6 +396,7 @@ class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):
     name: The resource name for the Key in the format
       "projects/{project}/keys/{key}".
     testingOptions: Options for user acceptance testing.
+    wafSettings: Settings for WAF
     webSettings: Settings for keys that can be used by websites.
   """
 
@@ -404,7 +431,8 @@ class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
   testingOptions = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TestingOptions', 7)
-  webSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1WebKeySettings', 8)
+  wafSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1WafSettings', 8)
+  webSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1WebKeySettings', 9)
 
 
 class GoogleCloudRecaptchaenterpriseV1ListFirewallPoliciesResponse(_messages.Message):
@@ -761,6 +789,49 @@ class GoogleCloudRecaptchaenterpriseV1TokenProperties(_messages.Message):
   valid = _messages.BooleanField(5)
 
 
+class GoogleCloudRecaptchaenterpriseV1WafSettings(_messages.Message):
+  r"""Settings specific to keys that can be used for WAF (Web Application
+  Firewall).
+
+  Enums:
+    WafFeatureValueValuesEnum: Required. The WAF feature for which this key is
+      enabled.
+    WafServiceValueValuesEnum: Required. The WAF service that uses this key.
+
+  Fields:
+    wafFeature: Required. The WAF feature for which this key is enabled.
+    wafService: Required. The WAF service that uses this key.
+  """
+
+  class WafFeatureValueValuesEnum(_messages.Enum):
+    r"""Required. The WAF feature for which this key is enabled.
+
+    Values:
+      WAF_FEATURE_UNSPECIFIED: Undefined feature.
+      CHALLENGE_PAGE: Redirects suspicious traffic to reCAPTCHA.
+      SESSION_TOKEN: Use reCAPTCHA session-tokens to protect the whole user
+        session on the site's domain.
+      ACTION_TOKEN: Use reCAPTCHA action-tokens to protect user actions.
+    """
+    WAF_FEATURE_UNSPECIFIED = 0
+    CHALLENGE_PAGE = 1
+    SESSION_TOKEN = 2
+    ACTION_TOKEN = 3
+
+  class WafServiceValueValuesEnum(_messages.Enum):
+    r"""Required. The WAF service that uses this key.
+
+    Values:
+      WAF_SERVICE_UNSPECIFIED: Undefined WAF
+      CA: Cloud Armor
+    """
+    WAF_SERVICE_UNSPECIFIED = 0
+    CA = 1
+
+  wafFeature = _messages.EnumField('WafFeatureValueValuesEnum', 1)
+  wafService = _messages.EnumField('WafServiceValueValuesEnum', 2)
+
+
 class GoogleCloudRecaptchaenterpriseV1WebKeySettings(_messages.Message):
   r"""Settings specific to keys that can be used by websites.
 
@@ -1048,12 +1119,12 @@ class RecaptchaenterpriseProjectsRelatedaccountgroupmembershipsSearchRequest(_me
     googleCloudRecaptchaenterpriseV1SearchRelatedAccountGroupMembershipsReques
       t: A GoogleCloudRecaptchaenterpriseV1SearchRelatedAccountGroupMembership
       sRequest resource to be passed as the request body.
-    parent: Required. The name of the project to search related account group
+    project: Required. The name of the project to search related account group
       memberships from, in the format "projects/{project}".
   """
 
   googleCloudRecaptchaenterpriseV1SearchRelatedAccountGroupMembershipsRequest = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1SearchRelatedAccountGroupMembershipsRequest', 1)
-  parent = _messages.StringField(2, required=True)
+  project = _messages.StringField(2, required=True)
 
 
 class RecaptchaenterpriseProjectsRelatedaccountgroupsListRequest(_messages.Message):

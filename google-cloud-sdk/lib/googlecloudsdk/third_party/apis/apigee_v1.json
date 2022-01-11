@@ -1392,7 +1392,7 @@
           "type": "boolean"
         },
         "keyStore": {
-          "description": "Required if `client_auth_enabled` is true. The resource ID of the keystore. References not yet supported.",
+          "description": "Required if `client_auth_enabled` is true. The resource ID of the keystore.",
           "type": "string"
         },
         "keyAlias": {
@@ -1400,7 +1400,7 @@
           "type": "string"
         },
         "trustStore": {
-          "description": "The resource ID of the truststore. References not yet supported.",
+          "description": "The resource ID of the truststore.",
           "type": "string"
         },
         "ignoreValidationErrors": {
@@ -2456,11 +2456,15 @@
           "type": "string"
         },
         "projectIds": {
-          "description": "List of GCP projects associated with the Apigee organization.",
+          "description": "DEPRECATED: Use `project_id`. An Apigee Organization is mapped to a single project.",
           "type": "array",
           "items": {
             "type": "string"
           }
+        },
+        "projectId": {
+          "description": "GCP project associated with the Apigee organization",
+          "type": "string"
         }
       }
     },
@@ -4073,7 +4077,7 @@
           "type": "string"
         },
         "status": {
-          "description": "Status of the API product.",
+          "description": "Status of the API product. Valid values are `approved` or `revoked`.",
           "type": "string"
         }
       }

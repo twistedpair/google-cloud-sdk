@@ -1159,7 +1159,13 @@ def DeleteGeneratedProperties(cluster, dataproc):
       'hdfs:dfs.namenode.lifeline.rpc-address',
       'hdfs:dfs.namenode.servicerpc-address'
   ]
-  for prop in props_to_delete:
+  prop_keys_to_delete = [
+      prop_key for prop_key in props.keys()
+      if any(prop_key.startswith(prop_to_delete)
+             for prop_to_delete in props_to_delete)
+  ]
+
+  for prop in prop_keys_to_delete:
     del props[prop]
   if not props:
     cluster.config.softwareConfig.properties = None

@@ -290,6 +290,51 @@
         }
       }
     },
+    "VirtualMachineThreatDetectionSettings": {
+      "id": "VirtualMachineThreatDetectionSettings",
+      "description": "Resource capturing the settings for the Virtual Machine Threat Detection service.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the VirtualMachineThreatDetectionSettings. Formats: * organizations\/{organization}\/virtualMachineThreatDetectionSettings * folders\/{folder}\/virtualMachineThreatDetectionSettings * projects\/{project}\/virtualMachineThreatDetectionSettings",
+          "type": "string"
+        },
+        "serviceEnablementState": {
+          "description": "The state of enablement for the service at its level of the resource hierarchy. A DISABLED state will override all module enablement_states to DISABLED.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This value is unused.",
+            "State is inherited from the parent resource.",
+            "State is enabled.",
+            "State is disabled."
+          ],
+          "enum": [
+            "ENABLEMENT_STATE_UNSPECIFIED",
+            "INHERITED",
+            "ENABLED",
+            "DISABLED"
+          ]
+        },
+        "modules": {
+          "description": "The configurations including the state of enablement for the service's different modules. The absence of a module in the map implies its configuration is inherited from its parent's.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "Config"
+          }
+        },
+        "serviceAccount": {
+          "description": "Output only. The service account used by Virtual Machine Threat Detection detectors.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "updateTime": {
+          "description": "Output only. The time the settings were last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
     "Subscription": {
       "id": "Subscription",
       "description": "Resource capturing the state of an organization's subscription.",
@@ -976,7 +1021,8 @@
               "T1098.004",
               "T1543",
               "T1539",
-              "T1578"
+              "T1578",
+              "T1190"
             ],
             "enum": [
               "TECHNIQUE_UNSPECIFIED",
@@ -1005,7 +1051,8 @@
               "SSH_AUTHORIZED_KEYS",
               "CREATE_OR_MODIFY_SYSTEM_PROCESS",
               "STEAL_WEB_SESSION_COOKIE",
-              "MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE"
+              "MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE",
+              "EXPLOIT_PUBLIC_FACING_APPLICATION"
             ]
           }
         },
@@ -1082,7 +1129,8 @@
               "T1098.004",
               "T1543",
               "T1539",
-              "T1578"
+              "T1578",
+              "T1190"
             ],
             "enum": [
               "TECHNIQUE_UNSPECIFIED",
@@ -1111,7 +1159,8 @@
               "SSH_AUTHORIZED_KEYS",
               "CREATE_OR_MODIFY_SYSTEM_PROCESS",
               "STEAL_WEB_SESSION_COOKIE",
-              "MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE"
+              "MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE",
+              "EXPLOIT_PUBLIC_FACING_APPLICATION"
             ]
           }
         },
@@ -1659,6 +1708,65 @@
           ],
           "description": "Update the SecurityHealthAnalyticsSettings resource."
         },
+        "getVirtualMachineThreatDetectionSettings": {
+          "id": "securitycenter.organizations.getVirtualMachineThreatDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/organizations/{organizationsId}/virtualMachineThreatDetectionSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the VirtualMachineThreatDetectionSettings to retrieve. Formats: * organizations\/{organization}\/virtualMachineThreatDetectionSettings * folders\/{folder}\/virtualMachineThreatDetectionSettings * projects\/{project}\/virtualMachineThreatDetectionSettings",
+              "pattern": "^organizations\/[^\/]+\/virtualMachineThreatDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "VirtualMachineThreatDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the VirtualMachineThreatDetectionSettings resource."
+        },
+        "updateVirtualMachineThreatDetectionSettings": {
+          "id": "securitycenter.organizations.updateVirtualMachineThreatDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/organizations/{organizationsId}/virtualMachineThreatDetectionSettings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The resource name of the VirtualMachineThreatDetectionSettings. Formats: * organizations\/{organization}\/virtualMachineThreatDetectionSettings * folders\/{folder}\/virtualMachineThreatDetectionSettings * projects\/{project}\/virtualMachineThreatDetectionSettings",
+              "pattern": "^organizations\/[^\/]+\/virtualMachineThreatDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "The list of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "VirtualMachineThreatDetectionSettings"
+          },
+          "response": {
+            "$ref": "VirtualMachineThreatDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Update the VirtualMachineThreatDetectionSettings resource."
+        },
         "getSubscription": {
           "id": "securitycenter.organizations.getSubscription",
           "path": "v1beta2/{+name}",
@@ -1830,6 +1938,35 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Calculates the effective SecurityHealthAnalyticsSettings based on its level in the resource hierarchy and its settings."
+            }
+          }
+        },
+        "virtualMachineThreatDetectionSettings": {
+          "methods": {
+            "calculate": {
+              "id": "securitycenter.organizations.virtualMachineThreatDetectionSettings.calculate",
+              "path": "v1beta2/{+name}:calculate",
+              "flatPath": "v1beta2/organizations/{organizationsId}/virtualMachineThreatDetectionSettings:calculate",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the VirtualMachineThreatDetectionSettings to calculate. Formats: * organizations\/{organization}\/virtualMachineThreatDetectionSettings * folders\/{folder}\/virtualMachineThreatDetectionSettings * projects\/{project}\/virtualMachineThreatDetectionSettings",
+                  "pattern": "^organizations\/[^\/]+\/virtualMachineThreatDetectionSettings$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "VirtualMachineThreatDetectionSettings"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Calculates the effective VirtualMachineThreatDetectionSettings based on its level in the resource hierarchy and its settings."
             }
           }
         },
@@ -2043,6 +2180,65 @@
           ],
           "description": "Update the SecurityHealthAnalyticsSettings resource."
         },
+        "getVirtualMachineThreatDetectionSettings": {
+          "id": "securitycenter.folders.getVirtualMachineThreatDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/folders/{foldersId}/virtualMachineThreatDetectionSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the VirtualMachineThreatDetectionSettings to retrieve. Formats: * organizations\/{organization}\/virtualMachineThreatDetectionSettings * folders\/{folder}\/virtualMachineThreatDetectionSettings * projects\/{project}\/virtualMachineThreatDetectionSettings",
+              "pattern": "^folders\/[^\/]+\/virtualMachineThreatDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "VirtualMachineThreatDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the VirtualMachineThreatDetectionSettings resource."
+        },
+        "updateVirtualMachineThreatDetectionSettings": {
+          "id": "securitycenter.folders.updateVirtualMachineThreatDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/folders/{foldersId}/virtualMachineThreatDetectionSettings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The resource name of the VirtualMachineThreatDetectionSettings. Formats: * organizations\/{organization}\/virtualMachineThreatDetectionSettings * folders\/{folder}\/virtualMachineThreatDetectionSettings * projects\/{project}\/virtualMachineThreatDetectionSettings",
+              "pattern": "^folders\/[^\/]+\/virtualMachineThreatDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "The list of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "VirtualMachineThreatDetectionSettings"
+          },
+          "response": {
+            "$ref": "VirtualMachineThreatDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Update the VirtualMachineThreatDetectionSettings resource."
+        },
         "getWebSecurityScannerSettings": {
           "id": "securitycenter.folders.getWebSecurityScannerSettings",
           "path": "v1beta2/{+name}",
@@ -2189,6 +2385,35 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Calculates the effective SecurityHealthAnalyticsSettings based on its level in the resource hierarchy and its settings."
+            }
+          }
+        },
+        "virtualMachineThreatDetectionSettings": {
+          "methods": {
+            "calculate": {
+              "id": "securitycenter.folders.virtualMachineThreatDetectionSettings.calculate",
+              "path": "v1beta2/{+name}:calculate",
+              "flatPath": "v1beta2/folders/{foldersId}/virtualMachineThreatDetectionSettings:calculate",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the VirtualMachineThreatDetectionSettings to calculate. Formats: * organizations\/{organization}\/virtualMachineThreatDetectionSettings * folders\/{folder}\/virtualMachineThreatDetectionSettings * projects\/{project}\/virtualMachineThreatDetectionSettings",
+                  "pattern": "^folders\/[^\/]+\/virtualMachineThreatDetectionSettings$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "VirtualMachineThreatDetectionSettings"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Calculates the effective VirtualMachineThreatDetectionSettings based on its level in the resource hierarchy and its settings."
             }
           }
         },
@@ -2401,6 +2626,65 @@
             "https://www.googleapis.com/auth/cloud-platform"
           ],
           "description": "Update the SecurityHealthAnalyticsSettings resource."
+        },
+        "getVirtualMachineThreatDetectionSettings": {
+          "id": "securitycenter.projects.getVirtualMachineThreatDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/projects/{projectsId}/virtualMachineThreatDetectionSettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the VirtualMachineThreatDetectionSettings to retrieve. Formats: * organizations\/{organization}\/virtualMachineThreatDetectionSettings * folders\/{folder}\/virtualMachineThreatDetectionSettings * projects\/{project}\/virtualMachineThreatDetectionSettings",
+              "pattern": "^projects\/[^\/]+\/virtualMachineThreatDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "VirtualMachineThreatDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get the VirtualMachineThreatDetectionSettings resource."
+        },
+        "updateVirtualMachineThreatDetectionSettings": {
+          "id": "securitycenter.projects.updateVirtualMachineThreatDetectionSettings",
+          "path": "v1beta2/{+name}",
+          "flatPath": "v1beta2/projects/{projectsId}/virtualMachineThreatDetectionSettings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The resource name of the VirtualMachineThreatDetectionSettings. Formats: * organizations\/{organization}\/virtualMachineThreatDetectionSettings * folders\/{folder}\/virtualMachineThreatDetectionSettings * projects\/{project}\/virtualMachineThreatDetectionSettings",
+              "pattern": "^projects\/[^\/]+\/virtualMachineThreatDetectionSettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "The list of fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "VirtualMachineThreatDetectionSettings"
+          },
+          "response": {
+            "$ref": "VirtualMachineThreatDetectionSettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Update the VirtualMachineThreatDetectionSettings resource."
         },
         "getWebSecurityScannerSettings": {
           "id": "securitycenter.projects.getWebSecurityScannerSettings",
@@ -2647,6 +2931,35 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Calculates the effective SecurityHealthAnalyticsSettings based on its level in the resource hierarchy and its settings."
+            }
+          }
+        },
+        "virtualMachineThreatDetectionSettings": {
+          "methods": {
+            "calculate": {
+              "id": "securitycenter.projects.virtualMachineThreatDetectionSettings.calculate",
+              "path": "v1beta2/{+name}:calculate",
+              "flatPath": "v1beta2/projects/{projectsId}/virtualMachineThreatDetectionSettings:calculate",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the VirtualMachineThreatDetectionSettings to calculate. Formats: * organizations\/{organization}\/virtualMachineThreatDetectionSettings * folders\/{folder}\/virtualMachineThreatDetectionSettings * projects\/{project}\/virtualMachineThreatDetectionSettings",
+                  "pattern": "^projects\/[^\/]+\/virtualMachineThreatDetectionSettings$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "VirtualMachineThreatDetectionSettings"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Calculates the effective VirtualMachineThreatDetectionSettings based on its level in the resource hierarchy and its settings."
             }
           }
         },

@@ -1520,9 +1520,14 @@ class RecoveryConfig(_messages.Message):
   Fields:
     scheduledSnapshotsConfig: Optional. The configuration for scheduled
       snapshot creation mechanism.
+    snapshotsLocation: Optional. The default Cloud Storage location for
+      storing snapshots. Automatically created snapshots are stored in this
+      location. If not set, the snapshots are stored in /snapshots folder in
+      the environment's Cloud Storage bucket.
   """
 
   scheduledSnapshotsConfig = _messages.MessageField('ScheduledSnapshotsConfig', 1)
+  snapshotsLocation = _messages.StringField(2)
 
 
 class RestartWebServerRequest(_messages.Message):
@@ -1537,8 +1542,6 @@ class ScheduledSnapshotsConfig(_messages.Message):
     snapshotsCreationSchedule: Optional. The cron expression representing the
       time when snapshots creation mechanism runs. This field is subject to
       additional validation around frequency of execution.
-    snapshotsLocation: Optional. The Cloud Storage location for storing
-      snapshots.
     snapshotsRetentionDays: Optional. The number of days describing the
       minimum period for how long to store snapshots. If the scheduled
       snapshot creation is enabled this value must be a non-negative integer.
@@ -1546,8 +1549,7 @@ class ScheduledSnapshotsConfig(_messages.Message):
 
   enabled = _messages.BooleanField(1)
   snapshotsCreationSchedule = _messages.StringField(2)
-  snapshotsLocation = _messages.StringField(3)
-  snapshotsRetentionDays = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  snapshotsRetentionDays = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class SchedulerResource(_messages.Message):

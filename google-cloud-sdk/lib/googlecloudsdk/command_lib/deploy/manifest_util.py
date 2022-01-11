@@ -26,7 +26,7 @@ from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
-PIPELINE_UPDATE_MASK = '*'
+PIPELINE_UPDATE_MASK = '*,labels'
 DELIVERY_PIPELINE_KIND_V1BETA1 = 'DeliveryPipeline'
 TARGET_KIND_V1BETA1 = 'Target'
 API_VERSION_V1BETA1 = 'deploy.cloud.google.com/v1beta1'

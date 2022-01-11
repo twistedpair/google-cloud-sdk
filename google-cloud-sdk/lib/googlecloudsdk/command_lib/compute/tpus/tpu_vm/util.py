@@ -23,6 +23,7 @@ import sys
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -254,3 +255,9 @@ class TPUNode(object):
           self.messages.Node.MetadataValue.AdditionalProperty(
               key=key, value=value))
     return metadata
+
+  def WaitForOperation(self, operation_ref, message):
+    operation_poller = waiter.CloudOperationPoller(
+        self.client.projects_locations_nodes,
+        self.client.projects_locations_operations)
+    return waiter.WaitFor(operation_poller, operation_ref, message)

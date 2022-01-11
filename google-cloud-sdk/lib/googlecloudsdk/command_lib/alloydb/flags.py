@@ -35,22 +35,6 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 
 
-def AddAssignIp(parser):
-  """Adds an --assign-ip flag to parser.
-
-  Args:
-    parser: argparse.Parser: Parser object for command line inputs.
-  """
-  parser.add_argument(
-      '--assign-ip',
-      required=False,
-      help='Assign a public IP address to the instance. This is a public, '
-      'externally available IPv4 address that you can use to connect to your '
-      'instance when properly authorized. Use `--assign-ip` to enable a public '
-      'IP and `--no-assign-ip` to disable it.',
-      action=arg_parsers.StoreTrueFalseAction)
-
-
 def AddAvailabilityType(parser):
   """Adds an '--availability-type' flag to the parser.
 

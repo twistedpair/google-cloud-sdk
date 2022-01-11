@@ -47,16 +47,16 @@ class Client:
 
   def __init__(self, releaseTrack):
     self._client = GetClientInstance(releaseTrack)
-    self._endpointClient = self._client.projects_locations_endpoints
-    self._operationsClient = self._client.projects_locations_operations
-    self._locationsClient = self._client.projects_locations
-    self._messages = GetMessagesModule(releaseTrack)
+    self._endpoint_client = self._client.projects_locations_endpoints
+    self._operations_client = self._client.projects_locations_operations
+    self._locations_client = self._client.projects_locations
+    self.messages = GetMessagesModule(releaseTrack)
     self._resource_parser = resources.Registry()
     self._resource_parser.RegisterApiByName('ids',
                                             _VERSION_MAP.get(releaseTrack))
 
   def _ParseSeverityLevel(self, severity_name):
-    return self._messages.Endpoint.SeverityValueValuesEnum.lookup_by_name(
+    return self.messages.Endpoint.SeverityValueValuesEnum.lookup_by_name(
         severity_name.upper())
 
   def CreateEndpoint(self,
@@ -65,33 +65,35 @@ class Client:
                      network,
                      severity,
                      description='',
-                     enable_traffic_logs=False):
-    """Calls the CreateEndpoint API"""
-    endpoint = self._messages.Endpoint(
+                     enable_traffic_logs=False,
+                     labels=None):
+    """Calls the CreateEndpoint API."""
+    endpoint = self.messages.Endpoint(
         network=network,
         description=description,
         severity=self._ParseSeverityLevel(severity),
-        trafficLogs=enable_traffic_logs)
-    req = self._messages.IdsProjectsLocationsEndpointsCreateRequest(
+        trafficLogs=enable_traffic_logs,
+        labels=labels)
+    req = self.messages.IdsProjectsLocationsEndpointsCreateRequest(
         endpointId=name, parent=parent, endpoint=endpoint)
-    return self._endpointClient.Create(req)
+    return self._endpoint_client.Create(req)
 
   def DeleteEndpoint(self, name):
-    """Calls the DeleteEndpoint API"""
-    req = self._messages.IdsProjectsLocationsEndpointsDeleteRequest(name=name)
-    return self._endpointClient.Delete(req)
+    """Calls the DeleteEndpoint API."""
+    req = self.messages.IdsProjectsLocationsEndpointsDeleteRequest(name=name)
+    return self._endpoint_client.Delete(req)
 
   def DescribeEndpoint(self, name):
-    """Calls the GetEndpoint API"""
-    req = self._messages.IdsProjectsLocationsEndpointsGetRequest(name=name)
-    return self._endpointClient.Get(req)
+    """Calls the GetEndpoint API."""
+    req = self.messages.IdsProjectsLocationsEndpointsGetRequest(name=name)
+    return self._endpoint_client.Get(req)
 
   def ListEndpoints(self, parent, limit=None, page_size=None, list_filter=None):
-    """Calls the ListEndpoints API"""
-    req = self._messages.IdsProjectsLocationsEndpointsListRequest(
+    """Calls the ListEndpoints API."""
+    req = self.messages.IdsProjectsLocationsEndpointsListRequest(
         parent=parent, filter=list_filter)
     return list_pager.YieldFromList(
-        self._endpointClient,
+        self._endpoint_client,
         req,
         batch_size=page_size,
         limit=limit,
@@ -99,10 +101,10 @@ class Client:
         batch_size_attribute='pageSize')
 
   def GetSupportedLocations(self, project):
-    """Calls the ListLocations API"""
-    req = self._messages.IdsProjectsLocationsListRequest(name='projects/' +
-                                                         project)
-    return self._locationsClient.List(req)
+    """Calls the ListLocations API."""
+    req = self.messages.IdsProjectsLocationsListRequest(name='projects/' +
+                                                        project)
+    return self._locations_client.List(req)
 
   def GetOperationRef(self, operation, endpoint):
     """Converts an Operation to a Resource that can be used with `waiter.WaitFor`."""
@@ -133,10 +135,10 @@ class Client:
         Otherwise, None.
     """
     if has_result:
-      poller = waiter.CloudOperationPoller(self._endpointClient,
-                                           self._operationsClient)
+      poller = waiter.CloudOperationPoller(self._endpoint_client,
+                                           self._operations_client)
     else:
-      poller = waiter.CloudOperationPollerNoResources(self._operationsClient)
+      poller = waiter.CloudOperationPollerNoResources(self._operations_client)
 
     return waiter.WaitFor(
         poller, operation_ref, message, max_wait_ms=max_wait.seconds * 1000)

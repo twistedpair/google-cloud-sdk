@@ -119,6 +119,12 @@ class Endpoint(_messages.Message):
       Directory.
     name: Immutable. The resource name for the endpoint in the format
       `projects/*/locations/*/namespaces/*/services/*/endpoints/*`.
+    network: Immutable. The Google Compute Engine network (VPC) of the
+      endpoint in the format `projects//locations/global/networks/*`. The
+      project must be specified by project number (project id is rejected).
+      Incorrectly formatted networks are rejected, we also check to make sure
+      that you have the servicedirectory.networks.attach permission on the
+      project specified.
     port: Optional. Service Directory rejects values outside of `[0, 65535]`.
   """
 
@@ -163,7 +169,8 @@ class Endpoint(_messages.Message):
   address = _messages.StringField(1)
   annotations = _messages.MessageField('AnnotationsValue', 2)
   name = _messages.StringField(3)
-  port = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  network = _messages.StringField(4)
+  port = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class Expr(_messages.Message):

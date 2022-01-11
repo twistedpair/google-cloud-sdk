@@ -45,7 +45,7 @@ class FilePartTask(task.Task):
       total_components (int): If a multipart operation, indicates the
         total number of components.
     """
-    super().__init__()
+    super(FilePartTask, self).__init__()
     self._source_resource = source_resource
     self._destination_resource = destination_resource
     self._offset = offset

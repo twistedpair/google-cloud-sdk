@@ -1472,12 +1472,37 @@ class NotebooksProjectsLocationsInstancesGetRequest(_messages.Message):
 class NotebooksProjectsLocationsInstancesIsUpgradeableRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsInstancesIsUpgradeableRequest object.
 
+  Enums:
+    TypeValueValuesEnum: Optional. The optional UpgradeType. Setting this
+      field will search for additional compute images to upgrade this
+      instance.
+
   Fields:
     notebookInstance: Required. Format:
       `projects/{project_id}/locations/{location}/instances/{instance_id}`
+    type: Optional. The optional UpgradeType. Setting this field will search
+      for additional compute images to upgrade this instance.
   """
 
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The optional UpgradeType. Setting this field will search for
+    additional compute images to upgrade this instance.
+
+    Values:
+      UPGRADE_TYPE_UNSPECIFIED: Upgrade type is not specified.
+      UPGRADE_FRAMEWORK: Upgrade ML framework.
+      UPGRADE_OS: Upgrade Operating System.
+      UPGRADE_CUDA: Upgrade CUDA.
+      UPGRADE_ALL: Upgrade All (OS, Framework and CUDA).
+    """
+    UPGRADE_TYPE_UNSPECIFIED = 0
+    UPGRADE_FRAMEWORK = 1
+    UPGRADE_OS = 2
+    UPGRADE_CUDA = 3
+    UPGRADE_ALL = 4
+
   notebookInstance = _messages.StringField(1, required=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class NotebooksProjectsLocationsInstancesListRequest(_messages.Message):
@@ -3226,17 +3251,71 @@ class UpgradeHistoryEntry(_messages.Message):
 class UpgradeInstanceInternalRequest(_messages.Message):
   r"""Request for upgrading a notebook instance from within the VM
 
+  Enums:
+    TypeValueValuesEnum: Optional. The optional UpgradeType. Setting this
+      field will search for additional compute images to upgrade this
+      instance.
+
   Fields:
+    type: Optional. The optional UpgradeType. Setting this field will search
+      for additional compute images to upgrade this instance.
     vmId: Required. The VM hardware token for authenticating the VM.
       https://cloud.google.com/compute/docs/instances/verifying-instance-
       identity
   """
 
-  vmId = _messages.StringField(1)
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The optional UpgradeType. Setting this field will search for
+    additional compute images to upgrade this instance.
+
+    Values:
+      UPGRADE_TYPE_UNSPECIFIED: Upgrade type is not specified.
+      UPGRADE_FRAMEWORK: Upgrade ML framework.
+      UPGRADE_OS: Upgrade Operating System.
+      UPGRADE_CUDA: Upgrade CUDA.
+      UPGRADE_ALL: Upgrade All (OS, Framework and CUDA).
+    """
+    UPGRADE_TYPE_UNSPECIFIED = 0
+    UPGRADE_FRAMEWORK = 1
+    UPGRADE_OS = 2
+    UPGRADE_CUDA = 3
+    UPGRADE_ALL = 4
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
+  vmId = _messages.StringField(2)
 
 
 class UpgradeInstanceRequest(_messages.Message):
-  r"""Request for upgrading a notebook instance"""
+  r"""Request for upgrading a notebook instance
+
+  Enums:
+    TypeValueValuesEnum: Optional. The optional UpgradeType. Setting this
+      field will search for additional compute images to upgrade this
+      instance.
+
+  Fields:
+    type: Optional. The optional UpgradeType. Setting this field will search
+      for additional compute images to upgrade this instance.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The optional UpgradeType. Setting this field will search for
+    additional compute images to upgrade this instance.
+
+    Values:
+      UPGRADE_TYPE_UNSPECIFIED: Upgrade type is not specified.
+      UPGRADE_FRAMEWORK: Upgrade ML framework.
+      UPGRADE_OS: Upgrade Operating System.
+      UPGRADE_CUDA: Upgrade CUDA.
+      UPGRADE_ALL: Upgrade All (OS, Framework and CUDA).
+    """
+    UPGRADE_TYPE_UNSPECIFIED = 0
+    UPGRADE_FRAMEWORK = 1
+    UPGRADE_OS = 2
+    UPGRADE_CUDA = 3
+    UPGRADE_ALL = 4
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
 
 
 class VertexAIParameters(_messages.Message):

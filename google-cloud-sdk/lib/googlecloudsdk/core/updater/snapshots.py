@@ -844,11 +844,13 @@ class ComponentSnapshotDiff(object):
       darwin_x86_64 -= missing_platform_darwin_x86_64
       valid_seed = native_seed | darwin_x86_64
 
-      if darwin_x86_64:
+      platform_seeds = [c_id for c_id in darwin_x86_64
+                        if 'darwin' not in c_id]
+
+      if platform_seeds:
         log.warning('The ARM versions of the following components are not '
                     'available yet, using x86_64 versions instead: [{}].'
-                    .format(', '.join([c_id for c_id in darwin_x86_64
-                                       if 'darwin' not in c_id])))
+                    .format(', '.join(platform_seeds)))
 
       local_connected = self.current.ConnectedComponents(
           valid_seed, platform_filter=self.__platform_filter)

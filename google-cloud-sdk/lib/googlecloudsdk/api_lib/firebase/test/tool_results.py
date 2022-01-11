@@ -129,7 +129,7 @@ def _ErrorFromInvalidMatrix(matrix):
       enum_values.INSTRUMENTATION_ORCHESTRATOR_INCOMPATIBLE:
           ("The test runner class specified by the user or the test APK's "
            'manifest file is not compatible with Android Test Orchestrator. '
-           'Please use AndroidJUnitRunner version 1.0 or higher'),
+           'Please use AndroidJUnitRunner version 1.1 or higher'),
       enum_values.NO_TEST_RUNNER_CLASS:
           ('The test APK does not contain the test runner class specified by '
            'the user or the manifest file. The test runner class name may be '

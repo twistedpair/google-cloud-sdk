@@ -1201,6 +1201,11 @@
           "description": "The time spent to release the CAS blobs used by the task.",
           "type": "string",
           "format": "google-duration"
+        },
+        "stderr": {
+          "description": "The time spent uploading the stderr logs.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },

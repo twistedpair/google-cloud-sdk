@@ -776,11 +776,21 @@ class LogBucket(_messages.Message):
       LIFECYCLE_STATE_UNSPECIFIED: Unspecified state. This is only used/useful
         for distinguishing unset values.
       ACTIVE: The normal and active state.
-      DELETE_REQUESTED: The bucket has been marked for deletion by the user.
+      DELETE_REQUESTED: The resource has been marked for deletion by the user.
+        For some resources (e.g. buckets), this can be reversed by an un-
+        delete operation.
+      UPDATING: The resource has been marked for an update by the user. It
+        will remain in this state until the update is complete.
+      CREATING: The resource has been marked for creation by the user. It will
+        remain in this state until the creation is complete.
+      FAILED: The resource is in an INTERNAL error state.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     ACTIVE = 1
     DELETE_REQUESTED = 2
+    UPDATING = 3
+    CREATING = 4
+    FAILED = 5
 
   analyticsEnabled = _messages.BooleanField(1)
   cmekSettings = _messages.MessageField('CmekSettings', 2)
@@ -4931,7 +4941,9 @@ class MonitoredResource(_messages.Message):
       use the labels "project_id", "instance_id", and "zone".
     type: Required. The monitored resource type. This field must match the
       type field of a MonitoredResourceDescriptor object. For example, the
-      type of a Compute Engine VM instance is gce_instance.
+      type of a Compute Engine VM instance is gce_instance. Some descriptors
+      include the service name in the type; for example, the type of a
+      Datastream stream is datastream.googleapis.com/Stream.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -5258,8 +5270,9 @@ class QueryLogEntriesRequest(_messages.Message):
       QueryLogEntries to paginate through the response rows.
     query: Optional. A query string, following the BigQuery SQL query syntax.
       The FROM clause should specify a fully qualified log view corresponding
-      to the log view in the resource_names. For example: SELECT count(*) FROM
-      my_project.logs_my_bucket_US._AllLogs;
+      to the log view in the resource_names, but should not include the name
+      of the resource container. For example: SELECT count(*) FROM
+      logs_my_bucket_US._AllLogs;
     resourceNames: Required. Names of one or more log views to run a SQL
       query. Currently, only a single view is supported. Multiple view
       selection may be supported in the future.Examples: projects/[PROJECT_ID]

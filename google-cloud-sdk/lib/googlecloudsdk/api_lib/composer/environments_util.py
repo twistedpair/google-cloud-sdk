@@ -508,6 +508,60 @@ def RestartWebServer(environment_ref, release_track=base.ReleaseTrack.BETA):
       release_track=release_track).RestartWebServer(request_message)
 
 
+def StoreEnvironmentState(environment_ref,
+                          snapshot_location,
+                          release_track=base.ReleaseTrack.ALPHA):
+  """Calls the Composer Environments.StoreEnvironmentState method.
+
+  Args:
+    environment_ref: Resource, the Composer environment resource to store the
+      state for.
+    snapshot_location: location to store the state of the environment.
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+      which Composer client library will be used.
+
+  Returns:
+    Operation: the operation corresponding to the storing state.
+  """
+  message_module = api_util.GetMessagesModule(release_track=release_track)
+  request_message = message_module.ComposerProjectsLocationsEnvironmentsStoreEnvironmentStateRequest(
+      environment=environment_ref.RelativeName(),
+      storeEnvironmentStateRequest=message_module.StoreEnvironmentStateRequest(
+          snapshotLocation=snapshot_location))
+  return GetService(
+      release_track=release_track).StoreEnvironmentState(request_message)
+
+
+def LoadEnvironmentState(environment_ref,
+                         skip_pypi_packages_installation,
+                         snapshot_location,
+                         release_track=base.ReleaseTrack.ALPHA):
+  """Calls the Composer Environments.LoadEnvironmentState method.
+
+  Args:
+    environment_ref: Resource, the Composer environment resource to Load the
+      state for.
+    skip_pypi_packages_installation: skip installing the pypi packages during
+      the operation
+    snapshot_location: location of the snapshots to load the state of the
+      environment.
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+      which Composer client library will be used.
+
+  Returns:
+    Operation: the operation corresponding to the Loading state.
+  """
+  message_module = api_util.GetMessagesModule(release_track=release_track)
+  request_message = message_module.ComposerProjectsLocationsEnvironmentsLoadEnvironmentStateRequest(
+      environment=environment_ref.RelativeName(),
+      loadEnvironmentStateRequest=message_module.LoadEnvironmentStateRequest(
+          skipPypiPackagesInstallation=skip_pypi_packages_installation,
+          snapshotLocation=snapshot_location
+          ))
+  return GetService(
+      release_track=release_track).LoadEnvironmentState(request_message)
+
+
 def CheckUpgrade(environment_ref,
                  image_version,
                  release_track=base.ReleaseTrack.BETA):

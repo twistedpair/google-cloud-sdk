@@ -117,9 +117,10 @@ def DoInstalledAppBrowserFlowGoogleAuth(launch_browser,
   """
   if client_id_file:
     AssertClientSecretIsInstalledType(client_id_file)
-  google_auth_flow = c_flow.CreateGoogleAuthFlow(scopes, client_id_file)
+  google_auth_flow = c_flow.CreateGoogleAuthFlow(launch_browser, scopes,
+                                                 client_id_file)
   try:
-    user_creds = c_flow.RunGoogleAuthFlow(google_auth_flow, launch_browser)
+    user_creds = google_auth_flow.Run()
     return c_google_auth.Credentials.FromGoogleAuthUserCredentials(
         user_creds)
   except c_flow.Error as e:

@@ -26,7 +26,6 @@ from googlecloudsdk.api_lib.util import common_args
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.artifacts import containeranalysis_util as ca_util
 from googlecloudsdk.command_lib.artifacts import requests as ar_requests
-from googlecloudsdk.command_lib.artifacts import util as ar_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -109,7 +108,6 @@ def _GetDefaultResources():
             "location": location,
             "repo": repo,
         }))
-  ar_util.ValidateLocation(location, project)
   return DockerRepo(project, location, repo)
 
 
@@ -145,8 +143,6 @@ def ParseDockerImagePath(img_path):
   except ar_exceptions.InvalidInputValueError:
     raise ar_exceptions.InvalidInputValueError(_INVALID_IMAGE_PATH_ERROR)
 
-  ar_util.ValidateLocation(docker_repo.location, docker_repo.project)
-
   if len(resource_val_list) == 3:
     return docker_repo
   elif len(resource_val_list) > 3:
@@ -172,8 +168,6 @@ def _ParseDockerImage(img_str, err_msg):
     docker_repo = _ParseInput(img_str)
   except ar_exceptions.InvalidInputValueError:
     raise ar_exceptions.InvalidInputValueError(_INVALID_DOCKER_IMAGE_ERROR)
-
-  ar_util.ValidateLocation(docker_repo.location, docker_repo.project)
 
   img_by_digest_match = re.match(DOCKER_IMG_BY_DIGEST_REGEX, img_str)
   if img_by_digest_match:
@@ -726,8 +720,6 @@ def AddDockerTag(args):
 def DeleteDockerTag(args):
   """Deletes a Docker tag."""
   img, tag = _ParseDockerTag(args.DOCKER_TAG)
-
-  ar_util.ValidateLocation(img.docker_repo.location, img.docker_repo.project)
   _ValidateDockerRepo(img.docker_repo.GetRepositoryName())
 
   console_io.PromptContinue(

@@ -69,6 +69,8 @@ class Cluster(_messages.Message):
     fleet: Optional. Fleet configuration.
     hub: Optional. GKE Hub configuration. DEPRECATED Use fleet instead.
     labels: Labels associated with this resource.
+    maintenancePolicy: Optional. Cluster-wide maintenance policy
+      configuration.
     name: Required. The resource name of the cluster.
     networking: Required. Cluster-wide networking configuration.
     updateTime: Output only. The time when the cluster was last updated.
@@ -106,9 +108,10 @@ class Cluster(_messages.Message):
   fleet = _messages.MessageField('Fleet', 6)
   hub = _messages.MessageField('Hub', 7)
   labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  networking = _messages.MessageField('ClusterNetworking', 10)
-  updateTime = _messages.StringField(11)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 9)
+  name = _messages.StringField(10)
+  networking = _messages.MessageField('ClusterNetworking', 11)
+  updateTime = _messages.StringField(12)
 
 
 class ClusterNetworking(_messages.Message):
@@ -835,6 +838,27 @@ class Machine(_messages.Message):
   zone = _messages.StringField(6)
 
 
+class MaintenancePolicy(_messages.Message):
+  r"""Maintenance policy configuration.
+
+  Fields:
+    window: Specifies the maintenance window in which maintenance may be
+      performed.
+  """
+
+  window = _messages.MessageField('MaintenanceWindow', 1)
+
+
+class MaintenanceWindow(_messages.Message):
+  r"""Maintenance window configuration
+
+  Fields:
+    recurringWindow: Configuration of a recurring maintenance window.
+  """
+
+  recurringWindow = _messages.MessageField('RecurringTimeWindow', 1)
+
+
 class NodePool(_messages.Message):
   r"""A set of Kubernetes nodes in a cluster with common configuration and
   specification.
@@ -1038,6 +1062,20 @@ class Quota(_messages.Message):
   usage = _messages.FloatField(3)
 
 
+class RecurringTimeWindow(_messages.Message):
+  r"""Represents an arbitrary window of time that recurs.
+
+  Fields:
+    recurrence: An RRULE (https://tools.ietf.org/html/rfc5545#section-3.8.5.3)
+      for how this window recurs. They go on for the span of time between the
+      start and end time.
+    window: The window of the first recurrence.
+  """
+
+  recurrence = _messages.StringField(1)
+  window = _messages.MessageField('TimeWindow', 2)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -1150,6 +1188,19 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class TimeWindow(_messages.Message):
+  r"""Represents an arbitrary window of time.
+
+  Fields:
+    endTime: The time that the window ends. The end time must take place after
+      the start time.
+    startTime: The time that the window first starts.
+  """
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
 
 
 class VpnConnection(_messages.Message):

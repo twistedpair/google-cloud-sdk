@@ -532,8 +532,8 @@ class Job(_messages.Message):
       can be viewed in execution logs. Cloud Scheduler will retry the job
       according to the RetryConfig. The allowed duration for this deadline is:
       * For HTTP targets, between 15 seconds and 30 minutes. * For App Engine
-      HTTP targets, between 15 seconds and 24 hours. * For PubSub targets,
-      this field is ignored.
+      HTTP targets, between 15 seconds and 24 hours 15 seconds. * For PubSub
+      targets, this field is ignored.
     description: Optionally caller-specified in CreateJob or UpdateJob. A
       human-readable description for the job. This string must not contain
       more than 500 characters.

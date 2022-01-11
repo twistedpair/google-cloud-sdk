@@ -40,6 +40,9 @@ def CheckFieldsSpecifiedBeta(unused_instance_ref, args, patch_request):
       'maintenance_window_day',
       'maintenance_window_hour',
       'maintenance_window_any',
+      'persistence_mode',
+      'rdb_snapshot_period',
+      'rdb_snapshot_start_time',
       'replica_count',
   ]
   return CheckFieldsSpecifiedCommon(args, patch_request, additional_update_args)

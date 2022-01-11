@@ -940,6 +940,20 @@ class BigtableadminProjectsInstancesTablesTestIamPermissionsRequest(_messages.Me
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class BigtableadminProjectsInstancesTablesUndeleteRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesUndeleteRequest object.
+
+  Fields:
+    name: Required. The unique name of the table to be restored. Values are of
+      the form `projects/{project}/instances/{instance}/tables/{table}`.
+    undeleteTableRequest: A UndeleteTableRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  undeleteTableRequest = _messages.MessageField('UndeleteTableRequest', 2)
+
+
 class BigtableadminProjectsInstancesTestIamPermissionsRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesTestIamPermissionsRequest object.
 
@@ -2757,6 +2771,29 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class UndeleteTableMetadata(_messages.Message):
+  r"""Metadata type for the operation returned by
+  google.bigtable.admin.v2.BigtableTableAdmin.UndeleteTable.
+
+  Fields:
+    endTime: If set, the time at which this operation finished or was
+      cancelled.
+    name: The name of the table being restored.
+    startTime: The time at which this operation started.
+  """
+
+  endTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  startTime = _messages.StringField(3)
+
+
+class UndeleteTableRequest(_messages.Message):
+  r"""Request message for
+  google.bigtable.admin.v2.BigtableTableAdmin.UndeleteTable
+  """
+
 
 
 class Union(_messages.Message):

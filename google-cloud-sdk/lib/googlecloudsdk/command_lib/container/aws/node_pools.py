@@ -18,11 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkemulticloud import util as api_util
 from googlecloudsdk.calliope import base
-from googlecloudsdk.core import log
 
 NODEPOOLS_FORMAT = """\
   table(
@@ -164,23 +162,15 @@ class NodePoolsClient(object):
 
   def List(self, cluster_ref, args):
     """List AWS node pools."""
-    try:
-      for node_pool in list_pager.YieldFromList(
-          service=self.service,
-          request=self.messages
-          .GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsListRequest(
-              parent=cluster_ref.RelativeName()),
-          limit=args.limit,
-          field='awsNodePools',
-          batch_size_attribute='pageSize'):
-        yield node_pool
-    # TODO(b/203617640): Remove handling of this exception once API has gone GA.
-    except apitools_exceptions.HttpNotFoundError as e:
-      if 'Method not found' in e.content:
-        log.warning(
-            'This project may not have been added to the allow list for the Anthos Multi-Cloud API, please reach out to your GCP account team to resolve this'
-        )
-      raise
+    for node_pool in list_pager.YieldFromList(
+        service=self.service,
+        request=self.messages
+        .GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsListRequest(
+            parent=cluster_ref.RelativeName()),
+        limit=args.limit,
+        field='awsNodePools',
+        batch_size_attribute='pageSize'):
+      yield node_pool
 
   def Update(self, node_pool_ref, args):
     """Updates a node pool in an Anthos cluster on AWS.

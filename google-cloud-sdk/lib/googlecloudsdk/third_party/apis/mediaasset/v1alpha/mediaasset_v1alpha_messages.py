@@ -605,9 +605,9 @@ class AssetType(_messages.Message):
       MEDIA_TYPE_UNSPECIFIED: AssetTypes with unspecified media types hold
         generic assets.
       VIDEO: AssetTypes with video media types have the following properties:
-        1. Have a required metadata field called 'vod' of type 'system:gcs-
-        file', which is the path to a vod video file. 2. Support searching the
-        content of the provided vod asset.
+        1. Have a required and immutable metadata field called 'video_file' of
+        type 'system:gcs-file', which is the path to a video file. 2. Support
+        searching the content of the provided video asset.
     """
     MEDIA_TYPE_UNSPECIFIED = 0
     VIDEO = 1

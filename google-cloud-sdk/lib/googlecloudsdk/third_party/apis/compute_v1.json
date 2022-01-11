@@ -4,7 +4,7 @@
   "id": "compute:v1",
   "name": "compute",
   "version": "v1",
-  "revision": "20211203",
+  "revision": "20211220",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -3208,7 +3208,7 @@
           "type": "string"
         },
         "ipv6Address": {
-          "description": "[Output Only] An IPv6 internal network address for this network interface.",
+          "description": "An IPv6 internal network address for this network interface.",
           "type": "string"
         },
         "name": {
@@ -3320,11 +3320,11 @@
           "type": "string"
         },
         "externalIpv6": {
-          "description": "[Output Only] The first IPv6 address of the external IPv6 range associated with this instance, prefix length is stored in externalIpv6PrefixLength in ipv6AccessConfig. The field is output only, an IPv6 address from a subnetwork associated with the instance will be allocated dynamically.",
+          "description": "The first IPv6 address of the external IPv6 range associated with this instance, prefix length is stored in externalIpv6PrefixLength in ipv6AccessConfig. The field is output only, an IPv6 address from a subnetwork associated with the instance will be allocated dynamically.",
           "type": "string"
         },
         "externalIpv6PrefixLength": {
-          "description": "[Output Only] The prefix length of the external IPv6 range.",
+          "description": "The prefix length of the external IPv6 range.",
           "type": "integer",
           "format": "int32"
         },
@@ -3544,6 +3544,13 @@
           "description": "Indicates how many IOPS to provision for the disk. This sets the number of I\/O operations per second that the disk can handle. Values must be between 10,000 and 120,000. For more details, see the Extreme persistent disk documentation.",
           "type": "string",
           "format": "int64"
+        },
+        "licenses": {
+          "description": "A list of publicly visible licenses. Reserved for Google's use.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -3829,6 +3836,10 @@
           "description": "The number of threads per physical core. To disable simultaneous multithreading (SMT) set this to 1. If unset, the maximum number of threads supported per core by the underlying processor is assumed.",
           "type": "integer",
           "format": "int32"
+        },
+        "enableUefiNetworking": {
+          "description": "Whether to enable UEFI networking for instance creation.",
+          "type": "boolean"
         }
       }
     },
@@ -4560,6 +4571,13 @@
           "description": "A list of tags to apply to the instances that are created from these properties. The tags identify valid sources or targets for network firewalls. The setTags method can modify this list of tags. Each tag within the list must comply with RFC1035.",
           "$ref": "Tags"
         },
+        "resourceManagerTags": {
+          "description": "Resource manager tags to be bound to the instance. Tag keys and values have the same definition as resource manager tags. Keys must be in the format `tagKeys\/{tag_key_id}`, and values are in the format `tagValues\/456`. The field is ignored (both PUT & PATCH) when empty.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "machineType": {
           "description": "The machine type to use for instances that are created from these properties.",
           "annotations": {
@@ -4629,7 +4647,7 @@
           "$ref": "ShieldedInstanceConfig"
         },
         "resourcePolicies": {
-          "description": "Resource policies (names, not ULRs) applied to instances created from these properties. Note that for MachineImage, this is not supported yet.",
+          "description": "Resource policies (names, not URLs) applied to instances created from these properties. Note that for MachineImage, this is not supported yet.",
           "type": "array",
           "items": {
             "type": "string"
@@ -4682,7 +4700,7 @@
       "type": "object",
       "properties": {
         "preference": {
-          "description": "Preference for a given location: ALLOW or DENY.",
+          "description": "Preference for a given location.",
           "type": "string",
           "enumDescriptions": [
             "Location is allowed for use.",
@@ -10358,6 +10376,7 @@
           "type": "string",
           "enumDescriptions": [
             "Signifies that this will be used for external HTTP(S), SSL Proxy, TCP Proxy, or Network Load Balancing",
+            "Signifies that this will be used for External Managed HTTP(S) Load Balancing.",
             "Signifies that this will be used for Internal TCP\/UDP Load Balancing.",
             "Signifies that this will be used for Internal HTTP(S) Load Balancing.",
             "Signifies that this will be used by Traffic Director.",
@@ -10365,6 +10384,7 @@
           ],
           "enum": [
             "EXTERNAL",
+            "EXTERNAL_MANAGED",
             "INTERNAL",
             "INTERNAL_MANAGED",
             "INTERNAL_SELF_MANAGED",
@@ -13483,10 +13503,12 @@
             "",
             "",
             "",
+            "",
             ""
           ],
           "enum": [
             "EXTERNAL",
+            "EXTERNAL_MANAGED",
             "INTERNAL",
             "INTERNAL_MANAGED",
             "INTERNAL_SELF_MANAGED",
@@ -26291,6 +26313,13 @@
           "type": "string",
           "format": "byte"
         },
+        "domainNames": {
+          "description": "If specified, the domain name will be used during the integration between the PSC connected endpoints and the Cloud DNS. For example, this is a valid domain name: \"p.mycompany.com.\". Current max number of domain names supported is 1.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "kind": {
           "description": "[Output Only] Type of the resource. Always compute#serviceAttachment for service attachments.",
           "default": "compute#serviceAttachment",
@@ -27458,7 +27487,7 @@
           ]
         },
         "ipv6CidrRange": {
-          "description": "[Output Only] The range of internal IPv6 addresses that are owned by this subnetwork.",
+          "description": "[Output Only] The range of internal IPv6 addresses that are owned by this subnetwork. Note this will be for private google access only eventually.",
           "type": "string"
         },
         "externalIpv6Prefix": {

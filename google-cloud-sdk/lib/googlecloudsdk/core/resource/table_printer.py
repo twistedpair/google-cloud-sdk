@@ -124,6 +124,10 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
   at most _N_ rows. Headings, alignment and sorting are done per-page. The
   title, if any, is printed before the first table.
 
+  If screen reader option is True, you may observe flattened list output instead
+  of a table with columns. Please refer to $ gcloud topic accessibility to turn
+  it off.
+
   Printer attributes:
     all-box: Prints a box around the entire table and each cell, including the
       title if any.

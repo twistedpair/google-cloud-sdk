@@ -128,7 +128,7 @@ class FileWildcardIterator(WildcardIterator):
       url (FileUrl): A FileUrl instance representing a file path.
       ignore_symlinks (bool): Skip over symlinks instead of following them.
     """
-    super().__init__()
+    super(FileWildcardIterator, self).__init__()
     self._url = _compress_url_wildcards(url)
     self._path = self._url.object_name
     self._ignore_symlinks = ignore_symlinks

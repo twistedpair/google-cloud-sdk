@@ -138,10 +138,7 @@ class AzureCredentials(_messages.Message):
   retention#user-credentials).
 
   Fields:
-    sasToken: Required. Azure shared access signature (SAS). *Note:*Copying
-      data from Azure Data Lake Storage (ADLS) Gen 2 is in
-      [Preview](/products/#product-launch-stages). During Preview, if you are
-      copying data from ADLS Gen 2, you must use an account SAS. For more
+    sasToken: Required. Azure shared access signature (SAS). For more
       information about SAS, see [Grant limited access to Azure Storage
       resources using shared access signatures
       (SAS)](https://docs.microsoft.com/en-us/azure/storage/common/storage-
@@ -441,22 +438,27 @@ class ListTransferJobsResponse(_messages.Message):
 
 
 class LoggingConfig(_messages.Message):
-  r"""Logging configuration.
+  r"""Specifies the logging behavior for transfer operations. For cloud-to-
+  cloud transfers, logs are sent to Cloud Logging. See [Read transfer
+  logs](https://cloud.google.com/storage-transfer/docs/read-transfer-logs) for
+  details. For transfers to or from a POSIX file system, logs are stored in
+  the Cloud Storage bucket that is the source or sink of the transfer. See
+  [Managing Transfer for on-premises jobs] (https://cloud.google.com/storage-
+  transfer/docs/managing-on-prem-jobs#viewing-logs) for details.
 
   Enums:
     LogActionStatesValueListEntryValuesEnum:
     LogActionsValueListEntryValuesEnum:
 
   Fields:
-    enableOnpremGcsTransferLogs: Enables the Cloud Storage transfer logs for
-      this transfer. This is only supported for transfer jobs with
-      PosixFilesystem sources. The default is that logs are not generated for
-      this transfer.
+    enableOnpremGcsTransferLogs: For transfers with a PosixFilesystem source,
+      this option enables the Cloud Storage transfer logs for this transfer.
     logActionStates: States in which `log_actions` are logged. If empty, no
-      logs are generated. This is not yet supported for transfers with
-      PosixFilesystem data sources.
-    logActions: Actions to be logged. If empty, no logs are generated. This is
-      not yet supported for transfers with PosixFilesystem data sources.
+      logs are generated. Not supported for transfers with PosixFilesystem
+      data sources; use enable_onprem_gcs_transfer_logs instead.
+    logActions: Specifies the actions to be logged. If empty, no logs are
+      generated. Not supported for transfers with PosixFilesystem data
+      sources; use enable_onprem_gcs_transfer_logs instead.
   """
 
   class LogActionStatesValueListEntryValuesEnum(_messages.Enum):
@@ -464,10 +466,10 @@ class LoggingConfig(_messages.Message):
 
     Values:
       LOGGABLE_ACTION_STATE_UNSPECIFIED: Default value. This value is unused.
-      SUCCEEDED: `LoggableAction` is completed successfully. `SUCCEEDED`
-        actions are logged as INFO.
-      FAILED: `LoggableAction` is terminated in an error state. `FAILED`
-        actions are logged as ERROR.
+      SUCCEEDED: `LoggableAction` completed successfully. `SUCCEEDED` actions
+        are logged as INFO.
+      FAILED: `LoggableAction` terminated in an error state. `FAILED` actions
+        are logged as ERROR.
     """
     LOGGABLE_ACTION_STATE_UNSPECIFIED = 0
     SUCCEEDED = 1
@@ -478,10 +480,9 @@ class LoggingConfig(_messages.Message):
 
     Values:
       LOGGABLE_ACTION_UNSPECIFIED: Default value. This value is unused.
-      FIND: Finding objects to transfer e.g. listing objects of the source
-        bucket.
-      DELETE: Deleting objects at source or destination.
-      COPY: Copying objects from source to destination.
+      FIND: Listing objects in a bucket.
+      DELETE: Deleting objects at the source or the destination.
+      COPY: Copying objects to Google Cloud Storage.
     """
     LOGGABLE_ACTION_UNSPECIFIED = 0
     FIND = 1
@@ -491,6 +492,101 @@ class LoggingConfig(_messages.Message):
   enableOnpremGcsTransferLogs = _messages.BooleanField(1)
   logActionStates = _messages.EnumField('LogActionStatesValueListEntryValuesEnum', 2, repeated=True)
   logActions = _messages.EnumField('LogActionsValueListEntryValuesEnum', 3, repeated=True)
+
+
+class MetadataOptions(_messages.Message):
+  r"""Specifies the metadata options for running a transfer.
+
+  Enums:
+    GidValueValuesEnum: Specifies how each file's GID attribute should be
+      handled by the transfer. If unspecified, the default behavior is the
+      same as GID_SKIP when the source is a POSIX file system.
+    ModeValueValuesEnum: Specifies how each file's mode attribute should be
+      handled by the transfer. If unspecified, the default behavior is the
+      same as MODE_SKIP when the source is a POSIX file system.
+    SymlinkValueValuesEnum: Specifies how symlinks should be handled by the
+      transfer. If unspecified, the default behavior is the same as
+      SYMLINK_SKIP when the source is a POSIX file system.
+    UidValueValuesEnum: Specifies how each file's UID attribute should be
+      handled by the transfer. If unspecified, the default behavior is the
+      same as UID_SKIP when the source is a POSIX file system.
+
+  Fields:
+    gid: Specifies how each file's GID attribute should be handled by the
+      transfer. If unspecified, the default behavior is the same as GID_SKIP
+      when the source is a POSIX file system.
+    mode: Specifies how each file's mode attribute should be handled by the
+      transfer. If unspecified, the default behavior is the same as MODE_SKIP
+      when the source is a POSIX file system.
+    symlink: Specifies how symlinks should be handled by the transfer. If
+      unspecified, the default behavior is the same as SYMLINK_SKIP when the
+      source is a POSIX file system.
+    uid: Specifies how each file's UID attribute should be handled by the
+      transfer. If unspecified, the default behavior is the same as UID_SKIP
+      when the source is a POSIX file system.
+  """
+
+  class GidValueValuesEnum(_messages.Enum):
+    r"""Specifies how each file's GID attribute should be handled by the
+    transfer. If unspecified, the default behavior is the same as GID_SKIP
+    when the source is a POSIX file system.
+
+    Values:
+      GID_UNSPECIFIED: GID behavior is unspecified.
+      GID_SKIP: Skip GID during a transfer job.
+      GID_NUMBER: Preserve GID during a transfer job.
+    """
+    GID_UNSPECIFIED = 0
+    GID_SKIP = 1
+    GID_NUMBER = 2
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Specifies how each file's mode attribute should be handled by the
+    transfer. If unspecified, the default behavior is the same as MODE_SKIP
+    when the source is a POSIX file system.
+
+    Values:
+      MODE_UNSPECIFIED: Mode behavior is unspecified.
+      MODE_SKIP: Skip mode during a transfer job.
+      MODE_PRESERVE: Preserve mode during a transfer job.
+    """
+    MODE_UNSPECIFIED = 0
+    MODE_SKIP = 1
+    MODE_PRESERVE = 2
+
+  class SymlinkValueValuesEnum(_messages.Enum):
+    r"""Specifies how symlinks should be handled by the transfer. If
+    unspecified, the default behavior is the same as SYMLINK_SKIP when the
+    source is a POSIX file system.
+
+    Values:
+      SYMLINK_UNSPECIFIED: Symlink behavior is unspecified. The default
+        behavior is to skip symlinks during a transfer job.
+      SYMLINK_SKIP: Skip symlinks during a transfer job.
+      SYMLINK_PRESERVE: Preserve symlinks during a transfer job.
+    """
+    SYMLINK_UNSPECIFIED = 0
+    SYMLINK_SKIP = 1
+    SYMLINK_PRESERVE = 2
+
+  class UidValueValuesEnum(_messages.Enum):
+    r"""Specifies how each file's UID attribute should be handled by the
+    transfer. If unspecified, the default behavior is the same as UID_SKIP
+    when the source is a POSIX file system.
+
+    Values:
+      UID_UNSPECIFIED: UID behavior is unspecified.
+      UID_SKIP: Skip UID during a transfer job.
+      UID_NUMBER: Preserve UID during a transfer job.
+    """
+    UID_UNSPECIFIED = 0
+    UID_SKIP = 1
+    UID_NUMBER = 2
+
+  gid = _messages.EnumField('GidValueValuesEnum', 1)
+  mode = _messages.EnumField('ModeValueValuesEnum', 2)
+  symlink = _messages.EnumField('SymlinkValueValuesEnum', 3)
+  uid = _messages.EnumField('UidValueValuesEnum', 4)
 
 
 class NotificationConfig(_messages.Message):
@@ -1419,6 +1515,8 @@ class TransferOptions(_messages.Message):
     deleteObjectsUniqueInSink: Whether objects that exist only in the sink
       should be deleted. **Note:** This option and
       delete_objects_from_source_after_transfer are mutually exclusive.
+    metadataOptions: Represents the selected metadata options for a transfer
+      job.
     overwriteObjectsAlreadyExistingInSink: When to overwrite objects that
       already exist in the sink. The default is that only objects that are
       different from the source are ovewritten. If true, all objects in the
@@ -1428,7 +1526,8 @@ class TransferOptions(_messages.Message):
 
   deleteObjectsFromSourceAfterTransfer = _messages.BooleanField(1)
   deleteObjectsUniqueInSink = _messages.BooleanField(2)
-  overwriteObjectsAlreadyExistingInSink = _messages.BooleanField(3)
+  metadataOptions = _messages.MessageField('MetadataOptions', 3)
+  overwriteObjectsAlreadyExistingInSink = _messages.BooleanField(4)
 
 
 class TransferSpec(_messages.Message):
@@ -1439,6 +1538,7 @@ class TransferSpec(_messages.Message):
     azureBlobStorageDataSource: An Azure Blob Storage data source.
     gcsDataSink: A Cloud Storage data sink.
     gcsDataSource: A Cloud Storage data source.
+    gcsIntermediateDataLocation: Cloud Storage intermediate data location.
     httpDataSource: An HTTP URL data source.
     objectConditions: Only objects that satisfy these object conditions are
       included in the set of data source and data sink objects. Object
@@ -1463,14 +1563,15 @@ class TransferSpec(_messages.Message):
   azureBlobStorageDataSource = _messages.MessageField('AzureBlobStorageData', 2)
   gcsDataSink = _messages.MessageField('GcsData', 3)
   gcsDataSource = _messages.MessageField('GcsData', 4)
-  httpDataSource = _messages.MessageField('HttpData', 5)
-  objectConditions = _messages.MessageField('ObjectConditions', 6)
-  posixDataSink = _messages.MessageField('PosixFilesystem', 7)
-  posixDataSource = _messages.MessageField('PosixFilesystem', 8)
-  sinkAgentPoolName = _messages.StringField(9)
-  sourceAgentPoolName = _messages.StringField(10)
-  transferManifest = _messages.MessageField('TransferManifest', 11)
-  transferOptions = _messages.MessageField('TransferOptions', 12)
+  gcsIntermediateDataLocation = _messages.MessageField('GcsData', 5)
+  httpDataSource = _messages.MessageField('HttpData', 6)
+  objectConditions = _messages.MessageField('ObjectConditions', 7)
+  posixDataSink = _messages.MessageField('PosixFilesystem', 8)
+  posixDataSource = _messages.MessageField('PosixFilesystem', 9)
+  sinkAgentPoolName = _messages.StringField(10)
+  sourceAgentPoolName = _messages.StringField(11)
+  transferManifest = _messages.MessageField('TransferManifest', 12)
+  transferOptions = _messages.MessageField('TransferOptions', 13)
 
 
 class UpdateTransferJobRequest(_messages.Message):
@@ -1479,17 +1580,18 @@ class UpdateTransferJobRequest(_messages.Message):
   Fields:
     projectId: Required. The ID of the Google Cloud project that owns the job.
     transferJob: Required. The job to update. `transferJob` is expected to
-      specify only four fields: description, transfer_spec,
-      notification_config, and status. An `UpdateTransferJobRequest` that
-      specifies other fields are rejected with the error INVALID_ARGUMENT.
-      Updating a job status to DELETED requires `storagetransfer.jobs.delete`
-      permissions.
+      specify one or more of five fields: description, transfer_spec,
+      notification_config, logging_config, and status. An
+      `UpdateTransferJobRequest` that specifies other fields are rejected with
+      the error INVALID_ARGUMENT. Updating a job status to DELETED requires
+      `storagetransfer.jobs.delete` permissions.
     updateTransferJobFieldMask: The field mask of the fields in `transferJob`
       that are to be updated in this request. Fields in `transferJob` that can
-      be updated are: description, transfer_spec, notification_config, and
-      status. To update the `transfer_spec` of the job, a complete transfer
-      specification must be provided. An incomplete specification missing any
-      required fields is rejected with the error INVALID_ARGUMENT.
+      be updated are: description, transfer_spec, notification_config,
+      logging_config, and status. To update the `transfer_spec` of the job, a
+      complete transfer specification must be provided. An incomplete
+      specification missing any required fields is rejected with the error
+      INVALID_ARGUMENT.
   """
 
   projectId = _messages.StringField(1)

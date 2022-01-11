@@ -77,14 +77,12 @@ def AddNatNameArg(parser, operation_type='operate on', plural=False):
   parser.add_argument('name', **params)
 
 
-def AddCommonNatArgs(parser,
-                     for_create=False,
-                     with_dynamic_port_allocation=False):
+def AddCommonNatArgs(parser, for_create=False):
   """Adds common arguments for creating and updating NATs."""
   _AddIpAllocationArgs(parser, for_create)
   _AddSubnetworkArgs(parser, for_create)
   _AddTimeoutsArgs(parser, for_create)
-  _AddMinPortsPerVmArg(parser, for_create, with_dynamic_port_allocation)
+  _AddMinPortsPerVmArg(parser, for_create)
   _AddLoggingArgs(parser)
   _AddEndpointIndependentMappingArg(parser)
   if not for_create:
@@ -92,8 +90,7 @@ def AddCommonNatArgs(parser,
 
   _AddRulesArg(parser)
 
-  if with_dynamic_port_allocation:
-    _AddDynamicPortAllocationArgs(parser, for_create)
+  _AddDynamicPortAllocationArgs(parser, for_create)
 
 
 def _AddRulesArg(parser):
@@ -203,20 +200,16 @@ def _AddTimeoutsArgs(parser,
       'Clear timeout for TCP connections in the TIME_WAIT state')
 
 
-def _AddMinPortsPerVmArg(parser,
-                         for_create=False,
-                         with_dynamic_port_allocation=False):
+def _AddMinPortsPerVmArg(parser, for_create=False):
   """Adds an argument to specify the minimum number of ports per VM for NAT."""
-  help_text = 'Minimum ports to be allocated to a VM'
-  if with_dynamic_port_allocation:
-    help_text = textwrap.dedent("""\
-    Minimum ports to be allocated to a VM.
+  help_text = textwrap.dedent("""\
+  Minimum ports to be allocated to a VM.
 
-    If Dynamic Port Allocation is disabled, this defaults to 64.
+  If Dynamic Port Allocation is disabled, this defaults to 64.
 
-    If Dynamic Port Allocation is enabled, this defaults to 32 and must be set
-    to a power of 2 that is at least 32 and lower than maxPortsPerVm.
-    """)
+  If Dynamic Port Allocation is enabled, this defaults to 32 and must be set
+  to a power of 2 that is at least 32 and lower than maxPortsPerVm.
+  """)
   _AddClearableArgument(
       parser,
       for_create,

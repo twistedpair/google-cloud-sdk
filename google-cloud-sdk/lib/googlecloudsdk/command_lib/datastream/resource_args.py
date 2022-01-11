@@ -473,6 +473,26 @@ def AddStreamResourceArg(parser, verb, release_track, required=True):
       }).AddToParser(parser)
 
 
+def AddStreamObjectResourceArg(parser):
+  """Add a resource argument for a Datastream stream object.
+
+  Args:
+    parser: the parser for the command.
+  """
+  resource_specs = [
+      presentation_specs.ResourcePresentationSpec(
+          '--stream',
+          GetStreamResourceSpec(),
+          'The stream to list objects for.',
+          required=True),
+  ]
+  concept_parsers.ConceptParser(
+      resource_specs,
+      command_level_fallthroughs={
+          '--stream.location': ['--location'],
+      }).AddToParser(parser)
+
+
 def AddRouteResourceArg(parser, verb, positional=True):
   """Add a resource argument for a Datastream route.
 

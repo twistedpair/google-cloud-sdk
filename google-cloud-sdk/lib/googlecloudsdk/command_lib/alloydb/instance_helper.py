@@ -56,8 +56,6 @@ def ConstructCreateRequestFromArgs(client, alloydb_messages, project_ref, args):
   instance_resource.gceZone = args.zone
   instance_resource.instanceType = _ParseInstanceType(alloydb_messages,
                                                       args.instance_type)
-  instance_resource.networkConfig = _ParseNetworkConfig(alloydb_messages,
-                                                        args.assign_ip)
 
   if instance_resource.instanceType == alloydb_messages.Instance.InstanceTypeValueValuesEnum.READ_POOL:
     instance_resource.readPoolConfig = alloydb_messages.ReadPoolConfig(
@@ -101,8 +99,6 @@ def ConstructPatchRequestFromArgs(alloydb_messages, instance_ref, args):
   instance_resource.gceZone = args.zone
   instance_resource.instanceType = _ParseInstanceType(alloydb_messages,
                                                       args.instance_type)
-  instance_resource.networkConfig = _ParseNetworkConfig(alloydb_messages,
-                                                        args.assign_ip)
   if args.read_pool_node_count:
     instance_resource.readPoolConfig = alloydb_messages.ReadPoolConfig(
         nodeCount=args.read_pool_node_count)
@@ -128,10 +124,4 @@ def _ParseInstanceType(alloydb_messages, instance_type):
   if instance_type:
     return alloydb_messages.Instance.InstanceTypeValueValuesEnum.lookup_by_name(
         instance_type.upper())
-  return None
-
-
-def _ParseNetworkConfig(alloydb_messages, assign_ip):
-  if assign_ip:
-    return alloydb_messages.NetworkConfig(publicIpEnabled=assign_ip)
   return None

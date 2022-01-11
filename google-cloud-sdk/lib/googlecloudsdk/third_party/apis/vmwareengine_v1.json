@@ -7,7 +7,7 @@
   "version": "v1",
   "revision": "0",
   "title": "VMware Engine API",
-  "description": "The Google VMWare Engine API lets you programmatically manage VMware environments.",
+  "description": "The Google VMware Engine API lets you programmatically manage VMware environments.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {

@@ -1296,7 +1296,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Lists all available machine types (tiers) for Cloud SQL, for example, db-custom-1-3840. For related information, see Pricing.
+      r"""Lists all available machine types (tiers) for Cloud SQL, for example, `db-custom-1-3840`. For related information, see [Pricing](/sql/pricing).
 
       Args:
         request: (SqlTiersListRequest) input message

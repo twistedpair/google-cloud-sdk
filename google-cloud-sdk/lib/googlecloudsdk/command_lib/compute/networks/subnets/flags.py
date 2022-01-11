@@ -102,7 +102,6 @@ def SubnetworkResolver():
 
 def AddUpdateArgs(parser, include_alpha_logging,
                   include_l7_internal_load_balancing,
-                  include_regional_managed_proxy,
                   include_internal_ipv6_access_type, api_version):
   """Add args to the parser for subnet update.
 
@@ -110,7 +109,6 @@ def AddUpdateArgs(parser, include_alpha_logging,
     parser: The argparse parser.
     include_alpha_logging: Include alpha-specific logging args.
     include_l7_internal_load_balancing: Include Internal HTTP(S) LB args.
-    include_regional_managed_proxy: Include the REGIONAL_MANAGED_PROXY args.
     include_internal_ipv6_access_type: Include internal IPv6 access type args.
     api_version: The api version of the request.
   """
@@ -232,18 +230,17 @@ def AddUpdateArgs(parser, include_alpha_logging,
         only applicable when the [--role=ACTIVE] flag is being used.
         """)
 
-  if include_regional_managed_proxy:
-    updated_field.add_argument(
-        '--purpose',
-        choices={
-            'REGIONAL_MANAGED_PROXY':
-                'The proxy-only subnet for regional HTTP(S) load balancers.'
-        },
-        type=lambda x: x.replace('-', '_').upper(),
-        help=("""\
-        The purpose of the subnetwork is set to REGIONAL_MANAGED_PROXY to
-        migrate from the INTERNAL_HTTPS_LOAD_BALANCER purpose.
-        """))
+  updated_field.add_argument(
+      '--purpose',
+      choices={
+          'REGIONAL_MANAGED_PROXY':
+              'The proxy-only subnet for regional HTTP(S) load balancers.'
+      },
+      type=lambda x: x.replace('-', '_').upper(),
+      help=("""\
+      The purpose of the subnetwork is set to REGIONAL_MANAGED_PROXY to
+      migrate from the INTERNAL_HTTPS_LOAD_BALANCER purpose.
+      """))
 
   parser.add_argument(
       '--stack-type',

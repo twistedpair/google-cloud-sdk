@@ -544,7 +544,7 @@ class ListAsReadOnlyDictionaryWrapper(collections_abc.Mapping):
 
 
 class ListAsDictionaryWrapper(ListAsReadOnlyDictionaryWrapper,
-                              collections.MutableMapping):
+                              collections_abc.MutableMapping):
   """Wraps repeated messages field with name and value in a dict-like object.
 
   Properties which resemble dictionaries (e.g. environment variables, build

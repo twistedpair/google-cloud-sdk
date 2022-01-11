@@ -956,16 +956,15 @@ class Gateway(_messages.Message):
       resource.
 
   Fields:
-    addresses: Required. One or more addresses with ports in format of ":"
-      that the Gateway must receive traffic on. The proxy binds to the ports
-      specified. IP address can be anything that is allowed by the underlying
-      infrastructure (auto-allocation, static IP, BYOIP).
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
     labels: Optional. Set of label tags associated with the Gateway resource.
     name: Required. Name of the Gateway resource. It matches pattern
       `projects/*/locations/global/gateways/`.
+    ports: Required. One or more ports that the Gateway must receive traffic
+      on. The proxy binds to the ports specified. Gateway listen on 0.0.0.0 on
+      the ports specified below.
     scope: Required. Immutable. Scope determines how configuration across
       multiple Gateway instances are merged. The configuration for multiple
       Gateway instances with the same scope will be merged as presented as a
@@ -1012,11 +1011,11 @@ class Gateway(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  addresses = _messages.StringField(1, repeated=True)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  ports = _messages.IntegerField(5, repeated=True, variant=_messages.Variant.INT32)
   scope = _messages.StringField(6)
   type = _messages.EnumField('TypeValueValuesEnum', 7)
   updateTime = _messages.StringField(8)
@@ -1701,6 +1700,8 @@ class HttpRoute(_messages.Message):
       `projects/*/locations/global/routers/` The attached Router should be of
       a type PROXY
     rules: Required. Rules that define how traffic is routed and handled.
+      Rules will be matched sequentially based on the RouteMatch specified for
+      the rule.
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
@@ -2173,7 +2174,10 @@ class HttpRouteRouteRule(_messages.Message):
     action: The detailed rule defining how to route matched traffic.
     matches: A list of matches define conditions used for matching the rule
       against incoming HTTP requests. Each match is independent, i.e. this
-      rule will be matched if ANY one of the matches is satisfied.
+      rule will be matched if ANY one of the matches is satisfied. If no
+      matches field is specified, this rule will unconditionally match
+      traffic. If a default rule is desired to be configured, add a rule with
+      no matches specified to the end of the rules list.
   """
 
   action = _messages.MessageField('HttpRouteRouteAction', 1)
@@ -2430,6 +2434,21 @@ class ListServiceBindingsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   serviceBindings = _messages.MessageField('ServiceBinding', 2, repeated=True)
+
+
+class ListServiceLbPoliciesResponse(_messages.Message):
+  r"""Response returned by the ListServiceLbPolicies method.
+
+  Fields:
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+    serviceLbPolicies: List of ServiceLbPolicy resources.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  serviceLbPolicies = _messages.MessageField('ServiceLbPolicy', 2, repeated=True)
 
 
 class ListTcpRoutesResponse(_messages.Message):
@@ -4527,6 +4546,86 @@ class NetworkservicesProjectsLocationsServiceBindingsTestIamPermissionsRequest(_
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class NetworkservicesProjectsLocationsServiceLbPoliciesCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceLbPoliciesCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource of the ServiceLbPolicy. Must be in
+      the format `projects/{project}/locations/{location}`.
+    serviceLbPolicy: A ServiceLbPolicy resource to be passed as the request
+      body.
+    serviceLbPolicyId: Required. Short name of the ServiceLbPolicy resource to
+      be created. E.g. for resource name `projects/{project}/locations/{locati
+      on}/serviceLbPolicies/{service_lb_policy_name}`. the id is value of
+      {service_lb_policy_name}
+  """
+
+  parent = _messages.StringField(1, required=True)
+  serviceLbPolicy = _messages.MessageField('ServiceLbPolicy', 2)
+  serviceLbPolicyId = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsServiceLbPoliciesDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceLbPoliciesDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the ServiceLbPolicy to delete. Must be in the
+      format `projects/{project}/locations/{location}/serviceLbPolicies/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsServiceLbPoliciesGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceLbPoliciesGetRequest object.
+
+  Fields:
+    name: Required. A name of the ServiceLbPolicy to get. Must be in the
+      format `projects/{project}/locations/{location}/serviceLbPolicies/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsServiceLbPoliciesListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceLbPoliciesListRequest object.
+
+  Fields:
+    pageSize: Maximum number of ServiceLbPolicies to return per call.
+    pageToken: The value returned by the last `ListServiceLbPoliciesResponse`
+      Indicates that this is a continuation of a prior `ListRouters` call, and
+      that the system should return the next page of data.
+    parent: Required. The project and location from which the
+      ServiceLbPolicies should be listed, specified in the format
+      `projects/{project}/locations/{location}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsServiceLbPoliciesPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceLbPoliciesPatchRequest object.
+
+  Fields:
+    name: Required. Name of the ServiceLbPolicy resource. It matches pattern `
+      projects/{project}/locations/{location}/serviceLbPolicies/{service_lb_po
+      licy_name}`.
+    serviceLbPolicy: A ServiceLbPolicy resource to be passed as the request
+      body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the ServiceLbPolicy resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  serviceLbPolicy = _messages.MessageField('ServiceLbPolicy', 2)
+  updateMask = _messages.StringField(3)
+
+
 class NetworkservicesProjectsLocationsTcpRoutesCreateRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsTcpRoutesCreateRequest object.
 
@@ -5457,6 +5556,114 @@ class ServiceGraph(_messages.Message):
   """
 
   enabled = _messages.BooleanField(1)
+
+
+class ServiceLbPolicy(_messages.Message):
+  r"""ServiceLbPolicy holds global load balancing and traffic distribution
+  configuration that can be applied to a BackendService.
+
+  Enums:
+    LoadBalancingAlgorithmValueValuesEnum: Required. The type of load
+      balancing algorithm to be used. Setting the value to
+      LOAD_BALANCING_ALGORITHM_UNSPECIFIED is not allowed.
+
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the
+      ServiceLbPolicy resource.
+
+  Fields:
+    autoCapacityDrain: Optional. Configuration to automatically move traffic
+      away for unhealthy IG/NEG for the associated Backend Service.
+    createTime: Output only. The timestamp when this resource was created.
+    description: Optional. A free-text description of the resource. Max length
+      1024 characters.
+    labels: Optional. Set of label tags associated with the ServiceLbPolicy
+      resource.
+    loadBalancingAlgorithm: Required. The type of load balancing algorithm to
+      be used. Setting the value to LOAD_BALANCING_ALGORITHM_UNSPECIFIED is
+      not allowed.
+    name: Required. Name of the ServiceLbPolicy resource. It matches pattern `
+      projects/{project}/locations/{location}/serviceLbPolicies/{service_lb_po
+      licy_name}`.
+    primaryBackends: Optional. primary_backends defines the list of backends
+      which are part of the Backend Service this ServiceLbPolicy is associated
+      with. Each primary backend should be a URL which points to either an IG
+      or NEG. e.g. 'projects/{project}/regions/{region}/instanceGroups/{ig-
+      name}' 'projects/{project}/global/networkEndpointGroups/{neg-name}'
+      'projects/{project}/regions/{region}/networkEndpointGroups/{neg-name}'
+    reduceSpikeOverload: Optional. Option to specify if traffic from each
+      client should be spread to all the IGs/NEGs in the region. NOTE: This
+      option and behavior are incompatible with
+      load_balancing_algorithm=NEAREST_ZONE_FIRST.
+    updateTime: Output only. The timestamp when this resource was last
+      updated.
+  """
+
+  class LoadBalancingAlgorithmValueValuesEnum(_messages.Enum):
+    r"""Required. The type of load balancing algorithm to be used. Setting the
+    value to LOAD_BALANCING_ALGORITHM_UNSPECIFIED is not allowed.
+
+    Values:
+      LOAD_BALANCING_ALGORITHM_UNSPECIFIED: The type of the loadbalancing
+        algorithm is unspecified.
+      BALANCE_OVER_REGION: Direct traffic to the nearest region with endpoints
+        and capacity before spilling over to other regions.
+      NEAREST_ZONE_FIRST: Attempt to keep traffic in a single zone closest to
+        the client, before spilling over to other zones.
+    """
+    LOAD_BALANCING_ALGORITHM_UNSPECIFIED = 0
+    BALANCE_OVER_REGION = 1
+    NEAREST_ZONE_FIRST = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the ServiceLbPolicy
+    resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  autoCapacityDrain = _messages.MessageField('ServiceLbPolicyAutoCapacityDrain', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  loadBalancingAlgorithm = _messages.EnumField('LoadBalancingAlgorithmValueValuesEnum', 5)
+  name = _messages.StringField(6)
+  primaryBackends = _messages.StringField(7, repeated=True)
+  reduceSpikeOverload = _messages.BooleanField(8)
+  updateTime = _messages.StringField(9)
+
+
+class ServiceLbPolicyAutoCapacityDrain(_messages.Message):
+  r"""Option to specify if an unhealthy IG/NEG should be considered for global
+  load balancing and traffic routing.
+
+  Fields:
+    enable: Optional. If set to 'True', an unhealthy IG/NEG will be set as
+      drained. - An IG/NEG is considered unhealthy if less than 25% of the
+      instances/endpoints in the IG/NEG are healthy. - This option will never
+      result in draining more than 50% of the configured IGs/NEGs for the
+      Backend Service.
+  """
+
+  enable = _messages.BooleanField(1)
 
 
 class SetIamPolicyRequest(_messages.Message):

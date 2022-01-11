@@ -3472,6 +3472,44 @@
         "contentUri": {
           "description": "Optional. The path of gcs source file for reloading document content. For now, only gcs uri is supported. For documents stored in Google Cloud Storage, these URIs must have the form `gs:\/\/\/`.",
           "type": "string"
+        },
+        "importGcsCustomMetadata": {
+          "description": "Optional. Whether to import custom metadata from Google Cloud Storage. Only valid when the document source is Google Cloud Storage URI.",
+          "type": "boolean"
+        },
+        "smartMessagingPartialUpdate": {
+          "description": "Optional. When enabled, the reload request is to apply partial update to the smart messaging allowlist.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudDialogflowV2ExportDocumentRequest": {
+      "id": "GoogleCloudDialogflowV2ExportDocumentRequest",
+      "description": "Request message for Documents.ExportDocument.",
+      "type": "object",
+      "properties": {
+        "gcsDestination": {
+          "description": "Cloud Storage file path to export the document.",
+          "$ref": "GoogleCloudDialogflowV2GcsDestination"
+        },
+        "exportFullContent": {
+          "description": "When enabled, export the full content of the document including empirical probability.",
+          "type": "boolean"
+        },
+        "smartMessagingPartialUpdate": {
+          "description": "When enabled, export the smart messaging allowlist document for partial update.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudDialogflowV2GcsDestination": {
+      "id": "GoogleCloudDialogflowV2GcsDestination",
+      "description": "Google Cloud Storage location for the output.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "The Google Cloud Storage URIs for the output. A URI is of the form: gs:\/\/bucket\/object-prefix-or-name Whether a prefix or name is used depends on the use case. The requesting user must have \"write-permission\" to the bucket.",
+          "type": "string"
         }
       }
     },
@@ -4043,6 +4081,10 @@
       "properties": {
         "currentPage": {
           "description": "Always present for WebhookRequest. Ignored for WebhookResponse. The unique identifier of the current page. Format: `projects\/\/locations\/\/agents\/\/flows\/\/pages\/`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Always present for WebhookRequest. Ignored for WebhookResponse. The display name of the current page.",
           "type": "string"
         },
         "formInfo": {
@@ -5730,6 +5772,10 @@
       "properties": {
         "currentPage": {
           "description": "Always present for WebhookRequest. Ignored for WebhookResponse. The unique identifier of the current page. Format: `projects\/\/locations\/\/agents\/\/flows\/\/pages\/`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Always present for WebhookRequest. Ignored for WebhookResponse. The display name of the current page.",
           "type": "string"
         },
         "formInfo": {
@@ -9208,6 +9254,10 @@
             "RUNNING",
             "DONE"
           ]
+        },
+        "knowledgeBase": {
+          "description": "The name of the knowledge base interacted with during the operation.",
+          "type": "string"
         }
       }
     },
@@ -12786,6 +12836,11 @@
                       "description": "The next_page_token value returned from a previous list request.",
                       "location": "query",
                       "type": "string"
+                    },
+                    "filter": {
+                      "description": "The filter expression used to filter knowledge bases returned by the list method. The expression has the following syntax: [AND ] ... The following fields and operators are supported: * display_name with has(:) operator * language_code with equals(=) operator Examples: * 'language_code=en-us' matches knowledge bases with en-us language code. * 'display_name:articles' matches knowledge bases whose display name contains \"articles\". * 'display_name:\"Best Articles\"' matches knowledge bases whose display name contains \"Best Articles\". * 'language_code=en-gb AND display_name=articles' matches all knowledge bases whose display name contains \"articles\" and whose language code is \"en-gb\". Note: An empty filter string (i.e. \"\") is a no-op and will result in no filtering. For more information about filtering, see [API Filtering](https:\/\/aip.dev\/160).",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -12949,6 +13004,11 @@
                           "description": "The next_page_token value returned from a previous list request.",
                           "location": "query",
                           "type": "string"
+                        },
+                        "filter": {
+                          "description": "The filter expression used to filter documents returned by the list method. The expression has the following syntax: [AND ] ... The following fields and operators are supported: * knowledge_types with has(:) operator * display_name with has(:) operator * state with equals(=) operator Examples: * \"knowledge_types:FAQ\" matches documents with FAQ knowledge type. * \"display_name:customer\" matches documents whose display name contains \"customer\". * \"state=ACTIVE\" matches documents with ACTIVE state. * \"knowledge_types:FAQ AND state=ACTIVE\" matches all active FAQ documents. For more information about filtering, see [API Filtering](https:\/\/aip.dev\/160).",
+                          "location": "query",
+                          "type": "string"
                         }
                       },
                       "parameterOrder": [
@@ -13107,6 +13167,35 @@
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
                       "description": "Reloads the specified document from its specified source, content_uri or content. The previously loaded content of the document will be deleted. Note: Even when the content of the document has not changed, there still may be side effects because of internal implementation changes. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/cx\/docs\/how\/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: Document Note: The `projects.agent.knowledgeBases.documents` resource is deprecated; only use `projects.knowledgeBases.documents`."
+                    },
+                    "export": {
+                      "id": "dialogflow.projects.locations.knowledgeBases.documents.export",
+                      "path": "v2/{+name}:export",
+                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/knowledgeBases/{knowledgeBasesId}/documents/{documentsId}:export",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the document to export. Format: `projects\/\/locations\/\/knowledgeBases\/\/documents\/`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/knowledgeBases\/[^\/]+\/documents\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudDialogflowV2ExportDocumentRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/dialogflow"
+                      ],
+                      "description": "Exports a smart messaging candidate document into the specified destination. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/cx\/docs\/how\/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: Document"
                     }
                   }
                 }
@@ -15027,6 +15116,11 @@
                       "description": "The next_page_token value returned from a previous list request.",
                       "location": "query",
                       "type": "string"
+                    },
+                    "filter": {
+                      "description": "The filter expression used to filter knowledge bases returned by the list method. The expression has the following syntax: [AND ] ... The following fields and operators are supported: * display_name with has(:) operator * language_code with equals(=) operator Examples: * 'language_code=en-us' matches knowledge bases with en-us language code. * 'display_name:articles' matches knowledge bases whose display name contains \"articles\". * 'display_name:\"Best Articles\"' matches knowledge bases whose display name contains \"Best Articles\". * 'language_code=en-gb AND display_name=articles' matches all knowledge bases whose display name contains \"articles\" and whose language code is \"en-gb\". Note: An empty filter string (i.e. \"\") is a no-op and will result in no filtering. For more information about filtering, see [API Filtering](https:\/\/aip.dev\/160).",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -15188,6 +15282,11 @@
                         },
                         "pageToken": {
                           "description": "The next_page_token value returned from a previous list request.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "The filter expression used to filter documents returned by the list method. The expression has the following syntax: [AND ] ... The following fields and operators are supported: * knowledge_types with has(:) operator * display_name with has(:) operator * state with equals(=) operator Examples: * \"knowledge_types:FAQ\" matches documents with FAQ knowledge type. * \"display_name:customer\" matches documents whose display name contains \"customer\". * \"state=ACTIVE\" matches documents with ACTIVE state. * \"knowledge_types:FAQ AND state=ACTIVE\" matches all active FAQ documents. For more information about filtering, see [API Filtering](https:\/\/aip.dev\/160).",
                           "location": "query",
                           "type": "string"
                         }
@@ -16184,6 +16283,11 @@
                   "description": "The next_page_token value returned from a previous list request.",
                   "location": "query",
                   "type": "string"
+                },
+                "filter": {
+                  "description": "The filter expression used to filter knowledge bases returned by the list method. The expression has the following syntax: [AND ] ... The following fields and operators are supported: * display_name with has(:) operator * language_code with equals(=) operator Examples: * 'language_code=en-us' matches knowledge bases with en-us language code. * 'display_name:articles' matches knowledge bases whose display name contains \"articles\". * 'display_name:\"Best Articles\"' matches knowledge bases whose display name contains \"Best Articles\". * 'language_code=en-gb AND display_name=articles' matches all knowledge bases whose display name contains \"articles\" and whose language code is \"en-gb\". Note: An empty filter string (i.e. \"\") is a no-op and will result in no filtering. For more information about filtering, see [API Filtering](https:\/\/aip.dev\/160).",
+                  "location": "query",
+                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -16347,6 +16451,11 @@
                       "description": "The next_page_token value returned from a previous list request.",
                       "location": "query",
                       "type": "string"
+                    },
+                    "filter": {
+                      "description": "The filter expression used to filter documents returned by the list method. The expression has the following syntax: [AND ] ... The following fields and operators are supported: * knowledge_types with has(:) operator * display_name with has(:) operator * state with equals(=) operator Examples: * \"knowledge_types:FAQ\" matches documents with FAQ knowledge type. * \"display_name:customer\" matches documents whose display name contains \"customer\". * \"state=ACTIVE\" matches documents with ACTIVE state. * \"knowledge_types:FAQ AND state=ACTIVE\" matches all active FAQ documents. For more information about filtering, see [API Filtering](https:\/\/aip.dev\/160).",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -16505,6 +16614,35 @@
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
                   "description": "Reloads the specified document from its specified source, content_uri or content. The previously loaded content of the document will be deleted. Note: Even when the content of the document has not changed, there still may be side effects because of internal implementation changes. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/cx\/docs\/how\/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: Document Note: The `projects.agent.knowledgeBases.documents` resource is deprecated; only use `projects.knowledgeBases.documents`."
+                },
+                "export": {
+                  "id": "dialogflow.projects.knowledgeBases.documents.export",
+                  "path": "v2/{+name}:export",
+                  "flatPath": "v2/projects/{projectsId}/knowledgeBases/{knowledgeBasesId}/documents/{documentsId}:export",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the document to export. Format: `projects\/\/locations\/\/knowledgeBases\/\/documents\/`.",
+                      "pattern": "^projects\/[^\/]+\/knowledgeBases\/[^\/]+\/documents\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudDialogflowV2ExportDocumentRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/dialogflow"
+                  ],
+                  "description": "Exports a smart messaging candidate document into the specified destination. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/cx\/docs\/how\/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: Document"
                 }
               }
             }

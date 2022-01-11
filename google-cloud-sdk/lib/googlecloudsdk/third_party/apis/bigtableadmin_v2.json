@@ -1105,6 +1105,13 @@
         }
       }
     },
+    "UndeleteTableRequest": {
+      "id": "UndeleteTableRequest",
+      "description": "Request message for google.bigtable.admin.v2.BigtableTableAdmin.UndeleteTable",
+      "type": "object",
+      "properties": {
+      }
+    },
     "ModifyColumnFamiliesRequest": {
       "id": "ModifyColumnFamiliesRequest",
       "description": "Request message for google.bigtable.admin.v2.BigtableTableAdmin.ModifyColumnFamilies",
@@ -1638,6 +1645,27 @@
         "progress": {
           "description": "The progress of the post-restore optimizations.",
           "$ref": "OperationProgress"
+        }
+      }
+    },
+    "UndeleteTableMetadata": {
+      "id": "UndeleteTableMetadata",
+      "description": "Metadata type for the operation returned by google.bigtable.admin.v2.BigtableTableAdmin.UndeleteTable.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the table being restored.",
+          "type": "string"
+        },
+        "startTime": {
+          "description": "The time at which this operation started.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "If set, the time at which this operation finished or was cancelled.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     }
@@ -3031,6 +3059,38 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Permanently deletes a specified table and all of its data."
+                },
+                "undelete": {
+                  "id": "bigtableadmin.projects.instances.tables.undelete",
+                  "path": "v2/{+name}:undelete",
+                  "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:undelete",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The unique name of the table to be restored. Values are of the form `projects\/{project}\/instances\/{instance}\/tables\/{table}`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "UndeleteTableRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/bigtable.admin",
+                    "https://www.googleapis.com/auth/bigtable.admin.table",
+                    "https://www.googleapis.com/auth/cloud-bigtable.admin",
+                    "https://www.googleapis.com/auth/cloud-bigtable.admin.table",
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Restores a specified table which was accidentally deleted."
                 },
                 "modifyColumnFamilies": {
                   "id": "bigtableadmin.projects.instances.tables.modifyColumnFamilies",

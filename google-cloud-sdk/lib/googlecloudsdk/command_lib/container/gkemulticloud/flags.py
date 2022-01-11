@@ -467,6 +467,7 @@ def AddProxyConfig(parser):
 def AddFleetProject(parser):
   parser.add_argument(
       '--fleet-project',
+      required=True,
       help='ID or number of the Fleet host project where the cluster is registered.'
   )
 
@@ -498,3 +499,11 @@ def AddPrivateEndpoint(parser):
       default=False,
       action='store_true',
       help='If set, use private VPC for authentication.')
+
+
+def AddExecCredential(parser):
+  parser.add_argument(
+      '--exec-credential',
+      default=False,
+      action='store_true',
+      help='If set, format access token as a Kubernetes execCredential object.')

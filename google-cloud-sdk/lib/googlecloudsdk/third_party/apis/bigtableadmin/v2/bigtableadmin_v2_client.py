@@ -1103,6 +1103,33 @@ class BigtableadminV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Undelete(self, request, global_params=None):
+      r"""Restores a specified table which was accidentally deleted.
+
+      Args:
+        request: (BigtableadminProjectsInstancesTablesUndeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Undelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Undelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:undelete',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.tables.undelete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:undelete',
+        request_field='undeleteTableRequest',
+        request_type_name='BigtableadminProjectsInstancesTablesUndeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsInstancesService(base_api.BaseApiService):
     """Service class for the projects_instances resource."""
 

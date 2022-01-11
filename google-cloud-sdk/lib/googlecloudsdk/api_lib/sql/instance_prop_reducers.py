@@ -336,7 +336,8 @@ def InsightsConfig(sql_messages,
                    insights_config_query_insights_enabled=None,
                    insights_config_query_string_length=None,
                    insights_config_record_application_tags=None,
-                   insights_config_record_client_address=None):
+                   insights_config_record_client_address=None,
+                   insights_config_query_plans_per_minute=None):
   """Generates the insights config for the instance.
 
   Args:
@@ -349,6 +350,8 @@ def InsightsConfig(sql_messages,
       should be recorded.
     insights_config_record_client_address: boolean, True if client address
       should be recorded.
+    insights_config_query_plans_per_minute: number, number of query plans to
+      sample every minute.
 
   Returns:
     sql_messages.InsightsConfig or None
@@ -359,6 +362,7 @@ def InsightsConfig(sql_messages,
       insights_config_query_string_length is not None,
       insights_config_record_application_tags is not None,
       insights_config_record_client_address is not None,
+      insights_config_query_plans_per_minute is not None,
   ])
   if not should_generate_config:
     return None
@@ -375,6 +379,8 @@ def InsightsConfig(sql_messages,
         insights_config_record_application_tags)
   if insights_config_record_client_address is not None:
     insights_config.recordClientAddress = insights_config_record_client_address
+  if insights_config_query_plans_per_minute is not None:
+    insights_config.queryPlansPerMinute = insights_config_query_plans_per_minute
 
   return insights_config
 

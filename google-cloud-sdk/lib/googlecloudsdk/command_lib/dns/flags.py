@@ -377,29 +377,36 @@ def GetResourceRecordSetsRrdatasArg(required=False):
       'on the type and class of the resource record.')
 
 
-def GetResourceRecordSetsRrdatasArgGroup():
+def GetResourceRecordSetsRrdatasArgGroup(use_deprecated_names=False):
   """Returns arg group for rrdatas flags.
+
+  Args:
+    use_deprecated_names: If true, uses snake_case names for flags
+        --routing-policy-type and --routing-policy-data, --routing_policy_type
+        and --routing_policy_data.
 
   This group is defined with required=True and mutex=True, meaning that exactly
   one of these two arg configurations must be specified:
     --rrdatas
-    --routing_policy_type AND --routing_policy_data
+    --routing-policy-type AND --routing-policy-data
   """
   # Declare optional routing policy group. If group specified, must contain
-  # both routing_policy_type and routing_policy_data args.
+  # both routing-policy-type and routing-policy-data args.
   policy_group = base.ArgumentGroup(
       required=False,
-      help='Routing policy arguments. If you specify one of --routing_policy_data or --routing_policy_type, you must specify both.'
+      help='Routing policy arguments. If you specify one of --routing-policy-data or --routing-policy-type, you must specify both.'
   )
   policy_group.AddArgument(
-      GetResourceRecordSetsRoutingPolicyTypeArg(required=True))
+      GetResourceRecordSetsRoutingPolicyTypeArg(
+          required=True, deprecated_name=use_deprecated_names))
   policy_group.AddArgument(
-      GetResourceRecordSetsRoutingPolicyDataArg(required=True))
+      GetResourceRecordSetsRoutingPolicyDataArg(
+          required=True, deprecated_name=use_deprecated_names))
 
   rrdatas_group = base.ArgumentGroup(
       required=True,
       mutex=True,
-      help='Resource record sets arguments. Can specify either --rrdatas or both --routing_policy_data and --routing_policy_type.'
+      help='Resource record sets arguments. Can specify either --rrdatas or both --routing-policy-data and --routing-policy-type.'
   )
   rrdatas_group.AddArgument(GetResourceRecordSetsRrdatasArg(required=False))
   rrdatas_group.AddArgument(policy_group)
@@ -407,9 +414,12 @@ def GetResourceRecordSetsRrdatasArgGroup():
   return rrdatas_group
 
 
-def GetResourceRecordSetsRoutingPolicyTypeArg(required=False):
+def GetResourceRecordSetsRoutingPolicyTypeArg(required=False,
+                                              deprecated_name=False):
+  """Returns --routing-policy-type command line arg value."""
+  flag_name = '--routing_policy_type' if deprecated_name else '--routing-policy-type'
   return base.Argument(
-      '--routing_policy_type',
+      flag_name,
       metavar='ROUTING_POLICY_TYPE',
       required=required,
       choices=['GEO', 'WRR'],
@@ -420,15 +430,16 @@ def GetResourceRecordSetsRoutingPolicyTypeArg(required=False):
       'policy and add a new one with the different type.')
 
 
-def GetResourceRecordSetsRoutingPolicyDataArg(required=False):
-  """Returns --routing_policy_data command line arg value."""
+def GetResourceRecordSetsRoutingPolicyDataArg(required=False,
+                                              deprecated_name=False):
+  """Returns --routing-policy-data command line arg value."""
 
   def RoutingPolicyDataArgType(routing_policy_data_value):
-    """Converts --routing_policy_data flag value to a list of policy data items.
+    """Converts --routing-policy-data flag value to a list of policy data items.
 
     Args:
       routing_policy_data_value: String value specified in the
-        --routing_policy_data flag.
+        --routing-policy-data flag.
 
     Returns:
       A list of policy data items in the format below:
@@ -440,8 +451,8 @@ def GetResourceRecordSetsRoutingPolicyDataArg(required=False):
     ]
 
     Where <routing_policy_data_key> is either a weight or location name,
-    depending on whether the user specified --routing_policy_type == WRR or
-    --routing_policy_type == GEO, respectively. We keep
+    depending on whether the user specified --routing-policy-type == WRR or
+    --routing-policy-type == GEO, respectively. We keep
     <routing_policy_data_key> a string value, even in the case of weights
     (which will eventually be interpereted as floats). This is to keep this
     flag type generic between WRR and GEO types.
@@ -467,20 +478,21 @@ def GetResourceRecordSetsRoutingPolicyDataArg(required=False):
 
     return routing_policy_data
 
+  flag_name = '--routing_policy_data' if deprecated_name else '--routing-policy-data'
   return base.Argument(
-      '--routing_policy_data',
+      flag_name,
       metavar='ROUTING_POLICY_DATA',
       required=required,
       type=RoutingPolicyDataArgType,
       help='The routing policy data supports one of two formats below, '
-      'depending on the choice of routing_policy_type.\n\n'
-      'For --routing_policy_type = "WRR" this flag indicates the weighted '
+      'depending on the choice of routing-policy-type.\n\n'
+      'For --routing-policy-type = "WRR" this flag indicates the weighted '
       'round robin policy data. The field accepts a semicolon-delimited list '
       'of the format "${weight_percent}:${rrdata},${rrdata}". Specify weight '
       'as a non-negative number (0 is allowed). Ratio of traffic '
       'routed to the target is calculated from the ratio of individual weight '
       'over the total across all weights.\n\n'
-      'For --routing_policy_type = "GEO" this flag indicates the geo-locations '
+      'For --routing-policy-type = "GEO" this flag indicates the geo-locations '
       'policy data. The field accepts a semicolon-delimited list of the format '
       '"${region}:${rrdata},${rrdata}".')
 

@@ -181,6 +181,438 @@ class ApplicationEndpoint(_messages.Message):
   port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class BeyondcorpProjectsLocationsAppConnectionsCreateRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsAppConnectionsCreateRequest object.
+
+  Fields:
+    appConnectionId: Optional. User-settable AppConnection resource ID. * Must
+      start with a letter. * Must contain between 4-63 characters from
+      (/a-z-/). * Must end with a number or a letter.
+    googleCloudBeyondcorpAppconnectionsV1alphaAppConnection: A
+      GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnection resource to be
+      passed as the request body.
+    parent: Required. The resource project name of the AppConnection location
+      using the form: `projects/{project_id}/locations/{location_id}`
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, validates request by executing a dry-run
+      which would not alter the resource in any way.
+  """
+
+  appConnectionId = _messages.StringField(1)
+  googleCloudBeyondcorpAppconnectionsV1alphaAppConnection = _messages.MessageField('GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnection', 2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class BeyondcorpProjectsLocationsAppConnectionsDeleteRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsAppConnectionsDeleteRequest object.
+
+  Fields:
+    name: Required. BeyondCorp Connector name using the form: `projects/{proje
+      ct_id}/locations/{location_id}/appConnections/{app_connection_id}`
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, validates request by executing a dry-run
+      which would not alter the resource in any way.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  validateOnly = _messages.BooleanField(3)
+
+
+class BeyondcorpProjectsLocationsAppConnectionsGetIamPolicyRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsAppConnectionsGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class BeyondcorpProjectsLocationsAppConnectionsGetRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsAppConnectionsGetRequest object.
+
+  Fields:
+    name: Required. BeyondCorp AppConnection name using the form: `projects/{p
+      roject_id}/locations/{location_id}/appConnections/{app_connection_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BeyondcorpProjectsLocationsAppConnectionsListRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsAppConnectionsListRequest object.
+
+  Fields:
+    filter: Optional. A filter specifying constraints of a list operation.
+    orderBy: Optional. Specifies the ordering of results. See [Sorting
+      order](https://cloud.google.com/apis/design/design_patterns#sorting_orde
+      r) for more information.
+    pageSize: Optional. The maximum number of items to return. If not
+      specified, a default value of 50 will be used by the service. Regardless
+      of the page_size value, the response may include a partial list and a
+      caller should only rely on response's next_page_token to determine if
+      there are more instances left to be queried.
+    pageToken: Optional. The next_page_token value returned from a previous
+      ListAppConnectionsRequest, if any.
+    parent: Required. The resource name of the AppConnection location using
+      the form: `projects/{project_id}/locations/{location_id}`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class BeyondcorpProjectsLocationsAppConnectionsPatchRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsAppConnectionsPatchRequest object.
+
+  Fields:
+    allowMissing: Optional. If set as true, will create the resource if it is
+      not found.
+    googleCloudBeyondcorpAppconnectionsV1alphaAppConnection: A
+      GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnection resource to be
+      passed as the request body.
+    name: Required. Unique resource name of the AppConnection. The name is
+      ignored when creating a AppConnection.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Mask of fields to update. At least one path must be
+      supplied in this field. The elements of the repeated paths field may
+      only include these fields from [BeyondCorp.AppConnection]: * `labels` *
+      `display_name` * `application_endpoint` * `connectors`
+    validateOnly: Optional. If set, validates request by executing a dry-run
+      which would not alter the resource in any way.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  googleCloudBeyondcorpAppconnectionsV1alphaAppConnection = _messages.MessageField('GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnection', 2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  updateMask = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
+
+
+class BeyondcorpProjectsLocationsAppConnectionsResolveRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsAppConnectionsResolveRequest object.
+
+  Fields:
+    appConnectorId: Required. BeyondCorp Connector name of the connector
+      associated with those AppConnections using the form: `projects/{project_
+      id}/locations/{location_id}/appConnectors/{app_connector_id}`
+    pageSize: Optional. The maximum number of items to return. If not
+      specified, a default value of 50 will be used by the service. Regardless
+      of the page_size value, the response may include a partial list and a
+      caller should only rely on response's next_page_token to determine if
+      there are more instances left to be queried.
+    pageToken: Optional. The next_page_token value returned from a previous
+      ResolveAppConnectionsResponse, if any.
+    parent: Required. The resource name of the AppConnection location using
+      the form: `projects/{project_id}/locations/{location_id}`
+  """
+
+  appConnectorId = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class BeyondcorpProjectsLocationsAppConnectionsSetIamPolicyRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsAppConnectionsSetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class BeyondcorpProjectsLocationsAppConnectionsTestIamPermissionsRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsAppConnectionsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class BeyondcorpProjectsLocationsAppConnectorsCreateRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsAppConnectorsCreateRequest object.
+
+  Fields:
+    appConnectorId: Optional. User-settable AppConnector resource ID. * Must
+      start with a letter. * Must contain between 4-63 characters from
+      (/a-z-/). * Must end with a number or a letter.
+    googleCloudBeyondcorpAppconnectorsV1alphaAppConnector: A
+      GoogleCloudBeyondcorpAppconnectorsV1alphaAppConnector resource to be
+      passed as the request body.
+    parent: Required. The resource project name of the AppConnector location
+      using the form: `projects/{project_id}/locations/{location_id}`
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, validates request by executing a dry-run
+      which would not alter the resource in any way.
+  """
+
+  appConnectorId = _messages.StringField(1)
+  googleCloudBeyondcorpAppconnectorsV1alphaAppConnector = _messages.MessageField('GoogleCloudBeyondcorpAppconnectorsV1alphaAppConnector', 2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class BeyondcorpProjectsLocationsAppConnectorsDeleteRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsAppConnectorsDeleteRequest object.
+
+  Fields:
+    name: Required. BeyondCorp AppConnector name using the form: `projects/{pr
+      oject_id}/locations/{location_id}/appConnectors/{app_connector_id}`
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, validates request by executing a dry-run
+      which would not alter the resource in any way.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  validateOnly = _messages.BooleanField(3)
+
+
+class BeyondcorpProjectsLocationsAppConnectorsGetIamPolicyRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsAppConnectorsGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class BeyondcorpProjectsLocationsAppConnectorsGetRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsAppConnectorsGetRequest object.
+
+  Fields:
+    name: Required. BeyondCorp AppConnector name using the form: `projects/{pr
+      oject_id}/locations/{location_id}/appConnectors/{app_connector_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BeyondcorpProjectsLocationsAppConnectorsListRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsAppConnectorsListRequest object.
+
+  Fields:
+    filter: Optional. A filter specifying constraints of a list operation.
+    orderBy: Optional. Specifies the ordering of results. See [Sorting
+      order](https://cloud.google.com/apis/design/design_patterns#sorting_orde
+      r) for more information.
+    pageSize: Optional. The maximum number of items to return. If not
+      specified, a default value of 50 will be used by the service. Regardless
+      of the page_size value, the response may include a partial list and a
+      caller should only rely on response's next_page_token to determine if
+      there are more instances left to be queried.
+    pageToken: Optional. The next_page_token value returned from a previous
+      ListAppConnectorsRequest, if any.
+    parent: Required. The resource name of the AppConnector location using the
+      form: `projects/{project_id}/locations/{location_id}`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class BeyondcorpProjectsLocationsAppConnectorsPatchRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsAppConnectorsPatchRequest object.
+
+  Fields:
+    googleCloudBeyondcorpAppconnectorsV1alphaAppConnector: A
+      GoogleCloudBeyondcorpAppconnectorsV1alphaAppConnector resource to be
+      passed as the request body.
+    name: Required. Unique resource name of the AppConnector. The name is
+      ignored when creating a AppConnector.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Mask of fields to update. At least one path must be
+      supplied in this field. The elements of the repeated paths field may
+      only include these fields from [BeyondCorp.AppConnector]: * `labels` *
+      `display_name`
+    validateOnly: Optional. If set, validates request by executing a dry-run
+      which would not alter the resource in any way.
+  """
+
+  googleCloudBeyondcorpAppconnectorsV1alphaAppConnector = _messages.MessageField('GoogleCloudBeyondcorpAppconnectorsV1alphaAppConnector', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class BeyondcorpProjectsLocationsAppConnectorsReportStatusRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsAppConnectorsReportStatusRequest object.
+
+  Fields:
+    appConnector: Required. BeyondCorp Connector name using the form:
+      `projects/{project_id}/locations/{location_id}/connectors/{connector}`
+    googleCloudBeyondcorpAppconnectorsV1alphaReportStatusRequest: A
+      GoogleCloudBeyondcorpAppconnectorsV1alphaReportStatusRequest resource to
+      be passed as the request body.
+  """
+
+  appConnector = _messages.StringField(1, required=True)
+  googleCloudBeyondcorpAppconnectorsV1alphaReportStatusRequest = _messages.MessageField('GoogleCloudBeyondcorpAppconnectorsV1alphaReportStatusRequest', 2)
+
+
+class BeyondcorpProjectsLocationsAppConnectorsResolveInstanceConfigRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsAppConnectorsResolveInstanceConfigRequest
+  object.
+
+  Fields:
+    appConnector: Required. BeyondCorp AppConnector name using the form: `proj
+      ects/{project_id}/locations/{location_id}/appConnectors/{app_connector}`
+  """
+
+  appConnector = _messages.StringField(1, required=True)
+
+
+class BeyondcorpProjectsLocationsAppConnectorsSetIamPolicyRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsAppConnectorsSetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class BeyondcorpProjectsLocationsAppConnectorsTestIamPermissionsRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsAppConnectorsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class BeyondcorpProjectsLocationsAppGatewaysCreateRequest(_messages.Message):
   r"""A BeyondcorpProjectsLocationsAppGatewaysCreateRequest object.
 
@@ -1756,6 +2188,568 @@ class Gateway(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 1)
   uri = _messages.StringField(2)
   userPort = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnection(_messages.Message):
+  r"""A BeyondCorp AppConnection resource represents a BeyondCorp protected
+  AppConnection to a remote application. It creates all the necessary GCP
+  components needed for creating a BeyondCorp protected AppConnection.
+  Multiple connectors can be authorised for a single AppConnection.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the AppConnection.
+    TypeValueValuesEnum: Required. The type of network connectivity used by
+      the AppConnection.
+
+  Messages:
+    LabelsValue: Optional. Resource labels to represent user provided
+      metadata.
+
+  Fields:
+    applicationEndpoint: Required. Address of the remote application endpoint
+      for the BeyondCorp AppConnection.
+    connectors: Optional. List of
+      [google.cloud.beyondcorp.v1main.Connector.name] that are authorised to
+      be associated with this AppConnection.
+    createTime: Output only. Timestamp when the resource was created.
+    displayName: Optional. An arbitrary user-provided name for the
+      AppConnection. Cannot exceed 64 characters.
+    gateway: Optional. Gateway used by the AppConnection.
+    labels: Optional. Resource labels to represent user provided metadata.
+    name: Required. Unique resource name of the AppConnection. The name is
+      ignored when creating a AppConnection.
+    state: Output only. The current state of the AppConnection.
+    type: Required. The type of network connectivity used by the
+      AppConnection.
+    uid: Output only. A unique identifier for the instance generated by the
+      system.
+    updateTime: Output only. Timestamp when the resource was last modified.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the AppConnection.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      CREATING: AppConnection is being created.
+      CREATED: AppConnection has been created.
+      UPDATING: AppConnection's configuration is being updated.
+      DELETING: AppConnection is being deleted.
+      DOWN: AppConnection is down and may be restored in the future. This
+        happens when CCFE sends ProjectState = OFF.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    CREATED = 2
+    UPDATING = 3
+    DELETING = 4
+    DOWN = 5
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of network connectivity used by the AppConnection.
+
+    Values:
+      TYPE_UNSPECIFIED: Default value. This value is unused.
+      TCP_PROXY: TCP Proxy based BeyondCorp AppConnection. API will default to
+        this if unset.
+    """
+    TYPE_UNSPECIFIED = 0
+    TCP_PROXY = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Resource labels to represent user provided metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  applicationEndpoint = _messages.MessageField('GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnectionApplicationEndpoint', 1)
+  connectors = _messages.StringField(2, repeated=True)
+  createTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  gateway = _messages.MessageField('GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnectionGateway', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  type = _messages.EnumField('TypeValueValuesEnum', 9)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+
+
+class GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnectionApplicationEndpoint(_messages.Message):
+  r"""ApplicationEndpoint represents a remote application endpoint.
+
+  Fields:
+    host: Required. Hostname or IP address of the remote application endpoint.
+    port: Required. Port of the remote application endpoint.
+  """
+
+  host = _messages.StringField(1)
+  port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnectionGateway(_messages.Message):
+  r"""Gateway represents a user facing component that serves as an entrance to
+  enable connectivity.
+
+  Enums:
+    TypeValueValuesEnum: Required. The type of hosting used by the gateway.
+
+  Fields:
+    appGateway: Required. AppGateway name in following format:
+      projects/{project_id}/locations/{location_id}/appgateways/{gateway_id}
+    ingressPort: Output only. Ingress port reserved on the gateways for this
+      AppConnection, if not specified or zero, the default port is 19443.
+    type: Required. The type of hosting used by the gateway.
+    uri: Output only. Server-defined URI for this resource.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of hosting used by the gateway.
+
+    Values:
+      TYPE_UNSPECIFIED: Default value. This value is unused.
+      GCP_REGIONAL_MIG: Gateway hosted in a GCP regional managed instance
+        group.
+    """
+    TYPE_UNSPECIFIED = 0
+    GCP_REGIONAL_MIG = 1
+
+  appGateway = _messages.StringField(1)
+  ingressPort = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+  uri = _messages.StringField(4)
+
+
+class GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnectionOperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    requestedCancellation: Output only. Identifies whether the user has
+      requested cancellation of the operation. Operations that have
+      successfully been cancelled have Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+    statusMessage: Output only. Human-readable status of the operation, if
+      any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  requestedCancellation = _messages.BooleanField(4)
+  statusMessage = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
+
+
+class GoogleCloudBeyondcorpAppconnectionsV1alphaListAppConnectionsResponse(_messages.Message):
+  r"""Response message for BeyondCorp.ListAppConnections.
+
+  Fields:
+    appConnections: A list of BeyondCorp AppConnections in the project.
+    nextPageToken: A token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    unreachable: A list of locations that could not be reached.
+  """
+
+  appConnections = _messages.MessageField('GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnection', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class GoogleCloudBeyondcorpAppconnectionsV1alphaResolveAppConnectionsResponse(_messages.Message):
+  r"""Response message for BeyondCorp.ResolveAppConnections.
+
+  Fields:
+    appConnectionDetails: A list of BeyondCorp AppConnections with details in
+      the project.
+    nextPageToken: A token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    unreachable: A list of locations that could not be reached.
+  """
+
+  appConnectionDetails = _messages.MessageField('GoogleCloudBeyondcorpAppconnectionsV1alphaResolveAppConnectionsResponseAppConnectionDetails', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class GoogleCloudBeyondcorpAppconnectionsV1alphaResolveAppConnectionsResponseAppConnectionDetails(_messages.Message):
+  r"""Details of the AppConnection.
+
+  Fields:
+    appConnection: A BeyondCorp AppConnection in the project.
+    recentMigVms: If type=GCP_REGIONAL_MIG, contains most recent VM instances,
+      like "https://www.googleapis.com/compute/v1/projects/{project_id}/zones/
+      {zone_id}/instances/{instance_id}".
+  """
+
+  appConnection = _messages.MessageField('GoogleCloudBeyondcorpAppconnectionsV1alphaAppConnection', 1)
+  recentMigVms = _messages.StringField(2, repeated=True)
+
+
+class GoogleCloudBeyondcorpAppconnectorsV1alphaAppConnector(_messages.Message):
+  r"""A BeyondCorp connector resource that represents an application facing
+  component deployed proximal to and with direct access to the application
+  instances. It is used to establish connectivity between the remote
+  enterprise environment and GCP. It initiates connections to the applications
+  and can proxy the data from users over the connection.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the AppConnector.
+
+  Messages:
+    LabelsValue: Optional. Resource labels to represent user provided
+      metadata.
+
+  Fields:
+    createTime: Output only. Timestamp when the resource was created.
+    displayName: Optional. An arbitrary user-provided name for the
+      AppConnector. Cannot exceed 64 characters.
+    labels: Optional. Resource labels to represent user provided metadata.
+    name: Required. Unique resource name of the AppConnector. The name is
+      ignored when creating a AppConnector.
+    principalInfo: Required. Principal information about the Identity of the
+      AppConnector.
+    resourceInfo: Optional. Resource info of the connector.
+    state: Output only. The current state of the AppConnector.
+    uid: Output only. A unique identifier for the instance generated by the
+      system.
+    updateTime: Output only. Timestamp when the resource was last modified.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the AppConnector.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      CREATING: AppConnector is being created.
+      CREATED: AppConnector has been created.
+      UPDATING: AppConnector's configuration is being updated.
+      DELETING: AppConnector is being deleted.
+      DOWN: AppConnector is down and may be restored in the future. This
+        happens when CCFE sends ProjectState = OFF.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    CREATED = 2
+    UPDATING = 3
+    DELETING = 4
+    DOWN = 5
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Resource labels to represent user provided metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  principalInfo = _messages.MessageField('GoogleCloudBeyondcorpAppconnectorsV1alphaAppConnectorPrincipalInfo', 5)
+  resourceInfo = _messages.MessageField('GoogleCloudBeyondcorpAppconnectorsV1alphaResourceInfo', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+
+
+class GoogleCloudBeyondcorpAppconnectorsV1alphaAppConnectorInstanceConfig(_messages.Message):
+  r"""AppConnectorInstanceConfig defines the instance config of a
+  AppConnector.
+
+  Messages:
+    InstanceConfigValue: The SLM instance agent configuration.
+
+  Fields:
+    imageConfig: ImageConfig defines the GCR images to run for the remote
+      agent's control plane.
+    instanceConfig: The SLM instance agent configuration.
+    notificationConfig: NotificationConfig defines the notification mechanism
+      that the remote instance should subscribe to in order to receive
+      notification.
+    sequenceNumber: Required. A monotonically increasing number generated and
+      maintained by the API provider. Every time a config changes in the
+      backend, the sequenceNumber should be bumped up to reflect the change.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InstanceConfigValue(_messages.Message):
+    r"""The SLM instance agent configuration.
+
+    Messages:
+      AdditionalProperty: An additional property for a InstanceConfigValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InstanceConfigValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  imageConfig = _messages.MessageField('GoogleCloudBeyondcorpAppconnectorsV1alphaImageConfig', 1)
+  instanceConfig = _messages.MessageField('InstanceConfigValue', 2)
+  notificationConfig = _messages.MessageField('GoogleCloudBeyondcorpAppconnectorsV1alphaNotificationConfig', 3)
+  sequenceNumber = _messages.IntegerField(4)
+
+
+class GoogleCloudBeyondcorpAppconnectorsV1alphaAppConnectorOperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    requestedCancellation: Output only. Identifies whether the user has
+      requested cancellation of the operation. Operations that have
+      successfully been cancelled have Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+    statusMessage: Output only. Human-readable status of the operation, if
+      any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  requestedCancellation = _messages.BooleanField(4)
+  statusMessage = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
+
+
+class GoogleCloudBeyondcorpAppconnectorsV1alphaAppConnectorPrincipalInfo(_messages.Message):
+  r"""PrincipalInfo represents an Identity oneof.
+
+  Fields:
+    serviceAccount: A GCP service account.
+  """
+
+  serviceAccount = _messages.MessageField('GoogleCloudBeyondcorpAppconnectorsV1alphaAppConnectorPrincipalInfoServiceAccount', 1)
+
+
+class GoogleCloudBeyondcorpAppconnectorsV1alphaAppConnectorPrincipalInfoServiceAccount(_messages.Message):
+  r"""ServiceAccount represents a GCP service account.
+
+  Fields:
+    email: Email address of the service account.
+  """
+
+  email = _messages.StringField(1)
+
+
+class GoogleCloudBeyondcorpAppconnectorsV1alphaImageConfig(_messages.Message):
+  r"""ImageConfig defines the control plane images to run.
+
+  Fields:
+    stableImage: The stable image that the remote agent will fallback to if
+      the target image fails.
+    targetImage: The initial image the remote agent will attempt to run for
+      the control plane.
+  """
+
+  stableImage = _messages.StringField(1)
+  targetImage = _messages.StringField(2)
+
+
+class GoogleCloudBeyondcorpAppconnectorsV1alphaListAppConnectorsResponse(_messages.Message):
+  r"""Response message for BeyondCorp.ListAppConnectors.
+
+  Fields:
+    appConnectors: A list of BeyondCorp AppConnectors in the project.
+    nextPageToken: A token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    unreachable: A list of locations that could not be reached.
+  """
+
+  appConnectors = _messages.MessageField('GoogleCloudBeyondcorpAppconnectorsV1alphaAppConnector', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class GoogleCloudBeyondcorpAppconnectorsV1alphaNotificationConfig(_messages.Message):
+  r"""NotificationConfig defines the mechanisms to notify instance agent.
+
+  Fields:
+    pubsubNotification: Pub/Sub topic for AppConnector to subscribe and
+      receive notifications from `projects/{project}/topics/{pubsub_topic}`
+  """
+
+  pubsubNotification = _messages.MessageField('GoogleCloudBeyondcorpAppconnectorsV1alphaNotificationConfigCloudPubSubNotificationConfig', 1)
+
+
+class GoogleCloudBeyondcorpAppconnectorsV1alphaNotificationConfigCloudPubSubNotificationConfig(_messages.Message):
+  r"""The configuration for Pub/Sub messaging for the AppConnector.
+
+  Fields:
+    pubsubSubscription: The Pub/Sub subscription the AppConnector uses to
+      receive notifications.
+  """
+
+  pubsubSubscription = _messages.StringField(1)
+
+
+class GoogleCloudBeyondcorpAppconnectorsV1alphaReportStatusRequest(_messages.Message):
+  r"""Request report the connector status.
+
+  Fields:
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    resourceInfo: Required. Resource info of the connector.
+    validateOnly: Optional. If set, validates request by executing a dry-run
+      which would not alter the resource in any way.
+  """
+
+  requestId = _messages.StringField(1)
+  resourceInfo = _messages.MessageField('GoogleCloudBeyondcorpAppconnectorsV1alphaResourceInfo', 2)
+  validateOnly = _messages.BooleanField(3)
+
+
+class GoogleCloudBeyondcorpAppconnectorsV1alphaResolveInstanceConfigResponse(_messages.Message):
+  r"""Response message for BeyondCorp.ResolveInstanceConfig.
+
+  Fields:
+    instanceConfig: AppConnectorInstanceConfig.
+  """
+
+  instanceConfig = _messages.MessageField('GoogleCloudBeyondcorpAppconnectorsV1alphaAppConnectorInstanceConfig', 1)
+
+
+class GoogleCloudBeyondcorpAppconnectorsV1alphaResourceInfo(_messages.Message):
+  r"""ResourceInfo represents the information/status of an app connector
+  resource. Such as: - remote_agent - container - runtime - appgateway -
+  appconnector - appconnection - tunnel - logagent
+
+  Enums:
+    StatusValueValuesEnum: Overall health status. Overall status is derived
+      based on the status of each sub level resources.
+
+  Messages:
+    ResourceValue: Specific details for the resource. This is for internal use
+      only.
+
+  Fields:
+    id: Required. Unique Id for the resource.
+    resource: Specific details for the resource. This is for internal use
+      only.
+    status: Overall health status. Overall status is derived based on the
+      status of each sub level resources.
+    sub: List of Info for the sub level resources.
+    time: The timestamp to collect the info. It is suggested to be set by the
+      topmost level resource only.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""Overall health status. Overall status is derived based on the status
+    of each sub level resources.
+
+    Values:
+      HEALTH_STATUS_UNSPECIFIED: Health status is unknown: not initialized or
+        failed to retrieve.
+      HEALTHY: The resource is healthy.
+      UNHEALTHY: The resource is unhealthy.
+      UNRESPONSIVE: The resource is unresponsive.
+      DEGRADED: The resource is some sub-resources are UNHEALTHY.
+    """
+    HEALTH_STATUS_UNSPECIFIED = 0
+    HEALTHY = 1
+    UNHEALTHY = 2
+    UNRESPONSIVE = 3
+    DEGRADED = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceValue(_messages.Message):
+    r"""Specific details for the resource. This is for internal use only.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResourceValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  id = _messages.StringField(1)
+  resource = _messages.MessageField('ResourceValue', 2)
+  status = _messages.EnumField('StatusValueValuesEnum', 3)
+  sub = _messages.MessageField('GoogleCloudBeyondcorpAppconnectorsV1alphaResourceInfo', 4, repeated=True)
+  time = _messages.StringField(5)
 
 
 class GoogleCloudLocationListLocationsResponse(_messages.Message):

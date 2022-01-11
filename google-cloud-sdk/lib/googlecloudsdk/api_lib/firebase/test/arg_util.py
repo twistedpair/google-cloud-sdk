@@ -288,7 +288,7 @@ def AddAndroidTestArgs(parser):
       help='Whether each test runs in its own Instrumentation instance with '
       'the Android Test Orchestrator (default: Orchestrator is not used, same '
       'as specifying --no-use-orchestrator). Orchestrator is only compatible '
-      'with AndroidJUnitRunner v1.0 or higher. See '
+      'with AndroidJUnitRunner v1.1 or higher. See '
       'https://developer.android.com/training/testing/junit-runner.html'
       '#using-android-test-orchestrator for more information about Android '
       'Test Orchestrator.')

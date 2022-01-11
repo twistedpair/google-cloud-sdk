@@ -531,8 +531,9 @@ class DetailedStatus:
 class ManagedResource:
   """ManagedResource represent a managed resource across multiple clusters."""
 
-  def __init__(self, group, kind, namespace, name, status, conditions,
-               clusters):
+  # TODO(b/213382604): use keyword arguments instead of positional arguments.
+  def __init__(self, group, kind, namespace, name, source_hash, status,
+               conditions, clusters):
     if not conditions:
       self.conditions = None
     else:
@@ -545,6 +546,7 @@ class ManagedResource:
     self.namespace = namespace
     self.name = name
     self.status = status
+    self.source_hash = source_hash
     self.clusters = clusters
 
 
@@ -581,13 +583,15 @@ class DescribeResult:
     conditions = None
     if 'conditions' in resource:
       conditions = resource['conditions']
+    source_hash = resource.get('sourceHash', '')
     mr = ManagedResource(resource['group'], resource['kind'],
-                         resource['namespace'], resource['name'],
+                         resource['namespace'], resource['name'], source_hash,
                          resource['status'], conditions, [membership])
     self.managed_resources.append(mr)
 
 
-def DescribeRepo(project, name, namespace, source, managed_resources):
+def DescribeRepo(project, name, namespace, source, repo_cluster,
+                 managed_resources):
   """Describe a repo for the detailed status and managed resources.
 
   Args:
@@ -595,6 +599,7 @@ def DescribeRepo(project, name, namespace, source, managed_resources):
     name: The name of the correspoinding RepoSync|RootSync CR.
     namespace: The namespace of the correspoinding RepoSync|RootSync CR.
     source: The source of the repo.
+    repo_cluster: The cluster that the repo is synced to.
     managed_resources: The status to filter the managed resources for the
       output.
 
@@ -604,10 +609,11 @@ def DescribeRepo(project, name, namespace, source, managed_resources):
   """
   if name and source or namespace and source:
     raise exceptions.Error(
-        '--name and --namespace cannot be specified together with '
+        '--sync-name and --sync-namespace cannot be specified together with '
         '--source.')
   if name and not namespace or namespace and not name:
-    raise exceptions.Error('--name and --namespace must be specified together.')
+    raise exceptions.Error(
+        '--sync-name and --sync-namespace must be specified together.')
   if managed_resources not in [
       'all', 'current', 'inprogress', 'notfound', 'failed', 'unknown'
   ]:
@@ -624,6 +630,8 @@ def DescribeRepo(project, name, namespace, source, managed_resources):
     log.error(err)
   if clusters:
     for cluster in clusters:
+      if repo_cluster and repo_cluster != cluster[0]:
+        continue
       try:
         utils.KubeconfigForCluster(project, cluster[1], cluster[0])
         _AppendReposAndResourceGroups(cluster[0], repo_cross_clusters,
@@ -638,6 +646,8 @@ def DescribeRepo(project, name, namespace, source, managed_resources):
   except exceptions.Error as err:
     raise err
   for membership in memberships:
+    if repo_cluster and repo_cluster != membership:
+      continue
     try:
       utils.KubeconfigForMembership(project, membership)
       _AppendReposAndResourceGroups(membership, repo_cross_clusters,

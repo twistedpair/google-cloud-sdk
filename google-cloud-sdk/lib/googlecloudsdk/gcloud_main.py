@@ -14,7 +14,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """gcloud command line tool."""
 
 from __future__ import absolute_import
@@ -22,6 +21,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import time
+
 START_TIME = time.time()
 
 # pylint:disable=g-bad-import-order
@@ -48,10 +48,8 @@ from googlecloudsdk.core.util import keyboard_interrupt
 from googlecloudsdk.core.util import platforms
 import surface
 
-
 # Disable stack traces when the command is interrupted.
 keyboard_interrupt.InstallHandler()
-
 
 if not config.Paths().sdk_root:
   # Don't do update checks if there is no install root.
@@ -77,7 +75,9 @@ def _ShouldCheckSurveyPrompt(command_path):
   if c_devshell.IsDevshellEnvironment():
     return False
 
-  exempt_commands = ['gcloud.components.post-process',]
+  exempt_commands = [
+      'gcloud.components.post-process',
+  ]
   for exempt_command in exempt_commands:
     if command_path.startswith(exempt_command):
       return False
@@ -102,13 +102,15 @@ def CreateCLI(surfaces, translator=None):
   """Generates the gcloud CLI from 'surface' folder with extra surfaces.
 
   Args:
-    surfaces: list(tuple(dot_path, dir_path)), extra commands or subsurfaces
-              to add, where dot_path is calliope command path and dir_path
-              path to command group or command.
+    surfaces: list(tuple(dot_path, dir_path)), extra commands or subsurfaces to
+      add, where dot_path is calliope command path and dir_path path to command
+      group or command.
     translator: yaml_command_translator.Translator, an alternative translator.
+
   Returns:
     calliope cli object.
   """
+
   def VersionFunc():
     generated_cli.Execute(['version'])
 
@@ -125,12 +127,14 @@ def CreateCLI(surfaces, translator=None):
       yaml_command_translator=(translator or
                                yaml_command_translator.Translator()),
   )
-  loader.AddReleaseTrack(base.ReleaseTrack.ALPHA,
-                         os.path.join(pkg_root, 'surface', 'alpha'),
-                         component='alpha')
-  loader.AddReleaseTrack(base.ReleaseTrack.BETA,
-                         os.path.join(pkg_root, 'surface', 'beta'),
-                         component='beta')
+  loader.AddReleaseTrack(
+      base.ReleaseTrack.ALPHA,
+      os.path.join(pkg_root, 'surface', 'alpha'),
+      component='alpha')
+  loader.AddReleaseTrack(
+      base.ReleaseTrack.BETA,
+      os.path.join(pkg_root, 'surface', 'beta'),
+      component='beta')
 
   for dot_path, dir_path in surfaces:
     loader.AddModule(dot_path, dir_path, component=None)
@@ -142,6 +146,12 @@ def CreateCLI(surfaces, translator=None):
                                              'ai_platform'))
   loader.RegisterPreRunHook(
       _IssueAIPlatformAliasWarning, include_commands=r'gcloud\..*ml-engine\..*')
+
+  # Clone 'container/hub/memberships' surface into 'container/fleet/memberships'
+  # for backward compatibility.
+  loader.AddModule(
+      'container.hub.memberships',
+      os.path.join(pkg_root, 'surface', 'container', 'fleet', 'memberships'))
 
   # Check for updates on shutdown but not for any of the updater commands.
   # Skip update checks for 'gcloud version' command as it does that manually.

@@ -40,7 +40,7 @@ class DeleteTemporaryComponentsTask(task.Task):
           composite object's metadata.
       random_prefix (str): ID added to temporary component names.
     """
-    super().__init__()
+    super(DeleteTemporaryComponentsTask, self).__init__()
     self._source_resource = source_resource
     self._destination_resource = destination_resource
     self._random_prefix = random_prefix

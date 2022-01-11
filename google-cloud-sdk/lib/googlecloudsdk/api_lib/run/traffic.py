@@ -22,6 +22,12 @@ import collections
 
 from googlecloudsdk.core import exceptions
 
+try:
+  # Python 3.3 and above.
+  collections_abc = collections.abc
+except AttributeError:
+  collections_abc = collections
+
 
 class InvalidTrafficSpecificationError(exceptions.Error):
   """Error to indicate an invalid traffic specification."""
@@ -150,7 +156,7 @@ def NewRoundingCorrectionPrecedence(key_and_percent):
       SortKeyFromKey(key)]
 
 
-class TrafficTargets(collections.MutableMapping):
+class TrafficTargets(collections_abc.MutableMapping):
   """Wraps a repeated TrafficTarget message and provides dict-like access.
 
   The dictionary key is one of

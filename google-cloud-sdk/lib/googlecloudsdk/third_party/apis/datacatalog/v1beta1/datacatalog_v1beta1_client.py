@@ -190,7 +190,7 @@ class DatacatalogV1beta1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the tags on an Entry.
+      r"""Lists tags assigned to an Entry. The columns in the response are lowercased.
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsEntriesTagsListRequest) input message
@@ -507,7 +507,7 @@ class DatacatalogV1beta1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the tags on an Entry.
+      r"""Lists tags assigned to an Entry. The columns in the response are lowercased.
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsTagsListRequest) input message

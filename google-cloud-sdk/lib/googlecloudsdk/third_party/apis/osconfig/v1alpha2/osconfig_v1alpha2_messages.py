@@ -1156,6 +1156,8 @@ class PatchConfig(_messages.Message):
   Fields:
     apt: Apt update settings. Use this override the default apt patch rules.
     goo: Goo update settings. Use this override the default goo patch rules.
+    migInstancesAllowed: Optional. Allows the patch job to run on Managed
+      instance groups (MIGs).
     postStep: Optional. The ExecStep to run after the patch update.
     preStep: Optional. The ExecStep to run before the patch update.
     rebootConfig: Optional. Post-patch reboot settings.
@@ -1188,13 +1190,14 @@ class PatchConfig(_messages.Message):
 
   apt = _messages.MessageField('AptSettings', 1)
   goo = _messages.MessageField('GooSettings', 2)
-  postStep = _messages.MessageField('ExecStep', 3)
-  preStep = _messages.MessageField('ExecStep', 4)
-  rebootConfig = _messages.EnumField('RebootConfigValueValuesEnum', 5)
-  retryStrategy = _messages.MessageField('RetryStrategy', 6)
-  windowsUpdate = _messages.MessageField('WindowsUpdateSettings', 7)
-  yum = _messages.MessageField('YumSettings', 8)
-  zypper = _messages.MessageField('ZypperSettings', 9)
+  migInstancesAllowed = _messages.BooleanField(3)
+  postStep = _messages.MessageField('ExecStep', 4)
+  preStep = _messages.MessageField('ExecStep', 5)
+  rebootConfig = _messages.EnumField('RebootConfigValueValuesEnum', 6)
+  retryStrategy = _messages.MessageField('RetryStrategy', 7)
+  windowsUpdate = _messages.MessageField('WindowsUpdateSettings', 8)
+  yum = _messages.MessageField('YumSettings', 9)
+  zypper = _messages.MessageField('ZypperSettings', 10)
 
 
 class PatchDeployment(_messages.Message):

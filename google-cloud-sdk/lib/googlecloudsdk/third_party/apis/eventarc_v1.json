@@ -210,11 +210,11 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. The resource name of the trigger. Must be unique within the location on the project and must be in `projects\/{project}\/locations\/{location}\/triggers\/{trigger}` format.",
+          "description": "Required. The resource name of the trigger. Must be unique within the location of the project and must be in `projects\/{project}\/locations\/{location}\/triggers\/{trigger}` format.",
           "type": "string"
         },
         "uid": {
-          "description": "Output only. Server assigned unique identifier for the trigger. The value is a UUID4 string and guaranteed to remain unchanged until the resource is deleted.",
+          "description": "Output only. Server-assigned unique identifier for the trigger. The value is a UUID4 string and guaranteed to remain unchanged until the resource is deleted.",
           "readOnly": true,
           "type": "string"
         },
@@ -231,14 +231,14 @@
           "format": "google-datetime"
         },
         "eventFilters": {
-          "description": "Required. null The list of filters that applies to event attributes. Only events that match all the provided filters will be sent to the destination.",
+          "description": "Required. null The list of filters that applies to event attributes. Only events that match all the provided filters are sent to the destination.",
           "type": "array",
           "items": {
             "$ref": "EventFilter"
           }
         },
         "serviceAccount": {
-          "description": "Optional. The IAM service account email associated with the trigger. The service account represents the identity of the trigger. The principal who calls this API must have `iam.serviceAccounts.actAs` permission in the service account. See https:\/\/cloud.google.com\/iam\/docs\/understanding-service-accounts?hl=en#sa_common for more information. For Cloud Run destinations, this service account is used to generate identity tokens when invoking the service. See https:\/\/cloud.google.com\/run\/docs\/triggering\/pubsub-push#create-service-account for information on how to invoke authenticated Cloud Run services. In order to create Audit Log triggers, the service account should also have `roles\/eventarc.eventReceiver` IAM role.",
+          "description": "Optional. The IAM service account email associated with the trigger. The service account represents the identity of the trigger. The principal who calls this API must have the `iam.serviceAccounts.actAs` permission in the service account. See https:\/\/cloud.google.com\/iam\/docs\/understanding-service-accounts?hl=en#sa_common for more information. For Cloud Run destinations, this service account is used to generate identity tokens when invoking the service. See https:\/\/cloud.google.com\/run\/docs\/triggering\/pubsub-push#create-service-account for information on how to invoke authenticated Cloud Run services. To create Audit Log triggers, the service account should also have the `roles\/eventarc.eventReceiver` IAM role.",
           "type": "string"
         },
         "destination": {
@@ -246,7 +246,7 @@
           "$ref": "Destination"
         },
         "transport": {
-          "description": "Optional. In order to deliver messages, Eventarc may use other GCP products as transport intermediary. This field contains a reference to that transport intermediary. This information can be used for debugging purposes.",
+          "description": "Optional. To deliver messages, Eventarc might use other GCP products as a transport intermediary. This field contains a reference to that transport intermediary. This information can be used for debugging purposes.",
           "$ref": "Transport"
         },
         "labels": {
@@ -257,11 +257,11 @@
           }
         },
         "channel": {
-          "description": "Optional. The name of the channel associated with the trigger in `projects\/{project}\/locations\/{location}\/channels\/{channel}` format. You must provide a channel in order to receive events from Eventarc SaaS partners.",
+          "description": "Optional. The name of the channel associated with the trigger in `projects\/{project}\/locations\/{location}\/channels\/{channel}` format. You must provide a channel to receive events from Eventarc SaaS partners.",
           "type": "string"
         },
         "etag": {
-          "description": "Output only. This checksum is computed by the server based on the value of other fields, and may be sent only on create requests to ensure the client has an up-to-date value before proceeding.",
+          "description": "Output only. This checksum is computed by the server based on the value of other fields, and might be sent only on create requests to ensure that the client has an up-to-date value before proceeding.",
           "readOnly": true,
           "type": "string"
         }
@@ -281,7 +281,7 @@
           "type": "string"
         },
         "operator": {
-          "description": "Optional. The operator used for matching the events with the value of the filter. If not specified, only events that have an exact key-value pair specified in the filter will be matched. The only allowed value is `match-path-pattern`.",
+          "description": "Optional. The operator used for matching the events with the value of the filter. If not specified, only events that have an exact key-value pair specified in the filter are matched. The only allowed value is `match-path-pattern`.",
           "type": "string"
         }
       }
@@ -300,11 +300,11 @@
           "type": "string"
         },
         "gke": {
-          "description": "A GKE service capable of receiving events. The service should be running in the same project of the trigger.",
+          "description": "A GKE service capable of receiving events. The service should be running in the same project as the trigger.",
           "$ref": "GKE"
         },
         "workflow": {
-          "description": "The resource name of the Workflow whose Executions will be triggered by the events. The Workflow resource should be deployed in the same project of the trigger. Format: projects\/{project}\/locations\/{location}\/workflows\/{workflow}",
+          "description": "The resource name of the Workflow whose Executions are triggered by the events. The Workflow resource should be deployed in the same project as the trigger. Format: projects\/{project}\/locations\/{location}\/workflows\/{workflow}",
           "type": "string"
         }
       }
@@ -315,15 +315,19 @@
       "type": "object",
       "properties": {
         "service": {
-          "description": "Required. The name of the Cloud Run service being addressed. See https:\/\/cloud.google.com\/run\/docs\/reference\/rest\/v1\/namespaces.services. Only services located in the same project of the trigger object can be addressed.",
+          "description": "Required. The name of the Cloud Run service being addressed. See https:\/\/cloud.google.com\/run\/docs\/reference\/rest\/v1\/namespaces.services. Only services located in the same project as the trigger object can be addressed.",
           "type": "string"
         },
         "path": {
-          "description": "Optional. The relative path on the Cloud Run service the events should be sent to. The value must conform to the definition of URI path segment (section 3.3 of RFC2396). Examples: \"\/route\", \"route\", \"route\/subroute\".",
+          "description": "Optional. The relative path on the Cloud Run service the events should be sent to. The value must conform to the definition of a URI path segment (section 3.3 of RFC2396). Examples: \"\/route\", \"route\", \"route\/subroute\".",
           "type": "string"
         },
         "region": {
           "description": "Required. The region the Cloud Run service is deployed in.",
+          "type": "string"
+        },
+        "job": {
+          "description": "Required. The name of the Cloud Run job to run. See https:\/\/cloud.google.com\/run\/docs\/reference\/rest\/v1\/namespaces.jobs. Only jobs located in the same project as the trigger object can be addressed. This field cannot be used with the `service` or `path` fields.",
           "type": "string"
         }
       }
@@ -338,7 +342,7 @@
           "type": "string"
         },
         "location": {
-          "description": "Required. The name of the Google Compute Engine in which the cluster resides, which can either be compute zone (e.g. us-central1-a) for the zonal clusters or region (e.g. us-central1) for regional clusters.",
+          "description": "Required. The name of the Google Compute Engine in which the cluster resides, which can either be compute zone (for example, us-central1-a) for the zonal clusters or region (for example, us-central1) for regional clusters.",
           "type": "string"
         },
         "namespace": {
@@ -350,18 +354,18 @@
           "type": "string"
         },
         "path": {
-          "description": "Optional. The relative path on the GKE service the events should be sent to. The value must conform to the definition of URI path segment (section 3.3 of RFC2396). Examples: \"\/route\", \"route\", \"route\/subroute\".",
+          "description": "Optional. The relative path on the GKE service the events should be sent to. The value must conform to the definition of a URI path segment (section 3.3 of RFC2396). Examples: \"\/route\", \"route\", \"route\/subroute\".",
           "type": "string"
         }
       }
     },
     "Transport": {
       "id": "Transport",
-      "description": "Represents the transport intermediaries created for the trigger in order to deliver events.",
+      "description": "Represents the transport intermediaries created for the trigger to deliver events.",
       "type": "object",
       "properties": {
         "pubsub": {
-          "description": "The Pub\/Sub topic and subscription used by Eventarc as delivery intermediary.",
+          "description": "The Pub\/Sub topic and subscription used by Eventarc as a transport intermediary.",
           "$ref": "Pubsub"
         }
       }
@@ -372,11 +376,11 @@
       "type": "object",
       "properties": {
         "topic": {
-          "description": "Optional. The name of the Pub\/Sub topic created and managed by Eventarc system as a transport for the event delivery. Format: `projects\/{PROJECT_ID}\/topics\/{TOPIC_NAME}`. You may set an existing topic for triggers of the type `google.cloud.pubsub.topic.v1.messagePublished` only. The topic you provide here will not be deleted by Eventarc at trigger deletion.",
+          "description": "Optional. The name of the Pub\/Sub topic created and managed by Eventarc as a transport for the event delivery. Format: `projects\/{PROJECT_ID}\/topics\/{TOPIC_NAME}`. You can set an existing topic for triggers of the type `google.cloud.pubsub.topic.v1.messagePublished`. The topic you provide here is not deleted by Eventarc at trigger deletion.",
           "type": "string"
         },
         "subscription": {
-          "description": "Output only. The name of the Pub\/Sub subscription created and managed by Eventarc system as a transport for the event delivery. Format: `projects\/{PROJECT_ID}\/subscriptions\/{SUBSCRIPTION_NAME}`.",
+          "description": "Output only. The name of the Pub\/Sub subscription created and managed by Eventarc as a transport for the event delivery. Format: `projects\/{PROJECT_ID}\/subscriptions\/{SUBSCRIPTION_NAME}`.",
           "readOnly": true,
           "type": "string"
         }
@@ -1234,7 +1238,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the trigger. Must be unique within the location on the project and must be in `projects\/{project}\/locations\/{location}\/triggers\/{trigger}` format.",
+                      "description": "Required. The resource name of the trigger. Must be unique within the location of the project and must be in `projects\/{project}\/locations\/{location}\/triggers\/{trigger}` format.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/triggers\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1859,6 +1863,93 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Delete a single ChannelConnection."
+                },
+                "setIamPolicy": {
+                  "id": "eventarc.projects.locations.channelConnections.setIamPolicy",
+                  "path": "v1/{+resource}:setIamPolicy",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/channelConnections/{channelConnectionsId}:setIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/channelConnections\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "SetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                },
+                "getIamPolicy": {
+                  "id": "eventarc.projects.locations.channelConnections.getIamPolicy",
+                  "path": "v1/{+resource}:getIamPolicy",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/channelConnections/{channelConnectionsId}:getIamPolicy",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/channelConnections\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "options.requestedPolicyVersion": {
+                      "description": "Optional. The maximum policy version that will be used to format the policy. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset. The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                },
+                "testIamPermissions": {
+                  "id": "eventarc.projects.locations.channelConnections.testIamPermissions",
+                  "path": "v1/{+resource}:testIamPermissions",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/channelConnections/{channelConnectionsId}:testIamPermissions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/channelConnections\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "TestIamPermissionsRequest"
+                  },
+                  "response": {
+                    "$ref": "TestIamPermissionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                 }
               }
             }

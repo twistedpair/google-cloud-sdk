@@ -41,10 +41,10 @@ def _ParseIndex(index_id, location_id):
 class IndexEndpointsClient(object):
   """High-level client for the AI Platform index endpoints surface."""
 
-  def __init__(self, client=None, messages=None):
+  def __init__(self, client=None, messages=None, version=constants.GA_VERSION):
     self.client = client or apis.GetClientInstance(
         constants.AI_PLATFORM_API_NAME,
-        constants.AI_PLATFORM_API_VERSION[constants.BETA_VERSION])
+        constants.AI_PLATFORM_API_VERSION[version])
     self.messages = messages or self.client.MESSAGES_MODULE
     self._service = self.client.projects_locations_indexEndpoints
 
@@ -57,6 +57,20 @@ class IndexEndpointsClient(object):
         parent=location_ref.RelativeName(),
         googleCloudAiplatformV1beta1IndexEndpoint=self.messages
         .GoogleCloudAiplatformV1beta1IndexEndpoint(
+            displayName=args.display_name,
+            description=args.description,
+            network=args.network,
+            labels=labels))
+    return self._service.Create(req)
+
+  def Create(self, location_ref, args):
+    """Create a new v1 index endpoint."""
+    labels = labels_util.ParseCreateArgs(
+        args, self.messages.GoogleCloudAiplatformV1IndexEndpoint.LabelsValue)
+    req = self.messages.AiplatformProjectsLocationsIndexEndpointsCreateRequest(
+        parent=location_ref.RelativeName(),
+        googleCloudAiplatformV1IndexEndpoint=self.messages
+        .GoogleCloudAiplatformV1IndexEndpoint(
             displayName=args.display_name,
             description=args.description,
             network=args.network,
@@ -96,6 +110,38 @@ class IndexEndpointsClient(object):
         updateMask=','.join(update_mask))
     return self._service.Patch(request)
 
+  def Patch(self, index_endpoint_ref, args):
+    """Update an v1 index endpoint."""
+    index_endpoint = self.messages.GoogleCloudAiplatformV1IndexEndpoint()
+    update_mask = []
+
+    if args.display_name is not None:
+      index_endpoint.displayName = args.display_name
+      update_mask.append('display_name')
+
+    if args.description is not None:
+      index_endpoint.description = args.description
+      update_mask.append('description')
+
+    def GetLabels():
+      return self.Get(index_endpoint_ref).labels
+
+    labels_update = labels_util.ProcessUpdateArgsLazy(
+        args, self.messages.GoogleCloudAiplatformV1IndexEndpoint.LabelsValue,
+        GetLabels)
+    if labels_update.needs_update:
+      index_endpoint.labels = labels_update.labels
+      update_mask.append('labels')
+
+    if not update_mask:
+      raise errors.NoFieldsSpecifiedError('No updates requested.')
+
+    request = self.messages.AiplatformProjectsLocationsIndexEndpointsPatchRequest(
+        name=index_endpoint_ref.RelativeName(),
+        googleCloudAiplatformV1IndexEndpoint=index_endpoint,
+        updateMask=','.join(update_mask))
+    return self._service.Patch(request)
+
   def DeployIndexBeta(self, index_endpoint_ref, args):
     """Deploy an index to an index endpoint."""
     index_ref = _ParseIndex(args.index, args.region)
@@ -121,15 +167,45 @@ class IndexEndpointsClient(object):
         googleCloudAiplatformV1beta1DeployIndexRequest=deploy_index_req)
     return self._service.DeployIndex(request)
 
+  def DeployIndex(self, index_endpoint_ref, args):
+    """Deploy an v1 index to an index endpoint."""
+    index_ref = _ParseIndex(args.index, args.region)
+
+    automatic_resources = self.messages.GoogleCloudAiplatformV1AutomaticResources(
+    )
+    if args.min_replica_count is not None:
+      automatic_resources.minReplicaCount = args.min_replica_count
+    if args.max_replica_count is not None:
+      automatic_resources.maxReplicaCount = args.max_replica_count
+
+    deployed_index = self.messages.GoogleCloudAiplatformV1DeployedIndex(
+        automaticResources=automatic_resources,
+        displayName=args.display_name,
+        id=args.deployed_index_id,
+        index=index_ref.RelativeName())
+    deploy_index_req = self.messages.GoogleCloudAiplatformV1DeployIndexRequest(
+        deployedIndex=deployed_index)
+    request = self.messages.AiplatformProjectsLocationsIndexEndpointsDeployIndexRequest(
+        indexEndpoint=index_endpoint_ref.RelativeName(),
+        googleCloudAiplatformV1DeployIndexRequest=deploy_index_req)
+    return self._service.DeployIndex(request)
+
   def UndeployIndexBeta(self, index_endpoint_ref, args):
     """Undeploy an index to an index endpoint."""
-    undeploy_index_req =\
-        self.messages.GoogleCloudAiplatformV1beta1UndeployIndexRequest(
-            deployedIndexId=args.deployed_index_id)
-    request =\
-        self.messages.AiplatformProjectsLocationsIndexEndpointsUndeployIndexRequest(
-            indexEndpoint=index_endpoint_ref.RelativeName(),
-            googleCloudAiplatformV1beta1UndeployIndexRequest=undeploy_index_req)
+    undeploy_index_req = self.messages.GoogleCloudAiplatformV1beta1UndeployIndexRequest(
+        deployedIndexId=args.deployed_index_id)
+    request = self.messages.AiplatformProjectsLocationsIndexEndpointsUndeployIndexRequest(
+        indexEndpoint=index_endpoint_ref.RelativeName(),
+        googleCloudAiplatformV1beta1UndeployIndexRequest=undeploy_index_req)
+    return self._service.UndeployIndex(request)
+
+  def UndeployIndex(self, index_endpoint_ref, args):
+    """Undeploy an v1 index to an index endpoint."""
+    undeploy_index_req = self.messages.GoogleCloudAiplatformV1UndeployIndexRequest(
+        deployedIndexId=args.deployed_index_id)
+    request = self.messages.AiplatformProjectsLocationsIndexEndpointsUndeployIndexRequest(
+        indexEndpoint=index_endpoint_ref.RelativeName(),
+        googleCloudAiplatformV1UndeployIndexRequest=undeploy_index_req)
     return self._service.UndeployIndex(request)
 
   def Get(self, index_endpoint_ref):

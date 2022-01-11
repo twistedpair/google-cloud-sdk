@@ -1273,6 +1273,10 @@
         "scheduledSnapshotsConfig": {
           "description": "Optional. The configuration for scheduled snapshot creation mechanism.",
           "$ref": "ScheduledSnapshotsConfig"
+        },
+        "snapshotsLocation": {
+          "description": "Optional. The default Cloud Storage location for storing snapshots. Automatically created snapshots are stored in this location. If not set, the snapshots are stored in \/snapshots folder in the environment's Cloud Storage bucket.",
+          "type": "string"
         }
       }
     },
@@ -1284,10 +1288,6 @@
         "enabled": {
           "description": "Optional. Whether scheduled snapshots creation is enabled.",
           "type": "boolean"
-        },
-        "snapshotsLocation": {
-          "description": "Optional. The Cloud Storage location for storing snapshots.",
-          "type": "string"
         },
         "snapshotsCreationSchedule": {
           "description": "Optional. The cron expression representing the time when snapshots creation mechanism runs. This field is subject to additional validation around frequency of execution.",

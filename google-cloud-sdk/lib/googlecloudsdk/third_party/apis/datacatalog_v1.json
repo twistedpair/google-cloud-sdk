@@ -2554,7 +2554,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Lists tags assigned to an Entry."
+                          "description": "Lists tags assigned to an Entry. The columns in the response are lowercased."
                         }
                       }
                     }
@@ -2683,7 +2683,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists tags assigned to an Entry."
+                      "description": "Lists tags assigned to an Entry. The columns in the response are lowercased."
                     }
                   }
                 }

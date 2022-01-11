@@ -755,6 +755,21 @@
             "FAILED",
             "IN_PROGRESS"
           ]
+        },
+        "failureCause": {
+          "description": "Output only. Reason this render failed. This will always be unspecified while the render in progress.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "No reason for failure is specified.",
+            "Cloud Build is not available, either because it is not enabled or because Cloud Deploy has insufficient permissions. See [required permission](\/deploy\/docs\/cloud-deploy-service-account#required_permissions).",
+            "The render operation did not complete successfully; check Cloud Build logs."
+          ],
+          "enum": [
+            "FAILURE_CAUSE_UNSPECIFIED",
+            "CLOUD_BUILD_UNAVAILABLE",
+            "EXECUTION_FAILED"
+          ]
         }
       }
     },
@@ -924,6 +939,25 @@
         "etag": {
           "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
           "type": "string"
+        },
+        "deployFailureCause": {
+          "description": "Output only. The reason this deploy failed. This will always be unspecified while the deploy in progress.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "No reason for failure is specified.",
+            "Cloud Build is not available, either because it is not enabled or because Cloud Deploy has insufficient permissions. See [required permission](\/deploy\/docs\/cloud-deploy-service-account#required_permissions).",
+            "The deploy operation did not complete successfully; check Cloud Build logs.",
+            "Deployment did not complete within the alloted time.",
+            "Release is in a failed state."
+          ],
+          "enum": [
+            "FAILURE_CAUSE_UNSPECIFIED",
+            "CLOUD_BUILD_UNAVAILABLE",
+            "EXECUTION_FAILED",
+            "DEADLINE_EXCEEDED",
+            "RELEASE_FAILED"
+          ]
         }
       }
     },

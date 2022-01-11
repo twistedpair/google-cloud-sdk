@@ -900,6 +900,15 @@ MAINTENANCE_WINDOW_RECURRENCE_FLAG = base.Argument(
 MAINTENANCE_WINDOW_FLAG_GROUP_DESCRIPTION = (
     'Group of arguments for setting the maintenance window value.')
 
+SKIP_PYPI_PACKAGES_INSTALLATION = base.Argument(
+    '--skip-pypi-packages-installation',
+    default=None,
+    action='store_true',
+    help="""\
+    When enabled, skip installing Pypi packages while loading the environment
+    state.
+    """)
+
 
 def GetAndValidateKmsEncryptionKey(args):
   """Validates the KMS key name.

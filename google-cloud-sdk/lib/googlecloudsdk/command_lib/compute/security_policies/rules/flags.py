@@ -236,5 +236,7 @@ def AddRequestHeadersToAdd(parser):
       '--request-headers-to-add',
       metavar='REQUEST_HEADERS_TO_ADD',
       type=arg_parsers.ArgDict(),
-      help=('A dict of headers names and values to add to requests that match '
-            'this rule.'))
+      help="""\
+      A comma-separated list of header names and header values to add to
+      requests that match this rule.
+      """)

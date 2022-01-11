@@ -1959,7 +1959,7 @@
           "type": "string"
         },
         "source": {
-          "description": "Source to build against this trigger.",
+          "description": "Source to build against this trigger. Branch and tag names cannot consist of regular expressions.",
           "$ref": "RepoSource"
         }
       }

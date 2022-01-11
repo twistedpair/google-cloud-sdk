@@ -15,9 +15,7 @@ definitions:
         type: boolean
       home_directory:
         type: string
-      resource_spec_name:
-        type: string
-      full_resource_spec_path:
+      resource_spec_path:
         type: string
       resource_attribute_renames:
         type: object
@@ -49,9 +47,7 @@ definitions:
         type: boolean
       home_directory:
         type: string
-      resource_spec_name:
-        type: string
-      full_resource_spec_path:
+      resource_spec_path:
         type: string
       resource_attribute_renames:
         type: object

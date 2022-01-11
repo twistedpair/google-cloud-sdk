@@ -915,7 +915,6 @@ class DataprocMetricConfig(_messages.Message):
     MetricSourcesValueListEntryValuesEnum:
 
   Fields:
-    enabled: Optional. Specifies that dataproc metric is enabled.
     metricSources: Optional. Optional field. If not mentioned all MetricSource
       are enabled
   """
@@ -925,19 +924,18 @@ class DataprocMetricConfig(_messages.Message):
 
     Values:
       METRIC_SOURCE_UNSPECIFIED: Required unspecified metric source
-      MONITORING_AGENT: Monitoring agent metric source, all default monitoring
-        agent metrics are published when we enable a metric agent in cluster
-        VM
+      MONITORING_AGENT_DEFAULTS: all default monitoring agent metrics that are
+        published with prefix "agent.googleapis.com" when we enable a
+        monitoring agent in Compute Engine
       HADOOP: Hadoop metric source
       SPARK: Spark metric source
     """
     METRIC_SOURCE_UNSPECIFIED = 0
-    MONITORING_AGENT = 1
+    MONITORING_AGENT_DEFAULTS = 1
     HADOOP = 2
     SPARK = 3
 
-  enabled = _messages.BooleanField(1)
-  metricSources = _messages.EnumField('MetricSourcesValueListEntryValuesEnum', 2, repeated=True)
+  metricSources = _messages.EnumField('MetricSourcesValueListEntryValuesEnum', 1, repeated=True)
 
 
 class DataprocProjectsLocationsAutoscalingPoliciesCreateRequest(_messages.Message):
@@ -1145,7 +1143,7 @@ class DataprocProjectsLocationsSessionsCreateRequest(_messages.Message):
       must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
     session: A Session resource to be passed as the request body.
-    sessionId: Optional. The ID to use for the session, which becomes the
+    sessionId: Required. The ID to use for the session, which becomes the
       final component of the session's resource name.This value must be 4-63
       characters. Valid characters are /a-z-/.
   """
@@ -4769,7 +4767,7 @@ class Session(_messages.Message):
       if present, must contain 1 to 63 characters, and must conform to RFC
       1035 (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can
       be associated with a session.
-    name: Optional. The resource name of the session.
+    name: Required. The resource name of the session.
     runtimeConfig: Optional. Runtime configuration for the session execution.
     runtimeInfo: Output only. Runtime information about session execution.
     spark: Optional. Spark engine config.

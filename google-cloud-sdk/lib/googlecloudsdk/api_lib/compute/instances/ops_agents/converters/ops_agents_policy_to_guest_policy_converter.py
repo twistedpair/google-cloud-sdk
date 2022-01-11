@@ -573,7 +573,7 @@ def _CreateStepInScript(messages, agent_rule, os_type):
     if agent_rule.version == 'latest' or '*.*' in agent_rule.version:
       agent_version = ''
     else:
-      agent_version = '.x86_64.%s' % agent_rule.version
+      agent_version = '.x86_64.%s@1' % agent_rule.version
 
   # PackageState is REMOVED.
   if (agent_rule.package_state

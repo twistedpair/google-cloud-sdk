@@ -175,55 +175,97 @@
         }
       }
     },
-    "ListLocationsResponse": {
-      "id": "ListLocationsResponse",
-      "description": "The response message for Locations.ListLocations.",
+    "ImportAptArtifactsRequest": {
+      "id": "ImportAptArtifactsRequest",
+      "description": "The request to import new apt artifacts.",
       "type": "object",
       "properties": {
-        "locations": {
-          "description": "A list of locations that matches the specified filter in the request.",
-          "type": "array",
-          "items": {
-            "$ref": "Location"
-          }
-        },
-        "nextPageToken": {
-          "description": "The standard List next-page token.",
-          "type": "string"
+        "gcsSource": {
+          "description": "Google Cloud Storage location where input content is located.",
+          "$ref": "ImportAptArtifactsGcsSource"
         }
       }
     },
-    "Location": {
-      "id": "Location",
-      "description": "A resource that represents Google Cloud Platform location.",
+    "ImportAptArtifactsGcsSource": {
+      "id": "ImportAptArtifactsGcsSource",
+      "description": "Google Cloud Storage location where the artifacts currently reside.",
       "type": "object",
       "properties": {
-        "name": {
-          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
-          "type": "string"
-        },
-        "locationId": {
-          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
-          "type": "string"
-        },
-        "displayName": {
-          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
-          "type": "string"
-        },
-        "labels": {
-          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
-          "type": "object",
-          "additionalProperties": {
+        "uris": {
+          "description": "Cloud Storage paths URI (e.g., gs:\/\/my_bucket\/\/my_object).",
+          "type": "array",
+          "items": {
             "type": "string"
           }
         },
-        "metadata": {
-          "description": "Service-specific metadata. For example the available capacity at the given location.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
+        "useWildcards": {
+          "description": "Supports URI wildcards for matching multiple objects from a single URI.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ImportYumArtifactsRequest": {
+      "id": "ImportYumArtifactsRequest",
+      "description": "The request to import new yum artifacts.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "Google Cloud Storage location where input content is located.",
+          "$ref": "ImportYumArtifactsGcsSource"
+        }
+      }
+    },
+    "ImportYumArtifactsGcsSource": {
+      "id": "ImportYumArtifactsGcsSource",
+      "description": "Google Cloud Storage location where the artifacts currently reside.",
+      "type": "object",
+      "properties": {
+        "uris": {
+          "description": "Cloud Storage paths URI (e.g., gs:\/\/my_bucket\/\/my_object).",
+          "type": "array",
+          "items": {
+            "type": "string"
           }
+        },
+        "useWildcards": {
+          "description": "Supports URI wildcards for matching multiple objects from a single URI.",
+          "type": "boolean"
+        }
+      }
+    },
+    "UploadAptArtifactRequest": {
+      "id": "UploadAptArtifactRequest",
+      "description": "The request to upload an artifact.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "UploadAptArtifactMediaResponse": {
+      "id": "UploadAptArtifactMediaResponse",
+      "description": "The response to upload an artifact.",
+      "type": "object",
+      "properties": {
+        "operation": {
+          "description": "Operation to be returned to the user.",
+          "$ref": "Operation"
+        }
+      }
+    },
+    "UploadYumArtifactRequest": {
+      "id": "UploadYumArtifactRequest",
+      "description": "The request to upload an artifact.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "UploadYumArtifactMediaResponse": {
+      "id": "UploadYumArtifactMediaResponse",
+      "description": "The response to upload an artifact.",
+      "type": "object",
+      "properties": {
+        "operation": {
+          "description": "Operation to be returned to the user.",
+          "$ref": "Operation"
         }
       }
     },
@@ -250,6 +292,10 @@
       "description": "A Repository for storing artifacts with a specific format.",
       "type": "object",
       "properties": {
+        "mavenConfig": {
+          "description": "Maven repository config contains repository level configuration for the repositories of maven type.",
+          "$ref": "MavenRepositoryConfig"
+        },
         "name": {
           "description": "The name of the repository, for example: \"projects\/p1\/locations\/us-central1\/repositories\/repo1\".",
           "type": "string"
@@ -304,10 +350,6 @@
         "kmsKeyName": {
           "description": "The Cloud KMS resource name of the customer managed encryption key that\u2019s used to encrypt the contents of the Repository. Has the form: `projects\/my-project\/locations\/my-region\/keyRings\/my-kr\/cryptoKeys\/my-key`. This value may not be changed after the Repository has been created.",
           "type": "string"
-        },
-        "mavenConfig": {
-          "description": "Maven repository config contains repository level configuration for the repositories of maven type.",
-          "$ref": "MavenRepositoryConfig"
         }
       }
     },
@@ -694,97 +736,55 @@
         }
       }
     },
-    "ImportAptArtifactsRequest": {
-      "id": "ImportAptArtifactsRequest",
-      "description": "The request to import new apt artifacts.",
+    "ListLocationsResponse": {
+      "id": "ListLocationsResponse",
+      "description": "The response message for Locations.ListLocations.",
       "type": "object",
       "properties": {
-        "gcsSource": {
-          "description": "Google Cloud Storage location where input content is located.",
-          "$ref": "ImportAptArtifactsGcsSource"
+        "locations": {
+          "description": "A list of locations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Location"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
         }
       }
     },
-    "ImportAptArtifactsGcsSource": {
-      "id": "ImportAptArtifactsGcsSource",
-      "description": "Google Cloud Storage location where the artifacts currently reside.",
+    "Location": {
+      "id": "Location",
+      "description": "A resource that represents Google Cloud Platform location.",
       "type": "object",
       "properties": {
-        "uris": {
-          "description": "Cloud Storage paths URI (e.g., gs:\/\/my_bucket\/\/my_object).",
-          "type": "array",
-          "items": {
+        "name": {
+          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "type": "string"
+        },
+        "locationId": {
+          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "type": "object",
+          "additionalProperties": {
             "type": "string"
           }
         },
-        "useWildcards": {
-          "description": "Supports URI wildcards for matching multiple objects from a single URI.",
-          "type": "boolean"
-        }
-      }
-    },
-    "ImportYumArtifactsRequest": {
-      "id": "ImportYumArtifactsRequest",
-      "description": "The request to import new yum artifacts.",
-      "type": "object",
-      "properties": {
-        "gcsSource": {
-          "description": "Google Cloud Storage location where input content is located.",
-          "$ref": "ImportYumArtifactsGcsSource"
-        }
-      }
-    },
-    "ImportYumArtifactsGcsSource": {
-      "id": "ImportYumArtifactsGcsSource",
-      "description": "Google Cloud Storage location where the artifacts currently reside.",
-      "type": "object",
-      "properties": {
-        "uris": {
-          "description": "Cloud Storage paths URI (e.g., gs:\/\/my_bucket\/\/my_object).",
-          "type": "array",
-          "items": {
-            "type": "string"
+        "metadata": {
+          "description": "Service-specific metadata. For example the available capacity at the given location.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
           }
-        },
-        "useWildcards": {
-          "description": "Supports URI wildcards for matching multiple objects from a single URI.",
-          "type": "boolean"
-        }
-      }
-    },
-    "UploadAptArtifactRequest": {
-      "id": "UploadAptArtifactRequest",
-      "description": "The request to upload an artifact.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "UploadAptArtifactMediaResponse": {
-      "id": "UploadAptArtifactMediaResponse",
-      "description": "The response to upload an artifact.",
-      "type": "object",
-      "properties": {
-        "operation": {
-          "description": "Operation to be returned to the user.",
-          "$ref": "Operation"
-        }
-      }
-    },
-    "UploadYumArtifactRequest": {
-      "id": "UploadYumArtifactRequest",
-      "description": "The request to upload an artifact.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "UploadYumArtifactMediaResponse": {
-      "id": "UploadYumArtifactMediaResponse",
-      "description": "The response to upload an artifact.",
-      "type": "object",
-      "properties": {
-        "operation": {
-          "description": "Operation to be returned to the user.",
-          "$ref": "Operation"
         }
       }
     },
@@ -914,7 +914,7 @@
           "type": "string",
           "enumDescriptions": [
             "Package type is not specified.",
-            "Binary package (.rpm). .rpm",
+            "Binary package (.rpm).",
             "Source package (.srpm)."
           ],
           "enum": [
@@ -972,6 +972,13 @@
           }
         }
       }
+    },
+    "OperationMetadata": {
+      "id": "OperationMetadata",
+      "description": "Metadata type for longrunning-operations, currently empty.",
+      "type": "object",
+      "properties": {
+      }
     }
   },
   "resources": {
@@ -1001,7 +1008,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/cloud-platform.read-only"
           ],
-          "description": "Retrieves the Settings for the Project"
+          "description": "Retrieves the Settings for the Project."
         },
         "updateProjectSettings": {
           "id": "artifactregistry.projects.updateProjectSettings",
@@ -1035,7 +1042,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Retrieves the Settings for the Project"
+          "description": "Updates the Settings for the Project."
         }
       }
       ,
@@ -1152,7 +1159,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "The name of the parent resource whose repositories will be listed.",
+                      "description": "Required. The name of the parent resource whose repositories will be listed.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1189,7 +1196,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The name of the repository to retrieve.",
+                      "description": "Required. The name of the repository to retrieve.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1215,7 +1222,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "The name of the parent resource where the repository will be created.",
+                      "description": "Required. The name of the parent resource where the repository will be created.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1282,7 +1289,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "The name of the repository to delete.",
+                      "description": "Required. The name of the repository to delete.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1392,6 +1399,158 @@
               }
               ,
               "resources": {
+                "aptArtifacts": {
+                  "methods": {
+                    "import": {
+                      "id": "artifactregistry.projects.locations.repositories.aptArtifacts.import",
+                      "path": "v1beta2/{+parent}/aptArtifacts:import",
+                      "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/aptArtifacts:import",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the parent resource where the artifacts will be imported.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "ImportAptArtifactsRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Imports Apt artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored."
+                    }
+                  }
+                },
+                "yumArtifacts": {
+                  "methods": {
+                    "import": {
+                      "id": "artifactregistry.projects.locations.repositories.yumArtifacts.import",
+                      "path": "v1beta2/{+parent}/yumArtifacts:import",
+                      "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/yumArtifacts:import",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the parent resource where the artifacts will be imported.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "ImportYumArtifactsRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Imports Yum (RPM) artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored."
+                    }
+                  }
+                },
+                "aptartifacts": {
+                  "methods": {
+                    "upload": {
+                      "id": "artifactregistry.projects.locations.repositories.aptartifacts.upload",
+                      "path": "v1beta2/{+parent}/aptArtifacts:create",
+                      "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/aptArtifacts:create",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the parent resource where the artifacts will be uploaded.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "supportsMediaUpload": true,
+                      "mediaUpload": {
+                        "accept": [
+                          "*/*"
+                        ],
+                        "protocols": {
+                          "simple": {
+                            "multipart": true,
+                            "path": "/upload/v1beta2/{+parent}/aptArtifacts:create"
+                          }
+                        }
+                      },
+                      "request": {
+                        "$ref": "UploadAptArtifactRequest"
+                      },
+                      "response": {
+                        "$ref": "UploadAptArtifactMediaResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Directly uploads an Apt artifact. The returned Operation will complete once the resources are uploaded. Package, Version, and File resources are created based on the imported artifact. Imported artifacts that conflict with existing resources are ignored."
+                    }
+                  }
+                },
+                "yumartifacts": {
+                  "methods": {
+                    "upload": {
+                      "id": "artifactregistry.projects.locations.repositories.yumartifacts.upload",
+                      "path": "v1beta2/{+parent}/yumArtifacts:create",
+                      "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/yumArtifacts:create",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the parent resource where the artifacts will be uploaded.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "supportsMediaUpload": true,
+                      "mediaUpload": {
+                        "accept": [
+                          "*/*"
+                        ],
+                        "protocols": {
+                          "simple": {
+                            "multipart": true,
+                            "path": "/upload/v1beta2/{+parent}/yumArtifacts:create"
+                          }
+                        }
+                      },
+                      "request": {
+                        "$ref": "UploadYumArtifactRequest"
+                      },
+                      "response": {
+                        "$ref": "UploadYumArtifactMediaResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Directly uploads a Yum artifact. The returned Operation will complete once the resources are uploaded. Package, Version, and File resources are created based on the imported artifact. Imported artifacts that conflict with existing resources are ignored."
+                    }
+                  }
+                },
                 "packages": {
                   "methods": {
                     "list": {
@@ -1401,7 +1560,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "The name of the parent resource whose packages will be listed.",
+                          "description": "Required. The name of the parent resource whose packages will be listed.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1438,7 +1597,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "The name of the package to retrieve.",
+                          "description": "Required. The name of the package to retrieve.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/packages\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1464,7 +1623,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "The name of the package to delete.",
+                          "description": "Required. The name of the package to delete.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/packages\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1852,158 +2011,6 @@
                         "https://www.googleapis.com/auth/cloud-platform.read-only"
                       ],
                       "description": "Gets a file."
-                    }
-                  }
-                },
-                "aptArtifacts": {
-                  "methods": {
-                    "import": {
-                      "id": "artifactregistry.projects.locations.repositories.aptArtifacts.import",
-                      "path": "v1beta2/{+parent}/aptArtifacts:import",
-                      "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/aptArtifacts:import",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "parent": {
-                          "description": "The name of the parent resource where the artifacts will be imported.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "request": {
-                        "$ref": "ImportAptArtifactsRequest"
-                      },
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Imports Apt artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored."
-                    }
-                  }
-                },
-                "yumArtifacts": {
-                  "methods": {
-                    "import": {
-                      "id": "artifactregistry.projects.locations.repositories.yumArtifacts.import",
-                      "path": "v1beta2/{+parent}/yumArtifacts:import",
-                      "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/yumArtifacts:import",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "parent": {
-                          "description": "The name of the parent resource where the artifacts will be imported.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "request": {
-                        "$ref": "ImportYumArtifactsRequest"
-                      },
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Imports Yum (RPM) artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored."
-                    }
-                  }
-                },
-                "aptartifacts": {
-                  "methods": {
-                    "upload": {
-                      "id": "artifactregistry.projects.locations.repositories.aptartifacts.upload",
-                      "path": "v1beta2/{+parent}/aptArtifacts:create",
-                      "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/aptArtifacts:create",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "parent": {
-                          "description": "The name of the parent resource where the artifacts will be uploaded.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "supportsMediaUpload": true,
-                      "mediaUpload": {
-                        "accept": [
-                          "*/*"
-                        ],
-                        "protocols": {
-                          "simple": {
-                            "multipart": true,
-                            "path": "/upload/v1beta2/{+parent}/aptArtifacts:create"
-                          }
-                        }
-                      },
-                      "request": {
-                        "$ref": "UploadAptArtifactRequest"
-                      },
-                      "response": {
-                        "$ref": "UploadAptArtifactMediaResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Directly uploads an Apt artifact. The returned Operation will complete once the resources are uploaded. Package, Version, and File resources are created based on the imported artifact. Imported artifacts that conflict with existing resources are ignored."
-                    }
-                  }
-                },
-                "yumartifacts": {
-                  "methods": {
-                    "upload": {
-                      "id": "artifactregistry.projects.locations.repositories.yumartifacts.upload",
-                      "path": "v1beta2/{+parent}/yumArtifacts:create",
-                      "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/yumArtifacts:create",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "parent": {
-                          "description": "The name of the parent resource where the artifacts will be uploaded.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "supportsMediaUpload": true,
-                      "mediaUpload": {
-                        "accept": [
-                          "*/*"
-                        ],
-                        "protocols": {
-                          "simple": {
-                            "multipart": true,
-                            "path": "/upload/v1beta2/{+parent}/yumArtifacts:create"
-                          }
-                        }
-                      },
-                      "request": {
-                        "$ref": "UploadYumArtifactRequest"
-                      },
-                      "response": {
-                        "$ref": "UploadYumArtifactMediaResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Directly uploads a Yum artifact. The returned Operation will complete once the resources are uploaded. Package, Version, and File resources are created based on the imported artifact. Imported artifacts that conflict with existing resources are ignored."
                     }
                   }
                 }

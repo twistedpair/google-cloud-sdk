@@ -226,20 +226,26 @@ class CloudRun(_messages.Message):
   r"""Represents a Cloud Run destination.
 
   Fields:
+    job: Required. The name of the Cloud Run job to run. See
+      https://cloud.google.com/run/docs/reference/rest/v1/namespaces.jobs.
+      Only jobs located in the same project as the trigger object can be
+      addressed. This field cannot be used with the `service` or `path`
+      fields.
     path: Optional. The relative path on the Cloud Run service the events
-      should be sent to. The value must conform to the definition of URI path
-      segment (section 3.3 of RFC2396). Examples: "/route", "route",
+      should be sent to. The value must conform to the definition of a URI
+      path segment (section 3.3 of RFC2396). Examples: "/route", "route",
       "route/subroute".
     region: Required. The region the Cloud Run service is deployed in.
     service: Required. The name of the Cloud Run service being addressed. See
       https://cloud.google.com/run/docs/reference/rest/v1/namespaces.services.
-      Only services located in the same project of the trigger object can be
+      Only services located in the same project as the trigger object can be
       addressed.
   """
 
-  path = _messages.StringField(1)
-  region = _messages.StringField(2)
-  service = _messages.StringField(3)
+  job = _messages.StringField(1)
+  path = _messages.StringField(2)
+  region = _messages.StringField(3)
+  service = _messages.StringField(4)
 
 
 class Destination(_messages.Message):
@@ -252,10 +258,10 @@ class Destination(_messages.Message):
     cloudRun: Cloud Run fully-managed resource that receives the events. The
       resource should be in the same project as the trigger.
     gke: A GKE service capable of receiving events. The service should be
-      running in the same project of the trigger.
-    workflow: The resource name of the Workflow whose Executions will be
-      triggered by the events. The Workflow resource should be deployed in the
-      same project of the trigger. Format:
+      running in the same project as the trigger.
+    workflow: The resource name of the Workflow whose Executions are triggered
+      by the events. The Workflow resource should be deployed in the same
+      project as the trigger. Format:
       projects/{project}/locations/{location}/workflows/{workflow}
   """
 
@@ -284,7 +290,7 @@ class EventFilter(_messages.Message):
       provide a filter for the 'type' attribute.
     operator: Optional. The operator used for matching the events with the
       value of the filter. If not specified, only events that have an exact
-      key-value pair specified in the filter will be matched. The only allowed
+      key-value pair specified in the filter are matched. The only allowed
       value is `match-path-pattern`.
     value: Required. The value for the attribute.
   """
@@ -344,6 +350,31 @@ class EventarcProjectsLocationsChannelConnectionsDeleteRequest(_messages.Message
   name = _messages.StringField(1, required=True)
 
 
+class EventarcProjectsLocationsChannelConnectionsGetIamPolicyRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsChannelConnectionsGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class EventarcProjectsLocationsChannelConnectionsGetRequest(_messages.Message):
   r"""A EventarcProjectsLocationsChannelConnectionsGetRequest object.
 
@@ -371,6 +402,37 @@ class EventarcProjectsLocationsChannelConnectionsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class EventarcProjectsLocationsChannelConnectionsSetIamPolicyRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsChannelConnectionsSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class EventarcProjectsLocationsChannelConnectionsTestIamPermissionsRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsChannelConnectionsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class EventarcProjectsLocationsChannelsCreateRequest(_messages.Message):
@@ -728,7 +790,7 @@ class EventarcProjectsLocationsTriggersPatchRequest(_messages.Message):
     allowMissing: If set to true, and the trigger is not found, a new trigger
       will be created. In this situation, `update_mask` is ignored.
     name: Required. The resource name of the trigger. Must be unique within
-      the location on the project and must be in
+      the location of the project and must be in
       `projects/{project}/locations/{location}/triggers/{trigger}` format.
     trigger: A Trigger resource to be passed as the request body.
     updateMask: The fields to be updated; only fields explicitly provided will
@@ -840,12 +902,12 @@ class GKE(_messages.Message):
       The cluster must be running in the same project as the trigger being
       created.
     location: Required. The name of the Google Compute Engine in which the
-      cluster resides, which can either be compute zone (e.g. us-central1-a)
-      for the zonal clusters or region (e.g. us-central1) for regional
-      clusters.
+      cluster resides, which can either be compute zone (for example, us-
+      central1-a) for the zonal clusters or region (for example, us-central1)
+      for regional clusters.
     namespace: Required. The namespace the GKE service is running in.
     path: Optional. The relative path on the GKE service the events should be
-      sent to. The value must conform to the definition of URI path segment
+      sent to. The value must conform to the definition of a URI path segment
       (section 3.3 of RFC2396). Examples: "/route", "route", "route/subroute".
     service: Required. Name of the GKE service.
   """
@@ -1317,14 +1379,14 @@ class Pubsub(_messages.Message):
 
   Fields:
     subscription: Output only. The name of the Pub/Sub subscription created
-      and managed by Eventarc system as a transport for the event delivery.
-      Format: `projects/{PROJECT_ID}/subscriptions/{SUBSCRIPTION_NAME}`.
+      and managed by Eventarc as a transport for the event delivery. Format:
+      `projects/{PROJECT_ID}/subscriptions/{SUBSCRIPTION_NAME}`.
     topic: Optional. The name of the Pub/Sub topic created and managed by
-      Eventarc system as a transport for the event delivery. Format:
-      `projects/{PROJECT_ID}/topics/{TOPIC_NAME}`. You may set an existing
+      Eventarc as a transport for the event delivery. Format:
+      `projects/{PROJECT_ID}/topics/{TOPIC_NAME}`. You can set an existing
       topic for triggers of the type
-      `google.cloud.pubsub.topic.v1.messagePublished` only. The topic you
-      provide here will not be deleted by Eventarc at trigger deletion.
+      `google.cloud.pubsub.topic.v1.messagePublished`. The topic you provide
+      here is not deleted by Eventarc at trigger deletion.
   """
 
   subscription = _messages.StringField(1)
@@ -1436,11 +1498,11 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class Transport(_messages.Message):
-  r"""Represents the transport intermediaries created for the trigger in order
-  to deliver events.
+  r"""Represents the transport intermediaries created for the trigger to
+  deliver events.
 
   Fields:
-    pubsub: The Pub/Sub topic and subscription used by Eventarc as delivery
+    pubsub: The Pub/Sub topic and subscription used by Eventarc as a transport
       intermediary.
   """
 
@@ -1457,39 +1519,38 @@ class Trigger(_messages.Message):
   Fields:
     channel: Optional. The name of the channel associated with the trigger in
       `projects/{project}/locations/{location}/channels/{channel}` format. You
-      must provide a channel in order to receive events from Eventarc SaaS
-      partners.
+      must provide a channel to receive events from Eventarc SaaS partners.
     createTime: Output only. The creation time.
     destination: Required. Destination specifies where the events should be
       sent to.
     etag: Output only. This checksum is computed by the server based on the
-      value of other fields, and may be sent only on create requests to ensure
-      the client has an up-to-date value before proceeding.
+      value of other fields, and might be sent only on create requests to
+      ensure that the client has an up-to-date value before proceeding.
     eventFilters: Required. null The list of filters that applies to event
-      attributes. Only events that match all the provided filters will be sent
-      to the destination.
+      attributes. Only events that match all the provided filters are sent to
+      the destination.
     labels: Optional. User labels attached to the triggers that can be used to
       group resources.
     name: Required. The resource name of the trigger. Must be unique within
-      the location on the project and must be in
+      the location of the project and must be in
       `projects/{project}/locations/{location}/triggers/{trigger}` format.
     serviceAccount: Optional. The IAM service account email associated with
       the trigger. The service account represents the identity of the trigger.
-      The principal who calls this API must have `iam.serviceAccounts.actAs`
-      permission in the service account. See
+      The principal who calls this API must have the
+      `iam.serviceAccounts.actAs` permission in the service account. See
       https://cloud.google.com/iam/docs/understanding-service-
       accounts?hl=en#sa_common for more information. For Cloud Run
       destinations, this service account is used to generate identity tokens
       when invoking the service. See
       https://cloud.google.com/run/docs/triggering/pubsub-push#create-service-
       account for information on how to invoke authenticated Cloud Run
-      services. In order to create Audit Log triggers, the service account
-      should also have `roles/eventarc.eventReceiver` IAM role.
-    transport: Optional. In order to deliver messages, Eventarc may use other
-      GCP products as transport intermediary. This field contains a reference
-      to that transport intermediary. This information can be used for
-      debugging purposes.
-    uid: Output only. Server assigned unique identifier for the trigger. The
+      services. To create Audit Log triggers, the service account should also
+      have the `roles/eventarc.eventReceiver` IAM role.
+    transport: Optional. To deliver messages, Eventarc might use other GCP
+      products as a transport intermediary. This field contains a reference to
+      that transport intermediary. This information can be used for debugging
+      purposes.
+    uid: Output only. Server-assigned unique identifier for the trigger. The
       value is a UUID4 string and guaranteed to remain unchanged until the
       resource is deleted.
     updateTime: Output only. The last-modified time.

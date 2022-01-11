@@ -1307,6 +1307,10 @@
         "targetPodIpv4Range": {
           "description": "The target IP address range of the pod IPs in this node pool. This setting works in conjunction with `pod_ipv4_cidr_block`. When `pod_ipv4_cidr_block` specifies an IP mask length then the corresponding range will be auto assigned from within the CIDR block specified here. Set to blank to use the default range (10.0.0.0\/8). Set to a [CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing) notation (e.g. `240.0.0.0\/8`) to pick a specific range to use.",
           "type": "string"
+        },
+        "podCidrOverprovisionConfig": {
+          "description": "Pod CIDR size overprovisioning config for the nodepool. Pod CIDR size per node depends on max_pods_per_node. By default, the value of max_pods_per_node is rounded off to next power of 2 and we then double that to get the size of pod CIDR block per node. Example: max_pods_per_node of 30 would result in 64 IPs (\/26). This config can disable the doubling of IPs (we still round off to next power of 2) Example: max_pods_per_node of 30 will result in 32 IPs (\/27) when overprovisioning is disabled.",
+          "$ref": "PodCIDROverprovisionConfig"
         }
       }
     },
@@ -1338,6 +1342,17 @@
             "TIER_UNSPECIFIED",
             "TIER_1"
           ]
+        }
+      }
+    },
+    "PodCIDROverprovisionConfig": {
+      "id": "PodCIDROverprovisionConfig",
+      "description": "Config for pod CIDR size overprovisioning.",
+      "type": "object",
+      "properties": {
+        "disable": {
+          "description": "Whether Pod CIDR overprovisioning is disabled. Note: Pod CIDR overprovisioning is enabled by default.",
+          "type": "boolean"
         }
       }
     },
@@ -1776,6 +1791,10 @@
         "targetServiceIpv4Range": {
           "description": "The target IP address range of the services IPs in this cluster. This setting works in conjunction with `services_ipv4_cidr_block`. When `services_ipv4_cidr_block` specifies an IP mask length then the corresponding range will be auto assigned from within the CIDR block specified here. Set to blank to use the default range (10.0.0.0\/8). Set to a [CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing) notation (e.g. `192.168.0.0\/16`) to pick a specific range to use.",
           "type": "string"
+        },
+        "podCidrOverprovisionConfig": {
+          "description": "Pod CIDR size overprovisioning config for the nodepool. Pod CIDR size per node depends on max_pods_per_node. By default, the value of max_pods_per_node is doubled and then rounded off to next power of 2 to get the size of pod CIDR block per node. Example: max_pods_per_node of 30 would result in 64 IPs (\/26). This config can disable the doubling of IPs (we still round off to next power of 2) Example: max_pods_per_node of 30 will result in 32 IPs (\/27) when overprovisioning is disabled.",
+          "$ref": "PodCIDROverprovisionConfig"
         }
       }
     },

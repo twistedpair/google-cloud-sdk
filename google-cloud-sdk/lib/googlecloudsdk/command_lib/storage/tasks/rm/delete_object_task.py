@@ -37,7 +37,7 @@ class DeleteObjectTask(task.Task):
       verbose (bool): If true, prints status messages. Otherwise, does not
           print anything.
     """
-    super().__init__()
+    super(DeleteObjectTask, self).__init__()
     self._object_url = object_url
     self._user_request_args = user_request_args
     self._verbose = verbose

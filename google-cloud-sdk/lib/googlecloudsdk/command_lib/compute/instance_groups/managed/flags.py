@@ -278,6 +278,48 @@ def AddMigDistributionPolicyTargetShapeFlag(parser):
       help=help_text)
 
 
+def AddFlagsForUpdateAllInstancesConfig(parser):
+  """Adds args for all-instances' config update command."""
+  # Add  metadata args
+  metadata_argument_name = '--metadata'
+  metadata_help_text = 'Add metadata to all-instances\' config configuration.'
+  parser.add_argument(
+      metadata_argument_name,
+      type=arg_parsers.ArgDict(min_length=1),
+      default={},
+      action=arg_parsers.StoreOnceAction,
+      metavar='KEY=VALUE',
+      help=metadata_help_text)
+  # Add labels args
+  labels_argument_name = '--labels'
+  metadata_help_text = 'Add labels to all-instances\' config configuration.'
+  parser.add_argument(
+      labels_argument_name,
+      type=arg_parsers.ArgDict(min_length=1),
+      default={},
+      action=arg_parsers.StoreOnceAction,
+      metavar='KEY=VALUE',
+      help=metadata_help_text)
+
+
+def AddFlagsForDeleteAllInstancesConfig(parser):
+  """Adds args for all-instances' config delete command."""
+  # Add  metadata args
+  metadata_argument_name = '--metadata'
+  parser.add_argument(
+      metadata_argument_name,
+      metavar='KEY',
+      type=arg_parsers.ArgList(min_length=1),
+      help='Remove metadata keys from all-instances\' config configuration.')
+  # Add labels args
+  labels_argument_name = '--labels'
+  parser.add_argument(
+      labels_argument_name,
+      metavar='KEY',
+      type=arg_parsers.ArgList(min_length=1),
+      help='Remove labels keys from all-instances\' config configuration.')
+
+
 def ValidateRegionalMigFlagsUsage(args, regional_flags_dests, igm_ref):
   """For zonal MIGs validate that user did not supply any RMIG-specific flags.
 

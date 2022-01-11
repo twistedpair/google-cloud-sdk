@@ -347,11 +347,6 @@ def ListRepositories(args):
   """
   project = GetProject(args)
   location = args.location or properties.VALUES.artifacts.location.Get()
-  location_list = ar_requests.ListLocations(project)
-  if location and location.lower() not in location_list and location != "all":
-    raise ar_exceptions.UnsupportedLocationError(
-        "{} is not a valid location. Valid locations are [{}].".format(
-            location, ", ".join(location_list)))
 
   loc_paths = []
   if location and location != "all":
@@ -359,6 +354,7 @@ def ListRepositories(args):
         project, location))
     loc_paths.append("projects/{}/locations/{}".format(project, location))
   else:
+    location_list = ar_requests.ListLocations(project)
     log.status.Print(
         "Listing items under project {}, across all locations.\n".format(
             project))
@@ -387,19 +383,6 @@ def ListRepositories(args):
   repos.sort(key=lambda x: x.name.split("/")[-1])
 
   return repos
-
-
-def ValidateLocation(location, project_id):
-  location_list = ar_requests.ListLocations(project_id)
-  if location.lower() not in location_list:
-    raise ar_exceptions.UnsupportedLocationError(
-        "{} is not a valid location. Valid locations are [{}].".format(
-            location, ", ".join(location_list)))
-
-
-def ValidateLocationHook(unused_ref, args, req):
-  ValidateLocation(GetLocation(args), GetProject(args))
-  return req
 
 
 def AddEncryptionLogToRepositoryInfo(response, unused_args):

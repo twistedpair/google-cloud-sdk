@@ -41,7 +41,7 @@ class ComposeObjectsTask(task.Task):
         the resulting composite object.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
-    super().__init__()
+    super(ComposeObjectsTask, self).__init__()
     self._source_resources = source_resources
     self._destination_resource = destination_resource
     self._user_request_args = user_request_args

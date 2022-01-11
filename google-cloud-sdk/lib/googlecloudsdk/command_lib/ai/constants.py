@@ -92,7 +92,7 @@ The {verb} operation [{name}] was submitted successfully.
 
 You may view the status of your operation with the command
 
-  $ gcloud beta ai operations describe {id} {sub_commands}\
+  $ gcloud ai operations describe {id} {sub_commands}\
 """
 
 DEFAULT_OPERATION_COLLECTION = 'aiplatform.projects.locations.operations'

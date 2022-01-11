@@ -1622,6 +1622,24 @@
       "description": "Request for upgrading a notebook instance",
       "type": "object",
       "properties": {
+        "type": {
+          "description": "Optional. The optional UpgradeType. Setting this field will search for additional compute images to upgrade this instance.",
+          "type": "string",
+          "enumDescriptions": [
+            "Upgrade type is not specified.",
+            "Upgrade ML framework.",
+            "Upgrade Operating System.",
+            "Upgrade CUDA.",
+            "Upgrade All (OS, Framework and CUDA)."
+          ],
+          "enum": [
+            "UPGRADE_TYPE_UNSPECIFIED",
+            "UPGRADE_FRAMEWORK",
+            "UPGRADE_OS",
+            "UPGRADE_CUDA",
+            "UPGRADE_ALL"
+          ]
+        }
       }
     },
     "RollbackInstanceRequest": {
@@ -1643,6 +1661,24 @@
         "vmId": {
           "description": "Required. The VM hardware token for authenticating the VM. https:\/\/cloud.google.com\/compute\/docs\/instances\/verifying-instance-identity",
           "type": "string"
+        },
+        "type": {
+          "description": "Optional. The optional UpgradeType. Setting this field will search for additional compute images to upgrade this instance.",
+          "type": "string",
+          "enumDescriptions": [
+            "Upgrade type is not specified.",
+            "Upgrade ML framework.",
+            "Upgrade Operating System.",
+            "Upgrade CUDA.",
+            "Upgrade All (OS, Framework and CUDA)."
+          ],
+          "enum": [
+            "UPGRADE_TYPE_UNSPECIFIED",
+            "UPGRADE_FRAMEWORK",
+            "UPGRADE_OS",
+            "UPGRADE_CUDA",
+            "UPGRADE_ALL"
+          ]
         }
       }
     },
@@ -3214,6 +3250,25 @@
                       "location": "path",
                       "required": true,
                       "type": "string"
+                    },
+                    "type": {
+                      "description": "Optional. The optional UpgradeType. Setting this field will search for additional compute images to upgrade this instance.",
+                      "location": "query",
+                      "type": "string",
+                      "enumDescriptions": [
+                        "Upgrade type is not specified.",
+                        "Upgrade ML framework.",
+                        "Upgrade Operating System.",
+                        "Upgrade CUDA.",
+                        "Upgrade All (OS, Framework and CUDA)."
+                      ],
+                      "enum": [
+                        "UPGRADE_TYPE_UNSPECIFIED",
+                        "UPGRADE_FRAMEWORK",
+                        "UPGRADE_OS",
+                        "UPGRADE_CUDA",
+                        "UPGRADE_ALL"
+                      ]
                     }
                   },
                   "parameterOrder": [

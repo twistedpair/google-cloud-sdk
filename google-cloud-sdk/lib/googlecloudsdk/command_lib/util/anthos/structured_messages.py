@@ -85,10 +85,17 @@ class OutputMessage(object):
     timestamp: RFC 3339 encoded timestamp
     as_json: bool, if true default string representation of object will be JSON.
      Default is False, which will render this object as YAML.
+    level: str, message log level
   """
 
-  def __init__(self, timestamp, body=None, version=SCHEMA_VERSION,
-               resource_body=None, error_details=None, as_json=False):
+  def __init__(self,
+               timestamp,
+               body=None,
+               version=SCHEMA_VERSION,
+               resource_body=None,
+               error_details=None,
+               as_json=False,
+               level=None):
     if (((body or resource_body) and error_details) or
         (not body and not resource_body and not error_details)):
       raise InvalidMessageError(
@@ -108,24 +115,29 @@ class OutputMessage(object):
             'ErrorDetails must be a dict object:[{}]'.format(error_details))
       err = self.ErrorDetails(error_details.get('error'),
                               error_details.get('context'),
-                              as_json)
+                              as_json,
+                              level)
     else:
       err = None
     self._err = err
     self._version = version
     self._ts = timestamp
     self._as_json = as_json
+    self._level = level
 
   class ErrorDetails(object):
     """Data class for ErrorDetail sub-messages."""
 
-    _DEFAULT_ERROR_FORMAT = 'Error: [{error}].'
+    _DEFAULT_ERROR_FORMAT = '{level}: [{error}].'
     _DEFAULT_CONTEXT_FORMAT = ' Additional details: [{context}]'
 
-    def __init__(self, error_msg, context=None, as_json=False):
+    def __init__(self, error_msg, context=None, as_json=False, level='error'):
       self.error = error_msg
       self.context = context
       self.as_json = as_json
+      self.level = level
+      if not self.level:
+        self.level = 'error'
 
     def AsDict(self):
       out = collections.OrderedDict(error=self.error)
@@ -146,7 +158,8 @@ class OutputMessage(object):
     def Format(self, error_format=None, context_format=None):
       """Render formatted ErrorDetails string."""
       output_string = error_format or self._DEFAULT_ERROR_FORMAT
-      output_string = output_string.format(error=self.error)
+      output_string = output_string.format(
+          error=self.error, level=self.level.capitalize())
       if self.context:
         output_string += context_format or self._DEFAULT_CONTEXT_FORMAT
         output_string = output_string.format(context=self.context)
@@ -172,7 +185,12 @@ class OutputMessage(object):
   def timestamp(self):
     return self._ts
 
+  @property
+  def level(self):
+    return self._level
+
   def AsDict(self):
+    """Returns a dict for the attributes."""
     out = collections.OrderedDict(version=self.version,
                                   timestamp=self.timestamp)
     if self.body:
@@ -181,6 +199,8 @@ class OutputMessage(object):
       out['resource_body'] = self.resource_body
     if self.error_details:
       out['error_details'] = self.error_details.AsDict()
+    if self.level:
+      out['level'] = self.level
     return out
 
   def IsError(self):
@@ -217,4 +237,5 @@ class OutputMessage(object):
                error_details=yaml_msg.get('error_details'),
                version=yaml_msg.get('version'),
                timestamp=yaml_msg.get('timestamp'),
+               level=yaml_msg.get('level'),
                as_json=as_json)

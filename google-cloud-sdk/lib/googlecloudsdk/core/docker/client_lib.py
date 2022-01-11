@@ -24,12 +24,11 @@ import os
 import subprocess
 import sys
 
-from distutils import version as distutils_version
-
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
+from googlecloudsdk.core.util import semver
 
 import six
 from six.moves import urllib
@@ -184,7 +183,7 @@ def GetDockerVersion():
     raise DockerError('could not retrieve Docker client version')
 
   # Remove ' from beginning and end of line.
-  return distutils_version.LooseVersion(stdoutdata.strip("'"))
+  return semver.LooseVersion(stdoutdata.strip("'"))
 
 
 def GetNormalizedURL(server):

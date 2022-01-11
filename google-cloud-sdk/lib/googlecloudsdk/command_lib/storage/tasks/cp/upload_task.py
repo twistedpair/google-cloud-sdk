@@ -34,7 +34,7 @@ class UploadTask(task.Task):
         Destination metadata for the upload.
       length (int): The size of source_resource.
     """
-    super().__init__()
+    super(UploadTask, self).__init__()
     self._source_resource = source_resource
     self._destination_resource = destination_resource
     self._length = length

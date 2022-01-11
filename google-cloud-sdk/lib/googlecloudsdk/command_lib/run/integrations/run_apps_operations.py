@@ -25,6 +25,7 @@ import re
 
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.run.integrations import api_utils
+from googlecloudsdk.api_lib.run.integrations import types_utils
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.core import properties
@@ -131,7 +132,43 @@ class RunAppsOperations(object):
   def _GetDeploymentName(self, appname):
     return '{}-{}'.format(
         appname,
-        datetime.datetime.now().strftime('%Y%m%d%H%M'))
+        datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
+
+  def GetIntegrationTypeFromConfig(self, resource_config):
+    """Gets the integration type.
+
+    The input is converted from proto with "oneof" property. Thus the dictionary
+    is expected to have only one key, matching the type of the matching oneof.
+
+    Args:
+      resource_config: dict, the resource configuration.
+
+    Returns:
+      str, the integration type.
+    """
+    keys = list(resource_config.keys())
+    if len(keys) != 1:
+      raise exceptions.ConfigurationError(
+          'resource config is invalid: {}.'.format(resource_config))
+    return keys[0]
+
+  def GetIntegration(self, name):
+    """Get an integration.
+
+    Args:
+      name: str, the name of the resource.
+
+    Raises:
+      IntegrationNotFoundError: If the integration is not found.
+
+    Returns:
+      The integration config.
+    """
+    try:
+      return self._GetDefaultAppDict()[_CONFIG_KEY][_RESOURCES_KEY][name]
+    except KeyError:
+      raise exceptions.IntegrationNotFoundError(
+          'Integration [{}] cannot be found'.format(name))
 
   def CreateIntegration(self, integration_type, parameters, service, name=None):
     """Create an integration.
@@ -145,15 +182,7 @@ class RunAppsOperations(object):
     Returns:
       The updated application.
     """
-    app_ref = self.GetAppRef(_DEFAULT_APP_NAME)
-    application = api_utils.GetApplication(self._client, app_ref)
-    if not application:
-      application = self.messages.Application(
-          name=_DEFAULT_APP_NAME, config={_RESOURCES_KEY: {}})
-
-    app_dict = encoding.MessageToDict(application)
-    app_dict.setdefault(_CONFIG_KEY, {})
-    app_dict[_CONFIG_KEY].setdefault(_RESOURCES_KEY, {})
+    app_dict = self._GetDefaultAppDict()
     resources_map = app_dict[_CONFIG_KEY][_RESOURCES_KEY]
     if not name:
       name = self._NewIntegrationName(integration_type, service, parameters,
@@ -199,24 +228,14 @@ class RunAppsOperations(object):
     Returns:
       The updated application.
     """
-    app_ref = self.GetAppRef(_DEFAULT_APP_NAME)
-    application = api_utils.GetApplication(self._client, app_ref)
-    if not application:
-      raise exceptions.IntegrationNotFoundError(
-          'Integration [{}] cannot be found'.format(name))
-    app_dict = encoding.MessageToDict(application)
-    app_dict.setdefault(_CONFIG_KEY, {})
-    resources_map = app_dict[_CONFIG_KEY].setdefault(_RESOURCES_KEY, {})
+    app_dict = self._GetDefaultAppDict()
+    resources_map = app_dict[_CONFIG_KEY][_RESOURCES_KEY]
     existing_resource = resources_map.get(name)
     if existing_resource is None:
       raise exceptions.IntegrationNotFoundError(
           'Integration [{}] cannot be found'.format(name))
-    # Get the integration type. It is in the oneof block from proto,
-    # which translated as the only key in the resource dict.
-    keys = list(existing_resource.keys())
-    assert len(keys) == 1
-    resource_type = keys[0]
 
+    resource_type = self.GetIntegrationTypeFromConfig(existing_resource)
     resource_config = self._GetResourceConfig(resource_type, parameters,
                                               add_service, remove_service,
                                               existing_resource)
@@ -233,12 +252,51 @@ class RunAppsOperations(object):
         match_type_names=match_type_names,
         etag=application.etag)
 
-  def _GetResourceConfig(self, int_type, parameters, add_service,
+  def ListIntegrationTypes(self):
+    """Returns the list of integration type definitions.
+
+    Returns:
+      An array of integration type definitions.
+    """
+    return types_utils.IntegrationTypes(self._client)
+
+  def GetIntegrationTypeDefinition(self, type_name):
+    """Returns the integration type definition of the given name.
+
+    Args:
+      type_name: name of the integration type
+
+    Returns:
+      An integration type definition. None if no matching type.
+    """
+    int_types = types_utils.IntegrationTypes(self._client)
+    for t in int_types:
+      if t['name'] == type_name:
+        return t
+    return None
+
+  def _GetDefaultAppDict(self):
+    """Returns the default application as a dict.
+
+    Returns:
+      dict representing the application.
+    """
+    application = api_utils.GetApplication(self._client,
+                                           self.GetAppRef(_DEFAULT_APP_NAME))
+    if not application:
+      application = self.messages.Application(
+          name=_DEFAULT_APP_NAME, config={_RESOURCES_KEY: {}})
+    app_dict = encoding.MessageToDict(application)
+    app_dict.setdefault(_CONFIG_KEY, {})
+    app_dict[_CONFIG_KEY].setdefault(_RESOURCES_KEY, {})
+    return app_dict
+
+  def _GetResourceConfig(self, res_type, parameters, add_service,
                          remove_service, res_config):
     """Returns a new resource config according to the parameters.
 
     Args:
-      int_type: type of the resource.
+      res_type: type of the resource.
       parameters: parameter dictionary from args.
       add_service: the service to attach to the integration.
       remove_service: the service to remove from the integration.
@@ -248,12 +306,12 @@ class RunAppsOperations(object):
     Returns:
       A new resource config
     """
-    if res_config is not None and int_type in res_config:
-      config = dict(res_config[int_type])
+    if res_config is not None and res_type in res_config:
+      config = dict(res_config[res_type])
     else:
       config = {}
 
-    if int_type == 'router':
+    if res_type == 'router':
       if 'dns-zone' in parameters:
         config['dns-zone'] = parameters['dns-zone']
       if 'domain' in parameters:
@@ -270,18 +328,21 @@ class RunAppsOperations(object):
           config['routes'].append(route)
         else:
           config['default-route'] = route
-      return {int_type: config}
+      return {res_type: config}
 
     raise exceptions.ArgumentError(
-        'Unsupported integration type [{}]'.format(int_type))
+        'Unsupported integration type [{}]'.format(res_type))
 
   def _EnsureServiceConfig(self, resources_map, service_name):
     if service_name not in resources_map:
       resources_map[service_name] = {'service': {}}
 
   def _GetResourceType(self, integration_type):
-    if integration_type == 'custom-domain':
-      return 'router'
+    type_def = self.GetIntegrationTypeDefinition(integration_type)
+    if type_def is not None:
+      res_name = type_def['resource_name']
+      if res_name is not None:
+        return res_name
     return integration_type
 
   def _NewIntegrationName(self, integration_type, service, parameters,
@@ -291,7 +352,7 @@ class RunAppsOperations(object):
     It makes sure the new name does not exist in the given app_dict.
 
     Args:
-      integration_type:  str, type of the integration.
+      integration_type:  str, name of the integration type.
       service: str, name of the service.
       parameters: parameter dictionary from args.
       app_dict: dict, the dictionary that represents the application.
@@ -305,9 +366,9 @@ class RunAppsOperations(object):
       if not domain:
         raise exceptions.ArgumentError('domain is required in "PARAMETERS" '
                                        'for integration type "custom-domain"')
-      name = 'domain-{}'.format(domain.replace('.', '-'))
-    else:
-      name = '{}-{}'.format(integration_type, service)
+      return 'domain-{}'.format(domain.replace('.', '-'))
+
+    name = '{}-{}'.format(integration_type, service)
     while name in app_dict[_CONFIG_KEY][_RESOURCES_KEY]:
       count = 1
       match = re.search(r'(.+)-(\d+)$', name)

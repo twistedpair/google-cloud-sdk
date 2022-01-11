@@ -138,8 +138,8 @@ class ArtifactregistryProjectsLocationsRepositoriesCreateRequest(_messages.Messa
   r"""A ArtifactregistryProjectsLocationsRepositoriesCreateRequest object.
 
   Fields:
-    parent: The name of the parent resource where the repository will be
-      created.
+    parent: Required. The name of the parent resource where the repository
+      will be created.
     repository: A Repository resource to be passed as the request body.
     repositoryId: The repository id to use for this repository.
   """
@@ -153,7 +153,7 @@ class ArtifactregistryProjectsLocationsRepositoriesDeleteRequest(_messages.Messa
   r"""A ArtifactregistryProjectsLocationsRepositoriesDeleteRequest object.
 
   Fields:
-    name: The name of the repository to delete.
+    name: Required. The name of the repository to delete.
   """
 
   name = _messages.StringField(1, required=True)
@@ -223,7 +223,7 @@ class ArtifactregistryProjectsLocationsRepositoriesGetRequest(_messages.Message)
   r"""A ArtifactregistryProjectsLocationsRepositoriesGetRequest object.
 
   Fields:
-    name: The name of the repository to retrieve.
+    name: Required. The name of the repository to retrieve.
   """
 
   name = _messages.StringField(1, required=True)
@@ -237,7 +237,8 @@ class ArtifactregistryProjectsLocationsRepositoriesListRequest(_messages.Message
       is 1,000.
     pageToken: The next_page_token value returned from a previous list
       request, if any.
-    parent: The name of the parent resource whose repositories will be listed.
+    parent: Required. The name of the parent resource whose repositories will
+      be listed.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -250,7 +251,7 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesDeleteRequest(_messag
   object.
 
   Fields:
-    name: The name of the package to delete.
+    name: Required. The name of the package to delete.
   """
 
   name = _messages.StringField(1, required=True)
@@ -261,7 +262,7 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesGetRequest(_messages.
   object.
 
   Fields:
-    name: The name of the package to retrieve.
+    name: Required. The name of the package to retrieve.
   """
 
   name = _messages.StringField(1, required=True)
@@ -276,7 +277,8 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesListRequest(_messages
       1,000.
     pageToken: The next_page_token value returned from a previous list
       request, if any.
-    parent: The name of the parent resource whose packages will be listed.
+    parent: Required. The name of the parent resource whose packages will be
+      listed.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1089,6 +1091,10 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class OperationMetadata(_messages.Message):
+  r"""Metadata type for longrunning-operations, currently empty."""
+
+
 class Package(_messages.Message):
   r"""Packages are named collections of versions.
 
@@ -1613,7 +1619,7 @@ class YumArtifact(_messages.Message):
 
     Values:
       PACKAGE_TYPE_UNSPECIFIED: Package type is not specified.
-      BINARY: Binary package (.rpm). .rpm
+      BINARY: Binary package (.rpm).
       SOURCE: Source package (.srpm).
     """
     PACKAGE_TYPE_UNSPECIFIED = 0

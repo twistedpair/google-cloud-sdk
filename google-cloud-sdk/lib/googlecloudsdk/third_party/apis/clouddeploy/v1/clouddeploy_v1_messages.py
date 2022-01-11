@@ -1728,6 +1728,8 @@ class Rollout(_messages.Message):
   Enums:
     ApprovalStateValueValuesEnum: Output only. Approval state of the
       `Rollout`.
+    DeployFailureCauseValueValuesEnum: Output only. The reason this deploy
+      failed. This will always be unspecified while the deploy in progress.
     StateValueValuesEnum: Output only. Current state of the `Rollout`.
 
   Messages:
@@ -1754,6 +1756,8 @@ class Rollout(_messages.Message):
     createTime: Output only. Time at which the `Rollout` was created.
     deployEndTime: Output only. Time at which the `Rollout` finished
       deploying.
+    deployFailureCause: Output only. The reason this deploy failed. This will
+      always be unspecified while the deploy in progress.
     deployStartTime: Output only. Time at which the `Rollout` started
       deploying.
     deployingBuild: Output only. The resource name of the Cloud Build `Build`
@@ -1799,6 +1803,27 @@ class Rollout(_messages.Message):
     DOES_NOT_NEED_APPROVAL = 2
     APPROVED = 3
     REJECTED = 4
+
+  class DeployFailureCauseValueValuesEnum(_messages.Enum):
+    r"""Output only. The reason this deploy failed. This will always be
+    unspecified while the deploy in progress.
+
+    Values:
+      FAILURE_CAUSE_UNSPECIFIED: No reason for failure is specified.
+      CLOUD_BUILD_UNAVAILABLE: Cloud Build is not available, either because it
+        is not enabled or because Cloud Deploy has insufficient permissions.
+        See [required permission](/deploy/docs/cloud-deploy-service-
+        account#required_permissions).
+      EXECUTION_FAILED: The deploy operation did not complete successfully;
+        check Cloud Build logs.
+      DEADLINE_EXCEEDED: Deployment did not complete within the alloted time.
+      RELEASE_FAILED: Release is in a failed state.
+    """
+    FAILURE_CAUSE_UNSPECIFIED = 0
+    CLOUD_BUILD_UNAVAILABLE = 1
+    EXECUTION_FAILED = 2
+    DEADLINE_EXCEEDED = 3
+    RELEASE_FAILED = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the `Rollout`.
@@ -1888,17 +1913,18 @@ class Rollout(_messages.Message):
   approveTime = _messages.StringField(3)
   createTime = _messages.StringField(4)
   deployEndTime = _messages.StringField(5)
-  deployStartTime = _messages.StringField(6)
-  deployingBuild = _messages.StringField(7)
-  description = _messages.StringField(8)
-  enqueueTime = _messages.StringField(9)
-  etag = _messages.StringField(10)
-  failureReason = _messages.StringField(11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  name = _messages.StringField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  targetId = _messages.StringField(15)
-  uid = _messages.StringField(16)
+  deployFailureCause = _messages.EnumField('DeployFailureCauseValueValuesEnum', 6)
+  deployStartTime = _messages.StringField(7)
+  deployingBuild = _messages.StringField(8)
+  description = _messages.StringField(9)
+  enqueueTime = _messages.StringField(10)
+  etag = _messages.StringField(11)
+  failureReason = _messages.StringField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  name = _messages.StringField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  targetId = _messages.StringField(16)
+  uid = _messages.StringField(17)
 
 
 class SerialPipeline(_messages.Message):
@@ -2225,16 +2251,37 @@ class TargetRender(_messages.Message):
   r"""Details of rendering for a single target.
 
   Enums:
+    FailureCauseValueValuesEnum: Output only. Reason this render failed. This
+      will always be unspecified while the render in progress.
     RenderingStateValueValuesEnum: Output only. Current state of the render
       operation for this Target.
 
   Fields:
+    failureCause: Output only. Reason this render failed. This will always be
+      unspecified while the render in progress.
     renderingBuild: Output only. The resource name of the Cloud Build `Build`
       object that is used to render the manifest for this target. Format is
       `projects/{project}/locations/{location}/builds/{build}`.
     renderingState: Output only. Current state of the render operation for
       this Target.
   """
+
+  class FailureCauseValueValuesEnum(_messages.Enum):
+    r"""Output only. Reason this render failed. This will always be
+    unspecified while the render in progress.
+
+    Values:
+      FAILURE_CAUSE_UNSPECIFIED: No reason for failure is specified.
+      CLOUD_BUILD_UNAVAILABLE: Cloud Build is not available, either because it
+        is not enabled or because Cloud Deploy has insufficient permissions.
+        See [required permission](/deploy/docs/cloud-deploy-service-
+        account#required_permissions).
+      EXECUTION_FAILED: The render operation did not complete successfully;
+        check Cloud Build logs.
+    """
+    FAILURE_CAUSE_UNSPECIFIED = 0
+    CLOUD_BUILD_UNAVAILABLE = 1
+    EXECUTION_FAILED = 2
 
   class RenderingStateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the render operation for this Target.
@@ -2251,8 +2298,9 @@ class TargetRender(_messages.Message):
     FAILED = 2
     IN_PROGRESS = 3
 
-  renderingBuild = _messages.StringField(1)
-  renderingState = _messages.EnumField('RenderingStateValueValuesEnum', 2)
+  failureCause = _messages.EnumField('FailureCauseValueValuesEnum', 1)
+  renderingBuild = _messages.StringField(2)
+  renderingState = _messages.EnumField('RenderingStateValueValuesEnum', 3)
 
 
 class TargetsPresentCondition(_messages.Message):

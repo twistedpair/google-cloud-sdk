@@ -45,7 +45,7 @@ class FinalizeCompositeUploadTask(task.Task):
       random_prefix (str): Random id added to component names.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
-    super().__init__()
+    super(FinalizeCompositeUploadTask, self).__init__()
     self._expected_component_count = expected_component_count
     self._source_resource = source_resource
     self._destination_resource = destination_resource

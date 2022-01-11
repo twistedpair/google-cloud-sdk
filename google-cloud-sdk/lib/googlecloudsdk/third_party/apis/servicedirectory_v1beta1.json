@@ -337,6 +337,25 @@
           "description": "Output only. A globally unique identifier (in UUID4 format) for this namespace.",
           "readOnly": true,
           "type": "string"
+        },
+        "attributes": {
+          "description": "Optional. Attributes associated with this Namespace.",
+          "$ref": "Attributes"
+        }
+      }
+    },
+    "Attributes": {
+      "id": "Attributes",
+      "description": "Attributes associated with Namespace.",
+      "type": "object",
+      "properties": {
+        "cloudDnsManagedZones": {
+          "description": "Output only. List of Cloud DNS ManagedZones that this namespace is associated with.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

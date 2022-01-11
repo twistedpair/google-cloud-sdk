@@ -15,6 +15,17 @@ from apitools.base.py import extra_types
 package = 'servicedirectory'
 
 
+class Attributes(_messages.Message):
+  r"""Attributes associated with Namespace.
+
+  Fields:
+    cloudDnsManagedZones: Output only. List of Cloud DNS ManagedZones that
+      this namespace is associated with.
+  """
+
+  cloudDnsManagedZones = _messages.StringField(1, repeated=True)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -726,6 +737,7 @@ class Namespace(_messages.Message):
       keys and values can be no longer than 63 characters.
 
   Fields:
+    attributes: Optional. Attributes associated with this Namespace.
     createTime: Output only. The timestamp when the namespace was created.
     labels: Optional. Resource labels associated with this namespace. No more
       than 64 user labels can be associated with a given resource. Label keys
@@ -764,11 +776,12 @@ class Namespace(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  uid = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  attributes = _messages.MessageField('Attributes', 1)
+  createTime = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  uid = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class Policy(_messages.Message):

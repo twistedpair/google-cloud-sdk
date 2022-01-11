@@ -557,13 +557,11 @@ class AccessConfig(_messages.Message):
       option is ONE_TO_ONE_NAT.
 
   Fields:
-    externalIpv6: [Output Only] The first IPv6 address of the external IPv6
-      range associated with this instance, prefix length is stored in
-      externalIpv6PrefixLength in ipv6AccessConfig. The field is output only,
-      an IPv6 address from a subnetwork associated with the instance will be
-      allocated dynamically.
-    externalIpv6PrefixLength: [Output Only] The prefix length of the external
-      IPv6 range.
+    externalIpv6: The first IPv6 address of the external IPv6 range associated
+      with this instance, prefix length is stored in externalIpv6PrefixLength
+      in ipv6AccessConfig. The field is output only, an IPv6 address from a
+      subnetwork associated with the instance will be allocated dynamically.
+    externalIpv6PrefixLength: The prefix length of the external IPv6 range.
     kind: [Output Only] Type of the resource. Always compute#accessConfig for
       access configs.
     name: The name of this access configuration. The default and recommended
@@ -1396,6 +1394,8 @@ class AdvancedMachineFeatures(_messages.Message):
   Fields:
     enableNestedVirtualization: Whether to enable nested virtualization or not
       (default is false).
+    enableUefiNetworking: Whether to enable UEFI networking for instance
+      creation.
     threadsPerCore: The number of threads per physical core. To disable
       simultaneous multithreading (SMT) set this to 1. If unset, the maximum
       number of threads supported per core by the underlying processor is
@@ -1403,7 +1403,8 @@ class AdvancedMachineFeatures(_messages.Message):
   """
 
   enableNestedVirtualization = _messages.BooleanField(1)
-  threadsPerCore = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  enableUefiNetworking = _messages.BooleanField(2)
+  threadsPerCore = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class AliasIpRange(_messages.Message):
@@ -1511,14 +1512,17 @@ class AllocationSpecificSKUReservation(_messages.Message):
   configuration. Next ID: 5
 
   Fields:
+    assuredCount: [Output Only] Indicates how many instances are actually
+      usable currently.
     count: Specifies the number of resources that are allocated.
     inUseCount: [Output Only] Indicates how many instances are in use.
     instanceProperties: The instance properties for the reservation.
   """
 
-  count = _messages.IntegerField(1)
-  inUseCount = _messages.IntegerField(2)
-  instanceProperties = _messages.MessageField('AllocationSpecificSKUAllocationReservedInstanceProperties', 3)
+  assuredCount = _messages.IntegerField(1)
+  count = _messages.IntegerField(2)
+  inUseCount = _messages.IntegerField(3)
+  instanceProperties = _messages.MessageField('AllocationSpecificSKUAllocationReservedInstanceProperties', 4)
 
 
 class AttachedDisk(_messages.Message):
@@ -1718,6 +1722,7 @@ class AttachedDiskInitializeParams(_messages.Message):
     labels: Labels to apply to this disk. These can be later modified by the
       disks.setLabels method. This field is only applicable for persistent
       disks.
+    licenses: A list of publicly visible licenses. Reserved for Google's use.
     multiWriter: Indicates whether or not the disk can be read/write attached
       to more than one instance.
     onUpdateAction: Specifies which action to take on instance update with
@@ -1806,14 +1811,15 @@ class AttachedDiskInitializeParams(_messages.Message):
   diskType = _messages.StringField(4)
   guestOsFeatures = _messages.MessageField('GuestOsFeature', 5, repeated=True)
   labels = _messages.MessageField('LabelsValue', 6)
-  multiWriter = _messages.BooleanField(7)
-  onUpdateAction = _messages.EnumField('OnUpdateActionValueValuesEnum', 8)
-  provisionedIops = _messages.IntegerField(9)
-  resourcePolicies = _messages.StringField(10, repeated=True)
-  sourceImage = _messages.StringField(11)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 12)
-  sourceSnapshot = _messages.StringField(13)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 14)
+  licenses = _messages.StringField(7, repeated=True)
+  multiWriter = _messages.BooleanField(8)
+  onUpdateAction = _messages.EnumField('OnUpdateActionValueValuesEnum', 9)
+  provisionedIops = _messages.IntegerField(10)
+  resourcePolicies = _messages.StringField(11, repeated=True)
+  sourceImage = _messages.StringField(12)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 13)
+  sourceSnapshot = _messages.StringField(14)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 15)
 
 
 class AuditConfig(_messages.Message):
@@ -36138,7 +36144,7 @@ class InstanceProperties(_messages.Message):
       Keys must be in the format `tagKeys/{tag_key_id}`, and values are in the
       format `tagValues/456`. The field is ignored (both PUT & PATCH) when
       empty.
-    resourcePolicies: Resource policies (names, not ULRs) applied to instances
+    resourcePolicies: Resource policies (names, not URLs) applied to instances
       created from these properties. Note that for MachineImage, this is not
       supported yet.
     scheduling: Specifies the scheduling options for the instances that are
@@ -39291,14 +39297,14 @@ class LocationPolicyLocation(_messages.Message):
   r"""A LocationPolicyLocation object.
 
   Enums:
-    PreferenceValueValuesEnum: Preference for a given location: ALLOW or DENY.
+    PreferenceValueValuesEnum: Preference for a given location.
 
   Fields:
-    preference: Preference for a given location: ALLOW or DENY.
+    preference: Preference for a given location.
   """
 
   class PreferenceValueValuesEnum(_messages.Enum):
-    r"""Preference for a given location: ALLOW or DENY.
+    r"""Preference for a given location.
 
     Values:
       ALLOW: Location is allowed for use.
@@ -41718,8 +41724,7 @@ class NetworkInterface(_messages.Message):
     ipv6AccessType: [Output Only] One of EXTERNAL, INTERNAL to indicate
       whether the IP can be accessed from the Internet. This field is always
       inherited from its subnetwork. Valid only if stackType is IPV4_IPV6.
-    ipv6Address: [Output Only] An IPv6 internal network address for this
-      network interface.
+    ipv6Address: An IPv6 internal network address for this network interface.
     kind: [Output Only] Type of the resource. Always compute#networkInterface
       for network interfaces.
     name: [Output Only] The name of the network interface, which is generated
@@ -54055,6 +54060,10 @@ class ServiceAttachment(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    domainNames: If specified, the domain name will be used during the
+      integration between the PSC connected endpoints and the Cloud DNS. For
+      example, this is a valid domain name: "p.mycompany.com.". Current max
+      number of domain names supported is 1.
     enableProxyProtocol: If true, enable the proxy protocol which is for
       supplying client TCP/IP address data in TCP connections that traverse
       proxies on their way to destination servers.
@@ -54113,17 +54122,18 @@ class ServiceAttachment(_messages.Message):
   consumerRejectLists = _messages.StringField(4, repeated=True)
   creationTimestamp = _messages.StringField(5)
   description = _messages.StringField(6)
-  enableProxyProtocol = _messages.BooleanField(7)
-  fingerprint = _messages.BytesField(8)
-  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(10, default='compute#serviceAttachment')
-  name = _messages.StringField(11)
-  natSubnets = _messages.StringField(12, repeated=True)
-  producerForwardingRule = _messages.StringField(13)
-  pscServiceAttachmentId = _messages.MessageField('Uint128', 14)
-  region = _messages.StringField(15)
-  selfLink = _messages.StringField(16)
-  targetService = _messages.StringField(17)
+  domainNames = _messages.StringField(7, repeated=True)
+  enableProxyProtocol = _messages.BooleanField(8)
+  fingerprint = _messages.BytesField(9)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(11, default='compute#serviceAttachment')
+  name = _messages.StringField(12)
+  natSubnets = _messages.StringField(13, repeated=True)
+  producerForwardingRule = _messages.StringField(14)
+  pscServiceAttachmentId = _messages.MessageField('Uint128', 15)
+  region = _messages.StringField(16)
+  selfLink = _messages.StringField(17)
+  targetService = _messages.StringField(18)
 
 
 class ServiceAttachmentAggregatedList(_messages.Message):
@@ -56743,7 +56753,8 @@ class Subnetwork(_messages.Message):
       the subnet is updated into IPV4_IPV6 dual stack. If the ipv6_type is
       EXTERNAL then this subnet cannot enable direct path.
     ipv6CidrRange: [Output Only] The range of internal IPv6 addresses that are
-      owned by this subnetwork.
+      owned by this subnetwork. Note this will be for private google access
+      only eventually.
     kind: [Output Only] Type of the resource. Always compute#subnetwork for
       Subnetwork resources.
     logConfig: This field denotes the VPC flow logging options for this

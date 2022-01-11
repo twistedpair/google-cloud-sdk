@@ -271,6 +271,20 @@
               "RELATED_ACCOUNTS_NUMBER_HIGH"
             ]
           }
+        },
+        "recommendedAction": {
+          "description": "Recommended action after this request.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default unspecified type.",
+            "The customer should probably request 2FA to their user.",
+            "This is likely an already seen and safe request. 2FA can be skipped."
+          ],
+          "enum": [
+            "RECOMMENDED_ACTION_UNSPECIFIED",
+            "REQUEST_2FA",
+            "SKIP_2FA"
+          ]
         }
       }
     },
@@ -304,7 +318,9 @@
             "type": "string",
             "enumDescriptions": [
               "Default unspecified reason.",
-              "Indicates a chargeback for fraud was issued for the transaction associated with the assessment.",
+              "Indicates a chargeback issued for the transaction with no other details. When possible, specify the type by using CHARGEBACK_FRAUD or CHARGEBACK_DISPUTE instead.",
+              "Indicates a chargeback related to an alleged unauthorized transaction from the cardholder's perspective (for example, the card number was stolen).",
+              "Indicates a chargeback related to the cardholder having provided their card details but allegedly not being satisfied with the purchase (for example, misrepresentation, attempted cancellation).",
               "Indicates the transaction associated with the assessment is suspected of being fraudulent based on the payment method, billing details, shipping address or other transaction information.",
               "Indicates that the user was served a 2FA challenge. An old assessment with `ENUM_VALUES.INITIATED_TWO_FACTOR` reason that has not been overwritten with `PASSED_TWO_FACTOR` is treated as an abandoned 2FA flow. This is equivalent to `FAILED_TWO_FACTOR`.",
               "Indicates that the user passed a 2FA challenge.",
@@ -315,6 +331,8 @@
             "enum": [
               "REASON_UNSPECIFIED",
               "CHARGEBACK",
+              "CHARGEBACK_FRAUD",
+              "CHARGEBACK_DISPUTE",
               "PAYMENT_HEURISTICS",
               "INITIATED_TWO_FACTOR",
               "PASSED_TWO_FACTOR",
@@ -378,6 +396,10 @@
         "testingOptions": {
           "description": "Options for user acceptance testing.",
           "$ref": "GoogleCloudRecaptchaenterpriseV1TestingOptions"
+        },
+        "wafSettings": {
+          "description": "Settings for WAF",
+          "$ref": "GoogleCloudRecaptchaenterpriseV1WafSettings"
         }
       }
     },
@@ -493,6 +515,41 @@
             "TESTING_CHALLENGE_UNSPECIFIED",
             "NOCAPTCHA",
             "UNSOLVABLE_CHALLENGE"
+          ]
+        }
+      }
+    },
+    "GoogleCloudRecaptchaenterpriseV1WafSettings": {
+      "id": "GoogleCloudRecaptchaenterpriseV1WafSettings",
+      "description": "Settings specific to keys that can be used for WAF (Web Application Firewall).",
+      "type": "object",
+      "properties": {
+        "wafService": {
+          "description": "Required. The WAF service that uses this key.",
+          "type": "string",
+          "enumDescriptions": [
+            "Undefined WAF",
+            "Cloud Armor"
+          ],
+          "enum": [
+            "WAF_SERVICE_UNSPECIFIED",
+            "CA"
+          ]
+        },
+        "wafFeature": {
+          "description": "Required. The WAF feature for which this key is enabled.",
+          "type": "string",
+          "enumDescriptions": [
+            "Undefined feature.",
+            "Redirects suspicious traffic to reCAPTCHA.",
+            "Use reCAPTCHA session-tokens to protect the whole user session on the site's domain.",
+            "Use reCAPTCHA action-tokens to protect user actions."
+          ],
+          "enum": [
+            "WAF_FEATURE_UNSPECIFIED",
+            "CHALLENGE_PAGE",
+            "SESSION_TOKEN",
+            "ACTION_TOKEN"
           ]
         }
       }
@@ -1366,11 +1423,11 @@
           "methods": {
             "search": {
               "id": "recaptchaenterprise.projects.relatedaccountgroupmemberships.search",
-              "path": "v1/{+parent}/relatedaccountgroupmemberships:search",
+              "path": "v1/{+project}/relatedaccountgroupmemberships:search",
               "flatPath": "v1/projects/{projectsId}/relatedaccountgroupmemberships:search",
               "httpMethod": "POST",
               "parameters": {
-                "parent": {
+                "project": {
                   "description": "Required. The name of the project to search related account group memberships from, in the format \"projects\/{project}\".",
                   "pattern": "^projects\/[^\/]+$",
                   "location": "path",
@@ -1379,7 +1436,7 @@
                 }
               },
               "parameterOrder": [
-                "parent"
+                "project"
               ],
               "request": {
                 "$ref": "GoogleCloudRecaptchaenterpriseV1SearchRelatedAccountGroupMembershipsRequest"

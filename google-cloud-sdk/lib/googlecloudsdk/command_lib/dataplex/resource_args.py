@@ -22,6 +22,14 @@ from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 
+def GetProjectSpec():
+  """Gets Project spec."""
+  return concepts.ResourceSpec(
+      'dataplex.projects',
+      resource_name='projects',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
 def GetLakeResourceSpec():
   """Gets Lake resource spec."""
   return concepts.ResourceSpec(
@@ -105,6 +113,16 @@ def ContentAttributeConfig():
 def EnvironmentAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='environment', help_text='The name of {resource} to use.')
+
+
+def AddProjectArg(parser, verb, positional=True):
+  """Adds a resource argument for a project."""
+  name = 'project' if positional else '--project'
+  return concept_parsers.ConceptParser.ForResource(
+      name,
+      GetProjectSpec(),
+      'Arguments and flags that define the project you want {}'.format(verb),
+      required=True).AddToParser(parser)
 
 
 def AddLakeResourceArg(parser, verb, positional=True):

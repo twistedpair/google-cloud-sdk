@@ -69,3 +69,6 @@ properties:
   error_details:
     "$ref": "#/definitions/error_details"
     description: Only present if the message is related to an error.
+  level:
+    type: string
+    description: The message level.

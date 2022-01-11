@@ -1175,7 +1175,12 @@ def RunMachineImageOVFImportBuild(args, output_filter, release_track):
 
   backoff = lambda elapsed: 2 if elapsed < 30 else 15
   builder_region = _GetBuilderRegion(_GetMachineImageImportRegion, args)
-  builder = _GetBuilder(_OVF_IMPORT_BUILDER_EXECUTABLE, args.docker_image_tag,
+
+  docker_image_tag = _DEFAULT_BUILDER_VERSION
+  if hasattr(args, 'docker_image_tag'):
+    docker_image_tag = args.docker_image_tag
+
+  builder = _GetBuilder(_OVF_IMPORT_BUILDER_EXECUTABLE, docker_image_tag,
                         builder_region)
 
   return _RunCloudBuild(

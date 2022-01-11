@@ -980,7 +980,7 @@ class ArtifactregistryV1beta2(base_api.BaseApiClient):
     )
 
     def UpdateProjectSettings(self, request, global_params=None):
-      r"""Retrieves the Settings for the Project.
+      r"""Updates the Settings for the Project.
 
       Args:
         request: (ArtifactregistryProjectsUpdateProjectSettingsRequest) input message

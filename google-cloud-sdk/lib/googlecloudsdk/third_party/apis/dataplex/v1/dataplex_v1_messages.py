@@ -1520,24 +1520,26 @@ class GoogleCloudDataplexV1AssetDiscoverySpec(_messages.Message):
 
   Fields:
     csvOptions: Optional. Configuration for CSV data.
-    enabled: Optional. Whether discovery is enabled. When inheritance_mode is
-      set to INHERIT this field is unset and ignored.
+    enabled: Optional. Whether discovery is enabled.
     excludePatterns: Optional. The list of patterns to apply for selecting
       data to exclude during discovery. For Cloud Storage bucket assets, these
       are interpreted as glob patterns used to match object names. For
       BigQuery dataset assets, these are interpreted as patterns to match
-      table names. When inheritance_mode is set to INHERIT this field is unset
-      and ignored.
+      table names.
     includePatterns: Optional. The list of patterns to apply for selecting
       data to include during discovery if only a subset of the data should
       considered. For Cloud Storage bucket assets, these are interpreted as
       glob patterns used to match object names. For BigQuery dataset assets,
-      these are interpreted as patterns to match table names. When
-      inheritance_mode is set to INHERIT this field is unset and ignored.
+      these are interpreted as patterns to match table names.
     jsonOptions: Optional. Configuration for Json data.
     schedule: Optional. Cron schedule (https://en.wikipedia.org/wiki/Cron) for
-      running discovery jobs periodically. Discovery jobs must be scheduled at
-      least 30 minutes apart.
+      running discovery periodically. Successive discovery runs must be
+      scheduled at least 60 minutes apart. The default value is to run
+      discovery every 60 minutes. To explicitly set a timezone to the cron
+      tab, apply a prefix in the cron tab: "CRON_TZ=${IANA_TIME_ZONE}" or
+      TZ=${IANA_TIME_ZONE}". The ${IANA_TIME_ZONE} may only be a valid string
+      from IANA time zone database. For example, "CRON_TZ=America/New_York 1 *
+      * * *", or "TZ=America/New_York 1 * * * *".
   """
 
   csvOptions = _messages.MessageField('GoogleCloudDataplexV1AssetDiscoverySpecCsvOptions', 1)
@@ -1590,13 +1592,11 @@ class GoogleCloudDataplexV1AssetDiscoveryStatus(_messages.Message):
     StateValueValuesEnum: The current status of the discovery feature.
 
   Fields:
-    lastRunTime: The time when the last discovery job started.
-    latestProcessedChangeTime: Timestamp of the latest change to data that has
-      been processed. This is only valid when discovery is in
-      PROCESSING_CHANGES state.
+    lastRunDuration: The duration of the last discovery run.
+    lastRunTime: The start time of the last discovery run.
     message: Additional information about the current state.
-    nextRunTime: The time when the next scheduled discovery job will start.
     state: The current status of the discovery feature.
+    stats: Data Stats of the asset reported by discovery.
     updateTime: Last update time of the status.
   """
 
@@ -1607,31 +1607,38 @@ class GoogleCloudDataplexV1AssetDiscoveryStatus(_messages.Message):
       STATE_UNSPECIFIED: State is unspecified.
       SCHEDULED: Discovery for the asset is scheduled.
       IN_PROGRESS: Discovery for the asset is running.
-      PAUSED: User-provided discovery schedule is temporarily ineffective, and
-        discovery runs on an alternative schedule when there is any pending
-        discovery action.
-      ERROR: Discovery for the asset has errors.
+      PAUSED: Discovery for the asset is currently paused--for example due to
+        a lack of available resources. It will be automatically resumed.
       DISABLED: Discovery for the asset is disabled.
-      PROCESSING_DATA: Discovery for the asset is processing all the data in
-        the storage resource.
-      PROCESSING_CHANGES: Discovery for the asset is processing changes to the
-        data.
     """
     STATE_UNSPECIFIED = 0
     SCHEDULED = 1
     IN_PROGRESS = 2
     PAUSED = 3
-    ERROR = 4
-    DISABLED = 5
-    PROCESSING_DATA = 6
-    PROCESSING_CHANGES = 7
+    DISABLED = 4
 
-  lastRunTime = _messages.StringField(1)
-  latestProcessedChangeTime = _messages.StringField(2)
+  lastRunDuration = _messages.StringField(1)
+  lastRunTime = _messages.StringField(2)
   message = _messages.StringField(3)
-  nextRunTime = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  stats = _messages.MessageField('GoogleCloudDataplexV1AssetDiscoveryStatusStats', 5)
   updateTime = _messages.StringField(6)
+
+
+class GoogleCloudDataplexV1AssetDiscoveryStatusStats(_messages.Message):
+  r"""The aggregated data statistics for the asset reported by discovery.
+
+  Fields:
+    dataItems: The count of data items within the referenced resource.
+    dataSize: The number of stored data bytes within the referenced resource.
+    filesets: The count of fileset entities within the referenced resource.
+    tables: The count of table entities within the referenced resource.
+  """
+
+  dataItems = _messages.IntegerField(1)
+  dataSize = _messages.IntegerField(2)
+  filesets = _messages.IntegerField(3)
+  tables = _messages.IntegerField(4)
 
 
 class GoogleCloudDataplexV1AssetResourceSpec(_messages.Message):
@@ -2885,12 +2892,10 @@ class GoogleCloudDataplexV1StorageFormat(_messages.Message):
         uncompressed data.
       GZIP: GZip compressed set of files.
       BZIP2: BZip2 compressed set of files.
-      LZ4: LZ4 compressed set of files.
     """
     COMPRESSION_FORMAT_UNSPECIFIED = 0
     GZIP = 1
     BZIP2 = 2
-    LZ4 = 3
 
   class FormatValueValuesEnum(_messages.Enum):
     r"""Output only. The data format associated with the stored data, which
@@ -3426,9 +3431,10 @@ class GoogleCloudDataplexV1ZoneDiscoverySpec(_messages.Message):
       these are interpreted as patterns to match table names.
     jsonOptions: Optional. Configuration for Json data.
     schedule: Optional. Cron schedule (https://en.wikipedia.org/wiki/Cron) for
-      running discovery jobs periodically. Discovery jobs must be scheduled at
-      least 30 minutes apart. To explicitly set a timezone to the cron tab,
-      apply a prefix in the cron tab: "CRON_TZ=${IANA_TIME_ZONE}" or
+      running discovery periodically. Successive discovery runs must be
+      scheduled at least 60 minutes apart. The default value is to run
+      discovery every 60 minutes. To explicitly set a timezone to the cron
+      tab, apply a prefix in the cron tab: "CRON_TZ=${IANA_TIME_ZONE}" or
       TZ=${IANA_TIME_ZONE}". The ${IANA_TIME_ZONE} may only be a valid string
       from IANA time zone database. For example, "CRON_TZ=America/New_York 1 *
       * * *", or "TZ=America/New_York 1 * * * *".

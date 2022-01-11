@@ -363,7 +363,9 @@ class _BaseInstances(object):
             insights_config_record_application_tags=args
             .insights_config_record_application_tags,
             insights_config_record_client_address=args
-            .insights_config_record_client_address))
+            .insights_config_record_client_address,
+            insights_config_query_plans_per_minute=args
+            .insights_config_query_plans_per_minute))
 
     if args.storage_type:
       settings.dataDiskType = _ParseStorageType(
@@ -488,7 +490,9 @@ class _BaseInstances(object):
             insights_config_record_application_tags=args
             .insights_config_record_application_tags,
             insights_config_record_client_address=args
-            .insights_config_record_client_address))
+            .insights_config_record_client_address,
+            insights_config_query_plans_per_minute=args
+            .insights_config_query_plans_per_minute))
 
     if args.active_directory_domain is not None:
       settings.activeDirectoryConfig = (

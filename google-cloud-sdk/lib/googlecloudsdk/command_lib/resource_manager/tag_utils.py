@@ -18,8 +18,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import json
 import re
 
+from apitools.base.py.exceptions import HttpError
 from apitools.base.py.exceptions import HttpForbiddenError
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.resource_manager import tags
@@ -69,7 +71,10 @@ def GetTagKeyFromNamespacedName(namespaced_name):
   parts = namespaced_name.split('/')
   if len(parts) != 2:
     raise InvalidInputError(
-        'TagKey namespaced name [{}] invalid'.format(namespaced_name))
+        'TagKey namespaced name [{}] invalid. It should be the permanent ID or '
+        'namespaced name; for example: tagKeys/123456789012 or '
+        'ORGANIZATION_ID/TAG_KEY_SHORT_NAME'
+        .format(namespaced_name))
 
   # ListTagKeys call requires the global CRM API endpoint.
   with endpoints.CrmEndpointOverrides('global'):
@@ -85,6 +90,14 @@ def GetTagKeyFromNamespacedName(namespaced_name):
           'TagKey [{}] does not exist or user does not have permissions to '
           'resolve namespaced name. Retry using tagKey\'s resource name, such '
           'as tagKeys/123.'.format(namespaced_name))
+      raise
+    except HttpError as e:
+      if json.loads(e.content)['error']['status'] == 'INVALID_ARGUMENT':
+        print(
+            'TagKey namespaced name [{}] invalid. It should be the permanent '
+            'ID or namespaced name; for example: tagKeys/123456789012 or '
+            'ORGANIZATION_ID/TAG_KEY_SHORT_NAME'
+            .format(namespaced_name))
       raise
 
     for key in response.tagKeys:
@@ -110,10 +123,12 @@ def GetTagValueFromNamespacedName(namespaced_name):
   parts = namespaced_name.split('/')
   if len(parts) != 3:
     raise InvalidInputError(
-        'TagValue namespaced name [{}] invalid'.format(namespaced_name))
+        'TagValue namespaced name [{}] invalid. It should be the permanent ID '
+        'or namespaced name; for example: tagValues/7890123456 or '
+        'ORGANIZATION_ID/TAG_KEY_SHORT_NAME/TAG_VALUE_SHORT_NAME'
+        .format(namespaced_name))
 
   name = GetTagKeyFromNamespacedName('/'.join(parts[:2])).name
-
   # ListTagValues call requires the global CRM API endpoint.
   with endpoints.CrmEndpointOverrides('global'):
     req = ListResourceFns['tagValues'](parent=name)
@@ -125,7 +140,11 @@ def GetTagValueFromNamespacedName(namespaced_name):
       if value.namespacedName == namespaced_name:
         return value
 
-  raise InvalidInputError('TagValue [{}] not found'.format(namespaced_name))
+  raise InvalidInputError(
+      'TagValue [{}] not found. It should be the permanent ID or namespaced '
+      'name; for example: tagValues/7890123456 or '
+      'ORGANIZATION_ID/TAG_KEY_SHORT_NAME/TAG_VALUE_SHORT_NAME'
+      .format(namespaced_name))
 
 
 def GetResourceFromNamespacedName(namespaced_name, resource_type):

@@ -286,6 +286,10 @@
           "description": "Output only. The PEM-encoded public certificate of the cluster's CA.",
           "readOnly": true,
           "type": "string"
+        },
+        "maintenancePolicy": {
+          "description": "Optional. Cluster-wide maintenance policy configuration.",
+          "$ref": "MaintenancePolicy"
         }
       }
     },
@@ -370,6 +374,60 @@
         "username": {
           "description": "Required. An active Google username.",
           "type": "string"
+        }
+      }
+    },
+    "MaintenancePolicy": {
+      "id": "MaintenancePolicy",
+      "description": "Maintenance policy configuration.",
+      "type": "object",
+      "properties": {
+        "window": {
+          "description": "Specifies the maintenance window in which maintenance may be performed.",
+          "$ref": "MaintenanceWindow"
+        }
+      }
+    },
+    "MaintenanceWindow": {
+      "id": "MaintenanceWindow",
+      "description": "Maintenance window configuration",
+      "type": "object",
+      "properties": {
+        "recurringWindow": {
+          "description": "Configuration of a recurring maintenance window.",
+          "$ref": "RecurringTimeWindow"
+        }
+      }
+    },
+    "RecurringTimeWindow": {
+      "id": "RecurringTimeWindow",
+      "description": "Represents an arbitrary window of time that recurs.",
+      "type": "object",
+      "properties": {
+        "window": {
+          "description": "The window of the first recurrence.",
+          "$ref": "TimeWindow"
+        },
+        "recurrence": {
+          "description": "An RRULE (https:\/\/tools.ietf.org\/html\/rfc5545#section-3.8.5.3) for how this window recurs. They go on for the span of time between the start and end time.",
+          "type": "string"
+        }
+      }
+    },
+    "TimeWindow": {
+      "id": "TimeWindow",
+      "description": "Represents an arbitrary window of time.",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "The time that the window first starts.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "The time that the window ends. The end time must take place after the start time.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

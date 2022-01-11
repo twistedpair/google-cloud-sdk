@@ -42,11 +42,13 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
     self.folders_containerThreatDetectionSettings = self.FoldersContainerThreatDetectionSettingsService(self)
     self.folders_eventThreatDetectionSettings = self.FoldersEventThreatDetectionSettingsService(self)
     self.folders_securityHealthAnalyticsSettings = self.FoldersSecurityHealthAnalyticsSettingsService(self)
+    self.folders_virtualMachineThreatDetectionSettings = self.FoldersVirtualMachineThreatDetectionSettingsService(self)
     self.folders_webSecurityScannerSettings = self.FoldersWebSecurityScannerSettingsService(self)
     self.folders = self.FoldersService(self)
     self.organizations_containerThreatDetectionSettings = self.OrganizationsContainerThreatDetectionSettingsService(self)
     self.organizations_eventThreatDetectionSettings = self.OrganizationsEventThreatDetectionSettingsService(self)
     self.organizations_securityHealthAnalyticsSettings = self.OrganizationsSecurityHealthAnalyticsSettingsService(self)
+    self.organizations_virtualMachineThreatDetectionSettings = self.OrganizationsVirtualMachineThreatDetectionSettingsService(self)
     self.organizations_webSecurityScannerSettings = self.OrganizationsWebSecurityScannerSettingsService(self)
     self.organizations = self.OrganizationsService(self)
     self.projects_containerThreatDetectionSettings = self.ProjectsContainerThreatDetectionSettingsService(self)
@@ -55,6 +57,7 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
     self.projects_locations_clusters = self.ProjectsLocationsClustersService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_securityHealthAnalyticsSettings = self.ProjectsSecurityHealthAnalyticsSettingsService(self)
+    self.projects_virtualMachineThreatDetectionSettings = self.ProjectsVirtualMachineThreatDetectionSettingsService(self)
     self.projects_webSecurityScannerSettings = self.ProjectsWebSecurityScannerSettingsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -166,6 +169,43 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
         request_field='',
         request_type_name='SecuritycenterFoldersSecurityHealthAnalyticsSettingsCalculateRequest',
         response_type_name='SecurityHealthAnalyticsSettings',
+        supports_download=False,
+    )
+
+  class FoldersVirtualMachineThreatDetectionSettingsService(base_api.BaseApiService):
+    """Service class for the folders_virtualMachineThreatDetectionSettings resource."""
+
+    _NAME = 'folders_virtualMachineThreatDetectionSettings'
+
+    def __init__(self, client):
+      super(SecuritycenterV1beta2.FoldersVirtualMachineThreatDetectionSettingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Calculate(self, request, global_params=None):
+      r"""Calculates the effective VirtualMachineThreatDetectionSettings based on its level in the resource hierarchy and its settings.
+
+      Args:
+        request: (SecuritycenterFoldersVirtualMachineThreatDetectionSettingsCalculateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VirtualMachineThreatDetectionSettings) The response message.
+      """
+      config = self.GetMethodConfig('Calculate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Calculate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/folders/{foldersId}/virtualMachineThreatDetectionSettings:calculate',
+        http_method='GET',
+        method_id='securitycenter.folders.virtualMachineThreatDetectionSettings.calculate',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta2/{+name}:calculate',
+        request_field='',
+        request_type_name='SecuritycenterFoldersVirtualMachineThreatDetectionSettingsCalculateRequest',
+        response_type_name='VirtualMachineThreatDetectionSettings',
         supports_download=False,
     )
 
@@ -297,6 +337,33 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetVirtualMachineThreatDetectionSettings(self, request, global_params=None):
+      r"""Get the VirtualMachineThreatDetectionSettings resource.
+
+      Args:
+        request: (SecuritycenterFoldersGetVirtualMachineThreatDetectionSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VirtualMachineThreatDetectionSettings) The response message.
+      """
+      config = self.GetMethodConfig('GetVirtualMachineThreatDetectionSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetVirtualMachineThreatDetectionSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/folders/{foldersId}/virtualMachineThreatDetectionSettings',
+        http_method='GET',
+        method_id='securitycenter.folders.getVirtualMachineThreatDetectionSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta2/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterFoldersGetVirtualMachineThreatDetectionSettingsRequest',
+        response_type_name='VirtualMachineThreatDetectionSettings',
+        supports_download=False,
+    )
+
     def GetWebSecurityScannerSettings(self, request, global_params=None):
       r"""Get the WebSecurityScannerSettings resource.
 
@@ -402,6 +469,33 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
         request_field='securityHealthAnalyticsSettings',
         request_type_name='SecuritycenterFoldersUpdateSecurityHealthAnalyticsSettingsRequest',
         response_type_name='SecurityHealthAnalyticsSettings',
+        supports_download=False,
+    )
+
+    def UpdateVirtualMachineThreatDetectionSettings(self, request, global_params=None):
+      r"""Update the VirtualMachineThreatDetectionSettings resource.
+
+      Args:
+        request: (SecuritycenterFoldersUpdateVirtualMachineThreatDetectionSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VirtualMachineThreatDetectionSettings) The response message.
+      """
+      config = self.GetMethodConfig('UpdateVirtualMachineThreatDetectionSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateVirtualMachineThreatDetectionSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/folders/{foldersId}/virtualMachineThreatDetectionSettings',
+        http_method='PATCH',
+        method_id='securitycenter.folders.updateVirtualMachineThreatDetectionSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta2/{+name}',
+        request_field='virtualMachineThreatDetectionSettings',
+        request_type_name='SecuritycenterFoldersUpdateVirtualMachineThreatDetectionSettingsRequest',
+        response_type_name='VirtualMachineThreatDetectionSettings',
         supports_download=False,
     )
 
@@ -540,6 +634,43 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
         request_field='',
         request_type_name='SecuritycenterOrganizationsSecurityHealthAnalyticsSettingsCalculateRequest',
         response_type_name='SecurityHealthAnalyticsSettings',
+        supports_download=False,
+    )
+
+  class OrganizationsVirtualMachineThreatDetectionSettingsService(base_api.BaseApiService):
+    """Service class for the organizations_virtualMachineThreatDetectionSettings resource."""
+
+    _NAME = 'organizations_virtualMachineThreatDetectionSettings'
+
+    def __init__(self, client):
+      super(SecuritycenterV1beta2.OrganizationsVirtualMachineThreatDetectionSettingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Calculate(self, request, global_params=None):
+      r"""Calculates the effective VirtualMachineThreatDetectionSettings based on its level in the resource hierarchy and its settings.
+
+      Args:
+        request: (SecuritycenterOrganizationsVirtualMachineThreatDetectionSettingsCalculateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VirtualMachineThreatDetectionSettings) The response message.
+      """
+      config = self.GetMethodConfig('Calculate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Calculate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/organizations/{organizationsId}/virtualMachineThreatDetectionSettings:calculate',
+        http_method='GET',
+        method_id='securitycenter.organizations.virtualMachineThreatDetectionSettings.calculate',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta2/{+name}:calculate',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsVirtualMachineThreatDetectionSettingsCalculateRequest',
+        response_type_name='VirtualMachineThreatDetectionSettings',
         supports_download=False,
     )
 
@@ -725,6 +856,33 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetVirtualMachineThreatDetectionSettings(self, request, global_params=None):
+      r"""Get the VirtualMachineThreatDetectionSettings resource.
+
+      Args:
+        request: (SecuritycenterOrganizationsGetVirtualMachineThreatDetectionSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VirtualMachineThreatDetectionSettings) The response message.
+      """
+      config = self.GetMethodConfig('GetVirtualMachineThreatDetectionSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetVirtualMachineThreatDetectionSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/organizations/{organizationsId}/virtualMachineThreatDetectionSettings',
+        http_method='GET',
+        method_id='securitycenter.organizations.getVirtualMachineThreatDetectionSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta2/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsGetVirtualMachineThreatDetectionSettingsRequest',
+        response_type_name='VirtualMachineThreatDetectionSettings',
+        supports_download=False,
+    )
+
     def GetWebSecurityScannerSettings(self, request, global_params=None):
       r"""Get the WebSecurityScannerSettings resource.
 
@@ -830,6 +988,33 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
         request_field='securityHealthAnalyticsSettings',
         request_type_name='SecuritycenterOrganizationsUpdateSecurityHealthAnalyticsSettingsRequest',
         response_type_name='SecurityHealthAnalyticsSettings',
+        supports_download=False,
+    )
+
+    def UpdateVirtualMachineThreatDetectionSettings(self, request, global_params=None):
+      r"""Update the VirtualMachineThreatDetectionSettings resource.
+
+      Args:
+        request: (SecuritycenterOrganizationsUpdateVirtualMachineThreatDetectionSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VirtualMachineThreatDetectionSettings) The response message.
+      """
+      config = self.GetMethodConfig('UpdateVirtualMachineThreatDetectionSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateVirtualMachineThreatDetectionSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/organizations/{organizationsId}/virtualMachineThreatDetectionSettings',
+        http_method='PATCH',
+        method_id='securitycenter.organizations.updateVirtualMachineThreatDetectionSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta2/{+name}',
+        request_field='virtualMachineThreatDetectionSettings',
+        request_type_name='SecuritycenterOrganizationsUpdateVirtualMachineThreatDetectionSettingsRequest',
+        response_type_name='VirtualMachineThreatDetectionSettings',
         supports_download=False,
     )
 
@@ -1082,6 +1267,43 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsVirtualMachineThreatDetectionSettingsService(base_api.BaseApiService):
+    """Service class for the projects_virtualMachineThreatDetectionSettings resource."""
+
+    _NAME = 'projects_virtualMachineThreatDetectionSettings'
+
+    def __init__(self, client):
+      super(SecuritycenterV1beta2.ProjectsVirtualMachineThreatDetectionSettingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Calculate(self, request, global_params=None):
+      r"""Calculates the effective VirtualMachineThreatDetectionSettings based on its level in the resource hierarchy and its settings.
+
+      Args:
+        request: (SecuritycenterProjectsVirtualMachineThreatDetectionSettingsCalculateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VirtualMachineThreatDetectionSettings) The response message.
+      """
+      config = self.GetMethodConfig('Calculate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Calculate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/projects/{projectsId}/virtualMachineThreatDetectionSettings:calculate',
+        http_method='GET',
+        method_id='securitycenter.projects.virtualMachineThreatDetectionSettings.calculate',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta2/{+name}:calculate',
+        request_field='',
+        request_type_name='SecuritycenterProjectsVirtualMachineThreatDetectionSettingsCalculateRequest',
+        response_type_name='VirtualMachineThreatDetectionSettings',
+        supports_download=False,
+    )
+
   class ProjectsWebSecurityScannerSettingsService(base_api.BaseApiService):
     """Service class for the projects_webSecurityScannerSettings resource."""
 
@@ -1210,6 +1432,33 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetVirtualMachineThreatDetectionSettings(self, request, global_params=None):
+      r"""Get the VirtualMachineThreatDetectionSettings resource.
+
+      Args:
+        request: (SecuritycenterProjectsGetVirtualMachineThreatDetectionSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VirtualMachineThreatDetectionSettings) The response message.
+      """
+      config = self.GetMethodConfig('GetVirtualMachineThreatDetectionSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetVirtualMachineThreatDetectionSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/projects/{projectsId}/virtualMachineThreatDetectionSettings',
+        http_method='GET',
+        method_id='securitycenter.projects.getVirtualMachineThreatDetectionSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta2/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterProjectsGetVirtualMachineThreatDetectionSettingsRequest',
+        response_type_name='VirtualMachineThreatDetectionSettings',
+        supports_download=False,
+    )
+
     def GetWebSecurityScannerSettings(self, request, global_params=None):
       r"""Get the WebSecurityScannerSettings resource.
 
@@ -1315,6 +1564,33 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
         request_field='securityHealthAnalyticsSettings',
         request_type_name='SecuritycenterProjectsUpdateSecurityHealthAnalyticsSettingsRequest',
         response_type_name='SecurityHealthAnalyticsSettings',
+        supports_download=False,
+    )
+
+    def UpdateVirtualMachineThreatDetectionSettings(self, request, global_params=None):
+      r"""Update the VirtualMachineThreatDetectionSettings resource.
+
+      Args:
+        request: (SecuritycenterProjectsUpdateVirtualMachineThreatDetectionSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VirtualMachineThreatDetectionSettings) The response message.
+      """
+      config = self.GetMethodConfig('UpdateVirtualMachineThreatDetectionSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateVirtualMachineThreatDetectionSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/projects/{projectsId}/virtualMachineThreatDetectionSettings',
+        http_method='PATCH',
+        method_id='securitycenter.projects.updateVirtualMachineThreatDetectionSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta2/{+name}',
+        request_field='virtualMachineThreatDetectionSettings',
+        request_type_name='SecuritycenterProjectsUpdateVirtualMachineThreatDetectionSettingsRequest',
+        response_type_name='VirtualMachineThreatDetectionSettings',
         supports_download=False,
     )
 

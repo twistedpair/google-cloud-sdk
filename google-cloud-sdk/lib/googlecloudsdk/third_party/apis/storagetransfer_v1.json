@@ -324,6 +324,10 @@
           "description": "An Azure Blob Storage data source.",
           "$ref": "AzureBlobStorageData"
         },
+        "gcsIntermediateDataLocation": {
+          "description": "Cloud Storage intermediate data location.",
+          "$ref": "GcsData"
+        },
         "objectConditions": {
           "description": "Only objects that satisfy these object conditions are included in the set of data source and data sink objects. Object conditions based on objects' \"last modification time\" do not exclude objects in a data sink.",
           "$ref": "ObjectConditions"
@@ -450,7 +454,7 @@
       "type": "object",
       "properties": {
         "sasToken": {
-          "description": "Required. Azure shared access signature (SAS). *Note:*Copying data from Azure Data Lake Storage (ADLS) Gen 2 is in [Preview](\/products\/#product-launch-stages). During Preview, if you are copying data from ADLS Gen 2, you must use an account SAS. For more information about SAS, see [Grant limited access to Azure Storage resources using shared access signatures (SAS)](https:\/\/docs.microsoft.com\/en-us\/azure\/storage\/common\/storage-sas-overview).",
+          "description": "Required. Azure shared access signature (SAS). For more information about SAS, see [Grant limited access to Azure Storage resources using shared access signatures (SAS)](https:\/\/docs.microsoft.com\/en-us\/azure\/storage\/common\/storage-sas-overview).",
           "type": "string"
         }
       }
@@ -512,6 +516,73 @@
         "deleteObjectsFromSourceAfterTransfer": {
           "description": "Whether objects should be deleted from the source after they are transferred to the sink. **Note:** This option and delete_objects_unique_in_sink are mutually exclusive.",
           "type": "boolean"
+        },
+        "metadataOptions": {
+          "description": "Represents the selected metadata options for a transfer job.",
+          "$ref": "MetadataOptions"
+        }
+      }
+    },
+    "MetadataOptions": {
+      "id": "MetadataOptions",
+      "description": "Specifies the metadata options for running a transfer.",
+      "type": "object",
+      "properties": {
+        "symlink": {
+          "description": "Specifies how symlinks should be handled by the transfer. If unspecified, the default behavior is the same as SYMLINK_SKIP when the source is a POSIX file system.",
+          "type": "string",
+          "enumDescriptions": [
+            "Symlink behavior is unspecified. The default behavior is to skip symlinks during a transfer job.",
+            "Skip symlinks during a transfer job.",
+            "Preserve symlinks during a transfer job."
+          ],
+          "enum": [
+            "SYMLINK_UNSPECIFIED",
+            "SYMLINK_SKIP",
+            "SYMLINK_PRESERVE"
+          ]
+        },
+        "mode": {
+          "description": "Specifies how each file's mode attribute should be handled by the transfer. If unspecified, the default behavior is the same as MODE_SKIP when the source is a POSIX file system.",
+          "type": "string",
+          "enumDescriptions": [
+            "Mode behavior is unspecified.",
+            "Skip mode during a transfer job.",
+            "Preserve mode during a transfer job."
+          ],
+          "enum": [
+            "MODE_UNSPECIFIED",
+            "MODE_SKIP",
+            "MODE_PRESERVE"
+          ]
+        },
+        "gid": {
+          "description": "Specifies how each file's GID attribute should be handled by the transfer. If unspecified, the default behavior is the same as GID_SKIP when the source is a POSIX file system.",
+          "type": "string",
+          "enumDescriptions": [
+            "GID behavior is unspecified.",
+            "Skip GID during a transfer job.",
+            "Preserve GID during a transfer job."
+          ],
+          "enum": [
+            "GID_UNSPECIFIED",
+            "GID_SKIP",
+            "GID_NUMBER"
+          ]
+        },
+        "uid": {
+          "description": "Specifies how each file's UID attribute should be handled by the transfer. If unspecified, the default behavior is the same as UID_SKIP when the source is a POSIX file system.",
+          "type": "string",
+          "enumDescriptions": [
+            "UID behavior is unspecified.",
+            "Skip UID during a transfer job.",
+            "Preserve UID during a transfer job."
+          ],
+          "enum": [
+            "UID_UNSPECIFIED",
+            "UID_SKIP",
+            "UID_NUMBER"
+          ]
         }
       }
     },
@@ -572,19 +643,19 @@
     },
     "LoggingConfig": {
       "id": "LoggingConfig",
-      "description": "Logging configuration.",
+      "description": "Specifies the logging behavior for transfer operations. For cloud-to-cloud transfers, logs are sent to Cloud Logging. See [Read transfer logs](https:\/\/cloud.google.com\/storage-transfer\/docs\/read-transfer-logs) for details. For transfers to or from a POSIX file system, logs are stored in the Cloud Storage bucket that is the source or sink of the transfer. See [Managing Transfer for on-premises jobs] (https:\/\/cloud.google.com\/storage-transfer\/docs\/managing-on-prem-jobs#viewing-logs) for details.",
       "type": "object",
       "properties": {
         "logActions": {
-          "description": "Actions to be logged. If empty, no logs are generated. This is not yet supported for transfers with PosixFilesystem data sources.",
+          "description": "Specifies the actions to be logged. If empty, no logs are generated. Not supported for transfers with PosixFilesystem data sources; use enable_onprem_gcs_transfer_logs instead.",
           "type": "array",
           "items": {
             "type": "string",
             "enumDescriptions": [
               "Default value. This value is unused.",
-              "Finding objects to transfer e.g. listing objects of the source bucket.",
-              "Deleting objects at source or destination.",
-              "Copying objects from source to destination."
+              "Listing objects in a bucket.",
+              "Deleting objects at the source or the destination.",
+              "Copying objects to Google Cloud Storage."
             ],
             "enum": [
               "LOGGABLE_ACTION_UNSPECIFIED",
@@ -595,14 +666,14 @@
           }
         },
         "logActionStates": {
-          "description": "States in which `log_actions` are logged. If empty, no logs are generated. This is not yet supported for transfers with PosixFilesystem data sources.",
+          "description": "States in which `log_actions` are logged. If empty, no logs are generated. Not supported for transfers with PosixFilesystem data sources; use enable_onprem_gcs_transfer_logs instead.",
           "type": "array",
           "items": {
             "type": "string",
             "enumDescriptions": [
               "Default value. This value is unused.",
-              "`LoggableAction` is completed successfully. `SUCCEEDED` actions are logged as INFO.",
-              "`LoggableAction` is terminated in an error state. `FAILED` actions are logged as ERROR."
+              "`LoggableAction` completed successfully. `SUCCEEDED` actions are logged as INFO.",
+              "`LoggableAction` terminated in an error state. `FAILED` actions are logged as ERROR."
             ],
             "enum": [
               "LOGGABLE_ACTION_STATE_UNSPECIFIED",
@@ -612,7 +683,7 @@
           }
         },
         "enableOnpremGcsTransferLogs": {
-          "description": "Enables the Cloud Storage transfer logs for this transfer. This is only supported for transfer jobs with PosixFilesystem sources. The default is that logs are not generated for this transfer.",
+          "description": "For transfers with a PosixFilesystem source, this option enables the Cloud Storage transfer logs for this transfer.",
           "type": "boolean"
         }
       }
@@ -704,11 +775,11 @@
           "type": "string"
         },
         "transferJob": {
-          "description": "Required. The job to update. `transferJob` is expected to specify only four fields: description, transfer_spec, notification_config, and status. An `UpdateTransferJobRequest` that specifies other fields are rejected with the error INVALID_ARGUMENT. Updating a job status to DELETED requires `storagetransfer.jobs.delete` permissions.",
+          "description": "Required. The job to update. `transferJob` is expected to specify one or more of five fields: description, transfer_spec, notification_config, logging_config, and status. An `UpdateTransferJobRequest` that specifies other fields are rejected with the error INVALID_ARGUMENT. Updating a job status to DELETED requires `storagetransfer.jobs.delete` permissions.",
           "$ref": "TransferJob"
         },
         "updateTransferJobFieldMask": {
-          "description": "The field mask of the fields in `transferJob` that are to be updated in this request. Fields in `transferJob` that can be updated are: description, transfer_spec, notification_config, and status. To update the `transfer_spec` of the job, a complete transfer specification must be provided. An incomplete specification missing any required fields is rejected with the error INVALID_ARGUMENT.",
+          "description": "The field mask of the fields in `transferJob` that are to be updated in this request. Fields in `transferJob` that can be updated are: description, transfer_spec, notification_config, logging_config, and status. To update the `transfer_spec` of the job, a complete transfer specification must be provided. An incomplete specification missing any required fields is rejected with the error INVALID_ARGUMENT.",
           "type": "string",
           "format": "google-fieldmask"
         }

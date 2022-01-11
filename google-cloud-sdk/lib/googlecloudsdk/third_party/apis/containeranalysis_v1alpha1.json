@@ -1402,6 +1402,16 @@
         "cpe": {
           "description": "The CPE of the resource being scanned.",
           "type": "string"
+        },
+        "lastScanTime": {
+          "description": "The last time this resource was scanned.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "archiveTime": {
+          "description": "The time occurrences related to this discovery occurrence were archived.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

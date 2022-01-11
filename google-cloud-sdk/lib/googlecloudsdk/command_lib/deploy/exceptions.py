@@ -56,6 +56,17 @@ class NoSnappedTargetsError(exceptions.Error):
         'No snapped targets in the release {}.'.format(release_name))
 
 
+class InvalidReleaseNameError(exceptions.Error):
+  """Error when a release has extra $ signs after expanding template terms."""
+
+  def __init__(self, release_name, error_indices):
+    error_msg = ("Invalid character '$'"
+                 " for release name '{}' at indices:"
+                 ' {}. Did you mean to use $DATE or $TIME?')
+    super(InvalidReleaseNameError,
+          self).__init__(error_msg.format(release_name, error_indices))
+
+
 class CloudDeployConfigError(exceptions.Error):
   """Error raised for errors in the cloud deploy yaml config."""
 

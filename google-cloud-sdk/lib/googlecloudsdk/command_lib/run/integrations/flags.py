@@ -24,6 +24,7 @@ from googlecloudsdk.command_lib.run import exceptions
 
 
 def AddFileArg(parser):
+  """Adds a FILE positional arg."""
   parser.add_argument(
       'FILE',
       type=arg_parsers.YAMLFileContents(),
@@ -31,37 +32,45 @@ def AddFileArg(parser):
       'definition to update or deploy.')
 
 
-def AddTypeArg(parser):
-  """Add an integration type arg."""
+def AddPositionalTypeArg(parser):
+  """Adds an integration type positional arg."""
   parser.add_argument(
-      '--type',
-      required=True,
+      'type',
       help='Type of the integration.')
 
 
+def AddTypeArg(parser):
+  """Adds an integration type arg."""
+  parser.add_argument(
+      '--type',
+      required=True,
+      help='Type of the integration. To see available types and usage, '
+           'use "gcloud run integrations types list" command.')
+
+
 def AddNameArg(parser):
-  """Add an integration name arg."""
+  """Adds an integration name arg."""
   parser.add_argument(
       '--name',
       help='Name of the integration.')
 
 
 def AddNamePositionalArg(parser):
-  """Add an integration name arg."""
+  """Adds an integration name arg."""
   parser.add_argument(
       'name',
       help='Name of the integration.')
 
 
 def AddServiceCreateArg(parser):
-  """Add a service arg for create."""
+  """Adds a service arg for create."""
   parser.add_argument(
       '--service',
       help='Name of the Cloud Run service to attach to the integration.')
 
 
 def AddServiceUpdateArgs(parser):
-  """Add service arguments for update."""
+  """Adds service arguments for update."""
   group = parser.add_mutually_exclusive_group()
   group.add_argument(
       '--add-service',
@@ -72,7 +81,7 @@ def AddServiceUpdateArgs(parser):
 
 
 def AddParametersArg(parser):
-  """Add a parameters arg."""
+  """Adds a parameters arg."""
   parser.add_argument(
       '--parameters',
       type=arg_parsers.ArgDict(),

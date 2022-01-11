@@ -389,14 +389,16 @@
             "Indicates a potential increase or decrease in cost.",
             "Indicates a potential increase or decrease in security.",
             "Indicates a potential increase or decrease in performance.",
-            "Indicates a potential increase or decrease in manageability."
+            "Indicates a potential increase or decrease in manageability.",
+            "Indicates a potential increase or decrease in sustainability."
           ],
           "enum": [
             "CATEGORY_UNSPECIFIED",
             "COST",
             "SECURITY",
             "PERFORMANCE",
-            "MANAGEABILITY"
+            "MANAGEABILITY",
+            "SUSTAINABILITY"
           ]
         },
         "costProjection": {

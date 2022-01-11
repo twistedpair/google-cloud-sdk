@@ -193,6 +193,16 @@ def AddProviderResourceArg(parser, group_help_text, required=False):
       required=required).AddToParser(parser)
 
 
+def AddProviderNameArg(parser):
+  """Adds an argument for an Eventarc provider name."""
+  parser.add_argument(
+      '--name',
+      required=False,
+      hidden=True,
+      help='A provider name. List results will be filtered on this provider.'
+      'Only exact match of the provider name is supported.')
+
+
 def AddServiceAccountArg(parser, required=False):
   """Adds an argument for the trigger's service account."""
   parser.add_argument(

@@ -422,7 +422,7 @@ class DaisyChainCopyTask(task.Task):
         Directories will not be accepted.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
-    super().__init__()
+    super(DaisyChainCopyTask, self).__init__()
     if (not isinstance(source_resource.storage_url, storage_url.CloudUrl)
         or not isinstance(destination_resource.storage_url,
                           storage_url.CloudUrl)):

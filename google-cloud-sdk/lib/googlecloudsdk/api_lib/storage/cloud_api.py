@@ -394,3 +394,11 @@ class CloudApi(object):
         this interface.
     """
     raise NotImplementedError('compose_object must be overridden.')
+
+  def get_service_agent(self):
+    """Returns the email address (str) used to identify the service agent.
+
+    For some providers, the service agent is responsible for encrypting and
+    decrypting objects using CMEKs.
+    """
+    raise NotImplementedError('get_service_agent must be overridden.')

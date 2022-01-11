@@ -117,7 +117,8 @@ class _BucketConfig(object):
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
-    return (super().__eq__(other) and self.cors == other.cors and
+    return (super(_BucketConfig, self).__eq__(other) and
+            self.cors == other.cors and
             self.labels == other.labels and self.location == other.location and
             self.lifecycle == other.lifecycle and
             self.versioning == other.versioning and
@@ -297,7 +298,7 @@ class _GcsBucketConfig(_BucketConfig):
         mainPageSuffix=web_main_page_suffix, notFoundPage=web_error_page)
 
   def __eq__(self, other):
-    return (super().__eq__(other) and
+    return (super(_GcsBucketConfig, self).__eq__(other) and
             self.default_encryption_key == other.default_encryption_key and
             self.default_event_based_hold == other.default_event_based_hold and
             self.default_storage_class == other.default_storage_class and
@@ -459,7 +460,7 @@ class _GcsObjectConfig(_ObjectConfig):
                gzip_encoded=False,
                md5_hash=None,
                size=None):
-    super().__init__(
+    super(_GcsObjectConfig, self).__init__(
         cache_control=cache_control,
         content_disposition=content_disposition,
         content_encoding=content_encoding,
@@ -476,7 +477,8 @@ class _GcsObjectConfig(_ObjectConfig):
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
-    return (super().__eq__(other) and self.custom_time == other.custom_time and
+    return (super(_GcsObjectConfig, self).__eq__(other) and
+            self.custom_time == other.custom_time and
             self.gzip_encoded == other.gzip_encoded)
 
 
@@ -539,7 +541,7 @@ class _GcsRequestConfig(_RequestConfig):
                predefined_acl_string=None,
                predefined_default_acl_string=None,
                resource_args=None):
-    super().__init__(
+    super(_GcsRequestConfig, self).__init__(
         predefined_acl_string=predefined_acl_string,
         predefined_default_acl_string=predefined_default_acl_string,
         resource_args=resource_args)
@@ -550,7 +552,7 @@ class _GcsRequestConfig(_RequestConfig):
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
-    return (super().__eq__(other) and
+    return (super(_GcsRequestConfig, self).__eq__(other) and
             self.max_bytes_per_call == other.max_bytes_per_call and
             self.precondition_generation_match
             == other.precondition_generation_match and

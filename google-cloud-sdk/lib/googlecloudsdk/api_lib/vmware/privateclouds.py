@@ -53,6 +53,7 @@ class PrivateCloudsClient(util.VmwareClientBase):
              network_cidr=None,
              network=None,
              network_project=None,
+             external_ip_access=None,
              node_custom_core_count=None):
     parent = resource.Parent().RelativeName()
     private_cloud_id = resource.Name()
@@ -61,6 +62,7 @@ class PrivateCloudsClient(util.VmwareClientBase):
     network_config = self.messages.NetworkConfig(
         managementCidr=network_cidr,
         network=network,
+        externalIpAccess=external_ip_access,
     )
     if not network.startswith('project'):
       if not bool(network_project):
@@ -70,8 +72,6 @@ class PrivateCloudsClient(util.VmwareClientBase):
     management_cluster = self.messages.ManagementCluster(
         clusterId=cluster_id, nodeCount=node_count,
         nodeTypeId=node_type, nodeCustomCoreCount=node_custom_core_count)
-    if node_custom_core_count is not None:
-      management_cluster.nodeCustomCoreCount = node_custom_core_count
     private_cloud.managementCluster = management_cluster
     private_cloud.networkConfig = network_config
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsCreateRequest(

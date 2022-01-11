@@ -595,6 +595,8 @@ class DiscoveryOccurrence(_messages.Message):
     analysisStatusError: When an error is encountered this will contain a
       LocalizedMessage under details to show to the user. The LocalizedMessage
       is output only and populated by the API.
+    archiveTime: Output only. The time occurrences related to this discovery
+      occurrence were archived.
     continuousAnalysis: Whether the resource is continuously analyzed.
     cpe: The CPE of the resource being scanned.
     lastScanTime: The last time this resource was scanned.
@@ -633,9 +635,10 @@ class DiscoveryOccurrence(_messages.Message):
 
   analysisStatus = _messages.EnumField('AnalysisStatusValueValuesEnum', 1)
   analysisStatusError = _messages.MessageField('Status', 2)
-  continuousAnalysis = _messages.EnumField('ContinuousAnalysisValueValuesEnum', 3)
-  cpe = _messages.StringField(4)
-  lastScanTime = _messages.StringField(5)
+  archiveTime = _messages.StringField(3)
+  continuousAnalysis = _messages.EnumField('ContinuousAnalysisValueValuesEnum', 4)
+  cpe = _messages.StringField(5)
+  lastScanTime = _messages.StringField(6)
 
 
 class Empty(_messages.Message):
@@ -810,8 +813,8 @@ class InTotoStatement(_messages.Message):
   "application/vnd.in-toto+json".
 
   Fields:
-    _type: Always "https://in-toto.io/Statement/v0.1".
-    predicateType: "https://slsa.dev/provenance/v0.1" for SlsaProvenance.
+    _type: Always `https://in-toto.io/Statement/v0.1`.
+    predicateType: `https://slsa.dev/provenance/v0.1` for SlsaProvenance.
     provenance: A InTotoProvenance attribute.
     slsaProvenance: A SlsaProvenance attribute.
     subject: A Subject attribute.
@@ -958,13 +961,13 @@ class Metadata(_messages.Message):
 
 class NonCompliantFile(_messages.Message):
   r"""Details about files that caused a compliance check to fail.
+  display_command is a single command that can be used to display a list of
+  non compliant files. When there is no such command, we can also iterate a
+  list of non compliant file using 'path'.
 
   Fields:
     displayCommand: Command to display the non-compliant files.
-    path: display_command is a single command that can be used to display a
-      list of non compliant files. When there is no such command, we can also
-      iterate a list of non compliant file using 'path'. Empty if
-      `display_command` is set.
+    path: Empty if `display_command` is set.
     reason: Explains why a file is non compliant for a CIS check.
   """
 
@@ -1965,12 +1968,12 @@ class Subject(_messages.Message):
   r"""A Subject object.
 
   Messages:
-    DigestValue: "": "" Algorithms can be e.g. sha256, sha512 See
+    DigestValue: `"": ""` Algorithms can be e.g. sha256, sha512 See
       https://github.com/in-
       toto/attestation/blob/main/spec/field_types.md#DigestSet
 
   Fields:
-    digest: "": "" Algorithms can be e.g. sha256, sha512 See
+    digest: `"": ""` Algorithms can be e.g. sha256, sha512 See
       https://github.com/in-
       toto/attestation/blob/main/spec/field_types.md#DigestSet
     name: A string attribute.
@@ -1978,7 +1981,7 @@ class Subject(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DigestValue(_messages.Message):
-    r""""": "" Algorithms can be e.g. sha256, sha512 See
+    r"""`"": ""` Algorithms can be e.g. sha256, sha512 See
     https://github.com/in-
     toto/attestation/blob/main/spec/field_types.md#DigestSet
 

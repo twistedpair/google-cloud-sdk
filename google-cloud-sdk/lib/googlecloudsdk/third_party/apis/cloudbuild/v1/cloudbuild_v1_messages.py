@@ -3822,7 +3822,8 @@ class RunBuildTriggerRequest(_messages.Message):
 
   Fields:
     projectId: Required. ID of the project.
-    source: Source to build against this trigger.
+    source: Source to build against this trigger. Branch and tag names cannot
+      consist of regular expressions.
     triggerId: Required. ID of the trigger.
   """
 

@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Hooks for beyondcorp app connections commands."""
+"""Hooks for beyondcorp app connectors commands."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -57,3 +57,12 @@ def UpdateLabels(unused_ref, args, patch_request):
 def UpdateLabelsFlags():
   """Defines flags for updating labels."""
   return command_util.UpdateLabelsFlags()
+
+
+def HideDetailsBeforeDescribing(response, args):
+  """Hide details before describing a connector."""
+  if args.details or response.resourceInfo is None:
+    return response
+  response.resourceInfo.resource = None
+  response.resourceInfo.sub.clear()
+  return response

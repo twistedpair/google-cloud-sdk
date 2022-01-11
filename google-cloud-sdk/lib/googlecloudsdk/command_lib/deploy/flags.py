@@ -191,3 +191,25 @@ def AddSkaffoldVersion(parser):
   """Adds skaffold version flag."""
   parser.add_argument(
       '--skaffold-version', help='Version of the Skaffold binary.')
+
+
+def AddSkaffoldFileFlag(parser):
+  """Add --skaffold-file flag."""
+  help_text = textwrap.dedent("""\
+  Path of the skaffold file relative to the source directory.
+
+  Examples:
+
+  Use Skaffold file:
+
+
+    $ {command} --source=/home/user/source --skaffold-file=config/skaffold.yaml
+
+    The skaffold file absolute file path is expected to be:
+    /home/user/source/config/skaffold.yaml
+
+""")
+
+  parser.add_argument(
+      '--skaffold-file',
+      help=help_text)

@@ -925,3 +925,10 @@ class GcsApi(cloud_api.CloudApi):
     with self._encryption_headers_context(encryption_key):
       return gcs_metadata_util.get_object_resource_from_metadata(
           self.client.objects.Compose(compose_request))
+
+  @_catch_http_error_raise_gcs_api_error()
+  def get_service_agent(self):
+    """See CloudApi class for doc strings."""
+    return self.client.projects_serviceAccount.Get(
+        self.messages.StorageProjectsServiceAccountGetRequest(
+            projectId=properties.VALUES.core.project.GetOrFail())).email_address

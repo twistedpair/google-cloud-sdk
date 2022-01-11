@@ -4196,7 +4196,8 @@ class GoogleCloudApigeeV1ApiProductRef(_messages.Message):
 
   Fields:
     apiproduct: Name of the API product.
-    status: Status of the API product.
+    status: Status of the API product. Valid values are `approved` or
+      `revoked`.
   """
 
   apiproduct = _messages.StringField(1)
@@ -7319,11 +7320,14 @@ class GoogleCloudApigeeV1OrganizationProjectMapping(_messages.Message):
 
   Fields:
     organization: Name of the Apigee organization.
-    projectIds: List of GCP projects associated with the Apigee organization.
+    projectId: GCP project associated with the Apigee organization
+    projectIds: DEPRECATED: Use `project_id`. An Apigee Organization is mapped
+      to a single project.
   """
 
   organization = _messages.StringField(1)
-  projectIds = _messages.StringField(2, repeated=True)
+  projectId = _messages.StringField(2)
+  projectIds = _messages.StringField(3, repeated=True)
 
 
 class GoogleCloudApigeeV1PodStatus(_messages.Message):
@@ -8712,10 +8716,9 @@ class GoogleCloudApigeeV1TlsInfo(_messages.Message):
     keyAlias: Required if `client_auth_enabled` is true. The resource ID for
       the alias containing the private key and cert.
     keyStore: Required if `client_auth_enabled` is true. The resource ID of
-      the keystore. References not yet supported.
+      the keystore.
     protocols: The TLS versioins to be used.
-    trustStore: The resource ID of the truststore. References not yet
-      supported.
+    trustStore: The resource ID of the truststore.
   """
 
   ciphers = _messages.StringField(1, repeated=True)

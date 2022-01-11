@@ -2011,8 +2011,12 @@ def AddNoRestartOnFailureArgs(parser):
 
 def AddMaintenancePolicyArgs(parser, deprecate=False):
   """Adds maintenance behavior related args."""
-  help_text = ('Specifies the behavior of the instances when their host '
-               'machines undergo maintenance. The default is MIGRATE.')
+  help_text = """\
+  Specifies the behavior of the VMs when their host machines undergo
+  maintenance. The default is MIGRATE.
+  For more information, see
+  https://cloud.google.com/compute/docs/instances/setting-instance-scheduling-options.
+  """
   flag_type = lambda x: x.upper()
   action = None
   if deprecate:

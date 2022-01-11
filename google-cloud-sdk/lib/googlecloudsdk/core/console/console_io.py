@@ -176,11 +176,15 @@ def IsInteractive(output=False, error=False, heuristic=False):
   Returns:
     True if the current terminal session is interactive.
   """
-  if not sys.stdin.isatty():
-    return False
-  if output and not sys.stdout.isatty():
-    return False
-  if error and not sys.stderr.isatty():
+  try:
+    if not sys.stdin.isatty():
+      return False
+    if output and not sys.stdout.isatty():
+      return False
+    if error and not sys.stderr.isatty():
+      return False
+  except AttributeError:
+    # This should only occur when one of the streams is not open.
     return False
 
   if heuristic:

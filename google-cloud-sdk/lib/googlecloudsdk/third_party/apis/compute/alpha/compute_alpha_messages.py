@@ -561,13 +561,11 @@ class AccessConfig(_messages.Message):
       option is ONE_TO_ONE_NAT.
 
   Fields:
-    externalIpv6: [Output Only] The first IPv6 address of the external IPv6
-      range associated with this instance, prefix length is stored in
-      externalIpv6PrefixLength in ipv6AccessConfig. The field is output only,
-      an IPv6 address from a subnetwork associated with the instance will be
-      allocated dynamically.
-    externalIpv6PrefixLength: [Output Only] The prefix length of the external
-      IPv6 range.
+    externalIpv6: The first IPv6 address of the external IPv6 range associated
+      with this instance, prefix length is stored in externalIpv6PrefixLength
+      in ipv6AccessConfig. The field is output only, an IPv6 address from a
+      subnetwork associated with the instance will be allocated dynamically.
+    externalIpv6PrefixLength: The prefix length of the external IPv6 range.
     kind: [Output Only] Type of the resource. Always compute#accessConfig for
       access configs.
     name: The name of this access configuration. The default and recommended
@@ -4100,6 +4098,16 @@ class BackendService(_messages.Message):
         the requests.
       ROUND_ROBIN: This is a simple policy in which each healthy backend is
         selected in round robin order. This is the default.
+      WEIGHTED_MAGLEV: Per-instance weighted Load Balancing via health check
+        reported weights. If set, the Backend Service must configure a non
+        legacy HTTP-based Health Check, and health check replies are expected
+        to contain non-standard HTTP response header field X-Load-Balancing-
+        Endpoint-Weight to specify the per-instance weights. If set, Load
+        Balancing is weighted based on the per-instance weights reported in
+        the last processed health check replies, as long as every instance
+        either reported a valid weight or had UNAVAILABLE_WEIGHT. Otherwise,
+        Load Balancing remains equal-weight. This option is only supported in
+        Network Load Balancing.
     """
     INVALID_LB_POLICY = 0
     LEAST_REQUEST = 1
@@ -4108,6 +4116,7 @@ class BackendService(_messages.Message):
     RANDOM = 4
     RING_HASH = 5
     ROUND_ROBIN = 6
+    WEIGHTED_MAGLEV = 7
 
   class ProtocolValueValuesEnum(_messages.Enum):
     r"""The protocol this BackendService uses to communicate with backends.
@@ -41013,7 +41022,7 @@ class InstanceProperties(_messages.Message):
       Keys must be in the format `tagKeys/{tag_key_id}`, and values are in the
       format `tagValues/456`. The field is ignored (both PUT & PATCH) when
       empty.
-    resourcePolicies: Resource policies (names, not ULRs) applied to instances
+    resourcePolicies: Resource policies (names, not URLs) applied to instances
       created from these properties. Note that for MachineImage, this is not
       supported yet.
     scheduling: Specifies the scheduling options for the instances that are
@@ -45483,14 +45492,14 @@ class LocationPolicyLocation(_messages.Message):
   r"""A LocationPolicyLocation object.
 
   Enums:
-    PreferenceValueValuesEnum: Preference for a given location: ALLOW or DENY.
+    PreferenceValueValuesEnum: Preference for a given location.
 
   Fields:
-    preference: Preference for a given location: ALLOW or DENY.
+    preference: Preference for a given location.
   """
 
   class PreferenceValueValuesEnum(_messages.Enum):
-    r"""Preference for a given location: ALLOW or DENY.
+    r"""Preference for a given location.
 
     Values:
       ALLOW: Location is allowed for use.
@@ -48462,8 +48471,8 @@ class NetworkInterface(_messages.Message):
       order to update the NetworkInterface. The request will fail with error
       400 Bad Request if the fingerprint is not provided, or 412 Precondition
       Failed if the fingerprint is out of date.
-    internalIpv6PrefixLength: [Output Only] The prefix length of the primary
-      internal IPv6 range.
+    internalIpv6PrefixLength: The prefix length of the primary internal IPv6
+      range.
     ipv6AccessConfigs: An array of IPv6 access configurations for this
       interface. Currently, only one IPv6 access config, DIRECT_IPV6, is
       supported. If there is no ipv6AccessConfig specified, then this instance
@@ -48471,8 +48480,7 @@ class NetworkInterface(_messages.Message):
     ipv6AccessType: [Output Only] One of EXTERNAL, INTERNAL to indicate
       whether the IP can be accessed from the Internet. This field is always
       inherited from its subnetwork. Valid only if stackType is IPV4_IPV6.
-    ipv6Address: [Output Only] An IPv6 internal network address for this
-      network interface.
+    ipv6Address: An IPv6 internal network address for this network interface.
     kind: [Output Only] Type of the resource. Always compute#networkInterface
       for network interfaces.
     name: [Output Only] The name of the network interface, which is generated
@@ -58609,6 +58617,7 @@ class Route(_messages.Message):
     IlbRouteBehaviorOnUnhealthyValueValuesEnum: ILB route behavior when ILB is
       deemed unhealthy based on user specified threshold on the Backend
       Service of the internal load balancing.
+    RouteStatusValueValuesEnum: [Output only] The status of the route.
     RouteTypeValueValuesEnum: [Output Only] The type of this route, which can
       be one of the following values: - 'TRANSIT' for a transit route that
       this router learned from another Cloud Router and will readvertise to
@@ -58677,6 +58686,7 @@ class Route(_messages.Message):
       length. In cases where multiple routes have equal prefix length, the one
       with the lowest-numbered priority value wins. The default value is
       `1000`. The priority value must be from `0` to `65535`, inclusive.
+    routeStatus: [Output only] The status of the route.
     routeType: [Output Only] The type of this route, which can be one of the
       following values: - 'TRANSIT' for a transit route that this router
       learned from another Cloud Router and will readvertise to one of its BGP
@@ -58711,6 +58721,26 @@ class Route(_messages.Message):
     """
     DO_NOT_WITHDRAW_ROUTE_IF_ILB_UNHEALTHY = 0
     WITHDRAW_ROUTE_IF_ILB_UNHEALTHY = 1
+
+  class RouteStatusValueValuesEnum(_messages.Enum):
+    r"""[Output only] The status of the route.
+
+    Values:
+      ACTIVE: This route is processed and active.
+      DROPPED: The route is dropped due to the VPC exceeding the dynamic route
+        limit. For dynamic route limit, please refer to the Learned route
+        example
+      INACTIVE: This route is processed but inactive due to failure from the
+        backend. The backend may have rejected the route
+      PENDING: This route is being processed internally. The status will
+        change once processed.
+      UNKNOWN_ROUTE_STATUS: <no description>
+    """
+    ACTIVE = 0
+    DROPPED = 1
+    INACTIVE = 2
+    PENDING = 3
+    UNKNOWN_ROUTE_STATUS = 4
 
   class RouteTypeValueValuesEnum(_messages.Enum):
     r"""[Output Only] The type of this route, which can be one of the
@@ -58871,11 +58901,12 @@ class Route(_messages.Message):
   nextHopPeering = _messages.StringField(17)
   nextHopVpnTunnel = _messages.StringField(18)
   priority = _messages.IntegerField(19, variant=_messages.Variant.UINT32)
-  routeType = _messages.EnumField('RouteTypeValueValuesEnum', 20)
-  selfLink = _messages.StringField(21)
-  selfLinkWithId = _messages.StringField(22)
-  tags = _messages.StringField(23, repeated=True)
-  warnings = _messages.MessageField('WarningsValueListEntry', 24, repeated=True)
+  routeStatus = _messages.EnumField('RouteStatusValueValuesEnum', 20)
+  routeType = _messages.EnumField('RouteTypeValueValuesEnum', 21)
+  selfLink = _messages.StringField(22)
+  selfLinkWithId = _messages.StringField(23)
+  tags = _messages.StringField(24, repeated=True)
+  warnings = _messages.MessageField('WarningsValueListEntry', 25, repeated=True)
 
 
 class RouteAsPath(_messages.Message):
@@ -62382,7 +62413,8 @@ class ServiceAttachment(_messages.Message):
       property when you create the resource.
     domainNames: If specified, the domain name will be used during the
       integration between the PSC connected endpoints and the Cloud DNS. For
-      example, this is a valid domain name: "p.mycompany.com".
+      example, this is a valid domain name: "p.mycompany.com.". Current max
+      number of domain names supported is 1.
     enableProxyProtocol: If true, enable the proxy protocol which is for
       supplying client TCP/IP address data in TCP connections that traverse
       proxies on their way to destination servers.
@@ -65566,7 +65598,8 @@ class Subnetwork(_messages.Message):
       the subnet is updated into IPV4_IPV6 dual stack. If the ipv6_type is
       EXTERNAL then this subnet cannot enable direct path.
     ipv6CidrRange: [Output Only] The range of internal IPv6 addresses that are
-      owned by this subnetwork.
+      owned by this subnetwork. Note this will be for private google access
+      only eventually.
     kind: [Output Only] Type of the resource. Always compute#subnetwork for
       Subnetwork resources.
     logConfig: This field denotes the VPC flow logging options for this

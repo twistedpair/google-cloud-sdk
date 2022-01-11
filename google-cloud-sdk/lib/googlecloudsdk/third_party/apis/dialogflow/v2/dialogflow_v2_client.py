@@ -1262,7 +1262,7 @@ class DialogflowV2(base_api.BaseApiClient):
         method_id='dialogflow.projects.agent.knowledgeBases.documents.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/documents',
         request_field='',
         request_type_name='DialogflowProjectsAgentKnowledgeBasesDocumentsListRequest',
@@ -1434,7 +1434,7 @@ class DialogflowV2(base_api.BaseApiClient):
         method_id='dialogflow.projects.agent.knowledgeBases.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/knowledgeBases',
         request_field='',
         request_type_name='DialogflowProjectsAgentKnowledgeBasesListRequest',
@@ -2831,6 +2831,33 @@ class DialogflowV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Export(self, request, global_params=None):
+      r"""Exports a smart messaging candidate document into the specified destination. This method is a [long-running operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: Document.
+
+      Args:
+        request: (DialogflowProjectsKnowledgeBasesDocumentsExportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Export')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Export.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/knowledgeBases/{knowledgeBasesId}/documents/{documentsId}:export',
+        http_method='POST',
+        method_id='dialogflow.projects.knowledgeBases.documents.export',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:export',
+        request_field='googleCloudDialogflowV2ExportDocumentRequest',
+        request_type_name='DialogflowProjectsKnowledgeBasesDocumentsExportRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Retrieves the specified document.
 
@@ -2877,7 +2904,7 @@ class DialogflowV2(base_api.BaseApiClient):
         method_id='dialogflow.projects.knowledgeBases.documents.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/documents',
         request_field='',
         request_type_name='DialogflowProjectsKnowledgeBasesDocumentsListRequest',
@@ -3049,7 +3076,7 @@ class DialogflowV2(base_api.BaseApiClient):
         method_id='dialogflow.projects.knowledgeBases.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/knowledgeBases',
         request_field='',
         request_type_name='DialogflowProjectsKnowledgeBasesListRequest',
@@ -5508,6 +5535,33 @@ class DialogflowV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Export(self, request, global_params=None):
+      r"""Exports a smart messaging candidate document into the specified destination. This method is a [long-running operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: Document.
+
+      Args:
+        request: (DialogflowProjectsLocationsKnowledgeBasesDocumentsExportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Export')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Export.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/knowledgeBases/{knowledgeBasesId}/documents/{documentsId}:export',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.knowledgeBases.documents.export',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:export',
+        request_field='googleCloudDialogflowV2ExportDocumentRequest',
+        request_type_name='DialogflowProjectsLocationsKnowledgeBasesDocumentsExportRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Retrieves the specified document.
 
@@ -5554,7 +5608,7 @@ class DialogflowV2(base_api.BaseApiClient):
         method_id='dialogflow.projects.locations.knowledgeBases.documents.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/documents',
         request_field='',
         request_type_name='DialogflowProjectsLocationsKnowledgeBasesDocumentsListRequest',
@@ -5726,7 +5780,7 @@ class DialogflowV2(base_api.BaseApiClient):
         method_id='dialogflow.projects.locations.knowledgeBases.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/knowledgeBases',
         request_field='',
         request_type_name='DialogflowProjectsLocationsKnowledgeBasesListRequest',

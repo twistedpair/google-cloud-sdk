@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.recommender import base
 from googlecloudsdk.command_lib.util.args import common_args
 
 
@@ -51,8 +52,84 @@ def AddParentFlagsToParser(parser):
       help='Folder ID to use for this invocation.')
 
 
-def GetLocationAndRecommender(location, recommender):
-  return '/locations/{0}/recommenders/{1}'.format(location, recommender)
+def AddEntityFlagsToParser(parser, entities):
+  """Adds argument mutex group of specified entities to parser.
+
+  Args:
+      parser: An argparse parser that you can use to add arguments that go on
+        the command line after this command.
+      entities: The entities to add.
+  """
+  resource_group = parser.add_mutually_exclusive_group(
+      required=True, help='Resource that is associated with cloud entity type.')
+  if base.EntityType.ORGANIZATION in entities:
+    resource_group.add_argument(
+        '--organization',
+        metavar='ORGANIZATION_ID',
+        help='The Google Cloud Organization ID to use for this invocation.')
+  if base.EntityType.FOLDER in entities:
+    resource_group.add_argument(
+        '--folder',
+        metavar='FOLDER_ID',
+        help='The Google Cloud Folder ID to use for this invocation.')
+  if base.EntityType.BILLING_ACCOUNT in entities:
+    resource_group.add_argument(
+        '--billing-account',
+        metavar='BILLING_ACCOUNT',
+        help='The Google Cloud Billing Account ID to use for this invocation.')
+  if base.EntityType.PROJECT in entities:
+    common_args.ProjectArgument(
+        help_text_to_overwrite='The Google Cloud Project ID.').AddToParser(
+            resource_group)
+
+
+def AddRecommenderFlagsToParser(parser, entities):
+  """Adds argument mutex group of specified entities and recommender to parser.
+
+  Args:
+      parser: An argparse parser that you can use to add arguments that go on
+        the command line after this command.
+      entities: The entities to add.
+  """
+  AddEntityFlagsToParser(parser, entities)
+  parser.add_argument(
+      '--location',
+      metavar='LOCATION',
+      required=True,
+      help='Location to use for this invocation.')
+  parser.add_argument(
+      'recommender',
+      metavar='RECOMMENDER',
+      help='Recommender to use for this invocation.')
+
+
+def GetResourceSegment(args):
+  """Returns the resource from up to the cloud entity."""
+  if args.project:
+    return 'projects/%s' % args.project
+  elif args.folder:
+    return 'folders/%s' % args.folder
+  elif args.billing_account:
+    return 'billingAccounts/%s' % args.billing_account
+  else:
+    return 'organizations/%s' % args.organization
+
+
+def GetLocationSegment(args):
+  """Returns the resource name up to the location."""
+  parent = GetResourceSegment(args)
+  return '{}/locations/{}'.format(parent, args.location)
+
+
+def GetRecommenderName(args):
+  """Returns the resource name up to the recommender."""
+  parent = GetLocationSegment(args)
+  return '{}/recommenders/{}'.format(parent, args.recommender)
+
+
+def GetRecommenderConfigName(args):
+  """Returns the resource name for the Recommender Config."""
+  return GetRecommenderName(args) + '/config'
 
 
 def GetConfigsParentFromFlags(args, is_insight_api):

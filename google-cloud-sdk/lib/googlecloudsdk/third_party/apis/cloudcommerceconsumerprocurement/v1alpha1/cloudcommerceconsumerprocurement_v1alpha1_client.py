@@ -1052,7 +1052,7 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
         method_id='cloudcommerceconsumerprocurement.projects.entitlements.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v1alpha1/{+parent}/entitlements',
         request_field='',
         request_type_name='CloudcommerceconsumerprocurementProjectsEntitlementsListRequest',

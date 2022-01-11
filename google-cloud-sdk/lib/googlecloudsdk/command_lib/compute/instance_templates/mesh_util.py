@@ -584,6 +584,7 @@ def _ModifyInstanceTemplate(args, is_mcp, metadata_args):
 
   args.metadata['enable-osconfig'] = 'true'
   args.metadata['enable-guest-attributes'] = 'true'
+  args.metadata['osconfig-disabled-features'] = 'tasks'
   args.metadata['gce-software-declaration'] = json.dumps(
       gce_software_declaration)
   args.metadata['gce-service-proxy'] = json.dumps(

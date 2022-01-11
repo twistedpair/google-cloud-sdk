@@ -35,4 +35,4 @@ help_text:
 arguments:
   resource:
     help_text: ${singular_capitalized_name} to export the configuration for.
-    spec: !REF googlecloudsdk.command_lib.${full_resource_spec_path}
+    spec: !REF googlecloudsdk.command_lib.${resource_spec_path}

@@ -126,8 +126,8 @@ class ResumableUpload(_Upload):
       serialization_data (dict): JSON used by apitools to resume an upload.
     """
     # pylint: enable=g-doc-args
-    super().__init__(gcs_api, http_client, source_stream,
-                     destination_resource, request_config)
+    super(ResumableUpload, self).__init__(gcs_api, http_client, source_stream,
+                                          destination_resource, request_config)
     self._serialization_data = serialization_data
     self._tracker_callback = tracker_callback
 

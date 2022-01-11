@@ -35,7 +35,7 @@ class DeleteBucketTask(task.Task):
       url (storage_url.StorageUrl): Should only contain bucket. Objects will be
         ignored.
     """
-    super().__init__()
+    super(DeleteBucketTask, self).__init__()
     self._url = url
     self.parallel_processing_key = url.url_string
 

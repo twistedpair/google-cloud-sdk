@@ -19,7 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import base64
-
+import os
 
 from googlecloudsdk.api_lib.container import kubeconfig as kubeconfig_util
 from googlecloudsdk.api_lib.container import util
@@ -27,9 +27,11 @@ from googlecloudsdk.command_lib.container.gkemulticloud import errors
 from googlecloudsdk.command_lib.container.hub import connect_gateway_util
 from googlecloudsdk.command_lib.container.hub import gwkubeconfig_util
 from googlecloudsdk.command_lib.projects import util as project_util
+from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import semver
 
 
@@ -100,7 +102,8 @@ def GenerateAuthProviderCmdArgs(kind, cluster_id, location):
     The command arguments for kubeconfig's authorization provider.
   """
   template = ('container {kind} clusters print-access-token '
-              '{cluster_id} --location={location}')
+              '{cluster_id} --location={location} --format=json '
+              '--exec-credential')
   return template.format(kind=kind, cluster_id=cluster_id, location=location)
 
 
@@ -187,14 +190,9 @@ def _PrivateVPCKubeconfig(kubeconfig, cluster, context, cmd_path, cmd_args):
     cmd_path: str, authentication provider command path.
     cmd_args: str, authentication provider command arguments.
   """
-  user_kwargs = {
-      'auth_provider': 'gcp',
-      'auth_provider_cmd_path': cmd_path,
-      'auth_provider_cmd_args': cmd_args,
-      'auth_provider_expiry_key': '{.expirationTime}',
-      'auth_provider_token_key': '{.accessToken}'
-  }
-  kubeconfig.users[context] = kubeconfig_util.User(context, **user_kwargs)
+  user = {}
+  user['exec'] = _ExecAuthPlugin(cmd_path, cmd_args)
+  kubeconfig.users[context] = {'name': context, 'user': user}
 
   cluster_kwargs = {}
   if cluster.clusterCaCertificate is None:
@@ -264,3 +262,47 @@ def _GetConnectGatewayEndpoint():
       'gkemulticloud.sandbox.googleapis.com/'):
     return 'autopush-connectgateway.sandbox.googleapis.com'
   raise errors.UnknownApiEndpointOverrideError('gkemulticloud')
+
+
+def ExecCredential(expiration_timestamp=None, access_token=None):
+  """Generates a Kubernetes execCredential object."""
+  return {
+      'kind': 'ExecCredential',
+      'apiVersion': 'client.authentication.k8s.io/v1',
+      'status': {
+          'expirationTimestamp': expiration_timestamp,
+          'token': access_token
+      }
+  }
+
+
+def _ExecAuthPlugin(cmd_path, cmd_args):
+  """Generates and returns an exec auth plugin config.
+
+  Args:
+    cmd_path: str, exec command path.
+    cmd_args: str, exec command arguments.
+
+  Returns:
+    dict, valid exec auth plugin config entry.
+  """
+  if cmd_path is None:
+    bin_name = 'gcloud'
+    if platforms.OperatingSystem.IsWindows():
+      bin_name = 'gcloud.cmd'
+    sdk_bin_path = config.Paths().sdk_bin_path
+    if sdk_bin_path is None:
+      log.error(kubeconfig_util.SDK_BIN_PATH_NOT_FOUND)
+      raise kubeconfig_util.Error(kubeconfig_util.SDK_BIN_PATH_NOT_FOUND)
+    cmd_path = os.path.join(sdk_bin_path, bin_name)
+
+  return {
+      'command':
+          cmd_path,
+      'apiVersion':
+          'client.authentication.k8s.io/v1',
+      'provideClusterInfo':
+          True,
+      'args': cmd_args.split(' '),
+      'interactiveMode': 'Never'
+  }

@@ -247,6 +247,10 @@
         "postStep": {
           "description": "The `ExecStep` to run after the patch update.",
           "$ref": "ExecStep"
+        },
+        "migInstancesAllowed": {
+          "description": "Allows the patch job to run on Managed instance groups (MIGs).",
+          "type": "boolean"
         }
       }
     },

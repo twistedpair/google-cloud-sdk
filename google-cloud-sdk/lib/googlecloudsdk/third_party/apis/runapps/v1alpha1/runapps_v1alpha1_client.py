@@ -227,33 +227,6 @@ class RunappsV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
-
-      Args:
-        request: (RunappsProjectsLocationsApplicationsGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}:getIamPolicy',
-        http_method='GET',
-        method_id='runapps.projects.locations.applications.getIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=['options_requestedPolicyVersion'],
-        relative_path='v1alpha1/{+resource}:getIamPolicy',
-        request_field='',
-        request_type_name='RunappsProjectsLocationsApplicationsGetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
     def GetStatus(self, request, global_params=None):
       r"""Gets status of a single Application.
 
@@ -332,60 +305,6 @@ class RunappsV1alpha1(base_api.BaseApiClient):
         request_field='application',
         request_type_name='RunappsProjectsLocationsApplicationsPatchRequest',
         response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
-
-      Args:
-        request: (RunappsProjectsLocationsApplicationsSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}:setIamPolicy',
-        http_method='POST',
-        method_id='runapps.projects.locations.applications.setIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1alpha1/{+resource}:setIamPolicy',
-        request_field='setIamPolicyRequest',
-        request_type_name='RunappsProjectsLocationsApplicationsSetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
-
-      Args:
-        request: (RunappsProjectsLocationsApplicationsTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}:testIamPermissions',
-        http_method='POST',
-        method_id='runapps.projects.locations.applications.testIamPermissions',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1alpha1/{+resource}:testIamPermissions',
-        request_field='testIamPermissionsRequest',
-        request_type_name='RunappsProjectsLocationsApplicationsTestIamPermissionsRequest',
-        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 

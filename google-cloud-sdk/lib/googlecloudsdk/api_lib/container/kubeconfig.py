@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import os
+import subprocess
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -301,6 +302,8 @@ credentials using one of
 $ gcloud config set container/use_application_default_credentials true
 $ export CLOUDSDK_CONTAINER_USE_APPLICATION_DEFAULT_CREDENTIALS=true'''
 
+GKE_GCLOUD_AUTH_PLUGIN_NOT_FOUND = '''ACTION REQUIRED: gke-gcloud-auth-plugin, which is needed for continued use of kubectl, was not found or is not executable. Install gke-gcloud-auth-plugin using go/gke-kubectl-exec-auth'''
+
 
 def _ExecAuthPlugin():
   """Generate and return an exec auth plugin config.
@@ -324,9 +327,13 @@ def _ExecAuthPlugin():
     bin_name = 'gke-gcloud-auth-plugin.exe'
   command = bin_name
 
-  sdk_bin_path = config.Paths().sdk_bin_path
-  if sdk_bin_path is not None:
-    command = os.path.join(sdk_bin_path, bin_name)
+  # Check if command is in PATH and executable. Else, print critical(RED)
+  # warning as kubectl will break if command is not executable.
+  try:
+    subprocess.run([command, '--version'], timeout=5, check=False)
+  except Exception:  # pylint: disable=broad-except
+    log.critical(GKE_GCLOUD_AUTH_PLUGIN_NOT_FOUND)
+
   exec_cfg = {
       'command':
           command,

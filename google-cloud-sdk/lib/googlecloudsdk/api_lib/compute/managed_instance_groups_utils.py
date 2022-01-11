@@ -1642,3 +1642,67 @@ def ValueOrNone(message):
     return message
   default_object = message.__class__()
   return message if message != default_object else None
+
+
+def RegisterCustomInstancePropertiesPatchEncoders(client):
+  """Registers decoders and encoders that will handle null values for maps in InstancePropertiesPatch message."""
+
+  def _NullValueEncoder(message):
+    """Encoder for use when removing map entries.
+
+    It works around issues with proto encoding of AdditionalProperties with null
+    values by directly encoding a dict of keys with None values into json,
+    skipping proto-based encoding.
+
+    Args:
+      message: an instance of InstancePropertiesPatch.MetadataValue or
+        InstancePropertiesPatch.LabelsValue
+
+    Returns:
+      JSON string with null value.
+    """
+    return json.dumps({
+        property.key: property.value
+        for property in message.additionalProperties
+    })
+
+  def _NullMetadataDecoder(data):
+    """Decoder for metadata map entries.
+
+    Args:
+      data: JSON representation of metadata map.
+
+    Returns:
+      Instance of InstancePropertiesPatch.MetadataValue.
+    """
+    py_object = json.loads(data)
+    return client.messages.InstancePropertiesPatch.MetadataValue(
+        additionalProperties=[
+            client.messages.InstancePropertiesPatch.MetadataValue
+            .AdditionalProperty(key=key, value=value)
+            for key, value in py_object.items()
+        ])
+
+  def _NullLabelsDecoder(data):
+    """Decoder for labels map entries.
+
+    Args:
+      data: JSON representation of labels map.
+
+    Returns:
+      Instance of InstancePropertiesPatch.LabelsValue.
+    """
+    py_object = json.loads(data)
+    return client.messages.InstancePropertiesPatch.LabelsValue(
+        additionalProperties=[
+            client.messages.InstancePropertiesPatch.LabelsValue
+            .AdditionalProperty(key=key, value=value)
+            for key, value in py_object.items()
+        ])
+
+  encoding.RegisterCustomMessageCodec(
+      encoder=_NullValueEncoder, decoder=_NullMetadataDecoder)(
+          client.messages.InstancePropertiesPatch.MetadataValue)
+  encoding.RegisterCustomMessageCodec(
+      encoder=_NullValueEncoder, decoder=_NullLabelsDecoder)(
+          client.messages.InstancePropertiesPatch.LabelsValue)

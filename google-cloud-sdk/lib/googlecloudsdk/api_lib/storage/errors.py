@@ -58,7 +58,7 @@ class GcsNotFoundError(GcsApiError, NotFoundError):
 
   def __init__(self, error, *args, **kwargs):
     del args, kwargs  # Unused.
-    super().__init__(
+    super(GcsNotFoundError, self).__init__(
         error, error_format='{instance_name} not found: {status_code}.')
 
 
@@ -86,7 +86,7 @@ class S3ErrorPayload(api_exceptions.FormattableErrorPayload):
         thrown by botocore, or a string that will be displayed as the error
         message.
     """
-    super().__init__(client_error)
+    super(S3ErrorPayload, self).__init__(client_error)
     # TODO(b/170215786): Remove botocore_error_string attribute when S3 api
     # tests no longer expect the botocore error format.
     self.botocore_error_string = str(client_error)
@@ -114,7 +114,7 @@ class S3ApiError(CloudApiError, api_exceptions.HttpException):
   # TODO(b/170215786): Set error_format=None when S3 api tests no longer expect
   # the botocore error format.
   def __init__(self, error, error_format='{botocore_error_string}'):
-    super().__init__(
+    super(S3ApiError, self).__init__(
         error, error_format=error_format, payload_class=S3ErrorPayload)
 
 

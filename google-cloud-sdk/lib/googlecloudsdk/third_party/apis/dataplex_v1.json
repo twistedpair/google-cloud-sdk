@@ -254,14 +254,12 @@
           "enumDescriptions": [
             "CompressionFormat unspecified. Implies uncompressed data.",
             "GZip compressed set of files.",
-            "BZip2 compressed set of files.",
-            "LZ4 compressed set of files."
+            "BZip2 compressed set of files."
           ],
           "enum": [
             "COMPRESSION_FORMAT_UNSPECIFIED",
             "GZIP",
-            "BZIP2",
-            "LZ4"
+            "BZIP2"
           ]
         },
         "mimeType": {
@@ -1179,7 +1177,7 @@
           "$ref": "GoogleCloudDataplexV1ZoneDiscoverySpecJsonOptions"
         },
         "schedule": {
-          "description": "Optional. Cron schedule (https:\/\/en.wikipedia.org\/wiki\/Cron) for running discovery jobs periodically. Discovery jobs must be scheduled at least 30 minutes apart. To explicitly set a timezone to the cron tab, apply a prefix in the cron tab: \"CRON_TZ=${IANA_TIME_ZONE}\" or TZ=${IANA_TIME_ZONE}\". The ${IANA_TIME_ZONE} may only be a valid string from IANA time zone database. For example, \"CRON_TZ=America\/New_York 1 * * * *\", or \"TZ=America\/New_York 1 * * * *\".",
+          "description": "Optional. Cron schedule (https:\/\/en.wikipedia.org\/wiki\/Cron) for running discovery periodically. Successive discovery runs must be scheduled at least 60 minutes apart. The default value is to run discovery every 60 minutes. To explicitly set a timezone to the cron tab, apply a prefix in the cron tab: \"CRON_TZ=${IANA_TIME_ZONE}\" or TZ=${IANA_TIME_ZONE}\". The ${IANA_TIME_ZONE} may only be a valid string from IANA time zone database. For example, \"CRON_TZ=America\/New_York 1 * * * *\", or \"TZ=America\/New_York 1 * * * *\".",
           "type": "string"
         }
       }
@@ -1441,18 +1439,18 @@
       "type": "object",
       "properties": {
         "enabled": {
-          "description": "Optional. Whether discovery is enabled. When inheritance_mode is set to INHERIT this field is unset and ignored.",
+          "description": "Optional. Whether discovery is enabled.",
           "type": "boolean"
         },
         "includePatterns": {
-          "description": "Optional. The list of patterns to apply for selecting data to include during discovery if only a subset of the data should considered. For Cloud Storage bucket assets, these are interpreted as glob patterns used to match object names. For BigQuery dataset assets, these are interpreted as patterns to match table names. When inheritance_mode is set to INHERIT this field is unset and ignored.",
+          "description": "Optional. The list of patterns to apply for selecting data to include during discovery if only a subset of the data should considered. For Cloud Storage bucket assets, these are interpreted as glob patterns used to match object names. For BigQuery dataset assets, these are interpreted as patterns to match table names.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "excludePatterns": {
-          "description": "Optional. The list of patterns to apply for selecting data to exclude during discovery. For Cloud Storage bucket assets, these are interpreted as glob patterns used to match object names. For BigQuery dataset assets, these are interpreted as patterns to match table names. When inheritance_mode is set to INHERIT this field is unset and ignored.",
+          "description": "Optional. The list of patterns to apply for selecting data to exclude during discovery. For Cloud Storage bucket assets, these are interpreted as glob patterns used to match object names. For BigQuery dataset assets, these are interpreted as patterns to match table names.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1467,7 +1465,7 @@
           "$ref": "GoogleCloudDataplexV1AssetDiscoverySpecJsonOptions"
         },
         "schedule": {
-          "description": "Optional. Cron schedule (https:\/\/en.wikipedia.org\/wiki\/Cron) for running discovery jobs periodically. Discovery jobs must be scheduled at least 30 minutes apart.",
+          "description": "Optional. Cron schedule (https:\/\/en.wikipedia.org\/wiki\/Cron) for running discovery periodically. Successive discovery runs must be scheduled at least 60 minutes apart. The default value is to run discovery every 60 minutes. To explicitly set a timezone to the cron tab, apply a prefix in the cron tab: \"CRON_TZ=${IANA_TIME_ZONE}\" or TZ=${IANA_TIME_ZONE}\". The ${IANA_TIME_ZONE} may only be a valid string from IANA time zone database. For example, \"CRON_TZ=America\/New_York 1 * * * *\", or \"TZ=America\/New_York 1 * * * *\".",
           "type": "string"
         }
       }
@@ -1523,21 +1521,15 @@
             "State is unspecified.",
             "Discovery for the asset is scheduled.",
             "Discovery for the asset is running.",
-            "User-provided discovery schedule is temporarily ineffective, and discovery runs on an alternative schedule when there is any pending discovery action.",
-            "Discovery for the asset has errors.",
-            "Discovery for the asset is disabled.",
-            "Discovery for the asset is processing all the data in the storage resource.",
-            "Discovery for the asset is processing changes to the data."
+            "Discovery for the asset is currently paused--for example due to a lack of available resources. It will be automatically resumed.",
+            "Discovery for the asset is disabled."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "SCHEDULED",
             "IN_PROGRESS",
             "PAUSED",
-            "ERROR",
-            "DISABLED",
-            "PROCESSING_DATA",
-            "PROCESSING_CHANGES"
+            "DISABLED"
           ]
         },
         "message": {
@@ -1550,19 +1542,45 @@
           "format": "google-datetime"
         },
         "lastRunTime": {
-          "description": "The time when the last discovery job started.",
+          "description": "The start time of the last discovery run.",
           "type": "string",
           "format": "google-datetime"
         },
-        "nextRunTime": {
-          "description": "The time when the next scheduled discovery job will start.",
-          "type": "string",
-          "format": "google-datetime"
+        "stats": {
+          "description": "Data Stats of the asset reported by discovery.",
+          "$ref": "GoogleCloudDataplexV1AssetDiscoveryStatusStats"
         },
-        "latestProcessedChangeTime": {
-          "description": "Timestamp of the latest change to data that has been processed. This is only valid when discovery is in PROCESSING_CHANGES state.",
+        "lastRunDuration": {
+          "description": "The duration of the last discovery run.",
           "type": "string",
-          "format": "google-datetime"
+          "format": "google-duration"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1AssetDiscoveryStatusStats": {
+      "id": "GoogleCloudDataplexV1AssetDiscoveryStatusStats",
+      "description": "The aggregated data statistics for the asset reported by discovery.",
+      "type": "object",
+      "properties": {
+        "dataItems": {
+          "description": "The count of data items within the referenced resource.",
+          "type": "string",
+          "format": "int64"
+        },
+        "dataSize": {
+          "description": "The number of stored data bytes within the referenced resource.",
+          "type": "string",
+          "format": "int64"
+        },
+        "tables": {
+          "description": "The count of table entities within the referenced resource.",
+          "type": "string",
+          "format": "int64"
+        },
+        "filesets": {
+          "description": "The count of fileset entities within the referenced resource.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },

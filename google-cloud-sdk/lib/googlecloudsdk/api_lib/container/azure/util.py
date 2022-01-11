@@ -19,11 +19,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkemulticloud import util
 from googlecloudsdk.calliope import base
-from googlecloudsdk.core import log
 
 
 class _AzureClientBase(object):
@@ -40,22 +38,14 @@ class _AzureClientBase(object):
 
     req = self._service.GetRequestType('List')(parent=parent_ref.RelativeName())
 
-    try:
-      for item in list_pager.YieldFromList(
-          self._service,
-          req,
-          field=self.GetListResultsField(),
-          limit=limit,
-          batch_size=page_size,
-          batch_size_attribute='pageSize'):
-        yield item
-    # TODO(b/203617640): Remove handling of this exception once API has gone GA.
-    except apitools_exceptions.HttpNotFoundError as e:
-      if 'Method not found' in e.content:
-        log.warning(
-            'This project may not have been added to the allow list for the Anthos Multi-Cloud API, please reach out to your GCP account team to resolve this'
-        )
-      raise
+    for item in list_pager.YieldFromList(
+        self._service,
+        req,
+        field=self.GetListResultsField(),
+        limit=limit,
+        batch_size=page_size,
+        batch_size_attribute='pageSize'):
+      yield item
 
   def Get(self, resource_ref):
     """Get an Azure resource."""

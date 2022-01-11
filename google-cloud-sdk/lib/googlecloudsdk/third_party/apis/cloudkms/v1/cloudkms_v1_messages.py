@@ -1742,18 +1742,18 @@ class GenerateRandomBytesRequest(_messages.Message):
 
   Enums:
     ProtectionLevelValueValuesEnum: The ProtectionLevel to use when generating
-      the random data. Defaults to SOFTWARE.
+      the random data. Currently, only HSM protection level is supported.
 
   Fields:
     lengthBytes: The length in bytes of the amount of randomness to retrieve.
       Minimum 8 bytes, maximum 1024 bytes.
     protectionLevel: The ProtectionLevel to use when generating the random
-      data. Defaults to SOFTWARE.
+      data. Currently, only HSM protection level is supported.
   """
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
-    r"""The ProtectionLevel to use when generating the random data. Defaults
-    to SOFTWARE.
+    r"""The ProtectionLevel to use when generating the random data. Currently,
+    only HSM protection level is supported.
 
     Values:
       PROTECTION_LEVEL_UNSPECIFIED: Not specified.
@@ -1819,14 +1819,14 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
     rsaAesWrappedKey: Wrapped key material produced with
       RSA_OAEP_3072_SHA1_AES_256 or RSA_OAEP_4096_SHA1_AES_256. This field
       contains the concatenation of two wrapped keys: 1. An ephemeral AES-256
-      wrapping key wrapped with the public_key using RSAES-OAEP with SHA-1,
-      MGF1 with SHA-1, and an empty label. 2. The key to be imported, wrapped
-      with the ephemeral AES-256 key using AES-KWP (RFC 5649). If importing
-      symmetric key material, it is expected that the unwrapped key contains
-      plain bytes. If importing asymmetric key material, it is expected that
-      the unwrapped key is in PKCS#8-encoded DER format (the PrivateKeyInfo
-      structure from RFC 5208). This format is the same as the format produced
-      by PKCS#11 mechanism CKM_RSA_AES_KEY_WRAP.
+      wrapping key wrapped with the public_key using RSAES-OAEP with
+      SHA-1/SHA-256, MGF1 with SHA-1/SHA-256, and an empty label. 2. The key
+      to be imported, wrapped with the ephemeral AES-256 key using AES-KWP
+      (RFC 5649). If importing symmetric key material, it is expected that the
+      unwrapped key contains plain bytes. If importing asymmetric key
+      material, it is expected that the unwrapped key is in PKCS#8-encoded DER
+      format (the PrivateKeyInfo structure from RFC 5208). This format is the
+      same as the format produced by PKCS#11 mechanism CKM_RSA_AES_KEY_WRAP.
   """
 
   class AlgorithmValueValuesEnum(_messages.Enum):

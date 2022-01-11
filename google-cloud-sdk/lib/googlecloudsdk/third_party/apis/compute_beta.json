@@ -4,7 +4,7 @@
   "id": "compute:beta",
   "name": "compute",
   "version": "beta",
-  "revision": "20211203",
+  "revision": "20211220",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -3433,7 +3433,7 @@
           "type": "string"
         },
         "ipv6Address": {
-          "description": "[Output Only] An IPv6 internal network address for this network interface.",
+          "description": "An IPv6 internal network address for this network interface.",
           "type": "string"
         },
         "name": {
@@ -3545,11 +3545,11 @@
           "type": "string"
         },
         "externalIpv6": {
-          "description": "[Output Only] The first IPv6 address of the external IPv6 range associated with this instance, prefix length is stored in externalIpv6PrefixLength in ipv6AccessConfig. The field is output only, an IPv6 address from a subnetwork associated with the instance will be allocated dynamically.",
+          "description": "The first IPv6 address of the external IPv6 range associated with this instance, prefix length is stored in externalIpv6PrefixLength in ipv6AccessConfig. The field is output only, an IPv6 address from a subnetwork associated with the instance will be allocated dynamically.",
           "type": "string"
         },
         "externalIpv6PrefixLength": {
-          "description": "[Output Only] The prefix length of the external IPv6 range.",
+          "description": "The prefix length of the external IPv6 range.",
           "type": "integer",
           "format": "int32"
         },
@@ -3791,6 +3791,13 @@
         "multiWriter": {
           "description": "Indicates whether or not the disk can be read\/write attached to more than one instance.",
           "type": "boolean"
+        },
+        "licenses": {
+          "description": "A list of publicly visible licenses. Reserved for Google's use.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -4142,6 +4149,10 @@
           "description": "The number of threads per physical core. To disable simultaneous multithreading (SMT) set this to 1. If unset, the maximum number of threads supported per core by the underlying processor is assumed.",
           "type": "integer",
           "format": "int32"
+        },
+        "enableUefiNetworking": {
+          "description": "Whether to enable UEFI networking for instance creation.",
+          "type": "boolean"
         }
       }
     },
@@ -5023,7 +5034,7 @@
           "$ref": "DisplayDevice"
         },
         "resourcePolicies": {
-          "description": "Resource policies (names, not ULRs) applied to instances created from these properties. Note that for MachineImage, this is not supported yet.",
+          "description": "Resource policies (names, not URLs) applied to instances created from these properties. Note that for MachineImage, this is not supported yet.",
           "type": "array",
           "items": {
             "type": "string"
@@ -5104,7 +5115,7 @@
       "type": "object",
       "properties": {
         "preference": {
-          "description": "Preference for a given location: ALLOW or DENY.",
+          "description": "Preference for a given location.",
           "type": "string",
           "enumDescriptions": [
             "Location is allowed for use.",
@@ -5414,6 +5425,11 @@
         },
         "inUseCount": {
           "description": "[Output Only] Indicates how many instances are in use.",
+          "type": "string",
+          "format": "int64"
+        },
+        "assuredCount": {
+          "description": "[Output Only] Indicates how many instances are actually usable currently.",
           "type": "string",
           "format": "int64"
         }
@@ -27218,6 +27234,13 @@
           "type": "string",
           "format": "byte"
         },
+        "domainNames": {
+          "description": "If specified, the domain name will be used during the integration between the PSC connected endpoints and the Cloud DNS. For example, this is a valid domain name: \"p.mycompany.com.\". Current max number of domain names supported is 1.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "kind": {
           "description": "[Output Only] Type of the resource. Always compute#serviceAttachment for service attachments.",
           "default": "compute#serviceAttachment",
@@ -28389,7 +28412,7 @@
           ]
         },
         "ipv6CidrRange": {
-          "description": "[Output Only] The range of internal IPv6 addresses that are owned by this subnetwork.",
+          "description": "[Output Only] The range of internal IPv6 addresses that are owned by this subnetwork. Note this will be for private google access only eventually.",
           "type": "string"
         },
         "externalIpv6Prefix": {
@@ -48392,7 +48415,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "Update the specified disk with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: user_license."
+          "description": "Updates the specified disk with the data included in the request. The update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: user_license."
         }
       }
     },

@@ -165,7 +165,9 @@ class CloudcommerceconsumerprocurementBillingAccountsConsentsListRequest(_messag
 
   Fields:
     agreement: Leave this field unset will return consents of agreements that
-      user has access to. A valid format would be - agreements/{agreement_id}
+      user has access to. A valid format would be - commerceoffercatalog.googl
+      eapis.com/billingAccounts/{billing_account}/offers/{offer_id}/agreements
+      /{agreement_id}
     pageSize: The maximum number of results returned by this request.
     pageToken: The continuation token, which is used to page through large
       result sets. To get the next page of results, set this parameter to the
@@ -530,6 +532,17 @@ class CloudcommerceconsumerprocurementProjectsEntitlementsListRequest(_messages.
   object.
 
   Fields:
+    filter: The filter that can be used to limit the list request. The filter
+      is a query string that can match a selected set of attributes with
+      string values. For example `product_external_name=abc`. Supported query
+      attributes are * `product_external_name` * `provider` If the query
+      contains some special characters other than letters, underscore, or
+      digits, the phrase must be quoted with double quotes. For example,
+      `product_external_name="foo:bar"`, where the product external name needs
+      to be quoted because it contains special character colon. Queries can be
+      combined with `OR`, and `NOT` to form more complex queries. They can
+      also be grouped to force a desired evaluation order. For example,
+      `product_external_name=abc OR product_external_name=def`.
     pageSize: The maximum number of entries that are requested. The default
       page size is 25 and the maximum page size is 200.
     pageToken: The token for fetching the next page.
@@ -538,9 +551,10 @@ class CloudcommerceconsumerprocurementProjectsEntitlementsListRequest(_messages.
       "projects/{project-id}".
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class CloudcommerceconsumerprocurementProjectsFreeTrialsCreateRequest(_messages.Message):
@@ -820,7 +834,8 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1CheckConsentRequest(_message
 
   Fields:
     agreement: Required. Agreement to be checked against. A valid format would
-      be - agreements/{agreement_id}
+      be - commerceoffercatalog.googleapis.com/billingAccounts/{billing_accoun
+      t}/offers/{offer_id}/agreements/{agreement_id}
     financialContract: Financial contract this consent applies to. This is a
       system full resource name. E.g.: //commerceoffercatalog.googleapis.com/b
       illingAccounts/{billing_account}/offers/{offer-id}

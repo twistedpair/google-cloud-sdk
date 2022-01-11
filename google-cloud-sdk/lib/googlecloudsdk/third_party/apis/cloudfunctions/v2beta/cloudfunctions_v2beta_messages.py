@@ -78,19 +78,19 @@ class AuditLogConfig(_messages.Message):
 
 
 class Binding(_messages.Message):
-  r"""Associates `members` with a `role`.
+  r"""Associates `members`, or principals, with a `role`.
 
   Fields:
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
       not apply to the current request. However, a different role binding
-      might grant the same role to one or more of the members in this binding.
-      To learn which resources support conditions in their IAM policies, see
-      the [IAM
+      might grant the same role to one or more of the principals in this
+      binding. To learn which resources support conditions in their IAM
+      policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the identities requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Cloud Platform
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -120,8 +120,8 @@ class Binding(_messages.Message):
       group retains the role in the binding. * `domain:{domain}`: The G Suite
       domain (primary) that represents all the users of that domain. For
       example, `google.com` or `example.com`.
-    role: Role that is assigned to `members`. For example, `roles/viewer`,
-      `roles/editor`, or `roles/owner`.
+    role: Role that is assigned to the list of `members`, or principals. For
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -274,12 +274,16 @@ class CloudfunctionsProjectsLocationsFunctionsGetIamPolicyRequest(_messages.Mess
   r"""A CloudfunctionsProjectsLocationsFunctionsGetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -551,6 +555,7 @@ class Function(_messages.Message):
   response to an event. It encapsulate function and triggers configurations.
 
   Enums:
+    EnvironmentValueValuesEnum: Describe whether the function is gen1 or gen2.
     StateValueValuesEnum: Output only. State of the function.
 
   Messages:
@@ -560,6 +565,7 @@ class Function(_messages.Message):
     buildConfig: Describes the Build step of the function that builds a
       container from the given source.
     description: User-provided description of a function.
+    environment: Describe whether the function is gen1 or gen2.
     eventTrigger: An Eventarc trigger managed by Google Cloud Functions that
       fires events in response to a condition in another service.
     labels: Labels associated with this Cloud Function.
@@ -571,6 +577,18 @@ class Function(_messages.Message):
     stateMessages: Output only. State Messages for this Cloud Function.
     updateTime: Output only. The last update timestamp of a Cloud Function.
   """
+
+  class EnvironmentValueValuesEnum(_messages.Enum):
+    r"""Describe whether the function is gen1 or gen2.
+
+    Values:
+      ENVIRONMENT_UNSPECIFIED: Unspecified
+      GEN_1: Gen 1
+      GEN_2: Gen 2
+    """
+    ENVIRONMENT_UNSPECIFIED = 0
+    GEN_1 = 1
+    GEN_2 = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of the function.
@@ -618,13 +636,14 @@ class Function(_messages.Message):
 
   buildConfig = _messages.MessageField('BuildConfig', 1)
   description = _messages.StringField(2)
-  eventTrigger = _messages.MessageField('EventTrigger', 3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  serviceConfig = _messages.MessageField('ServiceConfig', 6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  stateMessages = _messages.MessageField('GoogleCloudFunctionsV2betaStateMessage', 8, repeated=True)
-  updateTime = _messages.StringField(9)
+  environment = _messages.EnumField('EnvironmentValueValuesEnum', 3)
+  eventTrigger = _messages.MessageField('EventTrigger', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  serviceConfig = _messages.MessageField('ServiceConfig', 7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  stateMessages = _messages.MessageField('GoogleCloudFunctionsV2betaStateMessage', 9, repeated=True)
+  updateTime = _messages.StringField(10)
 
 
 class GenerateDownloadUrlRequest(_messages.Message):
@@ -748,12 +767,16 @@ class GoogleCloudFunctionsV2alphaStage(_messages.Message):
       BUILD: Build Stage
       SERVICE: Service Stage
       TRIGGER: Trigger Stage
+      SERVICE_ROLLBACK: Service Rollback Stage
+      TRIGGER_ROLLBACK: Trigger Rollback Stage
     """
     NAME_UNSPECIFIED = 0
     ARTIFACT_REGISTRY = 1
     BUILD = 2
     SERVICE = 3
     TRIGGER = 4
+    SERVICE_ROLLBACK = 5
+    TRIGGER_ROLLBACK = 6
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Current state of the Stage
@@ -797,10 +820,12 @@ class GoogleCloudFunctionsV2alphaStateMessage(_messages.Message):
       SEVERITY_UNSPECIFIED: Not specified. Invalid severity.
       ERROR: ERROR-level severity.
       WARNING: WARNING-level severity.
+      INFO: INFO-level severity.
     """
     SEVERITY_UNSPECIFIED = 0
     ERROR = 1
     WARNING = 2
+    INFO = 3
 
   message = _messages.StringField(1)
   severity = _messages.EnumField('SeverityValueValuesEnum', 2)
@@ -891,12 +916,16 @@ class GoogleCloudFunctionsV2betaStage(_messages.Message):
       BUILD: Build Stage
       SERVICE: Service Stage
       TRIGGER: Trigger Stage
+      SERVICE_ROLLBACK: Service Rollback Stage
+      TRIGGER_ROLLBACK: Trigger Rollback Stage
     """
     NAME_UNSPECIFIED = 0
     ARTIFACT_REGISTRY = 1
     BUILD = 2
     SERVICE = 3
     TRIGGER = 4
+    SERVICE_ROLLBACK = 5
+    TRIGGER_ROLLBACK = 6
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Current state of the Stage
@@ -940,10 +969,12 @@ class GoogleCloudFunctionsV2betaStateMessage(_messages.Message):
       SEVERITY_UNSPECIFIED: Not specified. Invalid severity.
       ERROR: ERROR-level severity.
       WARNING: WARNING-level severity.
+      INFO: INFO-level severity.
     """
     SEVERITY_UNSPECIFIED = 0
     ERROR = 1
     WARNING = 2
+    INFO = 3
 
   message = _messages.StringField(1)
   severity = _messages.EnumField('SeverityValueValuesEnum', 2)
@@ -1268,15 +1299,15 @@ class OperationMetadataV1(_messages.Message):
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
-  `bindings`. A `binding` binds one or more `members` to a single `role`.
-  Members can be user accounts, service accounts, Google groups, and domains
-  (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role. For some types of
-  Google Cloud resources, a `binding` can also specify a `condition`, which is
-  a logical expression that allows access to a resource only if the expression
-  evaluates to `true`. A condition can add constraints based on attributes of
-  the request, the resource, or both. To learn which resources support
-  conditions in their IAM policies, see the [IAM
+  `bindings`. A `binding` binds one or more `members`, or principals, to a
+  single `role`. Principals can be user accounts, service accounts, Google
+  groups, and domains (such as G Suite). A `role` is a named list of
+  permissions; each `role` can be an IAM predefined role or a user-created
+  custom role. For some types of Google Cloud resources, a `binding` can also
+  specify a `condition`, which is a logical expression that allows access to a
+  resource only if the expression evaluates to `true`. A condition can add
+  constraints based on attributes of the request, the resource, or both. To
+  learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
   policies). **JSON example:** { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
@@ -1298,14 +1329,15 @@ class Policy(_messages.Message):
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. Optionally, may
-      specify a `condition` that determines how and when the `bindings` are
-      applied. Each of the `bindings` must contain at least one member. The
-      `bindings` in a `Policy` can refer to up to 1,500 members; up to 250 of
-      these members can be Google groups. Each occurrence of a member counts
-      towards these limits. For example, if the `bindings` grant 50 different
-      roles to `user:alice@example.com`, and not to any other member, then you
-      can add another 1,450 members to the `bindings` in the `Policy`.
+    bindings: Associates a list of `members`, or principals, with a `role`.
+      Optionally, may specify a `condition` that determines how and when the
+      `bindings` are applied. Each of the `bindings` must contain at least one
+      principal. The `bindings` in a `Policy` can refer to up to 1,500
+      principals; up to 250 of these principals can be Google groups. Each
+      occurrence of a principal counts towards these limits. For example, if
+      the `bindings` grant 50 different roles to `user:alice@example.com`, and
+      not to any other principal, then you can add another 1,450 principals to
+      the `bindings` in the `Policy`.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -1427,15 +1459,19 @@ class ServiceConfig(_messages.Message):
       during function execution.
 
   Fields:
+    allTrafficOnLatestRevision: Whether 100% of traffic is routed to the
+      latest revision. On CreateFunction and UpdateFunction, when set to true,
+      the revision being deployed will serve 100% of traffic, ignoring any
+      traffic split settings, if any. On GetFunction, true will be returned if
+      the latest revision is serving 100% of traffic.
     availableMemory: The amount of memory available for a function. Defaults
       to 256M. Supported units are k, M, G, Mi, Gi. If no unit is supplied the
       value is interpreted as bytes. See https://github.com/kubernetes/kuberne
       tes/blob/master/staging/src/k8s.io/apimachinery/pkg/api/resource/quantit
       y.go a full description.
-    availableMemoryMb: The amount of memory in MB available for a function.
-      Defaults to 256MB.
     environmentVariables: Environment variables that shall be available during
       function execution.
+    gcfUri: Output only. URIs of the Service deployed
     ingressSettings: The ingress settings for the function, controlling what
       traffic can reach it.
     maxInstanceCount: The limit on the maximum number of function instances
@@ -1529,18 +1565,19 @@ class ServiceConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  availableMemory = _messages.StringField(1)
-  availableMemoryMb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  allTrafficOnLatestRevision = _messages.BooleanField(1)
+  availableMemory = _messages.StringField(2)
   environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 3)
-  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 4)
-  maxInstanceCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  minInstanceCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  service = _messages.StringField(7)
-  serviceAccountEmail = _messages.StringField(8)
-  timeoutSeconds = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  uri = _messages.StringField(10)
-  vpcConnector = _messages.StringField(11)
-  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 12)
+  gcfUri = _messages.StringField(4)
+  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 5)
+  maxInstanceCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  minInstanceCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  service = _messages.StringField(8)
+  serviceAccountEmail = _messages.StringField(9)
+  timeoutSeconds = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  uri = _messages.StringField(11)
+  vpcConnector = _messages.StringField(12)
+  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 13)
 
 
 class SetIamPolicyRequest(_messages.Message):

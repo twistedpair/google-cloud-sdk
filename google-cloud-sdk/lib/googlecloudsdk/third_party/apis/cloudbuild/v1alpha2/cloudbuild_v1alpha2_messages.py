@@ -137,6 +137,18 @@ class Artifacts(_messages.Message):
   objects = _messages.MessageField('ArtifactObjects', 2)
 
 
+class BatchCreateBitbucketServerConnectedRepositoriesResponse(_messages.Message):
+  r"""Response of BatchCreateBitbucketServerConnectedRepositories RPC method
+  including all successfully connected Bitbucket Server repositories.
+
+  Fields:
+    bitbucketServerConnectedRepositories: The connected Bitbucket Server
+      repositories.
+  """
+
+  bitbucketServerConnectedRepositories = _messages.MessageField('BitbucketServerConnectedRepository', 1, repeated=True)
+
+
 class BatchCreateBitbucketServerConnectedRepositoriesResponseMetadata(_messages.Message):
   r"""Metadata for `BatchCreateBitbucketServerConnectedRepositories`
   operation.
@@ -152,6 +164,40 @@ class BatchCreateBitbucketServerConnectedRepositoriesResponseMetadata(_messages.
   completeTime = _messages.StringField(1)
   config = _messages.StringField(2)
   createTime = _messages.StringField(3)
+
+
+class BitbucketServerConnectedRepository(_messages.Message):
+  r"""/ BitbucketServerConnectedRepository represents a connected Bitbucket
+  Server / repository.
+
+  Fields:
+    parent: The name of the `BitbucketServerConfig` that added connected
+      repository. Format: `projects/{project}/locations/{location}/bitbucketSe
+      rverConfigs/{config}`
+    repo: The Bitbucket Server repositories to connect.
+    status: Output only. The status of the repo connection request.
+  """
+
+  parent = _messages.StringField(1)
+  repo = _messages.MessageField('BitbucketServerRepositoryId', 2)
+  status = _messages.MessageField('Status', 3)
+
+
+class BitbucketServerRepositoryId(_messages.Message):
+  r"""BitbucketServerRepositoryId identifies a specific repository hosted on a
+  Bitbucket Server.
+
+  Fields:
+    projectKey: Required. Identifier for the project storing the repository.
+    repoSlug: Required. Identifier for the repository.
+    webhookId: Output only. The ID of the webhook that was created for
+      receiving events from this repo. We only create and manage a single
+      webhook for each repo.
+  """
+
+  projectKey = _messages.StringField(1)
+  repoSlug = _messages.StringField(2)
+  webhookId = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class Build(_messages.Message):

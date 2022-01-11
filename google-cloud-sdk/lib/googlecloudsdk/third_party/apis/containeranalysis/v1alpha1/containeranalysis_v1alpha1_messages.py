@@ -2298,8 +2298,11 @@ class Discovered(_messages.Message):
     analysisStatusError: When an error is encountered this will contain a
       LocalizedMessage under details to show to the user. The LocalizedMessage
       output only and populated by the API.
+    archiveTime: The time occurrences related to this discovery occurrence
+      were archived.
     continuousAnalysis: Whether the resource is continuously analyzed.
     cpe: The CPE of the resource being scanned.
+    lastScanTime: The last time this resource was scanned.
     operation: Output only. An operation that indicates the status of the
       current scan. This field is deprecated, do not use.
   """
@@ -2337,9 +2340,11 @@ class Discovered(_messages.Message):
 
   analysisStatus = _messages.EnumField('AnalysisStatusValueValuesEnum', 1)
   analysisStatusError = _messages.MessageField('Status', 2)
-  continuousAnalysis = _messages.EnumField('ContinuousAnalysisValueValuesEnum', 3)
-  cpe = _messages.StringField(4)
-  operation = _messages.MessageField('Operation', 5)
+  archiveTime = _messages.StringField(3)
+  continuousAnalysis = _messages.EnumField('ContinuousAnalysisValueValuesEnum', 4)
+  cpe = _messages.StringField(5)
+  lastScanTime = _messages.StringField(6)
+  operation = _messages.MessageField('Operation', 7)
 
 
 class Discovery(_messages.Message):

@@ -594,6 +594,15 @@ def AddInsightsConfigRecordClientAddress(parser, show_negated_in_help=False):
       **kwargs)
 
 
+def AddInsightsConfigQueryPlansPerMinute(parser):
+  parser.add_argument(
+      '--insights-config-query-plans-per-minute',
+      required=False,
+      type=arg_parsers.BoundedInt(lower_bound=0, upper_bound=20),
+      help="""Number of query plans to sample every minute.
+        Default value is 5. Allowed range: 0 to 20.""")
+
+
 def AddMemory(parser):
   parser.add_argument(
       '--memory',

@@ -1621,8 +1621,8 @@ class GoogleCloudDatacatalogV1beta1SearchCatalogRequestScope(_messages.Message):
       asia-east2 * asia-northeast1 * asia-northeast2 * asia-northeast3 * asia-
       south1 * asia-southeast1 * australia-southeast1 * eu * europe-north1 *
       europe-west1 * europe-west2 * europe-west3 * europe-west4 * europe-west6
-      * global * northamerica-northeast1 * southamerica-east1 * us * us-
-      central1 * us-east1 * us-east4 * us-west1 * us-west2
+      * europe-west8 * global * northamerica-northeast1 * southamerica-east1 *
+      us * us-central1 * us-east1 * us-east4 * us-west1 * us-west2
   """
 
   includeGcpPublicDatasets = _messages.BooleanField(1)
@@ -2077,7 +2077,7 @@ class GoogleCloudDatacatalogV1beta1UsageSignal(_messages.Message):
 
 class GoogleCloudDatacatalogV1beta1UsageStats(_messages.Message):
   r"""Detailed counts on the entry's usage. Caveats: - Only BigQuery tables
-  have usage stats - The usage stats only inlude BigQuery query jobs - The
+  have usage stats - The usage stats only include BigQuery query jobs - The
   usage stats might be underestimated, e.g. wildcard table references are not
   yet counted in usage computation
   https://cloud.google.com/bigquery/docs/querying-wildcard-tables

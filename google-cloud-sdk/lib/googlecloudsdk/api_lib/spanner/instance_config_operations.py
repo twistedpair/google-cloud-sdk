@@ -46,7 +46,7 @@ def BuildInstanceConfigOperationTypeFilter(op_type):
   if op_type is None:
     return ''
 
-  base_string = 'metadata.@type:type.googleapis.com/google.spanner.admin.database.v1.'
+  base_string = 'metadata.@type:type.googleapis.com/google.spanner.admin.instance.v1.'
   if op_type == 'INSTANCE_CONFIG_CREATE':
     return base_string + 'CreateInstanceConfigMetadata'
 

@@ -279,7 +279,7 @@ class GkemulticloudProjectsLocationsAwsClustersPatchRequest(_messages.Message):
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field can
       only include these fields from AwsCluster: * `description`. *
-      `annotations`. * `control_plane.version`.
+      `annotations`. * `control_plane.version`. * `authorization.admin_users`.
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """
@@ -754,11 +754,11 @@ class GoogleCloudGkemulticloudV1AwsAuthorization(_messages.Message):
   r"""Configuration related to the cluster RBAC settings.
 
   Fields:
-    adminUsers: Required. Users to perform operations as a cluster admin. A
-      managed ClusterRoleBinding will be created to grant the `cluster-admin`
-      ClusterRole to the users. At most one user can be specified. For more
-      info on RBAC, see https://kubernetes.io/docs/reference/access-authn-
-      authz/rbac/#user-facing-roles
+    adminUsers: Required. Users that can perform operations as a cluster
+      admin. A managed ClusterRoleBinding will be created to grant the
+      `cluster-admin` ClusterRole to the users. For more info on RBAC, see
+      https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-
+      facing-roles
   """
 
   adminUsers = _messages.MessageField('GoogleCloudGkemulticloudV1AwsClusterUser', 1, repeated=True)
@@ -956,8 +956,8 @@ class GoogleCloudGkemulticloudV1AwsControlPlane(_messages.Message):
     configEncryption: Required. Config encryption for user data.
     databaseEncryption: Required. The ARN of the AWS KMS key used to encrypt
       cluster secrets.
-    iamInstanceProfile: Required. The name of the AWS IAM instance pofile to
-      assign to each control plane replica.
+    iamInstanceProfile: Required. The name or ARN of the AWS IAM instance
+      profile to assign to each control plane replica.
     instanceType: Optional. The AWS instance type. When unspecified, it
       defaults to `t3.medium`.
     mainVolume: Optional. Configuration related to the main volume provisioned
@@ -1077,8 +1077,8 @@ class GoogleCloudGkemulticloudV1AwsNodeConfig(_messages.Message):
 
   Fields:
     configEncryption: Required. Config encryption for user data.
-    iamInstanceProfile: Required. The name of the AWS IAM role assigned to
-      nodes in the pool.
+    iamInstanceProfile: Required. The name or ARN of the AWS IAM role assigned
+      to nodes in the pool.
     instanceType: Optional. The AWS instance type. When unspecified, it
       defaults to `t3.medium`.
     labels: Optional. The initial labels assigned to nodes of this node pool.
@@ -1421,10 +1421,10 @@ class GoogleCloudGkemulticloudV1AzureAuthorization(_messages.Message):
 
   Fields:
     adminUsers: Required. Users that can perform operations as a cluster
-      admin. A new ClusterRoleBinding will be created to grant the cluster-
-      admin ClusterRole to the users. At most one user can be specified. For
-      more info on RBAC, see https://kubernetes.io/docs/reference/access-
-      authn-authz/rbac/#user-facing-roles
+      admin. A managed ClusterRoleBinding will be created to grant the
+      `cluster-admin` ClusterRole to the users. For more info on RBAC, see
+      https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-
+      facing-roles
   """
 
   adminUsers = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterUser', 1, repeated=True)

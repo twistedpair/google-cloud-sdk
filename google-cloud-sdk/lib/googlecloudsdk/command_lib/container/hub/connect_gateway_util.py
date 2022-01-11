@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.command_lib.container.hub.memberships import errors as memberships_errors
+from googlecloudsdk.command_lib.container.fleet.memberships import errors as memberships_errors
 
 
 def CheckGatewayApiEnablement(project_id, service_name):

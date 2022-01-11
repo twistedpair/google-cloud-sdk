@@ -1,6 +1,130 @@
 # Google Cloud SDK - Release Notes
 
-Copyright 2014-2021 Google Inc. All rights reserved.
+Copyright 2014-2022 Google Inc. All rights reserved.
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
+## 368.0.0 (2022-01-11)
+
+### Breaking Changes
+
+*   **(Anthos Multi-Cloud)** Required `--fleet-project` flag of `gcloud container aws clusters create`
+    and `gcloud container azure clusters create`.
+*   **(Anthos Multi-Cloud)** Required `--config-encryption-kms-key-arn` flag of `gcloud container aws
+    clusters create`.
+*   **(Firebase Test Lab)** Updated minimum version for AndroidJUnitRunner in combination with Android
+  Test Orchestrator from 1.0 to 1.1, deprecating support for the Test
+  Orchestrator from the legacy Android Test Support libraries.
+
+
+### AI
+
+*    Updated `gcloud ai custom-jobs create` to allow worker pools with `container-image-uri` when `python-package-uris` is also specified.
+
+### Anthos Multi-Cloud
+
+*   Replaced `auth-provider` auth plugin with `exec` auth plugin when generating
+    kubeconfig in `gcloud container aws clusters get-credentials` and `gcloud
+    container azure clusters get-credentials`.
+
+### Bare Metal Solution
+
+* Removed `gcloud bms snapshot-schedule-policies` from GA.
+ * Removed `gcloud bms volumes snapshots` from GA.
+ * Removed `gcloud bms volumes update` from GA.
+
+### Cloud Bigtable
+
+*   Added `cbt import [TABLE_ID] [INPUT_FILE]` which allows the contents of a
+    properly formatted .csv file to be written to an existing table.
+
+### Cloud Composer
+
+* Added `gcloud composer state store` for State Store operation of State/Disaster recovery to Alpha.
+* Added `gcloud composer state load` for State Load operation of State recovery to Alpha.
+
+### Cloud DNS
+
+* Added DNS Routing Policies support for `gcloud dns record-sets`.
+
+### Cloud Data Fusion
+
+* Added `--options` optional argument to\
+  `gcloud beta data-fusion instances update` for instance to update\
+  options field, specified as KEY1=VALUE1,KEY2=VALUE2.
+
+### Cloud Datastream
+
+* Added `gcloud datastream objects` command group. Commands in this group manage backfills for Stream object resources. For more information, see <https://cloud.google.com/datastream/docs/reference/rest/v1/projects.locations.streams.objects>.
+
+### Cloud Deploy
+
+* When creating a release with `gcloud releases create`, can include the date and time of release creation by adding keywords $DATE and $TIME to release name.
+
+### Cloud IDS
+
+*   Updated `ids endpoints create` to pass in user-defined labels to the
+    Endpoint resource.
+
+### Cloud On Demand Scanning
+
+* Updated `local-extract` to version 1.3.2 to fix an issue with extraction of
+  invalid zip archives.
+
+### Cloud SQL
+
+* Added `--insights-config-query-plans-per-minute` to
+* `gcloud sql instances create` and `gcloud sql instances patch`.
+
+### Cloud Storage
+
+* Updated gsutil component to 5.6.
+
+### Compute Engine
+
+* Promoted `compute machine-images` command group to GA.
+* Promoted `gcloud compute backend-services add-service-bindings` and `gcloud compute backend-services remove-service-bindings` commands to beta.
+* Promoted `--request-headers-to-add` for `gcloud compute security-policies rules create|update` to GA.
+* Promoted `--enable-dynamic-port-allocation` and `--max-ports-per-vm` flags of `gcloud compute routers nats create` and `gcloud compute routers nats update` to GA.
+* Promoted `--clear-max-ports-per-vm` flag of `gcloud compute routers nats update` to GA.
+* Promoted `REGIONAL_MANAGED_PROXY` option for `--purpose` flag of `gcloud compute networks subnets create` to GA.
+* Added `--zypper-excludes` flag to `gcloud compute os-config patch-jobs execute` to allow specifying patches to be excluded from update.
+
+### GKE Hub
+
+*   Added `gcloud container fleet memberships` command group identical to
+    existing `gcloud container hub memberships`.
+* Promoted the following commands to GA:
+  * `gcloud container hub mesh describe`.
+  * `gcloud container hub mesh disable`.
+  * `gcloud container hub mesh enable`.
+
+### Kubernetes Engine
+
+* Added `--enable-service-externalips` flag to `gcloud container clusters create | update` to allow or deny services to set the ExternalIPs field.
+* Added `--add-maintenance-exclusion-scope` flag to `gcloud container clusters update` to specify the maintenance exclusion scope as no_upgrades, no_minor_upgrades, or no_minor_or_node_upgrades.
+* Demoted many `gcloud container clusters` warning-level logs to informational.
+  * Changed warnings were those that do not indicate issues with your Kubernetes Engine resources, such as upcoming default changes and feature usage notes.
+  * Intent was to ensure warnings are genuine indications that something is wrong.
+  * Outdated warnings have been removed.
+* Added Compact Placement support to the command `gcloud container clusters
+  create`. A `--placement-type` flag can be specified to specify a requirement
+  of nodes collocation.
+* Added Compact Placement support to the command `gcloud container node-pools
+  create`. A `--placement-type` flag can be specified to specify a requirement
+  of nodes collocation.
+
+### Miscellaneous
+
+* Updated console handling code to assume non-interactive mode if stdin, stdout,
+  or stderr is not open, rather than exit with an error.
+
+### Recommender
+
+*   Added support for `gcloud beta recommender recommender-config describe`.
+*   Added support for `gcloud beta recommender recommender-config update`.
+
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 

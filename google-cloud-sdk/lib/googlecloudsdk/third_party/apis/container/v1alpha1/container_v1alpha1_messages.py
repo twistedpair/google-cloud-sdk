@@ -2147,6 +2147,14 @@ class IPAllocationPolicy(_messages.Message):
       notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
       `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
       range to use.
+    podCidrOverprovisionConfig: Pod CIDR size overprovisioning config for the
+      cluster. Pod CIDR size per node depends on max_pods_per_node. By
+      default, the value of max_pods_per_node is rounded off to next power of
+      2 and we then double that to get the size of pod CIDR block per node.
+      Example: max_pods_per_node of 30 would result in 64 IPs (/26). This
+      config can disable the doubling of IPs (we still round off to next power
+      of 2) Example: max_pods_per_node of 30 will result in 32 IPs (/27) when
+      overprovisioning is disabled.
     servicesIpv4Cidr: This field is deprecated, use services_ipv4_cidr_block.
     servicesIpv4CidrBlock: The IP address range of the services IPs in this
       cluster. If blank, a range will be automatically chosen with the default
@@ -2250,18 +2258,19 @@ class IPAllocationPolicy(_messages.Message):
   ipv6AccessType = _messages.EnumField('Ipv6AccessTypeValueValuesEnum', 6)
   nodeIpv4Cidr = _messages.StringField(7)
   nodeIpv4CidrBlock = _messages.StringField(8)
-  servicesIpv4Cidr = _messages.StringField(9)
-  servicesIpv4CidrBlock = _messages.StringField(10)
-  servicesSecondaryRangeName = _messages.StringField(11)
-  stackType = _messages.EnumField('StackTypeValueValuesEnum', 12)
-  subnetworkName = _messages.StringField(13)
-  targetNodeIpv4Range = _messages.StringField(14)
-  targetPodIpv4Range = _messages.StringField(15)
-  targetServiceIpv4Range = _messages.StringField(16)
-  tpuIpv4CidrBlock = _messages.StringField(17)
-  tpuUseServiceNetworking = _messages.BooleanField(18)
-  useIpAliases = _messages.BooleanField(19)
-  useRoutes = _messages.BooleanField(20)
+  podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 9)
+  servicesIpv4Cidr = _messages.StringField(10)
+  servicesIpv4CidrBlock = _messages.StringField(11)
+  servicesSecondaryRangeName = _messages.StringField(12)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 13)
+  subnetworkName = _messages.StringField(14)
+  targetNodeIpv4Range = _messages.StringField(15)
+  targetPodIpv4Range = _messages.StringField(16)
+  targetServiceIpv4Range = _messages.StringField(17)
+  tpuIpv4CidrBlock = _messages.StringField(18)
+  tpuUseServiceNetworking = _messages.BooleanField(19)
+  useIpAliases = _messages.BooleanField(20)
+  useRoutes = _messages.BooleanField(21)
 
 
 class IdentityServiceConfig(_messages.Message):
@@ -3477,6 +3486,14 @@ class NodeNetworkConfig(_messages.Message):
       cluster.privateClusterConfig.enablePrivateNodes
     networkPerformanceConfig: Network bandwidth tier configuration.
     nodeIpv4CidrBlock: A string attribute.
+    podCidrOverprovisionConfig: Pod CIDR size overprovisioning config for the
+      nodepool. Pod CIDR size per node depends on max_pods_per_node. By
+      default, the value of max_pods_per_node is doubled and then rounded off
+      to next power of 2 to get the size of pod CIDR block per node. Example:
+      max_pods_per_node of 30 would result in 64 IPs (/26). This config can
+      disable the doubling of IPs (we still round off to next power of 2)
+      Example: max_pods_per_node of 30 will result in 32 IPs (/27) when
+      overprovisioning is disabled.
     podIpv4CidrBlock: The IP address range for pod IPs in this node pool. Only
       applicable if `create_pod_range` is true. Set to blank to have a range
       chosen with the default size. Set to /netmask (e.g. `/14`) to have a
@@ -3506,10 +3523,11 @@ class NodeNetworkConfig(_messages.Message):
   enablePrivateNodes = _messages.BooleanField(4)
   networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 5)
   nodeIpv4CidrBlock = _messages.StringField(6)
-  podIpv4CidrBlock = _messages.StringField(7)
-  podRange = _messages.StringField(8)
-  subnetwork = _messages.StringField(9)
-  targetPodIpv4Range = _messages.StringField(10)
+  podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 7)
+  podIpv4CidrBlock = _messages.StringField(8)
+  podRange = _messages.StringField(9)
+  subnetwork = _messages.StringField(10)
+  targetPodIpv4Range = _messages.StringField(11)
 
 
 class NodeNetworkPolicy(_messages.Message):
@@ -3914,6 +3932,17 @@ class PlacementPolicy(_messages.Message):
     COMPACT = 1
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
+
+
+class PodCIDROverprovisionConfig(_messages.Message):
+  r"""Config for pod CIDR size overprovisioning.
+
+  Fields:
+    disable: Whether Pod CIDR overprovisioning is disabled. Note: Pod CIDR
+      overprovisioning is enabled by default.
+  """
+
+  disable = _messages.BooleanField(1)
 
 
 class PodSecurityPolicyConfig(_messages.Message):

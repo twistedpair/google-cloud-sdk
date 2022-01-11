@@ -887,6 +887,16 @@ class DialogflowProjectsAgentKnowledgeBasesDocumentsListRequest(_messages.Messag
   r"""A DialogflowProjectsAgentKnowledgeBasesDocumentsListRequest object.
 
   Fields:
+    filter: The filter expression used to filter documents returned by the
+      list method. The expression has the following syntax: [AND ] ... The
+      following fields and operators are supported: * knowledge_types with
+      has(:) operator * display_name with has(:) operator * state with
+      equals(=) operator Examples: * "knowledge_types:FAQ" matches documents
+      with FAQ knowledge type. * "display_name:customer" matches documents
+      whose display name contains "customer". * "state=ACTIVE" matches
+      documents with ACTIVE state. * "knowledge_types:FAQ AND state=ACTIVE"
+      matches all active FAQ documents. For more information about filtering,
+      see [API Filtering](https://aip.dev/160).
     pageSize: The maximum number of items to return in a single page. By
       default 10 and at most 100.
     pageToken: The next_page_token value returned from a previous list
@@ -895,9 +905,10 @@ class DialogflowProjectsAgentKnowledgeBasesDocumentsListRequest(_messages.Messag
       `projects//locations//knowledgeBases/`.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class DialogflowProjectsAgentKnowledgeBasesDocumentsPatchRequest(_messages.Message):
@@ -949,6 +960,19 @@ class DialogflowProjectsAgentKnowledgeBasesListRequest(_messages.Message):
   r"""A DialogflowProjectsAgentKnowledgeBasesListRequest object.
 
   Fields:
+    filter: The filter expression used to filter knowledge bases returned by
+      the list method. The expression has the following syntax: [AND ] ... The
+      following fields and operators are supported: * display_name with has(:)
+      operator * language_code with equals(=) operator Examples: *
+      'language_code=en-us' matches knowledge bases with en-us language code.
+      * 'display_name:articles' matches knowledge bases whose display name
+      contains "articles". * 'display_name:"Best Articles"' matches knowledge
+      bases whose display name contains "Best Articles". * 'language_code=en-
+      gb AND display_name=articles' matches all knowledge bases whose display
+      name contains "articles" and whose language code is "en-gb". Note: An
+      empty filter string (i.e. "") is a no-op and will result in no
+      filtering. For more information about filtering, see [API
+      Filtering](https://aip.dev/160).
     pageSize: The maximum number of items to return in a single page. By
       default 10 and at most 100.
     pageToken: The next_page_token value returned from a previous list
@@ -957,9 +981,10 @@ class DialogflowProjectsAgentKnowledgeBasesListRequest(_messages.Message):
       `projects//locations/`.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class DialogflowProjectsAgentKnowledgeBasesPatchRequest(_messages.Message):
@@ -1731,6 +1756,21 @@ class DialogflowProjectsKnowledgeBasesDocumentsDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class DialogflowProjectsKnowledgeBasesDocumentsExportRequest(_messages.Message):
+  r"""A DialogflowProjectsKnowledgeBasesDocumentsExportRequest object.
+
+  Fields:
+    googleCloudDialogflowV2ExportDocumentRequest: A
+      GoogleCloudDialogflowV2ExportDocumentRequest resource to be passed as
+      the request body.
+    name: Required. The name of the document to export. Format:
+      `projects//locations//knowledgeBases//documents/`.
+  """
+
+  googleCloudDialogflowV2ExportDocumentRequest = _messages.MessageField('GoogleCloudDialogflowV2ExportDocumentRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class DialogflowProjectsKnowledgeBasesDocumentsGetRequest(_messages.Message):
   r"""A DialogflowProjectsKnowledgeBasesDocumentsGetRequest object.
 
@@ -1746,6 +1786,16 @@ class DialogflowProjectsKnowledgeBasesDocumentsListRequest(_messages.Message):
   r"""A DialogflowProjectsKnowledgeBasesDocumentsListRequest object.
 
   Fields:
+    filter: The filter expression used to filter documents returned by the
+      list method. The expression has the following syntax: [AND ] ... The
+      following fields and operators are supported: * knowledge_types with
+      has(:) operator * display_name with has(:) operator * state with
+      equals(=) operator Examples: * "knowledge_types:FAQ" matches documents
+      with FAQ knowledge type. * "display_name:customer" matches documents
+      whose display name contains "customer". * "state=ACTIVE" matches
+      documents with ACTIVE state. * "knowledge_types:FAQ AND state=ACTIVE"
+      matches all active FAQ documents. For more information about filtering,
+      see [API Filtering](https://aip.dev/160).
     pageSize: The maximum number of items to return in a single page. By
       default 10 and at most 100.
     pageToken: The next_page_token value returned from a previous list
@@ -1754,9 +1804,10 @@ class DialogflowProjectsKnowledgeBasesDocumentsListRequest(_messages.Message):
       `projects//locations//knowledgeBases/`.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class DialogflowProjectsKnowledgeBasesDocumentsPatchRequest(_messages.Message):
@@ -1808,6 +1859,19 @@ class DialogflowProjectsKnowledgeBasesListRequest(_messages.Message):
   r"""A DialogflowProjectsKnowledgeBasesListRequest object.
 
   Fields:
+    filter: The filter expression used to filter knowledge bases returned by
+      the list method. The expression has the following syntax: [AND ] ... The
+      following fields and operators are supported: * display_name with has(:)
+      operator * language_code with equals(=) operator Examples: *
+      'language_code=en-us' matches knowledge bases with en-us language code.
+      * 'display_name:articles' matches knowledge bases whose display name
+      contains "articles". * 'display_name:"Best Articles"' matches knowledge
+      bases whose display name contains "Best Articles". * 'language_code=en-
+      gb AND display_name=articles' matches all knowledge bases whose display
+      name contains "articles" and whose language code is "en-gb". Note: An
+      empty filter string (i.e. "") is a no-op and will result in no
+      filtering. For more information about filtering, see [API
+      Filtering](https://aip.dev/160).
     pageSize: The maximum number of items to return in a single page. By
       default 10 and at most 100.
     pageToken: The next_page_token value returned from a previous list
@@ -1816,9 +1880,10 @@ class DialogflowProjectsKnowledgeBasesListRequest(_messages.Message):
       `projects//locations/`.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class DialogflowProjectsKnowledgeBasesPatchRequest(_messages.Message):
@@ -3414,6 +3479,22 @@ class DialogflowProjectsLocationsKnowledgeBasesDocumentsDeleteRequest(_messages.
   name = _messages.StringField(1, required=True)
 
 
+class DialogflowProjectsLocationsKnowledgeBasesDocumentsExportRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsKnowledgeBasesDocumentsExportRequest
+  object.
+
+  Fields:
+    googleCloudDialogflowV2ExportDocumentRequest: A
+      GoogleCloudDialogflowV2ExportDocumentRequest resource to be passed as
+      the request body.
+    name: Required. The name of the document to export. Format:
+      `projects//locations//knowledgeBases//documents/`.
+  """
+
+  googleCloudDialogflowV2ExportDocumentRequest = _messages.MessageField('GoogleCloudDialogflowV2ExportDocumentRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class DialogflowProjectsLocationsKnowledgeBasesDocumentsGetRequest(_messages.Message):
   r"""A DialogflowProjectsLocationsKnowledgeBasesDocumentsGetRequest object.
 
@@ -3429,6 +3510,16 @@ class DialogflowProjectsLocationsKnowledgeBasesDocumentsListRequest(_messages.Me
   r"""A DialogflowProjectsLocationsKnowledgeBasesDocumentsListRequest object.
 
   Fields:
+    filter: The filter expression used to filter documents returned by the
+      list method. The expression has the following syntax: [AND ] ... The
+      following fields and operators are supported: * knowledge_types with
+      has(:) operator * display_name with has(:) operator * state with
+      equals(=) operator Examples: * "knowledge_types:FAQ" matches documents
+      with FAQ knowledge type. * "display_name:customer" matches documents
+      whose display name contains "customer". * "state=ACTIVE" matches
+      documents with ACTIVE state. * "knowledge_types:FAQ AND state=ACTIVE"
+      matches all active FAQ documents. For more information about filtering,
+      see [API Filtering](https://aip.dev/160).
     pageSize: The maximum number of items to return in a single page. By
       default 10 and at most 100.
     pageToken: The next_page_token value returned from a previous list
@@ -3437,9 +3528,10 @@ class DialogflowProjectsLocationsKnowledgeBasesDocumentsListRequest(_messages.Me
       `projects//locations//knowledgeBases/`.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class DialogflowProjectsLocationsKnowledgeBasesDocumentsPatchRequest(_messages.Message):
@@ -3492,6 +3584,19 @@ class DialogflowProjectsLocationsKnowledgeBasesListRequest(_messages.Message):
   r"""A DialogflowProjectsLocationsKnowledgeBasesListRequest object.
 
   Fields:
+    filter: The filter expression used to filter knowledge bases returned by
+      the list method. The expression has the following syntax: [AND ] ... The
+      following fields and operators are supported: * display_name with has(:)
+      operator * language_code with equals(=) operator Examples: *
+      'language_code=en-us' matches knowledge bases with en-us language code.
+      * 'display_name:articles' matches knowledge bases whose display name
+      contains "articles". * 'display_name:"Best Articles"' matches knowledge
+      bases whose display name contains "Best Articles". * 'language_code=en-
+      gb AND display_name=articles' matches all knowledge bases whose display
+      name contains "articles" and whose language code is "en-gb". Note: An
+      empty filter string (i.e. "") is a no-op and will result in no
+      filtering. For more information about filtering, see [API
+      Filtering](https://aip.dev/160).
     pageSize: The maximum number of items to return in a single page. By
       default 10 and at most 100.
     pageToken: The next_page_token value returned from a previous list
@@ -3500,9 +3605,10 @@ class DialogflowProjectsLocationsKnowledgeBasesListRequest(_messages.Message):
       `projects//locations/`.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class DialogflowProjectsLocationsKnowledgeBasesPatchRequest(_messages.Message):
@@ -4694,12 +4800,15 @@ class GoogleCloudDialogflowCxV3PageInfo(_messages.Message):
     currentPage: Always present for WebhookRequest. Ignored for
       WebhookResponse. The unique identifier of the current page. Format:
       `projects//locations//agents//flows//pages/`.
+    displayName: Always present for WebhookRequest. Ignored for
+      WebhookResponse. The display name of the current page.
     formInfo: Optional for both WebhookRequest and WebhookResponse.
       Information about the form.
   """
 
   currentPage = _messages.StringField(1)
-  formInfo = _messages.MessageField('GoogleCloudDialogflowCxV3PageInfoFormInfo', 2)
+  displayName = _messages.StringField(2)
+  formInfo = _messages.MessageField('GoogleCloudDialogflowCxV3PageInfoFormInfo', 3)
 
 
 class GoogleCloudDialogflowCxV3PageInfoFormInfo(_messages.Message):
@@ -6677,12 +6786,15 @@ class GoogleCloudDialogflowCxV3beta1PageInfo(_messages.Message):
     currentPage: Always present for WebhookRequest. Ignored for
       WebhookResponse. The unique identifier of the current page. Format:
       `projects//locations//agents//flows//pages/`.
+    displayName: Always present for WebhookRequest. Ignored for
+      WebhookResponse. The display name of the current page.
     formInfo: Optional for both WebhookRequest and WebhookResponse.
       Information about the form.
   """
 
   currentPage = _messages.StringField(1)
-  formInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1PageInfoFormInfo', 2)
+  displayName = _messages.StringField(2)
+  formInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1PageInfoFormInfo', 3)
 
 
 class GoogleCloudDialogflowCxV3beta1PageInfoFormInfo(_messages.Message):
@@ -9099,6 +9211,22 @@ class GoogleCloudDialogflowV2ExportAgentResponse(_messages.Message):
   agentUri = _messages.StringField(2)
 
 
+class GoogleCloudDialogflowV2ExportDocumentRequest(_messages.Message):
+  r"""Request message for Documents.ExportDocument.
+
+  Fields:
+    exportFullContent: When enabled, export the full content of the document
+      including empirical probability.
+    gcsDestination: Cloud Storage file path to export the document.
+    smartMessagingPartialUpdate: When enabled, export the smart messaging
+      allowlist document for partial update.
+  """
+
+  exportFullContent = _messages.BooleanField(1)
+  gcsDestination = _messages.MessageField('GoogleCloudDialogflowV2GcsDestination', 2)
+  smartMessagingPartialUpdate = _messages.BooleanField(3)
+
+
 class GoogleCloudDialogflowV2FaqAnswer(_messages.Message):
   r"""Represents answer from "frequently asked questions".
 
@@ -9262,6 +9390,19 @@ class GoogleCloudDialogflowV2FulfillmentGenericWebService(_messages.Message):
   requestHeaders = _messages.MessageField('RequestHeadersValue', 3)
   uri = _messages.StringField(4)
   username = _messages.StringField(5)
+
+
+class GoogleCloudDialogflowV2GcsDestination(_messages.Message):
+  r"""Google Cloud Storage location for the output.
+
+  Fields:
+    uri: The Google Cloud Storage URIs for the output. A URI is of the form:
+      gs://bucket/object-prefix-or-name Whether a prefix or name is used
+      depends on the use case. The requesting user must have "write-
+      permission" to the bucket.
+  """
+
+  uri = _messages.StringField(1)
 
 
 class GoogleCloudDialogflowV2HumanAgentAssistantConfig(_messages.Message):
@@ -11431,9 +11572,16 @@ class GoogleCloudDialogflowV2ReloadDocumentRequest(_messages.Message):
     contentUri: Optional. The path of gcs source file for reloading document
       content. For now, only gcs uri is supported. For documents stored in
       Google Cloud Storage, these URIs must have the form `gs:///`.
+    importGcsCustomMetadata: Optional. Whether to import custom metadata from
+      Google Cloud Storage. Only valid when the document source is Google
+      Cloud Storage URI.
+    smartMessagingPartialUpdate: Optional. When enabled, the reload request is
+      to apply partial update to the smart messaging allowlist.
   """
 
   contentUri = _messages.StringField(1)
+  importGcsCustomMetadata = _messages.BooleanField(2)
+  smartMessagingPartialUpdate = _messages.BooleanField(3)
 
 
 class GoogleCloudDialogflowV2RestoreAgentRequest(_messages.Message):
@@ -13897,6 +14045,8 @@ class GoogleCloudDialogflowV2beta1KnowledgeOperationMetadata(_messages.Message):
       operation.
 
   Fields:
+    knowledgeBase: The name of the knowledge base interacted with during the
+      operation.
     state: Required. Output only. The current state of this operation.
   """
 
@@ -13914,7 +14064,8 @@ class GoogleCloudDialogflowV2beta1KnowledgeOperationMetadata(_messages.Message):
     RUNNING = 2
     DONE = 3
 
-  state = _messages.EnumField('StateValueValuesEnum', 1)
+  knowledgeBase = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
 class GoogleCloudDialogflowV2beta1Message(_messages.Message):

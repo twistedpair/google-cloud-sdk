@@ -50,6 +50,20 @@ stream:
       value: name
   disable_auto_completers: false
 
+stream_object:
+  name: stream_object
+  collection: datastream.projects.locations.streams.objects
+  request_id_field: stream_object.name
+  attributes:
+  - *project
+  - *location
+  - *stream
+  - &stream_object
+    parameter_name: objectsId
+    attribute_name: object
+    help: The Stream object name.
+  disable_auto_completers: false
+
 operation:
   name: operation
   collection: datastream.projects.locations.operations

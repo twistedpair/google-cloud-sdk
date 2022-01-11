@@ -869,6 +869,7 @@ class GoogleDevtoolsRemotebuildbotCommandDurations(_messages.Message):
     isoPrepDone: The timestamp when preparation is done and bot starts
       downloading files.
     overall: The time spent completing the command, in total.
+    stderr: The time spent uploading the stderr logs.
     stdout: The time spent uploading the stdout logs.
     upload: The time spent uploading the output files.
     uploadStartTime: The timestamp when uploading the output files begins.
@@ -884,9 +885,10 @@ class GoogleDevtoolsRemotebuildbotCommandDurations(_messages.Message):
   execution = _messages.StringField(8)
   isoPrepDone = _messages.StringField(9)
   overall = _messages.StringField(10)
-  stdout = _messages.StringField(11)
-  upload = _messages.StringField(12)
-  uploadStartTime = _messages.StringField(13)
+  stderr = _messages.StringField(11)
+  stdout = _messages.StringField(12)
+  upload = _messages.StringField(13)
+  uploadStartTime = _messages.StringField(14)
 
 
 class GoogleDevtoolsRemotebuildbotCommandEvents(_messages.Message):

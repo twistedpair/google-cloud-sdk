@@ -46,9 +46,7 @@ def FindNatOrRaise(router, nat_name):
   raise NatNotFoundError(nat_name)
 
 
-def CreateNatMessage(args,
-                     compute_holder,
-                     with_dynamic_port_allocation=False):
+def CreateNatMessage(args, compute_holder):
   """Creates a NAT message from the specified arguments."""
   params = {'name': args.name}
 
@@ -65,9 +63,8 @@ def CreateNatMessage(args,
   params['tcpTransitoryIdleTimeoutSec'] = args.tcp_transitory_idle_timeout
   params['tcpTimeWaitTimeoutSec'] = args.tcp_time_wait_timeout
   params['minPortsPerVm'] = args.min_ports_per_vm
-  if with_dynamic_port_allocation:
-    params['maxPortsPerVm'] = args.max_ports_per_vm
-    params['enableDynamicPortAllocation'] = args.enable_dynamic_port_allocation
+  params['maxPortsPerVm'] = args.max_ports_per_vm
+  params['enableDynamicPortAllocation'] = args.enable_dynamic_port_allocation
 
   if args.enable_logging is not None or args.log_filter is not None:
     log_config = compute_holder.client.messages.RouterNatLogConfig()
@@ -88,10 +85,7 @@ def CreateNatMessage(args,
   return compute_holder.client.messages.RouterNat(**params)
 
 
-def UpdateNatMessage(nat,
-                     args,
-                     compute_holder,
-                     with_dynamic_port_allocation=False):
+def UpdateNatMessage(nat, args, compute_holder):
   """Updates a NAT message with the specified arguments."""
   if (args.subnet_option in [
       nat_flags.SubnetOption.ALL_RANGES, nat_flags.SubnetOption.PRIMARY_RANGES
@@ -149,14 +143,13 @@ def UpdateNatMessage(nat,
   elif args.clear_min_ports_per_vm:
     nat.minPortsPerVm = None
 
-  if with_dynamic_port_allocation:
-    if args.max_ports_per_vm is not None:
-      nat.maxPortsPerVm = args.max_ports_per_vm
-    elif args.clear_max_ports_per_vm:
-      nat.maxPortsPerVm = None
+  if args.max_ports_per_vm is not None:
+    nat.maxPortsPerVm = args.max_ports_per_vm
+  elif args.clear_max_ports_per_vm:
+    nat.maxPortsPerVm = None
 
-    if args.enable_dynamic_port_allocation is not None:
-      nat.enableDynamicPortAllocation = args.enable_dynamic_port_allocation
+  if args.enable_dynamic_port_allocation is not None:
+    nat.enableDynamicPortAllocation = args.enable_dynamic_port_allocation
 
   if args.enable_logging is not None or args.log_filter is not None:
     nat.logConfig = (
