@@ -1017,7 +1017,8 @@
             "Gateway is being updated.",
             "Gateway is being deleted.",
             "Gateway is running.",
-            "Gateway is down and may be restored in the future. This happens when CCFE sends ProjectState = OFF."
+            "Gateway is down and may be restored in the future. This happens when CCFE sends ProjectState = OFF.",
+            "ClientGateway encountered an error and is in indeterministic state."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -1025,7 +1026,8 @@
             "UPDATING",
             "DELETING",
             "RUNNING",
-            "DOWN"
+            "DOWN",
+            "ERROR"
           ]
         },
         "id": {
@@ -3413,6 +3415,41 @@
                   ],
                   "description": "Creates a new ClientConnectorService in a given project and location."
                 },
+                "delete": {
+                  "id": "beyondcorp.projects.locations.clientConnectorServices.delete",
+                  "path": "v1alpha/{+name}",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/clientConnectorServices/{clientConnectorServicesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clientConnectorServices\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "validateOnly": {
+                      "description": "Optional. If set, validates request by executing a dry-run which would not alter the resource in any way.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": ""
+                },
                 "setIamPolicy": {
                   "id": "beyondcorp.projects.locations.clientConnectorServices.setIamPolicy",
                   "path": "v1alpha/{+resource}:setIamPolicy",
@@ -3617,6 +3654,41 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Creates a new ClientGateway in a given project and location."
+                },
+                "delete": {
+                  "id": "beyondcorp.projects.locations.clientGateways.delete",
+                  "path": "v1alpha/{+name}",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/clientGateways/{clientGatewaysId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the resource",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clientGateways\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "validateOnly": {
+                      "description": "Optional. If set, validates request by executing a dry-run which would not alter the resource in any way.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single ClientGateway."
                 },
                 "setIamPolicy": {
                   "id": "beyondcorp.projects.locations.clientGateways.setIamPolicy",

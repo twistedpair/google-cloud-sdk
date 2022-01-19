@@ -577,6 +577,44 @@ def AddDiskArgs(parser,
       help=disk_help)
 
 
+def AddDiskArgsForBulk(parser):
+  """Adds arguments related to disks for bulk insert."""
+
+  disk_device_name_help = _GetDiskDeviceNameHelp(container_mount_enabled=False)
+  AddBootDiskArgs(parser, enable_kms=True)
+
+  disk_arg_spec = {
+      'name': str,
+      'boot': arg_parsers.ArgBoolean(),
+      'device-name': str,
+      'scope': str,
+  }
+
+  disk_help = """
+      Attaches persistent disks to the instances. The disks
+      specified must already exist.
+
+      *name*::: The disk to attach to the instances.
+
+      *boot*::: If ``yes'', indicates that this is a boot disk. The
+      virtual machines will use the first partition of the disk for
+      their root file systems. The default value for this is ``no''.
+
+      *device-name*::: {}
+
+      *scope*::: Can be `zonal` or `regional`. If ``zonal'', the disk is
+      interpreted as a zonal disk in the same zone as the instance (default).
+      If ``regional'', the disk is interpreted as a regional disk in the same
+      region as the instance. The default value for this is ``zonal''.
+      """.format(disk_device_name_help)
+
+  parser.add_argument(
+      '--disk',
+      type=arg_parsers.ArgDict(spec=disk_arg_spec),
+      action='append',
+      help=disk_help)
+
+
 def AddBootDiskArgs(parser, enable_kms=False):
   """Adds boot disk args."""
   parser.add_argument(
@@ -1001,13 +1039,21 @@ def ValidateDiskFlags(args,
 
 
 def ValidateBulkDiskFlags(args,
-                          enable_snapshots=False,
                           enable_source_snapshot_csek=False,
                           enable_image_csek=False):
   """Validates the values of all disk-related flags."""
+  for disk in args.disk or []:
+    disk_name = disk.get('name')
+    if not disk_name:
+      raise exceptions.InvalidArgumentException(
+          '--disk',
+          '[name] is missing in [--disk]. [--disk] value must be of the form '
+          '[{0}].'.format(DISK_METAVAR))
+
+  ValidateDiskBootFlags(args, enable_kms=True)
   ValidateCreateDiskFlags(
       args,
-      enable_snapshots=enable_snapshots,
+      enable_snapshots=True,
       enable_source_snapshot_csek=enable_source_snapshot_csek,
       enable_image_csek=enable_image_csek)
 
@@ -1327,8 +1373,8 @@ def AddAddressArgs(parser,
       instance will get an ephemeral IP.
 
       *network-tier*::: Specifies the network tier of the interface.
-      ``NETWORK_TIER'' must be one of: `PREMIUM`, `STANDARD`. The default
-      value is `PREMIUM`.
+      ``NETWORK_TIER'' must be one of: `PREMIUM`, `STANDARD`, `FIXED_STANDARD`.
+      The default value is `PREMIUM`.
 
       *private-network-ip*::: Assigns the given RFC1918 IP address to the
       interface.
@@ -1751,13 +1797,14 @@ def AddNetworkTierArgs(parser, instance=True, for_update=False):
   if instance:
     network_tier_help = """\
         Specifies the network tier that will be used to configure the instance.
-        ``NETWORK_TIER'' must be one of: `PREMIUM`, `STANDARD`. The default
-        value is `PREMIUM`.
+        ``NETWORK_TIER'' must be one of: `PREMIUM`, `STANDARD`, `FIXED_STANDARD`.
+        The default value is `PREMIUM`.
         """
   else:
     network_tier_help = """\
         Specifies the network tier of the access configuration. ``NETWORK_TIER''
-        must be one of: `PREMIUM`, `STANDARD`. The default value is `PREMIUM`.
+        must be one of: `PREMIUM`, `STANDARD`, `FIXED_STANDARD`.
+        The default value is `PREMIUM`.
         """
   parser.add_argument(
       '--network-tier', type=lambda x: x.upper(), help=network_tier_help)

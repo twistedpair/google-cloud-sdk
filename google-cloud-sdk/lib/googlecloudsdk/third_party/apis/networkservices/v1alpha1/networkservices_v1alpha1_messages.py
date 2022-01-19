@@ -2627,7 +2627,7 @@ class Mesh(_messages.Message):
   dictate how requests are routed within this logical mesh boundary.
 
   Enums:
-    TypeValueValuesEnum: Required. Immutable. The type of the Mesh resource.
+    TypeValueValuesEnum: Immutable. The type of the Mesh resource.
 
   Messages:
     LabelsValue: Optional. Set of label tags associated with the Mesh
@@ -2654,12 +2654,12 @@ class Mesh(_messages.Message):
       scope. Max length 64 characters. Scope should start with a letter and
       can only have letters, numbers, hyphens. If no scope is supplied
       'default' is used as the scope.
-    type: Required. Immutable. The type of the Mesh resource.
+    type: Immutable. The type of the Mesh resource.
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Required. Immutable. The type of the Mesh resource.
+    r"""Immutable. The type of the Mesh resource.
 
     Values:
       TYPE_UNSPECIFIED: The type of Mesh is unspecified.

@@ -89,6 +89,11 @@ _INVALID_HTTP_SIGNATURE_TYPE_ERROR_MESSAGE = (
 _INVALID_RETRY_FLAG_ERROR_MESSAGE = (
     '`--retry` is only supported with an event trigger not http triggers.')
 
+_LATEST_REVISION_TRAFFIC_WARNING_MESSAGE = (
+    'The latest revision of this function is not serving 100% of traffic. '
+    'Please see the associated Cloud Run service to '
+    'confirm your expected traffic settings.')
+
 _LEGACY_V1_FLAGS = [
     ('security_level', '--security-level'),
 ]
@@ -950,10 +955,17 @@ def Run(args, release_track):
   _ValidateUnsupportedV2Flags(args)
 
   existing_function = _GetFunction(client, messages, function_ref)
+
   is_new_function = existing_function is None
   if is_new_function and not args.runtime:
     raise calliope_exceptions.RequiredArgumentException(
         'runtime', 'Flag `--runtime` is required for new functions.')
+
+  if existing_function:
+    has_all_traffic_on_latest_revision = existing_function.serviceConfig.allTrafficOnLatestRevision
+    if (has_all_traffic_on_latest_revision is not None and
+        not has_all_traffic_on_latest_revision):
+      log.warning(_LATEST_REVISION_TRAFFIC_WARNING_MESSAGE)
 
   event_trigger, trigger_updated_fields = _GetEventTrigger(
       args, messages, existing_function)

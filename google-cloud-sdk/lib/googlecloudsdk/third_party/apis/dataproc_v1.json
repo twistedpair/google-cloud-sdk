@@ -630,6 +630,11 @@
           "description": "Output only. A URI pointing to the location of the stdout and stderr of the workload.",
           "readOnly": true,
           "type": "string"
+        },
+        "diagnosticOutputUri": {
+          "description": "Output only. A URI pointing to the location of the diagnostics tarball.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -1695,21 +1700,23 @@
       "type": "object",
       "properties": {
         "metricSources": {
-          "description": "Optional. Optional field. If not mentioned all MetricSource are enabled",
+          "description": "Required. Required field. MetricSource(s) that should be enabled.",
           "type": "array",
           "items": {
             "type": "string",
             "enumDescriptions": [
               "Required unspecified metric source",
               "all default monitoring agent metrics that are published with prefix \"agent.googleapis.com\" when we enable a monitoring agent in Compute Engine",
-              "Hadoop metric source",
-              "Spark metric source"
+              "Hdfs metric source",
+              "Spark metric source",
+              "Yarn metric source"
             ],
             "enum": [
               "METRIC_SOURCE_UNSPECIFIED",
               "MONITORING_AGENT_DEFAULTS",
-              "HADOOP",
-              "SPARK"
+              "HDFS",
+              "SPARK",
+              "YARN"
             ]
           }
         }

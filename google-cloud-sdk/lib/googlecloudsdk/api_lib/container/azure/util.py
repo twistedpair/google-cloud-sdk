@@ -189,11 +189,6 @@ class ClustersClient(_AzureClientBase):
         azureCluster=cluster_ref.RelativeName())
     return self._service.GenerateAzureAccessToken(req)
 
-  def GetKubeConfig(self, cluster_ref):
-    req = self._service.GetRequestType('GetAzureClusterAdminKubeconfig')(
-        azureCluster=cluster_ref.RelativeName())
-    return self._service.GetAzureClusterAdminKubeconfig(req)
-
   def GetListResultsField(self):
     return 'azureClusters'
 

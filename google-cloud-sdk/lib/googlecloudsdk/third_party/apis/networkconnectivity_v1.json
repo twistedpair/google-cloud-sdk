@@ -583,16 +583,18 @@
           "type": "string"
         },
         "name": {
-          "description": "A unique name of the resource in the form of `projects\/{project_number}\/locations\/global\/PolicyBasedRoutes\/{policy_based_route_id}`",
+          "description": "Immutable. A unique name of the resource in the form of `projects\/{project_number}\/locations\/global\/PolicyBasedRoutes\/{policy_based_route_id}`",
           "type": "string"
         },
         "createTime": {
-          "description": "Time when the PolicyBasedRoute was created.",
+          "description": "Output only. Time when the PolicyBasedRoute was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Time when the PolicyBasedRoute was updated.",
+          "description": "Output only. Time when the PolicyBasedRoute was updated.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },

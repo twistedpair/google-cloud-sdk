@@ -5791,6 +5791,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Resume(self, request, global_params=None):
+      r"""Resumes an instance that was suspended using the instances().suspend method.
+
+      Args:
+        request: (ComputeInstancesResumeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Resume')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Resume.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instances.resume',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/resume',
+        request_field='',
+        request_type_name='ComputeInstancesResumeRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SendDiagnosticInterrupt(self, request, global_params=None):
       r"""Sends diagnostic interrupt to the instance.
 
@@ -6130,7 +6156,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SimulateMaintenanceEvent(self, request, global_params=None):
-      r"""Simulates a maintenance event on the instance.
+      r"""Simulates a host maintenance event on a VM. For more information, see Simulate a host maintenance event.
 
       Args:
         request: (ComputeInstancesSimulateMaintenanceEventRequest) input message
@@ -6229,6 +6255,32 @@ class ComputeV1(base_api.BaseApiClient):
         relative_path='projects/{project}/zones/{zone}/instances/{instance}/stop',
         request_field='',
         request_type_name='ComputeInstancesStopRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Suspend(self, request, global_params=None):
+      r"""This method suspends a running instance, saving its state to persistent storage, and allows you to resume the instance at a later time. Suspended instances incur reduced per-minute, virtual machine usage charges while they are suspended. Any resources the virtual machine is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted. For more information, see Suspending and resuming an instance.
+
+      Args:
+        request: (ComputeInstancesSuspendRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Suspend')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Suspend.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instances.suspend',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/suspend',
+        request_field='',
+        request_type_name='ComputeInstancesSuspendRequest',
         response_type_name='Operation',
         supports_download=False,
     )

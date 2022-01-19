@@ -941,7 +941,7 @@ class _SectionApiEndpointOverrides(_Section):
         'accessapproval', command='gcloud access-approval')
     self.accesscontextmanager = self._Add(
         'accesscontextmanager', command='gcloud access-context-manager')
-    self.alloydb = self._Add('alloydb', command='gcloud alloydb')
+    self.alloydb = self._Add('alloydb', command='gcloud alloydb', hidden=True)
     self.anthosevents = self._Add('anthosevents', command='gcloud anthos')
     self.aiplatform = self._Add('aiplatform', command='gcloud ai-platform')
     self.apigateway = self._Add('apigateway', command='gcloud api-gateway')

@@ -468,6 +468,13 @@ class Collections(enum.Enum):
       ['project', 'region', 'firewallPolicy'],
       True
   )
+  REGIONNETWORKS = (
+      'regionNetworks',
+      'projects/{project}/regions/{region}/networks/{network}',
+      {},
+      ['project', 'region', 'network'],
+      True
+  )
   REGIONNOTIFICATIONENDPOINTS = (
       'regionNotificationEndpoints',
       'projects/{project}/regions/{region}/notificationEndpoints/'

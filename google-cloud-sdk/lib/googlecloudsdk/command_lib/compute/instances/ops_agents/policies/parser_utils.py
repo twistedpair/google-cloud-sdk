@@ -325,6 +325,8 @@ def AddMutationArgs(parser, required=True):
         ubuntu             18.04
         ubuntu             19.10
         ubuntu             20.04
+        ubuntu             21.04
+        ubuntu             21.10
         windows            10.*
         windows            6.*
 

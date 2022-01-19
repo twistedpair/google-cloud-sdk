@@ -78,19 +78,3 @@ def AddSelfManagedCertificateDataFlagsToParser(parser, is_required):
   group.AddArgument(cert_flag)
   group.AddArgument(key_flag)
   group.AddToParser(parser)
-
-
-def AddAttachedCertificatesFlagsToParser(parser):
-  """Adds flags describing certificate update without resource args."""
-  is_clear_certificates = base.Argument(
-      '--clear-certificates',
-      help='Removes all certificates from the entry',
-      action='store_true')
-
-  group = base.ArgumentGroup(
-      help='Arguments to update list of certificates attached to map entry.',
-      required=False,
-      mutex=True,
-      category=base.COMMONLY_USED_FLAGS)
-  group.AddArgument(is_clear_certificates)
-  return group.AddToParser(parser)

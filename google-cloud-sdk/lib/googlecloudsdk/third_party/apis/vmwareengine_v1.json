@@ -372,10 +372,6 @@
       "description": "Details about a HCX Cloud Manager appliance.",
       "type": "object",
       "properties": {
-        "fdqn": {
-          "description": "Fully qualified domain name of the appliance.",
-          "type": "string"
-        },
         "internalIp": {
           "description": "Internal IP address of the appliance.",
           "type": "string"
@@ -414,10 +410,6 @@
       "description": "Details about a NSX Manager appliance.",
       "type": "object",
       "properties": {
-        "fdqn": {
-          "description": "Fully qualified domain name of the appliance.",
-          "type": "string"
-        },
         "internalIp": {
           "description": "Internal IP address of the appliance.",
           "type": "string"
@@ -456,10 +448,6 @@
       "description": "Details about a vCenter Server management appliance.",
       "type": "object",
       "properties": {
-        "fdqn": {
-          "description": "Fully qualified domain name of the appliance.",
-          "type": "string"
-        },
         "internalIp": {
           "description": "Internal IP address of the appliance.",
           "type": "string"

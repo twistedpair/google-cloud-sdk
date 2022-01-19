@@ -44,16 +44,6 @@ class ParseProtoException(exceptions.Error):
     super(ParseProtoException, self).__init__(msg)
 
 
-class HybridUnsupportedRegionError(exceptions.Error):
-  """Unsupported region for hybrid worker pools specified."""
-
-  def __init__(self, region):
-    msg = """hybrid worker pools currently does not support the {region} region. Please use {supported_regions}.""".format(
-        region=region,
-        supported_regions='\'us-west4\'')
-    super(HybridUnsupportedRegionError, self).__init__(msg)
-
-
 class HybridNonAlphaConfigError(exceptions.Error):
   """Hybrid Configs are currently only supported in the alpha release track."""
 

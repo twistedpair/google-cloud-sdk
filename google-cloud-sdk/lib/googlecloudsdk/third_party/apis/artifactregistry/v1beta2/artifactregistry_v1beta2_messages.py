@@ -1265,7 +1265,6 @@ class Repository(_messages.Message):
       DOCKER: Docker package format.
       MAVEN: Maven package format.
       NPM: NPM package format.
-      PYPI: PyPI package format. Deprecated, use PYTHON instead.
       APT: APT package format.
       YUM: YUM package format.
       GOOGET: GooGet package format.
@@ -1275,11 +1274,10 @@ class Repository(_messages.Message):
     DOCKER = 1
     MAVEN = 2
     NPM = 3
-    PYPI = 4
-    APT = 5
-    YUM = 6
-    GOOGET = 7
-    PYTHON = 8
+    APT = 4
+    YUM = 5
+    GOOGET = 6
+    PYTHON = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

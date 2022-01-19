@@ -30,10 +30,15 @@ class EndpointsClient(sd_base.ServiceDirectoryApiLibBase):
     super(EndpointsClient, self).__init__(release_track)
     self.service = self.client.projects_locations_namespaces_services_endpoints
 
-  def Create(self, endpoint_ref, address=None, port=None, annotations=None):
+  def Create(self,
+             endpoint_ref,
+             address=None,
+             port=None,
+             annotations=None,
+             network=None):
     """Endpoints create request."""
     endpoint = self.msgs.Endpoint(
-        address=address, port=port, annotations=annotations)
+        address=address, port=port, annotations=annotations, network=network)
     create_req = self.msgs.ServicedirectoryProjectsLocationsNamespacesServicesEndpointsCreateRequest(
         parent=endpoint_ref.Parent().RelativeName(),
         endpoint=endpoint,

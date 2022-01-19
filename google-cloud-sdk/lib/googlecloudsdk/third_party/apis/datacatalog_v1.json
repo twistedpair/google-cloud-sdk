@@ -898,7 +898,7 @@
           "type": "string"
         },
         "email": {
-          "description": "Email of the person, the format should be either `` or `John Doe`.",
+          "description": "Email of the person in the format of `john.doe@xyz`, ``, or `John Doe`.",
           "type": "string"
         }
       }
@@ -2286,7 +2286,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Modifies Entry Overview, part of the Business Context of an Entry. To call this method, you must have the Google IAM permission `datacatalog.entries.updateOverview`"
+                      "description": "Modifies entry overview, part of the business context of an Entry. To call this method, you must have the `datacatalog.entries.updateOverview` IAM permission on the corresponding project."
                     },
                     "modifyEntryContacts": {
                       "id": "datacatalog.projects.locations.entryGroups.entries.modifyEntryContacts",
@@ -2314,7 +2314,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Modifies Contacts, part of the Business Context of an Entry. To call this method, you must have the Google IAM permission `datacatalog.entries.updateContacts`"
+                      "description": "Modifies contacts, part of the business context of an Entry. To call this method, you must have the `datacatalog.entries.updateContacts` IAM permission on the corresponding project."
                     },
                     "star": {
                       "id": "datacatalog.projects.locations.entryGroups.entries.star",

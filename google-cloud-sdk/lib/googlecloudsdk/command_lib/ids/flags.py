@@ -18,14 +18,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.ids import ids_api
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
-from googlecloudsdk.command_lib.util.apis import yaml_data
-from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
-from googlecloudsdk.api_lib.ids import ids_api
 
 
 def AddDescriptionArg(parser):
@@ -100,3 +98,7 @@ def AddMaxWait(parser,
       default=default_max_wait,
       help=help_text,
       type=arg_parsers.Duration())
+
+
+def MakeGetUriFunc(release_track):
+  return lambda x: ids_api.GetEffectiveApiEndpoint(release_track) + x.name

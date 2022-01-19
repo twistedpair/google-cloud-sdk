@@ -127,7 +127,7 @@ class RunAppsOperations(object):
     deployment_ops = api_utils.CreateDeployment(self._client, app_ref,
                                                 deployment)
     return api_utils.WaitForOperation(self._client, deployment_ops,
-                                      'Deploying Changes')
+                                      'Configuring Integration')
 
   def _GetDeploymentName(self, appname):
     return '{}-{}'.format(
@@ -205,7 +205,7 @@ class RunAppsOperations(object):
     return self.ApplyAppConfig(
         appname=_DEFAULT_APP_NAME,
         appconfig=application.config,
-        message='Creating Integration [{}]'.format(name),
+        message='Saving Configuration for Integration [{}]'.format(name),
         match_type_names=match_type_names,
         etag=application.etag)
 

@@ -1146,6 +1146,71 @@
           "description": "Output only. The encryption information for the backup.",
           "readOnly": true,
           "$ref": "EncryptionInfo"
+        },
+        "referencingBackups": {
+          "description": "Output only. The names of the destination backups being created by copying this source backup. The backup names are of the form `projects\/\/instances\/\/backups\/`. Referencing backups may exist in different instances. The existence of any referencing backup prevents the backup from being deleted. When the copy operation is done (either successfully completed or cancelled or the destination backup is deleted), the reference to the backup is removed.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "maxExpireTime": {
+          "description": "Output only. The max allowed expiration time of the backup, with microseconds granularity. A backup's expiration time can be configured in multiple APIs: CreateBackup, UpdateBackup, CopyBackup. When updating or copying an existing backup, the expiration time specified must be less than `Backup.max_expire_time`.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "CopyBackupRequest": {
+      "id": "CopyBackupRequest",
+      "description": "The request for CopyBackup.",
+      "type": "object",
+      "properties": {
+        "backupId": {
+          "description": "Required. The id of the backup copy. The `backup_id` appended to `parent` forms the full backup_uri of the form `projects\/\/instances\/\/backups\/`.",
+          "type": "string"
+        },
+        "sourceBackup": {
+          "description": "Required. The source backup to be copied. The source backup needs to be in READY state for it to be copied. Once CopyBackup is in progress, the source backup cannot be deleted or cleaned up on expiration until CopyBackup is finished. Values are of the form: `projects\/\/instances\/\/backups\/`.",
+          "type": "string"
+        },
+        "expireTime": {
+          "description": "Required. The expiration time of the backup in microsecond granularity. The expiration time must be at least 6 hours and at most 366 days from the `create_time` of the source backup. Once the `expire_time` has passed, the backup is eligible to be automatically deleted by Cloud Spanner to free the resources used by the backup.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "encryptionConfig": {
+          "description": "Optional. The encryption configuration used to encrypt the backup. If this field is not specified, the backup will use the same encryption configuration as the source backup by default, namely encryption_type = `USE_CONFIG_DEFAULT_OR_BACKUP_ENCRYPTION`.",
+          "$ref": "CopyBackupEncryptionConfig"
+        }
+      }
+    },
+    "CopyBackupEncryptionConfig": {
+      "id": "CopyBackupEncryptionConfig",
+      "description": "Encryption configuration for the copied backup.",
+      "type": "object",
+      "properties": {
+        "encryptionType": {
+          "description": "Required. The encryption type of the backup.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified. Do not use.",
+            "This is the default option for CopyBackup when encryption_config is not specified. For example, if the source backup is using `Customer_Managed_Encryption`, the backup will be using the same Cloud KMS key as the source backup.",
+            "Use Google default encryption.",
+            "Use customer managed encryption. If specified, `kms_key_name` must contain a valid Cloud KMS key."
+          ],
+          "enum": [
+            "ENCRYPTION_TYPE_UNSPECIFIED",
+            "USE_CONFIG_DEFAULT_OR_BACKUP_ENCRYPTION",
+            "GOOGLE_DEFAULT_ENCRYPTION",
+            "CUSTOMER_MANAGED_ENCRYPTION"
+          ]
+        },
+        "kmsKeyName": {
+          "description": "Optional. The Cloud KMS key that will be used to protect the backup. This field should be set only when encryption_type is `CUSTOMER_MANAGED_ENCRYPTION`. Values are of the form `projects\/\/locations\/\/keyRings\/\/cryptoKeys\/`.",
+          "type": "string"
         }
       }
     },
@@ -2578,25 +2643,25 @@
         }
       }
     },
-    "CreateBackupMetadata": {
-      "id": "CreateBackupMetadata",
-      "description": "Metadata type for the operation returned by CreateBackup.",
+    "CopyBackupMetadata": {
+      "id": "CopyBackupMetadata",
+      "description": "Metadata type for the google.longrunning.Operation returned by CopyBackup.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name of the backup being created.",
+          "description": "The name of the backup being created through the copy operation. Values are of the form `projects\/\/instances\/\/backups\/`.",
           "type": "string"
         },
-        "database": {
-          "description": "The name of the database the backup is created from.",
+        "sourceBackup": {
+          "description": "The name of the source backup that is being copied. Values are of the form `projects\/\/instances\/\/backups\/`.",
           "type": "string"
         },
         "progress": {
-          "description": "The progress of the CreateBackup operation.",
+          "description": "The progress of the CopyBackup operation.",
           "$ref": "OperationProgress"
         },
         "cancelTime": {
-          "description": "The time at which cancellation of this operation was received. Operations.CancelOperation starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "description": "The time at which cancellation of CopyBackup operation was received. Operations.CancelOperation starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -2619,6 +2684,30 @@
         },
         "endTime": {
           "description": "If set, the time at which this operation failed or was completed successfully.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "CreateBackupMetadata": {
+      "id": "CreateBackupMetadata",
+      "description": "Metadata type for the operation returned by CreateBackup.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the backup being created.",
+          "type": "string"
+        },
+        "database": {
+          "description": "The name of the database the backup is created from.",
+          "type": "string"
+        },
+        "progress": {
+          "description": "The progress of the CreateBackup operation.",
+          "$ref": "OperationProgress"
+        },
+        "cancelTime": {
+          "description": "The time at which cancellation of this operation was received. Operations.CancelOperation starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -4516,6 +4605,35 @@
                     "https://www.googleapis.com/auth/spanner.admin"
                   ],
                   "description": "Starts creating a new Cloud Spanner Backup. The returned backup long-running operation will have a name of the format `projects\/\/instances\/\/backups\/\/operations\/` and can be used to track creation of the backup. The metadata field type is CreateBackupMetadata. The response field type is Backup, if successful. Cancelling the returned operation will stop the creation and delete the backup. There can be only one pending backup creation per database. Backup creation of different databases can run concurrently."
+                },
+                "copy": {
+                  "id": "spanner.projects.instances.backups.copy",
+                  "path": "v1/{+parent}/backups:copy",
+                  "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/backups:copy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The name of the destination instance that will contain the backup copy. Values are of the form: `projects\/\/instances\/`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "CopyBackupRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/spanner.admin"
+                  ],
+                  "description": "Starts copying a Cloud Spanner Backup. The returned backup long-running operation will have a name of the format `projects\/\/instances\/\/backups\/\/operations\/` and can be used to track copying of the backup. The operation is associated with the destination backup. The metadata field type is CopyBackupMetadata. The response field type is Backup, if successful. Cancelling the returned operation will stop the copying and delete the backup. Concurrent CopyBackup requests can run on the same source backup."
                 },
                 "get": {
                   "id": "spanner.projects.instances.backups.get",

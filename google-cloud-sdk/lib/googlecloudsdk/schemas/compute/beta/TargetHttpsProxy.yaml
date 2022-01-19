@@ -41,6 +41,12 @@ properties:
       globalForwardingRules with the loadBalancingScheme set to
       INTERNAL_SELF_MANAGED.
     type: string
+  certificateMap:
+    description: |-
+      URL of a certificate map that identifies a certificate map associated with
+      the given target proxy. This field can only be set for global target
+      proxies. If set, sslCertificates will be ignored.
+    type: string
   creationTimestamp:
     description: '[Output Only] Creation timestamp in RFC3339 text format.'
     type: string

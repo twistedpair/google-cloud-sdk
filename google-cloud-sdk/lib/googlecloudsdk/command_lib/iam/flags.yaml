@@ -407,3 +407,11 @@ workforce_pool_provider:
     help_text: |-
       The OIDC client ID. This must match the audience claim of the JWT issued by the identity
       provider.
+  saml_idp_metadata_path:
+    api_field: workforcePoolProvider.saml.idpMetadataXml
+    type: "googlecloudsdk.calliope.arg_parsers:FileContents:"
+    arg_name: idp-metadata-path
+    help_text: |-
+      XML file with configuration metadata for the SAML identity provider. The metadata file must
+      follow the
+      [SAML 2.0 metadata specification](https://www.oasis-open.org/committees/download.php/35391/sstc-saml-metadata-errata-2.0-wd-04-diff.pdf).

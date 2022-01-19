@@ -177,6 +177,10 @@ class FirestoreProjectsDatabasesImportDocumentsRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class GoogleFirestoreAdminV1UpdateDatabaseMetadata(_messages.Message):
+  r"""Metadata related to the update database operation."""
+
+
 class GoogleFirestoreAdminV1beta2ExportDocumentsMetadata(_messages.Message):
   r"""Metadata for google.longrunning.Operation results from
   FirestoreAdmin.ExportDocuments.

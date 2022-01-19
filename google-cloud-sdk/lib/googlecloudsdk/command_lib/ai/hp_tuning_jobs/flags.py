@@ -25,6 +25,7 @@ from googlecloudsdk.command_lib.ai import flags
 from googlecloudsdk.command_lib.ai import region_util
 from googlecloudsdk.command_lib.ai.hp_tuning_jobs import hp_tuning_jobs_util
 from googlecloudsdk.command_lib.util.apis import arg_utils
+from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 _HPTUNING_JOB_DISPLAY_NAME = base.Argument(
@@ -81,6 +82,8 @@ def AddCreateHpTuningJobFlags(parser, algorithm_enum):
   _HPTUNING_JOB_CONFIG.AddToParser(parser)
   _HPTUNING_MAX_TRIAL_COUNT.AddToParser(parser)
   _HPTUNING_PARALLEL_TRIAL_COUNT.AddToParser(parser)
+
+  labels_util.AddCreateLabelsFlags(parser)
 
   flags.AddRegionResourceArg(
       parser,

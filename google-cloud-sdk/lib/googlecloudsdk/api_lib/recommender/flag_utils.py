@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2020 Google LLC. All Rights Reserved.
+# Copyright 2022 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,12 +19,37 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.recommender import service as recommender_service
+from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import yaml
 import six
 
 RECOMMENDER_API_ALPHA_VERSION = 'v1alpha2'
 RECOMMENDER_API_BETA_VERSION = 'v1beta1'
 RECOMMENDER_API_GA_VERSION = 'v1'
+
+
+def ToCamelCase(s):
+  """Converts CamelCase to camelCase."""
+  return s[0].lower() + s[1:]
+
+
+def ReadConfig(config_file, message_type):
+  """Parses json config file.
+
+  Args:
+    config_file: file path of the config file.
+    message_type: The protorpc Message type.
+
+  Returns:
+    A message of type "message_type".
+  """
+  config = None
+  # Yaml is a superset of json, so parse json file as yaml.
+  data = yaml.load_path(config_file)
+  if data:
+    config = messages_util.DictToMessageWithErrorCheck(data, message_type)
+  return config
 
 
 def GetConfigServiceFromArgs(api_version, is_insight_api):

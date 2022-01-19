@@ -42,4 +42,4 @@ def GetClientInstance(release_track=base.ReleaseTrack.BETA):
 
 def GetApiBaseUrl(release_track=base.ReleaseTrack.ALPHA):
   api_version = API_VERSION_FOR_TRACK.get(release_track)
-  return resources.GetApiBaseUrl(API_NAME, api_version)
+  return resources.GetApiBaseUrlOrThrow(API_NAME, api_version)

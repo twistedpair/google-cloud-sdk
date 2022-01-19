@@ -23,10 +23,11 @@ import textwrap
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.util.apis import arg_utils
 
 IP_ADDRESSES_ARG = compute_flags.ResourceArgument(
     name='--nat-external-ip-pool',
-    short_help='External IP Addresses to use for NAT',
+    short_help='External IP Addresses to use for Cloud NAT',
     resource_name='address',
     regional_collection='compute.addresses',
     region_hidden=True,
@@ -45,11 +46,6 @@ DRAIN_NAT_IP_ADDRESSES_ARG = compute_flags.ResourceArgument(
     region_hidden=True,
     plural=True,
     required=False)
-
-
-class IpAllocationOption(enum.Enum):
-  AUTO = 0
-  MANUAL = 1
 
 
 class SubnetOption(enum.Enum):
@@ -77,9 +73,27 @@ def AddNatNameArg(parser, operation_type='operate on', plural=False):
   parser.add_argument('name', **params)
 
 
-def AddCommonNatArgs(parser, for_create=False):
+def AddTypeArg(parser):
+  """Adds the --type argument."""
+  help_text = 'Type of the NAT Gateway. Defaults to PUBLIC if not specified.'
+  choices = {
+      'PUBLIC':
+          'Used for private-to-public NAT translations. Allows VMs to '
+          'communicate with the Internet.',
+      'PRIVATE':
+          'Used for priate-to-private NAT translations. Allows communication '
+          'between VPC Networks.'
+  }
+  parser.add_argument(
+      '--type',
+      type=arg_utils.ChoiceToEnumName,
+      choices=choices,
+      help=help_text)
+
+
+def AddCommonNatArgs(parser, for_create=False, with_type=False):
   """Adds common arguments for creating and updating NATs."""
-  _AddIpAllocationArgs(parser, for_create)
+  _AddIpAllocationArgs(parser, for_create, with_type=with_type)
   _AddSubnetworkArgs(parser, for_create)
   _AddTimeoutsArgs(parser, for_create)
   _AddMinPortsPerVmArg(parser, for_create)
@@ -107,17 +121,22 @@ def _AddRulesArg(parser):
       required=False)
 
 
-def _AddIpAllocationArgs(parser, for_create=False):
+def _AddIpAllocationArgs(parser, for_create=False, with_type=False):
   """Adds a mutually exclusive group to specify IP allocation options."""
 
-  ip_allocation = parser.add_mutually_exclusive_group(required=for_create)
+  # If NAT Type is not supported, one of these flags is always required
+  # (old behavior).
+  #
+  # If NAT Type is supported: one of these flags is required if type is public,
+  # and these flags are not supported if type is private. This is validated
+  # when parsing args.
+  ip_allocation = parser.add_mutually_exclusive_group(
+      required=for_create and not with_type)
   ip_allocation.add_argument(
       '--auto-allocate-nat-external-ips',
       help='Automatically allocate external IP addresses for Cloud NAT',
-      action='store_const',
-      dest='ip_allocation_option',
-      const=IpAllocationOption.AUTO,
-      default=IpAllocationOption.MANUAL)
+      action='store_true',
+      default=False)
   IP_ADDRESSES_ARG.AddArgument(
       parser, mutex_group=ip_allocation, cust_metavar='IP_ADDRESS')
 

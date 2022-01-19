@@ -115,8 +115,7 @@ def ApplyCdnPolicyArgs(client,
                        args,
                        backend_bucket,
                        is_update=False,
-                       cleared_fields=None,
-                       support_extended_caching=False):
+                       cleared_fields=None):
   """Applies the CdnPolicy arguments to the specified backend bucket.
 
   If there are no arguments related to CdnPolicy, the backend bucket remains
@@ -130,8 +129,6 @@ def ApplyCdnPolicyArgs(client,
       a create command, False otherwise.
     cleared_fields: Reference to list with fields that should be cleared. Valid
       only for update command.
-    support_extended_caching: If True, support includeHttpHeader and
-      includeNamedCookie in cacheKeyPolicy.
   """
   if backend_bucket.cdnPolicy is not None:
     cdn_policy = encoding.CopyProtoMessage(backend_bucket.cdnPolicy)
@@ -205,7 +202,7 @@ def ApplyCdnPolicyArgs(client,
       cleared_fields.append('cdnPolicy.bypassCacheOnRequestHeaders')
       cdn_policy.bypassCacheOnRequestHeaders = []
 
-  if support_extended_caching and HasCacheKeyPolicyArgs(args):
+  if HasCacheKeyPolicyArgs(args):
     cdn_policy.cacheKeyPolicy = GetCacheKeyPolicy(client, args, backend_bucket)
 
   if cdn_policy != client.messages.BackendBucketCdnPolicy():

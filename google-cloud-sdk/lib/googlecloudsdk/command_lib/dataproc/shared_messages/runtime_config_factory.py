@@ -75,16 +75,23 @@ def AddArguments(parser):
   """Adds arguments related to RuntimeConfig message to the given parser."""
   parser.add_argument(
       '--container-image',
-      help=('Container image to use for batch job execution. '
-            'IMAGE name should follow the docker image naming format: '
-            '{hostname}/{repository}:{version}.'))
-
+      help=('Optional custom container image to use for the batch job runtime '
+            'environment. If not specified, a default container image will be '
+            'used. The value should follow the container image naming format: '
+            '{registry}/{repository}/{name}:{tag}, for example, '
+            'gcr.io/my-project/my-image:1.2.3'))
   parser.add_argument(
       '--properties',
       type=arg_parsers.ArgDict(),
       metavar='PROPERTY=VALUE',
-      help='Container image properties.')
+      help="""\
+      Specifies configuration properties for the batch job. Properties are
+      mapped to configuration files for the batch job. See
+      [Dataproc Serverless for Spark job capabilities]
+      (https://cloud.google.com/dataproc-serverless/docs/overview#for_spark_job_capabilities)
+      for the list of supported properties.""")
 
   parser.add_argument(
       '--version',
-      help='Batch runtime version.')
+      help=('Optional Batch runtime version.  If not specified, a default '
+            'version will be used.'))

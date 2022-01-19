@@ -54,7 +54,14 @@ class LocalRuntimeFiles(object):
       Text of a kubernetes config file.
     """
     if self._settings.cpu:
-      cpu_request = min(0.1, self._settings.cpu)
+      if isinstance(self._settings.cpu, six.text_type):
+        if not self._settings.cpu.endswith('m'):
+          raise ValueError('cpu limit must be defined as an integer or as '
+                           'millicpus')
+        user_cpu = int(self._settings.cpu[:-1]) / 1000.0
+      else:
+        user_cpu = self._settings.cpu
+      cpu_request = min(0.1, user_cpu)
     else:
       cpu_request = None
 

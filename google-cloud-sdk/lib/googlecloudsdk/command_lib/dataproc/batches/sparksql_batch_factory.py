@@ -60,18 +60,10 @@ class SparkSqlBatchFactory(object):
     # Upload requires a list.
     dependencies['queryFileUri'] = [args.SQL_SCRIPT]
 
-    if args.jar_files:
-      dependencies['jarFileUris'] = args.jar_files
-
     if args.jars:
       dependencies['jarFileUris'] = args.jars
 
-    params = None
-    if args.script_variables:
-      params = args.script_variables
-    elif args.vars:
-      params = args.vars
-
+    params = args.vars
     if params:
       kwargs['queryVariables'] = encoding.DictToAdditionalPropertyMessage(
           params,
@@ -79,10 +71,9 @@ class SparkSqlBatchFactory(object):
           sort_items=True)
 
     if local_file_uploader.HasLocalFiles(dependencies):
-      bucket = args.deps_bucket if args.deps_bucket is not None else args.bucket
-      if not bucket:
+      if not args.deps_bucket:
         raise AttributeError('--deps-bucket was not specified.')
-      dependencies = local_file_uploader.Upload(args.bucket, dependencies)
+      dependencies = local_file_uploader.Upload(args.deps_bucket, dependencies)
 
     # Move main SQL script out of the list.
     dependencies['queryFileUri'] = dependencies['queryFileUri'][0]

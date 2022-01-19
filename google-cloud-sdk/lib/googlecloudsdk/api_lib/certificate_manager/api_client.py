@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
 
-API_VERSION = 'v1alpha1'
+API_VERSION = 'v1'
 
 
 def GetClientInstance(api_version=API_VERSION):

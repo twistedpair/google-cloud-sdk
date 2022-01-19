@@ -41,6 +41,12 @@ def ExtractRequiredFlags(parser):
   AddProjectFlag(parent_group, 'Project ID')
 
 
+def ExtractFolderAndProjectRequiredFlags(parser):
+  parent_group = parser.add_mutually_exclusive_group()
+  AddFolderFlag(parent_group, 'Folder ID')
+  AddProjectFlag(parent_group, 'Project ID')
+
+
 def AddServiceArgument(parser):
   base.ChoiceArgument(
       '--service',

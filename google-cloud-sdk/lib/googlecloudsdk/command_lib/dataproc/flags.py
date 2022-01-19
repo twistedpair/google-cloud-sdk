@@ -197,19 +197,7 @@ def AddMainSqlScript(parser):
 
 def AddSqlScriptVariables(parser):
   """Add --params flag."""
-  sql_script_variables = parser.add_mutually_exclusive_group()
-  sql_script_variables.add_argument(
-      '--script-variables',
-      type=arg_parsers.ArgDict(),
-      metavar='NAME=VALUE',
-      action=actions.DeprecationAction(
-          '--script-variables',
-          warn=('The `--script-variables` flag is deprecated. '
-                'Use the `--vars` flag instead.')),
-      hidden=True,
-      help=('Mapping of query variable names to values (equivalent to the '
-            'Spark SQL command: SET name="value";).'))
-  sql_script_variables.add_argument(
+  parser.add_argument(
       '--vars',
       type=arg_parsers.ArgDict(),
       metavar='NAME=VALUE',
@@ -219,20 +207,7 @@ def AddSqlScriptVariables(parser):
 
 def AddJarFiles(parser):
   """Add --jars flag."""
-  jar_files = parser.add_mutually_exclusive_group()
-  jar_files.add_argument(
-      '--jar-files',
-      type=arg_parsers.ArgList(),
-      metavar='JAR',
-      default=[],
-      action=actions.DeprecationAction(
-          '--jar-files',
-          warn=('The `--jar-files` flag is deprecated. '
-                'Use the `--jars` flag instead.')),
-      hidden=True,
-      help=('Comma-separated list of jar files to be provided to the '
-            'classpaths.'))
-  jar_files.add_argument(
+  parser.add_argument(
       '--jars',
       type=arg_parsers.ArgList(),
       metavar='JAR',
@@ -250,21 +225,7 @@ def AddMainRFile(parser):
 
 def AddPythonFiles(parser):
   """Add --py-files flag."""
-  py_files = parser.add_mutually_exclusive_group()
-  py_files.add_argument(
-      '--python-files',
-      type=arg_parsers.ArgList(),
-      metavar='PY',
-      default=[],
-      action=actions.DeprecationAction(
-          '--python-files',
-          warn=('The `--python-files` flag is deprecated. '
-                'Use the `--py-files` flag instead.')),
-      hidden=True,
-      help=('Comma-separated list of Python scripts to be passed to the '
-            'PySpark framework. Supported file types: ``.py\'\', ``.egg\'\' '
-            'and ``.zip.\'\''))
-  py_files.add_argument(
+  parser.add_argument(
       '--py-files',
       type=arg_parsers.ArgList(),
       metavar='PY',
@@ -305,17 +266,7 @@ def AddArgs(parser):
 
 def AddBucket(parser):
   """Cloud Storage bucket to upload workload dependencies."""
-  bucket_group = parser.add_mutually_exclusive_group()
-  bucket_group.add_argument(
-      '--bucket',
-      action=actions.DeprecationAction(
-          '--bucket',
-          warn=('The `--bucket1 flag is deprecated. '
-                'Use the `--deps-bucket` flag instead.')),
-      hidden=True,
-      help=('A Cloud Storage bucket to upload workload '
-            'dependencies.'))
-  bucket_group.add_argument(
+  parser.add_argument(
       '--deps-bucket',
       help=('A Cloud Storage bucket to upload workload '
             'dependencies.'))

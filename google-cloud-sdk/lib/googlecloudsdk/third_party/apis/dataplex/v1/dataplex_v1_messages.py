@@ -114,8 +114,8 @@ class DataplexProjectsLocationsLakesContentGetRequest(_messages.Message):
     r"""Optional. Specify content view to make a partial request.
 
     Values:
-      CONTENT_VIEW_UNSPECIFIED: The default / unset value. The API will
-        default to the BASIC view.
+      CONTENT_VIEW_UNSPECIFIED: Content view not specified. Defaults to BASIC.
+        The API will default to the BASIC view.
       BASIC: Will not return the data_text field.
       FULL: Returns the complete proto.
     """
@@ -132,10 +132,9 @@ class DataplexProjectsLocationsLakesContentListRequest(_messages.Message):
 
   Fields:
     filter: Optional. Filter request. Filters are case-sensitive. The
-      following formats are supported:path = "/user/directory/notebook1.ipynb"
-      path = starts_with("/my/notebook/directory/file.ipynb") labels.key1 =
-      "value1" labels:key1 is_notebook is_sql_script = trueThese restrictions
-      can be coinjoined with AND, OR and NOT conjunctions.
+      following formats are supported:labels.key1 = "value1" labels:key1 type
+      = "NOTEBOOK" type = "SQL_SCRIPT"These restrictions can be coinjoined
+      with AND, OR and NOT conjunctions.
     pageSize: Optional. Maximum number of content to return. The service may
       return fewer than this value. If unspecified, at most 10 content will be
       returned. The maximum value is 1000; values above 1000 will be coerced
@@ -203,6 +202,110 @@ class DataplexProjectsLocationsLakesContentTestIamPermissionsRequest(_messages.M
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
   resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsLakesContentitemsCreateRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesContentitemsCreateRequest object.
+
+  Fields:
+    googleCloudDataplexV1Content: A GoogleCloudDataplexV1Content resource to
+      be passed as the request body.
+    parent: Required. The resource name of the parent lake:
+      projects/{project_id}/locations/{location_id}/lakes/{lake_id}
+    validateOnly: Optional. Only validate the request, but do not perform
+      mutations. The default is false.
+  """
+
+  googleCloudDataplexV1Content = _messages.MessageField('GoogleCloudDataplexV1Content', 1)
+  parent = _messages.StringField(2, required=True)
+  validateOnly = _messages.BooleanField(3)
+
+
+class DataplexProjectsLocationsLakesContentitemsDeleteRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesContentitemsDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the content: projects/{project_id}/lo
+      cations/{location_id}/lakes/{lake_id}/content/{content_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataplexProjectsLocationsLakesContentitemsGetRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesContentitemsGetRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Optional. Specify content view to make a partial
+      request.
+
+  Fields:
+    name: Required. The resource name of the content: projects/{project_id}/lo
+      cations/{location_id}/lakes/{lake_id}/content/{content_id}
+    view: Optional. Specify content view to make a partial request.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. Specify content view to make a partial request.
+
+    Values:
+      CONTENT_VIEW_UNSPECIFIED: Content view not specified. Defaults to BASIC.
+        The API will default to the BASIC view.
+      BASIC: Will not return the data_text field.
+      FULL: Returns the complete proto.
+    """
+    CONTENT_VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
+
+  name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
+
+
+class DataplexProjectsLocationsLakesContentitemsListRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesContentitemsListRequest object.
+
+  Fields:
+    filter: Optional. Filter request. Filters are case-sensitive. The
+      following formats are supported:labels.key1 = "value1" labels:key1 type
+      = "NOTEBOOK" type = "SQL_SCRIPT"These restrictions can be coinjoined
+      with AND, OR and NOT conjunctions.
+    pageSize: Optional. Maximum number of content to return. The service may
+      return fewer than this value. If unspecified, at most 10 content will be
+      returned. The maximum value is 1000; values above 1000 will be coerced
+      to 1000.
+    pageToken: Optional. Page token received from a previous ListContent call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to ListContent must match the call that provided the
+      page token.
+    parent: Required. The resource name of the parent lake:
+      projects/{project_id}/locations/{location_id}/lakes/{lake_id}
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class DataplexProjectsLocationsLakesContentitemsPatchRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesContentitemsPatchRequest object.
+
+  Fields:
+    googleCloudDataplexV1Content: A GoogleCloudDataplexV1Content resource to
+      be passed as the request body.
+    name: Output only. The relative resource name of the content, of the form:
+      projects/{project_id}/locations/{location_id}/lakes/{lake_id}/content/{c
+      ontent_id}
+    updateMask: Required. Mask of fields to update.
+    validateOnly: Optional. Only validate the request, but do not perform
+      mutations. The default is false.
+  """
+
+  googleCloudDataplexV1Content = _messages.MessageField('GoogleCloudDataplexV1Content', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
 
 
 class DataplexProjectsLocationsLakesCreateRequest(_messages.Message):
@@ -1342,6 +1445,10 @@ class GoogleCloudDataplexV1ActionFailedSecurityPolicyApply(_messages.Message):
 class GoogleCloudDataplexV1ActionIncompatibleDataSchema(_messages.Message):
   r"""Action details for incompatible schemas detected by discovery.
 
+  Enums:
+    SchemaChangeValueValuesEnum: Whether the action relates to a schema that
+      is incompatible or modified.
+
   Fields:
     existingSchema: The existing and expected schema of the table. The schema
       is provided as a JSON formatted structure listing columns and data
@@ -1350,13 +1457,31 @@ class GoogleCloudDataplexV1ActionIncompatibleDataSchema(_messages.Message):
       provided as a JSON formatted structured listing columns and data types.
     sampledDataLocations: The list of data locations sampled and used for
       format/schema inference.
+    schemaChange: Whether the action relates to a schema that is incompatible
+      or modified.
     table: The name of the table containing invalid data.
   """
+
+  class SchemaChangeValueValuesEnum(_messages.Enum):
+    r"""Whether the action relates to a schema that is incompatible or
+    modified.
+
+    Values:
+      SCHEMA_CHANGE_UNSPECIFIED: Schema change unspecified.
+      INCOMPATIBLE: Newly discovered schema is incompatible with existing
+        schema.
+      MODIFIED: Newly discovered schema has changed from existing schema for
+        data in a curated zone.
+    """
+    SCHEMA_CHANGE_UNSPECIFIED = 0
+    INCOMPATIBLE = 1
+    MODIFIED = 2
 
   existingSchema = _messages.StringField(1)
   newSchema = _messages.StringField(2)
   sampledDataLocations = _messages.StringField(3, repeated=True)
-  table = _messages.StringField(4)
+  schemaChange = _messages.EnumField('SchemaChangeValueValuesEnum', 4)
+  table = _messages.StringField(5)
 
 
 class GoogleCloudDataplexV1ActionInvalidDataFormat(_messages.Message):
@@ -3079,9 +3204,6 @@ class GoogleCloudDataplexV1TaskExecutionSpec(_messages.Message):
       job execution is expired.
     serviceAccount: Required. Service account to use to execute a task. If not
       provided, the default Compute service account for the project is used.
-    serviceAccountScopes: Optional. The set of auth scopes and permissions
-      granted to the service account. By default, the CLOUD_PLATFORM auth
-      scope is enabled.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -3120,7 +3242,6 @@ class GoogleCloudDataplexV1TaskExecutionSpec(_messages.Message):
   args = _messages.MessageField('ArgsValue', 1)
   maxJobExecutionLifetime = _messages.StringField(2)
   serviceAccount = _messages.StringField(3)
-  serviceAccountScopes = _messages.StringField(4, repeated=True)
 
 
 class GoogleCloudDataplexV1TaskInfrastructureSpec(_messages.Message):

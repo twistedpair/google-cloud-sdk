@@ -315,7 +315,6 @@ class Hcx(_messages.Message):
 
   Fields:
     externalIp: External IP address of the appliance.
-    fdqn: Fully qualified domain name of the appliance.
     fqdn: Fully qualified domain name of the appliance.
     internalIp: Internal IP address of the appliance.
     state: Output only. The state of the appliance.
@@ -336,11 +335,10 @@ class Hcx(_messages.Message):
     CREATING = 2
 
   externalIp = _messages.StringField(1)
-  fdqn = _messages.StringField(2)
-  fqdn = _messages.StringField(3)
-  internalIp = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  version = _messages.StringField(6)
+  fqdn = _messages.StringField(2)
+  internalIp = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  version = _messages.StringField(5)
 
 
 class HcxActivationKey(_messages.Message):
@@ -800,7 +798,6 @@ class Nsx(_messages.Message):
 
   Fields:
     externalIp: External IP address of the appliance.
-    fdqn: Fully qualified domain name of the appliance.
     fqdn: Fully qualified domain name of the appliance.
     internalIp: Internal IP address of the appliance.
     state: Output only. The state of the appliance.
@@ -821,11 +818,10 @@ class Nsx(_messages.Message):
     CREATING = 2
 
   externalIp = _messages.StringField(1)
-  fdqn = _messages.StringField(2)
-  fqdn = _messages.StringField(3)
-  internalIp = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  version = _messages.StringField(6)
+  fqdn = _messages.StringField(2)
+  internalIp = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  version = _messages.StringField(5)
 
 
 class Operation(_messages.Message):
@@ -1390,7 +1386,6 @@ class Vcenter(_messages.Message):
 
   Fields:
     externalIp: External IP address of the appliance.
-    fdqn: Fully qualified domain name of the appliance.
     fqdn: Fully qualified domain name of the appliance.
     internalIp: Internal IP address of the appliance.
     state: Output only. The state of the appliance.
@@ -1411,11 +1406,10 @@ class Vcenter(_messages.Message):
     CREATING = 2
 
   externalIp = _messages.StringField(1)
-  fdqn = _messages.StringField(2)
-  fqdn = _messages.StringField(3)
-  internalIp = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  version = _messages.StringField(6)
+  fqdn = _messages.StringField(2)
+  internalIp = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  version = _messages.StringField(5)
 
 
 class VmwareengineProjectsLocationsGetRequest(_messages.Message):

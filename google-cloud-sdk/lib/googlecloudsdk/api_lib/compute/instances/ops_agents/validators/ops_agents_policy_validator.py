@@ -45,7 +45,7 @@ _SUPPORTED_OS_SHORT_NAMES_AND_VERSIONS = {
         '12', '15'
     ],
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.UBUNTU: [
-        '16.04', '18.04', '19.10', '20.04'
+        '16.04', '18.04', '19.10', '20.04', '21.04', '21.10'
     ],
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.WINDOWS: [
         '10', '6'

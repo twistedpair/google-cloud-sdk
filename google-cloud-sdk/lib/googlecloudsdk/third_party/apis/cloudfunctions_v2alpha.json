@@ -703,6 +703,20 @@
           "items": {
             "type": "string"
           }
+        },
+        "environment": {
+          "description": "The environment for the runtime.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified",
+            "Gen 1",
+            "Gen 2"
+          ],
+          "enum": [
+            "ENVIRONMENT_UNSPECIFIED",
+            "GEN_1",
+            "GEN_2"
+          ]
         }
       }
     },
@@ -1689,6 +1703,11 @@
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The filter for Runtimes that match the filter expression, following the syntax outlined in https:\/\/google.aip.dev\/160.",
+                      "location": "query",
                       "type": "string"
                     }
                   },

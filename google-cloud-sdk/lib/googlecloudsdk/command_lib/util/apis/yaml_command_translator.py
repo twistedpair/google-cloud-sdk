@@ -145,13 +145,13 @@ class CommandBuilder(object):
       calliope.base.Command, The command that implements the spec.
     """
     if self.spec.command_type == yaml_command_schema.CommandType.DESCRIBE:
-      command = self._GenerateDescribeCommand()
+      command = DescribeCommandGenerator(self.spec, self.path).Generate()
     elif self.spec.command_type == yaml_command_schema.CommandType.LIST:
-      command = self._GenerateListCommand()
+      command = ListCommandGenerator(self.spec, self.path).Generate()
     elif self.spec.command_type == yaml_command_schema.CommandType.DELETE:
-      command = self._GenerateDeleteCommand()
+      command = DeleteCommandGenerator(self.spec, self.path).Generate()
     elif self.spec.command_type == yaml_command_schema.CommandType.CREATE:
-      command = self._GenerateCreateCommand()
+      command = CreateCommandGenerator(self.spec, self.path).Generate()
     elif self.spec.command_type == yaml_command_schema.CommandType.WAIT:
       command = self._GenerateWaitCommand()
     elif (self.spec.command_type ==
@@ -181,178 +181,6 @@ class CommandBuilder(object):
           ' '.join(self.path), self.spec.command_type))
     self._ConfigureGlobalAttributes(command)
     return command
-
-  def _GenerateDescribeCommand(self):
-    """Generates a Describe command.
-
-    A describe command has a single resource argument and an API method to call
-    to get the resource. The result is returned using the default output format.
-
-    Returns:
-      calliope.base.Command, The command that implements the spec.
-    """
-
-    # pylint: disable=no-self-argument, The class closure throws off the linter
-    # a bit. We want to use the generator class, not the class being generated.
-    # pylint: disable=protected-access, The linter gets confused about 'self'
-    # and thinks we are accessing something protected.
-    class Command(base.DescribeCommand):
-
-      @staticmethod
-      def Args(parser):
-        self._CommonArgs(parser)
-
-      def Run(self_, args):
-        unused_ref, response = self._CommonRun(args)
-        return self._HandleResponse(response, args)
-
-    return Command
-
-  def _GenerateListCommand(self):
-    """Generates a List command.
-
-    A list command operates on a single resource and has flags for the parent
-    collection of that resource. Because it extends the calliope base List
-    command, it gets flags for things like limit, filter, and page size. A
-    list command should register a table output format to display the result.
-    If arguments.resource.response_id_field is specified, a --uri flag will also
-    be enabled.
-
-    Returns:
-      calliope.base.Command, The command that implements the spec.
-    """
-
-    # pylint: disable=no-self-argument, The class closure throws off the linter
-    # a bit. We want to use the generator class, not the class being generated.
-    # pylint: disable=protected-access, The linter gets confused about 'self'
-    # and thinks we are accessing something protected.
-    class Command(base.ListCommand):
-      # pylint: disable=missing-docstring
-
-      @staticmethod
-      def Args(parser):
-        self._CommonArgs(parser)
-        # Remove the URI flag if we don't know how to generate URIs for this
-        # resource.
-        if not self.spec.response.id_field:
-          base.URI_FLAG.RemoveFromParser(parser)
-
-      def Run(self_, args):
-        self._RegisterURIFunc(args)
-        unused_ref, response = self._CommonRun(args)
-        return self._HandleResponse(response, args)
-
-    return Command
-
-  def _GenerateDeleteCommand(self):
-    """Generates a Delete command.
-
-    A delete command has a single resource argument and an API to call to
-    perform the delete. If the async section is given in the spec, an --async
-    flag is added and polling is automatically done on the response. For APIs
-    that adhere to standards, no further configuration is necessary. If the API
-    uses custom operations, you may need to provide extra configuration to
-    describe how to poll the operation.
-
-    Returns:
-      calliope.base.Command, The command that implements the spec.
-    """
-
-    # pylint: disable=no-self-argument, The class closure throws off the linter
-    # a bit. We want to use the generator class, not the class being generated.
-    # pylint: disable=protected-access, The linter gets confused about 'self'
-    # and thinks we are accessing something protected.
-    class Command(base.DeleteCommand):
-      # pylint: disable=missing-docstring
-
-      @staticmethod
-      def Args(parser):
-        self._CommonArgs(parser)
-        if self.spec.async_:
-          base.ASYNC_FLAG.AddToParser(parser)
-
-      def Run(self_, args):
-        ref, response = self._CommonRun(args)
-        if self.spec.async_:
-          response = self._HandleAsync(
-              args,
-              ref,
-              response,
-              request_string='Delete request issued for: [{{{}}}]'
-              .format(yaml_command_schema.NAME_FORMAT_KEY),
-              extract_resource_result=False)
-          if args.async_:
-            return self._HandleResponse(response, args)
-
-        response = self._HandleResponse(response, args)
-        log.DeletedResource(self._GetDisplayName(ref, args),
-                            kind=self.display_resource_type)
-        return response
-
-    return Command
-
-  def _GenerateCreateCommand(self):
-    """Generates a Create command.
-
-    A create command has a single resource argument and an API to call to
-    perform the creation. If the async section is given in the spec, an --async
-    flag is added and polling is automatically done on the response. For APIs
-    that adhere to standards, no further configuration is necessary. If the API
-    uses custom operations, you may need to provide extra configuration to
-    describe how to poll the operation.
-
-    Returns:
-      calliope.base.Command, The command that implements the spec.
-    """
-
-    # pylint: disable=no-self-argument, The class closure throws off the linter
-    # a bit. We want to use the generator class, not the class being generated.
-    # pylint: disable=protected-access, The linter gets confused about 'self'
-    # and thinks we are accessing something protected.
-    class Command(base.CreateCommand):
-      # pylint: disable=missing-docstring
-
-      @staticmethod
-      def Args(parser):
-        self._CommonArgs(parser)
-        if self.spec.async_:
-          base.ASYNC_FLAG.AddToParser(parser)
-        if self.spec.arguments.labels:
-          labels_util.AddCreateLabelsFlags(parser)
-
-      def Run(self_, args):
-        ref, response = self._CommonRun(args)
-        is_parent_resource = (self.spec.arguments.resource and
-                              self.spec.arguments.resource.is_parent_resource)
-        if self.spec.async_:
-          if ref is not None and not is_parent_resource:
-            request_string = 'Create request issued for: [{{{}}}]'.format(
-                yaml_command_schema.NAME_FORMAT_KEY)
-          else:
-            request_string = 'Create request issued'
-          response = self._HandleAsync(
-              args, ref, response,
-              request_string=request_string)
-          if args.async_:
-            return self._HandleResponse(response, args)
-
-        if is_parent_resource:
-          # Data on responses from operation polling is stored in
-          # additionalProperties, so convert to dict for consistent behavior.
-          response_obj = encoding.MessageToDict(response)
-          # If the response is an operation that has a 'response' property that
-          # has a name, use that. Otherwise, use the 'name' property.
-          full_name = response_obj.get('response', {}).get('name')
-          if not full_name:
-            full_name = response_obj.get('name')
-          resource_name = resource_transform.TransformBaseName(full_name)
-        else:
-          resource_name = self._GetDisplayName(ref, args)
-        log.CreatedResource(resource_name, kind=self.display_resource_type)
-        response = self._HandleResponse(response, args)
-        return response
-
-    return Command
 
   def _GenerateWaitCommand(self):
     """Generates a wait command for polling operations.
@@ -1268,23 +1096,6 @@ class CommandBuilder(object):
     d[yaml_command_schema.RESOURCE_TYPE_FORMAT_KEY] = self.display_resource_type
     return format_string.format(**d)
 
-  def _RegisterURIFunc(self, args):
-    """Generates and registers a function to create a URI from a resource.
-
-    Args:
-      args: The argparse namespace.
-
-    Returns:
-      f(resource) -> str, A function that converts the given resource payload
-      into a URI.
-    """
-    def URIFunc(resource):
-      id_value = getattr(
-          resource, self.spec.response.id_field)
-      ref = self.arg_generator.GetResponseResourceRef(id_value, args)
-      return ref.SelfLink()
-    args.GetDisplayInfo().AddUriFunc(URIFunc)
-
   def _ConfigureGlobalAttributes(self, command):
     """Configures top level attributes of the generated command.
 
@@ -1446,3 +1257,479 @@ def _GetAttribute(obj, attr_path):
             'Attribute path [{}] not found on type [{}]'.format(attr_path,
                                                                 type(obj)))
   return obj
+
+
+class BaseCommandGenerator(object):
+  """Base class for command generation."""
+
+  def __init__(self, spec, path):
+    self.spec = spec
+    self.path = path
+    self.has_request_method = yaml_command_schema.CommandType.HasRequestMethod(
+        spec.command_type)
+    self.ConfigureCommand()
+
+  def ConfigureCommand(self):
+    """Allows command to be reconfigured if needed."""
+    resource_arg = self.spec.arguments.resource
+
+    if self.has_request_method:
+      self.method = registry.GetMethod(self.spec.request.collection,
+                                       self.spec.request.method,
+                                       self.spec.request.api_version)
+      self.resource_collection = self.method.resource_argument_collection
+      self.display_resource_type = self.spec.request.display_resource_type
+
+    else:
+      self.method = None
+      self.resource_collection = registry.GetAPICollection(
+          self.spec.arguments.resource.GenerateResourceSpec().collection)
+      self.display_resource_type = None
+
+    self.arg_generator = arg_marshalling.DeclarativeArgumentGenerator(
+        self.method, self.spec.arguments.params, resource_arg,
+        self.resource_collection)
+
+    if (not self.display_resource_type and resource_arg and
+        not resource_arg.is_parent_resource):
+      self.display_resource_type = resource_arg.name if resource_arg else None
+
+  def _CommonArgs(self, parser):
+    """Performs argument actions common to all commands.
+
+    Adds all generated arguments to the parser
+    Sets the command output format if specified
+
+    Args:
+      parser: The argparse parser.
+    """
+    args = self.arg_generator.GenerateArgs()
+    parser = self._Exclude(parser)
+    for arg in args:
+      arg.AddToParser(parser)
+    if self.spec.arguments.additional_arguments_hook:
+      for arg in self.spec.arguments.additional_arguments_hook():
+        arg.AddToParser(parser)
+    if self.spec.output.format:
+      parser.display_info.AddFormat(self.spec.output.format)
+    if self.spec.output.flatten:
+      parser.display_info.AddFlatten(self.spec.output.flatten)
+
+  def _Exclude(self, parser):
+    """Excludes specified arguments from the parser.
+
+    Args:
+      parser: The argparse parser.
+
+    Returns:
+      The argparse parser.
+    """
+    for arg in self.spec.arguments.exclude:
+      base.Argument('--{}'.format(arg), help='').RemoveFromParser(parser)
+    return parser
+
+  def _CommonRun(self, args, existing_message=None):
+    """Performs run actions common to all commands.
+
+    Parses the resource argument into a resource reference
+    Prompts the user to continue (if applicable)
+    Calls the API method with the request generated from the parsed arguments
+
+    Args:
+      args: The argparse parser.
+      existing_message: the apitools message returned from previous request.
+
+    Returns:
+      (resources.Resource, response), A tuple of the parsed resource reference
+      and the API response from the method call.
+    """
+    ref = self.arg_generator.GetRequestResourceRef(args)
+    if self.spec.input.confirmation_prompt:
+      console_io.PromptContinue(
+          message=self._Format(self.spec.input.confirmation_prompt, ref,
+                               self._GetDisplayName(ref, args)),
+          default=self.spec.input.default_continue,
+          throw_if_unattended=True, cancel_on_no=True)
+
+    if self.spec.request.modify_method_hook:
+      self.spec.request.method = self.spec.request.modify_method_hook(ref, args)
+      self.method = registry.GetMethod(
+          self.spec.request.collection, self.spec.request.method,
+          self.spec.request.api_version)
+
+    if self.spec.request.issue_request_hook:
+      # Making the request is overridden, just call into the custom code.
+      return ref, self.spec.request.issue_request_hook(ref, args)
+
+    if self.spec.request.create_request_hook:
+      # We are going to make the request, but there is custom code to create it.
+      request = self.spec.request.create_request_hook(ref, args)
+    else:
+      parse_resource = self.spec.request.parse_resource_into_request
+      request = self.arg_generator.CreateRequest(
+          args,
+          self.spec.request.static_fields,
+          self.spec.request.resource_method_params,
+          self.spec.arguments.labels,
+          self.spec.command_type,
+          use_relative_name=self.spec.request.use_relative_name,
+          parse_resource_into_request=parse_resource,
+          existing_message=existing_message,
+          override_method=self.method)
+      for hook in self.spec.request.modify_request_hooks:
+        request = hook(ref, args, request)
+
+    response = self.method.Call(request,
+                                limit=self.arg_generator.Limit(args),
+                                page_size=self.arg_generator.PageSize(args))
+    return ref, response
+
+  def _Format(self, format_string, resource_ref, display_name=None):
+    """Formats a string with all the attributes of the given resource ref.
+
+    Args:
+      format_string: str, The format string.
+      resource_ref: resources.Resource, The resource reference to extract
+        attributes from.
+      display_name: the display name for the resource.
+
+    Returns:
+      str, The formatted string.
+    """
+    if resource_ref:
+      d = resource_ref.AsDict()
+      d[yaml_command_schema.NAME_FORMAT_KEY] = (
+          display_name or resource_ref.Name())
+      d[yaml_command_schema.REL_NAME_FORMAT_KEY] = resource_ref.RelativeName()
+    else:
+      d = {yaml_command_schema.NAME_FORMAT_KEY: display_name}
+    d[yaml_command_schema.RESOURCE_TYPE_FORMAT_KEY] = self.display_resource_type
+    return format_string.format(**d)
+
+  def _GetDisplayName(self, resource_ref, args):
+    if (self.spec.arguments.resource
+        and self.spec.arguments.resource.display_name_hook):
+      return self.spec.arguments.resource.display_name_hook(resource_ref, args)
+    return resource_ref.Name() if resource_ref else None
+
+  def _HandleResponse(self, response, args=None):
+    """Process the API response.
+
+    Args:
+      response: The apitools message object containing the API response.
+      args: argparse.Namespace, The parsed args.
+
+    Raises:
+      core.exceptions.Error: If an error was detected and extracted from the
+        response.
+
+    Returns:
+      A possibly modified response.
+    """
+    if self.spec.response.error:
+      error = self._FindPopulatedAttribute(
+          response, self.spec.response.error.field.split('.'))
+      if error:
+        messages = []
+        if self.spec.response.error.code:
+          messages.append('Code: [{}]'.format(
+              _GetAttribute(error, self.spec.response.error.code)))
+        if self.spec.response.error.message:
+          messages.append('Message: [{}]'.format(
+              _GetAttribute(error, self.spec.response.error.message)))
+        if messages:
+          raise exceptions.Error(' '.join(messages))
+        raise exceptions.Error(six.text_type(error))
+    if self.spec.response.result_attribute:
+      response = _GetAttribute(response, self.spec.response.result_attribute)
+    for hook in self.spec.response.modify_response_hooks:
+      response = hook(response, args)
+    return response
+
+  def _HandleAsync(self, args, resource_ref, operation,
+                   request_string, extract_resource_result=True):
+    """Handles polling for operations if the async flag is provided.
+
+    Args:
+      args: argparse.Namespace, The parsed args.
+      resource_ref: resources.Resource, The resource reference for the resource
+        being operated on (not the operation itself)
+      operation: The operation message response.
+      request_string: The format string to print indicating a request has been
+        issued for the resource. If None, nothing is printed.
+      extract_resource_result: bool, True to return the original resource as
+        the result or False to just return the operation response when it is
+        done. You would set this to False for things like Delete where the
+        resource no longer exists when the operation is done.
+
+    Returns:
+      The response (either the operation or the original resource).
+    """
+    operation_ref = resources.REGISTRY.Parse(
+        getattr(operation, self.spec.async_.response_name_field),
+        collection=self.spec.async_.collection,
+        api_version=(
+            self.spec.async_.api_version or self.spec.request.api_version))
+    request_string = self.spec.async_.request_issued_message or request_string
+    if request_string:
+      log.status.Print(self._Format(request_string, resource_ref,
+                                    self._GetDisplayName(resource_ref, args)))
+    if args.async_:
+      log.status.Print(self._Format(
+          'Check operation [{{{}}}] for status.'
+          .format(yaml_command_schema.REL_NAME_FORMAT_KEY), operation_ref))
+      return operation
+
+    poller = AsyncOperationPoller(
+        self.spec, resource_ref if extract_resource_result else None, args)
+    if poller.IsDone(operation):
+      return poller.GetResult(operation)
+
+    return self._WaitForOperationWithPoller(
+        poller, operation_ref, args=args)
+
+  def _WaitForOperationWithPoller(self, poller, operation_ref, args=None):
+    progress_string = self._Format(
+        'Waiting for operation [{{{}}}] to complete'.format(
+            yaml_command_schema.REL_NAME_FORMAT_KEY),
+        operation_ref)
+    display_name = (self._GetDisplayName(poller.resource_ref, args)
+                    if args else None)
+    return waiter.WaitFor(
+        poller, operation_ref,
+        self._Format(progress_string, poller.resource_ref, display_name))
+
+  def _FindPopulatedAttribute(self, obj, attributes):
+    """Searches the given object for an attribute that is non-None.
+
+    This digs into the object search for the given attributes. If any attribute
+    along the way is a list, it will search for sub-attributes in each item
+    of that list. The first match is returned.
+
+    Args:
+      obj: The object to search
+      attributes: [str], A sequence of attributes to use to dig into the
+        resource.
+
+    Returns:
+      The first matching instance of the attribute that is non-None, or None
+      if one could nto be found.
+    """
+    if not attributes:
+      return obj
+    attr = attributes[0]
+    try:
+      obj = getattr(obj, attr)
+    except AttributeError:
+      return None
+    if isinstance(obj, list):
+      for x in obj:
+        obj = self._FindPopulatedAttribute(x, attributes[1:])
+        if obj:
+          return obj
+    return self._FindPopulatedAttribute(obj, attributes[1:])
+
+
+class DescribeCommandGenerator(BaseCommandGenerator):
+  """Generator for describe commands."""
+
+  def Generate(self):
+    """Generates a Describe command.
+
+    A describe command has a single resource argument and an API method to call
+    to get the resource. The result is returned using the default output format.
+
+    Returns:
+      calliope.base.Command, The command that implements the spec.
+    """
+
+    # pylint: disable=no-self-argument, The class closure throws off the linter
+    # a bit. We want to use the generator class, not the class being generated.
+    # pylint: disable=protected-access, The linter gets confused about 'self'
+    # and thinks we are accessing something protected.
+    class Command(base.DescribeCommand):
+
+      @staticmethod
+      def Args(parser):
+        self._CommonArgs(parser)
+
+      def Run(self_, args):
+        unused_ref, response = self._CommonRun(args)
+        return self._HandleResponse(response, args)
+
+    return Command
+
+
+class ListCommandGenerator(BaseCommandGenerator):
+  """Generator for list commands."""
+
+  def _RegisterURIFunc(self, args):
+    """Generates and registers a function to create a URI from a resource.
+
+    Args:
+      args: The argparse namespace.
+
+    Returns:
+      f(resource) -> str, A function that converts the given resource payload
+      into a URI.
+    """
+    def URIFunc(resource):
+      id_value = getattr(
+          resource, self.spec.response.id_field)
+      ref = self.arg_generator.GetResponseResourceRef(id_value, args)
+      return ref.SelfLink()
+    args.GetDisplayInfo().AddUriFunc(URIFunc)
+
+  def Generate(self):
+    """Generates a List command.
+
+    A list command operates on a single resource and has flags for the parent
+    collection of that resource. Because it extends the calliope base List
+    command, it gets flags for things like limit, filter, and page size. A
+    list command should register a table output format to display the result.
+    If arguments.resource.response_id_field is specified, a --uri flag will also
+    be enabled.
+
+    Returns:
+      calliope.base.Command, The command that implements the spec.
+    """
+
+    # pylint: disable=no-self-argument, The class closure throws off the linter
+    # a bit. We want to use the generator class, not the class being generated.
+    # pylint: disable=protected-access, The linter gets confused about 'self'
+    # and thinks we are accessing something protected.
+    class Command(base.ListCommand):
+      # pylint: disable=missing-docstring
+
+      @staticmethod
+      def Args(parser):
+        self._CommonArgs(parser)
+        # Remove the URI flag if we don't know how to generate URIs for this
+        # resource.
+        if not self.spec.response.id_field:
+          base.URI_FLAG.RemoveFromParser(parser)
+
+      def Run(self_, args):
+        self._RegisterURIFunc(args)
+        unused_ref, response = self._CommonRun(args)
+        return self._HandleResponse(response, args)
+
+    return Command
+
+
+class DeleteCommandGenerator(BaseCommandGenerator):
+  """Generator for delete commands."""
+
+  def Generate(self):
+    """Generates a Delete command.
+
+    A delete command has a single resource argument and an API to call to
+    perform the delete. If the async section is given in the spec, an --async
+    flag is added and polling is automatically done on the response. For APIs
+    that adhere to standards, no further configuration is necessary. If the API
+    uses custom operations, you may need to provide extra configuration to
+    describe how to poll the operation.
+
+    Returns:
+      calliope.base.Command, The command that implements the spec.
+    """
+
+    # pylint: disable=no-self-argument, The class closure throws off the linter
+    # a bit. We want to use the generator class, not the class being generated.
+    # pylint: disable=protected-access, The linter gets confused about 'self'
+    # and thinks we are accessing something protected.
+    class Command(base.DeleteCommand):
+      # pylint: disable=missing-docstring
+
+      @staticmethod
+      def Args(parser):
+        self._CommonArgs(parser)
+        if self.spec.async_:
+          base.ASYNC_FLAG.AddToParser(parser)
+
+      def Run(self_, args):
+        ref, response = self._CommonRun(args)
+        if self.spec.async_:
+          response = self._HandleAsync(
+              args,
+              ref,
+              response,
+              request_string='Delete request issued for: [{{{}}}]'
+              .format(yaml_command_schema.NAME_FORMAT_KEY),
+              extract_resource_result=False)
+          if args.async_:
+            return self._HandleResponse(response, args)
+
+        response = self._HandleResponse(response, args)
+        log.DeletedResource(self._GetDisplayName(ref, args),
+                            kind=self.display_resource_type)
+        return response
+
+    return Command
+
+
+class CreateCommandGenerator(BaseCommandGenerator):
+  """Generator for create commands."""
+
+  def Generate(self):
+    """Generates a Create command.
+
+    A create command has a single resource argument and an API to call to
+    perform the creation. If the async section is given in the spec, an --async
+    flag is added and polling is automatically done on the response. For APIs
+    that adhere to standards, no further configuration is necessary. If the API
+    uses custom operations, you may need to provide extra configuration to
+    describe how to poll the operation.
+
+    Returns:
+      calliope.base.Command, The command that implements the spec.
+    """
+
+    # pylint: disable=no-self-argument, The class closure throws off the linter
+    # a bit. We want to use the generator class, not the class being generated.
+    # pylint: disable=protected-access, The linter gets confused about 'self'
+    # and thinks we are accessing something protected.
+    class Command(base.CreateCommand):
+      # pylint: disable=missing-docstring
+
+      @staticmethod
+      def Args(parser):
+        self._CommonArgs(parser)
+        if self.spec.async_:
+          base.ASYNC_FLAG.AddToParser(parser)
+        if self.spec.arguments.labels:
+          labels_util.AddCreateLabelsFlags(parser)
+
+      def Run(self_, args):
+        ref, response = self._CommonRun(args)
+        is_parent_resource = (self.spec.arguments.resource and
+                              self.spec.arguments.resource.is_parent_resource)
+        if self.spec.async_:
+          if ref is not None and not is_parent_resource:
+            request_string = 'Create request issued for: [{{{}}}]'.format(
+                yaml_command_schema.NAME_FORMAT_KEY)
+          else:
+            request_string = 'Create request issued'
+          response = self._HandleAsync(
+              args, ref, response,
+              request_string=request_string)
+          if args.async_:
+            return self._HandleResponse(response, args)
+
+        if is_parent_resource:
+          # Data on responses from operation polling is stored in
+          # additionalProperties, so convert to dict for consistent behavior.
+          response_obj = encoding.MessageToDict(response)
+          # If the response is an operation that has a 'response' property that
+          # has a name, use that. Otherwise, use the 'name' property.
+          full_name = response_obj.get('response', {}).get('name')
+          if not full_name:
+            full_name = response_obj.get('name')
+          resource_name = resource_transform.TransformBaseName(full_name)
+        else:
+          resource_name = self._GetDisplayName(ref, args)
+        log.CreatedResource(resource_name, kind=self.display_resource_type)
+        response = self._HandleResponse(response, args)
+        return response
+
+    return Command

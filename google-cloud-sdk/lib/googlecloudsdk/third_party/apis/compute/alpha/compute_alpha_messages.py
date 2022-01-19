@@ -3985,10 +3985,8 @@ class BackendService(_messages.Message):
       settable as a field in the request body.
     securityPolicy: [Output Only] The resource URL for the security policy
       associated with this backend service.
-    securitySettings: This field specifies the security policy that applies to
-      this backend service. This field is applicable to either: - A regional
-      backend service with the service_protocol set to HTTP, HTTPS, or HTTP2,
-      and load_balancing_scheme set to INTERNAL_MANAGED. - A global backend
+    securitySettings: This field specifies the security settings that apply to
+      this backend service. This field is applicable to a global backend
       service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED.
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
@@ -22361,6 +22359,176 @@ class ComputeRegionNetworkFirewallPoliciesTestIamPermissionsRequest(_messages.Me
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
+class ComputeRegionNetworksDeleteRequest(_messages.Message):
+  r"""A ComputeRegionNetworksDeleteRequest object.
+
+  Fields:
+    network: Name of the network to delete.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  network = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeRegionNetworksGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeRegionNetworksGetIamPolicyRequest object.
+
+  Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  resource = _messages.StringField(4, required=True)
+
+
+class ComputeRegionNetworksGetRequest(_messages.Message):
+  r"""A ComputeRegionNetworksGetRequest object.
+
+  Fields:
+    network: Name of the network to return.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  network = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionNetworksInsertRequest(_messages.Message):
+  r"""A ComputeRegionNetworksInsertRequest object.
+
+  Fields:
+    network: A Network resource to be passed as the request body.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  network = _messages.MessageField('Network', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeRegionNetworksListRequest(_messages.Message):
+  r"""A ComputeRegionNetworksListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
+      instances, you can exclude instances named `example-instance` by
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
+      fields. For example, you could specify `scheduling.automaticRestart =
+      false` to include instances only if they are not scheduled for automatic
+      restarts. You can use filtering on nested fields to filter based on
+      resource labels. To filter on multiple expressions, provide each
+      separate expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ```
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+
+
+class ComputeRegionNetworksSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeRegionNetworksSetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    regionSetPolicyRequest: A RegionSetPolicyRequest resource to be passed as
+      the request body.
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetPolicyRequest = _messages.MessageField('RegionSetPolicyRequest', 3)
+  resource = _messages.StringField(4, required=True)
+
+
+class ComputeRegionNetworksTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeRegionNetworksTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
 class ComputeRegionNotificationEndpointsAggregatedListRequest(_messages.Message):
   r"""A ComputeRegionNotificationEndpointsAggregatedListRequest object.
 
@@ -23476,6 +23644,34 @@ class ComputeRegionTargetHttpsProxiesListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+
+
+class ComputeRegionTargetHttpsProxiesPatchRequest(_messages.Message):
+  r"""A ComputeRegionTargetHttpsProxiesPatchRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    targetHttpsProxy: Name of the TargetHttpsProxy resource to patch.
+    targetHttpsProxyResource: A TargetHttpsProxy resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  targetHttpsProxy = _messages.StringField(4, required=True)
+  targetHttpsProxyResource = _messages.MessageField('TargetHttpsProxy', 5)
 
 
 class ComputeRegionTargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
@@ -32173,6 +32369,16 @@ class FirewallPoliciesListAssociationsResponse(_messages.Message):
 class FirewallPolicy(_messages.Message):
   r"""Represents a Firewall Policy resource.
 
+  Enums:
+    VpcNetworkScopeValueValuesEnum: The scope of networks allowed to be
+      associated with the firewall policy. This field can be either
+      GLOBAL_VPC_NETWORK or REGIONAL_VPC_NETWORK. A firewall policy with the
+      VPC scope set to GLOBAL_VPC_NETWORK is allowed to be attached only to
+      global networks. When the VPC scope is set to REGIONAL_VPC_NETWORK the
+      firewall policy is allowed to be attached only to regional networks in
+      the same scope as the firewall policy. Note: if not specified then
+      GLOBAL_VPC_NETWORK will be used.
+
   Fields:
     associations: A list of associations that belong to this firewall policy.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -32225,7 +32431,35 @@ class FirewallPolicy(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    vpcNetworkScope: The scope of networks allowed to be associated with the
+      firewall policy. This field can be either GLOBAL_VPC_NETWORK or
+      REGIONAL_VPC_NETWORK. A firewall policy with the VPC scope set to
+      GLOBAL_VPC_NETWORK is allowed to be attached only to global networks.
+      When the VPC scope is set to REGIONAL_VPC_NETWORK the firewall policy is
+      allowed to be attached only to regional networks in the same scope as
+      the firewall policy. Note: if not specified then GLOBAL_VPC_NETWORK will
+      be used.
   """
+
+  class VpcNetworkScopeValueValuesEnum(_messages.Enum):
+    r"""The scope of networks allowed to be associated with the firewall
+    policy. This field can be either GLOBAL_VPC_NETWORK or
+    REGIONAL_VPC_NETWORK. A firewall policy with the VPC scope set to
+    GLOBAL_VPC_NETWORK is allowed to be attached only to global networks. When
+    the VPC scope is set to REGIONAL_VPC_NETWORK the firewall policy is
+    allowed to be attached only to regional networks in the same scope as the
+    firewall policy. Note: if not specified then GLOBAL_VPC_NETWORK will be
+    used.
+
+    Values:
+      GLOBAL_VPC_NETWORK: The firewall policy is allowed to be attached only
+        to global networks.
+      REGIONAL_VPC_NETWORK: The firewall policy is allowed to be attached only
+        to regional networks in the same scope as the firewall policy. This
+        option is applicable only to regional firewall policies.
+    """
+    GLOBAL_VPC_NETWORK = 0
+    REGIONAL_VPC_NETWORK = 1
 
   associations = _messages.MessageField('FirewallPolicyAssociation', 1, repeated=True)
   creationTimestamp = _messages.StringField(2)
@@ -32242,6 +32476,7 @@ class FirewallPolicy(_messages.Message):
   selfLink = _messages.StringField(13)
   selfLinkWithId = _messages.StringField(14)
   shortName = _messages.StringField(15)
+  vpcNetworkScope = _messages.EnumField('VpcNetworkScopeValueValuesEnum', 16)
 
 
 class FirewallPolicyAssociation(_messages.Message):
@@ -46978,6 +47213,10 @@ class Network(_messages.Message):
     networkFirewallPolicyEnforcementOrder: A
       NetworkFirewallPolicyEnforcementOrderValueValuesEnum attribute.
     peerings: [Output Only] A list of network peerings for the resource.
+    region: [Output Only] URL of the region where the regional network
+      resides. This field is not applicable to global network. You must
+      specify this field as part of the HTTP request URL. It is not settable
+      as a field in the request body.
     routingConfig: The network-level routing configuration for this network.
       Used by Cloud Router to determine what type of network-wide routing
       behavior to enforce.
@@ -47012,10 +47251,11 @@ class Network(_messages.Message):
   name = _messages.StringField(12)
   networkFirewallPolicyEnforcementOrder = _messages.EnumField('NetworkFirewallPolicyEnforcementOrderValueValuesEnum', 13)
   peerings = _messages.MessageField('NetworkPeering', 14, repeated=True)
-  routingConfig = _messages.MessageField('NetworkRoutingConfig', 15)
-  selfLink = _messages.StringField(16)
-  selfLinkWithId = _messages.StringField(17)
-  subnetworks = _messages.StringField(18, repeated=True)
+  region = _messages.StringField(15)
+  routingConfig = _messages.MessageField('NetworkRoutingConfig', 16)
+  selfLink = _messages.StringField(17)
+  selfLinkWithId = _messages.StringField(18)
+  subnetworks = _messages.StringField(19, repeated=True)
 
 
 class NetworkEdgeSecurityService(_messages.Message):
@@ -54911,6 +55151,7 @@ class Quota(_messages.Message):
       COMMITTED_E2_CPUS: <no description>
       COMMITTED_LICENSES: <no description>
       COMMITTED_LOCAL_SSD_TOTAL_GB: <no description>
+      COMMITTED_M3_CPUS: <no description>
       COMMITTED_MEMORY_OPTIMIZED_CPUS: <no description>
       COMMITTED_N2A_CPUS: <no description>
       COMMITTED_N2D_CPUS: <no description>
@@ -54963,6 +55204,7 @@ class Quota(_messages.Message):
       LOCAL_SSD_TOTAL_GB: <no description>
       M1_CPUS: <no description>
       M2_CPUS: <no description>
+      M3_CPUS: <no description>
       MACHINE_IMAGES: <no description>
       N2A_CPUS: <no description>
       N2D_CPUS: <no description>
@@ -55052,124 +55294,126 @@ class Quota(_messages.Message):
     COMMITTED_E2_CPUS = 16
     COMMITTED_LICENSES = 17
     COMMITTED_LOCAL_SSD_TOTAL_GB = 18
-    COMMITTED_MEMORY_OPTIMIZED_CPUS = 19
-    COMMITTED_N2A_CPUS = 20
-    COMMITTED_N2D_CPUS = 21
-    COMMITTED_N2_CPUS = 22
-    COMMITTED_NVIDIA_A100_GPUS = 23
-    COMMITTED_NVIDIA_K80_GPUS = 24
-    COMMITTED_NVIDIA_P100_GPUS = 25
-    COMMITTED_NVIDIA_P4_GPUS = 26
-    COMMITTED_NVIDIA_T4_GPUS = 27
-    COMMITTED_NVIDIA_V100_GPUS = 28
-    COMMITTED_T2A_CPUS = 29
-    COMMITTED_T2D_CPUS = 30
-    CPUS = 31
-    CPUS_ALL_REGIONS = 32
-    DISKS_TOTAL_GB = 33
-    E2_CPUS = 34
-    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 35
-    EXTERNAL_PROTOCOL_FORWARDING_RULES = 36
-    EXTERNAL_VPN_GATEWAYS = 37
-    FIREWALLS = 38
-    FORWARDING_RULES = 39
-    GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES = 40
-    GLOBAL_INTERNAL_ADDRESSES = 41
-    GPUS_ALL_REGIONS = 42
-    HEALTH_CHECKS = 43
-    IMAGES = 44
-    INSTANCES = 45
-    INSTANCES_PER_NETWORK_GLOBAL = 46
-    INSTANCE_GROUPS = 47
-    INSTANCE_GROUP_MANAGERS = 48
-    INSTANCE_TEMPLATES = 49
-    INTERCONNECTS = 50
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 51
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 52
-    INTERCONNECT_TOTAL_GBPS = 53
-    INTERNAL_ADDRESSES = 54
-    INTERNAL_FORWARDING_RULES_PER_NETWORK = 55
-    INTERNAL_FORWARDING_RULES_WITH_GLOBAL_ACCESS_PER_NETWORK = 56
-    INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK = 57
-    INTERNAL_TARGET_INSTANCE_WITH_GLOBAL_ACCESS_PER_NETWORK = 58
-    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 59
-    IN_PLACE_SNAPSHOTS = 60
-    IN_USE_ADDRESSES = 61
-    IN_USE_BACKUP_SCHEDULES = 62
-    IN_USE_MAINTENANCE_WINDOWS = 63
-    IN_USE_SNAPSHOT_SCHEDULES = 64
-    LOCAL_SSD_TOTAL_GB = 65
-    M1_CPUS = 66
-    M2_CPUS = 67
-    MACHINE_IMAGES = 68
-    N2A_CPUS = 69
-    N2D_CPUS = 70
-    N2_CPUS = 71
-    NETWORKS = 72
-    NETWORK_ENDPOINT_GROUPS = 73
-    NETWORK_FIREWALL_POLICIES = 74
-    NODE_GROUPS = 75
-    NODE_TEMPLATES = 76
-    NVIDIA_A100_GPUS = 77
-    NVIDIA_K80_GPUS = 78
-    NVIDIA_P100_GPUS = 79
-    NVIDIA_P100_VWS_GPUS = 80
-    NVIDIA_P4_GPUS = 81
-    NVIDIA_P4_VWS_GPUS = 82
-    NVIDIA_T4_GPUS = 83
-    NVIDIA_T4_VWS_GPUS = 84
-    NVIDIA_V100_GPUS = 85
-    PACKET_MIRRORINGS = 86
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 87
-    PREEMPTIBLE_CPUS = 88
-    PREEMPTIBLE_LOCAL_SSD_GB = 89
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 90
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 91
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 92
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 93
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 94
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 95
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 96
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 97
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 98
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 99
-    PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 100
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 101
-    PSC_INTERNAL_LB_FORWARDING_RULES = 102
-    PUBLIC_ADVERTISED_PREFIXES = 103
-    PUBLIC_DELEGATED_PREFIXES = 104
-    REGIONAL_AUTOSCALERS = 105
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 106
-    RESERVATIONS = 107
-    RESOURCE_POLICIES = 108
-    ROUTERS = 109
-    ROUTES = 110
-    SECURITY_POLICIES = 111
-    SECURITY_POLICIES_PER_REGION = 112
-    SECURITY_POLICY_CEVAL_RULES = 113
-    SECURITY_POLICY_RULES = 114
-    SECURITY_POLICY_RULES_PER_REGION = 115
-    SERVICE_ATTACHMENTS = 116
-    SNAPSHOTS = 117
-    SSD_TOTAL_GB = 118
-    SSL_CERTIFICATES = 119
-    STATIC_ADDRESSES = 120
-    STATIC_BYOIP_ADDRESSES = 121
-    SUBNETWORKS = 122
-    SUBNET_RANGES_PER_NETWORK = 123
-    T2A_CPUS = 124
-    T2D_CPUS = 125
-    TARGET_HTTPS_PROXIES = 126
-    TARGET_HTTP_PROXIES = 127
-    TARGET_INSTANCES = 128
-    TARGET_POOLS = 129
-    TARGET_SSL_PROXIES = 130
-    TARGET_TCP_PROXIES = 131
-    TARGET_VPN_GATEWAYS = 132
-    URL_MAPS = 133
-    VPN_GATEWAYS = 134
-    VPN_TUNNELS = 135
-    XPN_SERVICE_PROJECTS = 136
+    COMMITTED_M3_CPUS = 19
+    COMMITTED_MEMORY_OPTIMIZED_CPUS = 20
+    COMMITTED_N2A_CPUS = 21
+    COMMITTED_N2D_CPUS = 22
+    COMMITTED_N2_CPUS = 23
+    COMMITTED_NVIDIA_A100_GPUS = 24
+    COMMITTED_NVIDIA_K80_GPUS = 25
+    COMMITTED_NVIDIA_P100_GPUS = 26
+    COMMITTED_NVIDIA_P4_GPUS = 27
+    COMMITTED_NVIDIA_T4_GPUS = 28
+    COMMITTED_NVIDIA_V100_GPUS = 29
+    COMMITTED_T2A_CPUS = 30
+    COMMITTED_T2D_CPUS = 31
+    CPUS = 32
+    CPUS_ALL_REGIONS = 33
+    DISKS_TOTAL_GB = 34
+    E2_CPUS = 35
+    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 36
+    EXTERNAL_PROTOCOL_FORWARDING_RULES = 37
+    EXTERNAL_VPN_GATEWAYS = 38
+    FIREWALLS = 39
+    FORWARDING_RULES = 40
+    GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES = 41
+    GLOBAL_INTERNAL_ADDRESSES = 42
+    GPUS_ALL_REGIONS = 43
+    HEALTH_CHECKS = 44
+    IMAGES = 45
+    INSTANCES = 46
+    INSTANCES_PER_NETWORK_GLOBAL = 47
+    INSTANCE_GROUPS = 48
+    INSTANCE_GROUP_MANAGERS = 49
+    INSTANCE_TEMPLATES = 50
+    INTERCONNECTS = 51
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 52
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 53
+    INTERCONNECT_TOTAL_GBPS = 54
+    INTERNAL_ADDRESSES = 55
+    INTERNAL_FORWARDING_RULES_PER_NETWORK = 56
+    INTERNAL_FORWARDING_RULES_WITH_GLOBAL_ACCESS_PER_NETWORK = 57
+    INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK = 58
+    INTERNAL_TARGET_INSTANCE_WITH_GLOBAL_ACCESS_PER_NETWORK = 59
+    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 60
+    IN_PLACE_SNAPSHOTS = 61
+    IN_USE_ADDRESSES = 62
+    IN_USE_BACKUP_SCHEDULES = 63
+    IN_USE_MAINTENANCE_WINDOWS = 64
+    IN_USE_SNAPSHOT_SCHEDULES = 65
+    LOCAL_SSD_TOTAL_GB = 66
+    M1_CPUS = 67
+    M2_CPUS = 68
+    M3_CPUS = 69
+    MACHINE_IMAGES = 70
+    N2A_CPUS = 71
+    N2D_CPUS = 72
+    N2_CPUS = 73
+    NETWORKS = 74
+    NETWORK_ENDPOINT_GROUPS = 75
+    NETWORK_FIREWALL_POLICIES = 76
+    NODE_GROUPS = 77
+    NODE_TEMPLATES = 78
+    NVIDIA_A100_GPUS = 79
+    NVIDIA_K80_GPUS = 80
+    NVIDIA_P100_GPUS = 81
+    NVIDIA_P100_VWS_GPUS = 82
+    NVIDIA_P4_GPUS = 83
+    NVIDIA_P4_VWS_GPUS = 84
+    NVIDIA_T4_GPUS = 85
+    NVIDIA_T4_VWS_GPUS = 86
+    NVIDIA_V100_GPUS = 87
+    PACKET_MIRRORINGS = 88
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 89
+    PREEMPTIBLE_CPUS = 90
+    PREEMPTIBLE_LOCAL_SSD_GB = 91
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 92
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 93
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 94
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 95
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 96
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 97
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 98
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 99
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 100
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 101
+    PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 102
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 103
+    PSC_INTERNAL_LB_FORWARDING_RULES = 104
+    PUBLIC_ADVERTISED_PREFIXES = 105
+    PUBLIC_DELEGATED_PREFIXES = 106
+    REGIONAL_AUTOSCALERS = 107
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 108
+    RESERVATIONS = 109
+    RESOURCE_POLICIES = 110
+    ROUTERS = 111
+    ROUTES = 112
+    SECURITY_POLICIES = 113
+    SECURITY_POLICIES_PER_REGION = 114
+    SECURITY_POLICY_CEVAL_RULES = 115
+    SECURITY_POLICY_RULES = 116
+    SECURITY_POLICY_RULES_PER_REGION = 117
+    SERVICE_ATTACHMENTS = 118
+    SNAPSHOTS = 119
+    SSD_TOTAL_GB = 120
+    SSL_CERTIFICATES = 121
+    STATIC_ADDRESSES = 122
+    STATIC_BYOIP_ADDRESSES = 123
+    SUBNETWORKS = 124
+    SUBNET_RANGES_PER_NETWORK = 125
+    T2A_CPUS = 126
+    T2D_CPUS = 127
+    TARGET_HTTPS_PROXIES = 128
+    TARGET_HTTP_PROXIES = 129
+    TARGET_INSTANCES = 130
+    TARGET_POOLS = 131
+    TARGET_SSL_PROXIES = 132
+    TARGET_TCP_PROXIES = 133
+    TARGET_VPN_GATEWAYS = 134
+    URL_MAPS = 135
+    VPN_GATEWAYS = 136
+    VPN_TUNNELS = 137
+    XPN_SERVICE_PROJECTS = 138
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)

@@ -331,7 +331,8 @@ class S3Api(cloud_api.CloudApi):
               'Key': destination_resource.storage_url.object_name,
               'CopySource': source_kwargs}
     kwargs.update(
-        s3_metadata_util.get_metadata_dict_from_request_config(request_config))
+        s3_metadata_util.get_object_metadata_dict_from_request_config(
+            request_config))
 
     response = self.client.copy_object(**kwargs)
     return s3_metadata_util.get_object_resource_from_s3_response(
@@ -553,7 +554,7 @@ class S3Api(cloud_api.CloudApi):
 
     # All fields common to both put_object and upload_fileobj are added
     # to the extra_args dict.
-    extra_args = s3_metadata_util.get_metadata_dict_from_request_config(
+    extra_args = s3_metadata_util.get_object_metadata_dict_from_request_config(
         request_config)
 
     md5_hash = getattr(request_config.resource_args, 'md5_hash', None)

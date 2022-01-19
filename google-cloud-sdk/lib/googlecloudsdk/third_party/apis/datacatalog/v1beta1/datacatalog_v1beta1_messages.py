@@ -1621,8 +1621,8 @@ class GoogleCloudDatacatalogV1beta1SearchCatalogRequestScope(_messages.Message):
       asia-east2 * asia-northeast1 * asia-northeast2 * asia-northeast3 * asia-
       south1 * asia-southeast1 * australia-southeast1 * eu * europe-north1 *
       europe-west1 * europe-west2 * europe-west3 * europe-west4 * europe-west6
-      * europe-west8 * global * northamerica-northeast1 * southamerica-east1 *
-      us * us-central1 * us-east1 * us-east4 * us-west1 * us-west2
+      * global * northamerica-northeast1 * southamerica-east1 * us * us-
+      central1 * us-east1 * us-east4 * us-west1 * us-west2
   """
 
   includeGcpPublicDatasets = _messages.BooleanField(1)

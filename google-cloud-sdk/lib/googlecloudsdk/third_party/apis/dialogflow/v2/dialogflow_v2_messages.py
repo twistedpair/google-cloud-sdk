@@ -1680,6 +1680,22 @@ class DialogflowProjectsConversationsParticipantsSuggestionsSuggestFaqAnswersReq
   parent = _messages.StringField(2, required=True)
 
 
+class DialogflowProjectsConversationsParticipantsSuggestionsSuggestSmartRepliesRequest(_messages.Message):
+  r"""A DialogflowProjectsConversationsParticipantsSuggestionsSuggestSmartRepl
+  iesRequest object.
+
+  Fields:
+    googleCloudDialogflowV2SuggestSmartRepliesRequest: A
+      GoogleCloudDialogflowV2SuggestSmartRepliesRequest resource to be passed
+      as the request body.
+    parent: Required. The name of the participant to fetch suggestion for.
+      Format: `projects//locations//conversations//participants/`.
+  """
+
+  googleCloudDialogflowV2SuggestSmartRepliesRequest = _messages.MessageField('GoogleCloudDialogflowV2SuggestSmartRepliesRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class DialogflowProjectsDeleteAgentRequest(_messages.Message):
   r"""A DialogflowProjectsDeleteAgentRequest object.
 
@@ -3388,6 +3404,22 @@ class DialogflowProjectsLocationsConversationsParticipantsSuggestionsSuggestFaqA
   """
 
   googleCloudDialogflowV2SuggestFaqAnswersRequest = _messages.MessageField('GoogleCloudDialogflowV2SuggestFaqAnswersRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsLocationsConversationsParticipantsSuggestionsSuggestSmartRepliesRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsConversationsParticipantsSuggestionsSuggest
+  SmartRepliesRequest object.
+
+  Fields:
+    googleCloudDialogflowV2SuggestSmartRepliesRequest: A
+      GoogleCloudDialogflowV2SuggestSmartRepliesRequest resource to be passed
+      as the request body.
+    parent: Required. The name of the participant to fetch suggestion for.
+      Format: `projects//locations//conversations//participants/`.
+  """
+
+  googleCloudDialogflowV2SuggestSmartRepliesRequest = _messages.MessageField('GoogleCloudDialogflowV2SuggestSmartRepliesRequest', 1)
   parent = _messages.StringField(2, required=True)
 
 
@@ -9437,6 +9469,17 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfigConversationModelConfig(_m
   model = _messages.StringField(1)
 
 
+class GoogleCloudDialogflowV2HumanAgentAssistantConfigConversationProcessConfig(_messages.Message):
+  r"""Config to process conversation.
+
+  Fields:
+    recentSentencesCount: Number of recent non-small-talk sentences to use as
+      context for article and FAQ suggestion
+  """
+
+  recentSentencesCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class GoogleCloudDialogflowV2HumanAgentAssistantConfigMessageAnalysisConfig(_messages.Message):
   r"""Configuration for analyses to run on each conversation message.
 
@@ -9495,6 +9538,7 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionFeatureConfig(_m
 
   Fields:
     conversationModelConfig: Configs of custom conversation model.
+    conversationProcessConfig: Configs for processing conversation.
     enableEventBasedSuggestion: Automatically iterates all participants and
       tries to compile suggestions. Supported features: ARTICLE_SUGGESTION,
       FAQ, DIALOGFLOW_ASSIST.
@@ -9505,10 +9549,11 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionFeatureConfig(_m
   """
 
   conversationModelConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigConversationModelConfig', 1)
-  enableEventBasedSuggestion = _messages.BooleanField(2)
-  queryConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionQueryConfig', 3)
-  suggestionFeature = _messages.MessageField('GoogleCloudDialogflowV2SuggestionFeature', 4)
-  suggestionTriggerSettings = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionTriggerSettings', 5)
+  conversationProcessConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigConversationProcessConfig', 2)
+  enableEventBasedSuggestion = _messages.BooleanField(3)
+  queryConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionQueryConfig', 4)
+  suggestionFeature = _messages.MessageField('GoogleCloudDialogflowV2SuggestionFeature', 5)
+  suggestionTriggerSettings = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionTriggerSettings', 6)
 
 
 class GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionQueryConfig(_messages.Message):
@@ -10928,15 +10973,19 @@ class GoogleCloudDialogflowV2Message(_messages.Message):
 
   Fields:
     content: Required. The message content.
-    createTime: Output only. The time when the message was created.
+    createTime: Output only. The time when the message was created in Contact
+      Center AI.
     languageCode: Optional. The message language. This should be a
       [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag.
       Example: "en-US".
     messageAnnotation: Output only. The annotation for the message.
-    name: The unique identifier of the message. Format:
+    name: Optional. The unique identifier of the message. Format:
       `projects//locations//conversations//messages/`.
     participant: Output only. The participant that sends this message.
     participantRole: Output only. The role of the participant.
+    sendTime: Optional. The time when the message was sent.
+    sentimentAnalysis: Output only. The sentiment analysis result for the
+      message.
   """
 
   class ParticipantRoleValueValuesEnum(_messages.Enum):
@@ -10962,6 +11011,8 @@ class GoogleCloudDialogflowV2Message(_messages.Message):
   name = _messages.StringField(5)
   participant = _messages.StringField(6)
   participantRole = _messages.EnumField('ParticipantRoleValueValuesEnum', 7)
+  sendTime = _messages.StringField(8)
+  sentimentAnalysis = _messages.MessageField('GoogleCloudDialogflowV2SentimentAnalysisResult', 9)
 
 
 class GoogleCloudDialogflowV2MessageAnnotation(_messages.Message):
@@ -11712,6 +11763,23 @@ class GoogleCloudDialogflowV2SessionEntityType(_messages.Message):
   name = _messages.StringField(3)
 
 
+class GoogleCloudDialogflowV2SmartReplyAnswer(_messages.Message):
+  r"""Represents a smart reply answer.
+
+  Fields:
+    answerRecord: The name of answer record, in the format of
+      "projects//locations//answerRecords/"
+    confidence: Smart reply confidence. The system's confidence score that
+      this reply is a good match for this conversation, as a value from 0.0
+      (completely uncertain) to 1.0 (completely certain).
+    reply: The content of the reply.
+  """
+
+  answerRecord = _messages.StringField(1)
+  confidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  reply = _messages.StringField(3)
+
+
 class GoogleCloudDialogflowV2SpeechContext(_messages.Message):
   r"""Hints for the speech recognizer to help with recognition in a specific
   conversation state.
@@ -11799,11 +11867,11 @@ class GoogleCloudDialogflowV2SuggestArticlesRequest(_messages.Message):
 
   Fields:
     assistQueryParams: Parameters for a human assist query.
-    contextSize: Max number of messages prior to and including latest_message
-      to use as context when compiling the suggestion. By default 20 and at
-      most 50.
-    latestMessage: The name of the latest conversation message to compile
-      suggestion for. If empty, it will be the latest message of the
+    contextSize: Optional. Max number of messages prior to and including
+      latest_message to use as context when compiling the suggestion. By
+      default 20 and at most 50.
+    latestMessage: Optional. The name of the latest conversation message to
+      compile suggestion for. If empty, it will be the latest message of the
       conversation. Format: `projects//locations//conversations//messages/`.
   """
 
@@ -11835,11 +11903,11 @@ class GoogleCloudDialogflowV2SuggestFaqAnswersRequest(_messages.Message):
 
   Fields:
     assistQueryParams: Parameters for a human assist query.
-    contextSize: Max number of messages prior to and including
+    contextSize: Optional. Max number of messages prior to and including
       [latest_message] to use as context when compiling the suggestion. By
       default 20 and at most 50.
-    latestMessage: The name of the latest conversation message to compile
-      suggestion for. If empty, it will be the latest message of the
+    latestMessage: Optional. The name of the latest conversation message to
+      compile suggestion for. If empty, it will be the latest message of the
       conversation. Format: `projects//locations//conversations//messages/`.
   """
 
@@ -11864,6 +11932,47 @@ class GoogleCloudDialogflowV2SuggestFaqAnswersResponse(_messages.Message):
   contextSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   faqAnswers = _messages.MessageField('GoogleCloudDialogflowV2FaqAnswer', 2, repeated=True)
   latestMessage = _messages.StringField(3)
+
+
+class GoogleCloudDialogflowV2SuggestSmartRepliesRequest(_messages.Message):
+  r"""The request message for Participants.SuggestSmartReplies.
+
+  Fields:
+    contextSize: Max number of messages prior to and including
+      [latest_message] to use as context when compiling the suggestion. By
+      default 20 and at most 50.
+    currentTextInput: The current natural language text segment to compile
+      suggestion for. This provides a way for user to get follow up smart
+      reply suggestion after a smart reply selection, without sending a text
+      message.
+    latestMessage: The name of the latest conversation message to compile
+      suggestion for. If empty, it will be the latest message of the
+      conversation. Format: `projects//locations//conversations//messages/`.
+  """
+
+  contextSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  currentTextInput = _messages.MessageField('GoogleCloudDialogflowV2TextInput', 2)
+  latestMessage = _messages.StringField(3)
+
+
+class GoogleCloudDialogflowV2SuggestSmartRepliesResponse(_messages.Message):
+  r"""The response message for Participants.SuggestSmartReplies.
+
+  Fields:
+    contextSize: Number of messages prior to and including latest_message to
+      compile the suggestion. It may be smaller than the
+      SuggestSmartRepliesRequest.context_size field in the request if there
+      aren't that many messages in the conversation.
+    latestMessage: The name of the latest conversation message used to compile
+      suggestion for. Format: `projects//locations//conversations//messages/`.
+    smartReplyAnswers: Output only. Multiple reply options provided by smart
+      reply service. The order is based on the rank of the model prediction.
+      The maximum number of the returned replies is set in SmartReplyConfig.
+  """
+
+  contextSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  latestMessage = _messages.StringField(2)
+  smartReplyAnswers = _messages.MessageField('GoogleCloudDialogflowV2SmartReplyAnswer', 3, repeated=True)
 
 
 class GoogleCloudDialogflowV2SuggestionFeature(_messages.Message):
@@ -11906,11 +12015,14 @@ class GoogleCloudDialogflowV2SuggestionResult(_messages.Message):
       ARTICLE_SUGGESTION.
     suggestFaqAnswersResponse: SuggestFaqAnswersResponse if request is for
       FAQ_ANSWER.
+    suggestSmartRepliesResponse: SuggestSmartRepliesResponse if request is for
+      SMART_REPLY.
   """
 
   error = _messages.MessageField('GoogleRpcStatus', 1)
   suggestArticlesResponse = _messages.MessageField('GoogleCloudDialogflowV2SuggestArticlesResponse', 2)
   suggestFaqAnswersResponse = _messages.MessageField('GoogleCloudDialogflowV2SuggestFaqAnswersResponse', 3)
+  suggestSmartRepliesResponse = _messages.MessageField('GoogleCloudDialogflowV2SuggestSmartRepliesResponse', 4)
 
 
 class GoogleCloudDialogflowV2SynthesizeSpeechConfig(_messages.Message):

@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
@@ -139,7 +140,12 @@ def _GetCertificateMapEntryResourcePresentationSpec(flag,
       })
 
 
-def AddCertificateMapResourceArg(parser, verb, noun=None, positional=True):
+def AddCertificateMapResourceArg(parser,
+                                 verb,
+                                 name='map',
+                                 noun=None,
+                                 positional=True,
+                                 required=True):
   """Add a resource argument for a Certificate Manager certificate map.
 
   NOTE: Must be used only if it's the only resource arg in the command.
@@ -147,19 +153,33 @@ def AddCertificateMapResourceArg(parser, verb, noun=None, positional=True):
   Args:
     parser: the parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
+    name: str, the name of the main arg for the resource.
     noun: str, the resource; default: 'The certificate map'.
-    positional: bool, if True, means that the map ID is a positional
-      arg rather than a flag.
+    positional: bool, if True, means that the map ID is a positional arg rather
+      than a flag.
+    required: bool, if False, means that map ID is optional.
   """
   noun = noun or 'The certificate map'
   concept_parsers.ConceptParser.ForResource(
-      'map' if positional else '--map',
+      name if positional else '--' + name,
       GetCertificateMapResourceSpec(),
       '{} {}.'.format(noun, verb),
-      required=True,
+      required=required,
       flag_name_overrides={
           'location': ''  # location is always global so don't create a flag.
       }).AddToParser(parser)
+
+
+def GetClearCertificateMapArgumentForOtherResource(resource_type,
+                                                   required=False):
+  """Returns the flag for clearing a Certificate Manager certificate map."""
+  return base.Argument(
+      '--clear-certificate-map',
+      action='store_true',
+      default=False,
+      required=required,
+      help='Removes any attached certificate map from the {}.'.format(
+          resource_type))
 
 
 def AddCertificateMapEntryResourceArg(parser, verb, noun=None, positional=True):

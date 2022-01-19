@@ -236,7 +236,8 @@ be either the project ID or the project number.
               'pubsub': str,
               'pubsub-topic': str,
               'filter': str,
-          }, required_keys=['pubsub']),
+          },
+          required_keys=['pubsub']),
       metavar='pubsub=ENABLED|DISABLED,pubsub-topic=TOPIC',
       help=help_text,
       hidden=hidden)
@@ -1477,6 +1478,82 @@ info."""
       hidden=suppressed)
 
 
+def AddNetworkTagsFlag(parser, help_text):
+  """Adds a --network-tags to the given parser."""
+  parser.add_argument(
+      '--network-tags',
+      metavar='NAPNETWORKTAGS',
+      hidden=True,
+      type=arg_parsers.ArgList(min_length=1),
+      help=help_text)
+
+
+def AddNetworkTagsCreate(parser):
+  AddNetworkTagsFlag(
+      parser, """\
+Applies the given Compute Engine tags (comma separated) on all nodes in the auto-provisioned node pools of the new AutoPilot cluster.
+
+Examples:
+
+  $ {command} example-cluster --network-tags=tag1,tag2
+
+New nodes in auto-provisoned node pools, including ones created by resize or recreate, will have these tags
+on the Compute Engine API instance object and can be used in firewall rules.
+See https://cloud.google.com/sdk/gcloud/reference/compute/firewall-rules/create
+for examples.
+""")
+
+
+def AddNAPNetworkTagsFlag(parser, help_text):
+  """Adds a --nap-network-tags to the given parser."""
+  parser.add_argument(
+      '--nap-network-tags',
+      metavar='NAPNETWORKTAGS',
+      hidden=True,
+      type=arg_parsers.ArgList(min_length=1),
+      help=help_text)
+
+
+def AddNAPNetworkTagsCreate(parser):
+  AddNAPNetworkTagsFlag(
+      parser, """\
+Applies the given Compute Engine tags (comma separated) on all nodes in the auto-provisioned node pools of the new standard cluster.
+
+Examples:
+
+  $ {command} example-cluster --nap-network-tags=tag1,tag2
+
+New nodes in auto-provisoned node pools, including ones created by resize or recreate, will have these tags
+on the Compute Engine API instance object and can be used in firewall rules.
+See https://cloud.google.com/sdk/gcloud/reference/compute/firewall-rules/create
+for examples.
+""")
+
+
+def AddNAPNetworkTagsUpdate(parser):
+  """Adds a --nap-network-tags flag to the given parser."""
+  help_text = """\
+Replaces all the user specified Compute Engine tags on all nodes in an existing
+auto-provisioned node pool with the given tags (comma separated).
+
+Examples:
+
+  $ {command} example-cluster --nap-network-tags=tag1,tag2
+
+New nodes in auto-provisoned node pools, including ones created by resize or recreate, will have these tags
+on the Compute Engine API instance object and these tags can be used in
+firewall rules.
+See https://cloud.google.com/sdk/gcloud/reference/compute/firewall-rules/create
+for examples.
+"""
+  parser.add_argument(
+      '--nap-network-tags',
+      metavar='NAPNETWORKTAGS',
+      hidden=True,
+      type=arg_parsers.ArgList(),
+      help=help_text)
+
+
 def AddTagsFlag(parser, help_text):
   """Adds a --tags to the given parser."""
   parser.add_argument(
@@ -1588,6 +1665,32 @@ def AddNetworkPolicyFlags(parser, hidden=False):
       'enabling network policy on an existing cluster the network policy '
       'addon must first be enabled on the master by using '
       '--update-addons=NetworkPolicy=ENABLED flag.')
+
+
+def AddNetworkPerformanceConfigFlags(parser, hidden=True):
+  """Adds config flags for advanced networking bandwidth tiers."""
+
+  network_perf_config_help = """\
+      Configures network performance settings for the node pool.
+      If this flag is not specified, the pool will be created
+      with its default network performance configuration.
+
+      *total-egress-bandwidth-tier*::: Total egress bandwidth is the available
+      outbound bandwidth from a VM, regardless of whether the traffic
+      is going to internal IP or external IP destinations.
+      The following tier values are allowed: [{tier_values}]
+
+      """.format(tier_values=','.join(['DEFAULT', 'TIER_1']))
+
+  spec = {'total-egress-bandwidth-tier': str}
+
+  parser.add_argument(
+      '--network-performance-configs',
+      type=arg_parsers.ArgDict(spec=spec),
+      action='append',
+      metavar='PROPERTY=VALUE',
+      hidden=hidden,
+      help=network_perf_config_help)
 
 
 def AddILBSubsettingFlags(parser, hidden=False):

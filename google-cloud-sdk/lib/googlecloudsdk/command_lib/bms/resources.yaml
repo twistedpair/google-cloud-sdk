@@ -107,3 +107,13 @@ snapshot:
     attribute_name: snapshot
     help: Bare Metal Solution volume snapshot.
   disable_auto_completers: false
+
+operation:
+  name: operation
+  collection: baremetalsolution.operations
+  api_version: v1
+  attributes:
+  - &operation
+    parameter_name: operationsId
+    attribute_name: operation
+    help: Bare Metal Solution operation.

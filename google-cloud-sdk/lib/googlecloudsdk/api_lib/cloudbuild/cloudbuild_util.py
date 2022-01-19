@@ -33,7 +33,6 @@ import six
 _API_NAME = 'cloudbuild'
 _GA_API_VERSION = 'v1'
 _BETA_API_VERSION = 'v1beta1'
-CBH_SUPPORTED_REGIONS = frozenset({'us-west4'})
 
 RELEASE_TRACK_TO_API_VERSION = {
     base.ReleaseTrack.GA: _GA_API_VERSION,

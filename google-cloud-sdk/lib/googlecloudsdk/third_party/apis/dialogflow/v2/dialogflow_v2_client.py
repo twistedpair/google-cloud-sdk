@@ -2504,6 +2504,33 @@ class DialogflowV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SuggestSmartReplies(self, request, global_params=None):
+      r"""Gets smart replies for a participant based on specific historical messages.
+
+      Args:
+        request: (DialogflowProjectsConversationsParticipantsSuggestionsSuggestSmartRepliesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2SuggestSmartRepliesResponse) The response message.
+      """
+      config = self.GetMethodConfig('SuggestSmartReplies')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SuggestSmartReplies.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversations/{conversationsId}/participants/{participantsId}/suggestions:suggestSmartReplies',
+        http_method='POST',
+        method_id='dialogflow.projects.conversations.participants.suggestions.suggestSmartReplies',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/suggestions:suggestSmartReplies',
+        request_field='googleCloudDialogflowV2SuggestSmartRepliesRequest',
+        request_type_name='DialogflowProjectsConversationsParticipantsSuggestionsSuggestSmartRepliesRequest',
+        response_type_name='GoogleCloudDialogflowV2SuggestSmartRepliesResponse',
+        supports_download=False,
+    )
+
   class ProjectsConversationsParticipantsService(base_api.BaseApiService):
     """Service class for the projects_conversations_participants resource."""
 
@@ -5205,6 +5232,33 @@ class DialogflowV2(base_api.BaseApiClient):
         request_field='googleCloudDialogflowV2SuggestFaqAnswersRequest',
         request_type_name='DialogflowProjectsLocationsConversationsParticipantsSuggestionsSuggestFaqAnswersRequest',
         response_type_name='GoogleCloudDialogflowV2SuggestFaqAnswersResponse',
+        supports_download=False,
+    )
+
+    def SuggestSmartReplies(self, request, global_params=None):
+      r"""Gets smart replies for a participant based on specific historical messages.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationsParticipantsSuggestionsSuggestSmartRepliesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2SuggestSmartRepliesResponse) The response message.
+      """
+      config = self.GetMethodConfig('SuggestSmartReplies')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SuggestSmartReplies.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversations/{conversationsId}/participants/{participantsId}/suggestions:suggestSmartReplies',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.conversations.participants.suggestions.suggestSmartReplies',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/suggestions:suggestSmartReplies',
+        request_field='googleCloudDialogflowV2SuggestSmartRepliesRequest',
+        request_type_name='DialogflowProjectsLocationsConversationsParticipantsSuggestionsSuggestSmartRepliesRequest',
+        response_type_name='GoogleCloudDialogflowV2SuggestSmartRepliesResponse',
         supports_download=False,
     )
 

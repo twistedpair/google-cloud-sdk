@@ -111,7 +111,8 @@ def CreateDiskMessages(args,
             project=project,
             location=location,
             scope=scope,
-            container_mount_disk=container_mount_disk))
+            container_mount_disk=container_mount_disk,
+            use_disk_type_uri=use_disk_type_uri))
 
   persistent_create_disks = (
       CreatePersistentCreateDiskMessages(
@@ -182,7 +183,8 @@ def CreatePersistentAttachedDiskMessages(resources,
                                          project,
                                          location,
                                          scope,
-                                         container_mount_disk=None):
+                                         container_mount_disk=None,
+                                         use_disk_type_uri=True):
   """Returns a list of AttachedDisk messages and the boot disk's reference."""
   disks_messages = []
 
@@ -218,13 +220,16 @@ def CreatePersistentAttachedDiskMessages(resources,
 
     device_name = instance_utils.GetDiskDeviceName(disk, name,
                                                    container_mount_disk)
+    source = disk_ref.SelfLink()
+    if scope == compute_scopes.ScopeEnum.ZONE and not use_disk_type_uri:
+      source = name
 
     attached_disk = messages.AttachedDisk(
         autoDelete=auto_delete,
         boot=boot,
         deviceName=device_name,
         mode=mode,
-        source=disk_ref.SelfLink(),
+        source=source,
         type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT,
         **kwargs)
 

@@ -211,6 +211,8 @@ _APT_CODENAMES = {
     '18.04': 'bionic',
     '19.10': 'eoan',
     '20.04': 'focal',
+    '21.04': 'hirsute',
+    '21.10': 'impish',
 }
 
 _SUSE_OS = ('sles-sap', 'sles')

@@ -74,6 +74,17 @@ def GetContentResourceSpec():
       contentId=ContentAttributeConfig())
 
 
+def GetTaskResourceSpec():
+  """Gets Tasks resource spec."""
+  return concepts.ResourceSpec(
+      'dataplex.projects.locations.lakes.tasks',
+      resource_name='tasks',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      lakesId=LakeAttributeConfig(),
+      tasksId=TaskAttributeConfig())
+
+
 def GetEnvironmentResourceSpec():
   """Gets Environment resource spec."""
   return concepts.ResourceSpec(
@@ -87,22 +98,22 @@ def GetEnvironmentResourceSpec():
 
 def LocationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='location', help_text='Location to which the {resource} belongs.')
+      name='location', help_text='The location of the Dataplex resource.')
 
 
 def LakeAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='lake', help_text='The name of the {resource} to use.')
+      name='lake', help_text='The identifier of the Dataplex lake resource.')
 
 
 def ZoneAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='zone', help_text='The name of the {resource} to use.')
+      name='zone', help_text='The identifier of the Dataplex zone resource.')
 
 
 def AssetAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='asset', help_text='The name of the {resource} to use.')
+      name='asset', help_text='The identifier of the Dataplex asset resource.')
 
 
 def ContentAttributeConfig():
@@ -125,11 +136,19 @@ def AddProjectArg(parser, verb, positional=True):
       required=True).AddToParser(parser)
 
 
+def TaskAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='task', help_text='The name of {resource} to use.')
+
+
 def AddLakeResourceArg(parser, verb, positional=True):
   """Adds a resource argument for a Dataplex Lake."""
   name = 'lake' if positional else '--lake'
   return concept_parsers.ConceptParser.ForResource(
-      name, GetLakeResourceSpec(), 'The Lake {}'.format(verb),
+      name,
+      GetLakeResourceSpec(),
+      'Arguments and flags that define the Dataplex lake you want {}'.format(
+          verb),
       required=True).AddToParser(parser)
 
 
@@ -137,7 +156,10 @@ def AddZoneResourceArg(parser, verb, positional=True):
   """Adds a resource argument for a Dataplex Zone."""
   name = 'zone' if positional else '--zone'
   return concept_parsers.ConceptParser.ForResource(
-      name, GetZoneResourceSpec(), 'The Zone {}'.format(verb),
+      name,
+      GetZoneResourceSpec(),
+      'Arguments and flags that define the Dataplex zone you want {}'.format(
+          verb),
       required=True).AddToParser(parser)
 
 
@@ -145,7 +167,10 @@ def AddAssetResourceArg(parser, verb, positional=True):
   """Adds a resource argument for a Dataplex Asset."""
   name = 'asset' if positional else '--asset'
   return concept_parsers.ConceptParser.ForResource(
-      name, GetAssetResourceSpec(), 'The Asset {}'.format(verb),
+      name,
+      GetAssetResourceSpec(),
+      'Arguments and flags that define the Dataplex asset you want {}'.format(
+          verb),
       required=True).AddToParser(parser)
 
 
@@ -156,6 +181,16 @@ def AddContentResourceArg(parser, verb, positional=True):
       name,
       GetContentResourceSpec(),
       'The Content {}'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def AddTaskResourceArg(parser, verb, positional=True):
+  """Adds a resource argument for a Dataplex Task."""
+  name = 'task' if positional else '--task'
+  return concept_parsers.ConceptParser.ForResource(
+      name,
+      GetTaskResourceSpec(),
+      'The Task {}'.format(verb),
       required=True).AddToParser(parser)
 
 

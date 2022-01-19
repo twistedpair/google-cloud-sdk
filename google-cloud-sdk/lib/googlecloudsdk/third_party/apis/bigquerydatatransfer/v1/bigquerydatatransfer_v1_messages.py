@@ -804,8 +804,7 @@ class CheckValidCredsResponse(_messages.Message):
 
 
 class DataSource(_messages.Message):
-  r"""Represents data source metadata. Metadata is sufficient to render UI and
-  request proper OAuth tokens.
+  r"""Defines the properties and custom parameters for a data source.
 
   Enums:
     AuthorizationTypeValueValuesEnum: Indicates the type of authorization.
@@ -922,11 +921,7 @@ class DataSource(_messages.Message):
 
 
 class DataSourceParameter(_messages.Message):
-  r"""Represents a data source parameter with validation rules, so that
-  parameters can be rendered in the UI. These parameters are given to us by
-  supported data sources, and include all needed information for rendering and
-  validation. Thus, whoever uses this api can decide to generate either
-  generic ui, or custom data source specific forms.
+  r"""A parameter used to define custom fields in a data source definition.
 
   Enums:
     TypeValueValuesEnum: Parameter type.

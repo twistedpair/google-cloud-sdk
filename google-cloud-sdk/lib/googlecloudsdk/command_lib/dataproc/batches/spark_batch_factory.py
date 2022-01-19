@@ -70,9 +70,6 @@ class SparkBatchFactory(object):
       # Upload requires a list.
       dependencies['mainJarFileUri'] = [args.main_jar]
 
-    if args.jar_files:
-      dependencies['jarFileUris'] = args.jar_files
-
     if args.jars:
       dependencies['jarFileUris'] = args.jars
 
@@ -83,10 +80,9 @@ class SparkBatchFactory(object):
       dependencies['archiveUris'] = args.archives
 
     if local_file_uploader.HasLocalFiles(dependencies):
-      bucket = args.deps_bucket if args.deps_bucket is not None else args.bucket
-      if not bucket:
+      if not args.deps_bucket:
         raise AttributeError('--deps-bucket was not specified.')
-      dependencies = local_file_uploader.Upload(args.bucket, dependencies)
+      dependencies = local_file_uploader.Upload(args.deps_bucket, dependencies)
 
     # Move mainJarFileUri out of the list.
     if 'mainJarFileUri' in dependencies:

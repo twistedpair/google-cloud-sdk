@@ -110,6 +110,125 @@
     }
   },
   "schemas": {
+    "GoogleCloudDataplexV1Content": {
+      "id": "GoogleCloudDataplexV1Content",
+      "description": "Content represents a user-visible notebook or a sql script",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The relative resource name of the content, of the form: projects\/{project_id}\/locations\/{location_id}\/lakes\/{lake_id}\/content\/{content_id}",
+          "readOnly": true,
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. System generated globally unique ID for the content. This ID will be different if the content is deleted and re-created with the same name.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "path": {
+          "description": "Required. The path for the Content file, represented as directory structure. Unique within a lake. Limited to alphanumerics, hyphens, underscores, dots and slashes.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Content creation time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time when the content was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Optional. User defined labels for the content.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "Optional. Description of the content.",
+          "type": "string"
+        },
+        "dataText": {
+          "description": "Required. Content data in string format.",
+          "type": "string"
+        },
+        "sqlScript": {
+          "description": "Sql Script related configurations.",
+          "$ref": "GoogleCloudDataplexV1ContentSqlScript"
+        },
+        "notebook": {
+          "description": "Notebook related configurations.",
+          "$ref": "GoogleCloudDataplexV1ContentNotebook"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1ContentSqlScript": {
+      "id": "GoogleCloudDataplexV1ContentSqlScript",
+      "description": "Configuration for the Sql Script content.",
+      "type": "object",
+      "properties": {
+        "engine": {
+          "description": "Required. Query Engine to be used for the Sql Query.",
+          "type": "string",
+          "enumDescriptions": [
+            "Value was unspecified.",
+            "Spark SQL Query."
+          ],
+          "enum": [
+            "QUERY_ENGINE_UNSPECIFIED",
+            "SPARK"
+          ]
+        }
+      }
+    },
+    "GoogleCloudDataplexV1ContentNotebook": {
+      "id": "GoogleCloudDataplexV1ContentNotebook",
+      "description": "Configuration for Notebook content.",
+      "type": "object",
+      "properties": {
+        "kernelType": {
+          "description": "Required. Kernel Type of the notebook.",
+          "type": "string",
+          "enumDescriptions": [
+            "Kernel Type unspecified.",
+            "Python 3 Kernel."
+          ],
+          "enum": [
+            "KERNEL_TYPE_UNSPECIFIED",
+            "PYTHON3"
+          ]
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for Empty is empty JSON object {}.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudDataplexV1ListContentResponse": {
+      "id": "GoogleCloudDataplexV1ListContentResponse",
+      "description": "List content response.",
+      "type": "object",
+      "properties": {
+        "content": {
+          "description": "Content under the given parent lake.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDataplexV1Content"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudDataplexV1Entity": {
       "id": "GoogleCloudDataplexV1Entity",
       "description": "Represents tables and fileset metadata contained within a zone.",
@@ -650,13 +769,6 @@
         }
       }
     },
-    "Empty": {
-      "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for Empty is empty JSON object {}.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "GoogleLongrunningCancelOperationRequest": {
       "id": "GoogleLongrunningCancelOperationRequest",
       "description": "The request message for Operations.CancelOperation.",
@@ -992,6 +1104,20 @@
           "items": {
             "type": "string"
           }
+        },
+        "schemaChange": {
+          "description": "Whether the action relates to a schema that is incompatible or modified.",
+          "type": "string",
+          "enumDescriptions": [
+            "Schema change unspecified.",
+            "Newly discovered schema is incompatible with existing schema.",
+            "Newly discovered schema has changed from existing schema for data in a curated zone."
+          ],
+          "enum": [
+            "SCHEMA_CHANGE_UNSPECIFIED",
+            "INCOMPATIBLE",
+            "MODIFIED"
+          ]
         }
       }
     },
@@ -1732,13 +1858,6 @@
           "description": "Required. Service account to use to execute a task. If not provided, the default Compute service account for the project is used.",
           "type": "string"
         },
-        "serviceAccountScopes": {
-          "description": "Optional. The set of auth scopes and permissions granted to the service account. By default, the CLOUD_PLATFORM auth scope is enabled.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
         "maxJobExecutionLifetime": {
           "description": "Optional. The maximum duration after which the job execution is expired.",
           "type": "string",
@@ -2205,118 +2324,6 @@
           "type": "array",
           "items": {
             "$ref": "GoogleCloudDataplexV1Environment"
-          }
-        },
-        "nextPageToken": {
-          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudDataplexV1Content": {
-      "id": "GoogleCloudDataplexV1Content",
-      "description": "Content represents a user-visible notebook or a sql script",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Output only. The relative resource name of the content, of the form: projects\/{project_id}\/locations\/{location_id}\/lakes\/{lake_id}\/content\/{content_id}",
-          "readOnly": true,
-          "type": "string"
-        },
-        "uid": {
-          "description": "Output only. System generated globally unique ID for the content. This ID will be different if the content is deleted and re-created with the same name.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "path": {
-          "description": "Required. The path for the Content file, represented as directory structure. Unique within a lake. Limited to alphanumerics, hyphens, underscores, dots and slashes.",
-          "type": "string"
-        },
-        "createTime": {
-          "description": "Output only. Content creation time.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. The time when the content was last updated.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "labels": {
-          "description": "Optional. User defined labels for the content.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "description": {
-          "description": "Optional. Description of the content.",
-          "type": "string"
-        },
-        "dataText": {
-          "description": "Required. Content data in string format.",
-          "type": "string"
-        },
-        "sqlScript": {
-          "description": "Sql Script related configurations.",
-          "$ref": "GoogleCloudDataplexV1ContentSqlScript"
-        },
-        "notebook": {
-          "description": "Notebook related configurations.",
-          "$ref": "GoogleCloudDataplexV1ContentNotebook"
-        }
-      }
-    },
-    "GoogleCloudDataplexV1ContentSqlScript": {
-      "id": "GoogleCloudDataplexV1ContentSqlScript",
-      "description": "Configuration for the Sql Script content.",
-      "type": "object",
-      "properties": {
-        "engine": {
-          "description": "Required. Query Engine to be used for the Sql Query.",
-          "type": "string",
-          "enumDescriptions": [
-            "Value was unspecified.",
-            "Spark SQL Query."
-          ],
-          "enum": [
-            "QUERY_ENGINE_UNSPECIFIED",
-            "SPARK"
-          ]
-        }
-      }
-    },
-    "GoogleCloudDataplexV1ContentNotebook": {
-      "id": "GoogleCloudDataplexV1ContentNotebook",
-      "description": "Configuration for Notebook content.",
-      "type": "object",
-      "properties": {
-        "kernelType": {
-          "description": "Required. Kernel Type of the notebook.",
-          "type": "string",
-          "enumDescriptions": [
-            "Kernel Type unspecified.",
-            "Python 3 Kernel."
-          ],
-          "enum": [
-            "KERNEL_TYPE_UNSPECIFIED",
-            "PYTHON3"
-          ]
-        }
-      }
-    },
-    "GoogleCloudDataplexV1ListContentResponse": {
-      "id": "GoogleCloudDataplexV1ListContentResponse",
-      "description": "List content response.",
-      "type": "object",
-      "properties": {
-        "content": {
-          "description": "Content under the given parent lake.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudDataplexV1Content"
           }
         },
         "nextPageToken": {
@@ -3189,6 +3196,188 @@
               }
               ,
               "resources": {
+                "contentitems": {
+                  "methods": {
+                    "create": {
+                      "id": "dataplex.projects.locations.lakes.contentitems.create",
+                      "path": "v1/{+parent}/contentitems",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/contentitems",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the parent lake: projects\/{project_id}\/locations\/{location_id}\/lakes\/{lake_id}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "validateOnly": {
+                          "description": "Optional. Only validate the request, but do not perform mutations. The default is false.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudDataplexV1Content"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudDataplexV1Content"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Create a content."
+                    },
+                    "patch": {
+                      "id": "dataplex.projects.locations.lakes.contentitems.patch",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/contentitems/{contentitemsId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Output only. The relative resource name of the content, of the form: projects\/{project_id}\/locations\/{location_id}\/lakes\/{lake_id}\/content\/{content_id}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/contentitems\/.*$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Required. Mask of fields to update.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        },
+                        "validateOnly": {
+                          "description": "Optional. Only validate the request, but do not perform mutations. The default is false.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudDataplexV1Content"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudDataplexV1Content"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Update a content. Only supports full resource update."
+                    },
+                    "delete": {
+                      "id": "dataplex.projects.locations.lakes.contentitems.delete",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/contentitems/{contentitemsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the content: projects\/{project_id}\/locations\/{location_id}\/lakes\/{lake_id}\/content\/{content_id}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/contentitems\/.*$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Empty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Delete a content."
+                    },
+                    "get": {
+                      "id": "dataplex.projects.locations.lakes.contentitems.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/contentitems/{contentitemsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the content: projects\/{project_id}\/locations\/{location_id}\/lakes\/{lake_id}\/content\/{content_id}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/contentitems\/.*$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "view": {
+                          "description": "Optional. Specify content view to make a partial request.",
+                          "location": "query",
+                          "type": "string",
+                          "enumDescriptions": [
+                            "Content view not specified. Defaults to BASIC. The API will default to the BASIC view.",
+                            "Will not return the data_text field.",
+                            "Returns the complete proto."
+                          ],
+                          "enum": [
+                            "CONTENT_VIEW_UNSPECIFIED",
+                            "BASIC",
+                            "FULL"
+                          ]
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudDataplexV1Content"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Get a content resource."
+                    },
+                    "list": {
+                      "id": "dataplex.projects.locations.lakes.contentitems.list",
+                      "path": "v1/{+parent}/contentitems",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/contentitems",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the parent lake: projects\/{project_id}\/locations\/{location_id}\/lakes\/{lake_id}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. Maximum number of content to return. The service may return fewer than this value. If unspecified, at most 10 content will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "Optional. Page token received from a previous ListContent call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to ListContent must match the call that provided the page token.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "Optional. Filter request. Filters are case-sensitive. The following formats are supported:labels.key1 = \"value1\" labels:key1 type = \"NOTEBOOK\" type = \"SQL_SCRIPT\"These restrictions can be coinjoined with AND, OR and NOT conjunctions.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudDataplexV1ListContentResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "List content."
+                    }
+                  }
+                },
                 "actions": {
                   "methods": {
                     "list": {
@@ -4809,7 +4998,7 @@
                           "type": "string"
                         },
                         "filter": {
-                          "description": "Optional. Filter request. Filters are case-sensitive. The following formats are supported:path = \"\/user\/directory\/notebook1.ipynb\" path = starts_with(\"\/my\/notebook\/directory\/file.ipynb\") labels.key1 = \"value1\" labels:key1 is_notebook is_sql_script = trueThese restrictions can be coinjoined with AND, OR and NOT conjunctions.",
+                          "description": "Optional. Filter request. Filters are case-sensitive. The following formats are supported:labels.key1 = \"value1\" labels:key1 type = \"NOTEBOOK\" type = \"SQL_SCRIPT\"These restrictions can be coinjoined with AND, OR and NOT conjunctions.",
                           "location": "query",
                           "type": "string"
                         }
@@ -4843,7 +5032,7 @@
                           "location": "query",
                           "type": "string",
                           "enumDescriptions": [
-                            "The default \/ unset value. The API will default to the BASIC view.",
+                            "Content view not specified. Defaults to BASIC. The API will default to the BASIC view.",
                             "Will not return the data_text field.",
                             "Returns the complete proto."
                           ],

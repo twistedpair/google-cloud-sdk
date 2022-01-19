@@ -2402,7 +2402,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The unique identifier of the message. Format: `projects\/\/locations\/\/conversations\/\/messages\/`.",
+          "description": "Optional. The unique identifier of the message. Format: `projects\/\/locations\/\/conversations\/\/messages\/`.",
           "type": "string"
         },
         "content": {
@@ -2436,8 +2436,13 @@
           ]
         },
         "createTime": {
-          "description": "Output only. The time when the message was created.",
+          "description": "Output only. The time when the message was created in Contact Center AI.",
           "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "sendTime": {
+          "description": "Optional. The time when the message was sent.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -2445,6 +2450,11 @@
           "description": "Output only. The annotation for the message.",
           "readOnly": true,
           "$ref": "GoogleCloudDialogflowV2MessageAnnotation"
+        },
+        "sentimentAnalysis": {
+          "description": "Output only. The sentiment analysis result for the message.",
+          "readOnly": true,
+          "$ref": "GoogleCloudDialogflowV2SentimentAnalysisResult"
         }
       }
     },
@@ -2501,6 +2511,10 @@
         "suggestFaqAnswersResponse": {
           "description": "SuggestFaqAnswersResponse if request is for FAQ_ANSWER.",
           "$ref": "GoogleCloudDialogflowV2SuggestFaqAnswersResponse"
+        },
+        "suggestSmartRepliesResponse": {
+          "description": "SuggestSmartRepliesResponse if request is for SMART_REPLY.",
+          "$ref": "GoogleCloudDialogflowV2SuggestSmartRepliesResponse"
         }
       }
     },
@@ -2623,6 +2637,50 @@
         }
       }
     },
+    "GoogleCloudDialogflowV2SuggestSmartRepliesResponse": {
+      "id": "GoogleCloudDialogflowV2SuggestSmartRepliesResponse",
+      "description": "The response message for Participants.SuggestSmartReplies.",
+      "type": "object",
+      "properties": {
+        "smartReplyAnswers": {
+          "description": "Output only. Multiple reply options provided by smart reply service. The order is based on the rank of the model prediction. The maximum number of the returned replies is set in SmartReplyConfig.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDialogflowV2SmartReplyAnswer"
+          }
+        },
+        "latestMessage": {
+          "description": "The name of the latest conversation message used to compile suggestion for. Format: `projects\/\/locations\/\/conversations\/\/messages\/`.",
+          "type": "string"
+        },
+        "contextSize": {
+          "description": "Number of messages prior to and including latest_message to compile the suggestion. It may be smaller than the SuggestSmartRepliesRequest.context_size field in the request if there aren't that many messages in the conversation.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudDialogflowV2SmartReplyAnswer": {
+      "id": "GoogleCloudDialogflowV2SmartReplyAnswer",
+      "description": "Represents a smart reply answer.",
+      "type": "object",
+      "properties": {
+        "reply": {
+          "description": "The content of the reply.",
+          "type": "string"
+        },
+        "confidence": {
+          "description": "Smart reply confidence. The system's confidence score that this reply is a good match for this conversation, as a value from 0.0 (completely uncertain) to 1.0 (completely certain).",
+          "type": "number",
+          "format": "float"
+        },
+        "answerRecord": {
+          "description": "The name of answer record, in the format of \"projects\/\/locations\/\/answerRecords\/\"",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudDialogflowV2DtmfParameters": {
       "id": "GoogleCloudDialogflowV2DtmfParameters",
       "description": "The message in the response that indicates the parameters of DTMF.",
@@ -2640,11 +2698,11 @@
       "type": "object",
       "properties": {
         "latestMessage": {
-          "description": "The name of the latest conversation message to compile suggestion for. If empty, it will be the latest message of the conversation. Format: `projects\/\/locations\/\/conversations\/\/messages\/`.",
+          "description": "Optional. The name of the latest conversation message to compile suggestion for. If empty, it will be the latest message of the conversation. Format: `projects\/\/locations\/\/conversations\/\/messages\/`.",
           "type": "string"
         },
         "contextSize": {
-          "description": "Max number of messages prior to and including latest_message to use as context when compiling the suggestion. By default 20 and at most 50.",
+          "description": "Optional. Max number of messages prior to and including latest_message to use as context when compiling the suggestion. By default 20 and at most 50.",
           "type": "integer",
           "format": "int32"
         },
@@ -2660,6 +2718,30 @@
       "type": "object",
       "properties": {
         "latestMessage": {
+          "description": "Optional. The name of the latest conversation message to compile suggestion for. If empty, it will be the latest message of the conversation. Format: `projects\/\/locations\/\/conversations\/\/messages\/`.",
+          "type": "string"
+        },
+        "contextSize": {
+          "description": "Optional. Max number of messages prior to and including [latest_message] to use as context when compiling the suggestion. By default 20 and at most 50.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "assistQueryParams": {
+          "description": "Parameters for a human assist query.",
+          "$ref": "GoogleCloudDialogflowV2AssistQueryParameters"
+        }
+      }
+    },
+    "GoogleCloudDialogflowV2SuggestSmartRepliesRequest": {
+      "id": "GoogleCloudDialogflowV2SuggestSmartRepliesRequest",
+      "description": "The request message for Participants.SuggestSmartReplies.",
+      "type": "object",
+      "properties": {
+        "currentTextInput": {
+          "description": "The current natural language text segment to compile suggestion for. This provides a way for user to get follow up smart reply suggestion after a smart reply selection, without sending a text message.",
+          "$ref": "GoogleCloudDialogflowV2TextInput"
+        },
+        "latestMessage": {
           "description": "The name of the latest conversation message to compile suggestion for. If empty, it will be the latest message of the conversation. Format: `projects\/\/locations\/\/conversations\/\/messages\/`.",
           "type": "string"
         },
@@ -2667,10 +2749,6 @@
           "description": "Max number of messages prior to and including [latest_message] to use as context when compiling the suggestion. By default 20 and at most 50.",
           "type": "integer",
           "format": "int32"
-        },
-        "assistQueryParams": {
-          "description": "Parameters for a human assist query.",
-          "$ref": "GoogleCloudDialogflowV2AssistQueryParameters"
         }
       }
     },
@@ -3009,6 +3087,10 @@
         "conversationModelConfig": {
           "description": "Configs of custom conversation model.",
           "$ref": "GoogleCloudDialogflowV2HumanAgentAssistantConfigConversationModelConfig"
+        },
+        "conversationProcessConfig": {
+          "description": "Configs for processing conversation.",
+          "$ref": "GoogleCloudDialogflowV2HumanAgentAssistantConfigConversationProcessConfig"
         }
       }
     },
@@ -3149,6 +3231,18 @@
         "model": {
           "description": "Conversation model resource name. Format: `projects\/\/conversationModels\/`.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDialogflowV2HumanAgentAssistantConfigConversationProcessConfig": {
+      "id": "GoogleCloudDialogflowV2HumanAgentAssistantConfigConversationProcessConfig",
+      "description": "Config to process conversation.",
+      "type": "object",
+      "properties": {
+        "recentSentencesCount": {
+          "description": "Number of recent non-small-talk sentences to use as context for article and FAQ suggestion",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -12758,6 +12852,35 @@
                             "https://www.googleapis.com/auth/dialogflow"
                           ],
                           "description": "Gets suggested faq answers for a participant based on specific historical messages."
+                        },
+                        "suggestSmartReplies": {
+                          "id": "dialogflow.projects.locations.conversations.participants.suggestions.suggestSmartReplies",
+                          "path": "v2/{+parent}/suggestions:suggestSmartReplies",
+                          "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/conversations/{conversationsId}/participants/{participantsId}/suggestions:suggestSmartReplies",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The name of the participant to fetch suggestion for. Format: `projects\/\/locations\/\/conversations\/\/participants\/`.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/conversations\/[^\/]+\/participants\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "request": {
+                            "$ref": "GoogleCloudDialogflowV2SuggestSmartRepliesRequest"
+                          },
+                          "response": {
+                            "$ref": "GoogleCloudDialogflowV2SuggestSmartRepliesResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/dialogflow"
+                          ],
+                          "description": "Gets smart replies for a participant based on specific historical messages."
                         }
                       }
                     }
@@ -16205,6 +16328,35 @@
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
                       "description": "Gets suggested faq answers for a participant based on specific historical messages."
+                    },
+                    "suggestSmartReplies": {
+                      "id": "dialogflow.projects.conversations.participants.suggestions.suggestSmartReplies",
+                      "path": "v2/{+parent}/suggestions:suggestSmartReplies",
+                      "flatPath": "v2/projects/{projectsId}/conversations/{conversationsId}/participants/{participantsId}/suggestions:suggestSmartReplies",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The name of the participant to fetch suggestion for. Format: `projects\/\/locations\/\/conversations\/\/participants\/`.",
+                          "pattern": "^projects\/[^\/]+\/conversations\/[^\/]+\/participants\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudDialogflowV2SuggestSmartRepliesRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudDialogflowV2SuggestSmartRepliesResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/dialogflow"
+                      ],
+                      "description": "Gets smart replies for a participant based on specific historical messages."
                     }
                   }
                 }

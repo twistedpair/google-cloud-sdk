@@ -555,7 +555,7 @@ class GoogleDatastoreAdminV1DatastoreFirestoreMigrationMetadata(_messages.Messag
   DatastoreFirestoreMigration operation is not started by the end-user via an
   explicit "creation" method. This is an intentional deviation from the LRO
   design pattern. This singleton resource can be accessed at:
-  "projects/{project_id}/datastore-firestore-migration"
+  "projects/{project_id}/operations/datastore-firestore-migration"
 
   Enums:
     MigrationStateValueValuesEnum: The current state of migration from Cloud
@@ -932,6 +932,114 @@ class GoogleDatastoreAdminV1ListIndexesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class GoogleDatastoreAdminV1MigrationProgressEvent(_messages.Message):
+  r"""An event signifying the start of a new step in a [migration from Cloud
+  Datastore to Cloud Firestore in Datastore
+  mode](https://cloud.google.com/datastore/docs/upgrade-to-firestore).
+
+  Enums:
+    StepValueValuesEnum: The step that is starting. An event with step set to
+      `START` indicates that the migration has been reverted back to the
+      initial pre-migration state.
+
+  Fields:
+    prepareStepDetails: Details for the `PREPARE` step.
+    redirectWritesStepDetails: Details for the `REDIRECT_WRITES` step.
+    step: The step that is starting. An event with step set to `START`
+      indicates that the migration has been reverted back to the initial pre-
+      migration state.
+  """
+
+  class StepValueValuesEnum(_messages.Enum):
+    r"""The step that is starting. An event with step set to `START` indicates
+    that the migration has been reverted back to the initial pre-migration
+    state.
+
+    Values:
+      MIGRATION_STEP_UNSPECIFIED: Unspecified.
+      PREPARE: Pre-migration: the database is prepared for migration.
+      START: Start of migration.
+      APPLY_WRITES_SYNCHRONOUSLY: Writes are applied synchronously to at least
+        one replica.
+      COPY_AND_VERIFY: Data is copied to Cloud Firestore and then verified to
+        match the data in Cloud Datastore.
+      REDIRECT_EVENTUALLY_CONSISTENT_READS: Eventually-consistent reads are
+        redirected to Cloud Firestore.
+      REDIRECT_STRONGLY_CONSISTENT_READS: Strongly-consistent reads are
+        redirected to Cloud Firestore.
+      REDIRECT_WRITES: Writes are redirected to Cloud Firestore.
+    """
+    MIGRATION_STEP_UNSPECIFIED = 0
+    PREPARE = 1
+    START = 2
+    APPLY_WRITES_SYNCHRONOUSLY = 3
+    COPY_AND_VERIFY = 4
+    REDIRECT_EVENTUALLY_CONSISTENT_READS = 5
+    REDIRECT_STRONGLY_CONSISTENT_READS = 6
+    REDIRECT_WRITES = 7
+
+  prepareStepDetails = _messages.MessageField('GoogleDatastoreAdminV1PrepareStepDetails', 1)
+  redirectWritesStepDetails = _messages.MessageField('GoogleDatastoreAdminV1RedirectWritesStepDetails', 2)
+  step = _messages.EnumField('StepValueValuesEnum', 3)
+
+
+class GoogleDatastoreAdminV1MigrationStateEvent(_messages.Message):
+  r"""An event signifying a change in state of a [migration from Cloud
+  Datastore to Cloud Firestore in Datastore
+  mode](https://cloud.google.com/datastore/docs/upgrade-to-firestore).
+
+  Enums:
+    StateValueValuesEnum: The new state of the migration.
+
+  Fields:
+    state: The new state of the migration.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The new state of the migration.
+
+    Values:
+      MIGRATION_STATE_UNSPECIFIED: Unspecified.
+      RUNNING: The migration is running.
+      PAUSED: The migration is paused.
+      COMPLETE: The migration is complete.
+    """
+    MIGRATION_STATE_UNSPECIFIED = 0
+    RUNNING = 1
+    PAUSED = 2
+    COMPLETE = 3
+
+  state = _messages.EnumField('StateValueValuesEnum', 1)
+
+
+class GoogleDatastoreAdminV1PrepareStepDetails(_messages.Message):
+  r"""Details for the `PREPARE` step.
+
+  Enums:
+    ConcurrencyModeValueValuesEnum: The concurrency mode this database will
+      use when it reaches the `REDIRECT_WRITES` step.
+
+  Fields:
+    concurrencyMode: The concurrency mode this database will use when it
+      reaches the `REDIRECT_WRITES` step.
+  """
+
+  class ConcurrencyModeValueValuesEnum(_messages.Enum):
+    r"""The concurrency mode this database will use when it reaches the
+    `REDIRECT_WRITES` step.
+
+    Values:
+      CONCURRENCY_MODE_UNSPECIFIED: Unspecified.
+      PESSIMISTIC: Pessimistic concurrency.
+      OPTIMISTIC: Optimistic concurrency.
+    """
+    CONCURRENCY_MODE_UNSPECIFIED = 0
+    PESSIMISTIC = 1
+    OPTIMISTIC = 2
+
+  concurrencyMode = _messages.EnumField('ConcurrencyModeValueValuesEnum', 1)
+
+
 class GoogleDatastoreAdminV1Progress(_messages.Message):
   r"""Measures the progress of a particular metric.
 
@@ -944,6 +1052,31 @@ class GoogleDatastoreAdminV1Progress(_messages.Message):
 
   workCompleted = _messages.IntegerField(1)
   workEstimated = _messages.IntegerField(2)
+
+
+class GoogleDatastoreAdminV1RedirectWritesStepDetails(_messages.Message):
+  r"""Details for the `REDIRECT_WRITES` step.
+
+  Enums:
+    ConcurrencyModeValueValuesEnum: Ths concurrency mode for this database.
+
+  Fields:
+    concurrencyMode: Ths concurrency mode for this database.
+  """
+
+  class ConcurrencyModeValueValuesEnum(_messages.Enum):
+    r"""Ths concurrency mode for this database.
+
+    Values:
+      CONCURRENCY_MODE_UNSPECIFIED: Unspecified.
+      PESSIMISTIC: Pessimistic concurrency.
+      OPTIMISTIC: Optimistic concurrency.
+    """
+    CONCURRENCY_MODE_UNSPECIFIED = 0
+    PESSIMISTIC = 1
+    OPTIMISTIC = 2
+
+  concurrencyMode = _messages.EnumField('ConcurrencyModeValueValuesEnum', 1)
 
 
 class GoogleDatastoreAdminV1beta1CommonMetadata(_messages.Message):

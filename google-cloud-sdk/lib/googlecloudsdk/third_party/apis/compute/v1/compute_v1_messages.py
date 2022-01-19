@@ -3643,10 +3643,8 @@ class BackendService(_messages.Message):
       settable as a field in the request body.
     securityPolicy: [Output Only] The resource URL for the security policy
       associated with this backend service.
-    securitySettings: This field specifies the security policy that applies to
-      this backend service. This field is applicable to either: - A regional
-      backend service with the service_protocol set to HTTP, HTTPS, or HTTP2,
-      and load_balancing_scheme set to INTERNAL_MANAGED. - A global backend
+    securitySettings: This field specifies the security settings that apply to
+      this backend service. This field is applicable to a global backend
       service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED.
     selfLink: [Output Only] Server-defined URL for the resource.
     sessionAffinity: Type of session affinity to use. The default is NONE.
@@ -11997,6 +11995,31 @@ class ComputeInstancesResetRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeInstancesResumeRequest(_messages.Message):
+  r"""A ComputeInstancesResumeRequest object.
+
+  Fields:
+    instance: Name of the instance resource to resume.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
+
+
 class ComputeInstancesSendDiagnosticInterruptRequest(_messages.Message):
   r"""A ComputeInstancesSendDiagnosticInterruptRequest object.
 
@@ -12412,6 +12435,31 @@ class ComputeInstancesStopRequest(_messages.Message):
 
   Fields:
     instance: Name of the instance resource to stop.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
+
+
+class ComputeInstancesSuspendRequest(_messages.Message):
+  r"""A ComputeInstancesSuspendRequest object.
+
+  Fields:
+    instance: Name of the instance resource to suspend.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -31822,6 +31870,15 @@ class InstanceGroupManagerActionsSummary(_messages.Message):
     restarting: [Output Only] The number of instances in the managed instance
       group that are scheduled to be restarted or are currently being
       restarted.
+    resuming: [Output Only] The number of instances in the managed instance
+      group that are scheduled to be resumed or are currently being resumed.
+    starting: [Output Only] The number of instances in the managed instance
+      group that are scheduled to be started or are currently being started.
+    stopping: [Output Only] The number of instances in the managed instance
+      group that are scheduled to be stopped or are currently being stopped.
+    suspending: [Output Only] The number of instances in the managed instance
+      group that are scheduled to be suspended or are currently being
+      suspended.
     verifying: [Output Only] The number of instances in the managed instance
       group that are being verified. See the managedInstances[].currentAction
       property in the listManagedInstances method documentation.
@@ -31835,7 +31892,11 @@ class InstanceGroupManagerActionsSummary(_messages.Message):
   recreating = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   refreshing = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   restarting = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  verifying = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  resuming = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  starting = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  stopping = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  suspending = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  verifying = _messages.IntegerField(13, variant=_messages.Variant.INT32)
 
 
 class InstanceGroupManagerAggregatedList(_messages.Message):
@@ -33715,6 +33776,10 @@ class InstanceManagedByIgmErrorInstanceActionDetails(_messages.Message):
         to the instance without stopping it. For example, the group can update
         the target pool list for an instance without stopping that instance.
       RESTARTING: The managed instance group is restarting this instance.
+      RESUMING: The managed instance group is resuming this instance.
+      STARTING: The managed instance group is starting this instance.
+      STOPPING: The managed instance group is stopping this instance.
+      SUSPENDING: The managed instance group is suspending this instance.
       VERIFYING: The managed instance group is verifying this already created
         instance. Verification happens every time the instance is (re)created
         or restarted and consists of: 1. Waiting until health check specified
@@ -33731,7 +33796,11 @@ class InstanceManagedByIgmErrorInstanceActionDetails(_messages.Message):
     RECREATING = 5
     REFRESHING = 6
     RESTARTING = 7
-    VERIFYING = 8
+    RESUMING = 8
+    STARTING = 9
+    STOPPING = 10
+    SUSPENDING = 11
+    VERIFYING = 12
 
   action = _messages.EnumField('ActionValueValuesEnum', 1)
   instance = _messages.StringField(2)
@@ -37824,6 +37893,10 @@ class ManagedInstance(_messages.Message):
         to the instance without stopping it. For example, the group can update
         the target pool list for an instance without stopping that instance.
       RESTARTING: The managed instance group is restarting this instance.
+      RESUMING: The managed instance group is resuming this instance.
+      STARTING: The managed instance group is starting this instance.
+      STOPPING: The managed instance group is stopping this instance.
+      SUSPENDING: The managed instance group is suspending this instance.
       VERIFYING: The managed instance group is verifying this already created
         instance. Verification happens every time the instance is (re)created
         or restarted and consists of: 1. Waiting until health check specified
@@ -37840,7 +37913,11 @@ class ManagedInstance(_messages.Message):
     RECREATING = 5
     REFRESHING = 6
     RESTARTING = 7
-    VERIFYING = 8
+    RESUMING = 8
+    STARTING = 9
+    STOPPING = 10
+    SUSPENDING = 11
+    VERIFYING = 12
 
   class InstanceStatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the instance. This field is empty when the
@@ -44852,6 +44929,7 @@ class Quota(_messages.Message):
       COMMITTED_E2_CPUS: <no description>
       COMMITTED_LICENSES: <no description>
       COMMITTED_LOCAL_SSD_TOTAL_GB: <no description>
+      COMMITTED_M3_CPUS: <no description>
       COMMITTED_MEMORY_OPTIMIZED_CPUS: <no description>
       COMMITTED_N2A_CPUS: <no description>
       COMMITTED_N2D_CPUS: <no description>
@@ -44895,6 +44973,7 @@ class Quota(_messages.Message):
       LOCAL_SSD_TOTAL_GB: <no description>
       M1_CPUS: <no description>
       M2_CPUS: <no description>
+      M3_CPUS: <no description>
       MACHINE_IMAGES: <no description>
       N2A_CPUS: <no description>
       N2D_CPUS: <no description>
@@ -44979,115 +45058,117 @@ class Quota(_messages.Message):
     COMMITTED_E2_CPUS = 14
     COMMITTED_LICENSES = 15
     COMMITTED_LOCAL_SSD_TOTAL_GB = 16
-    COMMITTED_MEMORY_OPTIMIZED_CPUS = 17
-    COMMITTED_N2A_CPUS = 18
-    COMMITTED_N2D_CPUS = 19
-    COMMITTED_N2_CPUS = 20
-    COMMITTED_NVIDIA_A100_GPUS = 21
-    COMMITTED_NVIDIA_K80_GPUS = 22
-    COMMITTED_NVIDIA_P100_GPUS = 23
-    COMMITTED_NVIDIA_P4_GPUS = 24
-    COMMITTED_NVIDIA_T4_GPUS = 25
-    COMMITTED_NVIDIA_V100_GPUS = 26
-    COMMITTED_T2A_CPUS = 27
-    COMMITTED_T2D_CPUS = 28
-    CPUS = 29
-    CPUS_ALL_REGIONS = 30
-    DISKS_TOTAL_GB = 31
-    E2_CPUS = 32
-    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 33
-    EXTERNAL_PROTOCOL_FORWARDING_RULES = 34
-    EXTERNAL_VPN_GATEWAYS = 35
-    FIREWALLS = 36
-    FORWARDING_RULES = 37
-    GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES = 38
-    GLOBAL_INTERNAL_ADDRESSES = 39
-    GPUS_ALL_REGIONS = 40
-    HEALTH_CHECKS = 41
-    IMAGES = 42
-    INSTANCES = 43
-    INSTANCE_GROUPS = 44
-    INSTANCE_GROUP_MANAGERS = 45
-    INSTANCE_TEMPLATES = 46
-    INTERCONNECTS = 47
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 48
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 49
-    INTERCONNECT_TOTAL_GBPS = 50
-    INTERNAL_ADDRESSES = 51
-    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 52
-    IN_PLACE_SNAPSHOTS = 53
-    IN_USE_ADDRESSES = 54
-    IN_USE_BACKUP_SCHEDULES = 55
-    IN_USE_SNAPSHOT_SCHEDULES = 56
-    LOCAL_SSD_TOTAL_GB = 57
-    M1_CPUS = 58
-    M2_CPUS = 59
-    MACHINE_IMAGES = 60
-    N2A_CPUS = 61
-    N2D_CPUS = 62
-    N2_CPUS = 63
-    NETWORKS = 64
-    NETWORK_ENDPOINT_GROUPS = 65
-    NETWORK_FIREWALL_POLICIES = 66
-    NODE_GROUPS = 67
-    NODE_TEMPLATES = 68
-    NVIDIA_A100_GPUS = 69
-    NVIDIA_K80_GPUS = 70
-    NVIDIA_P100_GPUS = 71
-    NVIDIA_P100_VWS_GPUS = 72
-    NVIDIA_P4_GPUS = 73
-    NVIDIA_P4_VWS_GPUS = 74
-    NVIDIA_T4_GPUS = 75
-    NVIDIA_T4_VWS_GPUS = 76
-    NVIDIA_V100_GPUS = 77
-    PACKET_MIRRORINGS = 78
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 79
-    PREEMPTIBLE_CPUS = 80
-    PREEMPTIBLE_LOCAL_SSD_GB = 81
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 82
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 83
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 84
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 85
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 86
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 87
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 88
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 89
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 90
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 91
-    PSC_INTERNAL_LB_FORWARDING_RULES = 92
-    PUBLIC_ADVERTISED_PREFIXES = 93
-    PUBLIC_DELEGATED_PREFIXES = 94
-    REGIONAL_AUTOSCALERS = 95
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 96
-    RESERVATIONS = 97
-    RESOURCE_POLICIES = 98
-    ROUTERS = 99
-    ROUTES = 100
-    SECURITY_POLICIES = 101
-    SECURITY_POLICIES_PER_REGION = 102
-    SECURITY_POLICY_CEVAL_RULES = 103
-    SECURITY_POLICY_RULES = 104
-    SECURITY_POLICY_RULES_PER_REGION = 105
-    SERVICE_ATTACHMENTS = 106
-    SNAPSHOTS = 107
-    SSD_TOTAL_GB = 108
-    SSL_CERTIFICATES = 109
-    STATIC_ADDRESSES = 110
-    STATIC_BYOIP_ADDRESSES = 111
-    SUBNETWORKS = 112
-    T2A_CPUS = 113
-    T2D_CPUS = 114
-    TARGET_HTTPS_PROXIES = 115
-    TARGET_HTTP_PROXIES = 116
-    TARGET_INSTANCES = 117
-    TARGET_POOLS = 118
-    TARGET_SSL_PROXIES = 119
-    TARGET_TCP_PROXIES = 120
-    TARGET_VPN_GATEWAYS = 121
-    URL_MAPS = 122
-    VPN_GATEWAYS = 123
-    VPN_TUNNELS = 124
-    XPN_SERVICE_PROJECTS = 125
+    COMMITTED_M3_CPUS = 17
+    COMMITTED_MEMORY_OPTIMIZED_CPUS = 18
+    COMMITTED_N2A_CPUS = 19
+    COMMITTED_N2D_CPUS = 20
+    COMMITTED_N2_CPUS = 21
+    COMMITTED_NVIDIA_A100_GPUS = 22
+    COMMITTED_NVIDIA_K80_GPUS = 23
+    COMMITTED_NVIDIA_P100_GPUS = 24
+    COMMITTED_NVIDIA_P4_GPUS = 25
+    COMMITTED_NVIDIA_T4_GPUS = 26
+    COMMITTED_NVIDIA_V100_GPUS = 27
+    COMMITTED_T2A_CPUS = 28
+    COMMITTED_T2D_CPUS = 29
+    CPUS = 30
+    CPUS_ALL_REGIONS = 31
+    DISKS_TOTAL_GB = 32
+    E2_CPUS = 33
+    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 34
+    EXTERNAL_PROTOCOL_FORWARDING_RULES = 35
+    EXTERNAL_VPN_GATEWAYS = 36
+    FIREWALLS = 37
+    FORWARDING_RULES = 38
+    GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES = 39
+    GLOBAL_INTERNAL_ADDRESSES = 40
+    GPUS_ALL_REGIONS = 41
+    HEALTH_CHECKS = 42
+    IMAGES = 43
+    INSTANCES = 44
+    INSTANCE_GROUPS = 45
+    INSTANCE_GROUP_MANAGERS = 46
+    INSTANCE_TEMPLATES = 47
+    INTERCONNECTS = 48
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 49
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 50
+    INTERCONNECT_TOTAL_GBPS = 51
+    INTERNAL_ADDRESSES = 52
+    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 53
+    IN_PLACE_SNAPSHOTS = 54
+    IN_USE_ADDRESSES = 55
+    IN_USE_BACKUP_SCHEDULES = 56
+    IN_USE_SNAPSHOT_SCHEDULES = 57
+    LOCAL_SSD_TOTAL_GB = 58
+    M1_CPUS = 59
+    M2_CPUS = 60
+    M3_CPUS = 61
+    MACHINE_IMAGES = 62
+    N2A_CPUS = 63
+    N2D_CPUS = 64
+    N2_CPUS = 65
+    NETWORKS = 66
+    NETWORK_ENDPOINT_GROUPS = 67
+    NETWORK_FIREWALL_POLICIES = 68
+    NODE_GROUPS = 69
+    NODE_TEMPLATES = 70
+    NVIDIA_A100_GPUS = 71
+    NVIDIA_K80_GPUS = 72
+    NVIDIA_P100_GPUS = 73
+    NVIDIA_P100_VWS_GPUS = 74
+    NVIDIA_P4_GPUS = 75
+    NVIDIA_P4_VWS_GPUS = 76
+    NVIDIA_T4_GPUS = 77
+    NVIDIA_T4_VWS_GPUS = 78
+    NVIDIA_V100_GPUS = 79
+    PACKET_MIRRORINGS = 80
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 81
+    PREEMPTIBLE_CPUS = 82
+    PREEMPTIBLE_LOCAL_SSD_GB = 83
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 84
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 85
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 86
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 87
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 88
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 89
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 90
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 91
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 92
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 93
+    PSC_INTERNAL_LB_FORWARDING_RULES = 94
+    PUBLIC_ADVERTISED_PREFIXES = 95
+    PUBLIC_DELEGATED_PREFIXES = 96
+    REGIONAL_AUTOSCALERS = 97
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 98
+    RESERVATIONS = 99
+    RESOURCE_POLICIES = 100
+    ROUTERS = 101
+    ROUTES = 102
+    SECURITY_POLICIES = 103
+    SECURITY_POLICIES_PER_REGION = 104
+    SECURITY_POLICY_CEVAL_RULES = 105
+    SECURITY_POLICY_RULES = 106
+    SECURITY_POLICY_RULES_PER_REGION = 107
+    SERVICE_ATTACHMENTS = 108
+    SNAPSHOTS = 109
+    SSD_TOTAL_GB = 110
+    SSL_CERTIFICATES = 111
+    STATIC_ADDRESSES = 112
+    STATIC_BYOIP_ADDRESSES = 113
+    SUBNETWORKS = 114
+    T2A_CPUS = 115
+    T2D_CPUS = 116
+    TARGET_HTTPS_PROXIES = 117
+    TARGET_HTTP_PROXIES = 118
+    TARGET_INSTANCES = 119
+    TARGET_POOLS = 120
+    TARGET_SSL_PROXIES = 121
+    TARGET_TCP_PROXIES = 122
+    TARGET_VPN_GATEWAYS = 123
+    URL_MAPS = 124
+    VPN_GATEWAYS = 125
+    VPN_TUNNELS = 126
+    XPN_SERVICE_PROJECTS = 127
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)

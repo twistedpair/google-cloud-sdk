@@ -280,6 +280,9 @@ class GkemulticloudProjectsLocationsAwsClustersPatchRequest(_messages.Message):
       supplied in this field. The elements of the repeated paths field can
       only include these fields from AwsCluster: * `description`. *
       `annotations`. * `control_plane.version`. * `authorization.admin_users`.
+      * `control_plane.aws_services_authentication.role_arn`. *
+      `control_plane.aws_services_authentication.role_session_name`. *
+      `control_plane.instance_type`.
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """
@@ -756,7 +759,8 @@ class GoogleCloudGkemulticloudV1AwsAuthorization(_messages.Message):
   Fields:
     adminUsers: Required. Users that can perform operations as a cluster
       admin. A managed ClusterRoleBinding will be created to grant the
-      `cluster-admin` ClusterRole to the users. For more info on RBAC, see
+      `cluster-admin` ClusterRole to the users. Up to ten admin users can be
+      provided. For more info on RBAC, see
       https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-
       facing-roles
   """
@@ -1422,7 +1426,8 @@ class GoogleCloudGkemulticloudV1AzureAuthorization(_messages.Message):
   Fields:
     adminUsers: Required. Users that can perform operations as a cluster
       admin. A managed ClusterRoleBinding will be created to grant the
-      `cluster-admin` ClusterRole to the users. For more info on RBAC, see
+      `cluster-admin` ClusterRole to the users. Up to ten admin users can be
+      provided. For more info on RBAC, see
       https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-
       facing-roles
   """

@@ -2717,7 +2717,7 @@
     },
     "GoogleCloudAiplatformV1alpha1ModelContainerSpec": {
       "id": "GoogleCloudAiplatformV1alpha1ModelContainerSpec",
-      "description": "Specification of a container for serving predictions. Some fields in this message correspond to fields in the [Kubernetes Container v1 core specification](https:\/\/v1-18.docs.kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.18\/#container-v1-core).",
+      "description": "Specification of a container for serving predictions. Some fields in this message correspond to fields in the [Kubernetes Container v1 core specification](https:\/\/kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.23\/#container-v1-core).",
       "type": "object",
       "properties": {
         "imageUri": {
@@ -2725,28 +2725,28 @@
           "type": "string"
         },
         "command": {
-          "description": "Immutable. Specifies the command that runs when the container starts. This overrides the container's [ENTRYPOINT](https:\/\/docs.docker.com\/engine\/reference\/builder\/#entrypoint). Specify this field as an array of executable and arguments, similar to a Docker `ENTRYPOINT`'s \"exec\" form, not its \"shell\" form. If you do not specify this field, then the container's `ENTRYPOINT` runs, in conjunction with the args field or the container's [`CMD`](https:\/\/docs.docker.com\/engine\/reference\/builder\/#cmd), if either exists. If this field is not specified and the container does not have an `ENTRYPOINT`, then refer to the Docker documentation about [how `CMD` and `ENTRYPOINT` interact](https:\/\/docs.docker.com\/engine\/reference\/builder\/#understand-how-cmd-and-entrypoint-interact). If you specify this field, then you can also specify the `args` field to provide additional arguments for this command. However, if you specify this field, then the container's `CMD` is ignored. See the [Kubernetes documentation about how the `command` and `args` fields interact with a container's `ENTRYPOINT` and `CMD`](https:\/\/kubernetes.io\/docs\/tasks\/inject-data-application\/define-command-argument-container\/#notes). In this field, you can reference [environment variables set by Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#aip-variables) and environment variables set in the env field. You cannot reference environment variables set in the Docker image. In order for environment variables to be expanded, reference them by using the following syntax: $( VARIABLE_NAME) Note that this differs from Bash variable expansion, which does not use parentheses. If a variable cannot be resolved, the reference in the input string is used unchanged. To avoid variable expansion, you can escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field corresponds to the `command` field of the Kubernetes Containers [v1 core API](https:\/\/v1-18.docs.kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.18\/#container-v1-core).",
+          "description": "Immutable. Specifies the command that runs when the container starts. This overrides the container's [ENTRYPOINT](https:\/\/docs.docker.com\/engine\/reference\/builder\/#entrypoint). Specify this field as an array of executable and arguments, similar to a Docker `ENTRYPOINT`'s \"exec\" form, not its \"shell\" form. If you do not specify this field, then the container's `ENTRYPOINT` runs, in conjunction with the args field or the container's [`CMD`](https:\/\/docs.docker.com\/engine\/reference\/builder\/#cmd), if either exists. If this field is not specified and the container does not have an `ENTRYPOINT`, then refer to the Docker documentation about [how `CMD` and `ENTRYPOINT` interact](https:\/\/docs.docker.com\/engine\/reference\/builder\/#understand-how-cmd-and-entrypoint-interact). If you specify this field, then you can also specify the `args` field to provide additional arguments for this command. However, if you specify this field, then the container's `CMD` is ignored. See the [Kubernetes documentation about how the `command` and `args` fields interact with a container's `ENTRYPOINT` and `CMD`](https:\/\/kubernetes.io\/docs\/tasks\/inject-data-application\/define-command-argument-container\/#notes). In this field, you can reference [environment variables set by Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#aip-variables) and environment variables set in the env field. You cannot reference environment variables set in the Docker image. In order for environment variables to be expanded, reference them by using the following syntax: $( VARIABLE_NAME) Note that this differs from Bash variable expansion, which does not use parentheses. If a variable cannot be resolved, the reference in the input string is used unchanged. To avoid variable expansion, you can escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field corresponds to the `command` field of the Kubernetes Containers [v1 core API](https:\/\/kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.23\/#container-v1-core).",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "args": {
-          "description": "Immutable. Specifies arguments for the command that runs when the container starts. This overrides the container's [`CMD`](https:\/\/docs.docker.com\/engine\/reference\/builder\/#cmd). Specify this field as an array of executable and arguments, similar to a Docker `CMD`'s \"default parameters\" form. If you don't specify this field but do specify the command field, then the command from the `command` field runs without any additional arguments. See the [Kubernetes documentation about how the `command` and `args` fields interact with a container's `ENTRYPOINT` and `CMD`](https:\/\/kubernetes.io\/docs\/tasks\/inject-data-application\/define-command-argument-container\/#notes). If you don't specify this field and don't specify the `command` field, then the container's [`ENTRYPOINT`](https:\/\/docs.docker.com\/engine\/reference\/builder\/#cmd) and `CMD` determine what runs based on their default behavior. See the Docker documentation about [how `CMD` and `ENTRYPOINT` interact](https:\/\/docs.docker.com\/engine\/reference\/builder\/#understand-how-cmd-and-entrypoint-interact). In this field, you can reference [environment variables set by Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#aip-variables) and environment variables set in the env field. You cannot reference environment variables set in the Docker image. In order for environment variables to be expanded, reference them by using the following syntax: $( VARIABLE_NAME) Note that this differs from Bash variable expansion, which does not use parentheses. If a variable cannot be resolved, the reference in the input string is used unchanged. To avoid variable expansion, you can escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field corresponds to the `args` field of the Kubernetes Containers [v1 core API](https:\/\/v1-18.docs.kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.18\/#container-v1-core).",
+          "description": "Immutable. Specifies arguments for the command that runs when the container starts. This overrides the container's [`CMD`](https:\/\/docs.docker.com\/engine\/reference\/builder\/#cmd). Specify this field as an array of executable and arguments, similar to a Docker `CMD`'s \"default parameters\" form. If you don't specify this field but do specify the command field, then the command from the `command` field runs without any additional arguments. See the [Kubernetes documentation about how the `command` and `args` fields interact with a container's `ENTRYPOINT` and `CMD`](https:\/\/kubernetes.io\/docs\/tasks\/inject-data-application\/define-command-argument-container\/#notes). If you don't specify this field and don't specify the `command` field, then the container's [`ENTRYPOINT`](https:\/\/docs.docker.com\/engine\/reference\/builder\/#cmd) and `CMD` determine what runs based on their default behavior. See the Docker documentation about [how `CMD` and `ENTRYPOINT` interact](https:\/\/docs.docker.com\/engine\/reference\/builder\/#understand-how-cmd-and-entrypoint-interact). In this field, you can reference [environment variables set by Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#aip-variables) and environment variables set in the env field. You cannot reference environment variables set in the Docker image. In order for environment variables to be expanded, reference them by using the following syntax: $( VARIABLE_NAME) Note that this differs from Bash variable expansion, which does not use parentheses. If a variable cannot be resolved, the reference in the input string is used unchanged. To avoid variable expansion, you can escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field corresponds to the `args` field of the Kubernetes Containers [v1 core API](https:\/\/kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.23\/#container-v1-core).",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "env": {
-          "description": "Immutable. List of environment variables to set in the container. After the container starts running, code running in the container can read these environment variables. Additionally, the command and args fields can reference these variables. Later entries in this list can also reference earlier entries. For example, the following example sets the variable `VAR_2` to have the value `foo bar`: ```json [ { \"name\": \"VAR_1\", \"value\": \"foo\" }, { \"name\": \"VAR_2\", \"value\": \"$(VAR_1) bar\" } ] ``` If you switch the order of the variables in the example, then the expansion does not occur. This field corresponds to the `env` field of the Kubernetes Containers [v1 core API](https:\/\/v1-18.docs.kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.18\/#container-v1-core).",
+          "description": "Immutable. List of environment variables to set in the container. After the container starts running, code running in the container can read these environment variables. Additionally, the command and args fields can reference these variables. Later entries in this list can also reference earlier entries. For example, the following example sets the variable `VAR_2` to have the value `foo bar`: ```json [ { \"name\": \"VAR_1\", \"value\": \"foo\" }, { \"name\": \"VAR_2\", \"value\": \"$(VAR_1) bar\" } ] ``` If you switch the order of the variables in the example, then the expansion does not occur. This field corresponds to the `env` field of the Kubernetes Containers [v1 core API](https:\/\/kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.23\/#container-v1-core).",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudAiplatformV1alpha1EnvVar"
           }
         },
         "ports": {
-          "description": "Immutable. List of ports to expose from the container. Vertex AI sends any prediction requests that it receives to the first port on this list. Vertex AI also sends [liveness and health checks](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#liveness) to this port. If you do not specify this field, it defaults to following value: ```json [ { \"containerPort\": 8080 } ] ``` Vertex AI does not use ports other than the first one listed. This field corresponds to the `ports` field of the Kubernetes Containers [v1 core API](https:\/\/v1-18.docs.kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.18\/#container-v1-core).",
+          "description": "Immutable. List of ports to expose from the container. Vertex AI sends any prediction requests that it receives to the first port on this list. Vertex AI also sends [liveness and health checks](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#liveness) to this port. If you do not specify this field, it defaults to following value: ```json [ { \"containerPort\": 8080 } ] ``` Vertex AI does not use ports other than the first one listed. This field corresponds to the `ports` field of the Kubernetes Containers [v1 core API](https:\/\/kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.23\/#container-v1-core).",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudAiplatformV1alpha1Port"
@@ -6344,7 +6344,7 @@
     },
     "GoogleCloudAiplatformV1alpha1Study": {
       "id": "GoogleCloudAiplatformV1alpha1Study",
-      "description": "LINT.IfChange A message representing a Study.",
+      "description": "A message representing a Study.",
       "type": "object",
       "properties": {
         "name": {
@@ -7751,7 +7751,7 @@
     },
     "GoogleCloudAiplatformInternalHumanInTheLoop": {
       "id": "GoogleCloudAiplatformInternalHumanInTheLoop",
-      "description": "A human in the loop configuration describing how to trigger a human labeling job in a prediction process and properties of the human labeling job. Next id: 26",
+      "description": "A human in the loop configuration describing how to trigger a human labeling job in a prediction process and properties of the human labeling job. Next id: 27",
       "type": "object",
       "properties": {
         "documentCriteria": {
@@ -7887,6 +7887,10 @@
         "autoAssignConfig": {
           "description": "Auto task assignment configuration of this human in the loop.",
           "$ref": "GoogleCloudAiplatformInternalAutoAssignConfig"
+        },
+        "marketplaceEntitlement": {
+          "description": "GCP Marketplace entitlement information to be attached to this HITL.",
+          "$ref": "GoogleCloudAiplatformInternalHumanInTheLoopMarketplaceEntitlement"
         }
       }
     },
@@ -8099,6 +8103,29 @@
         "autoAssignOnCreation": {
           "description": "If set to true, it means at the time of HumanInTheLoopService.CreateHumanInTheLoop call, all the existing specialist workers in HumanInTheLoop will be assigned with all the future data labeling tasks associated with this HITL.",
           "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalHumanInTheLoopMarketplaceEntitlement": {
+      "id": "GoogleCloudAiplatformInternalHumanInTheLoopMarketplaceEntitlement",
+      "description": "Metadata describing a GCP Marketplace entitlement.",
+      "type": "object",
+      "properties": {
+        "cloudCommerceEntitlementId": {
+          "description": "The unique id from the GCP Marketplace entitlement.",
+          "type": "string"
+        },
+        "providerName": {
+          "description": "Name of the provider of the entitlement.",
+          "type": "string"
+        },
+        "productName": {
+          "description": "Name of the product.",
+          "type": "string"
+        },
+        "planName": {
+          "description": "Name of plan indicating a specific tier of service and pricing.",
+          "type": "string"
         }
       }
     },
@@ -10815,6 +10842,10 @@
         "automaticResources": {
           "description": "Optional. A description of resources that the DeployedIndex uses, which to large degree are decided by Vertex AI, and optionally allows only a modest additional configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000.",
           "$ref": "GoogleCloudAiplatformUiAutomaticResources"
+        },
+        "dedicatedResources": {
+          "description": "Optional. A description of resources that are dedicated to the DeployedIndex, and that need a higher degree of manual configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. Available machine types: n1-standard-16 n1-standard-32",
+          "$ref": "GoogleCloudAiplatformUiDedicatedResources"
         },
         "enableAccessLogging": {
           "description": "Optional. If true, private endpoint's access logs are sent to StackDriver Logging. These logs are like standard server access logs, containing information like timestamp and latency for each MatchRequest. Note that Stackdriver logs may incur a cost, especially if the deployed index receives a high queries per second rate (QPS). Estimate your costs before enabling this option.",
@@ -15149,6 +15180,10 @@
         "automaticResources": {
           "description": "Optional. A description of resources that the DeployedIndex uses, which to large degree are decided by Vertex AI, and optionally allows only a modest additional configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000.",
           "$ref": "GoogleCloudAiplatformV1beta1AutomaticResources"
+        },
+        "dedicatedResources": {
+          "description": "Optional. A description of resources that are dedicated to the DeployedIndex, and that need a higher degree of manual configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. Available machine types: n1-standard-16 n1-standard-32",
+          "$ref": "GoogleCloudAiplatformV1beta1DedicatedResources"
         },
         "enableAccessLogging": {
           "description": "Optional. If true, private endpoint's access logs are sent to StackDriver Logging. These logs are like standard server access logs, containing information like timestamp and latency for each MatchRequest. Note that Stackdriver logs may incur a cost, especially if the deployed index receives a high queries per second rate (QPS). Estimate your costs before enabling this option.",
@@ -19930,6 +19965,10 @@
         "automaticResources": {
           "description": "Optional. A description of resources that the DeployedIndex uses, which to large degree are decided by Vertex AI, and optionally allows only a modest additional configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000.",
           "$ref": "GoogleCloudAiplatformV1AutomaticResources"
+        },
+        "dedicatedResources": {
+          "description": "Optional. A description of resources that are dedicated to the DeployedIndex, and that need a higher degree of manual configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. Available machine types: n1-standard-16 n1-standard-32",
+          "$ref": "GoogleCloudAiplatformV1DedicatedResources"
         },
         "enableAccessLogging": {
           "description": "Optional. If true, private endpoint's access logs are sent to StackDriver Logging. These logs are like standard server access logs, containing information like timestamp and latency for each MatchRequest. Note that Stackdriver logs may incur a cost, especially if the deployed index receives a high queries per second rate (QPS). Estimate your costs before enabling this option.",

@@ -5,6 +5,93 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 369.0.0 (2022-01-19)
+
+### AI
+
+* Added `--labels` flag to `gcloud ai custom-jobs create` and `gcloud ai hp-tuning-jobs create` to support setting labels on the resources.
+
+### Artifact Registry
+
+* Removed deprecated repository format 'PYPI' from commands `gcloud artifacts repositories create` and `gcloud artifacts print-settings`.
+
+### Bare Metal Solution
+
+* Updated `gcloud bms instances list` to return the resource identifier.
+* Added `gcloud bms operations describe` and `gcloud bms operations wait` which checks the status or waits for completion of long-running operations in Bare Metal Solution.
+
+### Certificate Manager
+
+*   Promoted `gcloud certificate-manager` to beta.
+
+### Cloud Dataproc
+
+*  Added `gcloud dataproc batches` to submit and manage Dataproc batch jobs.
+*  Added `--master-local-ssd-interface`, `--worker-local-ssd-interface` and
+    `--secondary-worker-local-ssd-interface` to `gcloud dataproc clusters
+    create` to allow users to specify interface (SCSI/NVME) while attaching
+    local SSDs.
+*  Enabled Cloud Storage file location for `dataproc workflow-templates instantiate-from-file --file`.
+
+### Cloud Deploy
+
+*   Promoted `gcloud deploy` to GA.
+
+### Cloud Functions
+
+* Promote `gcloud functions --gen2` commands to beta.
+
+### Cloud IDS
+
+*   Updated `ids endpoints create` to pass in user-defined labels to the
+    Endpoint resource.
+*   `ids endpoints list` now returns the correct list of endpoints when `--uri`
+    is passed in.
+
+### Cloud Speech API
+
+* Added `--model` flag to `gcloud ml speech recognize` to specify ml model to
+  use for audio recognition.
+* Added `--output-uri` flag to `gcloud ml speech recognize-long-running`
+  allowing users to specify output transcript file on Google Cloud Storage.
+
+### Compute Engine
+
+* Promoted `--auto-renew` flag of `gcloud compute commitments create` and  `gcloud compute commitments update` to GA.
+* Added `FIXED_STANDARD` to allowed list of values for `--network-tier` flag.
+* Promoted flags `--cache-key-include-http-header` and `--cache-key-include-named-cookie` of `gcloud compute backend-services create` and `gcloud compute backend-services update` to GA.
+* Promoted flags `--cache-key-include-http-header` and `--cache-key-query-string-whitelist` of `gcloud compute backend-buckets create` and `gcloud compute backend-buckets update` to GA.
+* Promoted `--certificate-map` of 'compute target-https-proxies insert|update` to beta.
+* Added `--domain-names` for `gcloud compute service-attachments create`.
+* Promoted `--troubleshoot` flag of `gcloud compute ssh` to GA.
+* Added `21.04` and `21.10` to allowed list of values for `--version` of `gcloud beta compute instances ops-agents policies [create|update]`.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.70.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### GKE Hub
+
+*   Added `--internal-ip` flag to `gcloud container fleet memberships register` for version beta to maintain consistency with `gcloud beta container clusters get-credentials`.
+
+### Recaptcha
+
+* Added `--waf-feature`, and `--waf-service` options to `recaptcha keys create` command, supporting creation of WAF-enabled keys.
+
+### Recommender
+
+*   Added support for `gcloud beta recommender insight-type-config describe`.
+*   Added support for `gcloud beta recommender insight-type-config update`.
+
+### Service Directory
+
+* Added `--network` flag to `gcloud service-directory endpoints create` command.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 368.0.0 (2022-01-11)
 
 ### Breaking Changes

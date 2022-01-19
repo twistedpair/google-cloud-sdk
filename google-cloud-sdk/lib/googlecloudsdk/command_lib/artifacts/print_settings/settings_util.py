@@ -29,7 +29,6 @@ from googlecloudsdk.command_lib.artifacts.print_settings import apt
 from googlecloudsdk.command_lib.artifacts.print_settings import gradle
 from googlecloudsdk.command_lib.artifacts.print_settings import mvn
 from googlecloudsdk.command_lib.artifacts.print_settings import npm
-from googlecloudsdk.command_lib.artifacts.print_settings import pypi
 from googlecloudsdk.command_lib.artifacts.print_settings import python
 from googlecloudsdk.command_lib.artifacts.print_settings import yum
 from googlecloudsdk.core import config
@@ -398,31 +397,6 @@ def GetGradleTemplate(messages, maven_cfg, sa_creds):
     gradle_template = gradle.SERVICE_ACCOUNT_TEMPLATE
 
   return gradle_template
-
-
-def GetPypiSettingsSnippet(args):
-  """Forms a PyPI snippet to add to the .pypirc file (twine) and pip.conf file.
-
-  Args:
-    args: an argparse namespace. All the arguments that were provided to this
-      command invocation.
-
-  Returns:
-    A pypi snippet.
-  """
-  messages = ar_requests.GetMessages()
-  location, repo_path = _GetLocationAndRepoPath(
-      args, messages.Repository.FormatValueValuesEnum.PYPI)
-  repo = _GetRequiredRepoValue(args)
-  data = {"location": location, "repo_path": repo_path, "repo": repo}
-
-  sa_creds = _GetServiceAccountCreds(args)
-
-  if sa_creds:
-    data["password"] = sa_creds
-    return pypi.SERVICE_ACCOUNT_SETTING_TEMPLATE.format(**data)
-  else:
-    return pypi.NO_SERVICE_ACCOUNT_SETTING_TEMPLATE.format(**data)
 
 
 def GetPythonSettingsSnippet(args):

@@ -315,6 +315,36 @@ class SettingsClient(object):
       return self._UpdateService(args, event_threat_detection_settings,
                                  SERVICE_STATUS_MASK)
 
+  def InheritService(self, args):
+    """Set service enablement state of folder/project to "inherited"."""
+    if args.service == 'web-security-scanner':
+      web_security_center_settings = self.message_module.WebSecurityScannerSettings(
+          serviceEnablementState=self.message_module.WebSecurityScannerSettings
+          .ServiceEnablementStateValueValuesEnum.INHERITED)
+      return self._UpdateService(args, web_security_center_settings,
+                                 SERVICE_STATUS_MASK)
+    elif args.service == 'security-health-analytics':
+      security_health_analytics_settings = self.message_module.SecurityHealthAnalyticsSettings(
+          serviceEnablementState=self.message_module
+          .SecurityHealthAnalyticsSettings.ServiceEnablementStateValueValuesEnum
+          .INHERITED)
+      return self._UpdateService(args, security_health_analytics_settings,
+                                 SERVICE_STATUS_MASK)
+    elif args.service == 'container-threat-detection':
+      container_threat_detection_settings = self.message_module.ContainerThreatDetectionSettings(
+          serviceEnablementState=self.message_module
+          .ContainerThreatDetectionSettings
+          .ServiceEnablementStateValueValuesEnum.INHERITED)
+      return self._UpdateService(args, container_threat_detection_settings,
+                                 SERVICE_STATUS_MASK)
+    elif args.service == 'event-threat-detection':
+      event_threat_detection_settings = self.message_module.EventThreatDetectionSettings(
+          serviceEnablementState=self.message_module
+          .EventThreatDetectionSettings.ServiceEnablementStateValueValuesEnum
+          .INHERITED)
+      return self._UpdateService(args, event_threat_detection_settings,
+                                 SERVICE_STATUS_MASK)
+
   def _UpdateService(self, args, service_settings, update_mask):
     """Update service settings of organization/folder/project."""
 

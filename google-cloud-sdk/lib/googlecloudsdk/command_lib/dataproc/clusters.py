@@ -202,21 +202,18 @@ def ArgsForClusterRef(parser,
       """)
   parser.add_argument(
       '--master-local-ssd-interface',
-      hidden=True,
       help="""\
-      Interface to use while attaching local SSDs to main node(s) in a cluster.
+      Interface to use to attach local SSDs to master node(s) in a cluster.
       """)
   parser.add_argument(
       '--worker-local-ssd-interface',
-      hidden=True,
       help="""\
-      Interface to use while attaching local SSDs to each worker in a cluster.
+      Interface to use to attach local SSDs to each worker in a cluster.
       """)
   parser.add_argument(
       '--secondary-worker-local-ssd-interface',
-      hidden=True,
       help="""\
-      Interface to use while attaching local SSDs to each secondary worker
+      Interface to use to attach local SSDs to each secondary worker
       in a cluster.
       """)
   parser.add_argument(

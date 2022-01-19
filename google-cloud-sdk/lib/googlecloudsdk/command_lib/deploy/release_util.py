@@ -136,7 +136,7 @@ def LoadBuildArtifactFile(path):
 
 def CreateReleaseConfig(source, gcs_source_staging_dir, ignore_file, images,
                         build_artifacts, description, skaffold_version,
-                        skaffold_file):
+                        skaffold_file, location):
   """Returns a build config."""
   _VerifySkaffoldFileExists(source, skaffold_file)
   messages = client_util.GetMessagesModule(client_util.GetClientInstance())
@@ -144,7 +144,7 @@ def CreateReleaseConfig(source, gcs_source_staging_dir, ignore_file, images,
   release_config.description = description
   release_config = _SetSkaffoldConfigPath(release_config, skaffold_file)
   release_config = _SetSource(release_config, source, gcs_source_staging_dir,
-                              ignore_file, skaffold_version)
+                              ignore_file, skaffold_version, location)
   release_config = _SetImages(messages, release_config, images, build_artifacts)
   return release_config
 
@@ -154,12 +154,29 @@ def _SetSource(release_config,
                gcs_source_staging_dir,
                ignore_file,
                skaffold_version,
+               location,
                hide_logs=False):
-  """Set the source for the release config."""
+  """Set the source for the release config.
+
+  Sets the source for the release config and creates a default Cloud Storage
+  bucket with location for staging if gcs-source-staging-dir is not specified.
+
+  Args:
+    release_config: a Release message
+    source: the location of the source files
+    gcs_source_staging_dir: directory in google cloud storage to use for staging
+    ignore_file: the ignore file to use
+    skaffold_version: version of Skaffold binary
+    location: the cloud region for the release
+    hide_logs: whether to show logs, defaults to False
+
+  Returns:
+    Modified release_config
+  """
   safe_project_id = staging_bucket_util.GetSafeProject()
   default_gcs_source = False
   default_bucket_name = staging_bucket_util.GetDefaultStagingBucket(
-      safe_project_id)
+      safe_project_id, location)
 
   if gcs_source_staging_dir is None:
     default_gcs_source = True
@@ -186,7 +203,9 @@ def _SetSource(release_config,
 
   try:
     gcs_client.CreateBucketIfNotExists(
-        gcs_source_staging_dir.bucket, check_ownership=default_gcs_source)
+        gcs_source_staging_dir.bucket,
+        location=location,
+        check_ownership=default_gcs_source)
   except storage_api.BucketInWrongProjectError:
     # If we're using the default bucket but it already exists in a different
     # project, then it could belong to a malicious attacker (b/33046325).

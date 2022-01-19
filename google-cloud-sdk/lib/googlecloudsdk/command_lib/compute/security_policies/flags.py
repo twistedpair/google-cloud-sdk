@@ -95,8 +95,10 @@ def SecurityPolicyMultiScopeArgumentForTargetResource(resource, required=False):
       required=required,
       global_collection='compute.securityPolicies',
       regional_collection='compute.regionSecurityPolicies',
-      short_help=('The security policy that will be set for this {0}.'.format(
-          resource)))
+      short_help=(
+          ('The security policy that will be set for this {0}. To remove the '
+           'policy from this {0} set the policy to an empty string.'
+          ).format(resource)))
 
 
 def EdgeSecurityPolicyArgumentForTargetResource(resource, required=False):
@@ -107,8 +109,10 @@ def EdgeSecurityPolicyArgumentForTargetResource(resource, required=False):
       plural=False,
       required=required,
       global_collection='compute.securityPolicies',
-      short_help=('The edge security policy that will be set for this {0}.'
-                  .format(resource)))
+      short_help=(
+          ('The edge security policy that will be set for this {0}. To remove '
+           'the policy from this {0} set the policy to an empty string.'
+          ).format(resource)))
 
 
 def SecurityPolicyArgumentForRules(required=False):

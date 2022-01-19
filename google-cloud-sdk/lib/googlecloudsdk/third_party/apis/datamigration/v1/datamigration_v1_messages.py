@@ -387,10 +387,12 @@ class ConnectionProfile(_messages.Message):
       DATABASE_PROVIDER_UNSPECIFIED: The database provider is unknown.
       CLOUDSQL: CloudSQL runs the database.
       RDS: RDS runs the database.
+      AURORA: Amazon Aurora.
     """
     DATABASE_PROVIDER_UNSPECIFIED = 0
     CLOUDSQL = 1
     RDS = 2
+    AURORA = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""The current connection profile state (e.g. DRAFT, READY, or FAILED).
@@ -486,10 +488,12 @@ class DatabaseType(_messages.Message):
       DATABASE_PROVIDER_UNSPECIFIED: The database provider is unknown.
       CLOUDSQL: CloudSQL runs the database.
       RDS: RDS runs the database.
+      AURORA: Amazon Aurora.
     """
     DATABASE_PROVIDER_UNSPECIFIED = 0
     CLOUDSQL = 1
     RDS = 2
+    AURORA = 3
 
   engine = _messages.EnumField('EngineValueValuesEnum', 1)
   provider = _messages.EnumField('ProviderValueValuesEnum', 2)
@@ -586,7 +590,7 @@ class DatamigrationProjectsLocationsConnectionProfilesListRequest(_messages.Mess
       example, you could specify **mySql.username = %lt;my_username%gt;** to
       list all connection profiles configured to connect with a specific
       username.
-    orderBy: the order by fields for the result.
+    orderBy: A comma-separated list of fields to order results according to.
     pageSize: The maximum number of connection profiles to return. The service
       may return fewer than this value. If unspecified, at most 50 connection
       profiles will be returned. The maximum value is 1000; values above 1000

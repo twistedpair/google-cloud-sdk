@@ -61,7 +61,7 @@ class BigquerydatatransferV1(base_api.BaseApiClient):
           }
 
     def CheckValidCreds(self, request, global_params=None):
-      r"""Returns true if valid credentials exist for the given data source and requesting user. Some data sources doesn't support service account, so we need to talk to them on behalf of the end user. This API just checks whether we have OAuth token for the particular user, which is a pre-requisite before user can create a transfer config.
+      r"""Returns true if valid credentials exist for the given data source and requesting user.
 
       Args:
         request: (BigquerydatatransferProjectsDataSourcesCheckValidCredsRequest) input message
@@ -88,7 +88,7 @@ class BigquerydatatransferV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves a supported data source and returns its settings, which can be used for UI rendering.
+      r"""Retrieves a supported data source and returns its settings.
 
       Args:
         request: (BigquerydatatransferProjectsDataSourcesGetRequest) input message
@@ -115,7 +115,7 @@ class BigquerydatatransferV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists supported data sources and returns their settings, which can be used for UI rendering.
+      r"""Lists supported data sources and returns their settings.
 
       Args:
         request: (BigquerydatatransferProjectsDataSourcesListRequest) input message
@@ -152,7 +152,7 @@ class BigquerydatatransferV1(base_api.BaseApiClient):
           }
 
     def CheckValidCreds(self, request, global_params=None):
-      r"""Returns true if valid credentials exist for the given data source and requesting user. Some data sources doesn't support service account, so we need to talk to them on behalf of the end user. This API just checks whether we have OAuth token for the particular user, which is a pre-requisite before user can create a transfer config.
+      r"""Returns true if valid credentials exist for the given data source and requesting user.
 
       Args:
         request: (BigquerydatatransferProjectsLocationsDataSourcesCheckValidCredsRequest) input message
@@ -179,7 +179,7 @@ class BigquerydatatransferV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves a supported data source and returns its settings, which can be used for UI rendering.
+      r"""Retrieves a supported data source and returns its settings.
 
       Args:
         request: (BigquerydatatransferProjectsLocationsDataSourcesGetRequest) input message
@@ -206,7 +206,7 @@ class BigquerydatatransferV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists supported data sources and returns their settings, which can be used for UI rendering.
+      r"""Lists supported data sources and returns their settings.
 
       Args:
         request: (BigquerydatatransferProjectsLocationsDataSourcesListRequest) input message
@@ -243,7 +243,7 @@ class BigquerydatatransferV1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Returns user facing log messages for the data transfer run.
+      r"""Returns log messages for the transfer run.
 
       Args:
         request: (BigquerydatatransferProjectsLocationsTransferConfigsRunsTransferLogsListRequest) input message
@@ -334,7 +334,7 @@ class BigquerydatatransferV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Returns information about running and completed jobs.
+      r"""Returns information about running and completed transfer runs.
 
       Args:
         request: (BigquerydatatransferProjectsLocationsTransferConfigsRunsListRequest) input message
@@ -661,7 +661,7 @@ class BigquerydatatransferV1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Returns user facing log messages for the data transfer run.
+      r"""Returns log messages for the transfer run.
 
       Args:
         request: (BigquerydatatransferProjectsTransferConfigsRunsTransferLogsListRequest) input message
@@ -752,7 +752,7 @@ class BigquerydatatransferV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Returns information about running and completed jobs.
+      r"""Returns information about running and completed transfer runs.
 
       Args:
         request: (BigquerydatatransferProjectsTransferConfigsRunsListRequest) input message

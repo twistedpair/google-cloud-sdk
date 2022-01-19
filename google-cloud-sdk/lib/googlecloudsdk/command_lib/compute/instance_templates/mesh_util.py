@@ -633,7 +633,9 @@ class KubernetesClient(object):
 
     self.temp_kubeconfig_dir = files.TemporaryDirectory()
     self.processor = hub_kube_util.KubeconfigProcessor(
-        gke_uri=None, gke_cluster=gke_cluster, kubeconfig=None, context=None)
+        api_adapter=None, gke_uri=None, gke_cluster=gke_cluster,
+        kubeconfig=None, internal_ip=False, cross_connect_subnetwork=None,
+        private_endpoint_fqdn=None, context=None)
     self.kubeconfig, self.context = self.processor.GetKubeconfigAndContext(
         self.temp_kubeconfig_dir)
 

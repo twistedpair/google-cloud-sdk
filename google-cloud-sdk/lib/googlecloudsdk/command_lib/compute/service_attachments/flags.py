@@ -86,6 +86,18 @@ def AddEnableProxyProtocolForUpdate(parser):
       """)
 
 
+def AddDomainNames(parser):
+  parser.add_argument(
+      '--domain-names',
+      type=arg_parsers.ArgList(),
+      metavar='DOMAIN_NAMES',
+      default=None,
+      help="""\
+      Specifies a comma separated list of DNS domain names that are used during
+      DNS integration on PSC connected endpoints.
+      """)
+
+
 def AddConsumerRejectList(parser):
   parser.add_argument(
       '--consumer-reject-list',

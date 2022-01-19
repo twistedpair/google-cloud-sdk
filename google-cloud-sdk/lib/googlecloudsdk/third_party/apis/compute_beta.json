@@ -4,7 +4,7 @@
   "id": "compute:beta",
   "name": "compute",
   "version": "beta",
-  "revision": "20211220",
+  "revision": "20220107",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -8005,6 +8005,26 @@
           "description": "[Output Only] The number of instances in the managed instance group that are being reconfigured with properties that do not require a restart or a recreate action. For example, setting or removing target pools for the instance.",
           "type": "integer",
           "format": "int32"
+        },
+        "suspending": {
+          "description": "[Output Only] The number of instances in the managed instance group that are scheduled to be suspended or are currently being suspended.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "resuming": {
+          "description": "[Output Only] The number of instances in the managed instance group that are scheduled to be resumed or are currently being resumed.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "stopping": {
+          "description": "[Output Only] The number of instances in the managed instance group that are scheduled to be stopped or are currently being stopped.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "starting": {
+          "description": "[Output Only] The number of instances in the managed instance group that are scheduled to be started or are currently being started.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -8645,6 +8665,10 @@
             "The managed instance group is recreating this instance.",
             "The managed instance group is applying configuration changes to the instance without stopping it. For example, the group can update the target pool list for an instance without stopping that instance.",
             "The managed instance group is restarting this instance.",
+            "The managed instance group is resuming this instance.",
+            "The managed instance group is starting this instance.",
+            "The managed instance group is stopping this instance.",
+            "The managed instance group is suspending this instance.",
             "The managed instance group is verifying this already created instance. Verification happens every time the instance is (re)created or restarted and consists of: 1. Waiting until health check specified as part of this managed instance group's autohealing policy reports HEALTHY. Note: Applies only if autohealing policy has a health check specified 2. Waiting for addition verification steps performed as post-instance creation (subject to future extensions)."
           ],
           "enum": [
@@ -8656,6 +8680,10 @@
             "RECREATING",
             "REFRESHING",
             "RESTARTING",
+            "RESUMING",
+            "STARTING",
+            "STOPPING",
+            "SUSPENDING",
             "VERIFYING"
           ]
         },
@@ -8917,6 +8945,10 @@
             "The managed instance group is recreating this instance.",
             "The managed instance group is applying configuration changes to the instance without stopping it. For example, the group can update the target pool list for an instance without stopping that instance.",
             "The managed instance group is restarting this instance.",
+            "The managed instance group is resuming this instance.",
+            "The managed instance group is starting this instance.",
+            "The managed instance group is stopping this instance.",
+            "The managed instance group is suspending this instance.",
             "The managed instance group is verifying this already created instance. Verification happens every time the instance is (re)created or restarted and consists of: 1. Waiting until health check specified as part of this managed instance group's autohealing policy reports HEALTHY. Note: Applies only if autohealing policy has a health check specified 2. Waiting for addition verification steps performed as post-instance creation (subject to future extensions)."
           ],
           "enum": [
@@ -8928,6 +8960,10 @@
             "RECREATING",
             "REFRESHING",
             "RESTARTING",
+            "RESUMING",
+            "STARTING",
+            "STOPPING",
+            "SUSPENDING",
             "VERIFYING"
           ]
         },
@@ -11122,7 +11158,7 @@
           "$ref": "BackendServiceLogConfig"
         },
         "securitySettings": {
-          "description": "This field specifies the security policy that applies to this backend service. This field is applicable to either: - A regional backend service with the service_protocol set to HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED. - A global backend service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED. ",
+          "description": "This field specifies the security settings that apply to this backend service. This field is applicable to a global backend service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED.",
           "$ref": "SecuritySettings"
         },
         "localityLbPolicy": {
@@ -22876,7 +22912,9 @@
             "",
             "",
             "",
+            "",
             "Guest CPUs",
+            "",
             "",
             "",
             "",
@@ -22993,6 +23031,7 @@
             "COMMITTED_E2_CPUS",
             "COMMITTED_LICENSES",
             "COMMITTED_LOCAL_SSD_TOTAL_GB",
+            "COMMITTED_M3_CPUS",
             "COMMITTED_MEMORY_OPTIMIZED_CPUS",
             "COMMITTED_N2A_CPUS",
             "COMMITTED_N2D_CPUS",
@@ -23036,6 +23075,7 @@
             "LOCAL_SSD_TOTAL_GB",
             "M1_CPUS",
             "M2_CPUS",
+            "M3_CPUS",
             "MACHINE_IMAGES",
             "N2A_CPUS",
             "N2D_CPUS",
@@ -37784,7 +37824,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "Simulates a maintenance event on the instance."
+          "description": "Simulates a host maintenance event on a VM. For more information, see Simulate a host maintenance event."
         },
         "addAccessConfig": {
           "id": "compute.instances.addAccessConfig",

@@ -287,19 +287,24 @@ def AddCreateDestinationArgs(parser, release_track, required=False):
       required=required,
       help='Flags for specifying the destination to which events should be sent.'
   )
-  _AddCreateCloudRunDestinationArgs(dest_group)
+  _AddCreateCloudRunDestinationArgs(dest_group, release_track)
   if release_track == base.ReleaseTrack.GA:
     _AddCreateGKEDestinationArgs(dest_group)
     _AddCreateWorkflowDestinationArgs(dest_group, hidden=True)
 
 
-def _AddCreateCloudRunDestinationArgs(parser, required=False):
-  """Adds arguments related to trigger's Cloud Run fully-managed service destination for create operations."""
+def _AddCreateCloudRunDestinationArgs(parser, release_track, required=False):
+  """Adds arguments related to trigger's Cloud Run fully-managed resource destination for create operations."""
   run_group = parser.add_group(
       required=required,
-      help='Flags for specifying a Cloud Run fully-managed service destination.'
+      help='Flags for specifying a Cloud Run fully-managed resource destination.'
   )
-  AddDestinationRunServiceArg(run_group, required=True)
+  resource_group = run_group.add_mutually_exclusive_group(required=True)
+  AddDestinationRunServiceArg(resource_group)
+  # When this is not True and only the service flag is in the mutually exclusive
+  # group, it will appear the same as if it was directly in the base run_group.
+  if release_track == base.ReleaseTrack.GA:
+    AddDestinationRunJobArg(resource_group)
   AddDestinationRunPathArg(run_group)
   AddDestinationRunRegionArg(run_group)
 
@@ -332,18 +337,23 @@ def AddUpdateDestinationArgs(parser, release_track, required=False):
   dest_group = parser.add_mutually_exclusive_group(
       required=required,
       help='Flags for updating the destination to which events should be sent.')
-  _AddUpdateCloudRunDestinationArgs(dest_group)
+  _AddUpdateCloudRunDestinationArgs(dest_group, release_track)
   if release_track == base.ReleaseTrack.GA:
     _AddUpdateGKEDestinationArgs(dest_group)
     _AddUpdateWorkflowDestinationArgs(dest_group, hidden=True)
 
 
-def _AddUpdateCloudRunDestinationArgs(parser, required=False):
-  """Adds arguments related to trigger's Cloud Run fully-managed service destination for update operations."""
+def _AddUpdateCloudRunDestinationArgs(parser, release_track, required=False):
+  """Adds arguments related to trigger's Cloud Run fully-managed resource destination for update operations."""
   run_group = parser.add_group(
       required=required,
-      help='Flags for updating a Cloud Run fully-managed service destination.')
-  AddDestinationRunServiceArg(run_group)
+      help='Flags for updating a Cloud Run fully-managed resource destination.')
+  resource_group = run_group.add_mutually_exclusive_group()
+  AddDestinationRunServiceArg(resource_group)
+  # When this is not True and only the service flag is in the mutually exclusive
+  # group, it will appear the same as if it was directly in the base run_group.
+  if release_track == base.ReleaseTrack.GA:
+    AddDestinationRunJobArg(resource_group)
   AddDestinationRunRegionArg(run_group)
   destination_run_path_group = run_group.add_mutually_exclusive_group()
   AddDestinationRunPathArg(destination_run_path_group)
@@ -373,13 +383,22 @@ def _AddUpdateWorkflowDestinationArgs(parser, required=False, hidden=False):
   _AddDestinationWorkflowLocationArg(workflow_group)
 
 
-def AddDestinationRunServiceArg(parser, required=False):
+def AddDestinationRunServiceArg(parser):
   """Adds an argument for the trigger's destination Cloud Run service."""
   parser.add_argument(
       '--destination-run-service',
-      required=required,
       help='Name of the Cloud Run fully-managed service that receives the '
       'events for the trigger. The service must be in the same project as the '
+      'trigger.')
+
+
+def AddDestinationRunJobArg(parser):
+  """Adds an argument for the trigger's destination Cloud Run job."""
+  parser.add_argument(
+      '--destination-run-job',
+      hidden=True,
+      help='Name of the Cloud Run fully-managed job that receives the '
+      'events for the trigger. The job must be in the same project as the '
       'trigger.')
 
 

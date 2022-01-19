@@ -214,12 +214,13 @@ class _TriggersClient(_BaseTriggersClient):
         channel=channel)
 
   def BuildCloudRunDestinationMessage(self, destination_run_service,
-                                      destination_run_path,
+                                      destination_run_job, destination_run_path,
                                       destination_run_region):
     """Builds a Destination message for a destination Cloud Run service.
 
     Args:
       destination_run_service: str or None, the destination Cloud Run service.
+      destination_run_job: str or None, the destination Cloud Run job.
       destination_run_path: str or None, the path on the destination Cloud Run
         service.
       destination_run_region: str or None, the destination Cloud Run service's
@@ -228,8 +229,11 @@ class _TriggersClient(_BaseTriggersClient):
     Returns:
       A Destination message for a destination Cloud Run service.
     """
+    # Because the flags for service and job are in a mutually exclusive group,
+    # we can set both here under the assumption one of them will be None.
     run_message = self._messages.CloudRun(
         service=destination_run_service,
+        job=destination_run_job,
         path=destination_run_path,
         region=destination_run_region)
     return self._messages.Destination(cloudRun=run_message)
@@ -282,10 +286,10 @@ class _TriggersClient(_BaseTriggersClient):
 
   def BuildUpdateMask(self, event_filters, event_filters_path_pattern,
                       service_account, destination_run_service,
-                      destination_run_path, destination_run_region,
-                      destination_gke_namespace, destination_gke_service,
-                      destination_gke_path, destination_workflow,
-                      destination_workflow_location):
+                      destination_run_job, destination_run_path,
+                      destination_run_region, destination_gke_namespace,
+                      destination_gke_service, destination_gke_path,
+                      destination_workflow, destination_workflow_location):
     """Builds an update mask for updating a Cloud Run trigger.
 
     Args:
@@ -295,6 +299,8 @@ class _TriggersClient(_BaseTriggersClient):
       service_account: bool, whether to update the service account.
       destination_run_service: bool, whether to update the destination Cloud Run
         service.
+      destination_run_job: bool, whether to update the desintation Cloud Run
+        job.
       destination_run_path: bool, whether to update the destination Cloud Run
         path.
       destination_run_region: bool, whether to update the destination Cloud Run
@@ -321,6 +327,8 @@ class _TriggersClient(_BaseTriggersClient):
       update_mask.append('destination.cloudRun.region')
     if destination_run_service:
       update_mask.append('destination.cloudRun.service')
+    if destination_run_job:
+      update_mask.append('destination.cloudRun.job')
     if destination_gke_namespace:
       update_mask.append('destination.gke.namespace')
     if destination_gke_service:
@@ -382,12 +390,15 @@ class _TriggersClientBeta(_BaseTriggersClient):
         transport=transport)
 
   def BuildCloudRunDestinationMessage(self, destination_run_service,
+                                      destination_run_job,
                                       destination_run_path,
                                       destination_run_region):
     """Builds a Destination message for a destination Cloud Run service.
 
     Args:
       destination_run_service: str or None, the destination Cloud Run service.
+      destination_run_job: this destination is not supported in the beta API,
+        but is included as an argument here for method consistency with v1.
       destination_run_path: str or None, the path on the destination Cloud Run
         service.
       destination_run_region: str or None, the destination Cloud Run service's
@@ -396,6 +407,8 @@ class _TriggersClientBeta(_BaseTriggersClient):
     Returns:
       A Destination message for a destination Cloud Run service.
     """
+    del destination_run_job  # Not supported in beta API
+
     run_message = self._messages.CloudRunService(
         service=destination_run_service,
         path=destination_run_path,
@@ -403,14 +416,16 @@ class _TriggersClientBeta(_BaseTriggersClient):
     return self._messages.Destination(cloudRunService=run_message)
 
   def BuildUpdateMask(self, event_filters, service_account,
-                      destination_run_service, destination_run_path,
-                      destination_run_region):
+                      destination_run_service, destination_run_job,
+                      destination_run_path, destination_run_region):
     """Builds an update mask for updating a trigger.
 
     Args:
       event_filters: bool, whether to update the event filters.
       service_account: bool, whether to update the service account.
       destination_run_service: bool, whether to update the destination service.
+      destination_run_job: this destination is not supported in the beta API,
+        but is included as an argument here for method consistency with v1.
       destination_run_path: bool, whether to update the destination path.
       destination_run_region: bool, whether to update the destination region.
 
@@ -420,6 +435,8 @@ class _TriggersClientBeta(_BaseTriggersClient):
     Raises:
       NoFieldsSpecifiedError: No fields are being updated.
     """
+    del destination_run_job  # Not supported in beta API
+
     update_mask = []
     if destination_run_path:
       update_mask.append('destination.cloudRunService.path')

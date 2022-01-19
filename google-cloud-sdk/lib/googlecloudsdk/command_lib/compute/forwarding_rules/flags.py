@@ -694,7 +694,8 @@ def AddNetworkTier(parser, supports_network_tier_flag, for_update):
           type=lambda x: x.upper(),
           help="""\
           Network tier to assign to the forwarding rules. ``NETWORK_TIER''
-          must be one of: `PREMIUM`, `STANDARD`. The default value is `PREMIUM`.
+          must be one of: `PREMIUM`, `STANDARD`, `FIXED_STANDARD`.
+          The default value is `PREMIUM`.
           """)
 
 

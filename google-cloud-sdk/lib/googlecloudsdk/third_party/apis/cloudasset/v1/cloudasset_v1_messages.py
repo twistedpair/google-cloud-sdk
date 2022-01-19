@@ -439,8 +439,12 @@ class CloudassetAnalyzeIamPolicyRequest(_messages.Message):
       there's another IAM policy states service account SA has permission P to
       the GCP folder F, then user A potentially has access to the GCP folder
       F. And those advanced analysis results will be included in
-      AnalyzeIamPolicyResponse.service_account_impersonation_analysis. Default
-      is false.
+      AnalyzeIamPolicyResponse.service_account_impersonation_analysis. Only
+      the following permissions are considered in this analysis: *
+      `iam.serviceAccounts.actAs` * `iam.serviceAccounts.signBlob` *
+      `iam.serviceAccounts.signJwt` * `iam.serviceAccounts.getAccessToken` *
+      `iam.serviceAccounts.getOpenIdToken` *
+      `iam.serviceAccounts.implicitDelegation` Default is false.
     analysisQuery_options_expandGroups: Optional. If true, the identities
       section of the result will expand any Google groups appearing in an IAM
       policy binding. If IamPolicyAnalysisQuery.identity_selector is
@@ -3341,8 +3345,12 @@ class Options(_messages.Message):
       there's another IAM policy states service account SA has permission P to
       the GCP folder F, then user A potentially has access to the GCP folder
       F. And those advanced analysis results will be included in
-      AnalyzeIamPolicyResponse.service_account_impersonation_analysis. Default
-      is false.
+      AnalyzeIamPolicyResponse.service_account_impersonation_analysis. Only
+      the following permissions are considered in this analysis: *
+      `iam.serviceAccounts.actAs` * `iam.serviceAccounts.signBlob` *
+      `iam.serviceAccounts.signJwt` * `iam.serviceAccounts.getAccessToken` *
+      `iam.serviceAccounts.getOpenIdToken` *
+      `iam.serviceAccounts.implicitDelegation` Default is false.
     expandGroups: Optional. If true, the identities section of the result will
       expand any Google groups appearing in an IAM policy binding. If
       IamPolicyAnalysisQuery.identity_selector is specified, the identity in

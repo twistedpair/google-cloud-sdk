@@ -2607,13 +2607,13 @@
         },
         "getSettings": {
           "id": "logging.getSettings",
-          "path": "v2/{+name}",
+          "path": "v2/{+name}/settings",
           "flatPath": "v2/{v2Id}/{v2Id1}/settings",
           "httpMethod": "GET",
           "parameters": {
             "name": {
               "description": "Required. The resource for which to retrieve settings. \"projects\/[PROJECT_ID]\/settings\" \"organizations\/[ORGANIZATION_ID]\/settings\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/settings\" \"folders\/[FOLDER_ID]\/settings\" For example:\"organizations\/12345\/settings\"Note: Settings for the Log Router can be get for Google Cloud projects, folders, organizations and billing accounts. Currently it can only be configured for organizations. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.",
-              "pattern": "^[^\/]+\/[^\/]+\/settings$",
+              "pattern": "^[^\/]+\/[^\/]+$",
               "location": "path",
               "required": true,
               "type": "string"
@@ -2635,13 +2635,13 @@
         },
         "updateSettings": {
           "id": "logging.updateSettings",
-          "path": "v2/{+name}",
+          "path": "v2/{+name}/settings",
           "flatPath": "v2/{v2Id}/{v2Id1}/settings",
           "httpMethod": "PATCH",
           "parameters": {
             "name": {
               "description": "Required. The resource name for the settings to update. \"organizations\/[ORGANIZATION_ID]\/settings\" For example:\"organizations\/12345\/settings\"Note: Settings for the Log Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.",
-              "pattern": "^[^\/]+\/[^\/]+\/settings$",
+              "pattern": "^[^\/]+\/[^\/]+$",
               "location": "path",
               "required": true,
               "type": "string"
@@ -2702,13 +2702,13 @@
         },
         "getSettings": {
           "id": "logging.projects.getSettings",
-          "path": "v2/{+name}",
+          "path": "v2/{+name}/settings",
           "flatPath": "v2/projects/{projectsId}/settings",
           "httpMethod": "GET",
           "parameters": {
             "name": {
               "description": "Required. The resource for which to retrieve settings. \"projects\/[PROJECT_ID]\/settings\" \"organizations\/[ORGANIZATION_ID]\/settings\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/settings\" \"folders\/[FOLDER_ID]\/settings\" For example:\"organizations\/12345\/settings\"Note: Settings for the Log Router can be get for Google Cloud projects, folders, organizations and billing accounts. Currently it can only be configured for organizations. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.",
-              "pattern": "^projects\/[^\/]+\/settings$",
+              "pattern": "^projects\/[^\/]+$",
               "location": "path",
               "required": true,
               "type": "string"
@@ -3953,13 +3953,13 @@
         },
         "getSettings": {
           "id": "logging.organizations.getSettings",
-          "path": "v2/{+name}",
+          "path": "v2/{+name}/settings",
           "flatPath": "v2/organizations/{organizationsId}/settings",
           "httpMethod": "GET",
           "parameters": {
             "name": {
               "description": "Required. The resource for which to retrieve settings. \"projects\/[PROJECT_ID]\/settings\" \"organizations\/[ORGANIZATION_ID]\/settings\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/settings\" \"folders\/[FOLDER_ID]\/settings\" For example:\"organizations\/12345\/settings\"Note: Settings for the Log Router can be get for Google Cloud projects, folders, organizations and billing accounts. Currently it can only be configured for organizations. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.",
-              "pattern": "^organizations\/[^\/]+\/settings$",
+              "pattern": "^organizations\/[^\/]+$",
               "location": "path",
               "required": true,
               "type": "string"
@@ -3981,13 +3981,13 @@
         },
         "updateSettings": {
           "id": "logging.organizations.updateSettings",
-          "path": "v2/{+name}",
+          "path": "v2/{+name}/settings",
           "flatPath": "v2/organizations/{organizationsId}/settings",
           "httpMethod": "PATCH",
           "parameters": {
             "name": {
               "description": "Required. The resource name for the settings to update. \"organizations\/[ORGANIZATION_ID]\/settings\" For example:\"organizations\/12345\/settings\"Note: Settings for the Log Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.",
-              "pattern": "^organizations\/[^\/]+\/settings$",
+              "pattern": "^organizations\/[^\/]+$",
               "location": "path",
               "required": true,
               "type": "string"
@@ -5046,13 +5046,13 @@
         },
         "getSettings": {
           "id": "logging.folders.getSettings",
-          "path": "v2/{+name}",
+          "path": "v2/{+name}/settings",
           "flatPath": "v2/folders/{foldersId}/settings",
           "httpMethod": "GET",
           "parameters": {
             "name": {
               "description": "Required. The resource for which to retrieve settings. \"projects\/[PROJECT_ID]\/settings\" \"organizations\/[ORGANIZATION_ID]\/settings\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/settings\" \"folders\/[FOLDER_ID]\/settings\" For example:\"organizations\/12345\/settings\"Note: Settings for the Log Router can be get for Google Cloud projects, folders, organizations and billing accounts. Currently it can only be configured for organizations. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.",
-              "pattern": "^folders\/[^\/]+\/settings$",
+              "pattern": "^folders\/[^\/]+$",
               "location": "path",
               "required": true,
               "type": "string"
@@ -6104,13 +6104,13 @@
         },
         "getSettings": {
           "id": "logging.billingAccounts.getSettings",
-          "path": "v2/{+name}",
+          "path": "v2/{+name}/settings",
           "flatPath": "v2/billingAccounts/{billingAccountsId}/settings",
           "httpMethod": "GET",
           "parameters": {
             "name": {
               "description": "Required. The resource for which to retrieve settings. \"projects\/[PROJECT_ID]\/settings\" \"organizations\/[ORGANIZATION_ID]\/settings\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/settings\" \"folders\/[FOLDER_ID]\/settings\" For example:\"organizations\/12345\/settings\"Note: Settings for the Log Router can be get for Google Cloud projects, folders, organizations and billing accounts. Currently it can only be configured for organizations. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.",
-              "pattern": "^billingAccounts\/[^\/]+\/settings$",
+              "pattern": "^billingAccounts\/[^\/]+$",
               "location": "path",
               "required": true,
               "type": "string"

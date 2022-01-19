@@ -1230,3 +1230,14 @@ def GetApiBaseUrl(api_name, api_version):
       if url_version is None:
         base_url += api_version + '/'
   return base_url
+
+
+def GetApiBaseUrlOrThrow(api_name, api_version):
+  """Determine base url to use for resources of given version."""
+  # Uses current override endpoint for this resource name or throws an exception
+  api_bese_url = GetApiBaseUrl(api_name, api_version)
+  if api_bese_url is None:
+    raise UserError(
+        'gcloud config property {} needs to be set in api_endpoint_overrides '
+        'section.'.format(api_name))
+  return api_bese_url

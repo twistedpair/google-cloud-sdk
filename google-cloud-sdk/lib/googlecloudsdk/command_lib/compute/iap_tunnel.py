@@ -47,6 +47,11 @@ import six
 from six.moves import queue
 
 
+if not platforms.OperatingSystem.IsWindows():
+  import fcntl  # pylint: disable=g-import-not-at-top
+else:
+  from ctypes import wintypes  # pylint: disable=g-import-not-at-top
+
 READ_FROM_STDIN_TIMEOUT_SECS = 3
 
 
@@ -295,6 +300,9 @@ def _OpenLocalTcpSockets(local_host, local_port):
     except socket.error:
       continue
     try:
+      if not platforms.OperatingSystem.IsWindows():
+        # This allows us to restart quickly on the same port. See b/213858080.
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
       s.bind(sock_addr)
       s.listen(1)
       open_sockets.append(s)
@@ -357,6 +365,20 @@ class _StdinSocket(object):
           target=self._ReadFromStdinAndEnqueueMessageWindows)
       self._reading_thread.daemon = True
       self._reading_thread.start()
+    else:
+      self._old_flags = fcntl.fcntl(sys.stdin, fcntl.F_GETFL)
+      # Set up non-blocking mode to avoid getting stuck on read.
+      fcntl.fcntl(sys.stdin, fcntl.F_SETFL, self._old_flags | os.O_NONBLOCK)
+
+  def __del__(self):
+    # We need to restore the flags, even when gcloud exits, nonblocking stdin
+    # causes weird problems in that terminal, such as cat stops working.
+    # This will happen if gcloud is running with stdin mode directly, then
+    # killed between the set nonblocking and the restore. The user could fix
+    # that by running bash and exiting it, or just closing the terminal.
+    # If gcloud is running as an ssh ProxyCommand this problem doesn't happen.
+    if not platforms.OperatingSystem.IsWindows():
+      fcntl.fcntl(sys.stdin, fcntl.F_SETFL, self._old_flags)
 
   def send(self, data):  # pylint: disable=invalid-name
     files.WriteStreamBytes(sys.stdout, data)
@@ -417,7 +439,6 @@ class _StdinSocket(object):
 
     try:
       while not self._stdin_closed:
-        from ctypes import wintypes  # pylint: disable=g-import-not-at-top
         # STD_INPUT_HANDLE is -10
         h = ctypes.windll.kernel32.GetStdHandle(-10)
         buf = ctypes.create_string_buffer(self._bufsize)
@@ -519,11 +540,7 @@ class _StdinSocket(object):
     # In python 3, we need to read stdin in a binary way, not a text way to
     # read bytes instead of str. In python 2, binary mode vs text mode only
     # matters on Windows.
-    import fcntl  # pylint: disable=g-import-not-at-top
-    old_flags = fcntl.fcntl(sys.stdin, fcntl.F_GETFL)
     try:
-      # Set up non-blocking mode to avoid getting stuck on read.
-      fcntl.fcntl(sys.stdin, fcntl.F_SETFL, old_flags | os.O_NONBLOCK)
       if six.PY2:
         b = sys.stdin.read(bufsize)
       else:
@@ -538,18 +555,6 @@ class _StdinSocket(object):
         # to IOError.
         return b''
       raise
-    finally:
-      # We need to restore the flags no matter what when exiting this function.
-      # Other code assumes it's blocking. Also even when gcloud exits,
-      # nonblocking stdin causes weird problems in that terminal, such as cat
-      # stops working.
-      # There's actually still a small chance of that happening if gcloud is
-      # running like this directly, then killed in the small time between the
-      # set nonblocking and the restore. The user could fix that by running bash
-      # and exiting it, or just closing the terminal.
-      # If gcloud is running as an ssh ProxyCommand this problem doesn't happen.
-      fcntl.fcntl(sys.stdin, fcntl.F_SETFL, old_flags)
-
     if b == b'':  # pylint: disable=g-explicit-bool-comparison
       # In python 2 and 3, EOF is indicated by returning b''.
       raise _StdinSocket._EOFError

@@ -146,22 +146,20 @@ class IndexEndpointsClient(object):
     """Deploy an index to an index endpoint."""
     index_ref = _ParseIndex(args.index, args.region)
 
-    automatic_resources =\
-          self.messages.GoogleCloudAiplatformV1beta1AutomaticResources()
+    automatic_resources = self.messages.GoogleCloudAiplatformV1beta1AutomaticResources(
+    )
     if args.min_replica_count is not None:
       automatic_resources.minReplicaCount = args.min_replica_count
     if args.max_replica_count is not None:
       automatic_resources.maxReplicaCount = args.max_replica_count
 
-    deployed_index =\
-          self.messages.GoogleCloudAiplatformV1beta1DeployedIndex(
-              automaticResources=automatic_resources,
-              displayName=args.display_name,
-              id=args.deployed_index_id,
-              index=index_ref.RelativeName())
-    deploy_index_req =\
-        self.messages.GoogleCloudAiplatformV1beta1DeployIndexRequest(
-            deployedIndex=deployed_index)
+    deployed_index = self.messages.GoogleCloudAiplatformV1beta1DeployedIndex(
+        automaticResources=automatic_resources,
+        displayName=args.display_name,
+        id=args.deployed_index_id,
+        index=index_ref.RelativeName())
+    deploy_index_req = self.messages.GoogleCloudAiplatformV1beta1DeployIndexRequest(
+        deployedIndex=deployed_index)
     request = self.messages.AiplatformProjectsLocationsIndexEndpointsDeployIndexRequest(
         indexEndpoint=index_endpoint_ref.RelativeName(),
         googleCloudAiplatformV1beta1DeployIndexRequest=deploy_index_req)
@@ -207,6 +205,40 @@ class IndexEndpointsClient(object):
         indexEndpoint=index_endpoint_ref.RelativeName(),
         googleCloudAiplatformV1UndeployIndexRequest=undeploy_index_req)
     return self._service.UndeployIndex(request)
+
+  def MutateDeployedIndexBeta(self, index_endpoint_ref, args):
+    """Mutate an deployed index from an index endpoint."""
+
+    automatic_resources = self.messages.GoogleCloudAiplatformV1beta1AutomaticResources(
+    )
+    if args.min_replica_count is not None:
+      automatic_resources.minReplicaCount = args.min_replica_count
+    if args.max_replica_count is not None:
+      automatic_resources.maxReplicaCount = args.max_replica_count
+
+    deployed_index = self.messages.GoogleCloudAiplatformV1beta1DeployedIndex(
+        automaticResources=automatic_resources, id=args.deployed_index_id)
+    request = self.messages.AiplatformProjectsLocationsIndexEndpointsMutateDeployedIndexRequest(
+        indexEndpoint=index_endpoint_ref.RelativeName(),
+        googleCloudAiplatformV1beta1DeployedIndex=deployed_index)
+    return self._service.MutateDeployedIndex(request)
+
+  def MutateDeployedIndex(self, index_endpoint_ref, args):
+    """Mutate an deployed index from an index endpoint."""
+
+    automatic_resources = self.messages.GoogleCloudAiplatformV1AutomaticResources(
+    )
+    if args.min_replica_count is not None:
+      automatic_resources.minReplicaCount = args.min_replica_count
+    if args.max_replica_count is not None:
+      automatic_resources.maxReplicaCount = args.max_replica_count
+
+    deployed_index = self.messages.GoogleCloudAiplatformV1DeployedIndex(
+        id=args.deployed_index_id, automaticResources=automatic_resources)
+    request = self.messages.AiplatformProjectsLocationsIndexEndpointsMutateDeployedIndexRequest(
+        indexEndpoint=index_endpoint_ref.RelativeName(),
+        googleCloudAiplatformV1DeployedIndex=deployed_index)
+    return self._service.MutateDeployedIndex(request)
 
   def Get(self, index_endpoint_ref):
     request = self.messages.AiplatformProjectsLocationsIndexEndpointsGetRequest(

@@ -265,7 +265,7 @@ def ShouldUseGen2():
 
 
 def _ShouldHideV2Flags(track):
-  return track is not base.ReleaseTrack.ALPHA
+  return track is base.ReleaseTrack.GA
 
 
 def ShouldEnsureAllUsersInvoke(args):
@@ -747,7 +747,7 @@ def AddCloudEventsFlag(parser, track):
 
       Mutually exclusive with --data flag.
 
-      Use for Cloud Functions V2 CloudEvent functions. The CloudEvent
+      Use for Cloud Functions 2nd Gen CloudEvent functions. The CloudEvent
       object will be sent to your function as a binary content mode message with
       the top-level 'data' field set as the HTTP body and all other JSON fields
       sent as HTTP headers.
@@ -769,11 +769,11 @@ def AddIgnoreFileFlag(parser):
   )
 
 
-def AddSignatureTypeFlag(parser, track):
+def AddSignatureTypeFlag(parser):
   base.ChoiceArgument(
       '--signature-type',
       choices=SIGNATURE_TYPES,
-      hidden=_ShouldHideV2Flags(track),
+      hidden=True,
       help_str=(
           'The type of event signature for the function. `http` '
           'indicates that the function is triggered by HTTP requests. '

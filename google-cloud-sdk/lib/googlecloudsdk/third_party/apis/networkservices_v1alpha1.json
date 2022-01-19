@@ -2991,7 +2991,7 @@
           "type": "string"
         },
         "type": {
-          "description": "Required. Immutable. The type of the Mesh resource.",
+          "description": "Immutable. The type of the Mesh resource.",
           "type": "string",
           "enumDescriptions": [
             "The type of Mesh is unspecified.",

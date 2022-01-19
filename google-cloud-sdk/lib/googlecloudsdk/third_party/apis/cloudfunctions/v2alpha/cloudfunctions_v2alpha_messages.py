@@ -437,11 +437,14 @@ class CloudfunctionsProjectsLocationsRuntimesListRequest(_messages.Message):
   r"""A CloudfunctionsProjectsLocationsRuntimesListRequest object.
 
   Fields:
+    filter: The filter for Runtimes that match the filter expression,
+      following the syntax outlined in https://google.aip.dev/160.
     parent: Required. The project and location from which the runtimes should
       be listed, specified in the format `projects/*/locations/*`
   """
 
-  parent = _messages.StringField(1, required=True)
+  filter = _messages.StringField(1)
+  parent = _messages.StringField(2, required=True)
 
 
 class EventFilter(_messages.Message):
@@ -1410,14 +1413,28 @@ class Runtime(_messages.Message):
   status) related to it.
 
   Enums:
+    EnvironmentValueValuesEnum: The environment for the runtime.
     StageValueValuesEnum: The stage of life this runtime is in, e.g., BETA,
       GA, etc.
 
   Fields:
+    environment: The environment for the runtime.
     name: The name of the runtime, e.g., 'go113', 'nodejs12', etc.
     stage: The stage of life this runtime is in, e.g., BETA, GA, etc.
     warnings: Warning messages, e.g., a deprecation warning.
   """
+
+  class EnvironmentValueValuesEnum(_messages.Enum):
+    r"""The environment for the runtime.
+
+    Values:
+      ENVIRONMENT_UNSPECIFIED: Unspecified
+      GEN_1: Gen 1
+      GEN_2: Gen 2
+    """
+    ENVIRONMENT_UNSPECIFIED = 0
+    GEN_1 = 1
+    GEN_2 = 2
 
   class StageValueValuesEnum(_messages.Enum):
     r"""The stage of life this runtime is in, e.g., BETA, GA, etc.
@@ -1439,9 +1456,10 @@ class Runtime(_messages.Message):
     DEPRECATED = 5
     DECOMMISSIONED = 6
 
-  name = _messages.StringField(1)
-  stage = _messages.EnumField('StageValueValuesEnum', 2)
-  warnings = _messages.StringField(3, repeated=True)
+  environment = _messages.EnumField('EnvironmentValueValuesEnum', 1)
+  name = _messages.StringField(2)
+  stage = _messages.EnumField('StageValueValuesEnum', 3)
+  warnings = _messages.StringField(4, repeated=True)
 
 
 class ServiceConfig(_messages.Message):

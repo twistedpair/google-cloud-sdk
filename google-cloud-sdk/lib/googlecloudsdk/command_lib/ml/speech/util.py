@@ -48,6 +48,23 @@ class UriFormatError(Error):
   """Error if the specified URI is invalid."""
 
 
+def GetRecognitionAudioFromPath(path, version):
+  """Determine whether path to audio is local, set RecognitionAudio message."""
+  messages = apis.GetMessagesModule(SPEECH_API, version)
+  audio = messages.RecognitionAudio()
+
+  if os.path.isfile(path):
+    audio.content = files.ReadBinaryFileContents(path)
+  elif storage_util.ObjectReference.IsStorageUrl(path):
+    audio.uri = path
+  else:
+    raise AudioException(
+        'Invalid audio source [{}]. The source must either be a local path '
+        'or a Google Cloud Storage URL (such as gs://bucket/object).'.format(
+            path))
+  return audio
+
+
 def GetAudioHook(version=SPEECH_API_VERSION):
   """Returns a hook to get the RecognitionAudio message for an API version."""
   def GetAudioFromPath(path):
@@ -63,20 +80,7 @@ def GetAudioHook(version=SPEECH_API_VERSION):
     Returns:
       speech_v1_messages.RecognitionAudio, the audio message.
     """
-    messages = apis.GetMessagesModule(SPEECH_API, version)
-    audio = messages.RecognitionAudio()
-
-    if os.path.isfile(path):
-      audio.content = files.ReadBinaryFileContents(path)
-    elif storage_util.ObjectReference.IsStorageUrl(path):
-      audio.uri = path
-    else:
-      raise AudioException(
-          'Invalid audio source [{}]. The source must either be a local path '
-          'or a Google Cloud Storage URL (such as gs://bucket/object).'
-          .format(path))
-
-    return audio
+    return GetRecognitionAudioFromPath(path, version)
   return GetAudioFromPath
 
 

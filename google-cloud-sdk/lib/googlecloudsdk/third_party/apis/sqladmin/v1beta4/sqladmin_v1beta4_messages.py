@@ -407,6 +407,8 @@ class ConnectSettings(_messages.Message):
         version is 26.
       MYSQL_8_0_27: The database major version is MySQL 8.0 and the minor
         version is 27.
+      MYSQL_8_0_28: The database major version is MySQL 8.0 and the minor
+        version is 28.
       POSTGRES_13: The database version is PostgreSQL 13.
       POSTGRES_14: The database version is PostgreSQL 14.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
@@ -433,12 +435,13 @@ class ConnectSettings(_messages.Message):
     MYSQL_8_0_18 = 14
     MYSQL_8_0_26 = 15
     MYSQL_8_0_27 = 16
-    POSTGRES_13 = 17
-    POSTGRES_14 = 18
-    SQLSERVER_2019_STANDARD = 19
-    SQLSERVER_2019_ENTERPRISE = 20
-    SQLSERVER_2019_EXPRESS = 21
-    SQLSERVER_2019_WEB = 22
+    MYSQL_8_0_28 = 17
+    POSTGRES_13 = 18
+    POSTGRES_14 = 19
+    SQLSERVER_2019_STANDARD = 20
+    SQLSERVER_2019_ENTERPRISE = 21
+    SQLSERVER_2019_EXPRESS = 22
+    SQLSERVER_2019_WEB = 23
 
   backendType = _messages.EnumField('BackendTypeValueValuesEnum', 1)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
@@ -554,6 +557,7 @@ class DatabaseInstance(_messages.Message):
     ipv6Address: The IPv6 address assigned to the instance. (Deprecated) This
       property was applicable only to First Generation instances.
     kind: This is always `sql#instance`.
+    maintenanceVersion: The current software version on the instance.
     masterInstanceName: The name of the instance which will act as primary in
       the replication setup.
     maxDiskSize: The maximum disk size of the instance in bytes.
@@ -639,6 +643,8 @@ class DatabaseInstance(_messages.Message):
         version is 26.
       MYSQL_8_0_27: The database major version is MySQL 8.0 and the minor
         version is 27.
+      MYSQL_8_0_28: The database major version is MySQL 8.0 and the minor
+        version is 28.
       POSTGRES_13: The database version is PostgreSQL 13.
       POSTGRES_14: The database version is PostgreSQL 14.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
@@ -665,12 +671,13 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0_18 = 14
     MYSQL_8_0_26 = 15
     MYSQL_8_0_27 = 16
-    POSTGRES_13 = 17
-    POSTGRES_14 = 18
-    SQLSERVER_2019_STANDARD = 19
-    SQLSERVER_2019_ENTERPRISE = 20
-    SQLSERVER_2019_EXPRESS = 21
-    SQLSERVER_2019_WEB = 22
+    MYSQL_8_0_28 = 17
+    POSTGRES_13 = 18
+    POSTGRES_14 = 19
+    SQLSERVER_2019_STANDARD = 20
+    SQLSERVER_2019_ENTERPRISE = 21
+    SQLSERVER_2019_EXPRESS = 22
+    SQLSERVER_2019_WEB = 23
 
   class InstalledVersionValueValuesEnum(_messages.Enum):
     r"""Stores the current database version including minor version such as
@@ -699,6 +706,8 @@ class DatabaseInstance(_messages.Message):
         version is 26.
       MYSQL_8_0_27: The database major version is MySQL 8.0 and the minor
         version is 27.
+      MYSQL_8_0_28: The database major version is MySQL 8.0 and the minor
+        version is 28.
       POSTGRES_13: The database version is PostgreSQL 13.
       POSTGRES_14: The database version is PostgreSQL 14.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
@@ -725,12 +734,13 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0_18 = 14
     MYSQL_8_0_26 = 15
     MYSQL_8_0_27 = 16
-    POSTGRES_13 = 17
-    POSTGRES_14 = 18
-    SQLSERVER_2019_STANDARD = 19
-    SQLSERVER_2019_ENTERPRISE = 20
-    SQLSERVER_2019_EXPRESS = 21
-    SQLSERVER_2019_WEB = 22
+    MYSQL_8_0_28 = 17
+    POSTGRES_13 = 18
+    POSTGRES_14 = 19
+    SQLSERVER_2019_STANDARD = 20
+    SQLSERVER_2019_ENTERPRISE = 21
+    SQLSERVER_2019_EXPRESS = 22
+    SQLSERVER_2019_WEB = 23
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type.
@@ -826,25 +836,26 @@ class DatabaseInstance(_messages.Message):
   ipAddresses = _messages.MessageField('IpMapping', 15, repeated=True)
   ipv6Address = _messages.StringField(16)
   kind = _messages.StringField(17)
-  masterInstanceName = _messages.StringField(18)
-  maxDiskSize = _messages.IntegerField(19)
-  name = _messages.StringField(20)
-  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 21)
-  outOfDiskReport = _messages.MessageField('SqlOutOfDiskReport', 22)
-  project = _messages.StringField(23)
-  region = _messages.StringField(24)
-  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 25)
-  replicaNames = _messages.StringField(26, repeated=True)
-  rootPassword = _messages.StringField(27)
-  satisfiesPzs = _messages.BooleanField(28)
-  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 29)
-  secondaryGceZone = _messages.StringField(30)
-  selfLink = _messages.StringField(31)
-  serverCaCert = _messages.MessageField('SslCert', 32)
-  serviceAccountEmailAddress = _messages.StringField(33)
-  settings = _messages.MessageField('Settings', 34)
-  state = _messages.EnumField('StateValueValuesEnum', 35)
-  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 36, repeated=True)
+  maintenanceVersion = _messages.StringField(18)
+  masterInstanceName = _messages.StringField(19)
+  maxDiskSize = _messages.IntegerField(20)
+  name = _messages.StringField(21)
+  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 22)
+  outOfDiskReport = _messages.MessageField('SqlOutOfDiskReport', 23)
+  project = _messages.StringField(24)
+  region = _messages.StringField(25)
+  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 26)
+  replicaNames = _messages.StringField(27, repeated=True)
+  rootPassword = _messages.StringField(28)
+  satisfiesPzs = _messages.BooleanField(29)
+  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 30)
+  secondaryGceZone = _messages.StringField(31)
+  selfLink = _messages.StringField(32)
+  serverCaCert = _messages.MessageField('SslCert', 33)
+  serviceAccountEmailAddress = _messages.StringField(34)
+  settings = _messages.MessageField('Settings', 35)
+  state = _messages.EnumField('StateValueValuesEnum', 36)
+  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 37, repeated=True)
 
 
 class DatabasesListResponse(_messages.Message):
@@ -1113,8 +1124,15 @@ class Flag(_messages.Message):
       Can be combined with min_value and max_value to add additional values.
     allowedStringValues: For `STRING` flags, a list of strings that the value
       can be set to.
-    appliesTo: The database version this flag applies to. Can be `MYSQL_8_0`,
-      `MYSQL_5_6`, or `MYSQL_5_7`.
+    appliesTo: The database version this flag applies to. Can be MySQL
+      instances: `MYSQL_8_0`, `MYSQL_8_0_18`, `MYSQL_8_0_26`, `MYSQL_5_7`, or
+      `MYSQL_5_6`. PostgreSQL instances: `POSTGRES_9_6`, `POSTGRES_10`,
+      `POSTGRES_11` or `POSTGRES_12`. SQL Server instances:
+      `SQLSERVER_2017_STANDARD`, `SQLSERVER_2017_ENTERPRISE`,
+      `SQLSERVER_2017_EXPRESS`, `SQLSERVER_2017_WEB`,
+      `SQLSERVER_2019_STANDARD`, `SQLSERVER_2019_ENTERPRISE`,
+      `SQLSERVER_2019_EXPRESS`, or `SQLSERVER_2019_WEB`. See [the complete
+      list](/sql/docs/mysql/admin-api/rest/v1/SqlDatabaseVersion).
     inBeta: Whether or not the flag is considered in beta.
     kind: This is always `sql#flag`.
     maxValue: For `INTEGER` flags, the maximum allowed value.
@@ -1154,6 +1172,8 @@ class Flag(_messages.Message):
         version is 26.
       MYSQL_8_0_27: The database major version is MySQL 8.0 and the minor
         version is 27.
+      MYSQL_8_0_28: The database major version is MySQL 8.0 and the minor
+        version is 28.
       POSTGRES_13: The database version is PostgreSQL 13.
       POSTGRES_14: The database version is PostgreSQL 14.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
@@ -1180,12 +1200,13 @@ class Flag(_messages.Message):
     MYSQL_8_0_18 = 14
     MYSQL_8_0_26 = 15
     MYSQL_8_0_27 = 16
-    POSTGRES_13 = 17
-    POSTGRES_14 = 18
-    SQLSERVER_2019_STANDARD = 19
-    SQLSERVER_2019_ENTERPRISE = 20
-    SQLSERVER_2019_EXPRESS = 21
-    SQLSERVER_2019_WEB = 22
+    MYSQL_8_0_28 = 17
+    POSTGRES_13 = 18
+    POSTGRES_14 = 19
+    SQLSERVER_2019_STANDARD = 20
+    SQLSERVER_2019_ENTERPRISE = 21
+    SQLSERVER_2019_EXPRESS = 22
+    SQLSERVER_2019_WEB = 23
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the flag. Flags are typed to being `BOOLEAN`, `STRING`,

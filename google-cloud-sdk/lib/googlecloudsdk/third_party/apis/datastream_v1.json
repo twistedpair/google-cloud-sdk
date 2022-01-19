@@ -1109,11 +1109,11 @@
       "type": "object",
       "properties": {
         "schema": {
-          "description": "The schema name.",
+          "description": "Required. The schema name.",
           "type": "string"
         },
         "table": {
-          "description": "The table name.",
+          "description": "Required. The table name.",
           "type": "string"
         }
       }
@@ -1124,11 +1124,11 @@
       "type": "object",
       "properties": {
         "database": {
-          "description": "The database name.",
+          "description": "Required. The database name.",
           "type": "string"
         },
         "table": {
-          "description": "The table name.",
+          "description": "Required. The table name.",
           "type": "string"
         }
       }

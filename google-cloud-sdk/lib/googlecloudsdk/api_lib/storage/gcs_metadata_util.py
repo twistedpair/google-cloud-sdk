@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import copy
 
+from googlecloudsdk.api_lib.storage import gcs_metadata_field_converters
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import storage_url
@@ -180,8 +181,44 @@ def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
   resource_args = request_config.resource_args
   if not resource_args:
     return
+  if resource_args.cors_file_path is not None:
+    bucket_metadata.cors = gcs_metadata_field_converters.process_cors(
+        resource_args.cors_file_path)
+  if resource_args.default_encryption_key is not None:
+    bucket_metadata.encryption = (
+        gcs_metadata_field_converters.process_default_encryption_key(
+            resource_args.default_encryption_key))
+  if resource_args.default_event_based_hold is not None:
+    bucket_metadata.defaultEventBasedHold = (
+        resource_args.default_event_based_hold)
   if resource_args.default_storage_class is not None:
     bucket_metadata.storageClass = resource_args.default_storage_class
+  if resource_args.labels_file_path is not None:
+    bucket_metadata.labels = gcs_metadata_field_converters.process_labels(
+        resource_args.labels_file_path)
+  if resource_args.lifecycle_file_path is not None:
+    bucket_metadata.lifecycle = (
+        gcs_metadata_field_converters.process_lifecycle(
+            resource_args.lifecycle_file_path))
+  if resource_args.location is not None:
+    bucket_metadata.location = resource_args.location
+  if resource_args.retention_period is not None:
+    bucket_metadata.retentionPolicy = (
+        gcs_metadata_field_converters.process_retention_period(
+            resource_args.retention_period))
+  if resource_args.uniform_bucket_level_access is not None:
+    bucket_metadata.iamConfiguration = (
+        gcs_metadata_field_converters.process_uniform_bucket_level_access(
+            bucket_metadata.iamConfiguration,
+            resource_args.uniform_bucket_level_access))
+  if resource_args.versioning is not None:
+    bucket_metadata.versioning = (
+        gcs_metadata_field_converters.process_versioning(
+            resource_args.versioning))
+  if (resource_args.web_error_page is not None or
+      resource_args.web_main_page_suffix is not None):
+    bucket_metadata.website = gcs_metadata_field_converters.process_website(
+        resource_args.web_error_page, resource_args.web_main_page_suffix)
 
 
 def update_object_metadata_from_request_config(object_metadata, request_config):

@@ -844,6 +844,21 @@ class CreateGitHubEnterpriseConfigOperationMetadata(_messages.Message):
   githubEnterpriseConfig = _messages.StringField(3)
 
 
+class CreateGitLabConfigOperationMetadata(_messages.Message):
+  r"""Metadata for `CreateGitLabConfig` operation.
+
+  Fields:
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+    gitlabConfig: The resource name of the GitLabConfig to be created. Format:
+      `projects/{project}/locations/{location}/gitlabConfigs/{id}`.
+  """
+
+  completeTime = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  gitlabConfig = _messages.StringField(3)
+
+
 class CreateWorkerPoolOperationMetadata(_messages.Message):
   r"""Metadata for the `CreateWorkerPool` operation.
 
@@ -889,6 +904,21 @@ class DeleteGitHubEnterpriseConfigOperationMetadata(_messages.Message):
   completeTime = _messages.StringField(1)
   createTime = _messages.StringField(2)
   githubEnterpriseConfig = _messages.StringField(3)
+
+
+class DeleteGitLabConfigOperationMetadata(_messages.Message):
+  r"""Metadata for `DeleteGitLabConfig` operation.
+
+  Fields:
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+    gitlabConfig: The resource name of the GitLabConfig to be created. Format:
+      `projects/{project}/locations/{location}/gitlabConfigs/{id}`.
+  """
+
+  completeTime = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  gitlabConfig = _messages.StringField(3)
 
 
 class DeleteWorkerPoolOperationMetadata(_messages.Message):
@@ -1894,6 +1924,21 @@ class UpdateGitHubEnterpriseConfigOperationMetadata(_messages.Message):
   completeTime = _messages.StringField(1)
   createTime = _messages.StringField(2)
   githubEnterpriseConfig = _messages.StringField(3)
+
+
+class UpdateGitLabConfigOperationMetadata(_messages.Message):
+  r"""Metadata for `UpdateGitLabConfig` operation.
+
+  Fields:
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+    gitlabConfig: The resource name of the GitLabConfig to be created. Format:
+      `projects/{project}/locations/{location}/gitlabConfigs/{id}`.
+  """
+
+  completeTime = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  gitlabConfig = _messages.StringField(3)
 
 
 class UpdateWorkerPoolOperationMetadata(_messages.Message):

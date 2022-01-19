@@ -145,8 +145,8 @@ class CertificateClient(object):
     certificate = self.messages.Certificate()
     updated_fields = []
     if self_managed_cert_data:
-      certificate.selfManagedCertData = self_managed_cert_data
-      updated_fields.append('self_managed_cert_data')
+      certificate.selfManaged = self_managed_cert_data
+      updated_fields.append('self_managed')
     if labels:
       certificate.labels = labels
       updated_fields.append('labels')

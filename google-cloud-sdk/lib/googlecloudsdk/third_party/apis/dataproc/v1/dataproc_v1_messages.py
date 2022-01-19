@@ -915,8 +915,8 @@ class DataprocMetricConfig(_messages.Message):
     MetricSourcesValueListEntryValuesEnum:
 
   Fields:
-    metricSources: Optional. Optional field. If not mentioned all MetricSource
-      are enabled
+    metricSources: Required. Required field. MetricSource(s) that should be
+      enabled.
   """
 
   class MetricSourcesValueListEntryValuesEnum(_messages.Enum):
@@ -927,13 +927,15 @@ class DataprocMetricConfig(_messages.Message):
       MONITORING_AGENT_DEFAULTS: all default monitoring agent metrics that are
         published with prefix "agent.googleapis.com" when we enable a
         monitoring agent in Compute Engine
-      HADOOP: Hadoop metric source
+      HDFS: Hdfs metric source
       SPARK: Spark metric source
+      YARN: Yarn metric source
     """
     METRIC_SOURCE_UNSPECIFIED = 0
     MONITORING_AGENT_DEFAULTS = 1
-    HADOOP = 2
+    HDFS = 2
     SPARK = 3
+    YARN = 4
 
   metricSources = _messages.EnumField('MetricSourcesValueListEntryValuesEnum', 1, repeated=True)
 
@@ -4692,6 +4694,8 @@ class RuntimeInfo(_messages.Message):
       interfaces and APIs) to their URIs.
 
   Fields:
+    diagnosticOutputUri: Output only. A URI pointing to the location of the
+      diagnostics tarball.
     endpoints: Output only. Map of remote access endpoints (such as web
       interfaces and APIs) to their URIs.
     outputUri: Output only. A URI pointing to the location of the stdout and
@@ -4723,8 +4727,9 @@ class RuntimeInfo(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  endpoints = _messages.MessageField('EndpointsValue', 1)
-  outputUri = _messages.StringField(2)
+  diagnosticOutputUri = _messages.StringField(1)
+  endpoints = _messages.MessageField('EndpointsValue', 2)
+  outputUri = _messages.StringField(3)
 
 
 class SecurityConfig(_messages.Message):

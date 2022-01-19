@@ -968,6 +968,10 @@ class FirestoreProjectsDatabasesIndexesListRequest(_messages.Message):
   parent = _messages.StringField(4, required=True)
 
 
+class GoogleFirestoreAdminV1UpdateDatabaseMetadata(_messages.Message):
+  r"""Metadata related to the update database operation."""
+
+
 class GoogleFirestoreAdminV1beta1ExportDocumentsMetadata(_messages.Message):
   r"""Metadata for ExportDocuments operations.
 

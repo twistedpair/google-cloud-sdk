@@ -164,7 +164,7 @@ class DatamigrationV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieve a list of all connection profiles in a given project and location.
+      r"""Retrieves a list of all connection profiles in a given project and location.
 
       Args:
         request: (DatamigrationProjectsLocationsConnectionProfilesListRequest) input message

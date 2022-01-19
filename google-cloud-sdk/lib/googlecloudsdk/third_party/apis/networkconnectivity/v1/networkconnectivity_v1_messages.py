@@ -1450,7 +1450,7 @@ class PolicyBasedRoute(_messages.Message):
     LabelsValue: User-defined labels.
 
   Fields:
-    createTime: Time when the PolicyBasedRoute was created.
+    createTime: Output only. Time when the PolicyBasedRoute was created.
     description: Optional. An optional description of this resource. Provide
       this field when you create the resource.
     filter: Required. The filter to match L4 traffic.
@@ -1459,8 +1459,9 @@ class PolicyBasedRoute(_messages.Message):
     kind: Output only. Type of this resource. Always
       networkconnectivity#policyBasedRoute for Policy Based Route resources.
     labels: User-defined labels.
-    name: A unique name of the resource in the form of `projects/{project_numb
-      er}/locations/global/PolicyBasedRoutes/{policy_based_route_id}`
+    name: Immutable. A unique name of the resource in the form of `projects/{p
+      roject_number}/locations/global/PolicyBasedRoutes/{policy_based_route_id
+      }`
     network: Required. Fully-qualified URL of the network that this route
       applies to. e.g. projects/my-project/global/networks/my-network.
     nextHopIlbIp: Optional. The IP of a global access enabled L4 ILB that
@@ -1477,7 +1478,7 @@ class PolicyBasedRoute(_messages.Message):
     tags: Optional. A list of instance tags to which this route applies to. If
       tags is not set, then the PBR will be install on all endpoints within
       the network.
-    updateTime: Time when the PolicyBasedRoute was updated.
+    updateTime: Output only. Time when the PolicyBasedRoute was updated.
     warnings: Output only. If potential misconfigurations are detected for
       this route, this field will be populated with warning messages.
   """

@@ -68,10 +68,9 @@ class SparkRBatchFactory(object):
       dependencies['archiveUris'] = args.archives
 
     if local_file_uploader.HasLocalFiles(dependencies):
-      bucket = args.deps_bucket if args.deps_bucket is not None else args.bucket
-      if not bucket:
+      if not args.deps_bucket:
         raise AttributeError('--deps-bucket was not specified.')
-      dependencies = local_file_uploader.Upload(args.bucket, dependencies)
+      dependencies = local_file_uploader.Upload(args.deps_bucket, dependencies)
 
     # Get mainRFileUri out of the list for message construction.
     dependencies['mainRFileUri'] = dependencies['mainRFileUri'][0]

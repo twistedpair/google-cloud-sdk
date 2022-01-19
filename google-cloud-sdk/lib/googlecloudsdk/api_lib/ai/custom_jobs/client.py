@@ -29,23 +29,32 @@ class CustomJobsClient(object):
   """Client used for interacting with CustomJob endpoint."""
 
   def __init__(self, version=constants.GA_VERSION):
-    self.client = apis.GetClientInstance(
-        constants.AI_PLATFORM_API_NAME,
-        constants.AI_PLATFORM_API_VERSION[version])
-    self.messages = self.client.MESSAGES_MODULE
+    client = apis.GetClientInstance(constants.AI_PLATFORM_API_NAME,
+                                    constants.AI_PLATFORM_API_VERSION[version])
+    self._messages = client.MESSAGES_MODULE
     self._version = version
-    self._service = self.client.projects_locations_customJobs
+    self._service = client.projects_locations_customJobs
     self._message_prefix = constants.AI_PLATFORM_MESSAGE_PREFIX[version]
 
   def GetMessage(self, message_name):
     """Returns the API message class by name."""
 
     return getattr(
-        self.messages,
+        self._messages,
         '{prefix}{name}'.format(prefix=self._message_prefix,
                                 name=message_name), None)
 
-  def Create(self, parent, job_spec, display_name=None, kms_key_name=None):
+  def CustomJobMessage(self):
+    """Retures the CustomJob resource message."""
+
+    return self.GetMessage('CustomJob')
+
+  def Create(self,
+             parent,
+             job_spec,
+             display_name=None,
+             kms_key_name=None,
+             labels=None):
     """Constructs a request and sends it to the endpoint to create a custom job instance.
 
     Args:
@@ -53,46 +62,51 @@ class CustomJobsClient(object):
       job_spec: The CustomJobSpec message instance for the job creation request.
       display_name: str, The display name of the custom job to create.
       kms_key_name: A customer-managed encryption key to use for the custom job.
+      labels: LabelValues, map-like user-defined metadata to organize the custom
+        jobs.
 
     Returns:
       A CustomJob message instance created.
     """
-    custom_job = self.GetMessage('CustomJob')(
+    custom_job = self.CustomJobMessage()(
         displayName=display_name, jobSpec=job_spec)
 
     if kms_key_name is not None:
       custom_job.encryptionSpec = self.GetMessage('EncryptionSpec')(
           kmsKeyName=kms_key_name)
 
+    if labels:
+      custom_job.labels = labels
+
     if self._version == constants.ALPHA_VERSION:
       return self._service.Create(
-          self.messages.AiplatformProjectsLocationsCustomJobsCreateRequest(
+          self._messages.AiplatformProjectsLocationsCustomJobsCreateRequest(
               parent=parent, googleCloudAiplatformV1alpha1CustomJob=custom_job))
     elif self._version == constants.BETA_VERSION:
       return self._service.Create(
-          self.messages.AiplatformProjectsLocationsCustomJobsCreateRequest(
+          self._messages.AiplatformProjectsLocationsCustomJobsCreateRequest(
               parent=parent, googleCloudAiplatformV1beta1CustomJob=custom_job))
     else:
       return self._service.Create(
-          self.messages.AiplatformProjectsLocationsCustomJobsCreateRequest(
+          self._messages.AiplatformProjectsLocationsCustomJobsCreateRequest(
               parent=parent, googleCloudAiplatformV1CustomJob=custom_job))
 
   def List(self, limit=None, region=None):
     return list_pager.YieldFromList(
         self._service,
-        self.messages.AiplatformProjectsLocationsCustomJobsListRequest(
+        self._messages.AiplatformProjectsLocationsCustomJobsListRequest(
             parent=region),
         field='customJobs',
         batch_size_attribute='pageSize',
         limit=limit)
 
   def Get(self, name):
-    request = self.messages.AiplatformProjectsLocationsCustomJobsGetRequest(
+    request = self._messages.AiplatformProjectsLocationsCustomJobsGetRequest(
         name=name)
     return self._service.Get(request)
 
   def Cancel(self, name):
-    request = self.messages.AiplatformProjectsLocationsCustomJobsCancelRequest(
+    request = self._messages.AiplatformProjectsLocationsCustomJobsCancelRequest(
         name=name)
     return self._service.Cancel(request)
 
@@ -105,7 +119,7 @@ class CustomJobsClient(object):
     Returns:
       A one-argument function decides if log fetcher should continue.
     """
-    request = self.messages.AiplatformProjectsLocationsCustomJobsGetRequest(
+    request = self._messages.AiplatformProjectsLocationsCustomJobsGetRequest(
         name=name)
     response = self._service.Get(request)
 

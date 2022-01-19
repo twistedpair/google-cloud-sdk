@@ -659,6 +659,15 @@ MAP = {
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
+        'v2':
+            APIDef(
+                ApitoolsClientDef(
+                    class_path='googlecloudsdk.third_party.apis.cloudbuild.v2',
+                    client_classpath='cloudbuild_v2_client.CloudbuildV2',
+                    messages_modulepath='cloudbuild_v2_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
     },
     'cloudcommerceconsumerprocurement': {
         'v1alpha1':
@@ -2261,6 +2270,15 @@ MAP = {
                     class_path='googlecloudsdk.third_party.apis.publicca.v1alpha1',
                     client_classpath='publicca_v1alpha1_client.PubliccaV1alpha1',
                     messages_modulepath='publicca_v1alpha1_messages'),
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+        'v1beta1':
+            APIDef(
+                ApitoolsClientDef(
+                    class_path='googlecloudsdk.third_party.apis.publicca.v1beta1',
+                    client_classpath='publicca_v1beta1_client.PubliccaV1beta1',
+                    messages_modulepath='publicca_v1beta1_messages'),
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
@@ -2601,6 +2619,15 @@ MAP = {
                     client_classpath='spanner_v1_client.SpannerV1',
                     messages_modulepath='spanner_v1_messages'),
                 default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+        'v1alpha':
+            APIDef(
+                ApitoolsClientDef(
+                    class_path='googlecloudsdk.third_party.apis.spanner.v1alpha',
+                    client_classpath='spanner_v1alpha_client.SpannerV1alpha',
+                    messages_modulepath='spanner_v1alpha_messages'),
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },

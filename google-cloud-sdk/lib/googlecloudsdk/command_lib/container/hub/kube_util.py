@@ -141,24 +141,34 @@ class MembershipCRDCreationOperation(object):
 class KubeconfigProcessor(object):
   """A helper class that processes kubeconfig and context arguments."""
 
-  def __init__(self, gke_uri, gke_cluster, kubeconfig, context):
+  def __init__(self, api_adapter, gke_uri, gke_cluster, kubeconfig, internal_ip,
+               cross_connect_subnetwork, private_endpoint_fqdn, context):
     """Constructor for KubeconfigProcessor.
 
     Args:
+      api_adapter: the GKE api adapter used for running kubernetes commands
       gke_uri: the URI of the GKE cluster; for example,
                'https://container.googleapis.com/v1/projects/my-project/locations/us-central1-a/clusters/my-cluster'
       gke_cluster: the "location/name" of the GKE cluster. The location can be a
         zone or a region for e.g `us-central1-a/my-cluster`
       kubeconfig: the kubeconfig path
+      internal_ip: whether to persist the internal IP of the endpoint.
+      cross_connect_subnetwork: full path of the cross connect subnet whose
+      endpoint to persist (optional)
+      private_endpoint_fqdn: whether to persist the private fqdn.
       context: the context to use
 
     Raises:
       exceptions.Error: if kubectl is not installed
     """
 
+    self.api_adapter = api_adapter
     self.gke_uri = gke_uri
     self.gke_cluster = gke_cluster
     self.kubeconfig = kubeconfig
+    self.internal_ip = internal_ip
+    self.cross_connect_subnetwork = cross_connect_subnetwork
+    self.private_endpoint_fqdn = private_endpoint_fqdn
     self.context = context
     # Warn if kubectl is not installed.
     if not c_util.CheckKubectlInstalled():
@@ -193,8 +203,10 @@ class KubeconfigProcessor(object):
 
       self.gke_cluster_self_link, self.gke_cluster_uri = api_util.GetGKEURIAndResourceName(
           cluster_project, location, name)
-      return _GetGKEKubeconfig(cluster_project, location, name,
-                               temp_kubeconfig_dir), None
+      return _GetGKEKubeconfig(self.api_adapter, cluster_project, location,
+                               name, temp_kubeconfig_dir, self.internal_ip,
+                               self.cross_connect_subnetwork,
+                               self.private_endpoint_fqdn), None
 
     # We need to support in-cluster configuration so that gcloud can run from
     # a container on the Cluster we are registering. KUBERNETES_SERICE_PORT
@@ -267,20 +279,29 @@ class KubernetesClient(object):
   """A client for accessing a subset of the Kubernetes API."""
 
   def __init__(self,
+               api_adapter=None,
                gke_uri=None,
                gke_cluster=None,
                kubeconfig=None,
+               internal_ip=False,
+               cross_connect_subnetwork=None,
+               private_endpoint_fqdn=None,
                context=None,
                public_issuer_url=None,
                enable_workload_identity=False):
     """Constructor for KubernetesClient.
 
     Args:
+      api_adapter: the GKE api adapter used for running kubernetes commands
       gke_uri: the URI of the GKE cluster; for example,
                'https://container.googleapis.com/v1/projects/my-project/locations/us-central1-a/clusters/my-cluster'
       gke_cluster: the "location/name" of the GKE cluster. The location can be a
         zone or a region for e.g `us-central1-a/my-cluster`
       kubeconfig: the kubeconfig path
+      internal_ip: whether to persist the internal IP of the endpoint.
+      cross_connect_subnetwork: full path of the cross connect subnet whose
+      endpoint to persist (optional)
+      private_endpoint_fqdn: whether to persist the private fqdn.
       context: the context to use
       public_issuer_url: the public issuer url
       enable_workload_identity: whether to enable workload identity
@@ -300,9 +321,13 @@ class KubernetesClient(object):
       self.temp_kubeconfig_dir = files.TemporaryDirectory()
 
     self.processor = KubeconfigProcessor(
+        api_adapter=api_adapter,
         gke_uri=gke_uri,
         gke_cluster=gke_cluster,
         kubeconfig=kubeconfig,
+        internal_ip=internal_ip,
+        cross_connect_subnetwork=cross_connect_subnetwork,
+        private_endpoint_fqdn=private_endpoint_fqdn,
         context=context)
     self.kubeconfig, self.context = self.processor.GetKubeconfigAndContext(
         self.temp_kubeconfig_dir)
@@ -997,7 +1022,13 @@ def _ParseGKECluster(gke_cluster):
       '`{{REGION OR ZONE}}/{{CLUSTER_NAME`}}`'.format(gke_cluster))
 
 
-def _GetGKEKubeconfig(project, location_id, cluster_id, temp_kubeconfig_dir):
+def _GetGKEKubeconfig(api_adapter, project, location_id,
+                      cluster_id,
+                      temp_kubeconfig_dir,
+                      internal_ip,
+                      cross_connect_subnetwork,
+                      private_endpoint_fqdn
+                      ):
   """The kubeconfig of GKE Cluster is fetched using the GKE APIs.
 
   The 'KUBECONFIG' value in `os.environ` will be temporarily updated with
@@ -1010,11 +1041,16 @@ def _GetGKEKubeconfig(project, location_id, cluster_id, temp_kubeconfig_dir):
   persisted in the temporarily updated 'KUBECONFIG'.
 
   Args:
-    project: string, the project id of the cluster for which kube config is to
-      be fetched
+    api_adapter: the GKE api adapter used for running kubernetes commands
+    project: string, the project id of the cluster for which kube config is
+      to be fetched
     location_id: string, the id of the location to which the cluster belongs
     cluster_id: string, the id of the cluster
     temp_kubeconfig_dir: TemporaryDirectory object
+    internal_ip: whether to persist the internal IP of the endpoint.
+    cross_connect_subnetwork: full path of the cross connect subnet whose
+    endpoint to persist (optional)
+    private_endpoint_fqdn: whether to persist the private fqdn.
 
   Raises:
     Error: If unable to get credentials for kubernetes cluster.
@@ -1026,9 +1062,10 @@ def _GetGKEKubeconfig(project, location_id, cluster_id, temp_kubeconfig_dir):
   old_kubeconfig = encoding.GetEncodedValue(os.environ, 'KUBECONFIG')
   try:
     encoding.SetEncodedValue(os.environ, 'KUBECONFIG', kubeconfig)
-    gke_api = gke_api_adapter.NewAPIAdapter('v1')
-    cluster_ref = gke_api.ParseCluster(cluster_id, location_id, project)
-    cluster = gke_api.GetCluster(cluster_ref)
+    if api_adapter is None:
+      api_adapter = gke_api_adapter.NewAPIAdapter('v1')
+    cluster_ref = api_adapter.ParseCluster(cluster_id, location_id, project)
+    cluster = api_adapter.GetCluster(cluster_ref)
     auth = cluster.masterAuth
     valid_creds = auth and auth.clientCertificate and auth.clientKey
     # c_util.ClusterConfig.UseGCPAuthProvider() checks for
@@ -1037,7 +1074,9 @@ def _GetGKEKubeconfig(project, location_id, cluster_id, temp_kubeconfig_dir):
       raise c_util.Error(
           'Unable to get cluster credentials. User must have edit '
           'permission on {}'.format(cluster_ref.projectId))
-    c_util.ClusterConfig.Persist(cluster, cluster_ref.projectId)
+    c_util.ClusterConfig.Persist(cluster, cluster_ref.projectId, internal_ip,
+                                 cross_connect_subnetwork,
+                                 private_endpoint_fqdn)
   finally:
     if old_kubeconfig:
       encoding.SetEncodedValue(os.environ, 'KUBECONFIG', old_kubeconfig)

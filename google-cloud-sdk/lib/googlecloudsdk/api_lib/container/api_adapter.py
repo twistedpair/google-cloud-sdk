@@ -470,6 +470,8 @@ class CreateClusterOptions(object):
       boot_disk_kms_key=None,
       node_pool_name=None,
       tags=None,
+      network_tags=None,
+      nap_network_tags=None,
       node_labels=None,
       node_taints=None,
       enable_autoscaling=None,
@@ -623,6 +625,8 @@ class CreateClusterOptions(object):
     self.boot_disk_kms_key = boot_disk_kms_key
     self.node_pool_name = node_pool_name
     self.tags = tags
+    self.network_tags = network_tags
+    self.nap_network_tags = nap_network_tags
     self.node_labels = node_labels
     self.node_taints = node_taints
     self.enable_autoscaling = enable_autoscaling
@@ -842,6 +846,7 @@ class UpdateClusterOptions(object):
       enable_service_externalips=None,
       security_group=None,
       enable_gcfs=None,
+      nap_network_tags=None,
       enable_image_streaming=None,
       enable_managed_prometheus=None,
       disable_managed_prometheus=None,
@@ -936,6 +941,7 @@ class UpdateClusterOptions(object):
     self.enable_service_externalips = enable_service_externalips
     self.security_group = security_group
     self.enable_gcfs = enable_gcfs
+    self.nap_network_tags = nap_network_tags
     self.enable_image_streaming = enable_image_streaming
     self.enable_managed_prometheus = enable_managed_prometheus
     self.disable_managed_prometheus = disable_managed_prometheus
@@ -1020,7 +1026,8 @@ class CreateNodePoolOptions(object):
                enable_rolling_update=None,
                node_pool_soak_duration=None,
                standard_rollout_policy=None,
-               maintenance_interval=None):
+               maintenance_interval=None,
+               network_performance_config=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -1077,6 +1084,7 @@ class CreateNodePoolOptions(object):
     self.node_pool_soak_duration = node_pool_soak_duration
     self.standard_rollout_policy = standard_rollout_policy
     self.maintenance_interval = maintenance_interval
+    self.network_performance_config = network_performance_config
 
 
 class UpdateNodePoolOptions(object):
@@ -1105,7 +1113,8 @@ class UpdateNodePoolOptions(object):
                enable_blue_green_update=None,
                enable_rolling_update=None,
                node_pool_soak_duration=None,
-               standard_rollout_policy=None):
+               standard_rollout_policy=None,
+               network_performance_config=None):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.enable_autoscaling = enable_autoscaling
@@ -1129,6 +1138,7 @@ class UpdateNodePoolOptions(object):
     self.enable_rolling_update = enable_rolling_update
     self.node_pool_soak_duration = node_pool_soak_duration
     self.standard_rollout_policy = standard_rollout_policy
+    self.network_performance_config = network_performance_config
 
   def IsAutoscalingUpdate(self):
     return (self.enable_autoscaling is not None or self.max_nodes is not None or
@@ -1153,7 +1163,8 @@ class UpdateNodePoolOptions(object):
             self.enable_rolling_update is not None or
             self.enable_blue_green_update is not None or
             self.node_pool_soak_duration is not None or
-            self.standard_rollout_policy is not None)
+            self.standard_rollout_policy is not None or
+            self.network_performance_config is not None)
 
 
 class APIAdapter(object):
@@ -1602,6 +1613,18 @@ class APIAdapter(object):
             self.messages.NodeConfigDefaults())
       cluster.nodePoolDefaults.nodeConfigDefaults.gcfsConfig = (
           self.messages.GcfsConfig(enabled=options.enable_gcfs))
+
+    if options.network_tags:
+      if cluster.nodePoolAutoConfig is None:
+        cluster.nodePoolAutoConfig = self.messages.NodePoolAutoConfig()
+      cluster.nodePoolAutoConfig.networkTags = (
+          self.messages.NetworkTags(tags=options.network_tags))
+
+    if options.nap_network_tags:
+      if cluster.nodePoolAutoConfig is None:
+        cluster.nodePoolAutoConfig = self.messages.NodePoolAutoConfig()
+      cluster.nodePoolAutoConfig.networkTags = (
+          self.messages.NetworkTags(tags=options.nap_network_tags))
 
     if options.enable_image_streaming:
       if cluster.nodePoolDefaults is None:
@@ -2508,6 +2531,11 @@ class APIAdapter(object):
           desiredGcfsConfig=self.messages.GcfsConfig(
               enabled=options.enable_gcfs))
 
+    if options.nap_network_tags is not None:
+      update = self.messages.ClusterUpdate(
+          desiredNodePoolAutoConfigNetworkTags=self.messages.NetworkTags(
+              tags=options.nap_network_tags))
+
     if options.enable_image_streaming is not None:
       update = self.messages.ClusterUpdate(
           desiredGcfsConfig=self.messages.GcfsConfig(
@@ -3002,6 +3030,10 @@ class APIAdapter(object):
 
     pool.networkConfig = self._GetNetworkConfig(options)
 
+    if options.network_performance_config:
+      pool.networkConfig.networkPerformanceConfig = self._GetNetworkPerformanceConfig(
+          options)
+
     if options.placement_type == 'COMPACT':
       pool.placementPolicy = self.messages.PlacementPolicy()
       pool.placementPolicy.type = self.messages.PlacementPolicy.TypeValueValuesEnum.COMPACT
@@ -3232,6 +3264,11 @@ class APIAdapter(object):
       gcfs_config = self.messages.GcfsConfig(
           enabled=options.enable_image_streaming)
       update_request.gcfsConfig = gcfs_config
+    elif options.network_performance_config is not None:
+      network_config = self.messages.NodeNetworkConfig()
+      network_config.networkPerformanceConfig = self._GetNetworkPerformanceConfig(
+          options)
+      update_request.nodeNetworkConfig = network_config
     return update_request
 
   def UpdateNodePool(self, node_pool_ref, options):
@@ -3372,7 +3409,8 @@ class APIAdapter(object):
     """
     if (options.pod_ipv4_range is None and
         options.create_pod_ipv4_range is None and
-        options.enable_private_nodes is None):
+        options.enable_private_nodes is None and
+        options.network_performance_config is None):
       return None
 
     network_config = self.messages.NodeNetworkConfig()
@@ -3390,6 +3428,20 @@ class APIAdapter(object):
     if options.enable_private_nodes is not None:
       network_config.enablePrivateNodes = options.enable_private_nodes
     return network_config
+
+  def _GetNetworkPerformanceConfig(self, options):
+    """Get NetworkPerformanceConfig message for the instance."""
+
+    network_perf_args = options.network_performance_config
+    network_perf_configs = self.messages.NetworkPerformanceConfig()
+
+    for config in network_perf_args:
+      total_tier = config.get('total-egress-bandwidth-tier', '').upper()
+      if total_tier:
+        network_perf_configs.totalEgressBandwidthTier = self.messages.NetworkPerformanceConfig.TotalEgressBandwidthTierValueValuesEnum(
+            total_tier)
+
+    return network_perf_configs
 
   def UpdateLabelsCommon(self, cluster_ref, update_labels):
     """Update labels on a cluster.
@@ -4836,8 +4888,8 @@ def _GetStableFleetConfig(options, messages):
     }
     if options.maintenance_interval not in maintenance_interval_types:
       raise util.Error(
-          MAINTENANCE_INTERVAL_TYPE_NOT_SUPPORTED
-          .FORMAT(type=options.maintenance_interval))
+          MAINTENANCE_INTERVAL_TYPE_NOT_SUPPORTED.FORMAT(
+              type=options.maintenance_interval))
     return messages.StableFleetConfig(
         maintenanceInterval=maintenance_interval_types[
             options.maintenance_interval])

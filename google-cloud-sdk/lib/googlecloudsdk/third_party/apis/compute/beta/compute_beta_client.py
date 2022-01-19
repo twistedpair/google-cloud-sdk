@@ -6833,7 +6833,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def SimulateMaintenanceEvent(self, request, global_params=None):
-      r"""Simulates a maintenance event on the instance.
+      r"""Simulates a host maintenance event on a VM. For more information, see Simulate a host maintenance event.
 
       Args:
         request: (ComputeInstancesSimulateMaintenanceEventRequest) input message

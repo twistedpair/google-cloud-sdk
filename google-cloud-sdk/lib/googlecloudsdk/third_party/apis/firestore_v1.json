@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1",
-  "revision": "20211218",
+  "revision": "20220105",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development. ",
   "ownerDomain": "google.com",
@@ -499,12 +499,6 @@
             "PESSIMISTIC",
             "OPTIMISTIC_WITH_ENTITY_GROUPS"
           ]
-        },
-        "earliestVersionTime": {
-          "description": "Output only. The earliest timestamp at which older versions of the data can be read from the database. See [version_retention_period] above; this field is populated with `now - version_retention_period`. This value is continuously updated, and becomes stale the moment it is queried. If you are using this value to recover data, make sure to account for the time from the moment when the value is queried to the moment when you initiate the recovery. Note that you should not need to query this field: if you know the `version_retention_period` then you can query within that time.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
         },
         "etag": {
           "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
@@ -2010,6 +2004,13 @@
           "description": "Location of the output files. This can be used to begin an import into Cloud Firestore (this project or another project) after the operation completes successfully.",
           "type": "string"
         }
+      }
+    },
+    "GoogleFirestoreAdminV1UpdateDatabaseMetadata": {
+      "id": "GoogleFirestoreAdminV1UpdateDatabaseMetadata",
+      "description": "Metadata related to the update database operation.",
+      "type": "object",
+      "properties": {
       }
     }
   },

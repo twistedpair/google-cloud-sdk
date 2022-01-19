@@ -19,9 +19,10 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import datetime
+
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import resources
 
@@ -40,6 +41,11 @@ def GetMessagesModule(release_track=base.ReleaseTrack.GA):
 def GetClientInstance(release_track=base.ReleaseTrack.GA):
   api_version = _VERSION_MAP.get(release_track)
   return apis.GetClientInstance('ids', api_version)
+
+
+def GetEffectiveApiEndpoint(release_track=base.ReleaseTrack.GA):
+  api_version = _VERSION_MAP.get(release_track)
+  return apis.GetEffectiveApiEndpoint('ids', api_version)
 
 
 class Client:

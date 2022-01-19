@@ -389,7 +389,7 @@ class DatacatalogV1(base_api.BaseApiClient):
     )
 
     def ModifyEntryContacts(self, request, global_params=None):
-      r"""Modifies Contacts, part of the Business Context of an Entry. To call this method, you must have the Google IAM permission `datacatalog.entries.updateContacts`.
+      r"""Modifies contacts, part of the business context of an Entry. To call this method, you must have the `datacatalog.entries.updateContacts` IAM permission on the corresponding project.
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsEntriesModifyEntryContactsRequest) input message
@@ -416,7 +416,7 @@ class DatacatalogV1(base_api.BaseApiClient):
     )
 
     def ModifyEntryOverview(self, request, global_params=None):
-      r"""Modifies Entry Overview, part of the Business Context of an Entry. To call this method, you must have the Google IAM permission `datacatalog.entries.updateOverview`.
+      r"""Modifies entry overview, part of the business context of an Entry. To call this method, you must have the `datacatalog.entries.updateOverview` IAM permission on the corresponding project.
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsEntriesModifyEntryOverviewRequest) input message

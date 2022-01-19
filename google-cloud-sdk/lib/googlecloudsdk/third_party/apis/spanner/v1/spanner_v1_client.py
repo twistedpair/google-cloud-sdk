@@ -400,6 +400,33 @@ class SpannerV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Copy(self, request, global_params=None):
+      r"""Starts copying a Cloud Spanner Backup. The returned backup long-running operation will have a name of the format `projects//instances//backups//operations/` and can be used to track copying of the backup. The operation is associated with the destination backup. The metadata field type is CopyBackupMetadata. The response field type is Backup, if successful. Cancelling the returned operation will stop the copying and delete the backup. Concurrent CopyBackup requests can run on the same source backup.
+
+      Args:
+        request: (SpannerProjectsInstancesBackupsCopyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Copy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Copy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/backups:copy',
+        http_method='POST',
+        method_id='spanner.projects.instances.backups.copy',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/backups:copy',
+        request_field='copyBackupRequest',
+        request_type_name='SpannerProjectsInstancesBackupsCopyRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Starts creating a new Cloud Spanner Backup. The returned backup long-running operation will have a name of the format `projects//instances//backups//operations/` and can be used to track creation of the backup. The metadata field type is CreateBackupMetadata. The response field type is Backup, if successful. Cancelling the returned operation will stop the creation and delete the backup. There can be only one pending backup creation per database. Backup creation of different databases can run concurrently.
 

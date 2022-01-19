@@ -1881,7 +1881,8 @@ class RRSetRoutingPolicy(_messages.Message):
 
 
 class RRSetRoutingPolicyGeoPolicy(_messages.Message):
-  r"""A RRSetRoutingPolicyGeoPolicy object.
+  r"""Configures a RRSetRoutingPolicy that routes based on the geo location of
+  the querying user.
 
   Fields:
     items: The primary geo routing configuration. If there are multiple items
@@ -1894,7 +1895,7 @@ class RRSetRoutingPolicyGeoPolicy(_messages.Message):
 
 
 class RRSetRoutingPolicyGeoPolicyGeoPolicyItem(_messages.Message):
-  r"""A RRSetRoutingPolicyGeoPolicyGeoPolicyItem object.
+  r"""ResourceRecordSet data for one geo location.
 
   Fields:
     kind: A string attribute.
@@ -1902,7 +1903,9 @@ class RRSetRoutingPolicyGeoPolicyGeoPolicyItem(_messages.Message):
       string should correspond to a GCP region. e.g. "us-east1",
       "southamerica-east1", "asia-east1", etc.
     rrdatas: A string attribute.
-    signatureRrdatas: DNSSEC generated signatures for the above geo_rrdata.
+    signatureRrdatas: DNSSEC generated signatures for all the rrdata within
+      this item. Note that if health checked targets are provided for DNSSEC
+      enabled zones, there's a restriction of 1 ip per item. .
   """
 
   kind = _messages.StringField(1, default='dns#rRSetRoutingPolicyGeoPolicyGeoPolicyItem')
@@ -1912,7 +1915,8 @@ class RRSetRoutingPolicyGeoPolicyGeoPolicyItem(_messages.Message):
 
 
 class RRSetRoutingPolicyWrrPolicy(_messages.Message):
-  r"""A RRSetRoutingPolicyWrrPolicy object.
+  r"""Configures a RRSetRoutingPolicy that routes in a weighted round robin
+  fashion.
 
   Fields:
     items: A RRSetRoutingPolicyWrrPolicyWrrPolicyItem attribute.
@@ -1924,12 +1928,14 @@ class RRSetRoutingPolicyWrrPolicy(_messages.Message):
 
 
 class RRSetRoutingPolicyWrrPolicyWrrPolicyItem(_messages.Message):
-  r"""A RRSetRoutingPolicyWrrPolicyWrrPolicyItem object.
+  r"""A routing block which contains the routing information for one WRR item.
 
   Fields:
     kind: A string attribute.
     rrdatas: A string attribute.
-    signatureRrdatas: DNSSEC generated signatures for the above wrr_rrdata.
+    signatureRrdatas: DNSSEC generated signatures for all the rrdata within
+      this item. Note that if health checked targets are provided for DNSSEC
+      enabled zones, there's a restriction of 1 ip per item. .
     weight: The weight corresponding to this subset of rrdata. When multiple
       WeightedRoundRobinPolicyItems are configured, the probability of
       returning an rrset is proportional to its weight relative to the sum of

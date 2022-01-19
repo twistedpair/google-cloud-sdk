@@ -1167,15 +1167,6 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
 
   Fields:
     concurrencyMode: The concurrency control mode to use for this database.
-    earliestVersionTime: Output only. The earliest timestamp at which older
-      versions of the data can be read from the database. See
-      [version_retention_period] above; this field is populated with `now -
-      version_retention_period`. This value is continuously updated, and
-      becomes stale the moment it is queried. If you are using this value to
-      recover data, make sure to account for the time from the moment when the
-      value is queried to the moment when you initiate the recovery. Note that
-      you should not need to query this field: if you know the
-      `version_retention_period` then you can query within that time.
     etag: This checksum is computed by the server based on the value of other
       fields, and may be sent on update and delete requests to ensure the
       client has an up-to-date value before proceeding.
@@ -1223,11 +1214,10 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
     DATASTORE_MODE = 2
 
   concurrencyMode = _messages.EnumField('ConcurrencyModeValueValuesEnum', 1)
-  earliestVersionTime = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  locationId = _messages.StringField(4)
-  name = _messages.StringField(5)
-  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  etag = _messages.StringField(2)
+  locationId = _messages.StringField(3)
+  name = _messages.StringField(4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
 
 
 class GoogleFirestoreAdminV1ExportDocumentsMetadata(_messages.Message):
@@ -1759,6 +1749,10 @@ class GoogleFirestoreAdminV1Progress(_messages.Message):
 
   completedWork = _messages.IntegerField(1)
   estimatedWork = _messages.IntegerField(2)
+
+
+class GoogleFirestoreAdminV1UpdateDatabaseMetadata(_messages.Message):
+  r"""Metadata related to the update database operation."""
 
 
 class GoogleLongrunningCancelOperationRequest(_messages.Message):

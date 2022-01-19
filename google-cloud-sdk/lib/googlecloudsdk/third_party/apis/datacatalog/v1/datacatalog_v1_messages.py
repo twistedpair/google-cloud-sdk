@@ -1292,7 +1292,8 @@ class GoogleCloudDatacatalogV1ContactsPerson(_messages.Message):
 
   Fields:
     designation: Designation of the person, for example, Data Steward.
-    email: Email of the person, the format should be either `` or `John Doe`.
+    email: Email of the person in the format of `john.doe@xyz`, ``, or `John
+      Doe`.
   """
 
   designation = _messages.StringField(1)

@@ -1197,8 +1197,8 @@ class MysqlObjectIdentifier(_messages.Message):
   r"""Mysql data source object identifier.
 
   Fields:
-    database: The database name.
-    table: The table name.
+    database: Required. The database name.
+    table: Required. The table name.
   """
 
   database = _messages.StringField(1)
@@ -1454,8 +1454,8 @@ class OracleObjectIdentifier(_messages.Message):
   r"""Oracle data source object identifier.
 
   Fields:
-    schema: The schema name.
-    table: The table name.
+    schema: Required. The schema name.
+    table: Required. The table name.
   """
 
   schema = _messages.StringField(1)

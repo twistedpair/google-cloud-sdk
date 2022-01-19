@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2020 Google LLC. All Rights Reserved.
+# Copyright 2022 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -83,6 +83,26 @@ def AddEntityFlagsToParser(parser, entities):
             resource_group)
 
 
+def AddInsightTypeFlagsToParser(parser, entities):
+  """Adds argument mutex group of specified entities and insight type to parser.
+
+  Args:
+      parser: An argparse parser that you can use to add arguments that go on
+        the command line after this command.
+      entities: The entities to add.
+  """
+  AddEntityFlagsToParser(parser, entities)
+  parser.add_argument(
+      '--location',
+      metavar='LOCATION',
+      required=True,
+      help='Location to use for this invocation.')
+  parser.add_argument(
+      'insight_type',
+      metavar='INSIGHT_TYPE',
+      help='Insight type to use for this invocation.')
+
+
 def AddRecommenderFlagsToParser(parser, entities):
   """Adds argument mutex group of specified entities and recommender to parser.
 
@@ -103,6 +123,58 @@ def AddRecommenderFlagsToParser(parser, entities):
       help='Recommender to use for this invocation.')
 
 
+def AddConfigFileToParser(parser, resource):
+  """Adds config file to parser.
+
+  Args:
+      parser: An argparse parser that you can use to add arguments that go on
+        the command line after this command.
+      resource: The resource to add to.
+  """
+  parser.add_argument(
+      '--config-file',
+      help='Generation configuration file for the {}'.format(resource))
+
+
+def AddDisplayNameToParser(parser, resource):
+  """Adds display-name to parser.
+
+  Args:
+      parser: An argparse parser that you can use to add arguments that go on
+        the command line after this command.
+      resource: The resource to add to.
+  """
+  parser.add_argument(
+      '--display-name', help='Display name of the {}'.format(resource))
+
+
+def AddValidateOnlyToParser(parser):
+  """Adds validate-only to parser.
+
+  Args:
+      parser: An argparse parser that you can use to add arguments that go on
+        the command line after this command.
+  """
+  parser.add_argument(
+      '--validate-only',
+      action='store_true',
+      default=False,
+      help='If true, validate the request and preview the change, but do not actually update it.'
+  )
+
+
+def AddEtagToParser(parser, resource):
+  """Adds etag to parser.
+
+  Args:
+      parser: An argparse parser that you can use to add arguments that go on
+        the command line after this command.
+      resource: The resource to add to.
+  """
+  parser.add_argument(
+      '--etag', required=True, help='Etag of the {}'.format(resource))
+
+
 def GetResourceSegment(args):
   """Returns the resource from up to the cloud entity."""
   if args.project:
@@ -121,6 +193,17 @@ def GetLocationSegment(args):
   return '{}/locations/{}'.format(parent, args.location)
 
 
+def GetInsightTypeName(args):
+  """Returns the resource name up to the insight type."""
+  parent = GetLocationSegment(args)
+  return '{}/insightTypes/{}'.format(parent, args.insight_type)
+
+
+def GetInsightTypeConfigName(args):
+  """Returns the resource name for the insight type config."""
+  return GetInsightTypeName(args) + '/config'
+
+
 def GetRecommenderName(args):
   """Returns the resource name up to the recommender."""
   parent = GetLocationSegment(args)
@@ -128,7 +211,7 @@ def GetRecommenderName(args):
 
 
 def GetRecommenderConfigName(args):
-  """Returns the resource name for the Recommender Config."""
+  """Returns the resource name for the recommender config."""
   return GetRecommenderName(args) + '/config'
 
 

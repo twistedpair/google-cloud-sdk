@@ -22,6 +22,7 @@ import base64
 import binascii
 import re
 
+from googlecloudsdk.api_lib.storage import s3_metadata_field_converters
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import s3_resource_reference
@@ -156,8 +157,41 @@ def get_prefix_resource_from_s3_response(prefix_dict, bucket_name):
       prefix=prefix)
 
 
-def get_metadata_dict_from_request_config(request_config):
-  """Returns S3 metadata dict fields based on RequestConfig."""
+def get_bucket_metadata_dict_from_request_config(request_config):
+  """Returns S3 bucket metadata dict fields based on RequestConfig."""
+  metadata = {}
+
+  resource_args = request_config.resource_args
+  if resource_args:
+    if resource_args.cors_file_path is not None:
+      metadata.update(
+          s3_metadata_field_converters.process_cors(
+              resource_args.cors_file_path))
+    if resource_args.labels_file_path is not None:
+      metadata.update(
+          s3_metadata_field_converters.process_labels(
+              resource_args.labels_file_path))
+    if resource_args.lifecycle_file_path is not None:
+      metadata.update(
+          s3_metadata_field_converters.process_lifecycle(
+              resource_args.lifecycle_file_path))
+    if resource_args.location is not None:
+      metadata['LocationConstraint'] = resource_args.location
+    if resource_args.versioning is not None:
+      metadata.update(
+          s3_metadata_field_converters.process_versioning(
+              resource_args.versioning))
+    if (resource_args.web_error_page is not None or
+        resource_args.web_main_page_suffix is not None):
+      metadata.update(
+          s3_metadata_field_converters.process_website(
+              resource_args.web_error_page, resource_args.web_main_page_suffix))
+
+  return metadata
+
+
+def get_object_metadata_dict_from_request_config(request_config):
+  """Returns S3 object metadata dict fields based on RequestConfig."""
   metadata = {}
   if request_config.predefined_acl_string is not None:
     metadata['ACL'] = translate_predefined_acl_string_to_s3(

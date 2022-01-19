@@ -2516,7 +2516,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "The parent (project and location) where the Features will be listed. Specified in the format `projects\/*\/locations\/global`.",
+                          "description": "Required. The parent (project and location) where the Features will be listed. Specified in the format `projects\/*\/locations\/global`.",
                           "pattern": "^projects\/[^\/]+\/locations\/global$",
                           "location": "path",
                           "required": true,
@@ -2562,7 +2562,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "The Feature resource name in the format `projects\/*\/locations\/global\/features\/*`",
+                          "description": "Required. The Feature resource name in the format `projects\/*\/locations\/global\/features\/*`",
                           "pattern": "^projects\/[^\/]+\/locations\/global\/features\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2587,7 +2587,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "The parent (project and location) where the Feature will be created. Specified in the format `projects\/*\/locations\/global`.",
+                          "description": "Required. The parent (project and location) where the Feature will be created. Specified in the format `projects\/*\/locations\/global`.",
                           "pattern": "^projects\/[^\/]+\/locations\/global$",
                           "location": "path",
                           "required": true,
@@ -2620,7 +2620,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "The Feature resource name in the format `projects\/*\/locations\/global\/features\/*`.",
+                          "description": "Required. The Feature resource name in the format `projects\/*\/locations\/global\/features\/*`.",
                           "pattern": "^projects\/[^\/]+\/locations\/global\/features\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2650,7 +2650,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "The Feature resource name in the format `projects\/*\/locations\/global\/features\/*`.",
+                          "description": "Required. The Feature resource name in the format `projects\/*\/locations\/global\/features\/*`.",
                           "pattern": "^projects\/[^\/]+\/locations\/global\/features\/[^\/]+$",
                           "location": "path",
                           "required": true,

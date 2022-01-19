@@ -880,7 +880,7 @@
           "type": "string"
         },
         "ldif": {
-          "description": "LDIF File Resource name for Schema Extensions. Represented in the form of projects\/{project_id}\/buckets\/{bucket_name}\/objects\/{object_name}",
+          "description": "Deprecated. Please use ldif_source field. LDIF File Resource name for Schema Extensions. Represented in the form of projects\/{project_id}\/buckets\/{bucket_name}\/objects\/{object_name}",
           "type": "string"
         },
         "createTime": {
@@ -921,6 +921,15 @@
           "description": "Output only. Additional information about the current status of this Schema Extension, if available.",
           "readOnly": true,
           "type": "string"
+        },
+        "gcsPath": {
+          "description": "File stored in Cloud Storage bucket and represented in the form projects\/{project_id}\/buckets\/{bucket_name}\/objects\/{object_name}",
+          "type": "string"
+        },
+        "fileContents": {
+          "description": "File uploaded as a byte stream input.",
+          "type": "string",
+          "format": "byte"
         }
       }
     },

@@ -29,6 +29,14 @@ DEFAULT_LIST_FORMAT = """\
       urlMap.basename()
     )"""
 
+DEFAULT_BETA_LIST_FORMAT = """\
+    table(
+      name,
+      sslCertificates.map().basename().list():label=SSL_CERTIFICATES,
+      urlMap.basename(),
+      certificateMap.basename()
+    )"""
+
 
 class TargetHttpsProxiesCompleter(compute_completers.ListCommandCompleter):
 

@@ -29,7 +29,7 @@ def GetSafeProject():
           .replace('google', 'elgoog'))
 
 
-def GetDefaultStagingBucket(project_id):
+def GetDefaultStagingBucket(project_id, location):
   """Returns the default source staging bucket."""
 
-  return project_id + '_clouddeploy'
+  return project_id + '_clouddeploy_' + location

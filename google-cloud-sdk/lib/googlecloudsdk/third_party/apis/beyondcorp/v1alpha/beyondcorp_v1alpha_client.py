@@ -819,6 +819,33 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Delete(self, request, global_params=None):
+      r"""Delete method for the projects_locations_clientConnectorServices service.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsClientConnectorServicesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/clientConnectorServices/{clientConnectorServicesId}',
+        http_method='DELETE',
+        method_id='beyondcorp.projects.locations.clientConnectorServices.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'validateOnly'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='BeyondcorpProjectsLocationsClientConnectorServicesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details of a single ClientConnectorService.
 
@@ -987,6 +1014,33 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
         relative_path='v1alpha/{+parent}/clientGateways',
         request_field='clientGateway',
         request_type_name='BeyondcorpProjectsLocationsClientGatewaysCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single ClientGateway.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsClientGatewaysDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/clientGateways/{clientGatewaysId}',
+        http_method='DELETE',
+        method_id='beyondcorp.projects.locations.clientGateways.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'validateOnly'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='BeyondcorpProjectsLocationsClientGatewaysDeleteRequest',
         response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )

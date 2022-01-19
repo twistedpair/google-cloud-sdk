@@ -38,6 +38,28 @@ class NatNotFoundError(core_exceptions.Error):
     super(NatNotFoundError, self).__init__(msg)
 
 
+class IpAllocateOptionShouldNotBeSpecifiedError(core_exceptions.Error):
+  """Raised when IP Allocation option is specified for private NAT."""
+
+  def __init__(self):
+    msg = (
+        '--nat-external-ip-pool and --auto-allocate-nat-external-ips '
+        'cannot be specified for Private NAT.'
+    )
+    super(IpAllocateOptionShouldNotBeSpecifiedError, self).__init__(msg)
+
+
+class IpAllocationUnspecifiedError(core_exceptions.Error):
+  """Raised when IP Allocation option is not specified for public NAT."""
+
+  def __init__(self):
+    msg = (
+        'Either --nat-external-ip-pool or --auto-allocate-nat-external-ips '
+        'must be specified for Public NAT.'
+    )
+    super(IpAllocationUnspecifiedError, self).__init__(msg)
+
+
 def FindNatOrRaise(router, nat_name):
   """Returns the nat with the given name in the given router."""
   for nat in router.nats:
@@ -46,16 +68,29 @@ def FindNatOrRaise(router, nat_name):
   raise NatNotFoundError(nat_name)
 
 
-def CreateNatMessage(args, compute_holder):
+def CreateNatMessage(args, compute_holder, with_type=False):
   """Creates a NAT message from the specified arguments."""
   params = {'name': args.name}
 
   params['sourceSubnetworkIpRangesToNat'], params['subnetworks'] = (
       _ParseSubnetFields)(args, compute_holder)
 
-  option, nat_ips = _ParseNatIpFields(args, compute_holder)
-  params['natIpAllocateOption'] = option
-  params['natIps'] = nat_ips
+  if with_type and args.type is not None:
+    params['type'] = (
+        compute_holder.client.messages.RouterNat.TypeValueValuesEnum(args.type))
+
+  is_private = with_type and args.type == 'PRIVATE'
+  is_ip_allocation_specified = (
+      args.auto_allocate_nat_external_ips or args.nat_external_ip_pool)
+  if is_private:
+    if is_ip_allocation_specified:
+      raise IpAllocateOptionShouldNotBeSpecifiedError()
+  else:
+    if not is_ip_allocation_specified:
+      raise IpAllocationUnspecifiedError()
+    option, nat_ips = _ParseNatIpFields(args, compute_holder)
+    params['natIpAllocateOption'] = option
+    params['natIps'] = nat_ips
 
   params['udpIdleTimeoutSec'] = args.udp_idle_timeout
   params['icmpIdleTimeoutSec'] = args.icmp_idle_timeout
@@ -107,8 +142,7 @@ def UpdateNatMessage(nat, args, compute_holder):
   if args.clear_nat_external_drain_ip_pool:
     nat.drainNatIps = []
 
-  if (args.ip_allocation_option == nat_flags.IpAllocationOption.AUTO or
-      args.nat_external_ip_pool):
+  if args.auto_allocate_nat_external_ips or args.nat_external_ip_pool:
     option, nat_ips = _ParseNatIpFields(args, compute_holder)
     nat.natIpAllocateOption = option
     nat.natIps = nat_ips
@@ -250,7 +284,7 @@ def _ParseSubnetFields(args, compute_holder):
 
 def _ParseNatIpFields(args, compute_holder):
   messages = compute_holder.client.messages
-  if args.ip_allocation_option == nat_flags.IpAllocationOption.AUTO:
+  if args.auto_allocate_nat_external_ips:
     return (messages.RouterNat.NatIpAllocateOptionValueValuesEnum.AUTO_ONLY,
             list())
   return (messages.RouterNat.NatIpAllocateOptionValueValuesEnum.MANUAL_ONLY, [

@@ -70,6 +70,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_LAKES_CONTENTITEMS = (
+      'projects.locations.lakes.contentitems',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/'
+              'contentitems/{contentitemsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_LAKES_ENVIRONMENTS = (
       'projects.locations.lakes.environments',
       '{+name}',

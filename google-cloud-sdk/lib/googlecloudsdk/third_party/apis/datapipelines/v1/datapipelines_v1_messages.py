@@ -81,6 +81,27 @@ class DatapipelinesProjectsLocationsPipelinesGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class DatapipelinesProjectsLocationsPipelinesJobsListRequest(_messages.Message):
+  r"""A DatapipelinesProjectsLocationsPipelinesJobsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of entities to return. The service may return
+      fewer than this value, even if there are additional pages. If
+      unspecified, the max limit will be determined by the backend
+      implementation.
+    pageToken: A page token, received from a previous `ListJobs` call. Provide
+      this to retrieve the subsequent page. When paginating, all other
+      parameters provided to `ListJobs` must match the call that provided the
+      page token.
+    parent: Required. The pipeline name. For example:
+      `projects/PROJECT_ID/locations/LOCATION_ID/pipelines/PIPELINE_ID`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class DatapipelinesProjectsLocationsPipelinesPatchRequest(_messages.Message):
   r"""A DatapipelinesProjectsLocationsPipelinesPatchRequest object.
 
@@ -612,6 +633,20 @@ class GoogleCloudDatapipelinesV1LaunchTemplateRequest(_messages.Message):
   location = _messages.StringField(3)
   projectId = _messages.StringField(4)
   validateOnly = _messages.BooleanField(5)
+
+
+class GoogleCloudDatapipelinesV1ListJobsResponse(_messages.Message):
+  r"""Response message for ListJobs
+
+  Fields:
+    jobs: Results that were accessible to the caller. Results are always in
+      descending order of job creation date.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  jobs = _messages.MessageField('GoogleCloudDatapipelinesV1Job', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class GoogleCloudDatapipelinesV1ListPipelinesResponse(_messages.Message):

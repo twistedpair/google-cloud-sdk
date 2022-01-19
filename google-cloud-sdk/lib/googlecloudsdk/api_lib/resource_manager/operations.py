@@ -28,30 +28,30 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import progress_tracker as tracker
 from googlecloudsdk.core.util import retry
 
-
-OPERATIONS_API_VERSION = 'v1'
+OPERATIONS_API_V1 = 'v1'
+OPERATIONS_API_V3 = 'v3'
 
 
 class OperationError(exceptions.Error):
   pass
 
 
-def OperationsClient():
-  return apis.GetClientInstance('cloudresourcemanager', OPERATIONS_API_VERSION)
+def OperationsClient(version=OPERATIONS_API_V1):
+  return apis.GetClientInstance('cloudresourcemanager', version)
 
 
-def OperationsRegistry():
+def OperationsRegistry(version=OPERATIONS_API_V1):
   registry = resources.REGISTRY.Clone()
-  registry.RegisterApiByName('cloudresourcemanager', OPERATIONS_API_VERSION)
+  registry.RegisterApiByName('cloudresourcemanager', version)
   return registry
 
 
-def OperationsService():
-  return OperationsClient().operations
+def OperationsService(version=OPERATIONS_API_V1):
+  return OperationsClient(version).operations
 
 
-def OperationsMessages():
-  return apis.GetMessagesModule('cloudresourcemanager', OPERATIONS_API_VERSION)
+def OperationsMessages(version=OPERATIONS_API_V1):
+  return apis.GetMessagesModule('cloudresourcemanager', version)
 
 
 def OperationNameToId(operation_name):
@@ -66,6 +66,13 @@ def GetOperation(operation_id):
   return OperationsService().Get(
       OperationsMessages().CloudresourcemanagerOperationsGetRequest(
           operationsId=operation_id))
+
+
+def GetOperationV3(operation_id):
+  return OperationsService(OPERATIONS_API_V3).Get(
+      OperationsMessages(
+          OPERATIONS_API_V3).CloudresourcemanagerOperationsGetRequest(
+              name=OperationIdToName(operation_id)))
 
 
 def WaitForOperation(operation):

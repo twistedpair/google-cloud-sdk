@@ -41,6 +41,7 @@ class DataplexV1(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.projects_locations_lakes_actions = self.ProjectsLocationsLakesActionsService(self)
     self.projects_locations_lakes_content = self.ProjectsLocationsLakesContentService(self)
+    self.projects_locations_lakes_contentitems = self.ProjectsLocationsLakesContentitemsService(self)
     self.projects_locations_lakes_environments_sessions = self.ProjectsLocationsLakesEnvironmentsSessionsService(self)
     self.projects_locations_lakes_environments = self.ProjectsLocationsLakesEnvironmentsService(self)
     self.projects_locations_lakes_tasks_jobs = self.ProjectsLocationsLakesTasksJobsService(self)
@@ -316,6 +317,151 @@ class DataplexV1(base_api.BaseApiClient):
         request_field='googleIamV1TestIamPermissionsRequest',
         request_type_name='DataplexProjectsLocationsLakesContentTestIamPermissionsRequest',
         response_type_name='GoogleIamV1TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsLakesContentitemsService(base_api.BaseApiService):
+    """Service class for the projects_locations_lakes_contentitems resource."""
+
+    _NAME = 'projects_locations_lakes_contentitems'
+
+    def __init__(self, client):
+      super(DataplexV1.ProjectsLocationsLakesContentitemsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a content.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesContentitemsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1Content) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/contentitems',
+        http_method='POST',
+        method_id='dataplex.projects.locations.lakes.contentitems.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['validateOnly'],
+        relative_path='v1/{+parent}/contentitems',
+        request_field='googleCloudDataplexV1Content',
+        request_type_name='DataplexProjectsLocationsLakesContentitemsCreateRequest',
+        response_type_name='GoogleCloudDataplexV1Content',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a content.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesContentitemsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/contentitems/{contentitemsId}',
+        http_method='DELETE',
+        method_id='dataplex.projects.locations.lakes.contentitems.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLakesContentitemsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get a content resource.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesContentitemsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1Content) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/contentitems/{contentitemsId}',
+        http_method='GET',
+        method_id='dataplex.projects.locations.lakes.contentitems.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLakesContentitemsGetRequest',
+        response_type_name='GoogleCloudDataplexV1Content',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List content.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesContentitemsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1ListContentResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/contentitems',
+        http_method='GET',
+        method_id='dataplex.projects.locations.lakes.contentitems.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/contentitems',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLakesContentitemsListRequest',
+        response_type_name='GoogleCloudDataplexV1ListContentResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update a content. Only supports full resource update.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesContentitemsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1Content) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/contentitems/{contentitemsId}',
+        http_method='PATCH',
+        method_id='dataplex.projects.locations.lakes.contentitems.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudDataplexV1Content',
+        request_type_name='DataplexProjectsLocationsLakesContentitemsPatchRequest',
+        response_type_name='GoogleCloudDataplexV1Content',
         supports_download=False,
     )
 

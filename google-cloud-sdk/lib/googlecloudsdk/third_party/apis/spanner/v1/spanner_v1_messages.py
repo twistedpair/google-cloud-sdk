@@ -36,6 +36,11 @@ class Backup(_messages.Message):
       processed. Once the `expire_time` has passed, the backup is eligible to
       be automatically deleted by Cloud Spanner to free the resources used by
       the backup.
+    maxExpireTime: Output only. The max allowed expiration time of the backup,
+      with microseconds granularity. A backup's expiration time can be
+      configured in multiple APIs: CreateBackup, UpdateBackup, CopyBackup.
+      When updating or copying an existing backup, the expiration time
+      specified must be less than `Backup.max_expire_time`.
     name: Output only for the CreateBackup operation. Required for the
       UpdateBackup operation. A globally unique identifier for the backup
       which cannot be changed. Values are of the form
@@ -44,6 +49,13 @@ class Backup(_messages.Message):
       in the location(s) specified in the instance configuration of the
       instance containing the backup, identified by the prefix of the backup
       name of the form `projects//instances/`.
+    referencingBackups: Output only. The names of the destination backups
+      being created by copying this source backup. The backup names are of the
+      form `projects//instances//backups/`. Referencing backups may exist in
+      different instances. The existence of any referencing backup prevents
+      the backup from being deleted. When the copy operation is done (either
+      successfully completed or cancelled or the destination backup is
+      deleted), the reference to the backup is removed.
     referencingDatabases: Output only. The names of the restored databases
       that reference the backup. The database names are of the form
       `projects//instances//databases/`. Referencing databases may exist in
@@ -75,11 +87,13 @@ class Backup(_messages.Message):
   database = _messages.StringField(2)
   encryptionInfo = _messages.MessageField('EncryptionInfo', 3)
   expireTime = _messages.StringField(4)
-  name = _messages.StringField(5)
-  referencingDatabases = _messages.StringField(6, repeated=True)
-  sizeBytes = _messages.IntegerField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  versionTime = _messages.StringField(9)
+  maxExpireTime = _messages.StringField(5)
+  name = _messages.StringField(6)
+  referencingBackups = _messages.StringField(7, repeated=True)
+  referencingDatabases = _messages.StringField(8, repeated=True)
+  sizeBytes = _messages.IntegerField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  versionTime = _messages.StringField(11)
 
 
 class BackupInfo(_messages.Message):
@@ -310,6 +324,99 @@ class ContextValue(_messages.Message):
   severity = _messages.EnumField('SeverityValueValuesEnum', 2)
   unit = _messages.StringField(3)
   value = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+
+
+class CopyBackupEncryptionConfig(_messages.Message):
+  r"""Encryption configuration for the copied backup.
+
+  Enums:
+    EncryptionTypeValueValuesEnum: Required. The encryption type of the
+      backup.
+
+  Fields:
+    encryptionType: Required. The encryption type of the backup.
+    kmsKeyName: Optional. The Cloud KMS key that will be used to protect the
+      backup. This field should be set only when encryption_type is
+      `CUSTOMER_MANAGED_ENCRYPTION`. Values are of the form
+      `projects//locations//keyRings//cryptoKeys/`.
+  """
+
+  class EncryptionTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The encryption type of the backup.
+
+    Values:
+      ENCRYPTION_TYPE_UNSPECIFIED: Unspecified. Do not use.
+      USE_CONFIG_DEFAULT_OR_BACKUP_ENCRYPTION: This is the default option for
+        CopyBackup when encryption_config is not specified. For example, if
+        the source backup is using `Customer_Managed_Encryption`, the backup
+        will be using the same Cloud KMS key as the source backup.
+      GOOGLE_DEFAULT_ENCRYPTION: Use Google default encryption.
+      CUSTOMER_MANAGED_ENCRYPTION: Use customer managed encryption. If
+        specified, `kms_key_name` must contain a valid Cloud KMS key.
+    """
+    ENCRYPTION_TYPE_UNSPECIFIED = 0
+    USE_CONFIG_DEFAULT_OR_BACKUP_ENCRYPTION = 1
+    GOOGLE_DEFAULT_ENCRYPTION = 2
+    CUSTOMER_MANAGED_ENCRYPTION = 3
+
+  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 1)
+  kmsKeyName = _messages.StringField(2)
+
+
+class CopyBackupMetadata(_messages.Message):
+  r"""Metadata type for the google.longrunning.Operation returned by
+  CopyBackup.
+
+  Fields:
+    cancelTime: The time at which cancellation of CopyBackup operation was
+      received. Operations.CancelOperation starts asynchronous cancellation on
+      a long-running operation. The server makes a best effort to cancel the
+      operation, but success is not guaranteed. Clients can use
+      Operations.GetOperation or other methods to check whether the
+      cancellation succeeded or whether the operation completed despite
+      cancellation. On successful cancellation, the operation is not deleted;
+      instead, it becomes an operation with an Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+    name: The name of the backup being created through the copy operation.
+      Values are of the form `projects//instances//backups/`.
+    progress: The progress of the CopyBackup operation.
+    sourceBackup: The name of the source backup that is being copied. Values
+      are of the form `projects//instances//backups/`.
+  """
+
+  cancelTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  progress = _messages.MessageField('OperationProgress', 3)
+  sourceBackup = _messages.StringField(4)
+
+
+class CopyBackupRequest(_messages.Message):
+  r"""The request for CopyBackup.
+
+  Fields:
+    backupId: Required. The id of the backup copy. The `backup_id` appended to
+      `parent` forms the full backup_uri of the form
+      `projects//instances//backups/`.
+    encryptionConfig: Optional. The encryption configuration used to encrypt
+      the backup. If this field is not specified, the backup will use the same
+      encryption configuration as the source backup by default, namely
+      encryption_type = `USE_CONFIG_DEFAULT_OR_BACKUP_ENCRYPTION`.
+    expireTime: Required. The expiration time of the backup in microsecond
+      granularity. The expiration time must be at least 6 hours and at most
+      366 days from the `create_time` of the source backup. Once the
+      `expire_time` has passed, the backup is eligible to be automatically
+      deleted by Cloud Spanner to free the resources used by the backup.
+    sourceBackup: Required. The source backup to be copied. The source backup
+      needs to be in READY state for it to be copied. Once CopyBackup is in
+      progress, the source backup cannot be deleted or cleaned up on
+      expiration until CopyBackup is finished. Values are of the form:
+      `projects//instances//backups/`.
+  """
+
+  backupId = _messages.StringField(1)
+  encryptionConfig = _messages.MessageField('CopyBackupEncryptionConfig', 2)
+  expireTime = _messages.StringField(3)
+  sourceBackup = _messages.StringField(4)
 
 
 class CreateBackupMetadata(_messages.Message):
@@ -3364,6 +3471,20 @@ class SpannerProjectsInstancesBackupOperationsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class SpannerProjectsInstancesBackupsCopyRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesBackupsCopyRequest object.
+
+  Fields:
+    copyBackupRequest: A CopyBackupRequest resource to be passed as the
+      request body.
+    parent: Required. The name of the destination instance that will contain
+      the backup copy. Values are of the form: `projects//instances/`.
+  """
+
+  copyBackupRequest = _messages.MessageField('CopyBackupRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class SpannerProjectsInstancesBackupsCreateRequest(_messages.Message):

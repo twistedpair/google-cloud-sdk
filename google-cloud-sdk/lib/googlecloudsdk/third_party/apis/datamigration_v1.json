@@ -440,12 +440,14 @@
           "enumDescriptions": [
             "The database provider is unknown.",
             "CloudSQL runs the database.",
-            "RDS runs the database."
+            "RDS runs the database.",
+            "Amazon Aurora."
           ],
           "enum": [
             "DATABASE_PROVIDER_UNSPECIFIED",
             "CLOUDSQL",
-            "RDS"
+            "RDS",
+            "AURORA"
           ]
         },
         "engine": {
@@ -675,12 +677,14 @@
           "enumDescriptions": [
             "The database provider is unknown.",
             "CloudSQL runs the database.",
-            "RDS runs the database."
+            "RDS runs the database.",
+            "Amazon Aurora."
           ],
           "enum": [
             "DATABASE_PROVIDER_UNSPECIFIED",
             "CLOUDSQL",
-            "RDS"
+            "RDS",
+            "AURORA"
           ]
         }
       }
@@ -2022,7 +2026,7 @@
                       "type": "string"
                     },
                     "orderBy": {
-                      "description": "the order by fields for the result.",
+                      "description": "A comma-separated list of fields to order results according to.",
                       "location": "query",
                       "type": "string"
                     }
@@ -2036,7 +2040,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Retrieve a list of all connection profiles in a given project and location."
+                  "description": "Retrieves a list of all connection profiles in a given project and location."
                 },
                 "get": {
                   "id": "datamigration.projects.locations.connectionProfiles.get",

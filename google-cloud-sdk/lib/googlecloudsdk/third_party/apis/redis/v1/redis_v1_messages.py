@@ -430,6 +430,12 @@ class Instance(_messages.Message):
       If not provided, the service will choose an unused /29 block, for
       example, 10.0.0.0/29 or 192.168.0.0/29. For READ_REPLICAS_ENABLED the
       default block size is /28.
+    secondaryIpRange: Optional. Additional ip ranges for node placement,
+      beyond those specified in reserved_ip_range. At most 1 secondary IP
+      range is supported. The mask value must not exceed /28. Not supported
+      for BASIC tier. Updates can only add new ranges, once added ranges
+      cannot be changed or deleted. Values in this list cannot overlap with
+      the reserved_ip_range. Not supported during instance creation.
     serverCaCerts: Output only. List of server CA certificates for the
       instance.
     state: Output only. The current state of this instance.
@@ -608,11 +614,12 @@ class Instance(_messages.Message):
   redisVersion = _messages.StringField(23)
   replicaCount = _messages.IntegerField(24, variant=_messages.Variant.INT32)
   reservedIpRange = _messages.StringField(25)
-  serverCaCerts = _messages.MessageField('TlsCertificate', 26, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 27)
-  statusMessage = _messages.StringField(28)
-  tier = _messages.EnumField('TierValueValuesEnum', 29)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 30)
+  secondaryIpRange = _messages.StringField(26)
+  serverCaCerts = _messages.MessageField('TlsCertificate', 27, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 28)
+  statusMessage = _messages.StringField(29)
+  tier = _messages.EnumField('TierValueValuesEnum', 30)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 31)
 
 
 class InstanceAuthString(_messages.Message):

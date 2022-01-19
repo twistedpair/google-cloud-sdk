@@ -25,53 +25,27 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import json
-
-from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import storage_url
-from googlecloudsdk.core.cache import function_result_cache
 from googlecloudsdk.core.util import debug_output
-from googlecloudsdk.core.util import files
-from googlecloudsdk.core.util import times
 
 
 DEFAULT_CONTENT_TYPE = 'application/octet-stream'
-
-
-@function_result_cache.lru(maxsize=None)
-def _read_json_config_file(file_path):
-  """Convert JSON file to an in-memory dict."""
-  with files.FileReader(file_path) as file_reader:
-    return json.load(file_reader)
-
-
-@function_result_cache.lru(maxsize=None)
-def _get_label_pairs_from_file(file_path):
-  """Convert JSON file to a list of label keys and values."""
-  # Expected JSON file format: Dict<str: str>
-  labels_dict = _read_json_config_file(file_path)
-  # {'key1': 'val1', 'key2': 'val2', ...} -> [('key1', 'val1'), ...]
-  return list(labels_dict.items())
-
-
-def _parse_date_from_lifecycle_condition(lifecycle_rule, field):
-  date_string = lifecycle_rule['condition'].get(field)
-  if date_string:
-    return times.ParseDateTime(date_string).date()
-  return None
 
 
 class _BucketConfig(object):
   """Holder for generic bucket fields.
 
   Attributes:
-    cors (None): May be set in subclasses.
-    labels (None): May be set in subclasses.
-    lifecycle (None): May be set in subclasses.
+    cors_file_path (None|str): Path to file with CORS settings.
+    labels_file_path (None|str): Path to file with labels settings.
+    lifecycle_file_path (None|str): Path to file with lifecycle settings.
     location (str|None): Location of bucket.
-    versioning (None): May be set in subclasses.
-    website (None): May be set in subclasses.
+    versioning (None|bool): Whether to turn on object versioning in a bucket.
+    web_error_page (None|str): Error page address if bucket is being used
+      to host a website.
+    web_main_page_suffix (None|str): Suffix of main page address if bucket is
+      being used to host a website.
   """
 
   def __init__(self,
@@ -83,46 +57,24 @@ class _BucketConfig(object):
                web_error_page=None,
                web_main_page_suffix=None):
     self.location = location
-    self.cors = None
-    self.process_cors(cors_file_path)
-    self.labels = None
-    self.process_labels(labels_file_path)
-    self.lifecycle = None
-    self.process_lifecycle(lifecycle_file_path)
-    self.versioning = None
-    self.process_versioning(versioning)
-    self.website = None
-    self.process_website(web_error_page, web_main_page_suffix)
-
-  def process_cors(self, cors_file_path):
-    if cors_file_path:
-      raise NotImplementedError
-
-  def process_labels(self, labels_file_path):
-    if labels_file_path:
-      raise NotImplementedError
-
-  def process_lifecycle(self, file_path):
-    if file_path:
-      raise NotImplementedError
-
-  def process_versioning(self, versioning):
-    if versioning:
-      raise NotImplementedError
-
-  def process_website(self, web_error_page, web_main_page_suffix):
-    if web_error_page or web_main_page_suffix:
-      raise NotImplementedError
+    self.cors_file_path = cors_file_path
+    self.labels_file_path = labels_file_path
+    self.lifecycle_file_path = lifecycle_file_path
+    self.versioning = versioning
+    self.web_error_page = web_error_page
+    self.web_main_page_suffix = web_main_page_suffix
 
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
     return (super(_BucketConfig, self).__eq__(other) and
-            self.cors == other.cors and
-            self.labels == other.labels and self.location == other.location and
-            self.lifecycle == other.lifecycle and
+            self.cors_file_path == other.cors_file_path and
+            self.labels_file_path == other.labels_file_path and
+            self.location == other.location and
+            self.lifecycle_file_path == other.lifecycle_file_path and
             self.versioning == other.versioning and
-            self.website == other.website)
+            self.web_error_page == other.web_error_page and
+            self.web_main_page_suffix == other.web_main_page_suffix)
 
   def __repr__(self):
     return debug_output.generic_repr(self)
@@ -131,21 +83,18 @@ class _BucketConfig(object):
 class _GcsBucketConfig(_BucketConfig):
   """Holder for GCS-specific bucket fields.
 
-  Attributes:
-    cors (List[CorsValueListEntry]|None): List of Apitools objects for CORS
-      settings.
-    default_encryption_key (EncryptionValue|None): A key used to encrypt objects
+  See superclass for remaining attributes.
+
+  Subclass Attributes:
+    default_encryption_key (str|None): A key used to encrypt objects
       added to the bucket.
     default_event_based_hold (bool|None): Determines if event-based holds will
       automatically be applied to new objects in bucket.
     default_storage_class (str|None): Storage class assigned to objects in the
       bucket by default.
-    labels (List[LabelsValue]|None): List of Apitools objects for labels
-      settings.
-    location (str|None): Location of bucket.
     retention_period (int|None): Minimum retention period in seconds for objects
       in a bucket. Attempts to delete an object earlier will be denied.
-    uniform_bucket_level_access (UniformBucketLevelAccessValue|None):
+    uniform_bucket_level_access (bool|None):
       Determines if the IAM policies will apply to every object in bucket.
   """
 
@@ -166,136 +115,11 @@ class _GcsBucketConfig(_BucketConfig):
           self).__init__(cors_file_path, labels_file_path, lifecycle_file_path,
                          location, versioning, web_error_page,
                          web_main_page_suffix)
-    self._messages = core_apis.GetMessagesModule('storage', 'v1')
-
+    self.default_encryption_key = default_encryption_key
     self.default_event_based_hold = default_event_based_hold
     self.default_storage_class = default_storage_class
     self.retention_period = retention_period
-
-    self.default_encryption_key = None
-    self.process_default_encryption_key(default_encryption_key)
-    self.uniform_bucket_level_access = None
-    self.process_uniform_bucket_level_access(uniform_bucket_level_access)
-
-  def process_cors(self, file_path):
-    """Integrate CORS file into BucketConfig."""
-    if not file_path:
-      return
-
-    # Expected JSON file format:
-    # List[Dict<
-    #   max_age_seconds: int | None,
-    #   method: List[str] | None,
-    #   origin: List[str] | None,
-    #   response_header: List[str] | None>]
-    cors_dict_list = _read_json_config_file(file_path)
-
-    self.cors = []
-    for cors_dict in cors_dict_list:
-      self.cors.append(
-          self._messages.Bucket.CorsValueListEntry(
-              maxAgeSeconds=cors_dict.get('max_age_seconds'),
-              method=cors_dict.get('method', []),
-              origin=cors_dict.get('origin', []),
-              responseHeader=cors_dict.get('response_header', [])))
-
-  def process_default_encryption_key(self, default_encryption_key):
-    """Integrate default_encryption_key boolean into BucketConfig."""
-    if default_encryption_key is None:
-      return
-
-    self.default_encryption_key = self._messages.Bucket.EncryptionValue(
-        defaultKmsKeyName=default_encryption_key)
-
-  def process_labels(self, file_path):
-    """Integrate labels file into BucketConfig."""
-    if not file_path:
-      return
-
-    labels_pair_list = _get_label_pairs_from_file(file_path)
-    labels_property_list = [
-        self._messages.Bucket.LabelsValue.AdditionalProperty(
-            key=key, value=value) for key, value in labels_pair_list
-    ]
-
-    self.labels = self._messages.Bucket.LabelsValue(
-        additionalProperties=labels_property_list)
-
-  def process_lifecycle(self, file_path):
-    """Integrate lifecycle file into BucketConfig."""
-    if not file_path:
-      return
-
-    # Expected JSON file format:
-    # [{
-    #   "action": {
-    #     "storage_class": str|None
-    #     "type": str
-    #   },
-    #   "": {
-    #     "age": int|None
-    #     (See rest of fields below in implementation.)
-    #   }
-    # }, ... ]
-    json_lifecycle_rules = _read_json_config_file(file_path)
-
-    apitools_lifecycle_rules = []
-    for lifecycle_rule in json_lifecycle_rules:
-      action = (
-          self._messages.Bucket.LifecycleValue.RuleValueListEntry.ActionValue(
-              storageClass=lifecycle_rule['action'].get('storage_class'),
-              type=lifecycle_rule['action'].get('type')))
-
-      condition = (
-          self._messages.Bucket.LifecycleValue.RuleValueListEntry
-          .ConditionValue(
-              age=lifecycle_rule['condition'].get('age'),
-              createdBefore=_parse_date_from_lifecycle_condition(
-                  lifecycle_rule, 'created_before'),
-              customTimeBefore=_parse_date_from_lifecycle_condition(
-                  lifecycle_rule, 'custom_time_before'),
-              daysSinceCustomTime=lifecycle_rule['condition'].get(
-                  'days_since_custom_time'),
-              daysSinceNoncurrentTime=lifecycle_rule['condition'].get(
-                  'days_since_noncurrent_time'),
-              isLive=lifecycle_rule['condition'].get('is_live'),
-              matchesPattern=lifecycle_rule['condition'].get('matches_pattern'),
-              matchesStorageClass=lifecycle_rule['condition'].get(
-                  'matches_storage_class', []),
-              noncurrentTimeBefore=_parse_date_from_lifecycle_condition(
-                  lifecycle_rule, 'noncurrent_time_before'),
-              numNewerVersions=lifecycle_rule['condition'].get(
-                  'num_newer_versions'),
-          ))
-      apitools_lifecycle_rules.append(
-          self._messages.Bucket.LifecycleValue.RuleValueListEntry(
-              action=action, condition=condition))
-
-    self.lifecycle = self._messages.Bucket.LifecycleValue(
-        rule=apitools_lifecycle_rules)
-
-  def process_uniform_bucket_level_access(self, uniform_bucket_level_access):
-    """Integrate uniform_bucket_level_access boolean into BucketConfig."""
-    if uniform_bucket_level_access is None:
-      return
-
-    self.uniform_bucket_level_access = (
-        (self._messages.Bucket.IamConfigurationValue
-         .UniformBucketLevelAccessValue(enabled=uniform_bucket_level_access)))
-
-  def process_versioning(self, versioning):
-    """Integrate versioning boolean into BucketConfig."""
-    if versioning is None:
-      return
-
-    self.versioning = self._messages.Bucket.VersioningValue(enabled=versioning)
-
-  def process_website(self, web_error_page, web_main_page_suffix):
-    """Integrate website values into BucketConfig."""
-    if not (web_error_page or web_main_page_suffix):
-      return
-    self.website = self._messages.Bucket.WebsiteValue(
-        mainPageSuffix=web_main_page_suffix, notFoundPage=web_error_page)
+    self.uniform_bucket_level_access = uniform_bucket_level_access
 
   def __eq__(self, other):
     return (super(_GcsBucketConfig, self).__eq__(other) and
@@ -310,67 +134,10 @@ class _GcsBucketConfig(_BucketConfig):
 class _S3BucketConfig(_BucketConfig):
   """Holder for S3-specific bucket fields.
 
-  Attributes:
-    cors (dict|None): Amazon-formatted list of CORS settings.
-    labels (dict|None): Amazon-formatted list of labels. Called "tags" by AWS.
-    location (str|None): Location of bucket.
-    versioning (dict|None): Determines if the bucket retains past versions of
-      objects.
+  See superclass for attributes.
+  We currently don't support any S3-only fields. This class exists to maintain
+  the provider-specific subclass pattern used by the request config factory.
   """
-
-  def process_cors(self, file_path):
-    """Integrate CORS file into BucketConfig."""
-    if not file_path:
-      return
-    # Expect CORS file to already be in correct format for S3.
-    # { "CORSRules": [...] }
-    # https://boto3.amazonaws.com/v1/documentation/api/latest/reference
-    # /services/s3.html#S3.Client.put_bucket_cors
-    self.cors = _read_json_config_file(file_path)
-
-  def process_labels(self, file_path):
-    """Integrate CORS file into BucketConfig."""
-    if not file_path:
-      return
-
-    labels_pair_list = _get_label_pairs_from_file(file_path)
-    s3_tag_set_list = []
-    for key, value in labels_pair_list:
-      s3_tag_set_list.append({'Key': key, 'Value': value})
-
-    self.labels = {'TagSet': s3_tag_set_list}
-
-  def process_lifecycle(self, file_path):
-    """Integrate lifecycle file into BucketConfig."""
-    if not file_path:
-      return
-
-    # Expect CORS file to already be in correct format for S3.
-    # { "Rules": [...] }
-    # https://boto3.amazonaws.com/v1/documentation/api/latest/reference
-    # /services/s3.html#S3.Client.put_bucket_lifecycle_configuration
-    self.lifecycle = _read_json_config_file(file_path)
-
-  def process_versioning(self, versioning):
-    """Integrate versioning boolean into BucketConfig."""
-    if versioning is None:
-      return
-
-    versioning_string = 'Enabled' if versioning else 'Suspended'
-    self.versioning = {'Status': versioning_string}
-
-  def process_website(self, web_error_page, web_main_page_suffix):
-    """Integrate website values into BucketConfig."""
-    if not (web_error_page or web_main_page_suffix):
-      return
-    self.website = {
-        'ErrorDocument': {
-            'Key': web_error_page,
-        },
-        'IndexDocument': {
-            'Suffix': web_main_page_suffix,
-        },
-    }
 
 
 class _ObjectConfig(object):
@@ -591,22 +358,22 @@ def _get_request_config_resource_args(url,
               user_resource_args.default_storage_class)
           new_resource_args.retention_period = (
               user_resource_args.retention_period)
-          new_resource_args.process_default_encryption_key(
+          new_resource_args.default_encryption_key = (
               user_resource_args.default_encryption_key)
-          new_resource_args.process_uniform_bucket_level_access(
+          new_resource_args.uniform_bucket_level_access = (
               user_resource_args.uniform_bucket_level_access)
 
       elif url.scheme == storage_url.ProviderPrefix.S3:
         new_resource_args = _S3BucketConfig()
 
       if user_resource_args:
-        new_resource_args.process_cors(user_resource_args.cors_file_path)
-        new_resource_args.process_labels(user_resource_args.labels_file_path)
-        new_resource_args.process_lifecycle(
+        new_resource_args.cors_file_path = user_resource_args.cors_file_path
+        new_resource_args.labels_file_path = user_resource_args.labels_file_path
+        new_resource_args.lifecycle_file_path = (
             user_resource_args.lifecycle_file_path)
-        new_resource_args.process_versioning(user_resource_args.versioning)
-        new_resource_args.process_website(
-            user_resource_args.web_error_page,
+        new_resource_args.versioning = user_resource_args.versioning
+        new_resource_args.web_error_page = user_resource_args.web_error_page
+        new_resource_args.web_main_page_suffix = (
             user_resource_args.web_main_page_suffix)
 
     else:

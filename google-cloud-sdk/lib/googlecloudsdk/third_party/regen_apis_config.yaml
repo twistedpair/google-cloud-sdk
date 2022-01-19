@@ -265,6 +265,8 @@ apis:
       resources:
         projects:
           path: projects/{projectId}
+    v2:
+      discovery_doc: cloudbuild_v2.json
   cloudcommerceconsumerprocurement:
     v1alpha1:
       discovery_doc: cloudcommerceconsumerprocurement_v1alpha1.json
@@ -947,8 +949,11 @@ apis:
     v1:
       discovery_doc: privateca_v1.json
   publicca:
-    v1alpha1:
+    v1beta1:
       default: true
+      discovery_doc: publicca_v1beta1.json
+      enable_mtls: false
+    v1alpha1:
       discovery_doc: publicca_v1alpha1.json
       enable_mtls: false
   pubsub:
@@ -1077,6 +1082,9 @@ apis:
     v1:
       discovery_doc: spanner_v1.json
       default: true
+    v1alpha:
+      discovery_doc: spanner_v1alpha.json
+      default: false
   speech:
     v1:
       discovery_doc: speech_v1.json

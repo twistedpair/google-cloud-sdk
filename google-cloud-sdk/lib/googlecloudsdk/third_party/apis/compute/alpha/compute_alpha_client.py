@@ -99,6 +99,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.regionInstantSnapshots = self.RegionInstantSnapshotsService(self)
     self.regionNetworkEndpointGroups = self.RegionNetworkEndpointGroupsService(self)
     self.regionNetworkFirewallPolicies = self.RegionNetworkFirewallPoliciesService(self)
+    self.regionNetworks = self.RegionNetworksService(self)
     self.regionNotificationEndpoints = self.RegionNotificationEndpointsService(self)
     self.regionOperations = self.RegionOperationsService(self)
     self.regionSecurityPolicies = self.RegionSecurityPoliciesService(self)
@@ -7189,7 +7190,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SimulateMaintenanceEvent(self, request, global_params=None):
-      r"""Simulates a maintenance event on the instance.
+      r"""Simulates a host maintenance event on a VM. For more information, see Simulate a host maintenance event.
 
       Args:
         request: (ComputeInstancesSimulateMaintenanceEventRequest) input message
@@ -15266,6 +15267,198 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class RegionNetworksService(base_api.BaseApiService):
+    """Service class for the regionNetworks resource."""
+
+    _NAME = 'regionNetworks'
+
+    def __init__(self, client):
+      super(ComputeAlpha.RegionNetworksService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified network.
+
+      Args:
+        request: (ComputeRegionNetworksDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.regionNetworks.delete',
+        ordered_params=['project', 'region', 'network'],
+        path_params=['network', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/networks/{network}',
+        request_field='',
+        request_type_name='ComputeRegionNetworksDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified network.
+
+      Args:
+        request: (ComputeRegionNetworksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Network) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionNetworks.get',
+        ordered_params=['project', 'region', 'network'],
+        path_params=['network', 'project', 'region'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/networks/{network}',
+        request_field='',
+        request_type_name='ComputeRegionNetworksGetRequest',
+        response_type_name='Network',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeRegionNetworksGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionNetworks.getIamPolicy',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/regions/{region}/networks/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name='ComputeRegionNetworksGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a network in the specified project and region using the data included in the request.
+
+      Args:
+        request: (ComputeRegionNetworksInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionNetworks.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/networks',
+        request_field='network',
+        request_type_name='ComputeRegionNetworksInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves the list of networks available to the specified project in the given region.
+
+      Args:
+        request: (ComputeRegionNetworksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionNetworks.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/networks',
+        request_field='',
+        request_type_name='ComputeRegionNetworksListRequest',
+        response_type_name='NetworkList',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeRegionNetworksSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionNetworks.setIamPolicy',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/networks/{resource}/setIamPolicy',
+        request_field='regionSetPolicyRequest',
+        request_type_name='ComputeRegionNetworksSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRegionNetworksTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionNetworks.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/networks/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeRegionNetworksTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
   class RegionNotificationEndpointsService(base_api.BaseApiService):
     """Service class for the regionNotificationEndpoints resource."""
 
@@ -16321,6 +16514,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeRegionTargetHttpsProxiesListRequest',
         response_type_name='TargetHttpsProxyList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patches the specified regional TargetHttpsProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+
+      Args:
+        request: (ComputeRegionTargetHttpsProxiesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.regionTargetHttpsProxies.patch',
+        ordered_params=['project', 'region', 'targetHttpsProxy'],
+        path_params=['project', 'region', 'targetHttpsProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/targetHttpsProxies/{targetHttpsProxy}',
+        request_field='targetHttpsProxyResource',
+        request_type_name='ComputeRegionTargetHttpsProxiesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

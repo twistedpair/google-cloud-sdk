@@ -21,8 +21,6 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.recommender import base
 from googlecloudsdk.api_lib.recommender import flag_utils
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.api_lib.util import messages as messages_util
-from googlecloudsdk.core import yaml
 
 
 def CreateClient(release_track):
@@ -50,19 +48,6 @@ class RecommenderConfig(object):
         '{prefix}{name}'.format(prefix=self._message_prefix,
                                 name=message_name), None)
 
-  def _ToCamelCase(self, s):
-    """Converts CamelCase to camelCase."""
-    return s[0].lower() + s[1:]
-
-  def _ReadConfig(self, config_file, message_type):
-    """Parse json config file."""
-    config = None
-    # Yaml is a superset of json, so parse json file as yaml.
-    data = yaml.load_path(config_file)
-    if data:
-      config = messages_util.DictToMessageWithErrorCheck(data, message_type)
-    return config
-
   def Get(self, config_name):
     """Gets a RecommenderConfig.
 
@@ -72,12 +57,7 @@ class RecommenderConfig(object):
     Returns:
       The RecommenderConfig message.
     """
-    if config_name.startswith('organizations'):
-      request = self._messages.RecommenderOrganizationsLocationsRecommendersGetConfigRequest(
-          name=config_name)
-      return self._org_service.GetConfig(request)
-
-    # Default to project
+    # Using Project message is ok for all entities if the name is correct.
     request = self._messages.RecommenderProjectsLocationsRecommendersGetConfigRequest(
         name=config_name)
     return self._project_service.GetConfig(request)
@@ -102,7 +82,7 @@ class RecommenderConfig(object):
     config.etag = args.etag
 
     if args.config_file:
-      gen_config = self._ReadConfig(
+      gen_config = flag_utils.ReadConfig(
           args.config_file, self._GetMessage('RecommenderGenerationConfig'))
       config.recommenderGenerationConfig = gen_config
       update_mask.append('recommender_generation_config')
@@ -118,13 +98,17 @@ class RecommenderConfig(object):
 
     # Need to do it this way to dynamically set the versioned RecommenderConfig
     kwargs = {
-        'name': config_name,
-        self._ToCamelCase(self._message_prefix + 'RecommenderConfig'): config,
-        'updateMask': ','.join(update_mask),
-        'validateOnly': args.validate_only
+        'name':
+            config_name,
+        flag_utils.ToCamelCase(self._message_prefix + 'RecommenderConfig'):
+            config,
+        'updateMask':
+            ','.join(update_mask),
+        'validateOnly':
+            args.validate_only
     }
 
-    # Default to project
+    # Using Project message is ok for all entities if the name is correct.
     request = self._messages.RecommenderProjectsLocationsRecommendersUpdateConfigRequest(
         **kwargs)
     return self._project_service.UpdateConfig(request)

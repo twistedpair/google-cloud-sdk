@@ -15,45 +15,6 @@ from apitools.base.py import extra_types
 package = 'artifactregistry'
 
 
-class AptArtifact(_messages.Message):
-  r"""A detailed representation of an Apt artifact. Information in the record
-  is derived from the archive's control file. See
-  https://www.debian.org/doc/debian-policy/ch-controlfields.html
-
-  Enums:
-    PackageTypeValueValuesEnum: Output only. An artifact is a binary or source
-      package.
-
-  Fields:
-    architecture: Output only. Operating system architecture of the artifact.
-    component: Output only. Repository component of the artifact.
-    controlFile: Output only. Contents of the artifact's control metadata
-      file.
-    name: Output only. The Artifact Registry resource name of the artifact.
-    packageName: Output only. The Apt package name of the artifact.
-    packageType: Output only. An artifact is a binary or source package.
-  """
-
-  class PackageTypeValueValuesEnum(_messages.Enum):
-    r"""Output only. An artifact is a binary or source package.
-
-    Values:
-      PACKAGE_TYPE_UNSPECIFIED: Package type is not specified.
-      BINARY: Binary package.
-      SOURCE: Source package.
-    """
-    PACKAGE_TYPE_UNSPECIFIED = 0
-    BINARY = 1
-    SOURCE = 2
-
-  architecture = _messages.StringField(1)
-  component = _messages.StringField(2)
-  controlFile = _messages.BytesField(3)
-  name = _messages.StringField(4)
-  packageName = _messages.StringField(5)
-  packageType = _messages.EnumField('PackageTypeValueValuesEnum', 6)
-
-
 class ArtifactregistryProjectsLocationsGetRequest(_messages.Message):
   r"""A ArtifactregistryProjectsLocationsGetRequest object.
 
@@ -193,7 +154,8 @@ class ArtifactregistryProjectsLocationsRepositoriesListRequest(_messages.Message
   r"""A ArtifactregistryProjectsLocationsRepositoriesListRequest object.
 
   Fields:
-    pageSize: The maximum number of repositories to return.
+    pageSize: The maximum number of repositories to return. Maximum page size
+      is 1,000.
     pageToken: The next_page_token value returned from a previous list
       request, if any.
     parent: Required. The name of the parent resource whose repositories will
@@ -232,7 +194,8 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesListRequest(_messages
   object.
 
   Fields:
-    pageSize: The maximum number of packages to return.
+    pageSize: The maximum number of packages to return. Maximum page size is
+      1,000.
     pageToken: The next_page_token value returned from a previous list
       request, if any.
     parent: Required. The name of the parent resource whose packages will be
@@ -292,7 +255,8 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesTagsListRequest(_mess
       `version="projects/p1/locations/us-
       central1/repositories/repo1/packages/pkg1/versions/1.0"` --> Tags that
       are applied to the version `1.0` in package `pkg1`.
-    pageSize: The maximum number of tags to return.
+    pageSize: The maximum number of tags to return. Maximum page size is
+      10,000.
     pageToken: The next_page_token value returned from a previous list
       request, if any.
     parent: The name of the parent resource whose tags will be listed.
@@ -382,7 +346,8 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsListRequest(_
 
   Fields:
     orderBy: Optional. Sorting field and order
-    pageSize: The maximum number of versions to return.
+    pageSize: The maximum number of versions to return. Maximum page size is
+      1,000.
     pageToken: The next_page_token value returned from a previous list
       request, if any.
     parent: The name of the parent resource whose versions will be listed.
@@ -605,80 +570,6 @@ class Hash(_messages.Message):
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
   value = _messages.BytesField(2)
-
-
-class ImportAptArtifactsErrorInfo(_messages.Message):
-  r"""Error information explaining why a package was not imported.
-
-  Fields:
-    error: The detailed error status.
-    gcsSource: Google Cloud Storage location requested.
-  """
-
-  error = _messages.MessageField('Status', 1)
-  gcsSource = _messages.MessageField('ImportAptArtifactsGcsSource', 2)
-
-
-class ImportAptArtifactsGcsSource(_messages.Message):
-  r"""Google Cloud Storage location where the artifacts currently reside.
-
-  Fields:
-    uris: Cloud Storage paths URI (e.g., gs://my_bucket//my_object).
-    useWildcards: Supports URI wildcards for matching multiple objects from a
-      single URI.
-  """
-
-  uris = _messages.StringField(1, repeated=True)
-  useWildcards = _messages.BooleanField(2)
-
-
-class ImportAptArtifactsResponse(_messages.Message):
-  r"""The response message from importing artifacts.
-
-  Fields:
-    aptArtifacts: The Apt artifacts updated.
-    errors: Detailed error info for packages that were not imported.
-  """
-
-  aptArtifacts = _messages.MessageField('AptArtifact', 1, repeated=True)
-  errors = _messages.MessageField('ImportAptArtifactsErrorInfo', 2, repeated=True)
-
-
-class ImportYumArtifactsErrorInfo(_messages.Message):
-  r"""Error information explaining why a package was not imported.
-
-  Fields:
-    error: The detailed error status.
-    gcsSource: Google Cloud Storage location requested.
-  """
-
-  error = _messages.MessageField('Status', 1)
-  gcsSource = _messages.MessageField('ImportYumArtifactsGcsSource', 2)
-
-
-class ImportYumArtifactsGcsSource(_messages.Message):
-  r"""Google Cloud Storage location where the artifacts currently reside.
-
-  Fields:
-    uris: Cloud Storage paths URI (e.g., gs://my_bucket//my_object).
-    useWildcards: Supports URI wildcards for matching multiple objects from a
-      single URI.
-  """
-
-  uris = _messages.StringField(1, repeated=True)
-  useWildcards = _messages.BooleanField(2)
-
-
-class ImportYumArtifactsResponse(_messages.Message):
-  r"""The response message from importing artifacts.
-
-  Fields:
-    errors: Detailed error info for packages that were not imported.
-    yumArtifacts: The yum artifacts updated.
-  """
-
-  errors = _messages.MessageField('ImportYumArtifactsErrorInfo', 1, repeated=True)
-  yumArtifacts = _messages.MessageField('YumArtifact', 2, repeated=True)
 
 
 class ListFilesResponse(_messages.Message):
@@ -1268,7 +1159,9 @@ class Tag(_messages.Message):
       encoded.
     version: The name of the version the tag refers to, for example:
       "projects/p1/locations/us-
-      central1/repositories/repo1/packages/pkg1/versions/sha256:5243811"
+      central1/repositories/repo1/packages/pkg1/versions/sha256:5243811" If
+      the package or version ID parts contain slashes, the slashes are
+      escaped.
   """
 
   name = _messages.StringField(1)
@@ -1299,48 +1192,6 @@ class TestIamPermissionsResponse(_messages.Message):
   permissions = _messages.StringField(1, repeated=True)
 
 
-class UploadAptArtifactMediaResponse(_messages.Message):
-  r"""The response to upload an artifact.
-
-  Fields:
-    operation: Operation to be returned to the user.
-  """
-
-  operation = _messages.MessageField('Operation', 1)
-
-
-class UploadAptArtifactResponse(_messages.Message):
-  r"""The response of the completed artifact upload operation. This response
-  is contained in the Operation and available to users.
-
-  Fields:
-    aptArtifacts: The Apt artifacts updated.
-  """
-
-  aptArtifacts = _messages.MessageField('AptArtifact', 1, repeated=True)
-
-
-class UploadYumArtifactMediaResponse(_messages.Message):
-  r"""The response to upload an artifact.
-
-  Fields:
-    operation: Operation to be returned to the user.
-  """
-
-  operation = _messages.MessageField('Operation', 1)
-
-
-class UploadYumArtifactResponse(_messages.Message):
-  r"""The response of the completed artifact upload operation. This response
-  is contained in the Operation and available to users.
-
-  Fields:
-    yumArtifacts: The Apt artifacts updated.
-  """
-
-  yumArtifacts = _messages.MessageField('YumArtifact', 1, repeated=True)
-
-
 class Version(_messages.Message):
   r"""The body of a version resource. A version resource represents a
   collection of components, such as files and other data. This may correspond
@@ -1363,38 +1214,6 @@ class Version(_messages.Message):
   name = _messages.StringField(3)
   relatedTags = _messages.MessageField('Tag', 4, repeated=True)
   updateTime = _messages.StringField(5)
-
-
-class YumArtifact(_messages.Message):
-  r"""A detailed representation of a Yum artifact.
-
-  Enums:
-    PackageTypeValueValuesEnum: Output only. An artifact is a binary or source
-      package.
-
-  Fields:
-    architecture: Output only. Operating system architecture of the artifact.
-    name: Output only. The Artifact Registry resource name of the artifact.
-    packageName: Output only. The yum package name of the artifact.
-    packageType: Output only. An artifact is a binary or source package.
-  """
-
-  class PackageTypeValueValuesEnum(_messages.Enum):
-    r"""Output only. An artifact is a binary or source package.
-
-    Values:
-      PACKAGE_TYPE_UNSPECIFIED: Package type is not specified.
-      BINARY: Binary package (.rpm). .rpm
-      SOURCE: Source package (.srpm).
-    """
-    PACKAGE_TYPE_UNSPECIFIED = 0
-    BINARY = 1
-    SOURCE = 2
-
-  architecture = _messages.StringField(1)
-  name = _messages.StringField(2)
-  packageName = _messages.StringField(3)
-  packageType = _messages.EnumField('PackageTypeValueValuesEnum', 4)
 
 
 encoding.AddCustomJsonFieldMapping(

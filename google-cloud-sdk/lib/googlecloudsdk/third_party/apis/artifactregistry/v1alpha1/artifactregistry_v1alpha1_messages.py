@@ -201,7 +201,8 @@ class ArtifactregistryProjectsLocationsRepositoriesListRequest(_messages.Message
   r"""A ArtifactregistryProjectsLocationsRepositoriesListRequest object.
 
   Fields:
-    pageSize: The maximum number of repositories to return.
+    pageSize: The maximum number of repositories to return. Maximum page size
+      is 1,000.
     pageToken: The next_page_token value returned from a previous list
       request, if any.
     parent: Required. The name of the parent resource whose repositories will
@@ -980,6 +981,10 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class OperationMetadata(_messages.Message):
+  r"""Metadata type for longrunning-operations, currently empty."""
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -1155,7 +1160,7 @@ class YumArtifact(_messages.Message):
 
     Values:
       PACKAGE_TYPE_UNSPECIFIED: Package type is not specified.
-      BINARY: Binary package (.rpm). .rpm
+      BINARY: Binary package (.rpm).
       SOURCE: Source package (.srpm).
     """
     PACKAGE_TYPE_UNSPECIFIED = 0

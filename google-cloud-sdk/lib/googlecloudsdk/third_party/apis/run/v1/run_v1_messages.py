@@ -495,16 +495,6 @@ class DomainMappingStatus(_messages.Message):
   url = _messages.StringField(5)
 
 
-class Empty(_messages.Message):
-  r"""A generic empty message that you can re-use to avoid defining duplicated
-  empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
-  """
-
-
-
 class EnvFromSource(_messages.Message):
   r"""Not supported by Cloud Run EnvFromSource represents the source of a set
   of ConfigMaps
@@ -610,7 +600,7 @@ class Expr(_messages.Message):
 
 
 class GoogleCloudRunV1Condition(_messages.Message):
-  r"""Condition defines a generic condition for a Resource
+  r"""Condition defines a generic condition for a Resource.
 
   Fields:
     lastTransitionTime: Optional. Last time the condition transitioned from
@@ -635,10 +625,6 @@ class GoogleCloudRunV1Condition(_messages.Message):
   severity = _messages.StringField(4)
   status = _messages.StringField(5)
   type = _messages.StringField(6)
-
-
-class GoogleLongrunningCancelOperationRequest(_messages.Message):
-  r"""The request message for Operations.CancelOperation."""
 
 
 class HTTPGetAction(_messages.Message):
@@ -1364,32 +1350,28 @@ class ResourceRequirements(_messages.Message):
   r"""ResourceRequirements describes the compute resource requirements.
 
   Messages:
-    LimitsValue: (Optional) Only memory and CPU are supported. Note: The only
-      supported values for CPU are '1', '2', and '4'. Setting 4 CPU requires
-      at least 2Gi of memory. Limits describes the maximum amount of compute
-      resources allowed. The values of the map is string form of the
-      'quantity' k8s type: https://github.com/kubernetes/kubernetes/blob/maste
-      r/staging/src/k8s.io/apimachinery/pkg/api/resource/quantity.go
-    RequestsValue: (Optional) Only memory and CPU are supported. Note: The
-      only supported values for CPU are '1', '2', and '4'. Requests describes
-      the minimum amount of compute resources required. If Requests is omitted
-      for a container, it defaults to Limits if that is explicitly specified,
-      otherwise to an implementation-defined value. The values of the map is
+    LimitsValue: (Optional) Only memory and CPU are supported. Limits
+      describes the maximum amount of compute resources allowed. The values of
+      the map is string form of the 'quantity' k8s type: https://github.com/ku
+      bernetes/kubernetes/blob/master/staging/src/k8s.io/apimachinery/pkg/api/
+      resource/quantity.go
+    RequestsValue: (Optional) Only memory and CPU are supported. Requests
+      describes the minimum amount of compute resources required. If Requests
+      is omitted for a container, it defaults to Limits if that is explicitly
+      specified, otherwise to an implementation-defined value. The values of
+      the map is string form of the 'quantity' k8s type: https://github.com/ku
+      bernetes/kubernetes/blob/master/staging/src/k8s.io/apimachinery/pkg/api/
+      resource/quantity.go
+
+  Fields:
+    limits: (Optional) Only memory and CPU are supported. Limits describes the
+      maximum amount of compute resources allowed. The values of the map is
       string form of the 'quantity' k8s type: https://github.com/kubernetes/ku
       bernetes/blob/master/staging/src/k8s.io/apimachinery/pkg/api/resource/qu
       antity.go
-
-  Fields:
-    limits: (Optional) Only memory and CPU are supported. Note: The only
-      supported values for CPU are '1', '2', and '4'. Setting 4 CPU requires
-      at least 2Gi of memory. Limits describes the maximum amount of compute
-      resources allowed. The values of the map is string form of the
-      'quantity' k8s type: https://github.com/kubernetes/kubernetes/blob/maste
-      r/staging/src/k8s.io/apimachinery/pkg/api/resource/quantity.go
-    requests: (Optional) Only memory and CPU are supported. Note: The only
-      supported values for CPU are '1', '2', and '4'. Requests describes the
-      minimum amount of compute resources required. If Requests is omitted for
-      a container, it defaults to Limits if that is explicitly specified,
+    requests: (Optional) Only memory and CPU are supported. Requests describes
+      the minimum amount of compute resources required. If Requests is omitted
+      for a container, it defaults to Limits if that is explicitly specified,
       otherwise to an implementation-defined value. The values of the map is
       string form of the 'quantity' k8s type: https://github.com/kubernetes/ku
       bernetes/blob/master/staging/src/k8s.io/apimachinery/pkg/api/resource/qu
@@ -1398,12 +1380,11 @@ class ResourceRequirements(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LimitsValue(_messages.Message):
-    r"""(Optional) Only memory and CPU are supported. Note: The only supported
-    values for CPU are '1', '2', and '4'. Setting 4 CPU requires at least 2Gi
-    of memory. Limits describes the maximum amount of compute resources
-    allowed. The values of the map is string form of the 'quantity' k8s type:
-    https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/ap
-    imachinery/pkg/api/resource/quantity.go
+    r"""(Optional) Only memory and CPU are supported. Limits describes the
+    maximum amount of compute resources allowed. The values of the map is
+    string form of the 'quantity' k8s type: https://github.com/kubernetes/kube
+    rnetes/blob/master/staging/src/k8s.io/apimachinery/pkg/api/resource/quanti
+    ty.go
 
     Messages:
       AdditionalProperty: An additional property for a LimitsValue object.
@@ -1427,9 +1408,8 @@ class ResourceRequirements(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class RequestsValue(_messages.Message):
-    r"""(Optional) Only memory and CPU are supported. Note: The only supported
-    values for CPU are '1', '2', and '4'. Requests describes the minimum
-    amount of compute resources required. If Requests is omitted for a
+    r"""(Optional) Only memory and CPU are supported. Requests describes the
+    minimum amount of compute resources required. If Requests is omitted for a
     container, it defaults to Limits if that is explicitly specified,
     otherwise to an implementation-defined value. The values of the map is
     string form of the 'quantity' k8s type: https://github.com/kubernetes/kube
@@ -2076,20 +2056,6 @@ class RunNamespacesServicesReplaceServiceRequest(_messages.Message):
   dryRun = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   service = _messages.MessageField('Service', 3)
-
-
-class RunOperationsCancelRequest(_messages.Message):
-  r"""A RunOperationsCancelRequest object.
-
-  Fields:
-    googleLongrunningCancelOperationRequest: A
-      GoogleLongrunningCancelOperationRequest resource to be passed as the
-      request body.
-    name: The name of the operation resource to be cancelled.
-  """
-
-  googleLongrunningCancelOperationRequest = _messages.MessageField('GoogleLongrunningCancelOperationRequest', 1)
-  name = _messages.StringField(2, required=True)
 
 
 class RunProjectsAuthorizeddomainsListRequest(_messages.Message):

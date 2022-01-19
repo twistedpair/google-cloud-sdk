@@ -2452,8 +2452,11 @@ class SchemaExtension(_messages.Message):
     backup: Output only. Id for backup taken before extending domain schema.
     createTime: Output only. The time the schema extension was created.
     description: Description for Schema Change.
-    ldif: LDIF File Resource name for Schema Extensions. Represented in the
-      form of
+    fileContents: File uploaded as a byte stream input.
+    gcsPath: File stored in Cloud Storage bucket and represented in the form
+      projects/{project_id}/buckets/{bucket_name}/objects/{object_name}
+    ldif: Deprecated. Please use ldif_source field. LDIF File Resource name
+      for Schema Extensions. Represented in the form of
       projects/{project_id}/buckets/{bucket_name}/objects/{object_name}
     name: The unique name of the Schema Extension in the form of projects/{pro
       ject_id}/locations/global/domains/{domain_name}/schemaExtensions/{schema
@@ -2481,11 +2484,13 @@ class SchemaExtension(_messages.Message):
   backup = _messages.StringField(1)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
-  ldif = _messages.StringField(4)
-  name = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  statusMessage = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  fileContents = _messages.BytesField(4)
+  gcsPath = _messages.StringField(5)
+  ldif = _messages.StringField(6)
+  name = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  statusMessage = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class SetIamPolicyRequest(_messages.Message):

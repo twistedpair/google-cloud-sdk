@@ -1141,16 +1141,16 @@ class GkehubProjectsLocationsFeaturesCreateRequest(_messages.Message):
   Fields:
     feature: A Feature resource to be passed as the request body.
     featureId: The ID of the feature to create.
-    parent: The parent (project and location) where the Feature will be
-      created. Specified in the format `projects/*/locations/*`.
-    requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
+    parent: Required. The parent (project and location) where the Feature will
+      be created. Specified in the format `projects/*/locations/*`.
+    requestId: A request ID to identify requests. Specify a unique request ID
+      so that if you must retry your request, the server will know to ignore
+      the request if it has already been completed. The server will guarantee
+      that for at least 60 minutes after the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
@@ -1169,7 +1169,7 @@ class GkehubProjectsLocationsFeaturesDeleteRequest(_messages.Message):
     force: If set to true, the delete will ignore any outstanding resources
       for this Feature (that is, `FeatureState.has_resources` is set to true).
       These resources will NOT be cleaned up or modified in any way.
-    name: The Feature resource name in the format
+    name: Required. The Feature resource name in the format
       `projects/*/locations/*/features/*`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -1218,7 +1218,7 @@ class GkehubProjectsLocationsFeaturesGetRequest(_messages.Message):
   r"""A GkehubProjectsLocationsFeaturesGetRequest object.
 
   Fields:
-    name: The Feature resource name in the format
+    name: Required. The Feature resource name in the format
       `projects/*/locations/*/features/*`
   """
 
@@ -1243,8 +1243,8 @@ class GkehubProjectsLocationsFeaturesListRequest(_messages.Message):
     pageToken: Token returned by previous call to `ListFeatures` which
       specifies the position in the list from where to continue listing the
       resources.
-    parent: The parent (project and location) where the Features will be
-      listed. Specified in the format `projects/*/locations/*`.
+    parent: Required. The parent (project and location) where the Features
+      will be listed. Specified in the format `projects/*/locations/*`.
   """
 
   filter = _messages.StringField(1)
@@ -1259,16 +1259,16 @@ class GkehubProjectsLocationsFeaturesPatchRequest(_messages.Message):
 
   Fields:
     feature: A Feature resource to be passed as the request body.
-    name: The Feature resource name in the format
+    name: Required. The Feature resource name in the format
       `projects/*/locations/*/features/*`.
-    requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
+    requestId: A request ID to identify requests. Specify a unique request ID
+      so that if you must retry your request, the server will know to ignore
+      the request if it has already been completed. The server will guarantee
+      that for at least 60 minutes after the first request. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).

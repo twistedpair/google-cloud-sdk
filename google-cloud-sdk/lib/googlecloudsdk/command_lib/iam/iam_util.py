@@ -37,7 +37,8 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import files
 import six
 
-# generation from proto.
+# Kluge for fixing inconsistency in python message
+# generation from proto. See b/124063772.
 kms_message = core_apis.GetMessagesModule('cloudkms', 'v1')
 encoding.AddCustomJsonFieldMapping(
     kms_message.CloudkmsProjectsLocationsKeyRingsGetIamPolicyRequest,

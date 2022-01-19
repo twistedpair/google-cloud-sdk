@@ -6361,6 +6361,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Copy(self, request, global_params=None):
+      r"""Copies an already existing in Vertex AI Model into this Location. The source Model must exist in the same Project.
+
+      Args:
+        request: (AiplatformProjectsLocationsModelsCopyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Copy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Copy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/models:copy',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.models.copy',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/models:copy',
+        request_field='googleCloudAiplatformV1beta1CopyModelRequest',
+        request_type_name='AiplatformProjectsLocationsModelsCopyRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes a Model. A model cannot be deleted if any Endpoint resource has a DeployedModel based on the model in its deployed_models field.
 

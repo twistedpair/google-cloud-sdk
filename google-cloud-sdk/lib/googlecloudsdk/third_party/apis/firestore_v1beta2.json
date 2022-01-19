@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1beta2",
-  "revision": "20211218",
+  "revision": "20220105",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development. ",
   "ownerDomain": "google.com",
@@ -664,6 +664,13 @@
           "description": "Location of the output files. This can be used to begin an import into Cloud Firestore (this project or another project) after the operation completes successfully.",
           "type": "string"
         }
+      }
+    },
+    "GoogleFirestoreAdminV1UpdateDatabaseMetadata": {
+      "id": "GoogleFirestoreAdminV1UpdateDatabaseMetadata",
+      "description": "Metadata related to the update database operation.",
+      "type": "object",
+      "properties": {
       }
     }
   },

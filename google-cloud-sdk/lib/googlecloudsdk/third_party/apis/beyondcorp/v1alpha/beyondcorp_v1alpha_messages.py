@@ -799,6 +799,32 @@ class BeyondcorpProjectsLocationsClientConnectorServicesCreateRequest(_messages.
   validateOnly = _messages.BooleanField(5)
 
 
+class BeyondcorpProjectsLocationsClientConnectorServicesDeleteRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsClientConnectorServicesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, validates request by executing a dry-run
+      which would not alter the resource in any way.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  validateOnly = _messages.BooleanField(3)
+
+
 class BeyondcorpProjectsLocationsClientConnectorServicesGetIamPolicyRequest(_messages.Message):
   r"""A BeyondcorpProjectsLocationsClientConnectorServicesGetIamPolicyRequest
   object.
@@ -918,6 +944,31 @@ class BeyondcorpProjectsLocationsClientGatewaysCreateRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
   validateOnly = _messages.BooleanField(5)
+
+
+class BeyondcorpProjectsLocationsClientGatewaysDeleteRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsClientGatewaysDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, validates request by executing a dry-run
+      which would not alter the resource in any way.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  validateOnly = _messages.BooleanField(3)
 
 
 class BeyondcorpProjectsLocationsClientGatewaysGetIamPolicyRequest(_messages.Message):
@@ -1616,6 +1667,8 @@ class ClientGateway(_messages.Message):
       RUNNING: Gateway is running.
       DOWN: Gateway is down and may be restored in the future. This happens
         when CCFE sends ProjectState = OFF.
+      ERROR: ClientGateway encountered an error and is in indeterministic
+        state.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -1623,6 +1676,7 @@ class ClientGateway(_messages.Message):
     DELETING = 3
     RUNNING = 4
     DOWN = 5
+    ERROR = 6
 
   clientConnectorService = _messages.StringField(1)
   createTime = _messages.StringField(2)

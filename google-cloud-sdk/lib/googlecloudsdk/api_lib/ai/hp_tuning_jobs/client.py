@@ -37,12 +37,11 @@ def GetAlgorithmEnum(version=constants.BETA_VERSION):
 class HpTuningJobsClient(object):
   """Client used for interacting with HyperparameterTuningJob endpoint."""
 
-  def __init__(self, version, client=None, messages=None):
-    self.client = client or apis.GetClientInstance(
-        constants.AI_PLATFORM_API_NAME,
-        constants.AI_PLATFORM_API_VERSION[version])
-    self.messages = messages or self.client.MESSAGES_MODULE
-    self._service = self.client.projects_locations_hyperparameterTuningJobs
+  def __init__(self, version):
+    client = apis.GetClientInstance(constants.AI_PLATFORM_API_NAME,
+                                    constants.AI_PLATFORM_API_VERSION[version])
+    self._messages = client.MESSAGES_MODULE
+    self._service = client.projects_locations_hyperparameterTuningJobs
     self.version = version
     self._message_prefix = constants.AI_PLATFORM_MESSAGE_PREFIX[version]
 
@@ -50,9 +49,19 @@ class HpTuningJobsClient(object):
     """Returns the API messsages class by name."""
 
     return getattr(
-        self.messages,
+        self._messages,
         '{prefix}{name}'.format(prefix=self._message_prefix,
                                 name=message_name), None)
+
+  def HyperparameterTuningJobMessage(self):
+    """Returns the HyperparameterTuningJob resource message."""
+
+    return self._GetMessage('HyperparameterTuningJob')
+
+  def AlgorithmEnum(self):
+    """Returns enum message representing Algorithm."""
+
+    return self._GetMessage('StudySpec').AlgorithmValueValuesEnum
 
   def Create(self,
              config_path,
@@ -64,7 +73,8 @@ class HpTuningJobsClient(object):
              kms_key_name=None,
              network=None,
              service_account=None,
-             enable_web_access=False):
+             enable_web_access=False,
+             labels=None):
     """Creates a hyperparameter tuning job with given parameters.
 
     Args:
@@ -88,17 +98,19 @@ class HpTuningJobsClient(object):
         the job.
       enable_web_access: bool, Whether to enable the interactive shell for the
         job.
+      labels: LabelsValues, map-like user-defined metadata to organize the
+        hp-tuning jobs.
 
     Returns:
       Created hyperparameter tuning job.
     """
-    job_spec = self._GetMessage('HyperparameterTuningJob')()
+    job_spec = self.HyperparameterTuningJobMessage()
 
     if config_path:
       data = yaml.load_path(config_path)
       if data:
         job_spec = messages_util.DictToMessageWithErrorCheck(
-            data, self._GetMessage('HyperparameterTuningJob'))
+            data, self.HyperparameterTuningJobMessage())
 
     job_spec.maxTrialCount = max_trial_count
     job_spec.parallelTrialCount = parallel_trial_count
@@ -118,30 +130,33 @@ class HpTuningJobsClient(object):
       job_spec.encryptionSpec = self._GetMessage('EncryptionSpec')(
           kmsKeyName=kms_key_name)
 
+    if labels:
+      job_spec.labels = labels
+
     if self.version == constants.GA_VERSION:
-      request = self.messages.AiplatformProjectsLocationsHyperparameterTuningJobsCreateRequest(
+      request = self._messages.AiplatformProjectsLocationsHyperparameterTuningJobsCreateRequest(
           parent=parent,
           googleCloudAiplatformV1HyperparameterTuningJob=job_spec)
     else:
-      request = self.messages.AiplatformProjectsLocationsHyperparameterTuningJobsCreateRequest(
+      request = self._messages.AiplatformProjectsLocationsHyperparameterTuningJobsCreateRequest(
           parent=parent,
           googleCloudAiplatformV1beta1HyperparameterTuningJob=job_spec)
     return self._service.Create(request)
 
   def Get(self, name=None):
-    request = self.messages.AiplatformProjectsLocationsHyperparameterTuningJobsGetRequest(
+    request = self._messages.AiplatformProjectsLocationsHyperparameterTuningJobsGetRequest(
         name=name)
     return self._service.Get(request)
 
   def Cancel(self, name=None):
-    request = self.messages.AiplatformProjectsLocationsHyperparameterTuningJobsCancelRequest(
+    request = self._messages.AiplatformProjectsLocationsHyperparameterTuningJobsCancelRequest(
         name=name)
     return self._service.Cancel(request)
 
   def List(self, limit=None, region=None):
     return list_pager.YieldFromList(
         self._service,
-        self.messages
+        self._messages
         .AiplatformProjectsLocationsHyperparameterTuningJobsListRequest(
             parent=region),
         field='hyperparameterTuningJobs',
@@ -157,7 +172,7 @@ class HpTuningJobsClient(object):
     Returns:
       A one-argument function decides if log fetcher should continue.
     """
-    request = self.messages.AiplatformProjectsLocationsHyperparameterTuningJobsGetRequest(
+    request = self._messages.AiplatformProjectsLocationsHyperparameterTuningJobsGetRequest(
         name=name)
     response = self._service.Get(request)
 

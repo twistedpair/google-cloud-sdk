@@ -4,7 +4,7 @@
   "id": "compute:v1",
   "name": "compute",
   "version": "v1",
-  "revision": "20211220",
+  "revision": "20220107",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -7490,6 +7490,26 @@
           "description": "[Output Only] The number of instances in the managed instance group that are being reconfigured with properties that do not require a restart or a recreate action. For example, setting or removing target pools for the instance.",
           "type": "integer",
           "format": "int32"
+        },
+        "suspending": {
+          "description": "[Output Only] The number of instances in the managed instance group that are scheduled to be suspended or are currently being suspended.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "resuming": {
+          "description": "[Output Only] The number of instances in the managed instance group that are scheduled to be resumed or are currently being resumed.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "stopping": {
+          "description": "[Output Only] The number of instances in the managed instance group that are scheduled to be stopped or are currently being stopped.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "starting": {
+          "description": "[Output Only] The number of instances in the managed instance group that are scheduled to be started or are currently being started.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -8062,6 +8082,10 @@
             "The managed instance group is recreating this instance.",
             "The managed instance group is applying configuration changes to the instance without stopping it. For example, the group can update the target pool list for an instance without stopping that instance.",
             "The managed instance group is restarting this instance.",
+            "The managed instance group is resuming this instance.",
+            "The managed instance group is starting this instance.",
+            "The managed instance group is stopping this instance.",
+            "The managed instance group is suspending this instance.",
             "The managed instance group is verifying this already created instance. Verification happens every time the instance is (re)created or restarted and consists of: 1. Waiting until health check specified as part of this managed instance group's autohealing policy reports HEALTHY. Note: Applies only if autohealing policy has a health check specified 2. Waiting for addition verification steps performed as post-instance creation (subject to future extensions)."
           ],
           "enum": [
@@ -8073,6 +8097,10 @@
             "RECREATING",
             "REFRESHING",
             "RESTARTING",
+            "RESUMING",
+            "STARTING",
+            "STOPPING",
+            "SUSPENDING",
             "VERIFYING"
           ]
         },
@@ -8284,6 +8312,10 @@
             "The managed instance group is recreating this instance.",
             "The managed instance group is applying configuration changes to the instance without stopping it. For example, the group can update the target pool list for an instance without stopping that instance.",
             "The managed instance group is restarting this instance.",
+            "The managed instance group is resuming this instance.",
+            "The managed instance group is starting this instance.",
+            "The managed instance group is stopping this instance.",
+            "The managed instance group is suspending this instance.",
             "The managed instance group is verifying this already created instance. Verification happens every time the instance is (re)created or restarted and consists of: 1. Waiting until health check specified as part of this managed instance group's autohealing policy reports HEALTHY. Note: Applies only if autohealing policy has a health check specified 2. Waiting for addition verification steps performed as post-instance creation (subject to future extensions)."
           ],
           "enum": [
@@ -8295,6 +8327,10 @@
             "RECREATING",
             "REFRESHING",
             "RESTARTING",
+            "RESUMING",
+            "STARTING",
+            "STOPPING",
+            "SUSPENDING",
             "VERIFYING"
           ]
         },
@@ -10429,7 +10465,7 @@
           "$ref": "BackendServiceLogConfig"
         },
         "securitySettings": {
-          "description": "This field specifies the security policy that applies to this backend service. This field is applicable to either: - A regional backend service with the service_protocol set to HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED. - A global backend service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED. ",
+          "description": "This field specifies the security settings that apply to this backend service. This field is applicable to a global backend service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED.",
           "$ref": "SecuritySettings"
         },
         "localityLbPolicy": {
@@ -21961,7 +21997,9 @@
             "",
             "",
             "",
+            "",
             "Guest CPUs",
+            "",
             "",
             "",
             "",
@@ -22077,6 +22115,7 @@
             "COMMITTED_E2_CPUS",
             "COMMITTED_LICENSES",
             "COMMITTED_LOCAL_SSD_TOTAL_GB",
+            "COMMITTED_M3_CPUS",
             "COMMITTED_MEMORY_OPTIMIZED_CPUS",
             "COMMITTED_N2A_CPUS",
             "COMMITTED_N2D_CPUS",
@@ -22120,6 +22159,7 @@
             "LOCAL_SSD_TOTAL_GB",
             "M1_CPUS",
             "M2_CPUS",
+            "M3_CPUS",
             "MACHINE_IMAGES",
             "N2A_CPUS",
             "N2D_CPUS",
@@ -36002,7 +36042,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "Simulates a maintenance event on the instance."
+          "description": "Simulates a host maintenance event on a VM. For more information, see Simulate a host maintenance event."
         },
         "addAccessConfig": {
           "id": "compute.instances.addAccessConfig",
@@ -37336,6 +37376,100 @@
             "https://www.googleapis.com/auth/compute"
           ],
           "description": "Sets deletion protection on the instance."
+        },
+        "suspend": {
+          "id": "compute.instances.suspend",
+          "path": "projects/{project}/zones/{zone}/instances/{instance}/suspend",
+          "flatPath": "projects/{project}/zones/{zone}/instances/{instance}/suspend",
+          "httpMethod": "POST",
+          "parameters": {
+            "instance": {
+              "description": "Name of the instance resource to suspend.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "project": {
+              "description": "Project ID for this request.",
+              "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "requestId": {
+              "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported ( 00000000-0000-0000-0000-000000000000).",
+              "location": "query",
+              "type": "string"
+            },
+            "zone": {
+              "description": "The name of the zone for this request.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project",
+            "zone",
+            "instance"
+          ],
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/compute"
+          ],
+          "description": "This method suspends a running instance, saving its state to persistent storage, and allows you to resume the instance at a later time. Suspended instances incur reduced per-minute, virtual machine usage charges while they are suspended. Any resources the virtual machine is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted. For more information, see Suspending and resuming an instance."
+        },
+        "resume": {
+          "id": "compute.instances.resume",
+          "path": "projects/{project}/zones/{zone}/instances/{instance}/resume",
+          "flatPath": "projects/{project}/zones/{zone}/instances/{instance}/resume",
+          "httpMethod": "POST",
+          "parameters": {
+            "instance": {
+              "description": "Name of the instance resource to resume.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "project": {
+              "description": "Project ID for this request.",
+              "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "requestId": {
+              "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported ( 00000000-0000-0000-0000-000000000000).",
+              "location": "query",
+              "type": "string"
+            },
+            "zone": {
+              "description": "The name of the zone for this request.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project",
+            "zone",
+            "instance"
+          ],
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/compute"
+          ],
+          "description": "Resumes an instance that was suspended using the instances().suspend method."
         },
         "addResourcePolicies": {
           "id": "compute.instances.addResourcePolicies",

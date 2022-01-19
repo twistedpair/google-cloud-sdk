@@ -28,6 +28,7 @@ from googlecloudsdk.command_lib.ai import constants
 from googlecloudsdk.command_lib.ai import flags as shared_flags
 from googlecloudsdk.command_lib.ai import region_util
 from googlecloudsdk.command_lib.ai.custom_jobs import custom_jobs_util
+from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 _DISPLAY_NAME = base.Argument(
@@ -198,6 +199,8 @@ def AddCreateCustomJobFlags(parser):
   shared_flags.NETWORK.AddToParser(parser)
   shared_flags.ENABLE_WEB_ACCESS.AddToParser(parser)
   shared_flags.AddKmsKeyResourceArg(parser, 'custom job')
+
+  labels_util.AddCreateLabelsFlags(parser)
 
   _DISPLAY_NAME.AddToParser(parser)
   _PYTHON_PACKAGE_URIS.AddToParser(parser)

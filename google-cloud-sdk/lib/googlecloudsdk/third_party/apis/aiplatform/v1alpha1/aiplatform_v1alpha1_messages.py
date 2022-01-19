@@ -6128,7 +6128,7 @@ class GoogleCloudAiplatformInternalGenericOperationMetadata(_messages.Message):
 class GoogleCloudAiplatformInternalHumanInTheLoop(_messages.Message):
   r"""A human in the loop configuration describing how to trigger a human
   labeling job in a prediction process and properties of the human labeling
-  job. Next id: 26
+  job. Next id: 27
 
   Enums:
     GoogleSpecialistRegionValueValuesEnum: Residency of Google in-house
@@ -6195,6 +6195,8 @@ class GoogleCloudAiplatformInternalHumanInTheLoop(_messages.Message):
       "aiplatform.googleapis.com/" and are immutable. Following system labels
       exist for each HumanInTheLoop: * "aiplatform.googleapis.com/schema": -
       output only, its value is the inputs_schema's title.
+    marketplaceEntitlement: GCP Marketplace entitlement information to be
+      attached to this HITL.
     name: Output only. The resource name of the human in the loop
       configuration.
     outputPath: Cloud Storage path the labeling answer will be written to.
@@ -6292,15 +6294,16 @@ class GoogleCloudAiplatformInternalHumanInTheLoop(_messages.Message):
   googleSpecialistRegion = _messages.EnumField('GoogleSpecialistRegionValueValuesEnum', 12)
   instructionUri = _messages.StringField(13)
   labels = _messages.MessageField('LabelsValue', 14)
-  name = _messages.StringField(15)
-  outputPath = _messages.StringField(16)
-  pipeliningConfig = _messages.MessageField('GoogleCloudAiplatformInternalPipeliningAndAuditConfig', 17)
-  replicaCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  runningDataItemsCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  runningDataLabelingJobsCount = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  specialistPool = _messages.StringField(21, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
-  updateTime = _messages.StringField(23)
+  marketplaceEntitlement = _messages.MessageField('GoogleCloudAiplatformInternalHumanInTheLoopMarketplaceEntitlement', 15)
+  name = _messages.StringField(16)
+  outputPath = _messages.StringField(17)
+  pipeliningConfig = _messages.MessageField('GoogleCloudAiplatformInternalPipeliningAndAuditConfig', 18)
+  replicaCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  runningDataItemsCount = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  runningDataLabelingJobsCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  specialistPool = _messages.StringField(22, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 23)
+  updateTime = _messages.StringField(24)
 
 
 class GoogleCloudAiplatformInternalHumanInTheLoopEntitlement(_messages.Message):
@@ -6397,6 +6400,23 @@ class GoogleCloudAiplatformInternalHumanInTheLoopEntitlementCloudCommerceEntitle
 
   productExternalName = _messages.StringField(1)
   productId = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformInternalHumanInTheLoopMarketplaceEntitlement(_messages.Message):
+  r"""Metadata describing a GCP Marketplace entitlement.
+
+  Fields:
+    cloudCommerceEntitlementId: The unique id from the GCP Marketplace
+      entitlement.
+    planName: Name of plan indicating a specific tier of service and pricing.
+    productName: Name of the product.
+    providerName: Name of the provider of the entitlement.
+  """
+
+  cloudCommerceEntitlementId = _messages.StringField(1)
+  planName = _messages.StringField(2)
+  productName = _messages.StringField(3)
+  providerName = _messages.StringField(4)
 
 
 class GoogleCloudAiplatformInternalHumanInTheLoopRandomSampling(_messages.Message):
@@ -7556,6 +7576,12 @@ class GoogleCloudAiplatformUiDeployedIndex(_messages.Message):
       default value is min_replica_count. The max allowed replica count is
       1000.
     createTime: Output only. Timestamp when the DeployedIndex was created.
+    dedicatedResources: Optional. A description of resources that are
+      dedicated to the DeployedIndex, and that need a higher degree of manual
+      configuration. If min_replica_count is not set, the default value is 2
+      (we don't provide SLA when min_replica_count=1). If max_replica_count is
+      not set, the default value is min_replica_count. The max allowed replica
+      count is 1000. Available machine types: n1-standard-16 n1-standard-32
     deployedIndexAuthConfig: Optional. If set, the authentication is enabled
       for the private endpoint.
     deploymentGroup: Optional. The deployment group can be no longer than 64
@@ -7608,15 +7634,16 @@ class GoogleCloudAiplatformUiDeployedIndex(_messages.Message):
 
   automaticResources = _messages.MessageField('GoogleCloudAiplatformUiAutomaticResources', 1)
   createTime = _messages.StringField(2)
-  deployedIndexAuthConfig = _messages.MessageField('GoogleCloudAiplatformUiDeployedIndexAuthConfig', 3)
-  deploymentGroup = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  enableAccessLogging = _messages.BooleanField(6)
-  id = _messages.StringField(7)
-  index = _messages.StringField(8)
-  indexSyncTime = _messages.StringField(9)
-  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformUiIndexPrivateEndpoints', 10)
-  reservedIpRanges = _messages.StringField(11, repeated=True)
+  dedicatedResources = _messages.MessageField('GoogleCloudAiplatformUiDedicatedResources', 3)
+  deployedIndexAuthConfig = _messages.MessageField('GoogleCloudAiplatformUiDeployedIndexAuthConfig', 4)
+  deploymentGroup = _messages.StringField(5)
+  displayName = _messages.StringField(6)
+  enableAccessLogging = _messages.BooleanField(7)
+  id = _messages.StringField(8)
+  index = _messages.StringField(9)
+  indexSyncTime = _messages.StringField(10)
+  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformUiIndexPrivateEndpoints', 11)
+  reservedIpRanges = _messages.StringField(12, repeated=True)
 
 
 class GoogleCloudAiplatformUiDeployedIndexAuthConfig(_messages.Message):
@@ -11374,6 +11401,12 @@ class GoogleCloudAiplatformV1DeployedIndex(_messages.Message):
       default value is min_replica_count. The max allowed replica count is
       1000.
     createTime: Output only. Timestamp when the DeployedIndex was created.
+    dedicatedResources: Optional. A description of resources that are
+      dedicated to the DeployedIndex, and that need a higher degree of manual
+      configuration. If min_replica_count is not set, the default value is 2
+      (we don't provide SLA when min_replica_count=1). If max_replica_count is
+      not set, the default value is min_replica_count. The max allowed replica
+      count is 1000. Available machine types: n1-standard-16 n1-standard-32
     deployedIndexAuthConfig: Optional. If set, the authentication is enabled
       for the private endpoint.
     deploymentGroup: Optional. The deployment group can be no longer than 64
@@ -11426,15 +11459,16 @@ class GoogleCloudAiplatformV1DeployedIndex(_messages.Message):
 
   automaticResources = _messages.MessageField('GoogleCloudAiplatformV1AutomaticResources', 1)
   createTime = _messages.StringField(2)
-  deployedIndexAuthConfig = _messages.MessageField('GoogleCloudAiplatformV1DeployedIndexAuthConfig', 3)
-  deploymentGroup = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  enableAccessLogging = _messages.BooleanField(6)
-  id = _messages.StringField(7)
-  index = _messages.StringField(8)
-  indexSyncTime = _messages.StringField(9)
-  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1IndexPrivateEndpoints', 10)
-  reservedIpRanges = _messages.StringField(11, repeated=True)
+  dedicatedResources = _messages.MessageField('GoogleCloudAiplatformV1DedicatedResources', 3)
+  deployedIndexAuthConfig = _messages.MessageField('GoogleCloudAiplatformV1DeployedIndexAuthConfig', 4)
+  deploymentGroup = _messages.StringField(5)
+  displayName = _messages.StringField(6)
+  enableAccessLogging = _messages.BooleanField(7)
+  id = _messages.StringField(8)
+  index = _messages.StringField(9)
+  indexSyncTime = _messages.StringField(10)
+  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1IndexPrivateEndpoints', 11)
+  reservedIpRanges = _messages.StringField(12, repeated=True)
 
 
 class GoogleCloudAiplatformV1DeployedIndexAuthConfig(_messages.Message):
@@ -20816,9 +20850,9 @@ class GoogleCloudAiplatformV1alpha1Model(_messages.Message):
 
 class GoogleCloudAiplatformV1alpha1ModelContainerSpec(_messages.Message):
   r"""Specification of a container for serving predictions. Some fields in
-  this message correspond to fields in the [Kubernetes Container v1 core speci
-  fication](https://v1-18.docs.kubernetes.io/docs/reference/generated/kubernet
-  es-api/v1.18/#container-v1-core).
+  this message correspond to fields in the [Kubernetes Container v1 core
+  specification](https://kubernetes.io/docs/reference/generated/kubernetes-
+  api/v1.23/#container-v1-core).
 
   Fields:
     args: Immutable. Specifies arguments for the command that runs when the
@@ -20848,9 +20882,9 @@ class GoogleCloudAiplatformV1alpha1ModelContainerSpec(_messages.Message):
       parentheses. If a variable cannot be resolved, the reference in the
       input string is used unchanged. To avoid variable expansion, you can
       escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field
-      corresponds to the `args` field of the Kubernetes Containers [v1 core AP
-      I](https://v1-18.docs.kubernetes.io/docs/reference/generated/kubernetes-
-      api/v1.18/#container-v1-core).
+      corresponds to the `args` field of the Kubernetes Containers [v1 core
+      API](https://kubernetes.io/docs/reference/generated/kubernetes-
+      api/v1.23/#container-v1-core).
     command: Immutable. Specifies the command that runs when the container
       starts. This overrides the container's [ENTRYPOINT](https://docs.docker.
       com/engine/reference/builder/#entrypoint). Specify this field as an
@@ -20881,8 +20915,8 @@ class GoogleCloudAiplatformV1alpha1ModelContainerSpec(_messages.Message):
       input string is used unchanged. To avoid variable expansion, you can
       escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field
       corresponds to the `command` field of the Kubernetes Containers [v1 core
-      API](https://v1-18.docs.kubernetes.io/docs/reference/generated/kubernete
-      s-api/v1.18/#container-v1-core).
+      API](https://kubernetes.io/docs/reference/generated/kubernetes-
+      api/v1.23/#container-v1-core).
     env: Immutable. List of environment variables to set in the container.
       After the container starts running, code running in the container can
       read these environment variables. Additionally, the command and args
@@ -20892,8 +20926,9 @@ class GoogleCloudAiplatformV1alpha1ModelContainerSpec(_messages.Message):
       "VAR_1", "value": "foo" }, { "name": "VAR_2", "value": "$(VAR_1) bar" }
       ] ``` If you switch the order of the variables in the example, then the
       expansion does not occur. This field corresponds to the `env` field of
-      the Kubernetes Containers [v1 core API](https://v1-18.docs.kubernetes.io
-      /docs/reference/generated/kubernetes-api/v1.18/#container-v1-core).
+      the Kubernetes Containers [v1 core
+      API](https://kubernetes.io/docs/reference/generated/kubernetes-
+      api/v1.23/#container-v1-core).
     healthRoute: Immutable. HTTP path on the container to send health checks
       to. Vertex AI intermittently sends GET requests to this path on the
       container's IP address and port to check that the container is healthy.
@@ -20937,8 +20972,9 @@ class GoogleCloudAiplatformV1alpha1ModelContainerSpec(_messages.Message):
       this field, it defaults to following value: ```json [ { "containerPort":
       8080 } ] ``` Vertex AI does not use ports other than the first one
       listed. This field corresponds to the `ports` field of the Kubernetes
-      Containers [v1 core API](https://v1-18.docs.kubernetes.io/docs/reference
-      /generated/kubernetes-api/v1.18/#container-v1-core).
+      Containers [v1 core
+      API](https://kubernetes.io/docs/reference/generated/kubernetes-
+      api/v1.23/#container-v1-core).
     predictRoute: Immutable. HTTP path on the container to send prediction
       requests to. Vertex AI forwards requests sent using
       projects.locations.endpoints.predict to this path on the container's IP
@@ -23307,7 +23343,7 @@ class GoogleCloudAiplatformV1alpha1StringArray(_messages.Message):
 
 
 class GoogleCloudAiplatformV1alpha1Study(_messages.Message):
-  r"""LINT.IfChange A message representing a Study.
+  r"""A message representing a Study.
 
   Enums:
     StateValueValuesEnum: Output only. The detailed state of a Study.
@@ -25231,6 +25267,12 @@ class GoogleCloudAiplatformV1beta1DeployedIndex(_messages.Message):
       default value is min_replica_count. The max allowed replica count is
       1000.
     createTime: Output only. Timestamp when the DeployedIndex was created.
+    dedicatedResources: Optional. A description of resources that are
+      dedicated to the DeployedIndex, and that need a higher degree of manual
+      configuration. If min_replica_count is not set, the default value is 2
+      (we don't provide SLA when min_replica_count=1). If max_replica_count is
+      not set, the default value is min_replica_count. The max allowed replica
+      count is 1000. Available machine types: n1-standard-16 n1-standard-32
     deployedIndexAuthConfig: Optional. If set, the authentication is enabled
       for the private endpoint.
     deploymentGroup: Optional. The deployment group can be no longer than 64
@@ -25283,15 +25325,16 @@ class GoogleCloudAiplatformV1beta1DeployedIndex(_messages.Message):
 
   automaticResources = _messages.MessageField('GoogleCloudAiplatformV1beta1AutomaticResources', 1)
   createTime = _messages.StringField(2)
-  deployedIndexAuthConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployedIndexAuthConfig', 3)
-  deploymentGroup = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  enableAccessLogging = _messages.BooleanField(6)
-  id = _messages.StringField(7)
-  index = _messages.StringField(8)
-  indexSyncTime = _messages.StringField(9)
-  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1beta1IndexPrivateEndpoints', 10)
-  reservedIpRanges = _messages.StringField(11, repeated=True)
+  dedicatedResources = _messages.MessageField('GoogleCloudAiplatformV1beta1DedicatedResources', 3)
+  deployedIndexAuthConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployedIndexAuthConfig', 4)
+  deploymentGroup = _messages.StringField(5)
+  displayName = _messages.StringField(6)
+  enableAccessLogging = _messages.BooleanField(7)
+  id = _messages.StringField(8)
+  index = _messages.StringField(9)
+  indexSyncTime = _messages.StringField(10)
+  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1beta1IndexPrivateEndpoints', 11)
+  reservedIpRanges = _messages.StringField(12, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1DeployedIndexAuthConfig(_messages.Message):

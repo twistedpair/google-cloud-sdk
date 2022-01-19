@@ -324,8 +324,8 @@ For example:
     for c in sorted(constants.OP_AUTOSCALING_METRIC_NAME_MAPPER.keys())])))
 
 
-def AddAutomaticResourcesArgs(parser, resource_type):
-  """Add arguments for automatic deployment resources."""
+def AddDeploymentResourcesArgs(parser, resource_type):
+  """Add arguments for the deployment resources."""
   base.Argument(
       '--min-replica-count',
       type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),

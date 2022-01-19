@@ -1409,8 +1409,8 @@ class GkehubProjectsLocationsGlobalFeaturesCreateRequest(_messages.Message):
   Fields:
     feature: A Feature resource to be passed as the request body.
     featureId: The ID of the feature to create.
-    parent: The parent (project and location) where the Feature will be
-      created. Specified in the format `projects/*/locations/global`.
+    parent: Required. The parent (project and location) where the Feature will
+      be created. Specified in the format `projects/*/locations/global`.
   """
 
   feature = _messages.MessageField('Feature', 1)
@@ -1425,7 +1425,7 @@ class GkehubProjectsLocationsGlobalFeaturesDeleteRequest(_messages.Message):
     force: If set to true, the delete will ignore any outstanding resources
       for this Feature (that is, `FeatureState.has_resources` is set to true).
       These resources will NOT be cleaned up or modified in any way.
-    name: The Feature resource name in the format
+    name: Required. The Feature resource name in the format
       `projects/*/locations/global/features/*`.
   """
 
@@ -1437,7 +1437,7 @@ class GkehubProjectsLocationsGlobalFeaturesGetRequest(_messages.Message):
   r"""A GkehubProjectsLocationsGlobalFeaturesGetRequest object.
 
   Fields:
-    name: The Feature resource name in the format
+    name: Required. The Feature resource name in the format
       `projects/*/locations/global/features/*`
   """
 
@@ -1463,8 +1463,8 @@ class GkehubProjectsLocationsGlobalFeaturesListRequest(_messages.Message):
     pageToken: Token returned by previous call to `ListFeatures` which
       specifies the position in the list from where to continue listing the
       resources.
-    parent: The parent (project and location) where the Features will be
-      listed. Specified in the format `projects/*/locations/global`.
+    parent: Required. The parent (project and location) where the Features
+      will be listed. Specified in the format `projects/*/locations/global`.
   """
 
   filter = _messages.StringField(1)
@@ -1479,7 +1479,7 @@ class GkehubProjectsLocationsGlobalFeaturesPatchRequest(_messages.Message):
 
   Fields:
     feature: A Feature resource to be passed as the request body.
-    name: The Feature resource name in the format
+    name: Required. The Feature resource name in the format
       `projects/*/locations/global/features/*`.
     updateMask: Mask of fields to update.
   """

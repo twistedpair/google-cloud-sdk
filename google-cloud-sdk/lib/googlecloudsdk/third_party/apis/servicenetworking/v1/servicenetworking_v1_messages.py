@@ -3522,6 +3522,9 @@ class ValidateConsumerConfigRequest(_messages.Message):
   r"""A ValidateConsumerConfigRequest object.
 
   Fields:
+    checkServiceNetworkingUsePermission: Optional. The IAM permission check
+      determines whether the consumer project has
+      'servicenetworking.services.use' permission or not.
     consumerNetwork: Required. The network that the consumer is using to
       connect with services. Must be in the form of
       projects/{project}/global/networks/{network} {project} is a project
@@ -3540,10 +3543,11 @@ class ValidateConsumerConfigRequest(_messages.Message):
       that have validate_network set to true.
   """
 
-  consumerNetwork = _messages.StringField(1)
-  consumerProject = _messages.MessageField('ConsumerProject', 2)
-  rangeReservation = _messages.MessageField('RangeReservation', 3)
-  validateNetwork = _messages.BooleanField(4)
+  checkServiceNetworkingUsePermission = _messages.BooleanField(1)
+  consumerNetwork = _messages.StringField(2)
+  consumerProject = _messages.MessageField('ConsumerProject', 3)
+  rangeReservation = _messages.MessageField('RangeReservation', 4)
+  validateNetwork = _messages.BooleanField(5)
 
 
 class ValidateConsumerConfigResponse(_messages.Message):
@@ -3586,6 +3590,8 @@ class ValidateConsumerConfigResponse(_messages.Message):
       RANGES_DELETED_LATER: The IP ranges were reserved but deleted later.
       COMPUTE_API_NOT_ENABLED: The consumer project does not have the compute
         api enabled.
+      USE_PERMISSION_NOT_FOUND: The consumer project does not have the
+        permission from the host project.
     """
     VALIDATION_ERROR_UNSPECIFIED = 0
     VALIDATION_NOT_REQUESTED = 1
@@ -3601,6 +3607,7 @@ class ValidateConsumerConfigResponse(_messages.Message):
     RANGES_NOT_RESERVED = 11
     RANGES_DELETED_LATER = 12
     COMPUTE_API_NOT_ENABLED = 13
+    USE_PERMISSION_NOT_FOUND = 14
 
   existingSubnetworkCandidates = _messages.MessageField('Subnetwork', 1, repeated=True)
   isValid = _messages.BooleanField(2)

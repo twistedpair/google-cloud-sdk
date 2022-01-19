@@ -39,21 +39,6 @@ properties:
       Name of the Mesh resource. It matches pattern
       `projects/*/locations/global/meshes/`.
     type: string
-  scope:
-    description: |-
-      Scope defines a logical configuration boundary for mesh. The routes
-      pointing to this particular mesh resource defines the mesh configuration
-      and the scope field name is used by mesh clients to receive that
-      configuration. There cannot be more than one Mesh resource instance of the
-      same type (SIDECAR or PROXYLESS_GRPC) with the same scope.
-    type: string
-  type:
-    description: The type of the Mesh resource.
-    type: string
-    enum:
-    - PROXYLESS_GRPC
-    - SIDECAR
-    - TYPE_UNSPECIFIED
   interception_port:
     description: |-
       If set to a valid TCP port (1-65535), instructs the SIDECAR proxy to listen

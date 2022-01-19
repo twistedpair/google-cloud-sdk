@@ -845,7 +845,7 @@
           "type": "string",
           "enumDescriptions": [
             "Package type is not specified.",
-            "Binary package (.rpm). .rpm",
+            "Binary package (.rpm).",
             "Source package (.srpm)."
           ],
           "enum": [
@@ -984,6 +984,13 @@
           "format": "google-datetime"
         }
       }
+    },
+    "OperationMetadata": {
+      "id": "OperationMetadata",
+      "description": "Metadata type for longrunning-operations, currently empty.",
+      "type": "object",
+      "properties": {
+      }
     }
   },
   "resources": {
@@ -1108,7 +1115,7 @@
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "The maximum number of repositories to return.",
+                      "description": "The maximum number of repositories to return. Maximum page size is 1,000.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"

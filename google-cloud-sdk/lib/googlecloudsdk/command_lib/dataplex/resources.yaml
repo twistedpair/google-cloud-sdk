@@ -19,7 +19,7 @@ location:
     parameter_name: locationsId
     attribute_name: location
     help: |
-      The location of the Dataplex service.
+      The location of the Dataplex resource.
 
 lake:
   name: lake
@@ -33,7 +33,7 @@ lake:
     parameter_name: lakesId
     attribute_name: lake
     help: |
-      The lake_id for the Lake Resource of the Dataplex service.
+      The identifier of the Dataplex lake resource.
 
 zone:
   name: zone
@@ -48,7 +48,7 @@ zone:
     parameter_name: zonesId
     attribute_name: zone
     help: |
-      The zone_id for the Zone Resource of the Dataplex service.
+      The identifier of the Dataplex zone resource.
 
 asset:
   name: asset
@@ -64,7 +64,7 @@ asset:
     parameter_name: assetsId
     attribute_name: asset
     help: |
-      The asset_id for the Asset Resource of the Dataplex service.
+      The identifier of the Dataplex asset resource.
 
 task:
   name: task
