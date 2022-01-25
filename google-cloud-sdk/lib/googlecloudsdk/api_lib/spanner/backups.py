@@ -105,6 +105,28 @@ def CreateBackup(backup_ref, args, encryption_type=None, kms_key=None):
   return client.DeserializeMessage(message_type, response_body)
 
 
+def CopyBackup(source_backup_ref,
+               destination_backup_ref,
+               args,
+               encryption_type=None,
+               kms_key=None):
+  """Copy a backup."""
+  client = apis.GetClientInstance('spanner', 'v1')
+  msgs = apis.GetMessagesModule('spanner', 'v1')
+  copy_backup_request = msgs.CopyBackupRequest(
+      backupId=destination_backup_ref.Name(),
+      sourceBackup=source_backup_ref.RelativeName())
+  copy_backup_request.expireTime = CheckAndGetExpireTime(args)
+  if encryption_type:
+    copy_backup_request.encryptionConfig = msgs.CopyBackupEncryptionConfig(
+        encryptionType=encryption_type, kmsKeyName=kms_key)
+
+  req = msgs.SpannerProjectsInstancesBackupsCopyRequest(
+      parent=destination_backup_ref.Parent().RelativeName(),
+      copyBackupRequest=copy_backup_request)
+  return client.projects_instances_backups.Copy(req)
+
+
 def ModifyUpdateMetadataRequest(backup_ref, args, req):
   """Parse arguments and construct update backup request."""
   req.backup.name = backup_ref.Parent().RelativeName(

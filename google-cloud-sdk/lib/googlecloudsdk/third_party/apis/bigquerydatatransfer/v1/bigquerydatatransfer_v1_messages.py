@@ -54,7 +54,7 @@ class BigquerydatatransferProjectsDataSourcesListRequest(_messages.Message):
       as the `page_token` value to request the next page of list results.
     parent: Required. The BigQuery project id for which data sources should be
       returned. Must be in the form: `projects/{project_id}` or
-      `projects/{project_id}/locations/{location_id}
+      `projects/{project_id}/locations/{location_id}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -116,7 +116,7 @@ class BigquerydatatransferProjectsLocationsDataSourcesListRequest(_messages.Mess
       as the `page_token` value to request the next page of list results.
     parent: Required. The BigQuery project id for which data sources should be
       returned. Must be in the form: `projects/{project_id}` or
-      `projects/{project_id}/locations/{location_id}
+      `projects/{project_id}/locations/{location_id}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -251,8 +251,8 @@ class BigquerydatatransferProjectsLocationsTransferConfigsListRequest(_messages.
       of `ListTransfersRequest` list results. For multiple-page results,
       `ListTransfersResponse` outputs a `next_page` token, which can be used
       as the `page_token` value to request the next page of list results.
-    parent: Required. The BigQuery project id for which data sources should be
-      returned: `projects/{project_id}` or
+    parent: Required. The BigQuery project id for which transfer configs
+      should be returned: `projects/{project_id}` or
       `projects/{project_id}/locations/{location_id}`
   """
 
@@ -560,8 +560,8 @@ class BigquerydatatransferProjectsTransferConfigsListRequest(_messages.Message):
       of `ListTransfersRequest` list results. For multiple-page results,
       `ListTransfersResponse` outputs a `next_page` token, which can be used
       as the `page_token` value to request the next page of list results.
-    parent: Required. The BigQuery project id for which data sources should be
-      returned: `projects/{project_id}` or
+    parent: Required. The BigQuery project id for which transfer configs
+      should be returned: `projects/{project_id}` or
       `projects/{project_id}/locations/{location_id}`
   """
 

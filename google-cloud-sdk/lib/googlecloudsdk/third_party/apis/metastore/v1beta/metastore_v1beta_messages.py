@@ -78,6 +78,64 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class AuxiliaryVersionConfig(_messages.Message):
+  r"""Configuration information for the auxiliary service versions.
+
+  Messages:
+    ConfigOverridesValue: A mapping of Hive metastore configuration key-value
+      pairs to apply to the auxiliary Hive metastore (configured in hive-
+      site.xml) in addition to the primary version's overrides. If keys are
+      present in both the auxiliary version's overrides and the primary
+      version's overrides, the value from the auxiliary version's overrides
+      takes precedence.
+
+  Fields:
+    configOverrides: A mapping of Hive metastore configuration key-value pairs
+      to apply to the auxiliary Hive metastore (configured in hive-site.xml)
+      in addition to the primary version's overrides. If keys are present in
+      both the auxiliary version's overrides and the primary version's
+      overrides, the value from the auxiliary version's overrides takes
+      precedence.
+    networkConfig: Output only. The network configuration contains the
+      endpoint URI(s) of the auxiliary Hive metastore service.
+    version: The Hive metastore version of the auxiliary service. It must be
+      less than the primary Hive metastore service's version.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ConfigOverridesValue(_messages.Message):
+    r"""A mapping of Hive metastore configuration key-value pairs to apply to
+    the auxiliary Hive metastore (configured in hive-site.xml) in addition to
+    the primary version's overrides. If keys are present in both the auxiliary
+    version's overrides and the primary version's overrides, the value from
+    the auxiliary version's overrides takes precedence.
+
+    Messages:
+      AdditionalProperty: An additional property for a ConfigOverridesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ConfigOverridesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ConfigOverridesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  configOverrides = _messages.MessageField('ConfigOverridesValue', 1)
+  networkConfig = _messages.MessageField('NetworkConfig', 2)
+  version = _messages.StringField(3)
+
+
 class Backup(_messages.Message):
   r"""The details of a backup resource.
 
@@ -408,6 +466,14 @@ class HiveMetastoreConfig(_messages.Message):
       service endpoint. If unspecified, defaults to THRIFT.
 
   Messages:
+    AuxiliaryVersionsValue: A mapping of Hive metastore version to the
+      auxiliary version configuration. When specified, a secondary Hive
+      metastore service is created along with the primary service. All
+      auxiliary versions must be less than the service's primary version. The
+      key is the auxiliary service name and it must match the regular
+      expression a-z?. This means that the first character must be a lowercase
+      letter, and all the following characters must be hyphens, lowercase
+      letters, or digits, except the last character, which cannot be a hyphen.
     ConfigOverridesValue: A mapping of Hive metastore configuration key-value
       pairs to apply to the Hive metastore (configured in hive-site.xml). The
       mappings override system defaults (some keys cannot be overridden).
@@ -415,6 +481,14 @@ class HiveMetastoreConfig(_messages.Message):
       further customized in the auxiliary version's AuxiliaryVersionConfig.
 
   Fields:
+    auxiliaryVersions: A mapping of Hive metastore version to the auxiliary
+      version configuration. When specified, a secondary Hive metastore
+      service is created along with the primary service. All auxiliary
+      versions must be less than the service's primary version. The key is the
+      auxiliary service name and it must match the regular expression a-z?.
+      This means that the first character must be a lowercase letter, and all
+      the following characters must be hyphens, lowercase letters, or digits,
+      except the last character, which cannot be a hyphen.
     configOverrides: A mapping of Hive metastore configuration key-value pairs
       to apply to the Hive metastore (configured in hive-site.xml). The
       mappings override system defaults (some keys cannot be overridden).
@@ -446,6 +520,39 @@ class HiveMetastoreConfig(_messages.Message):
     GRPC = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class AuxiliaryVersionsValue(_messages.Message):
+    r"""A mapping of Hive metastore version to the auxiliary version
+    configuration. When specified, a secondary Hive metastore service is
+    created along with the primary service. All auxiliary versions must be
+    less than the service's primary version. The key is the auxiliary service
+    name and it must match the regular expression a-z?. This means that the
+    first character must be a lowercase letter, and all the following
+    characters must be hyphens, lowercase letters, or digits, except the last
+    character, which cannot be a hyphen.
+
+    Messages:
+      AdditionalProperty: An additional property for a AuxiliaryVersionsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AuxiliaryVersionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AuxiliaryVersionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A AuxiliaryVersionConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('AuxiliaryVersionConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class ConfigOverridesValue(_messages.Message):
     r"""A mapping of Hive metastore configuration key-value pairs to apply to
     the Hive metastore (configured in hive-site.xml). The mappings override
@@ -474,10 +581,11 @@ class HiveMetastoreConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  configOverrides = _messages.MessageField('ConfigOverridesValue', 1)
-  endpointProtocol = _messages.EnumField('EndpointProtocolValueValuesEnum', 2)
-  kerberosConfig = _messages.MessageField('KerberosConfig', 3)
-  version = _messages.StringField(4)
+  auxiliaryVersions = _messages.MessageField('AuxiliaryVersionsValue', 1)
+  configOverrides = _messages.MessageField('ConfigOverridesValue', 2)
+  endpointProtocol = _messages.EnumField('EndpointProtocolValueValuesEnum', 3)
+  kerberosConfig = _messages.MessageField('KerberosConfig', 4)
+  version = _messages.StringField(5)
 
 
 class HiveMetastoreVersion(_messages.Message):
@@ -1711,6 +1819,8 @@ class Service(_messages.Message):
   r"""A managed metastore service that serves metadata queries.
 
   Enums:
+    DatabaseTypeValueValuesEnum: Immutable. The database type that the
+      Metastore service stores its data.
     ReleaseChannelValueValuesEnum: Immutable. The release channel of the
       service. If unspecified, defaults to STABLE.
     StateValueValuesEnum: Output only. The current state of the metastore
@@ -1725,6 +1835,8 @@ class Service(_messages.Message):
       that specifies where artifacts related to the metastore service are
       stored.
     createTime: Output only. The time when the metastore service was created.
+    databaseType: Immutable. The database type that the Metastore service
+      stores its data.
     encryptionConfig: Immutable. Information used to configure the Dataproc
       Metastore service to encrypt customer data at rest. Cannot be updated.
     endpointUri: Output only. The URI of the endpoint used to access the
@@ -1761,6 +1873,19 @@ class Service(_messages.Message):
     updateTime: Output only. The time when the metastore service was last
       updated.
   """
+
+  class DatabaseTypeValueValuesEnum(_messages.Enum):
+    r"""Immutable. The database type that the Metastore service stores its
+    data.
+
+    Values:
+      DATABASE_TYPE_UNSPECIFIED: The DATABASE_TYPE is not set.
+      MYSQL: MySQL is used to persist the metastore data.
+      SPANNER: Spanner is used to persist the metastore data.
+    """
+    DATABASE_TYPE_UNSPECIFIED = 0
+    MYSQL = 1
+    SPANNER = 2
 
   class ReleaseChannelValueValuesEnum(_messages.Enum):
     r"""Immutable. The release channel of the service. If unspecified,
@@ -1847,23 +1972,24 @@ class Service(_messages.Message):
 
   artifactGcsUri = _messages.StringField(1)
   createTime = _messages.StringField(2)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 3)
-  endpointUri = _messages.StringField(4)
-  hiveMetastoreConfig = _messages.MessageField('HiveMetastoreConfig', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 7)
-  metadataIntegration = _messages.MessageField('MetadataIntegration', 8)
-  metadataManagementActivity = _messages.MessageField('MetadataManagementActivity', 9)
-  name = _messages.StringField(10)
-  network = _messages.StringField(11)
-  networkConfig = _messages.MessageField('NetworkConfig', 12)
-  port = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  stateMessage = _messages.StringField(16)
-  tier = _messages.EnumField('TierValueValuesEnum', 17)
-  uid = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
+  databaseType = _messages.EnumField('DatabaseTypeValueValuesEnum', 3)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 4)
+  endpointUri = _messages.StringField(5)
+  hiveMetastoreConfig = _messages.MessageField('HiveMetastoreConfig', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 8)
+  metadataIntegration = _messages.MessageField('MetadataIntegration', 9)
+  metadataManagementActivity = _messages.MessageField('MetadataManagementActivity', 10)
+  name = _messages.StringField(11)
+  network = _messages.StringField(12)
+  networkConfig = _messages.MessageField('NetworkConfig', 13)
+  port = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  stateMessage = _messages.StringField(17)
+  tier = _messages.EnumField('TierValueValuesEnum', 18)
+  uid = _messages.StringField(19)
+  updateTime = _messages.StringField(20)
 
 
 class SetIamPolicyRequest(_messages.Message):

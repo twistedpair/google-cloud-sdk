@@ -194,7 +194,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Modifies a `NetworkPolicy` resource. Only the following fields can be updated: `labels`, `internet_access`, `external_ip`, `edge_services_cidr`. Only fields specified in `updateMask` are applied. When updating a network policy, the external IP network service can only be disabled if there are no external IP addresses present in the scope of the policy. Also, a `NetworkService` cannot be updated when `NetworkService.state` is set to `RECONCILING`.
+      r"""Modifies a `NetworkPolicy` resource. Only the following fields can be updated: `labels`, `internet_access`, `external_ip`, `edge_services_cidr`. Only fields specified in `updateMask` are applied. When updating a network policy, the external IP network service can only be disabled if there are no external IP addresses present in the scope of the policy. Also, a `NetworkService` cannot be updated when `NetworkService.state` is set to `RECONCILING`. During operation processing, the resource is temporarily in the `ACTIVE` state before the operation fully completes. For that period of time, you can't update the resource. Use the operation status to determine when the processing fully completes.
 
       Args:
         request: (VmwareengineProjectsLocationsNetworkPoliciesPatchRequest) input message
@@ -656,7 +656,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Modifies a `Cluster` resource. Only the following fields can be updated: `labels`, `nodeCount`. Only fields specified in `updateMask` are applied.
+      r"""Modifies a `Cluster` resource. Only the following fields can be updated: `labels`, `nodeCount`. Only fields specified in `updateMask` are applied. During operation processing, the resource is temporarily in the `ACTIVE` state before the operation fully completes. For that period of time, you can't update the resource. Use the operation status to determine when the processing fully completes.
 
       Args:
         request: (VmwareengineProjectsLocationsPrivateCloudsClustersPatchRequest) input message
@@ -1054,7 +1054,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Modifies a `PrivateCloud` resource. Only the following fields can be updated: `labels`, `description`, `network_config.external_ip_access`. Only fields specified in `updateMask` are applied.
+      r"""Modifies a `PrivateCloud` resource. Only the following fields can be updated: `labels`, `description`, `network_config.external_ip_access`. Only fields specified in `updateMask` are applied. During operation processing, the resource is temporarily in the `ACTIVE` state before the operation fully completes. For that period of time, you can't update the resource. Use the operation status to determine when the processing fully completes.
 
       Args:
         request: (VmwareengineProjectsLocationsPrivateCloudsPatchRequest) input message

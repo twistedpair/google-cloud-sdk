@@ -33,14 +33,6 @@ def AddVpcId(parser):
       '--vpc-id', required=True, help='VPC associated with the cluster.')
 
 
-def AddServiceLoadBalancerSubnetIDs(parser):
-  parser.add_argument(
-      '--service-load-balancer-subnet-ids',
-      type=arg_parsers.ArgList(),
-      metavar='SUBNET_ID',
-      help='Subnets for the services of type Load Balancer.')
-
-
 def AddIamInstanceProfile(parser):
   parser.add_argument(
       '--iam-instance-profile',

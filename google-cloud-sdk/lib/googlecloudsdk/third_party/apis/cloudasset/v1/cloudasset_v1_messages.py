@@ -606,7 +606,8 @@ class CloudassetAssetsListRequest(_messages.Message):
     parent: Required. Name of the organization or project the assets belong
       to. Format: "organizations/[organization-number]" (such as
       "organizations/123"), "projects/[project-id]" (such as "projects/my-
-      project-id"), or "projects/[project-number]" (such as "projects/12345").
+      project-id"), "projects/[project-number]" (such as "projects/12345"), or
+      "folders/[folder-number]" (such as "folders/12345").
     readTime: Timestamp to take an asset snapshot. This can only be set to a
       timestamp between the current time and the current time minus 35 days
       (inclusive). If not specified, the current time will be used. Due to

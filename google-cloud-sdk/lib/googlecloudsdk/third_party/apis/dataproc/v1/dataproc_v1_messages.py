@@ -911,33 +911,11 @@ class ConfidentialInstanceConfig(_messages.Message):
 class DataprocMetricConfig(_messages.Message):
   r"""Contains dataproc metric config.
 
-  Enums:
-    MetricSourcesValueListEntryValuesEnum:
-
   Fields:
-    metricSources: Required. Required field. MetricSource(s) that should be
-      enabled.
+    metrics: Required. Metrics to be enabled.
   """
 
-  class MetricSourcesValueListEntryValuesEnum(_messages.Enum):
-    r"""MetricSourcesValueListEntryValuesEnum enum type.
-
-    Values:
-      METRIC_SOURCE_UNSPECIFIED: Required unspecified metric source
-      MONITORING_AGENT_DEFAULTS: all default monitoring agent metrics that are
-        published with prefix "agent.googleapis.com" when we enable a
-        monitoring agent in Compute Engine
-      HDFS: Hdfs metric source
-      SPARK: Spark metric source
-      YARN: Yarn metric source
-    """
-    METRIC_SOURCE_UNSPECIFIED = 0
-    MONITORING_AGENT_DEFAULTS = 1
-    HDFS = 2
-    SPARK = 3
-    YARN = 4
-
-  metricSources = _messages.EnumField('MetricSourcesValueListEntryValuesEnum', 1, repeated=True)
+  metrics = _messages.MessageField('Metric', 1, repeated=True)
 
 
 class DataprocProjectsLocationsAutoscalingPoliciesCreateRequest(_messages.Message):
@@ -1070,7 +1048,7 @@ class DataprocProjectsLocationsBatchesCreateRequest(_messages.Message):
     batch: A Batch resource to be passed as the request body.
     batchId: Optional. The ID to use for the batch, which will become the
       final component of the batch's resource name.This value must be 4-63
-      characters. Valid characters are /a-z-/.
+      characters. Valid characters are /[a-z][0-9]-/.
     parent: Required. The parent resource where this batch will be created.
     requestId: Optional. A unique ID used to identify the request. If the
       service receives two CreateBatchRequest (https://cloud.google.com/datapr
@@ -3937,6 +3915,41 @@ class MetastoreConfig(_messages.Message):
   """
 
   dataprocMetastoreService = _messages.StringField(1)
+
+
+class Metric(_messages.Message):
+  r"""Metric source to enable along with any optional metrics for this source
+  that override the dataproc defaults
+
+  Enums:
+    MetricSourceValueValuesEnum: Required. MetricSource that should be enabled
+
+  Fields:
+    metricOverrides: Optional. Optional Metrics to override the dataproc
+      default metrics configured for the metric source
+    metricSource: Required. MetricSource that should be enabled
+  """
+
+  class MetricSourceValueValuesEnum(_messages.Enum):
+    r"""Required. MetricSource that should be enabled
+
+    Values:
+      METRIC_SOURCE_UNSPECIFIED: Required unspecified metric source
+      MONITORING_AGENT_DEFAULTS: all default monitoring agent metrics that are
+        published with prefix "agent.googleapis.com" when we enable a
+        monitoring agent in Compute Engine
+      HDFS: Hdfs metric source
+      SPARK: Spark metric source
+      YARN: Yarn metric source
+    """
+    METRIC_SOURCE_UNSPECIFIED = 0
+    MONITORING_AGENT_DEFAULTS = 1
+    HDFS = 2
+    SPARK = 3
+    YARN = 4
+
+  metricOverrides = _messages.StringField(1, repeated=True)
+  metricSource = _messages.EnumField('MetricSourceValueValuesEnum', 2)
 
 
 class NamespacedGkeDeploymentTarget(_messages.Message):

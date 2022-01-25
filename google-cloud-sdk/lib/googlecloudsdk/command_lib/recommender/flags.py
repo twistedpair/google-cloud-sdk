@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.recommender import base
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.util.args import common_args
 
 
@@ -133,7 +134,7 @@ def AddConfigFileToParser(parser, resource):
   """
   parser.add_argument(
       '--config-file',
-      help='Generation configuration file for the {}'.format(resource))
+      help='Generation configuration file for the {}.'.format(resource))
 
 
 def AddDisplayNameToParser(parser, resource):
@@ -145,7 +146,7 @@ def AddDisplayNameToParser(parser, resource):
       resource: The resource to add to.
   """
   parser.add_argument(
-      '--display-name', help='Display name of the {}'.format(resource))
+      '--display-name', help='Display name of the {}.'.format(resource))
 
 
 def AddValidateOnlyToParser(parser):
@@ -172,7 +173,25 @@ def AddEtagToParser(parser, resource):
       resource: The resource to add to.
   """
   parser.add_argument(
-      '--etag', required=True, help='Etag of the {}'.format(resource))
+      '--etag', required=True, help='Etag of the {}.'.format(resource))
+
+
+def AddAnnotationsToParser(parser, resource):
+  """Adds annotations to parser.
+
+  Args:
+      parser: An argparse parser that you can use to add arguments that go on
+        the command line after this command.
+      resource: The resource to add to.
+  """
+  parser.add_argument(
+      '--annotations',
+      type=arg_parsers.ArgDict(min_length=1),
+      default={},
+      help='Store small amounts of arbitrary data on the {}.'
+      .format(resource),
+      metavar='KEY=VALUE',
+      action=arg_parsers.StoreOnceAction)
 
 
 def GetResourceSegment(args):

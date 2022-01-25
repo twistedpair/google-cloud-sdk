@@ -19,8 +19,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import base
 
-DEFAULT_API_VERSION = 'v1alpha1'
+DEFAULT_API_VERSION = 'v1beta1'
 
 
 def GetClientClass(api_version=DEFAULT_API_VERSION):
@@ -33,3 +34,10 @@ def GetClientInstance(api_version=DEFAULT_API_VERSION):
 
 def GetMessagesModule(api_version=DEFAULT_API_VERSION):
   return apis.GetMessagesModule('publicca', api_version)
+
+
+def GetVersion(release_track):
+  if release_track is base.ReleaseTrack.ALPHA:
+    return 'v1alpha1'
+  else:
+    return 'v1beta1'

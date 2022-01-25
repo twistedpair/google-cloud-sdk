@@ -67,3 +67,36 @@ addressGroup:
     parameter_name: addressGroupsId
     attribute_name: address_group
     help: Id of the address group.
+
+organization:
+  name: organization
+  collection: networksecurity.organizations
+  attributes:
+  - &organization
+    parameter_name: organizationsId
+    attribute_name: organization
+    help: |
+      The organization number.
+
+orgLocation:
+  name: location
+  collection: networksecurity.organizations.locations
+  attributes:
+  - *organization
+  - &orgLocation
+    parameter_name: locationsId
+    attribute_name: location
+    help: |
+      The location Id.
+
+orgAddressGroup:
+  name: address group
+  collection: networksecurity.organizations.locations.addressGroups
+  request_id_field: addressGroupId
+  attributes:
+  - *organization
+  - *location
+  - &orgAddressGroup
+    parameter_name: addressGroupsId
+    attribute_name: address_group
+    help: Id of the address group.

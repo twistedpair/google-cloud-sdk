@@ -360,6 +360,17 @@
         "vrf": {
           "description": "The vrf for the Network.",
           "$ref": "VRF"
+        },
+        "labels": {
+          "description": "Labels as key value pairs.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "servicesCidr": {
+          "description": "IP range for reserved for services (e.g. NFS).",
+          "type": "string"
         }
       }
     },
@@ -431,13 +442,6 @@
         }
       }
     },
-    "ResetInstanceRequest": {
-      "id": "ResetInstanceRequest",
-      "description": "Message requesting to reset a server.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "Operation": {
       "id": "Operation",
       "description": "This resource represents a long-running operation that is the result of a network API call.",
@@ -498,6 +502,13 @@
             }
           }
         }
+      }
+    },
+    "ResetInstanceRequest": {
+      "id": "ResetInstanceRequest",
+      "description": "Message requesting to reset a server.",
+      "type": "object",
+      "properties": {
       }
     },
     "ListVolumesResponse": {
@@ -612,6 +623,13 @@
         "snapshotSchedulePolicy": {
           "description": "The name of the snapshot schedule policy in use for this volume, if any.",
           "type": "string"
+        },
+        "labels": {
+          "description": "Labels as key value pairs.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -703,6 +721,13 @@
           "type": "array",
           "items": {
             "$ref": "Schedule"
+          }
+        },
+        "labels": {
+          "description": "Labels as key value pairs.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
           }
         }
       }
@@ -978,6 +1003,11 @@
                       "description": "A token identifying a page of results from the server.",
                       "location": "query",
                       "type": "string"
+                    },
+                    "filter": {
+                      "description": "List filter.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -1015,6 +1045,40 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Get details about a single server."
+                },
+                "patch": {
+                  "id": "baremetalsolution.projects.locations.instances.patch",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The resource name of this `Instance`. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. Format: `projects\/{project}\/locations\/{location}\/instances\/{instance}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "The list of fields to update. The only currently supported fields are: `labels`",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Instance"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Update details of a single server."
                 },
                 "reset": {
                   "id": "baremetalsolution.projects.locations.instances.reset",
@@ -1071,6 +1135,11 @@
                       "description": "A token identifying a page of results from the server.",
                       "location": "query",
                       "type": "string"
+                    },
+                    "filter": {
+                      "description": "List filter.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -1123,7 +1192,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "The list of fields to update. The only currently supported fields are: `snapshot_auto_delete_behavior` `snapshot_schedule_policy_name`",
+                      "description": "The list of fields to update. The only currently supported fields are: `snapshot_auto_delete_behavior` `snapshot_schedule_policy_name` 'labels'",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -1384,6 +1453,11 @@
                       "description": "A token identifying a page of results from the server.",
                       "location": "query",
                       "type": "string"
+                    },
+                    "filter": {
+                      "description": "List filter.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -1421,6 +1495,40 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Get details of a single network."
+                },
+                "patch": {
+                  "id": "baremetalsolution.projects.locations.networks.patch",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/networks/{networksId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The resource name of this `Network`. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. Format: `projects\/{project}\/locations\/{location}\/networks\/{network}` This field will contain the same value as field \"network\", which will soon be deprecated. Please use this field to reference the name of the network resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/networks\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "The list of fields to update. The only currently supported fields are: `labels`",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Network"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Update details of a single network."
                 }
               }
             },
@@ -1447,6 +1555,11 @@
                     },
                     "pageToken": {
                       "description": "The next_page_token value returned from a previous List request, if any.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "List filter.",
                       "location": "query",
                       "type": "string"
                     }

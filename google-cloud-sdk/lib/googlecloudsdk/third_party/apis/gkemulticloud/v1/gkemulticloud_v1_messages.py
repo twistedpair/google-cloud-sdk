@@ -652,7 +652,8 @@ class GkemulticloudProjectsLocationsAzureClustersPatchRequest(_messages.Message)
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field can
       only include these fields from AzureCluster: * `description`. *
-      `azureClient`. * `control_plane.version`.
+      `annotations`. * `azureClient`. * `control_plane.version`. *
+      `authorization.admin_users`.
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """

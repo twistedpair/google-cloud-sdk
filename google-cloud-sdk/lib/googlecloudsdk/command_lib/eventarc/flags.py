@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import googlecloudsdk
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
@@ -29,16 +30,30 @@ from googlecloudsdk.core import properties
 _IAM_API_VERSION = 'v1'
 
 
-def LocationAttributeConfig():
+def LocationAttributeConfig(required=True):
   """Builds an AttributeConfig for the location resource."""
+  fallthroughs_list = [
+      deps.PropertyFallthrough(properties.FromString('eventarc/location'))
+  ]
+  help_text = ('The location for the Eventarc {resource}, which should be '
+               "either ``global'' or one of the supported regions. "
+               'Alternatively, set the [eventarc/location] property.')
+  if not required:
+    fallthroughs_list.append(deps.Fallthrough(
+        googlecloudsdk.command_lib.eventarc.flags.SetLocation,
+        'use \'-\' location to aggregate results for all Eventarc locations'))
+    help_text = ('The location for the Eventarc {resource}, which should be '
+                 "either ``global'' or one of the supported regions. "
+                 'Use ``-'' to aggregate results for all Eventarc locations. '
+                 'Alternatively, set the [eventarc/location] property.')
   return concepts.ResourceParameterAttributeConfig(
       name='location',
-      fallthroughs=[
-          deps.PropertyFallthrough(properties.FromString('eventarc/location'))
-      ],
-      help_text='The location for the Eventarc {resource}, which should be '
-      "either ``global'' or one of the supported regions. Alternatively, set "
-      'the [eventarc/location] property.')
+      fallthroughs=fallthroughs_list,
+      help_text=help_text)
+
+
+def SetLocation():
+  return '-'
 
 
 def TriggerAttributeConfig():
@@ -130,7 +145,7 @@ def AddLocationResourceArg(parser, group_help_text, required=False):
   resource_spec = concepts.ResourceSpec(
       'eventarc.projects.locations',
       resource_name='location',
-      locationsId=LocationAttributeConfig(),
+      locationsId=LocationAttributeConfig(required),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
   concept_parser = concept_parsers.ConceptParser.ForResource(
       '--location', resource_spec, group_help_text, required=required)

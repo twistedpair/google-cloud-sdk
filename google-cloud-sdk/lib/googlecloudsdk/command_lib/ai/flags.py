@@ -131,6 +131,11 @@ def GetIndexIdArg(required=True, helper_text='ID of the index.'):
   return base.Argument('--index', help=helper_text, required=required)
 
 
+def GetIndexEndpointIdArg(required=True,
+                          helper_text='ID of the index endpoint.'):
+  return base.Argument('--index-endpoint', help=helper_text, required=required)
+
+
 def GetDeployedIndexId(required=True):
   return base.Argument(
       '--deployed-index-id',

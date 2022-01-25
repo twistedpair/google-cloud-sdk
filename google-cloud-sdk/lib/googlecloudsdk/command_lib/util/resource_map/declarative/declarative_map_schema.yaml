@@ -30,6 +30,8 @@ definitions:
         type: string
       enable_single_resource_autogen:
         type: boolean
+      group_category:
+        type: string
     additionalProperties: false
 
   resource:
@@ -62,6 +64,8 @@ definitions:
         type: string
       enable_single_resource_autogen:
         type: boolean
+      group_category:
+        type: string
       GA:
         type: {$ref: "#/definitions/release_track"}
       BETA:

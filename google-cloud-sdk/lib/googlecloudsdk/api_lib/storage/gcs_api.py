@@ -482,7 +482,7 @@ class GcsApi(cloud_api.CloudApi):
   def get_object_metadata(self,
                           bucket_name,
                           object_name,
-                          request_config,
+                          request_config=None,
                           generation=None,
                           fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""
@@ -494,8 +494,8 @@ class GcsApi(cloud_api.CloudApi):
     projection = self._get_projection(fields_scope,
                                       self.messages.StorageObjectsGetRequest)
 
-    decryption_key = getattr(request_config.resource_args, 'decryption_key',
-                             None)
+    decryption_key = getattr(
+        getattr(request_config, 'resource_args', None), 'decryption_key', None)
     with self._encryption_headers_context(decryption_key):
       object_metadata = self.client.objects.Get(
           self.messages.StorageObjectsGetRequest(

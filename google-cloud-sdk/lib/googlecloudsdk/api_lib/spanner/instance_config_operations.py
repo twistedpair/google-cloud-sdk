@@ -24,6 +24,24 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
+def Get(config, operation):
+  """Gets the specified operation."""
+  # TODO(b/213356452): Replace v1alpha -> v1, once spanner prod (spanner/v1)
+  # contain rest bindings for instanceConfigs LROs.
+  client = apis.GetClientInstance('spanner', 'v1alpha')
+  msgs = apis.GetMessagesModule('spanner', 'v1alpha')
+  ref = resources.REGISTRY.Parse(
+      operation,
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'instanceConfigsId': config,
+      },
+      collection='spanner.projects.instanceConfigs.operations')
+  req = msgs.SpannerProjectsInstanceConfigsOperationsGetRequest(
+      name=ref.RelativeName())
+  return client.projects_instanceConfigs_operations.Get(req)
+
+
 def List(config, type_filter=None):
   """List operations on the instance config."""
   client = apis.GetClientInstance('spanner', 'v1')
@@ -39,6 +57,24 @@ def List(config, type_filter=None):
       req,
       field='operations',
       batch_size_attribute='pageSize')
+
+
+def Cancel(config, operation):
+  """Cancel the specified operation."""
+  # TODO(b/213356452): Replace v1alpha -> v1, once spanner prod (spanner/v1)
+  # contain rest bindings for instanceConfigs LROs.
+  client = apis.GetClientInstance('spanner', 'v1alpha')
+  msgs = apis.GetMessagesModule('spanner', 'v1alpha')
+  ref = resources.REGISTRY.Parse(
+      operation,
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'instanceConfigsId': config,
+      },
+      collection='spanner.projects.instanceConfigs.operations')
+  req = msgs.SpannerProjectsInstanceConfigsOperationsCancelRequest(
+      name=ref.RelativeName())
+  return client.projects_instanceConfigs_operations.Cancel(req)
 
 
 def BuildInstanceConfigOperationTypeFilter(op_type):

@@ -1176,7 +1176,7 @@ class Vp9CodecSettings(_messages.Message):
       value is 1,000. The maximum value is 480,000,000.
     crfLevel: Target CRF level. Must be between 10 and 36, where 10 is the
       highest quality and 36 is the most efficient compression. The default is
-      21.
+      21. *Note*: This field is not supported.
     frameRate: Required. The target video frame rate in frames per second
       (FPS). Must be less than or equal to 120. Will default to the input
       frame rate if larger than the input frame rate. The API will generate an
@@ -1207,8 +1207,7 @@ class Vp9CodecSettings(_messages.Message):
       certain values for this field may cause the transcoder to override other
       fields you set in the `Vp9CodecSettings` message.
     rateControlMode: Specify the `rate_control_mode`. The default is `vbr`.
-      Supported rate control modes: - `vbr` - variable bitrate - `crf` -
-      constant rate factor
+      Supported rate control modes: - `vbr` - variable bitrate
     widthPixels: The width of the video in pixels. Must be an even integer.
       When not specified, the width is adjusted to match the specified height
       and input aspect ratio. If both are omitted, the input width is used.

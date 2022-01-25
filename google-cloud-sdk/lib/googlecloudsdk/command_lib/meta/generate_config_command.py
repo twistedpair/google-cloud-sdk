@@ -337,20 +337,25 @@ def _MakeResourceArgFlags(collection_info, resource_data):
   resource_arg_flags = []
 
   if getattr(collection_info, 'flat_paths'):
+    # Path components will generally be stored in the '' key of flat_paths dict.
     if '' in getattr(collection_info, 'flat_paths', None):
       components = collection_info.flat_paths[''].split('/')
 
+      # Remove surrounding brackets and 'Id' suffix from path component
       resource_arg_flag_names = [
           component.replace('{', '').replace('Id}', '')
           for component in components
           if '{' in component
       ]
 
+      # Remove project component as this isn't needed to specify test args.
       filtered_resource_arg_flag_names = [
           resource_arg for resource_arg in resource_arg_flag_names
           if 'project' not in resource_arg
       ]
 
+      # Get parent components, convert from camelcase to dash delimited
+      # e.g. fooBar -> foo-bar
       formatted_resource_arg_flag_names = []
       for resource_arg in filtered_resource_arg_flag_names[:-1]:
         formatted_name = name_parsing.split_name_on_capitals(
@@ -358,12 +363,16 @@ def _MakeResourceArgFlags(collection_info, resource_data):
             delimiter='-').lower()
         formatted_resource_arg_flag_names.append(formatted_name)
 
+      # Override component name using `resource_attribute_renames` field of
+      # declarative map if specified.
       if 'resource_attribute_renames' in resource_data:
         for original_attr_name, new_attr_name in resource_data.resource_attribute_renames.items(
         ):
           for x in range(len(formatted_resource_arg_flag_names)):
             if formatted_resource_arg_flag_names[x] == original_attr_name:
               formatted_resource_arg_flag_names[x] = new_attr_name
+
+      # Format components into command string for unit tests.
       resource_arg_flags = [
           '--{param}=my-{param}'.format(param=resource_arg)
           for resource_arg in formatted_resource_arg_flag_names
@@ -372,10 +381,18 @@ def _MakeResourceArgFlags(collection_info, resource_data):
   elif getattr(collection_info, 'params', None):
     for param in collection_info.params:
       modified_param_name = param
+
+      # Remove 'Id' suffix.
       if modified_param_name[-2:] == 'Id':
         modified_param_name = modified_param_name[:-2]
+
+      # Convert component name from camelCase to dash delimited
+      # e.g. fooBar -> foo-bar
       modified_param_name = name_parsing.convert_collection_name_to_delimited(
           modified_param_name, delimiter='-', make_singular=False)
+
+      # If component name is not positional resource name, `project`, or `name`
+      # format for unit test.
       if (modified_param_name
           not in (name_parsing.convert_collection_name_to_delimited(
               collection_info.name, delimiter='-'), 'project', 'name')):

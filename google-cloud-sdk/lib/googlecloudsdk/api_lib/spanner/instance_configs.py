@@ -96,7 +96,6 @@ def Create(config,
 
     replica_info.append(
         msgs.ReplicaInfo(location=replica['location'], type=replica_type))
-  # TODO(b/399093071): Implement --replicas-file option.
 
   labels_message = {}
   if labels is not None:

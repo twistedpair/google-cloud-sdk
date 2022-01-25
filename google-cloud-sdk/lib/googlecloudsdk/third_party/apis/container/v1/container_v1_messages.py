@@ -300,7 +300,8 @@ class Cluster(_messages.Message):
       Domain_Routing) notation (e.g. `10.96.0.0/14`). Leave blank to have one
       automatically chosen or specify a `/14` block in `10.0.0.0/8`.
     conditions: Which conditions caused the current cluster state.
-    confidentialNodes: Configuration of Confidential Nodes
+    confidentialNodes: Configuration of Confidential Nodes. All the nodes in
+      the cluster will be Confidential VM once enabled.
     createTime: [Output only] The time the cluster was created, in
       [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
     currentMasterVersion: [Output only] The current software version of the
@@ -645,6 +646,8 @@ class ClusterUpdate(_messages.Message):
     desiredDefaultSnatStatus: The desired status of whether to disable default
       sNAT for this cluster.
     desiredDnsConfig: DNSConfig contains clusterDNS config for this cluster.
+    desiredEnablePrivateEndpoint: Enable/Disable private endpoint for the
+      cluster.
     desiredGcfsConfig: The desired GCFS config for the cluster
     desiredImage: The desired name of the image to use for this node. This is
       used to create clusters using a custom image. NOTE: Set the
@@ -768,33 +771,34 @@ class ClusterUpdate(_messages.Message):
   desiredDatapathProvider = _messages.EnumField('DesiredDatapathProviderValueValuesEnum', 7)
   desiredDefaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 8)
   desiredDnsConfig = _messages.MessageField('DNSConfig', 9)
-  desiredGcfsConfig = _messages.MessageField('GcfsConfig', 10)
-  desiredImage = _messages.StringField(11)
-  desiredImageProject = _messages.StringField(12)
-  desiredImageType = _messages.StringField(13)
-  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 14)
-  desiredL4ilbSubsettingConfig = _messages.MessageField('ILBSubsettingConfig', 15)
-  desiredLocations = _messages.StringField(16, repeated=True)
-  desiredLoggingConfig = _messages.MessageField('LoggingConfig', 17)
-  desiredLoggingService = _messages.StringField(18)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 19)
-  desiredMasterVersion = _messages.StringField(20)
-  desiredMeshCertificates = _messages.MessageField('MeshCertificates', 21)
-  desiredMonitoringConfig = _messages.MessageField('MonitoringConfig', 22)
-  desiredMonitoringService = _messages.StringField(23)
-  desiredNodePoolAutoConfigNetworkTags = _messages.MessageField('NetworkTags', 24)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 25)
-  desiredNodePoolId = _messages.StringField(26)
-  desiredNodeVersion = _messages.StringField(27)
-  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 28)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 29)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 30)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 31)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 32)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 33)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 34)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 35)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 36)
+  desiredEnablePrivateEndpoint = _messages.BooleanField(10)
+  desiredGcfsConfig = _messages.MessageField('GcfsConfig', 11)
+  desiredImage = _messages.StringField(12)
+  desiredImageProject = _messages.StringField(13)
+  desiredImageType = _messages.StringField(14)
+  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 15)
+  desiredL4ilbSubsettingConfig = _messages.MessageField('ILBSubsettingConfig', 16)
+  desiredLocations = _messages.StringField(17, repeated=True)
+  desiredLoggingConfig = _messages.MessageField('LoggingConfig', 18)
+  desiredLoggingService = _messages.StringField(19)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 20)
+  desiredMasterVersion = _messages.StringField(21)
+  desiredMeshCertificates = _messages.MessageField('MeshCertificates', 22)
+  desiredMonitoringConfig = _messages.MessageField('MonitoringConfig', 23)
+  desiredMonitoringService = _messages.StringField(24)
+  desiredNodePoolAutoConfigNetworkTags = _messages.MessageField('NetworkTags', 25)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 26)
+  desiredNodePoolId = _messages.StringField(27)
+  desiredNodeVersion = _messages.StringField(28)
+  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 29)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 30)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 31)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 32)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 33)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 34)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 35)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 36)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 37)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -804,8 +808,8 @@ class CompleteIPRotationRequest(_messages.Message):
   Fields:
     clusterId: Deprecated. The name of the cluster. This field has been
       deprecated and replaced by the name field.
-    name: The name (project, location, cluster id) of the cluster to complete
-      IP rotation. Specified in the format
+    name: The name (project, location, cluster name) of the cluster to
+      complete IP rotation. Specified in the format
       `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
       project
@@ -828,8 +832,7 @@ class ConfidentialNodes(_messages.Message):
   which makes nodes run on confidential VMs.
 
   Fields:
-    enabled: Whether Confidential Nodes feature is enabled for all nodes in
-      this cluster.
+    enabled: Whether Confidential Nodes feature is enabled.
   """
 
   enabled = _messages.BooleanField(1)
@@ -909,7 +912,7 @@ class ContainerProjectsLocationsClustersGetJwksRequest(_messages.Message):
   r"""A ContainerProjectsLocationsClustersGetJwksRequest object.
 
   Fields:
-    parent: The cluster (project, location, cluster id) to get keys for.
+    parent: The cluster (project, location, cluster name) to get keys for.
       Specified in the format `projects/*/locations/*/clusters/*`.
   """
 
@@ -1022,7 +1025,7 @@ class ContainerProjectsLocationsClustersNodePoolsListRequest(_messages.Message):
   Fields:
     clusterId: Deprecated. The name of the cluster. This field has been
       deprecated and replaced by the parent field.
-    parent: The parent (project, location, cluster id) where the node pools
+    parent: The parent (project, location, cluster name) where the node pools
       will be listed. Specified in the format
       `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
@@ -1047,7 +1050,7 @@ class ContainerProjectsLocationsClustersWellKnownGetOpenidConfigurationRequest(_
   object.
 
   Fields:
-    parent: The cluster (project, location, cluster id) to get the discovery
+    parent: The cluster (project, location, cluster name) to get the discovery
       document for. Specified in the format
       `projects/*/locations/*/clusters/*`.
   """
@@ -1248,7 +1251,7 @@ class ContainerProjectsZonesClustersNodePoolsListRequest(_messages.Message):
   Fields:
     clusterId: Deprecated. The name of the cluster. This field has been
       deprecated and replaced by the parent field.
-    parent: The parent (project, location, cluster id) where the node pools
+    parent: The parent (project, location, cluster name) where the node pools
       will be listed. Specified in the format
       `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
@@ -1362,7 +1365,7 @@ class CreateNodePoolRequest(_messages.Message):
     clusterId: Deprecated. The name of the cluster. This field has been
       deprecated and replaced by the parent field.
     nodePool: Required. The node pool to create.
-    parent: The parent (project, location, cluster id) where the node pool
+    parent: The parent (project, location, cluster name) where the node pool
       will be created. Specified in the format
       `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
@@ -2123,10 +2126,13 @@ class MasterAuthorizedNetworksConfig(_messages.Message):
     cidrBlocks: cidr_blocks define up to 50 external networks that could
       access Kubernetes master through HTTPS.
     enabled: Whether or not master authorized networks is enabled.
+    gcpPublicCidrsAccessEnabled: Whether master is accessbile via Google
+      Compute Engine Public IPs.
   """
 
   cidrBlocks = _messages.MessageField('CidrBlock', 1, repeated=True)
   enabled = _messages.BooleanField(2)
+  gcpPublicCidrsAccessEnabled = _messages.BooleanField(3)
 
 
 class MaxPodsConstraint(_messages.Message):
@@ -2386,6 +2392,8 @@ class NodeConfig(_messages.Message):
       /cryptoKeys/[KEY_NAME]. For more information about protecting resources
       with Cloud KMS Keys please see:
       https://cloud.google.com/compute/docs/disks/customer-managed-encryption
+    confidentialNodes: Confidential nodes config. All the nodes in the node
+      pool will be Confidential VM once enabled.
     diskSizeGb: Size of the disk attached to each node, specified in GB. The
       smallest allowed disk size is 10GB. If unspecified, the default disk
       size is 100GB.
@@ -2550,30 +2558,31 @@ class NodeConfig(_messages.Message):
   accelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
   advancedMachineFeatures = _messages.MessageField('AdvancedMachineFeatures', 2)
   bootDiskKmsKey = _messages.StringField(3)
-  diskSizeGb = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  diskType = _messages.StringField(5)
-  gcfsConfig = _messages.MessageField('GcfsConfig', 6)
-  gvnic = _messages.MessageField('VirtualNIC', 7)
-  imageType = _messages.StringField(8)
-  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 11)
-  localSsdCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  machineType = _messages.StringField(13)
-  metadata = _messages.MessageField('MetadataValue', 14)
-  minCpuPlatform = _messages.StringField(15)
-  nodeGroup = _messages.StringField(16)
-  nodeImageConfig = _messages.MessageField('CustomImageConfig', 17)
-  oauthScopes = _messages.StringField(18, repeated=True)
-  preemptible = _messages.BooleanField(19)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 20)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 21)
-  serviceAccount = _messages.StringField(22)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 23)
-  spot = _messages.BooleanField(24)
-  tags = _messages.StringField(25, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 26, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 27)
+  confidentialNodes = _messages.MessageField('ConfidentialNodes', 4)
+  diskSizeGb = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  diskType = _messages.StringField(6)
+  gcfsConfig = _messages.MessageField('GcfsConfig', 7)
+  gvnic = _messages.MessageField('VirtualNIC', 8)
+  imageType = _messages.StringField(9)
+  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 12)
+  localSsdCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  machineType = _messages.StringField(14)
+  metadata = _messages.MessageField('MetadataValue', 15)
+  minCpuPlatform = _messages.StringField(16)
+  nodeGroup = _messages.StringField(17)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 18)
+  oauthScopes = _messages.StringField(19, repeated=True)
+  preemptible = _messages.BooleanField(20)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 21)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 22)
+  serviceAccount = _messages.StringField(23)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 24)
+  spot = _messages.BooleanField(25)
+  tags = _messages.StringField(26, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 27, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 28)
 
 
 class NodeConfigDefaults(_messages.Message):
@@ -2616,6 +2625,45 @@ class NodeKubeletConfig(_messages.Message):
   cpuManagerPolicy = _messages.StringField(3)
 
 
+class NodeLabels(_messages.Message):
+  r"""Collection of node-level [Kubernetes
+  labels](https://kubernetes.io/docs/concepts/overview/working-with-
+  objects/labels).
+
+  Messages:
+    LabelsValue: Map of node label keys and node label values.
+
+  Fields:
+    labels: Map of node label keys and node label values.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Map of node label keys and node label values.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+
+
 class NodeManagement(_messages.Message):
   r"""NodeManagement defines the set of node management services turned on for
   the node pool.
@@ -2647,6 +2695,9 @@ class NodeNetworkConfig(_messages.Message):
       default (`ip_allocation_policy.cluster_ipv4_cidr_block`) is used. Only
       applicable if `ip_allocation_policy.use_ip_aliases` is true. This field
       cannot be changed after the node pool has been created.
+    enablePrivateNodes: Whether nodes have internal IP addresses only. If
+      enable_private_nodes is not specified, then the value is derived from
+      cluster.privateClusterConfig.enablePrivateNodes
     podIpv4CidrBlock: The IP address range for pod IPs in this node pool. Only
       applicable if `create_pod_range` is true. Set to blank to have a range
       chosen with the default size. Set to /netmask (e.g. `/14`) to have a
@@ -2663,8 +2714,9 @@ class NodeNetworkConfig(_messages.Message):
   """
 
   createPodRange = _messages.BooleanField(1)
-  podIpv4CidrBlock = _messages.StringField(2)
-  podRange = _messages.StringField(3)
+  enablePrivateNodes = _messages.BooleanField(2)
+  podIpv4CidrBlock = _messages.StringField(3)
+  podRange = _messages.StringField(4)
 
 
 class NodePool(_messages.Message):
@@ -2842,6 +2894,18 @@ class NodeTaint(_messages.Message):
   effect = _messages.EnumField('EffectValueValuesEnum', 1)
   key = _messages.StringField(2)
   value = _messages.StringField(3)
+
+
+class NodeTaints(_messages.Message):
+  r"""Collection of Kubernetes [node
+  taints](https://kubernetes.io/docs/concepts/configuration/taint-and-
+  toleration).
+
+  Fields:
+    taints: List of node taints.
+  """
+
+  taints = _messages.MessageField('NodeTaint', 1, repeated=True)
 
 
 class NotificationConfig(_messages.Message):
@@ -3025,6 +3089,9 @@ class PrivateClusterConfig(_messages.Message):
       this cluster.
     privateEndpoint: Output only. The internal IP address of this cluster's
       master endpoint.
+    privateEndpointSubnetwork: Subnetwork in cluster's network where master's
+      endpoint will be provisioned. Specified in
+      projects/*/regions/*/subnetworks/* format.
     publicEndpoint: Output only. The external IP address of this cluster's
       master endpoint.
   """
@@ -3035,7 +3102,8 @@ class PrivateClusterConfig(_messages.Message):
   masterIpv4CidrBlock = _messages.StringField(4)
   peeringName = _messages.StringField(5)
   privateEndpoint = _messages.StringField(6)
-  publicEndpoint = _messages.StringField(7)
+  privateEndpointSubnetwork = _messages.StringField(7)
+  publicEndpoint = _messages.StringField(8)
 
 
 class PrivateClusterMasterGlobalAccessConfig(_messages.Message):
@@ -3409,7 +3477,7 @@ class SetLabelsRequest(_messages.Message):
       to modify or update labels. You must always provide an up-to-date
       fingerprint hash when updating or changing labels. Make a `get()`
       request to the resource to get the latest fingerprint.
-    name: The name (project, location, cluster id) of the cluster to set
+    name: The name (project, location, cluster name) of the cluster to set
       labels. Specified in the format `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
       project
@@ -3464,7 +3532,7 @@ class SetLegacyAbacRequest(_messages.Message):
       been deprecated and replaced by the name field.
     enabled: Required. Whether ABAC authorization will be enabled in the
       cluster.
-    name: The name (project, location, cluster id) of the cluster to set
+    name: The name (project, location, cluster name) of the cluster to set
       legacy abac. Specified in the format
       `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
@@ -3552,7 +3620,7 @@ class SetMaintenancePolicyRequest(_messages.Message):
     clusterId: Required. The name of the cluster to update.
     maintenancePolicy: Required. The maintenance policy to be set for the
       cluster. An empty field clears the existing maintenance policy.
-    name: The name (project, location, cluster id) of the cluster to set
+    name: The name (project, location, cluster name) of the cluster to set
       maintenance policy. Specified in the format
       `projects/*/locations/*/clusters/*`.
     projectId: Required. The Google Developers Console [project ID or project
@@ -3655,7 +3723,7 @@ class SetNetworkPolicyRequest(_messages.Message):
   Fields:
     clusterId: Deprecated. The name of the cluster. This field has been
       deprecated and replaced by the name field.
-    name: The name (project, location, cluster id) of the cluster to set
+    name: The name (project, location, cluster name) of the cluster to set
       networking policy. Specified in the format
       `projects/*/locations/*/clusters/*`.
     networkPolicy: Required. Configuration options for the NetworkPolicy
@@ -3866,8 +3934,9 @@ class StartIPRotationRequest(_messages.Message):
   Fields:
     clusterId: Deprecated. The name of the cluster. This field has been
       deprecated and replaced by the name field.
-    name: The name (project, location, cluster id) of the cluster to start IP
-      rotation. Specified in the format `projects/*/locations/*/clusters/*`.
+    name: The name (project, location, cluster name) of the cluster to start
+      IP rotation. Specified in the format
+      `projects/*/locations/*/clusters/*`.
     projectId: Deprecated. The Google Developers Console [project ID or
       project
       number](https://developers.google.com/console/help/new/#projectnumber).
@@ -4167,6 +4236,8 @@ class UpdateNodePoolRequest(_messages.Message):
   Fields:
     clusterId: Deprecated. The name of the cluster to upgrade. This field has
       been deprecated and replaced by the name field.
+    confidentialNodes: Confidential nodes config. All the nodes in the node
+      pool will be Confidential VM once enabled.
     gcfsConfig: GCFS config.
     gvnic: Enable or disable gvnic on the node pool.
     image: The desired name of the image name to use for this node. This is
@@ -4175,6 +4246,10 @@ class UpdateNodePoolRequest(_messages.Message):
       node pool. This is used to create clusters using a custom image.
     imageType: Required. The desired image type for the node pool.
     kubeletConfig: Node kubelet configs.
+    labels: The desired node labels to be applied to all nodes in the node
+      pool. If this field is not present, the labels will not be changed.
+      Otherwise, the existing node labels will be *replaced* with the provided
+      labels.
     linuxNodeConfig: Parameters that can be configured on Linux nodes.
     locations: The desired list of Google Compute Engine
       [zones](https://cloud.google.com/compute/docs/zones#available) in which
@@ -4184,6 +4259,7 @@ class UpdateNodePoolRequest(_messages.Message):
     name: The name (project, location, cluster, node pool) of the node pool to
       update. Specified in the format
       `projects/*/locations/*/clusters/*/nodePools/*`.
+    nodeNetworkConfig: Node network config.
     nodePoolId: Deprecated. The name of the node pool to upgrade. This field
       has been deprecated and replaced by the name field.
     nodeVersion: Required. The Kubernetes version to change the nodes to
@@ -4197,6 +4273,14 @@ class UpdateNodePoolRequest(_messages.Message):
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the name field.
+    tags: The desired network tags to be applied to all nodes in the node
+      pool. If this field is not present, the tags will not be changed.
+      Otherwise, the existing network tags will be *replaced* with the
+      provided tags.
+    taints: The desired node taints to be applied to all nodes in the node
+      pool. If this field is not present, the taints will not be changed.
+      Otherwise, the existing node taints will be *replaced* with the provided
+      taints.
     upgradeSettings: Upgrade settings control disruption and speed of the
       upgrade.
     workloadMetadataConfig: The desired workload metadata config for the node
@@ -4208,21 +4292,26 @@ class UpdateNodePoolRequest(_messages.Message):
   """
 
   clusterId = _messages.StringField(1)
-  gcfsConfig = _messages.MessageField('GcfsConfig', 2)
-  gvnic = _messages.MessageField('VirtualNIC', 3)
-  image = _messages.StringField(4)
-  imageProject = _messages.StringField(5)
-  imageType = _messages.StringField(6)
-  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 7)
-  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 8)
-  locations = _messages.StringField(9, repeated=True)
-  name = _messages.StringField(10)
-  nodePoolId = _messages.StringField(11)
-  nodeVersion = _messages.StringField(12)
-  projectId = _messages.StringField(13)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 14)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 15)
-  zone = _messages.StringField(16)
+  confidentialNodes = _messages.MessageField('ConfidentialNodes', 2)
+  gcfsConfig = _messages.MessageField('GcfsConfig', 3)
+  gvnic = _messages.MessageField('VirtualNIC', 4)
+  image = _messages.StringField(5)
+  imageProject = _messages.StringField(6)
+  imageType = _messages.StringField(7)
+  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 8)
+  labels = _messages.MessageField('NodeLabels', 9)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 10)
+  locations = _messages.StringField(11, repeated=True)
+  name = _messages.StringField(12)
+  nodeNetworkConfig = _messages.MessageField('NodeNetworkConfig', 13)
+  nodePoolId = _messages.StringField(14)
+  nodeVersion = _messages.StringField(15)
+  projectId = _messages.StringField(16)
+  tags = _messages.MessageField('NetworkTags', 17)
+  taints = _messages.MessageField('NodeTaints', 18)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 19)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 20)
+  zone = _messages.StringField(21)
 
 
 class UpgradeAvailableEvent(_messages.Message):

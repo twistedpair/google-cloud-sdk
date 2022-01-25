@@ -4,7 +4,7 @@
   "id": "compute:v1",
   "name": "compute",
   "version": "v1",
-  "revision": "20220107",
+  "revision": "20220114",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -1417,13 +1417,6 @@
         "service": {
           "description": "Specifies a service that will be enabled for audit logging. For example, `storage.googleapis.com`, `cloudsql.googleapis.com`. `allServices` is a special value that covers all services.",
           "type": "string"
-        },
-        "exemptedMembers": {
-          "description": "This is deprecated and has no effect. Do not use.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         },
         "auditLogConfigs": {
           "description": "The configuration for logging of each type of permission.",
@@ -3626,7 +3619,7 @@
       "type": "object",
       "properties": {
         "onHostMaintenance": {
-          "description": "Defines the maintenance behavior for this instance. For standard instances, the default behavior is MIGRATE. For preemptible instances, the default and only possible behavior is TERMINATE. For more information, see Setting Instance Scheduling Options.",
+          "description": "Defines the maintenance behavior for this instance. For standard instances, the default behavior is MIGRATE. For preemptible instances, the default and only possible behavior is TERMINATE. For more information, see Set VM availability policies.",
           "type": "string",
           "enumDescriptions": [
             "*[Default]* Allows Compute Engine to automatically migrate instances out of the way of maintenance events.",
@@ -31809,6 +31802,23 @@
         "resource": {
           "description": "Content of the UrlMap to be validated.",
           "$ref": "UrlMap"
+        },
+        "loadBalancingSchemes": {
+          "description": "Specifies the load balancer type(s) this validation request is for. Use EXTERNAL_MANAGED for HTTP\/HTTPS External Global Load Balancer with Advanced Traffic Management. Use EXTERNAL for Classic HTTP\/HTTPS External Global Load Balancer. Other load balancer types are not supported. For more information, refer to Choosing a load balancer. If unspecified, the load balancing scheme will be inferred from the backend service resources this URL map references. If that can not be inferred (for example, this URL map only references backend buckets, or this Url map is for rewrites and redirects only and doesn't reference any backends), EXTERNAL will be used as the default type. If specified, the scheme(s) must not conflict with the load balancing scheme of the backend service resources this Url map references.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Signifies that this will be used for Classic L7 External Load Balancing.",
+              "Signifies that this will be used for Envoy-based L7 External Load Balancing.",
+              "If unspecified, the validation will try to infer the scheme from the backend service resources this Url map references. If the inferrence is not possible, EXTERNAL will be used as the default type."
+            ],
+            "enum": [
+              "EXTERNAL",
+              "EXTERNAL_MANAGED",
+              "LOAD_BALANCING_SCHEME_UNSPECIFIED"
+            ]
+          }
         }
       }
     },
@@ -36324,7 +36334,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "Sets an instance's scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a `TERMINATED` state. See Instance Life Cycle for more information on the possible instance states."
+          "description": "Sets an instance's scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a `TERMINATED` state. See Instance Life Cycle for more information on the possible instance states. For more information about setting scheduling options for a VM, see Set VM availability policies."
         },
         "getSerialPortOutput": {
           "id": "compute.instances.getSerialPortOutput",
@@ -37422,7 +37432,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "This method suspends a running instance, saving its state to persistent storage, and allows you to resume the instance at a later time. Suspended instances incur reduced per-minute, virtual machine usage charges while they are suspended. Any resources the virtual machine is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted. For more information, see Suspending and resuming an instance."
+          "description": "This method suspends a running instance, saving its state to persistent storage, and allows you to resume the instance at a later time. Suspended instances have no compute costs (cores or RAM), and incur only storage charges for the saved VM memory and localSSD data. Any charged resources the virtual machine was using, such as persistent disks and static IP addresses, will continue to be charged while the instance is suspended. For more information, see Suspending and resuming an instance."
         },
         "resume": {
           "id": "compute.instances.resume",

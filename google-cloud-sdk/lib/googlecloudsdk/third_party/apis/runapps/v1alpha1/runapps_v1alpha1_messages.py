@@ -124,6 +124,84 @@ class ApplicationStatus(_messages.Message):
   resource = _messages.MessageField('ResourceStatus', 3, repeated=True)
 
 
+class BindingStatus(_messages.Message):
+  r"""The binding status of a resource
+
+  Messages:
+    AnnotationsValue: Annotations of the Cloud Run service for the binded
+      resource.
+    EnvVarsValue: Environment variables of the Cloud Run service for the
+      binded resource.
+
+  Fields:
+    annotations: Annotations of the Cloud Run service for the binded resource.
+    envVars: Environment variables of the Cloud Run service for the binded
+      resource.
+    resourceName: Name of the binded resource.
+    resourceType: Type of the binded resource.
+    serviceAccount: Service account used by the Cloud Run service for the
+      binded resource.
+    serviceName: Name of the Cloud Run service.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Annotations of the Cloud Run service for the binded resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class EnvVarsValue(_messages.Message):
+    r"""Environment variables of the Cloud Run service for the binded
+    resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a EnvVarsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type EnvVarsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EnvVarsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  envVars = _messages.MessageField('EnvVarsValue', 2)
+  resourceName = _messages.StringField(3)
+  resourceType = _messages.StringField(4)
+  serviceAccount = _messages.StringField(5)
+  serviceName = _messages.StringField(6)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -175,6 +253,10 @@ class CloudSqlSettings(_messages.Message):
   tier = _messages.StringField(5)
 
 
+class CloudSqlStatus(_messages.Message):
+  r"""Detail Status of CloudSQL resource."""
+
+
 class CloudStorage(_messages.Message):
   r"""Configures a Cloud Storage location.
 
@@ -197,8 +279,8 @@ class Config(_messages.Message):
 
   Fields:
     config: A byte array encapsulating the contents of the application config.
-      This can be of any type of supported config (Simple SAF Yaml, multi-file
-      in-app config, etc.)
+      This can be of any type of supported config (Simple Yaml, multi-file in-
+      app config, etc.)
     resources: The map of resource configs where the key is the name of
       resources and the value is the resource config.
   """
@@ -343,17 +425,33 @@ class Deployment(_messages.Message):
 class DeploymentStatus(_messages.Message):
   r"""Message to encapsulate the current status of the deployment.
 
+  Enums:
+    StateValueValuesEnum: The state associated with the deployment.
+
   Fields:
     errorMessage: The error message associated with a failed deployment state,
       if applicable.
     jobDetails: Details of each deploy job.
-    status: The status message associated with the current state of the
-      deployment.
+    state: The state associated with the deployment.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The state associated with the deployment.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      FAILED: Deployment completed with failure.
+      SUCCEEDED: Deployment completed successfully.
+      IN_PROGRESS: Deployment is running and has not completed.
+    """
+    STATE_UNSPECIFIED = 0
+    FAILED = 1
+    SUCCEEDED = 2
+    IN_PROGRESS = 3
 
   errorMessage = _messages.StringField(1)
   jobDetails = _messages.MessageField('JobDetails', 2, repeated=True)
-  status = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class Empty(_messages.Message):
@@ -373,10 +471,13 @@ class GcpResourceStatus(_messages.Message):
     StateValueValuesEnum: The state of the GCP resource.
 
   Fields:
+    dirty: Indicates that this GCP resource has been altered and may not match
+      the expected state.
     errorMessage: The error message associated with the GCP resource, if
       applicable.
     gcpResourceName: The full path of the GCP resource, which can be used to
       query other GCP services.
+    selfLink: Fully qualified URL to the GCP resource object.
     state: The state of the GCP resource.
     type: The type of the GCP resource (e.g. "redis").
   """
@@ -387,30 +488,54 @@ class GcpResourceStatus(_messages.Message):
     Values:
       GCP_RESOURCE_STATE_UNKNOWN: <no description>
       GCP_RESOURCE_STATE_DEPLOYED: The resource has been deployed.
+      GCP_RESOURCE_STATE_MISSING: The resource is missing.
     """
     GCP_RESOURCE_STATE_UNKNOWN = 0
     GCP_RESOURCE_STATE_DEPLOYED = 1
+    GCP_RESOURCE_STATE_MISSING = 2
 
-  errorMessage = _messages.StringField(1)
-  gcpResourceName = _messages.StringField(2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
-  type = _messages.StringField(4)
+  dirty = _messages.BooleanField(1)
+  errorMessage = _messages.StringField(2)
+  gcpResourceName = _messages.StringField(3)
+  selfLink = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  type = _messages.StringField(6)
 
 
 class JobDetails(_messages.Message):
   r"""Message to encapsulate the current status deployment job.
 
+  Enums:
+    StateValueValuesEnum: State of deployment job
+
   Fields:
     createSelector: Create selector applied to deployment job.
     deleteSelector: Delete selector applied to deployment job.
-    jobId: ID of deployment job.
-    jobUri: URI of deployment job.
+    jobName: Name of deployment job. Format:
+      projects/{project}/locations/{location}/builds/{build}
+    jobUri: URI of deployment job within Google Cloud Console.
+    state: State of deployment job
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of deployment job
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      FAILED: Job completed with failure.
+      SUCCEEDED: Job completed successfully.
+      IN_PROGRESS: Job is running and has not completed.
+    """
+    STATE_UNSPECIFIED = 0
+    FAILED = 1
+    SUCCEEDED = 2
+    IN_PROGRESS = 3
 
   createSelector = _messages.MessageField('Selector', 1)
   deleteSelector = _messages.MessageField('Selector', 2)
-  jobId = _messages.StringField(3)
+  jobName = _messages.StringField(3)
   jobUri = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class ListApplicationsResponse(_messages.Message):
@@ -737,6 +862,10 @@ class RedisInstanceConfig(_messages.Message):
   version = _messages.StringField(4)
 
 
+class RedisStatus(_messages.Message):
+  r"""Detail Status of Redis resource."""
+
+
 class Render(_messages.Message):
   r"""Message to encapsulate the parameters for a Render.
 
@@ -789,13 +918,20 @@ class ResourceStatus(_messages.Message):
     StateValueValuesEnum: The enum status of the resource.
 
   Fields:
+    bindingStatus: The binding status related to this resource.
+    cloudSqlDetails: Detail Status of CloudSQL resource.
+    dirty: Indicates that a child GCP resource has been altered and may not
+      match the expected state.
     errorMessage: The error message associated with the resource, if
       applicable.
     gcpResource: Repeated field with status per GCP resource created for this
       resource.
+    redisDetails: Detail Status of Redis resource.
     resourceName: Name of the resource, pulled from the Application Config.
+    routerDetails: Detail Status of Router resource.
     state: The enum status of the resource.
     type: Type of resource.
+    vpcDetails: Detail Status of VPC resource.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -803,16 +939,32 @@ class ResourceStatus(_messages.Message):
 
     Values:
       RESOURCE_STATE_UNKNOWN: <no description>
-      RESOURCE_STATE_DEPLOYED: The resource has been deployed.
+      RESOURCE_STATE_READY: The resource is ready.
+      RESOURCE_STATE_ERROR: Some of the components of the resource are not
+        working.
+      RESOURCE_STATE_MISSING: The key components are missing.
+      RESOURCE_STATE_UPDATING: The resource is being deployed.
+      RESOURCE_STATE_NOT_READY: Some of the resource's child resources are not
+        in ready state.
     """
     RESOURCE_STATE_UNKNOWN = 0
-    RESOURCE_STATE_DEPLOYED = 1
+    RESOURCE_STATE_READY = 1
+    RESOURCE_STATE_ERROR = 2
+    RESOURCE_STATE_MISSING = 3
+    RESOURCE_STATE_UPDATING = 4
+    RESOURCE_STATE_NOT_READY = 5
 
-  errorMessage = _messages.StringField(1)
-  gcpResource = _messages.MessageField('GcpResourceStatus', 2, repeated=True)
-  resourceName = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  type = _messages.StringField(5)
+  bindingStatus = _messages.MessageField('BindingStatus', 1, repeated=True)
+  cloudSqlDetails = _messages.MessageField('CloudSqlStatus', 2)
+  dirty = _messages.BooleanField(3)
+  errorMessage = _messages.StringField(4)
+  gcpResource = _messages.MessageField('GcpResourceStatus', 5, repeated=True)
+  redisDetails = _messages.MessageField('RedisStatus', 6)
+  resourceName = _messages.StringField(7)
+  routerDetails = _messages.MessageField('RouterStatus', 8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  type = _messages.StringField(10)
+  vpcDetails = _messages.MessageField('VPCStatus', 11)
 
 
 class Route(_messages.Message):
@@ -850,6 +1002,16 @@ class RouterConfig(_messages.Message):
   dns_zone = _messages.StringField(2)
   domain = _messages.StringField(3)
   routes = _messages.MessageField('Route', 4, repeated=True)
+
+
+class RouterStatus(_messages.Message):
+  r"""Detail Status of Router resource.
+
+  Fields:
+    ipAddress: A string attribute.
+  """
+
+  ipAddress = _messages.StringField(1)
 
 
 class RunappsProjectsLocationsApplicationsCreateRequest(_messages.Message):
@@ -1314,6 +1476,10 @@ class VPCConfig(_messages.Message):
   """
 
   network = _messages.StringField(1)
+
+
+class VPCStatus(_messages.Message):
+  r"""Detail Status of VPC resource."""
 
 
 encoding.AddCustomJsonFieldMapping(

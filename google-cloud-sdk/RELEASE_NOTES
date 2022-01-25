@@ -5,6 +5,63 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 370.0.0 (2022-01-25)
+
+### AI
+
+* Added more choice options to `--region` flag of `gcloud ai custom-jobs` and `gcloud ai hp-tunining-jobs`, including: asia-east2, asia-south1, europe-west3, europe-west6, northamerica-northeast2 and us-west2.
+
+### Bare Metal Solution
+
+* Added `gcloud bms instances reset` which hard resets Bare Metal Solution instances.
+
+### BigQuery
+
+* Add support for `--clone` flag for table clones.
+* Add support for `--multi_region_auxiliary` flag for reservations.
+* Fix 'bq show -d' to support authorized routines.
+* Minor bug fixes and dependency updates.
+
+### Cloud Composer
+
+* Fixed issues in creation of Cloud Composer 2 environments that didn't properly pass on the secondary range names/CIDRs.
+
+### Cloud Functions
+
+*   Promoted `--set-secrets`, `--update-secrets`, `--remove-secrets` and `--clear-secrets` flags of `gcloud functions deploy` to GA.
+
+### Compute Engine
+
+* Promoted `--enable-ipv6`, `--ipv6-nexthop-address`, and `--peer-ipv6-nexthop-address` flags of `gcloud compute router update-bgp-peer` to GA.
+* Promoted `--enable-ipv6`, `--ipv6-nexthop-address`, and `--peer-ipv6-nexthop-address` flags of `gcloud compute router add-bgp-peer` to GA.
+* Promoted `--stack-type`, `--candidate-ipv6-subnet`, `--cloud-router-ipv6-interface-id`, and `--customer-router-ipv6-interface-id` flags of `gcloud compute interconnects attachments dedicated create` to GA.
+* Promoted `--stack-type`, `--candidate-ipv6-subnet`, `--cloud-router-ipv6-interface-id`, and `--customer-router-ipv6-interface-id` flags of `gcloud compute interconnects attachments dedicated update` to GA.
+* Promoted `--enable-uefi-networking` flag of `gcloud compute instances create`, `gcloud compute instance-templates create`
+  and `gcloud compute instances bulk create` to GA.
+* Added `mesh` as an option for `--service-proxy` of `gcloud beta compute instance-templates create`.
+
+### Compute OS Config
+
+* Add `--mig-instances-allowed` flag to `gcloud compute os-config patch-jobs execute`.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.71.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Dataproc Metastore
+
+*   Added `--database-type` flag to `metastore services create` alpha and beta
+    release tracks to allow specifying the backing store in Dataproc Metastore.
+
+### Recommender
+
+*   Added annotations support for `gcloud beta recommender insight-type-config update` and `gcloud beta recommender recommender-config update`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 369.0.0 (2022-01-19)
 
 ### AI

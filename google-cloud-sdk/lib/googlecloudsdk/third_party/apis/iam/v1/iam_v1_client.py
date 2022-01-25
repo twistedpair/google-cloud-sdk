@@ -2193,7 +2193,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""**Note:** We are in the process of deprecating this method. Use PatchServiceAccount instead. Updates a ServiceAccount. You can update only the `display_name` and `description` fields.
+      r"""**Note:** We are in the process of deprecating this method. Use PatchServiceAccount instead. Updates a ServiceAccount. You can update only the `display_name` field.
 
       Args:
         request: (ServiceAccount) input message

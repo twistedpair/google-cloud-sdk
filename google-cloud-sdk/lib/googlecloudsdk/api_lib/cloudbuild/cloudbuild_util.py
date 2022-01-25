@@ -18,7 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import enum
 import re
+
 from apitools.base.protorpclite import messages as proto_messages
 from apitools.base.py import encoding as apitools_encoding
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_exceptions
@@ -48,6 +50,12 @@ REGIONAL_WORKERPOOL_REGION_SELECTOR = r'projects/.*/locations/(.*)/workerPools/.
 DEFAULT_REGION = 'global'
 
 BYTES_IN_ONE_GB = 2**30
+
+
+class WorkerpoolTypes(enum.Enum):
+  UNKNOWN = 0
+  PRIVATE = 1
+  HYBRID = 2
 
 
 def GetMessagesModule(release_track=base.ReleaseTrack.GA):

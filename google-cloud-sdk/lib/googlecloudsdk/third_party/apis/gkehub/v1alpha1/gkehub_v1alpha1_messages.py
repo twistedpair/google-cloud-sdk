@@ -1092,6 +1092,7 @@ class FeatureStateDetails(_messages.Message):
     multiclusteringressFeatureState: State for the Ingress for Anthos Feature.
     multiclusterservicediscoveryFeatureState: State for the Multi-cluster
       Service Discovery Feature.
+    policycontrollerFeatureState: State for the Policy Controller Feature.
     servicedirectoryFeatureState: State for the Service Directory Feature.
     servicemeshFeatureState: State for the Service Mesh Feature.
     updateTime: The last update time of this status by the controllers
@@ -1134,10 +1135,11 @@ class FeatureStateDetails(_messages.Message):
   meteringFeatureState = _messages.MessageField('MeteringFeatureState', 12)
   multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 13)
   multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 14)
-  servicedirectoryFeatureState = _messages.MessageField('ServiceDirectoryFeatureState', 15)
-  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 16)
-  updateTime = _messages.StringField(17)
-  workloadcertificateFeatureState = _messages.MessageField('WorkloadCertificateFeatureState', 18)
+  policycontrollerFeatureState = _messages.MessageField('PolicyControllerFeatureState', 15)
+  servicedirectoryFeatureState = _messages.MessageField('ServiceDirectoryFeatureState', 16)
+  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 17)
+  updateTime = _messages.StringField(18)
+  workloadcertificateFeatureState = _messages.MessageField('WorkloadCertificateFeatureState', 19)
 
 
 class FeatureTest(_messages.Message):
@@ -2368,6 +2370,154 @@ class PolicyController(_messages.Message):
   templateLibraryInstalled = _messages.BooleanField(7)
 
 
+class PolicyControllerFeatureState(_messages.Message):
+  r"""State for PolicyController
+
+  Enums:
+    StateValueValuesEnum: The lifecycle state observed by the Hub Feature
+      controller.
+
+  Fields:
+    clusterName: The user-defined name for the cluster used by
+      ClusterSelectors to group clusters together. This should match
+      Membership's membership_name, unless the user installed Policy
+      Controller on the cluster manually prior to enabling the Policy
+      Controller Hub Feature. Unique within a Policy Controller installation.
+    membershipConfig: Membership configuration in the cluster. This represents
+      the actual state in the cluster, while the MembershipConfig in the
+      FeatureSpec represents the intended state
+    state: The lifecycle state observed by the Hub Feature controller.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The lifecycle state observed by the Hub Feature controller.
+
+    Values:
+      LIFECYCLE_STATE_UNSPECIFIED: The lifecycle state is unspecified.
+      NOT_INSTALLED: Policy Controller (PC) does not exist on the given
+        cluster, and no k8s resources of any type that are associated with the
+        PC should exist there. The cluster does not possess a membership with
+        the Hub Feature controller.
+      INSTALLING: The Hub Feature controller possesses a Membership, however
+        Policy Controller is not fully installed on the cluster. In this state
+        the hub can be expected to be taking actions to install the PC on the
+        cluster.
+      ACTIVE: Policy Controller (PC) is fully installed on the cluster and in
+        an operational mode. In this state the Hub Feature controller will be
+        reconciling state with the PC, and the PC will be performing it's
+        operational tasks per that software. Entering a READY state requires
+        that the hub has confirmed the PC is installed and its pods are
+        operational with the version of the PC the Hub Feature controller
+        expects.
+      UPDATING: Policy Controller (PC) is fully installed, but in the process
+        of changing the configuration (including changing the version of PC
+        either up and down, or modifying the manifests of PC) of the resources
+        running on the cluster. The Hub Feature controller has a Membership,
+        is aware of the version the cluster should be running in, but has not
+        confirmed for itself that the PC is running with that version.
+      DECOMISSIONING: Policy Controller (PC) may have resources on the
+        cluster, but the Hub Feature controller wishes to remove the
+        Membership. The Membership still exists.
+      CLUSTER_ERROR: Policy Controller (PC) is not operational, and the Hub
+        Feature controller is unable to act to make it operational. Entering a
+        CLUSTER_ERROR state happens automatically when the PCH determines that
+        a PC installed on the cluster is non-operative or that the cluster
+        does not meet requirements set for the Hub Feature controller to
+        administer the cluster but has nevertheless been given an instruction
+        to do so (such as 'install').
+      HUB_ERROR: In this state, the PC may still be operational, and only the
+        Hub Feature controller is unable to act. The hub should not issue
+        instructions to change the PC state, or otherwise interfere with the
+        on-cluster resources. Entering a HUB_ERROR state happens automatically
+        when the Hub Feature controller determines the hub is in an unhealthy
+        state and it wishes to 'take hands off' to avoid corrupting the PC or
+        other data.
+    """
+    LIFECYCLE_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLING = 2
+    ACTIVE = 3
+    UPDATING = 4
+    DECOMISSIONING = 5
+    CLUSTER_ERROR = 6
+    HUB_ERROR = 7
+
+  clusterName = _messages.StringField(1)
+  membershipConfig = _messages.MessageField('PolicyControllerMembershipConfig', 2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+
+
+class PolicyControllerHubConfig(_messages.Message):
+  r"""Configuration for Policy Controller.
+
+  Enums:
+    InstallSpecValueValuesEnum: The install_spec represents the intended state
+      specified by the latest request that mutated install_spec in the feature
+      spec, not the lifecycle state of the feature observed by the Hub feature
+      controller that is reported in the feature state.
+
+  Fields:
+    auditIntervalSeconds: Sets the interval for Policy Controller Audit Scans
+      (in seconds). When set to 0, this disables audit functionality
+      altogether.
+    exemptableNamespaces: The set of namespaces that are excluded from Policy
+      Controller checks. Namespaces do not need to currently exist on the
+      cluster.
+    installSpec: The install_spec represents the intended state specified by
+      the latest request that mutated install_spec in the feature spec, not
+      the lifecycle state of the feature observed by the Hub feature
+      controller that is reported in the feature state.
+    logDeniesEnabled: Logs all denies and dry run failures.
+    mutationEnabled: Enables the ability to mutate resources using Policy
+      Controller.
+    referentialRulesEnabled: Enables the ability to use Constraint Templates
+      that reference to objects other than the object currently being
+      evaluated.
+    templateLibraryConfig: Configures the library templates to install along
+      with Policy Controller.
+  """
+
+  class InstallSpecValueValuesEnum(_messages.Enum):
+    r"""The install_spec represents the intended state specified by the latest
+    request that mutated install_spec in the feature spec, not the lifecycle
+    state of the feature observed by the Hub feature controller that is
+    reported in the feature state.
+
+    Values:
+      INSTALL_SPEC_UNSPECIFIED: Spec is unknown.
+      INSTALL_SPEC_NOT_INSTALLED: Request to uninstall Policy Controller.
+      INSTALL_SPEC_ENABLED: Request to install and enable Policy Controller.
+      INSTALL_SPEC_DISABLED: Request to disable Policy Controller. If Policy
+        Controller is not installed, it will be installed but disabled.
+    """
+    INSTALL_SPEC_UNSPECIFIED = 0
+    INSTALL_SPEC_NOT_INSTALLED = 1
+    INSTALL_SPEC_ENABLED = 2
+    INSTALL_SPEC_DISABLED = 3
+
+  auditIntervalSeconds = _messages.IntegerField(1)
+  exemptableNamespaces = _messages.StringField(2, repeated=True)
+  installSpec = _messages.EnumField('InstallSpecValueValuesEnum', 3)
+  logDeniesEnabled = _messages.BooleanField(4)
+  mutationEnabled = _messages.BooleanField(5)
+  referentialRulesEnabled = _messages.BooleanField(6)
+  templateLibraryConfig = _messages.MessageField('TemplateLibraryConfig', 7)
+
+
+class PolicyControllerMembershipConfig(_messages.Message):
+  r"""Configuration for a single cluster. Intended to parallel the
+  PolicyController CR.
+
+  Fields:
+    policyControllerHubConfig: Policy Controller configuration for the
+      cluster, managed by the Policy Controller Hub Feature controller.
+    version: The version of the Policy Controller Feature.
+  """
+
+  policyControllerHubConfig = _messages.MessageField('PolicyControllerHubConfig', 1)
+  version = _messages.StringField(2)
+
+
 class PolicyControllerState(_messages.Message):
   r"""State for PolicyControllerState.
 
@@ -2772,6 +2922,17 @@ class SyncState(_messages.Message):
   lastSyncTime = _messages.StringField(5)
   sourceToken = _messages.StringField(6)
   syncToken = _messages.StringField(7)
+
+
+class TemplateLibraryConfig(_messages.Message):
+  r"""The config specifying which default library templates to install.
+
+  Fields:
+    included: Whether the standard template library should be installed or
+      not.
+  """
+
+  included = _messages.BooleanField(1)
 
 
 class TestIamPermissionsRequest(_messages.Message):

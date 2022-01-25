@@ -333,12 +333,16 @@
           "type": "string"
         },
         "createConfigController": {
-          "description": "Optional. If set, then a Config Controller instance with a default, well-known name will be created as part of the deployment, if it does not already exist. Note that Blueprints Controller does not manage this Config Controller instance and only creates it.",
+          "description": "Required. If set, then a Config Controller instance with a default, well-known name will be created as part of the deployment, if it does not already exist. Note that Blueprints Controller does not manage this Config Controller instance and only creates it.",
           "type": "boolean"
         },
         "gitTarget": {
-          "description": "Optional. If set, then the hydrated blueprint will be uploaded to the specified Git repository.",
+          "description": "Required. If set, then the hydrated blueprint will be uploaded to the specified Git repository.",
           "$ref": "GitTarget"
+        },
+        "clusterless": {
+          "description": "Required. If set, the deployment will create GCP resources without deploying to a Config Controller instance.",
+          "type": "boolean"
         }
       }
     },

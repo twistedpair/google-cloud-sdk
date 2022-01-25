@@ -62,9 +62,10 @@ class Cluster(_messages.Message):
     clusterCaCertificate: Output only. The PEM-encoded public certificate of
       the cluster's CA.
     createTime: Output only. The time when the cluster was created.
-    defaultMaxPodsPerNode: The default maximum number of pods per node used if
-      a maximum value is not specified explicitly for a node pool in this
-      cluster. If unspecified, the Kubernetes default value will be used.
+    defaultMaxPodsPerNode: Optional. The default maximum number of pods per
+      node used if a maximum value is not specified explicitly for a node pool
+      in this cluster. If unspecified, the Kubernetes default value will be
+      used.
     endpoint: Output only. The IP address of the Kubernetes API server.
     fleet: Optional. Fleet configuration.
     hub: Optional. GKE Hub configuration. DEPRECATED Use fleet instead.

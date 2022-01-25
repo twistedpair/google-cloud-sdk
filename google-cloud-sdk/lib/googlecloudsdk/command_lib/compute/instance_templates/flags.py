@@ -122,6 +122,7 @@ def AddServiceProxyConfigArgs(parser, hide_arguments=False,
         'exclude-outbound-ip-ranges': str,
         'exclude-outbound-port-ranges': str,
         'scope': str,
+        'mesh': str,
     })
     service_proxy_help += textwrap.dedent("""
     *intercept-all-outbound-traffic*::: Enables interception of all outgoing
@@ -145,11 +146,17 @@ def AddServiceProxyConfigArgs(parser, hide_arguments=False,
 
          exclude-outbound-port-ranges="81;8080-8090"
 
-    *scope*::: Scope defines a logical configuration boundary for Mesh resource.
-    On the VM boot up, service proxy will reach the Traffic Director to
-    retrieve the routing information corresponding to the routes attached to the
-    mesh with this scope name. When `scope` is specified, `network` value is
-    ignored.
+    *scope*::: Scope defines a logical configuration boundary for a Gateway
+    resource. On VM boot up, the service proxy reaches the Traffic Director to
+    retrieve routing information that corresponds to the routes attached to the
+    gateway with this scope name. When scope is specified, the network value is
+    ignored. You cannot specify `scope` and `mesh` values at the same time.
+
+    *mesh*::: Mesh defines a logical configuration boundary for a Mesh resource.
+    On VM boot up, the service proxy reaches the Traffic Director to retrieve
+    routing information that corresponds to the routes attached to the mesh with
+    this mesh name. When mesh is specified, the network value is ignored. You
+    cannot specify `scope` and `mesh` values at the same time.
     """)
 
   service_proxy_group.add_argument(
@@ -263,6 +270,10 @@ def ValidateServiceProxyFlags(args):
               'exclude-outbound-port-ranges',
               'List of port ranges can only contain numbers between 1 and '
               '65535, i.e. "80;8080-8090".')
+
+    if 'scope' in args.service_proxy and 'mesh' in args.service_proxy:
+      raise exceptions.ConflictingArgumentsException('--service-proxy:scope',
+                                                     '--service-proxy:mesh')
 
 
 def ValidateSinglePort(port_str):

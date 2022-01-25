@@ -6052,7 +6052,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def SetScheduling(self, request, global_params=None):
-      r"""Sets an instance's scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a `TERMINATED` state. See Instance Life Cycle for more information on the possible instance states.
+      r"""Sets an instance's scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a `TERMINATED` state. See Instance Life Cycle for more information on the possible instance states. For more information about setting scheduling options for a VM, see Set VM availability policies.
 
       Args:
         request: (ComputeInstancesSetSchedulingRequest) input message
@@ -6260,7 +6260,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Suspend(self, request, global_params=None):
-      r"""This method suspends a running instance, saving its state to persistent storage, and allows you to resume the instance at a later time. Suspended instances incur reduced per-minute, virtual machine usage charges while they are suspended. Any resources the virtual machine is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted. For more information, see Suspending and resuming an instance.
+      r"""This method suspends a running instance, saving its state to persistent storage, and allows you to resume the instance at a later time. Suspended instances have no compute costs (cores or RAM), and incur only storage charges for the saved VM memory and localSSD data. Any charged resources the virtual machine was using, such as persistent disks and static IP addresses, will continue to be charged while the instance is suspended. For more information, see Suspending and resuming an instance.
 
       Args:
         request: (ComputeInstancesSuspendRequest) input message

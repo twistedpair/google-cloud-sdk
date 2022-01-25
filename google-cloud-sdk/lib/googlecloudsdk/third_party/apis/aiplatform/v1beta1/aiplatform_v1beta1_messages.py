@@ -8460,6 +8460,11 @@ class GoogleCloudAiplatformUiDeployedIndex(_messages.Message):
   r"""A deployment of an Index. IndexEndpoints contain one or more
   DeployedIndexes.
 
+  Enums:
+    UiStateValueValuesEnum: Output only. The state of the index deployment.
+      Different from public API, BEING_DEPLOYED and FAILED deployment state
+      deployed indexes will also be returned in Ui ListEndpoints.
+
   Fields:
     automaticResources: Optional. A description of resources that the
       DeployedIndex uses, which to large degree are decided by Vertex AI, and
@@ -8523,7 +8528,32 @@ class GoogleCloudAiplatformUiDeployedIndex(_messages.Message):
       sohuld be the name of the address
       (https://cloud.google.com/compute/docs/reference/rest/v1/addresses)
       Example: 'vertex-ai-ip-range'.
+    uiState: Output only. The state of the index deployment. Different from
+      public API, BEING_DEPLOYED and FAILED deployment state deployed indexes
+      will also be returned in Ui ListEndpoints.
   """
+
+  class UiStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the index deployment. Different from public
+    API, BEING_DEPLOYED and FAILED deployment state deployed indexes will also
+    be returned in Ui ListEndpoints.
+
+    Values:
+      UI_DEPLOYMENT_STATE_UNSPECIFIED: Should not be used.
+      UI_DEPLOYMENT_STATE_BEING_DEPLOYED: The deployment of the model is
+        ongoing and not ready for use yet. The resource is not usable at this
+        state.
+      UI_DEPLOYMENT_STATE_DEPLOYED: The model is deployed.
+      UI_DEPLOYMENT_STATE_BEING_UNDEPLOYED: The model is being undeployed. The
+        resource is not usable at this state.
+      UI_DEPLOYMENT_STATE_FAILED: The model is failed to deploy or undeploy.
+        The resource is not usable at this state.
+    """
+    UI_DEPLOYMENT_STATE_UNSPECIFIED = 0
+    UI_DEPLOYMENT_STATE_BEING_DEPLOYED = 1
+    UI_DEPLOYMENT_STATE_DEPLOYED = 2
+    UI_DEPLOYMENT_STATE_BEING_UNDEPLOYED = 3
+    UI_DEPLOYMENT_STATE_FAILED = 4
 
   automaticResources = _messages.MessageField('GoogleCloudAiplatformUiAutomaticResources', 1)
   createTime = _messages.StringField(2)
@@ -8537,6 +8567,7 @@ class GoogleCloudAiplatformUiDeployedIndex(_messages.Message):
   indexSyncTime = _messages.StringField(10)
   privateEndpoints = _messages.MessageField('GoogleCloudAiplatformUiIndexPrivateEndpoints', 11)
   reservedIpRanges = _messages.StringField(12, repeated=True)
+  uiState = _messages.EnumField('UiStateValueValuesEnum', 13)
 
 
 class GoogleCloudAiplatformUiDeployedIndexAuthConfig(_messages.Message):
@@ -12121,7 +12152,7 @@ class GoogleCloudAiplatformV1CreateTensorboardOperationMetadata(_messages.Messag
 
 
 class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
-  r"""Represents the spec of a CustomJob.
+  r"""Represents the spec of a CustomJob. Next Id: 14
 
   Fields:
     baseOutputDirectory: The Cloud Storage location to store the output of
@@ -20232,6 +20263,16 @@ class GoogleCloudAiplatformV1beta1CreateDatasetOperationMetadata(_messages.Messa
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
 
 
+class GoogleCloudAiplatformV1beta1CreateDeploymentResourcePoolOperationMetadata(_messages.Message):
+  r"""Runtime operation information for CreateDeploymentResourcePool method.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
 class GoogleCloudAiplatformV1beta1CreateEndpointOperationMetadata(_messages.Message):
   r"""Runtime operation information for EndpointService.CreateEndpoint.
 
@@ -20565,7 +20606,7 @@ class GoogleCloudAiplatformV1beta1CustomJob(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1CustomJobSpec(_messages.Message):
-  r"""Represents the spec of a CustomJob.
+  r"""Represents the spec of a CustomJob. Next Id: 14
 
   Fields:
     baseOutputDirectory: The Cloud Storage location to store the output of
@@ -31121,6 +31162,16 @@ class GoogleCloudAiplatformV1beta1UnmanagedContainerModel(_messages.Message):
   predictSchemata = _messages.MessageField('GoogleCloudAiplatformV1beta1PredictSchemata', 3)
 
 
+class GoogleCloudAiplatformV1beta1UpdateDeploymentResourcePoolOperationMetadata(_messages.Message):
+  r"""Runtime operation information for UpdateDeploymentResourcePool method.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
 class GoogleCloudAiplatformV1beta1UpdateFeaturestoreOperationMetadata(_messages.Message):
   r"""Details of operations that perform update Featurestore.
 
@@ -31725,6 +31776,77 @@ class GoogleProtobufEmpty(_messages.Message):
   representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class GoogleRpcContextHttpHeaderContext(_messages.Message):
+  r"""`HttpHeaderContext` provides access to all HTTP headers of a request.
+  Use this with care as it makes your API dependent from HTTP entry points.
+
+  Messages:
+    HeadersValue: A map from all headers in the request to their value. If a
+      header occurs multiple times, it will be normalized into a comma-
+      separated list of values as specified in
+      [RFC2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2)
+      Note: When used in the request path, there is no guarantee of casing for
+      header keys. Please use ignore-case string comparison while searching
+      for a header. Warning: The map keys are case-sensitive, and the case may
+      be different between HTTP1.x and HTTP2 requests.
+
+  Fields:
+    headers: A map from all headers in the request to their value. If a header
+      occurs multiple times, it will be normalized into a comma-separated list
+      of values as specified in
+      [RFC2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2)
+      Note: When used in the request path, there is no guarantee of casing for
+      header keys. Please use ignore-case string comparison while searching
+      for a header. Warning: The map keys are case-sensitive, and the case may
+      be different between HTTP1.x and HTTP2 requests.
+    requestFirstline: The first line of the HTTP request, including the HTTP
+      method, request url, and protocol. Not used in response path.
+    requestPath: Request path string. It is the path following the host:port
+      without the query parameters. For example, if the request URL is
+      "https://ml.googleapis.com/v1/parent/jobs?key=key", request_path will
+      contain "/v1/parent/jobs". Not used in response path.
+    responseCode: HTTP status code. If the backend sets this code, it will be
+      used to set HTTP status for the response. It is unused for HTTP requests
+      reaching the backend.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class HeadersValue(_messages.Message):
+    r"""A map from all headers in the request to their value. If a header
+    occurs multiple times, it will be normalized into a comma-separated list
+    of values as specified in
+    [RFC2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2)
+    Note: When used in the request path, there is no guarantee of casing for
+    header keys. Please use ignore-case string comparison while searching for
+    a header. Warning: The map keys are case-sensitive, and the case may be
+    different between HTTP1.x and HTTP2 requests.
+
+    Messages:
+      AdditionalProperty: An additional property for a HeadersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type HeadersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a HeadersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  headers = _messages.MessageField('HeadersValue', 1)
+  requestFirstline = _messages.StringField(2)
+  requestPath = _messages.StringField(3)
+  responseCode = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class GoogleRpcStatus(_messages.Message):

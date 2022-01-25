@@ -1798,6 +1798,21 @@ class DialogflowProjectsKnowledgeBasesDocumentsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class DialogflowProjectsKnowledgeBasesDocumentsImportRequest(_messages.Message):
+  r"""A DialogflowProjectsKnowledgeBasesDocumentsImportRequest object.
+
+  Fields:
+    googleCloudDialogflowV2ImportDocumentsRequest: A
+      GoogleCloudDialogflowV2ImportDocumentsRequest resource to be passed as
+      the request body.
+    parent: Required. The knowledge base to import documents into. Format:
+      `projects//locations//knowledgeBases/`.
+  """
+
+  googleCloudDialogflowV2ImportDocumentsRequest = _messages.MessageField('GoogleCloudDialogflowV2ImportDocumentsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class DialogflowProjectsKnowledgeBasesDocumentsListRequest(_messages.Message):
   r"""A DialogflowProjectsKnowledgeBasesDocumentsListRequest object.
 
@@ -3538,6 +3553,22 @@ class DialogflowProjectsLocationsKnowledgeBasesDocumentsGetRequest(_messages.Mes
   name = _messages.StringField(1, required=True)
 
 
+class DialogflowProjectsLocationsKnowledgeBasesDocumentsImportRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsKnowledgeBasesDocumentsImportRequest
+  object.
+
+  Fields:
+    googleCloudDialogflowV2ImportDocumentsRequest: A
+      GoogleCloudDialogflowV2ImportDocumentsRequest resource to be passed as
+      the request body.
+    parent: Required. The knowledge base to import documents into. Format:
+      `projects//locations//knowledgeBases/`.
+  """
+
+  googleCloudDialogflowV2ImportDocumentsRequest = _messages.MessageField('GoogleCloudDialogflowV2ImportDocumentsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class DialogflowProjectsLocationsKnowledgeBasesDocumentsListRequest(_messages.Message):
   r"""A DialogflowProjectsLocationsKnowledgeBasesDocumentsListRequest object.
 
@@ -4115,7 +4146,7 @@ class GoogleCloudDialogflowCxV3EnvironmentTestCasesConfig(_messages.Message):
 
   Fields:
     enableContinuousRun: Whether to run test cases in
-      TestCasesConfig.test_cases periodically. Default false. If set to ture,
+      TestCasesConfig.test_cases periodically. Default false. If set to true,
       run once a day.
     enablePredeploymentRun: Whether to run test cases in
       TestCasesConfig.test_cases before deploying a flow version to the
@@ -9437,6 +9468,18 @@ class GoogleCloudDialogflowV2GcsDestination(_messages.Message):
   uri = _messages.StringField(1)
 
 
+class GoogleCloudDialogflowV2GcsSources(_messages.Message):
+  r"""Google Cloud Storage location for the inputs.
+
+  Fields:
+    uris: Required. Google Cloud Storage URIs for the inputs. A URI is of the
+      form: gs://bucket/object-prefix-or-name Whether a prefix or name is used
+      depends on the use case.
+  """
+
+  uris = _messages.StringField(1, repeated=True)
+
+
 class GoogleCloudDialogflowV2HumanAgentAssistantConfig(_messages.Message):
   r"""Defines the Human Agent Assist to connect to a conversation.
 
@@ -9738,6 +9781,108 @@ class GoogleCloudDialogflowV2ImportAgentRequest(_messages.Message):
 
   agentContent = _messages.BytesField(1)
   agentUri = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowV2ImportDocumentTemplate(_messages.Message):
+  r"""The template used for importing documents.
+
+  Enums:
+    KnowledgeTypesValueListEntryValuesEnum:
+
+  Messages:
+    MetadataValue: Metadata for the document. The metadata supports arbitrary
+      key-value pairs. Suggested use cases include storing a document's title,
+      an external URL distinct from the document's content_uri, etc. The max
+      size of a `key` or a `value` of the metadata is 1024 bytes.
+
+  Fields:
+    knowledgeTypes: Required. The knowledge type of document content.
+    metadata: Metadata for the document. The metadata supports arbitrary key-
+      value pairs. Suggested use cases include storing a document's title, an
+      external URL distinct from the document's content_uri, etc. The max size
+      of a `key` or a `value` of the metadata is 1024 bytes.
+    mimeType: Required. The MIME type of the document.
+  """
+
+  class KnowledgeTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""KnowledgeTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      KNOWLEDGE_TYPE_UNSPECIFIED: The type is unspecified or arbitrary.
+      FAQ: The document content contains question and answer pairs as either
+        HTML or CSV. Typical FAQ HTML formats are parsed accurately, but
+        unusual formats may fail to be parsed. CSV must have questions in the
+        first column and answers in the second, with no header. Because of
+        this explicit format, they are always parsed accurately.
+      EXTRACTIVE_QA: Documents for which unstructured text is extracted and
+        used for question answering.
+      ARTICLE_SUGGESTION: The entire document content as a whole can be used
+        for query results. Only for Contact Center Solutions on Dialogflow.
+    """
+    KNOWLEDGE_TYPE_UNSPECIFIED = 0
+    FAQ = 1
+    EXTRACTIVE_QA = 2
+    ARTICLE_SUGGESTION = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Metadata for the document. The metadata supports arbitrary key-value
+    pairs. Suggested use cases include storing a document's title, an external
+    URL distinct from the document's content_uri, etc. The max size of a `key`
+    or a `value` of the metadata is 1024 bytes.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  knowledgeTypes = _messages.EnumField('KnowledgeTypesValueListEntryValuesEnum', 1, repeated=True)
+  metadata = _messages.MessageField('MetadataValue', 2)
+  mimeType = _messages.StringField(3)
+
+
+class GoogleCloudDialogflowV2ImportDocumentsRequest(_messages.Message):
+  r"""Request message for Documents.ImportDocuments.
+
+  Fields:
+    documentTemplate: Required. Document template used for importing all the
+      documents.
+    gcsSource: The Google Cloud Storage location for the documents. The path
+      can include a wildcard. These URIs may have the forms `gs:///`.
+      `gs:////*.`.
+    importGcsCustomMetadata: Whether to import custom metadata from Google
+      Cloud Storage. Only valid when the document source is Google Cloud
+      Storage URI.
+  """
+
+  documentTemplate = _messages.MessageField('GoogleCloudDialogflowV2ImportDocumentTemplate', 1)
+  gcsSource = _messages.MessageField('GoogleCloudDialogflowV2GcsSources', 2)
+  importGcsCustomMetadata = _messages.BooleanField(3)
+
+
+class GoogleCloudDialogflowV2ImportDocumentsResponse(_messages.Message):
+  r"""Response message for Documents.ImportDocuments.
+
+  Fields:
+    warnings: Includes details about skipped documents or any other warnings.
+  """
+
+  warnings = _messages.MessageField('GoogleRpcStatus', 1, repeated=True)
 
 
 class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
@@ -10749,6 +10894,8 @@ class GoogleCloudDialogflowV2KnowledgeOperationMetadata(_messages.Message):
     StateValueValuesEnum: Output only. The current state of this operation.
 
   Fields:
+    knowledgeBase: The name of the knowledge base interacted with during the
+      operation.
     state: Output only. The current state of this operation.
   """
 
@@ -10766,7 +10913,8 @@ class GoogleCloudDialogflowV2KnowledgeOperationMetadata(_messages.Message):
     RUNNING = 2
     DONE = 3
 
-  state = _messages.EnumField('StateValueValuesEnum', 1)
+  knowledgeBase = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
 class GoogleCloudDialogflowV2ListAnswerRecordsResponse(_messages.Message):

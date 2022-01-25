@@ -13,9 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Run a web flow for oauth2.
-
-"""
+"""Run a web flow for oauth2."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -23,18 +21,18 @@ from __future__ import unicode_literals
 
 import abc
 import contextlib
-import json
 import select
 import socket
 import webbrowser
 import wsgiref
 from google_auth_oauthlib import flow as google_auth_flow
 
+from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as c_exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.core import properties
 from googlecloudsdk.core import requests
-from googlecloudsdk.core.util import files
+from googlecloudsdk.core.console import console_attr
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import pkg_resources
 
 from oauthlib.oauth2.rfc6749 import errors as rfc6749_errors
@@ -74,6 +72,10 @@ class LocalServerTimeoutError(Error):
   """Exception for when the local server timeout before receiving request."""
 
 
+class WebBrowserInaccessible(Error):
+  """Exception for when a web browser is required but not accessible."""
+
+
 def RaiseProxyError(source_exc):
   six.raise_from(AuthRequestFailedError(
       'Could not reach the login server. A potential cause of this could be '
@@ -86,49 +88,6 @@ def RaiseProxyError(source_exc):
 def PromptForAuthCode(message, authorize_url):
   log.err.Print(message.format(url=authorize_url))
   return input('Enter verification code: ').strip()
-
-
-def CreateGoogleAuthFlow(launch_browser, scopes, client_id_file=None):
-  """Creates a Google auth oauthlib browser flow."""
-  client_config = _CreateGoogleAuthClientConfig(client_id_file)
-  if launch_browser:
-    try:
-      return FullWebFlow.from_client_config(
-          client_config,
-          scopes,
-          autogenerate_code_verifier=not properties.VALUES.auth
-          .disable_code_verifier.GetBool())
-    except LocalServerCreationError as e:
-      log.warning(e)
-      log.warning('Defaulting to URL copy/paste mode.')
-  return OobFlow.from_client_config(
-      client_config,
-      scopes,
-      autogenerate_code_verifier=not properties.VALUES.auth
-      .disable_code_verifier.GetBool())
-
-
-def _CreateGoogleAuthClientConfig(client_id_file=None):
-  """Creates a client config from a client id file or gcloud's properties."""
-  if client_id_file:
-    with files.FileReader(client_id_file) as f:
-      return json.load(f)
-  return _CreateGoogleAuthClientConfigFromProperties()
-
-
-def _CreateGoogleAuthClientConfigFromProperties():
-  auth_uri = properties.VALUES.auth.auth_host.Get(required=True)
-  token_uri = properties.VALUES.auth.token_host.Get(required=True)
-  client_id = properties.VALUES.auth.client_id.Get(required=True)
-  client_secret = properties.VALUES.auth.client_secret.Get(required=True)
-  return {
-      'installed': {
-          'client_id': client_id,
-          'client_secret': client_secret,
-          'auth_uri': auth_uri,
-          'token_uri': token_uri
-      }
-  }
 
 
 @contextlib.contextmanager
@@ -223,6 +182,9 @@ class WSGIServer(wsgiref.simple_server.WSGIServer):
       self.shutdown_request(request)
 
 
+_LOCALHOST = 'localhost'
+
+
 class InstalledAppFlow(
     six.with_metaclass(abc.ABCMeta, google_auth_flow.InstalledAppFlow)):
   """Base class of authorization flow for installed app.
@@ -255,7 +217,7 @@ class InstalledAppFlow(
         autogenerate_code_verifier=autogenerate_code_verifier)
     self.original_client_config = client_config
     if require_local_server:
-      self.host = 'localhost'
+      self.host = _LOCALHOST
       self.app = _RedirectWSGIApp()
       self.server = CreateLocalServer(self.app, self.host, _PORT_SEARCH_START,
                                       _PORT_SEARCH_END)
@@ -264,13 +226,25 @@ class InstalledAppFlow(
     else:
       self.redirect_uri = self._OOB_REDIRECT_URI
 
-  def Run(self):
+  def Run(self, **kwargs):
     with HandleOauth2FlowErrors():
-      return self._Run()
+      return self._Run(**kwargs)
 
   @abc.abstractmethod
-  def _Run(self):
+  def _Run(self, **kwargs):
     pass
+
+  @property
+  def _for_adc(self):
+    """If the flow is for application default credentials."""
+    return self.client_config.get('client_id') != config.CLOUDSDK_CLIENT_ID
+
+  @property
+  def _target_command(self):
+    if self._for_adc:
+      return 'gcloud auth application-default login'
+    else:
+      return 'gcloud auth login'
 
   @classmethod
   def FromInstalledAppFlow(cls, source_flow):
@@ -406,6 +380,268 @@ class OobFlow(InstalledAppFlow):
     self.fetch_token(code=code, include_client_id=True, verify=None)
 
     return self.credentials
+
+
+class UrlManager(object):
+  """A helper for url manipulation."""
+
+  def __init__(self, url):
+    self._parse_url = parse.urlparse(url)
+    self._scheme, self._netloc, self._path, self._query = (
+        self._parse_url.scheme, self._parse_url.netloc, self._parse_url.path,
+        self._parse_url.query)
+    self._parsed_query = parse.parse_qsl(self._query)
+
+  def UpdateQueryParams(self, query_params):
+    """Updates query params in the url using query_params.
+
+    Args:
+       query_params: A list of two-element tuples. The first element in the
+         tuple is the query key and the second element is the query value.
+    """
+    for key, value in query_params:
+      self._RemoveQueryParam(key)
+      self._parsed_query.append((key, value))
+
+  def RemoveQueryParams(self, query_keys):
+    """Removes query params from the url.
+
+    Args:
+      query_keys: A list of query keys to remove.
+    """
+    for p in query_keys:
+      self._RemoveQueryParam(p)
+
+  def _RemoveQueryParam(self, query_key):
+    self._parsed_query[:] = [p for p in self._parsed_query if p[0] != query_key]
+
+  def ContainQueryParams(self, query_keys):
+    """If the url contains the query keys in query_key.
+
+    Args:
+      query_keys: A list of query keys to check in the url.
+
+    Returns:
+      True if all query keys in query_keys are contained in url. Otherwise,
+        return False.
+    """
+    parsed_query_keys = {k for (k, v) in self._parsed_query}
+    return all([p in parsed_query_keys for p in query_keys])
+
+  def GetQueryParam(self, query_key):
+    """Gets the value of the query_key.
+
+    Args:
+       query_key: str, A query key to get the value for.
+
+    Returns:
+      The value of the query_key. None if query_key does not exist in the url.
+    """
+    for k, v in self._parsed_query:
+      if query_key == k:
+        return v
+
+  def GetUrl(self):
+    """Gets the current url in the string format."""
+    encoded_query = parse.urlencode(self._parsed_query)
+    return parse.urlunparse(
+        (self._scheme, self._netloc, self._path, '', encoded_query, ''))
+
+  def GetPort(self):
+    try:
+      _, port = self._netloc.split(':')
+      return int(port)
+    except ValueError:
+      return None
+
+
+_REQUIRED_QUERY_PARAMS_IN_AUTH_RESPONSE = ('state', 'code', 'scope')
+
+_AUTH_RESPONSE_ERR_MSG = (
+    'The provided authorization response is invalid. Expect a url '
+    'with query parameters of [{}].'.format(
+        ', '.join(_REQUIRED_QUERY_PARAMS_IN_AUTH_RESPONSE)))
+
+
+def _ValidateAuthResponse(auth_response):
+  if UrlManager(auth_response).ContainQueryParams(
+      _REQUIRED_QUERY_PARAMS_IN_AUTH_RESPONSE):
+    return
+  raise AuthRequestFailedError(_AUTH_RESPONSE_ERR_MSG)
+
+
+def PromptForAuthResponse(helper_msg, prompt_msg):
+  log.err.Print(helper_msg)
+  log.err.Print('\n')
+  return input(prompt_msg).strip()
+
+
+class NoBrowserFlow(InstalledAppFlow):
+  """Flow to authorize gcloud on a machine without access to web browsers.
+
+  Out-of-band flow (OobFlow) is deprecated. This flow together with the helper
+  flow NoBrowserHelperFlow is the replacement. gcloud in
+  environments without access to browsers (i.e. access via ssh) can use this
+  flow to authorize gcloud. This flow will print authorization parameters
+  which will be taken by the helper flow to build the final authorization
+  request. The helper flow (run by a gcloud instance
+  with access to browsers) will launch the browser and ask for user's
+  authorization. After the authorization, the helper flow will print the
+  authorization response to pass back to this flow to continue the process
+  (exchanging for the refresh/access tokens).
+  """
+
+  # TODO(b/204090784): Updates the required gcloud version.
+  _REQUIRED_GCLOUD_VERSION = 'xxx.x.x'
+  _HELPER_MSG = ('You are authorizing {target} without access to a web '
+                 'browser. Please run the following command on a machine with '
+                 'a web browser and copy its output back here. Make sure the '
+                 'installed gcloud is newer than {version}.\n\n'
+                 '{command} --remote-bootstrap="{partial_url}"')
+  _PROMPT_MSG = 'Enter the output of the above command: '
+
+  def __init__(self,
+               oauth2session,
+               client_type,
+               client_config,
+               redirect_uri=None,
+               code_verifier=None,
+               autogenerate_code_verifier=False):
+    super(NoBrowserFlow, self).__init__(
+        oauth2session,
+        client_type,
+        client_config,
+        redirect_uri=redirect_uri,
+        code_verifier=code_verifier,
+        autogenerate_code_verifier=autogenerate_code_verifier,
+        require_local_server=False)
+
+  def _PromptForAuthResponse(self, partial_url):
+    if not self._for_adc:
+      target = 'gcloud CLI'
+      command = 'gcloud auth login'
+    else:
+      target = 'client libraries'
+      command = 'gcloud auth application-default login'
+    helper_msg = self._HELPER_MSG.format(
+        target=target,
+        version=self._REQUIRED_GCLOUD_VERSION,
+        command=command,
+        partial_url=partial_url)
+    return PromptForAuthResponse(helper_msg, self._PROMPT_MSG)
+
+  def _Run(self, **kwargs):
+    auth_url, _ = self.authorization_url(**kwargs)
+    url_manager = UrlManager(auth_url)
+    # redirect_uri needs to be provided by the helper flow because the helper
+    # will dynamically select a port on its localhost to handle redirect.
+    url_manager.RemoveQueryParams(['redirect_uri'])
+    # token_usage=remote is to indicate that the authorization is to bootstrap a
+    # a different gcloud instance.
+    url_manager.UpdateQueryParams([('token_usage', 'remote')])
+    auth_response = self._PromptForAuthResponse(url_manager.GetUrl())
+    _ValidateAuthResponse(auth_response)
+    redirect_port = UrlManager(auth_response).GetPort()
+    # Even though we started the local service using "localhost" as host name,
+    # system may use a different name. So, the host name in the auth
+    # response may not be "localhost". However, we should ignore it and keep
+    # using "localhost" as the redirect_uri in token exchange because it is
+    # what was used during authorization.
+    self.redirect_uri = 'http://{}:{}/'.format(_LOCALHOST, redirect_port)
+    # TODO (b/204953716): Remove verify=None
+    self.fetch_token(
+        authorization_response=auth_response,
+        include_client_id=True,
+        verify=None)
+    return self.credentials
+
+
+class NoBrowserHelperFlow(InstalledAppFlow):
+  """Helper flow for the NoBrowserFlow to help another gcloud to authorize.
+
+  This flow takes the authorization parameters (i.e. requested scopes) generated
+  by the NoBrowserFlow and launches the browser for users to authorize.
+  After users authorize, print the authorization response which will be taken
+  by NoBrowserFlow to continue the login process
+  (exchanging for refresh/access token).
+  """
+
+  _COPY_AUTH_RESPONSE_INSTRUCTION = (
+      'Copy the following line back to the gcloud CLI waiting to continue '
+      'the login flow.')
+  _COPY_AUTH_RESPONSE_WARNING = (
+      '{bold}WARNING: THE FOLLOWING LINE ENABLES ACCESS TO YOUR GCP RESOURCES. '
+      'ONLY COPY IT TO A MACHINE YOU TRUST AND RAN '
+      '`{command} --no-browser` EARLY ON.{normal}')
+  _PROMPT_TO_CONTINUE_MSG = (
+      'DO NOT PROCEED UNLESS YOU ARE BOOTSTRAPPING GCLOUD '
+      'ON A TRUSTED MACHINE WITHOUT A WEB BROWSER AND THE ABOVE COMMAND WAS '
+      'THE OUTPUT OF `{command} --no-browser` FROM THE TRUSTED MACHINE.')
+
+  def __init__(self,
+               oauth2session,
+               client_type,
+               client_config,
+               redirect_uri=None,
+               code_verifier=None,
+               autogenerate_code_verifier=False):
+    super(NoBrowserHelperFlow, self).__init__(
+        oauth2session,
+        client_type,
+        client_config,
+        redirect_uri=redirect_uri,
+        code_verifier=code_verifier,
+        autogenerate_code_verifier=autogenerate_code_verifier,
+        require_local_server=True)
+    self.partial_auth_url = None
+
+  @property
+  def _for_adc(self):
+    client_id = UrlManager(self.partial_auth_url).GetQueryParam('client_id')
+    return client_id != config.CLOUDSDK_CLIENT_ID
+
+  def _PrintCopyInstruction(self, auth_response):
+    con = console_attr.GetConsoleAttr()
+
+    log.status.write(self._COPY_AUTH_RESPONSE_INSTRUCTION + ' ')
+    log.status.Print(
+        self._COPY_AUTH_RESPONSE_WARNING.format(
+            bold=con.GetFontCode(bold=True),
+            command=self._target_command,
+            normal=con.GetFontCode()))
+    log.status.write('\n')
+    log.status.Print(auth_response)
+
+  def _ShouldContinue(self):
+    """Ask users to confirm before actually running the flow."""
+    return console_io.PromptContinue(
+        self._PROMPT_TO_CONTINUE_MSG.format(command=self._target_command),
+        prompt_string='Proceed',
+        default=False)
+
+  def _Run(self, **kwargs):
+    self.partial_auth_url = kwargs['partial_auth_url']
+    auth_url_manager = UrlManager(self.partial_auth_url)
+    auth_url_manager.UpdateQueryParams([('redirect_uri', self.redirect_uri)])
+    auth_url = auth_url_manager.GetUrl()
+    if not self._ShouldContinue():
+      return
+    webbrowser.open(auth_url, new=1, autoraise=True)
+
+    authorization_prompt_message = (
+        'Your browser has been opened to visit:\n\n    {url}\n')
+    log.err.Print(authorization_prompt_message.format(url=auth_url))
+    self.server.handle_request()
+    self.server.server_close()
+
+    if not self.app.last_request_uri:
+      raise LocalServerTimeoutError(
+          'Local server timed out before receiving the redirection request.')
+    # Note: using https here because oauthlib requires that
+    # OAuth 2.0 should only occur over https.
+    authorization_response = self.app.last_request_uri.replace(
+        'http:', 'https:')
+    self._PrintCopyInstruction(authorization_response)
 
 
 def CreateLocalServer(wsgi_app, host, search_start_port, search_end_port):

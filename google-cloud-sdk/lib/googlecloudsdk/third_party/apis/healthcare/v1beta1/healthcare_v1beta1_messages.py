@@ -1014,7 +1014,7 @@ class DeidentifyDicomStoreRequest(_messages.Message):
   r"""Creates a new DICOM store with sensitive information de-identified.
 
   Fields:
-    config: De-identify configuration.
+    config: Deidentify configuration.
     destinationStore: The name of the DICOM store to create and write the
       redacted data to. For example, `projects/{project_id}/locations/{locatio
       n_id}/datasets/{dataset_id}/dicomStores/{dicom_store_id}`. * The

@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import encoding
 from googlecloudsdk.api_lib.recommender import base
 from googlecloudsdk.api_lib.recommender import flag_utils
 from googlecloudsdk.api_lib.util import apis
@@ -74,7 +75,6 @@ class InsightTypeConfig(object):
       Exception: If nothing is updated.
     """
 
-    # TODO(b/205859938): Support annotations
     update_mask = []
     config = self._GetMessage('InsightTypeConfig')()
     config.name = config_name
@@ -89,6 +89,13 @@ class InsightTypeConfig(object):
     if args.display_name:
       config.displayName = args.display_name
       update_mask.append('display_name')
+
+    if args.annotations:
+      config.annotations = encoding.DictToAdditionalPropertyMessage(
+          args.annotations,
+          self._GetMessage('InsightTypeConfig').AnnotationsValue,
+          sort_items=True)
+      update_mask.append('annotations')
 
     if not update_mask:
       raise Exception(

@@ -1953,15 +1953,13 @@ class AuditConfig(_messages.Message):
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
-    exemptedMembers: This is deprecated and has no effect. Do not use.
     service: Specifies a service that will be enabled for audit logging. For
       example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
       `allServices` is a special value that covers all services.
   """
 
   auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
-  exemptedMembers = _messages.StringField(2, repeated=True)
-  service = _messages.StringField(3)
+  service = _messages.StringField(2)
 
 
 class AuditLogConfig(_messages.Message):
@@ -59375,6 +59373,7 @@ class Router(_messages.Message):
       resource, (for example, linkedVpnTunnel), or IP address and IP address
       range (for example, ipRange), or both.
     kind: [Output Only] Type of resource. Always compute#router for routers.
+    md5AuthenticationKeys: Keys used for MD5 authentication.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -59400,12 +59399,13 @@ class Router(_messages.Message):
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
   interfaces = _messages.MessageField('RouterInterface', 7, repeated=True)
   kind = _messages.StringField(8, default='compute#router')
-  name = _messages.StringField(9)
-  nats = _messages.MessageField('RouterNat', 10, repeated=True)
-  network = _messages.StringField(11)
-  region = _messages.StringField(12)
-  selfLink = _messages.StringField(13)
-  selfLinkWithId = _messages.StringField(14)
+  md5AuthenticationKeys = _messages.MessageField('RouterMd5AuthenticationKey', 9, repeated=True)
+  name = _messages.StringField(10)
+  nats = _messages.MessageField('RouterNat', 11, repeated=True)
+  network = _messages.StringField(12)
+  region = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  selfLinkWithId = _messages.StringField(15)
 
 
 class RouterAdvertisedIpRange(_messages.Message):
@@ -59722,6 +59722,9 @@ class RouterBgpPeer(_messages.Message):
       InterconnectAttachment of type PARTNER. Google automatically creates,
       updates, and deletes this type of BGP peer when the PARTNER
       InterconnectAttachment is created, updated, or deleted.
+    md5AuthenticationKeyName: Present if MD5 authentication is enabled for the
+      peering. Must be the name of one of the entries in the
+      Router.md5_authentication_keys. The field must comply with RFC1035.
     name: Name of this BGP peer. The name must be 1-63 characters long, and
       comply with RFC1035. Specifically, the name must be 1-63 characters long
       and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which
@@ -59811,11 +59814,12 @@ class RouterBgpPeer(_messages.Message):
   ipAddress = _messages.StringField(9)
   ipv6NexthopAddress = _messages.StringField(10)
   managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 11)
-  name = _messages.StringField(12)
-  peerAsn = _messages.IntegerField(13, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(14)
-  peerIpv6NexthopAddress = _messages.StringField(15)
-  routerApplianceInstance = _messages.StringField(16)
+  md5AuthenticationKeyName = _messages.StringField(12)
+  name = _messages.StringField(13)
+  peerAsn = _messages.IntegerField(14, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(15)
+  peerIpv6NexthopAddress = _messages.StringField(16)
+  routerApplianceInstance = _messages.StringField(17)
 
 
 class RouterBgpPeerBfd(_messages.Message):
@@ -60186,6 +60190,23 @@ class RouterList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
+class RouterMd5AuthenticationKey(_messages.Message):
+  r"""A RouterMd5AuthenticationKey object.
+
+  Fields:
+    key: [Input only] Value of the key. For patch and update calls, it can be
+      skipped to copy the value from the previous configuration. This is
+      allowed if the key with the same name existed before the operation.
+      Maximum length is 80 characters. Can only contain printable ASCII
+      characters.
+    name: Name used to identify the key. Must be unique within a router. Must
+      be referenced by at least one bgpPeer. Must comply with RFC1035.
+  """
+
+  key = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
 class RouterNat(_messages.Message):
   r"""Represents a Nat resource. It enables the VMs within the specified
   subnetworks to access Internet without external IP addresses. It specifies a
@@ -60505,6 +60526,7 @@ class RouterStatusBgpPeerStatus(_messages.Message):
 
   Enums:
     StatusValueValuesEnum: Status of the BGP peer: {UP, DOWN}
+    StatusReasonValueValuesEnum: Indicates why particular status was returned.
 
   Fields:
     advertisedRoutes: Routes that were advertised to the remote BGP peer
@@ -60514,6 +60536,8 @@ class RouterStatusBgpPeerStatus(_messages.Message):
     ipAddress: IP address of the local BGP interface.
     ipv6NexthopAddress: IPv6 address of the local BGP interface.
     linkedVpnTunnel: URL of the VPN tunnel that this BGP peer controls.
+    md5AuthEnabled: Informs whether MD5 authentication is enabled on this BGP
+      peer.
     name: Name of this BGP peer. Unique within the Routers resource.
     numLearnedRoutes: Number of routes learned from the remote BGP Peer.
     peerIpAddress: IP address of the remote BGP interface.
@@ -60524,10 +60548,23 @@ class RouterStatusBgpPeerStatus(_messages.Message):
       BGP session.
     state: BGP state as specified in RFC1771.
     status: Status of the BGP peer: {UP, DOWN}
+    statusReason: Indicates why particular status was returned.
     uptime: Time this session has been up. Format: 14 years, 51 weeks, 6 days,
       23 hours, 59 minutes, 59 seconds
     uptimeSeconds: Time this session has been up, in seconds. Format: 145
   """
+
+  class StatusReasonValueValuesEnum(_messages.Enum):
+    r"""Indicates why particular status was returned.
+
+    Values:
+      MD5_AUTH_INTERNAL_PROBLEM: Indicates internal problems with
+        configuration of MD5 authentication. This particular reason can only
+        be returned when md5AuthEnabled is true and status is DOWN.
+      STATUS_REASON_UNSPECIFIED: <no description>
+    """
+    MD5_AUTH_INTERNAL_PROBLEM = 0
+    STATUS_REASON_UNSPECIFIED = 1
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""Status of the BGP peer: {UP, DOWN}
@@ -60547,15 +60584,17 @@ class RouterStatusBgpPeerStatus(_messages.Message):
   ipAddress = _messages.StringField(4)
   ipv6NexthopAddress = _messages.StringField(5)
   linkedVpnTunnel = _messages.StringField(6)
-  name = _messages.StringField(7)
-  numLearnedRoutes = _messages.IntegerField(8, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(9)
-  peerIpv6NexthopAddress = _messages.StringField(10)
-  routerApplianceInstance = _messages.StringField(11)
-  state = _messages.StringField(12)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  uptime = _messages.StringField(14)
-  uptimeSeconds = _messages.StringField(15)
+  md5AuthEnabled = _messages.BooleanField(7)
+  name = _messages.StringField(8)
+  numLearnedRoutes = _messages.IntegerField(9, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(10)
+  peerIpv6NexthopAddress = _messages.StringField(11)
+  routerApplianceInstance = _messages.StringField(12)
+  state = _messages.StringField(13)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
+  statusReason = _messages.EnumField('StatusReasonValueValuesEnum', 15)
+  uptime = _messages.StringField(16)
+  uptimeSeconds = _messages.StringField(17)
 
 
 class RouterStatusNatStatus(_messages.Message):
@@ -61117,8 +61156,7 @@ class Scheduling(_messages.Message):
     OnHostMaintenanceValueValuesEnum: Defines the maintenance behavior for
       this instance. For standard instances, the default behavior is MIGRATE.
       For preemptible instances, the default and only possible behavior is
-      TERMINATE. For more information, see Setting Instance Scheduling
-      Options.
+      TERMINATE. For more information, see Set VM availability policies.
     ProvisioningModelValueValuesEnum: Specifies the provisioning model of the
       instance.
 
@@ -61167,7 +61205,7 @@ class Scheduling(_messages.Message):
     onHostMaintenance: Defines the maintenance behavior for this instance. For
       standard instances, the default behavior is MIGRATE. For preemptible
       instances, the default and only possible behavior is TERMINATE. For more
-      information, see Setting Instance Scheduling Options.
+      information, see Set VM availability policies.
     preemptible: Defines whether the instance is preemptible. This can only be
       set during instance creation or while the instance is stopped and
       therefore, in a `TERMINATED` state. See Instance Life Cycle for more
@@ -61209,7 +61247,7 @@ class Scheduling(_messages.Message):
     r"""Defines the maintenance behavior for this instance. For standard
     instances, the default behavior is MIGRATE. For preemptible instances, the
     default and only possible behavior is TERMINATE. For more information, see
-    Setting Instance Scheduling Options.
+    Set VM availability policies.
 
     Values:
       MIGRATE: *[Default]* Allows Compute Engine to automatically migrate

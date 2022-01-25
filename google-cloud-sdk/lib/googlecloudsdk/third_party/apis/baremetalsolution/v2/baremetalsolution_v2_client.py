@@ -104,11 +104,38 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         method_id='baremetalsolution.projects.locations.instances.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/instances',
         request_field='',
         request_type_name='BaremetalsolutionProjectsLocationsInstancesListRequest',
         response_type_name='ListInstancesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update details of a single server.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsInstancesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
+        http_method='PATCH',
+        method_id='baremetalsolution.projects.locations.instances.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='instance',
+        request_type_name='BaremetalsolutionProjectsLocationsInstancesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -195,11 +222,38 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         method_id='baremetalsolution.projects.locations.networks.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/networks',
         request_field='',
         request_type_name='BaremetalsolutionProjectsLocationsNetworksListRequest',
         response_type_name='ListNetworksResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update details of a single network.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsNetworksPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/networks/{networksId}',
+        http_method='PATCH',
+        method_id='baremetalsolution.projects.locations.networks.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='network',
+        request_type_name='BaremetalsolutionProjectsLocationsNetworksPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -313,7 +367,7 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         method_id='baremetalsolution.projects.locations.snapshotSchedulePolicies.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/snapshotSchedulePolicies',
         request_field='',
         request_type_name='BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesListRequest',
@@ -613,7 +667,7 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         method_id='baremetalsolution.projects.locations.volumes.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/volumes',
         request_field='',
         request_type_name='BaremetalsolutionProjectsLocationsVolumesListRequest',

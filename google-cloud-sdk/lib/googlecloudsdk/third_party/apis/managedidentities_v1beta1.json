@@ -2461,7 +2461,7 @@
                               "type": "string"
                             },
                             "filter": {
-                              "description": "Optional. Filter specifying constraints of a list operation. For example, `backup.location =\"us-west1-a\"`.",
+                              "description": "Optional. Filter specifying constraints of a list operation.",
                               "location": "query",
                               "type": "string"
                             },

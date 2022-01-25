@@ -4059,8 +4059,8 @@ class GooglePrivacyDlpV2Finding(_messages.Message):
 
 
 class GooglePrivacyDlpV2FindingLimits(_messages.Message):
-  r"""Configuration to control the number of findings returned. Cannot be set
-  if de-identification is requested.
+  r"""Configuration to control the number of findings returned for inspection.
+  This is not used for de-identification or data profiling.
 
   Fields:
     maxFindingsPerInfoType: Configuration of findings limit given for
@@ -4495,14 +4495,15 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
       https://cloud.google.com/dlp/docs/likelihood to learn more.
 
   Fields:
-    contentOptions: List of options defining data content to scan. If empty,
-      text, images, and other content will be included.
+    contentOptions: Deprecated and unused.
     customInfoTypes: CustomInfoTypes provided by the user. See
       https://cloud.google.com/dlp/docs/creating-custom-infotypes to learn
       more.
     excludeInfoTypes: When true, excludes type information of the findings.
+      This is not used for data profiling.
     includeQuote: When true, a contextual quote from the data that triggered a
-      finding is included in the response; see Finding.quote.
+      finding is included in the response; see Finding.quote. This is not used
+      for data profiling.
     infoTypes: Restricts what info_types to look for. The values must
       correspond to InfoType values returned by ListInfoTypes or listed at
       https://cloud.google.com/dlp/docs/infotypes-reference. When no InfoTypes
@@ -4512,7 +4513,8 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
       precise control and predictability as to what detectors are run you
       should specify specific InfoTypes listed in the reference, otherwise a
       default list will be used, which may change over time.
-    limits: Configuration to control the number of findings returned.
+    limits: Configuration to control the number of findings returned. This is
+      not used for data profiling.
     minLikelihood: Only returns findings equal or above this threshold. The
       default is POSSIBLE. See https://cloud.google.com/dlp/docs/likelihood to
       learn more.

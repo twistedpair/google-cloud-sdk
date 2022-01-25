@@ -850,9 +850,9 @@ class LogsPanel(_messages.Message):
       Logs Queries (https://cloud.google.com/logging/docs/view/advanced-
       queries). Only log entries that match the filter are returned. An empty
       filter matches all log entries.
-    resourceNames: The names of logging resources to collect logs for. Does
-      not implicitly include the current host project. Currently only projects
-      are supported. There must be at least one resource_name.
+    resourceNames: The names of logging resources to collect logs for.
+      Currently only projects are supported. If empty, the widget will default
+      to the host project.
   """
 
   filter = _messages.StringField(1)

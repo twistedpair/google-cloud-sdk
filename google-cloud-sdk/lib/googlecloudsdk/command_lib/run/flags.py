@@ -1421,6 +1421,8 @@ def _GetConfigurationChanges(args):
     changes.append(
         config_changes.SetAnnotationChange(
             k8s_object.CUSTOM_AUDIENCES_ANNOTATION))
+  if 'execution_environment' in args and args.execution_environment:
+    changes.append(config_changes.SandboxChange(args.execution_environment))
   return changes
 
 
@@ -1443,8 +1445,6 @@ def GetServiceConfigurationChanges(args):
       changes.append(config_changes.SetAnnotationChange(key, value))
   if 'revision_suffix' in args and args.revision_suffix:
     changes.append(config_changes.RevisionNameChanges(args.revision_suffix))
-  if 'execution_environment' in args and args.execution_environment:
-    changes.append(config_changes.SandboxChange(args.execution_environment))
   if 'clear_vpc_connector' in args and args.clear_vpc_connector:
     # MUST be after 'vpc_egress' change.
     changes.append(config_changes.ClearVpcConnectorChange())

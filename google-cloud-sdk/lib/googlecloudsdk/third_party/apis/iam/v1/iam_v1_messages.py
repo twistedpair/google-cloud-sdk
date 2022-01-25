@@ -3262,19 +3262,18 @@ class WorkforcePoolProvider(_messages.Message):
       are supported: * `google.subject`: The principal IAM is authenticating.
       You can reference this value in IAM bindings. This is also the subject
       that appears in Cloud Logging logs. This is a required field and the
-      mapped subject cannot exceed 100 characters. * `google.groups`: Groups
-      the authenticating user belongs to. You can grant groups access to
-      resources using an IAM `principalSet` binding; access applies to all
-      members of the group. This is an optional field and the name of the
-      group cannot exceed 100 characters. * `google.display_name`: The name of
-      the authenticated user. This is an optional field and the mapped display
-      name cannot exceed 100 characters. If not set, `google.subject` will be
-      displayed instead. This attribute cannot be referenced in IAM bindings.
-      * `google.profile_photo`: The URL that specifies the authenticated
-      user's thumbnail photo. This is an optional field. When set, the image
-      will be visible as the user's profile picture. If not set, a generic
-      user icon will be displayed instead. This attribute cannot be referenced
-      in IAM bindings. You can also provide custom attributes by specifying
+      mapped subject cannot exceed 127 bytes. * `google.groups`: Groups the
+      authenticating user belongs to. You can grant groups access to resources
+      using an IAM `principalSet` binding; access applies to all members of
+      the group. * `google.display_name`: The name of the authenticated user.
+      This is an optional field and the mapped display name cannot exceed 100
+      bytes. If not set, `google.subject` will be displayed instead. This
+      attribute cannot be referenced in IAM bindings. *
+      `google.profile_photo`: The URL that specifies the authenticated user's
+      thumbnail photo. This is an optional field. When set, the image will be
+      visible as the user's profile picture. If not set, a generic user icon
+      will be displayed instead. This attribute cannot be referenced in IAM
+      bindings. You can also provide custom attributes by specifying
       `attribute.{custom_attribute}`, where {custom_attribute} is the name of
       the custom attribute to be mapped. You can define a maximum of 50 custom
       attributes. The maximum length of a mapped attribute key is 100
@@ -3322,19 +3321,18 @@ class WorkforcePoolProvider(_messages.Message):
       are supported: * `google.subject`: The principal IAM is authenticating.
       You can reference this value in IAM bindings. This is also the subject
       that appears in Cloud Logging logs. This is a required field and the
-      mapped subject cannot exceed 100 characters. * `google.groups`: Groups
-      the authenticating user belongs to. You can grant groups access to
-      resources using an IAM `principalSet` binding; access applies to all
-      members of the group. This is an optional field and the name of the
-      group cannot exceed 100 characters. * `google.display_name`: The name of
-      the authenticated user. This is an optional field and the mapped display
-      name cannot exceed 100 characters. If not set, `google.subject` will be
-      displayed instead. This attribute cannot be referenced in IAM bindings.
-      * `google.profile_photo`: The URL that specifies the authenticated
-      user's thumbnail photo. This is an optional field. When set, the image
-      will be visible as the user's profile picture. If not set, a generic
-      user icon will be displayed instead. This attribute cannot be referenced
-      in IAM bindings. You can also provide custom attributes by specifying
+      mapped subject cannot exceed 127 bytes. * `google.groups`: Groups the
+      authenticating user belongs to. You can grant groups access to resources
+      using an IAM `principalSet` binding; access applies to all members of
+      the group. * `google.display_name`: The name of the authenticated user.
+      This is an optional field and the mapped display name cannot exceed 100
+      bytes. If not set, `google.subject` will be displayed instead. This
+      attribute cannot be referenced in IAM bindings. *
+      `google.profile_photo`: The URL that specifies the authenticated user's
+      thumbnail photo. This is an optional field. When set, the image will be
+      visible as the user's profile picture. If not set, a generic user icon
+      will be displayed instead. This attribute cannot be referenced in IAM
+      bindings. You can also provide custom attributes by specifying
       `attribute.{custom_attribute}`, where {custom_attribute} is the name of
       the custom attribute to be mapped. You can define a maximum of 50 custom
       attributes. The maximum length of a mapped attribute key is 100
@@ -3396,21 +3394,20 @@ class WorkforcePoolProvider(_messages.Message):
     `google.subject`: The principal IAM is authenticating. You can reference
     this value in IAM bindings. This is also the subject that appears in Cloud
     Logging logs. This is a required field and the mapped subject cannot
-    exceed 100 characters. * `google.groups`: Groups the authenticating user
+    exceed 127 bytes. * `google.groups`: Groups the authenticating user
     belongs to. You can grant groups access to resources using an IAM
-    `principalSet` binding; access applies to all members of the group. This
-    is an optional field and the name of the group cannot exceed 100
-    characters. * `google.display_name`: The name of the authenticated user.
-    This is an optional field and the mapped display name cannot exceed 100
-    characters. If not set, `google.subject` will be displayed instead. This
-    attribute cannot be referenced in IAM bindings. * `google.profile_photo`:
-    The URL that specifies the authenticated user's thumbnail photo. This is
-    an optional field. When set, the image will be visible as the user's
-    profile picture. If not set, a generic user icon will be displayed
-    instead. This attribute cannot be referenced in IAM bindings. You can also
-    provide custom attributes by specifying `attribute.{custom_attribute}`,
-    where {custom_attribute} is the name of the custom attribute to be mapped.
-    You can define a maximum of 50 custom attributes. The maximum length of a
+    `principalSet` binding; access applies to all members of the group. *
+    `google.display_name`: The name of the authenticated user. This is an
+    optional field and the mapped display name cannot exceed 100 bytes. If not
+    set, `google.subject` will be displayed instead. This attribute cannot be
+    referenced in IAM bindings. * `google.profile_photo`: The URL that
+    specifies the authenticated user's thumbnail photo. This is an optional
+    field. When set, the image will be visible as the user's profile picture.
+    If not set, a generic user icon will be displayed instead. This attribute
+    cannot be referenced in IAM bindings. You can also provide custom
+    attributes by specifying `attribute.{custom_attribute}`, where
+    {custom_attribute} is the name of the custom attribute to be mapped. You
+    can define a maximum of 50 custom attributes. The maximum length of a
     mapped attribute key is 100 characters, and the key may only contain the
     characters [a-z0-9_]. You can reference these attributes in IAM policies
     to define fine-grained access for a workforce pool to Google Cloud

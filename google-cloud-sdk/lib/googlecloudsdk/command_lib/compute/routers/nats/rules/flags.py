@@ -27,22 +27,62 @@ _ACTIVE_IPS_HELP_TEXT = textwrap.dedent("""\
 
     These must be valid reserved external IPs in the same region.""")
 
+_ACTIVE_IPS_HELP_TEXT_WITH_PRIVATE_NAT = textwrap.dedent("""\
+    External IP Addresses to use for connections matching this rule. This is
+    only supported for Public NAT, and is required when creating a Public NAT
+    gateway.
 
-def _ActiveIpsArgument(required=False):
+    These must be valid reserved external IPs in the same region.""")
+
+
+def _ActiveIpsArgument(required=False, with_private_nat=False):
   return compute_flags.ResourceArgument(
       name='--source-nat-active-ips',
-      detailed_help=_ACTIVE_IPS_HELP_TEXT,
+      detailed_help=(_ACTIVE_IPS_HELP_TEXT_WITH_PRIVATE_NAT
+                     if with_private_nat else _ACTIVE_IPS_HELP_TEXT),
       resource_name='address',
       regional_collection='compute.addresses',
       region_hidden=True,
       plural=True,
       required=required)
 
+# This is only used in the case where Private NAT isn't supported.
+ACTIVE_IPS_ARG_REQUIRED = _ActiveIpsArgument(required=True)
 
-ACTIVE_IPS_ARG_CREATE = _ActiveIpsArgument(required=True)
+ACTIVE_IPS_ARG_OPTIONAL = _ActiveIpsArgument(required=False)
 
-# The arg is not required on update.
-ACTIVE_IPS_ARG_UPDATE = _ActiveIpsArgument(required=False)
+
+_ACTIVE_RANGES_HELP_TEXT = textwrap.dedent("""\
+    Subnetworks from which addresses are used for connections matching this
+    rule. This is only supported for Private NAT, and is required when creating
+    a Private NAT gateway..
+
+    These must be Subnetwork resources in the same region, with purpose set to
+    PRIVATE_NAT.""")
+
+ACTIVE_RANGES_ARG = compute_flags.ResourceArgument(
+    name='--source-nat-active-ranges',
+    detailed_help=_ACTIVE_RANGES_HELP_TEXT,
+    resource_name='subnetworks',
+    regional_collection='compute.subnetworks',
+    region_hidden=True,
+    plural=True,
+    required=False)
+
+_DRAIN_RANGES_HELP_TEXT = textwrap.dedent("""\
+    Subnetwork ranges to drain connections on.
+
+    These must be subnetworks previously used as active ranges on this rule.
+    No new connections will be established using these ranges.""")
+
+DRAIN_RANGES_ARG = compute_flags.ResourceArgument(
+    name='--source-nat-drain-ranges',
+    detailed_help=_DRAIN_RANGES_HELP_TEXT,
+    resource_name='subnetworks',
+    regional_collection='compute.subnetworks',
+    region_hidden=True,
+    plural=True,
+    required=False)
 
 
 _DRAIN_IPS_HELP_TEXT = textwrap.dedent("""\
@@ -83,11 +123,26 @@ def AddRuleNumberArg(parser, operation_type='operate on', plural=False):
   parser.add_argument('rule_number', type=int, **params)
 
 
-def AddMatchArg(parser, required=False):
+def AddMatchArg(parser, required=False, with_private_nat=False):
   """Adds common arguments for creating and updating NAT Rules."""
-  parser.add_argument(
-      '--match',
-      help=textwrap.dedent("""\
+  help_text_with_private_nat = textwrap.dedent("""
+      CEL Expression used to identify traffic to which this rule applies.
+
+      * Supported attributes (Public NAT): destination.ip
+      * Supported attributes (Private NAT): nexthop.hub
+      * Supported methods (Public Nat): inIpRange
+      * Supported operators (Public NAT): ||, ==
+      * Supported operators (Private NAT): ==
+
+      Examples of allowed Match expressions (Public NAT):
+      * 'inIpRange(destination.ip, "203.0.113.0/24")''
+      * 'destination.ip == "203.0.113.7"'
+      * 'destination.ip == "203.0.113.7" || inIpRange(destination.ip, "203.0.113.16/25")'
+
+      Example of allowed Match expression (Private NAT):
+      * nexthop.hub == "//networkconnectivity.googleapis.com/projects/p1/locations/global/hubs/h1"
+  """)
+  help_text_without_private_nat = textwrap.dedent("""\
       CEL Expression used to identify traffic to which this rule applies.
       * Supported attributes: destination.ip
       * Supported operators: ||, ==
@@ -97,23 +152,44 @@ def AddMatchArg(parser, required=False):
       * 'inIpRange(destination.ip, "203.0.113.0/24")''
       * 'destination.ip == "203.0.113.7"'
       * 'destination.ip == "203.0.113.7" || inIpRange(destination.ip, "203.0.113.16/25")'
-      """),
+      """)
+  parser.add_argument(
+      '--match',
+      help=(help_text_with_private_nat
+            if with_private_nat else help_text_without_private_nat),
       required=required)
 
 
-def AddIpArgsForCreate(parser):
+def AddIpAndRangeArgsForCreate(parser, with_private_nat=False):
   """Adds arguments to specify source NAT IP Addresses when creating a rule."""
-  ACTIVE_IPS_ARG_CREATE.AddArgument(parser, cust_metavar='IP_ADDRESS')
+  if with_private_nat:
+    ACTIVE_IPS_ARG_OPTIONAL.AddArgument(parser, cust_metavar='IP_ADDRESS')
+    ACTIVE_RANGES_ARG.AddArgument(parser, cust_metavar='SUBNETWORK')
+  else:
+    ACTIVE_IPS_ARG_REQUIRED.AddArgument(parser, cust_metavar='IP_ADDRESS')
 
 
-def AddIpArgsForUpdate(parser):
+def AddIpAndRangeArgsForUpdate(parser, with_private_nat=False):
   """Adds argument to specify source NAT IP Addresses when updating a rule."""
-  ACTIVE_IPS_ARG_UPDATE.AddArgument(parser, cust_metavar='IP_ADDRESS')
-  drain_mutex = parser.add_mutually_exclusive_group(required=False)
-  drain_mutex.add_argument(
+  if with_private_nat:
+    ACTIVE_RANGES_ARG.AddArgument(parser, cust_metavar='SUBNETWORK')
+  ACTIVE_IPS_ARG_OPTIONAL.AddArgument(parser, cust_metavar='IP_ADDRESS')
+
+  drain_ip_mutex = parser.add_mutually_exclusive_group(required=False)
+  drain_ip_mutex.add_argument(
       '--clear-source-nat-drain-ips',
       help='Clear drained IPs from the Rule',
       action='store_true',
       default=None)
   DRAIN_IPS_ARG.AddArgument(
-      parser, mutex_group=drain_mutex, cust_metavar='IP_ADDRESS')
+      parser, mutex_group=drain_ip_mutex, cust_metavar='IP_ADDRESS')
+
+  if with_private_nat:
+    drain_range_mutex = parser.add_mutually_exclusive_group(required=False)
+    drain_range_mutex.add_argument(
+        '--clear-source-nat-drain-ranges',
+        help='Clear drained ranges from the Rule',
+        action='store_true',
+        default=None)
+    DRAIN_RANGES_ARG.AddArgument(parser, mutex_group=drain_range_mutex,
+                                 cust_metavar='SUBNETWORK')

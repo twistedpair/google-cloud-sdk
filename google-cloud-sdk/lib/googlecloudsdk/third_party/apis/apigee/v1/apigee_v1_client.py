@@ -829,7 +829,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""List key value entries for any one of org, env or proxy scoped key value maps.
+      r"""Lists key value entries for key values maps scoped to an organization, environment, or API proxy.
 
       Args:
         request: (ApigeeOrganizationsApisKeyvaluemapsEntriesListRequest) input message
@@ -866,7 +866,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a key value map in an api proxy.
+      r"""Creates a key value map in an API proxy.
 
       Args:
         request: (ApigeeOrganizationsApisKeyvaluemapsCreateRequest) input message
@@ -893,7 +893,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete a key value map in an api proxy.
+      r"""Deletes a key value map from an API proxy.
 
       Args:
         request: (ApigeeOrganizationsApisKeyvaluemapsDeleteRequest) input message
@@ -3977,7 +3977,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""List key value entries for any one of org, env or proxy scoped key value maps.
+      r"""Lists key value entries for key values maps scoped to an organization, environment, or API proxy.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesListRequest) input message
@@ -4041,7 +4041,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete a key value map in an environment.
+      r"""Deletes a key value map from an environment.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsKeyvaluemapsDeleteRequest) input message
@@ -5440,7 +5440,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates an existing environment. When updating properties, you must pass all existing properties to the API, even if they are not being changed. If you omit properties from the payload, the properties are removed. To get the current list of properties for the environment, use the [Get Environment API](get).
+      r"""Updates an existing environment. When updating properties, you must pass all existing properties to the API, even if they are not being changed. If you omit properties from the payload, the properties are removed. To get the current list of properties for the environment, use the [Get Environment API](get). **Note**: Both `PUT` and `POST` methods are supported for updating an existing environment.
 
       Args:
         request: (GoogleCloudApigeeV1Environment) input message
@@ -5494,7 +5494,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def UpdateEnvironment(self, request, global_params=None):
-      r"""Updates an existing environment. When updating properties, you must pass all existing properties to the API, even if they are not being changed. If you omit properties from the payload, the properties are removed. To get the current list of properties for the environment, use the [Get Environment API](get).
+      r"""Updates an existing environment. When updating properties, you must pass all existing properties to the API, even if they are not being changed. If you omit properties from the payload, the properties are removed. To get the current list of properties for the environment, use the [Get Environment API](get). **Note**: Both `PUT` and `POST` methods are supported for updating an existing environment.
 
       Args:
         request: (GoogleCloudApigeeV1Environment) input message
@@ -6384,7 +6384,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""List key value entries for any one of org, env or proxy scoped key value maps.
+      r"""Lists key value entries for key values maps scoped to an organization, environment, or API proxy.
 
       Args:
         request: (ApigeeOrganizationsKeyvaluemapsEntriesListRequest) input message
@@ -6448,7 +6448,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete a key value map in an organization.
+      r"""Deletes a key value map from an organization.
 
       Args:
         request: (ApigeeOrganizationsKeyvaluemapsDeleteRequest) input message

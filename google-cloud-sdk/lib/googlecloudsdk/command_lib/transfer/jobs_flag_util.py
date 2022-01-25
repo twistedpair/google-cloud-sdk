@@ -89,7 +89,7 @@ def setup_parser(parser, is_update=False):
   if is_update:
     job_information.add_argument(
         '--status',
-        choices=[status.value for status in JobStatus],
+        choices=sorted([status.value for status in JobStatus]),
         help='Specify this flag to change the status of the job. Options'
         " include 'enabled', 'disabled', 'deleted'.")
     job_information.add_argument('--source', help=_SOURCE_HELP_TEXT)
@@ -110,6 +110,14 @@ def setup_parser(parser, is_update=False):
         '--clear-destination-agent-pool',
         action='store_true',
         help='Remove the destination agent pool from the transfer job.')
+    job_information.add_argument(
+        '--clear-intermediate-storage-path',
+        action='store_true',
+        help='Remove the intermediate storage path from the transfer job.')
+    job_information.add_argument(
+        '--clear-manifest-file',
+        action='store_true',
+        help='Remove the manifest file from the transfer job.')
   else:
     job_information.add_argument(
         '--name',
@@ -139,6 +147,19 @@ def setup_parser(parser, is_update=False):
       '--destination-agent-pool',
       help='If using a POSIX filesystem destination, specify the ID of the'
       ' agent pool associated with destination filesystem.')
+  job_information.add_argument(
+      '--intermediate-storage-path',
+      help='If transferring between filesystems, specify the path to a folder'
+      ' in a Google Cloud Storage bucket (gs://example-bucket/example-folder)'
+      ' to use as intermediary storage. Recommended: Use an empty folder'
+      " reserved for this transfer job to ensure transferred data doesn't"
+      ' interact with any of your existing Cloud Storage data.')
+  job_information.add_argument(
+      '--manifest-file',
+      help='Path to a .csv file in a Google Cloud Storage bucket'
+      ' containing a list of files to transfer from your source. E.g.,'
+      ' gs://mybucket/manifest.csv. For manifest file formatting, see'
+      ' https://cloud.google.com/storage-transfer/docs/manifest.')
 
   schedule = parser.add_group(
       help=("SCHEDULE\n\nA job's schedule determines when and how often the job"
@@ -279,7 +300,7 @@ def setup_parser(parser, is_update=False):
         ' your source or destination.')
   transfer_options.add_argument(
       '--overwrite-when',
-      choices=[option.value for option in OverwriteOption],
+      choices=sorted([option.value for option in OverwriteOption]),
       help='Determine when destination objects are overwritten by source'
       ' objects. Options include:\n'
       " - 'different' - Overwrites files with the same name if the contents"
@@ -288,7 +309,7 @@ def setup_parser(parser, is_update=False):
       " same name -- even if they're identical")
   transfer_options.add_argument(
       '--delete-from',
-      choices=[option.value for option in DeleteOption],
+      choices=sorted([option.value for option in DeleteOption]),
       help="By default, transfer jobs won't delete any data from your source"
       ' or destination. These options enable you to delete data if'
       ' needed for your use case. Options include:\n'

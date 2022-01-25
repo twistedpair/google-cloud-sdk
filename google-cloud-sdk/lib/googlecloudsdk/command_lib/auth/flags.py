@@ -100,3 +100,32 @@ def _AddDisableQuotaProject(parser):
 
 def AddQuotaProjectFlags(parser):
   _AddDisableQuotaProject(parser)
+
+
+def AddNoBrowserFlag(parser, auth_target):
+  parser.add_argument(
+      '--no-browser',
+      default=False,
+      action='store_true',
+      help='Use this flag to authenticate {} on a machine without a '
+      'web browser.'.format(auth_target))
+
+
+def AddRemoteBootstrapFlag(parser):
+  parser.add_argument(
+      '--remote-bootstrap',
+      # Never un-hide this flag because it should not be used directly by users.
+      hidden=True,
+      default=None,
+      help='Use this flag to pass login parameters to a gcloud instance '
+           'which will help this gcloud to login. '
+           'This flag is reserved for bootstrapping remote workstation without '
+           'access to web browsers, which should be initiated by using '
+           'the --no-browser. Users should not use this flag directly.')
+
+
+def AddRemoteLoginArgGroup(parser, for_adc=False):
+  group = parser.add_mutually_exclusive_group(hidden=True)
+  auth_target = 'client libraries' if for_adc else 'gcloud CLI'
+  AddNoBrowserFlag(group, auth_target=auth_target)
+  AddRemoteBootstrapFlag(group)

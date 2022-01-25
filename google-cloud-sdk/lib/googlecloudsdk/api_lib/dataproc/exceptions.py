@@ -63,3 +63,27 @@ class ValidationError(Error):
 
 class PersonalAuthError(Exception):
   """Error while establishing a personal auth session."""
+
+
+class GkeClusterGetError(Error):
+  """Error while getting a GKE Cluster."""
+
+  def __init__(self, cause):
+    super(GkeClusterGetError, self).__init__(
+        'Error while getting the GKE Cluster: {0}'.format(cause))
+
+
+class GkeClusterMissingWorkloadIdentityError(Error):
+  """GKE Cluster is not Workload Identity enabled."""
+
+  def __init__(self, gke_cluster_ref):
+    super(GkeClusterMissingWorkloadIdentityError, self).__init__()
+    self.gke_cluster_ref = gke_cluster_ref
+
+  def __str__(self):
+    return (
+        'GKE Cluster "{0}" does not have Workload Identity enabled. Dataproc '
+        'on GKE requires the GKE Cluster to have Workload Identity enabled. '
+        'See '
+        'https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity'
+    ).format(self.gke_cluster_ref.RelativeName())

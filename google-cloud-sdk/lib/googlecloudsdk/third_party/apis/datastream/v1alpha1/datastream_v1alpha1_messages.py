@@ -752,7 +752,7 @@ class DestinationConfig(_messages.Message):
   Fields:
     destinationConnectionProfileName: Required. Destination connection profile
       identifier.
-    gcsDestinationConfig: A GcsDestinationConfig attribute.
+    gcsDestinationConfig: GCS destination configuration.
   """
 
   destinationConnectionProfileName = _messages.StringField(1)
@@ -1598,7 +1598,7 @@ class PrivateConnection(_messages.Message):
       STATE_UNSPECIFIED: <no description>
       CREATING: The private connection is in creation state - creating
         resources.
-      CREATED: The private connection has been created with all of it's
+      CREATED: The private connection has been created with all of its
         resources.
       FAILED: The private connection creation has failed.
       DELETING: The private connection is being deleted.

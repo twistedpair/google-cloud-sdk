@@ -46,7 +46,7 @@ def GetMessages():
 
 
 def GetApplication(client, app_ref):
-  """Calls ApplicationGet API of Runapps of the specificed reference.
+  """Calls ApplicationGet API of Runapps of the specified reference.
 
   Args:
     client: GAPIC API client, the api client to use.
@@ -64,8 +64,28 @@ def GetApplication(client, app_ref):
     return None
 
 
+def GetApplicationStatus(client, app_ref):
+  """Calls ApplicationGetStatus API of Runapps of the specified reference.
+
+  Args:
+    client: GAPIC API client, the api client to use.
+    app_ref: googlecloudsdk.core.resources.Resource, the resource reference of
+      the application.
+
+  Returns:
+    The ApplicationStatus object. Or None if not found.
+  """
+  module = client.MESSAGES_MODULE
+  request = module.RunappsProjectsLocationsApplicationsGetStatusRequest(
+      name=app_ref.RelativeName())
+  try:
+    return client.projects_locations_applications.GetStatus(request)
+  except api_exceptions.HttpNotFoundError:
+    return None
+
+
 def CreateApplication(client, app_ref, application):
-  """Calls ApplicationCreate API of Runapps of the specificed reference.
+  """Calls ApplicationCreate API of Runapps of the specified reference.
 
   Args:
     client: GAPIC API client, the api client to use.
@@ -84,7 +104,7 @@ def CreateApplication(client, app_ref, application):
 
 
 def PatchApplication(client, app_ref, application, update_mask=None):
-  """Calls ApplicationPatch API of Runapps of the specificed reference.
+  """Calls ApplicationPatch API of Runapps of the specified reference.
 
   Args:
     client: GAPIC API client, the api client to use.

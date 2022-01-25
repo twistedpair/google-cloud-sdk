@@ -881,6 +881,44 @@ class BeyondcorpProjectsLocationsClientConnectorServicesListRequest(_messages.Me
   parent = _messages.StringField(5, required=True)
 
 
+class BeyondcorpProjectsLocationsClientConnectorServicesPatchRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsClientConnectorServicesPatchRequest object.
+
+  Fields:
+    allowMissing: Optional. If set as true, will create the resource if it is
+      not found.
+    clientConnectorService: A ClientConnectorService resource to be passed as
+      the request body.
+    name: Required. Name of resource. The name is ignored during creation.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the ClientConnectorService resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
+      Mutable fields: display_name.
+    validateOnly: Optional. If set, validates request by executing a dry-run
+      which would not alter the resource in any way.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  clientConnectorService = _messages.MessageField('ClientConnectorService', 2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  updateMask = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
+
+
 class BeyondcorpProjectsLocationsClientConnectorServicesSetIamPolicyRequest(_messages.Message):
   r"""A BeyondcorpProjectsLocationsClientConnectorServicesSetIamPolicyRequest
   object.
@@ -1593,6 +1631,8 @@ class ClientConnectorService(_messages.Message):
       RUNNING: ClientConnectorService is running.
       DOWN: ClientConnectorService is down and may be restored in the future.
         This happens when CCFE sends ProjectState = OFF.
+      ERROR: ClientConnectorService encountered an error and is in an
+        indeterministic state.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -1600,6 +1640,7 @@ class ClientConnectorService(_messages.Message):
     DELETING = 3
     RUNNING = 4
     DOWN = 5
+    ERROR = 6
 
   createTime = _messages.StringField(1)
   displayName = _messages.StringField(2)

@@ -331,6 +331,175 @@ class BuilderConfig(_messages.Message):
   id = _messages.StringField(1)
 
 
+class CVSS(_messages.Message):
+  r"""Common Vulnerability Scoring System.
+
+  Enums:
+    AttackComplexityValueValuesEnum:
+    AttackVectorValueValuesEnum: Base Metrics Represents the intrinsic
+      characteristics of a vulnerability that are constant over time and
+      across user environments.
+    AuthenticationValueValuesEnum:
+    AvailabilityImpactValueValuesEnum:
+    ConfidentialityImpactValueValuesEnum:
+    IntegrityImpactValueValuesEnum:
+    PrivilegesRequiredValueValuesEnum:
+    ScopeValueValuesEnum:
+    UserInteractionValueValuesEnum:
+
+  Fields:
+    attackComplexity: A AttackComplexityValueValuesEnum attribute.
+    attackVector: Base Metrics Represents the intrinsic characteristics of a
+      vulnerability that are constant over time and across user environments.
+    authentication: A AuthenticationValueValuesEnum attribute.
+    availabilityImpact: A AvailabilityImpactValueValuesEnum attribute.
+    baseScore: The base score is a function of the base metric scores.
+    confidentialityImpact: A ConfidentialityImpactValueValuesEnum attribute.
+    exploitabilityScore: A number attribute.
+    impactScore: A number attribute.
+    integrityImpact: A IntegrityImpactValueValuesEnum attribute.
+    privilegesRequired: A PrivilegesRequiredValueValuesEnum attribute.
+    scope: A ScopeValueValuesEnum attribute.
+    userInteraction: A UserInteractionValueValuesEnum attribute.
+  """
+
+  class AttackComplexityValueValuesEnum(_messages.Enum):
+    r"""AttackComplexityValueValuesEnum enum type.
+
+    Values:
+      ATTACK_COMPLEXITY_UNSPECIFIED: <no description>
+      ATTACK_COMPLEXITY_LOW: <no description>
+      ATTACK_COMPLEXITY_HIGH: <no description>
+    """
+    ATTACK_COMPLEXITY_UNSPECIFIED = 0
+    ATTACK_COMPLEXITY_LOW = 1
+    ATTACK_COMPLEXITY_HIGH = 2
+
+  class AttackVectorValueValuesEnum(_messages.Enum):
+    r"""Base Metrics Represents the intrinsic characteristics of a
+    vulnerability that are constant over time and across user environments.
+
+    Values:
+      ATTACK_VECTOR_UNSPECIFIED: <no description>
+      ATTACK_VECTOR_NETWORK: <no description>
+      ATTACK_VECTOR_ADJACENT: <no description>
+      ATTACK_VECTOR_LOCAL: <no description>
+      ATTACK_VECTOR_PHYSICAL: <no description>
+    """
+    ATTACK_VECTOR_UNSPECIFIED = 0
+    ATTACK_VECTOR_NETWORK = 1
+    ATTACK_VECTOR_ADJACENT = 2
+    ATTACK_VECTOR_LOCAL = 3
+    ATTACK_VECTOR_PHYSICAL = 4
+
+  class AuthenticationValueValuesEnum(_messages.Enum):
+    r"""AuthenticationValueValuesEnum enum type.
+
+    Values:
+      AUTHENTICATION_UNSPECIFIED: <no description>
+      AUTHENTICATION_MULTIPLE: <no description>
+      AUTHENTICATION_SINGLE: <no description>
+      AUTHENTICATION_NONE: <no description>
+    """
+    AUTHENTICATION_UNSPECIFIED = 0
+    AUTHENTICATION_MULTIPLE = 1
+    AUTHENTICATION_SINGLE = 2
+    AUTHENTICATION_NONE = 3
+
+  class AvailabilityImpactValueValuesEnum(_messages.Enum):
+    r"""AvailabilityImpactValueValuesEnum enum type.
+
+    Values:
+      IMPACT_UNSPECIFIED: <no description>
+      IMPACT_HIGH: <no description>
+      IMPACT_LOW: <no description>
+      IMPACT_NONE: <no description>
+    """
+    IMPACT_UNSPECIFIED = 0
+    IMPACT_HIGH = 1
+    IMPACT_LOW = 2
+    IMPACT_NONE = 3
+
+  class ConfidentialityImpactValueValuesEnum(_messages.Enum):
+    r"""ConfidentialityImpactValueValuesEnum enum type.
+
+    Values:
+      IMPACT_UNSPECIFIED: <no description>
+      IMPACT_HIGH: <no description>
+      IMPACT_LOW: <no description>
+      IMPACT_NONE: <no description>
+    """
+    IMPACT_UNSPECIFIED = 0
+    IMPACT_HIGH = 1
+    IMPACT_LOW = 2
+    IMPACT_NONE = 3
+
+  class IntegrityImpactValueValuesEnum(_messages.Enum):
+    r"""IntegrityImpactValueValuesEnum enum type.
+
+    Values:
+      IMPACT_UNSPECIFIED: <no description>
+      IMPACT_HIGH: <no description>
+      IMPACT_LOW: <no description>
+      IMPACT_NONE: <no description>
+    """
+    IMPACT_UNSPECIFIED = 0
+    IMPACT_HIGH = 1
+    IMPACT_LOW = 2
+    IMPACT_NONE = 3
+
+  class PrivilegesRequiredValueValuesEnum(_messages.Enum):
+    r"""PrivilegesRequiredValueValuesEnum enum type.
+
+    Values:
+      PRIVILEGES_REQUIRED_UNSPECIFIED: <no description>
+      PRIVILEGES_REQUIRED_NONE: <no description>
+      PRIVILEGES_REQUIRED_LOW: <no description>
+      PRIVILEGES_REQUIRED_HIGH: <no description>
+    """
+    PRIVILEGES_REQUIRED_UNSPECIFIED = 0
+    PRIVILEGES_REQUIRED_NONE = 1
+    PRIVILEGES_REQUIRED_LOW = 2
+    PRIVILEGES_REQUIRED_HIGH = 3
+
+  class ScopeValueValuesEnum(_messages.Enum):
+    r"""ScopeValueValuesEnum enum type.
+
+    Values:
+      SCOPE_UNSPECIFIED: <no description>
+      SCOPE_UNCHANGED: <no description>
+      SCOPE_CHANGED: <no description>
+    """
+    SCOPE_UNSPECIFIED = 0
+    SCOPE_UNCHANGED = 1
+    SCOPE_CHANGED = 2
+
+  class UserInteractionValueValuesEnum(_messages.Enum):
+    r"""UserInteractionValueValuesEnum enum type.
+
+    Values:
+      USER_INTERACTION_UNSPECIFIED: <no description>
+      USER_INTERACTION_NONE: <no description>
+      USER_INTERACTION_REQUIRED: <no description>
+    """
+    USER_INTERACTION_UNSPECIFIED = 0
+    USER_INTERACTION_NONE = 1
+    USER_INTERACTION_REQUIRED = 2
+
+  attackComplexity = _messages.EnumField('AttackComplexityValueValuesEnum', 1)
+  attackVector = _messages.EnumField('AttackVectorValueValuesEnum', 2)
+  authentication = _messages.EnumField('AuthenticationValueValuesEnum', 3)
+  availabilityImpact = _messages.EnumField('AvailabilityImpactValueValuesEnum', 4)
+  baseScore = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+  confidentialityImpact = _messages.EnumField('ConfidentialityImpactValueValuesEnum', 6)
+  exploitabilityScore = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
+  impactScore = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
+  integrityImpact = _messages.EnumField('IntegrityImpactValueValuesEnum', 9)
+  privilegesRequired = _messages.EnumField('PrivilegesRequiredValueValuesEnum', 10)
+  scope = _messages.EnumField('ScopeValueValuesEnum', 11)
+  userInteraction = _messages.EnumField('UserInteractionValueValuesEnum', 12)
+
+
 class CisBenchmark(_messages.Message):
   r"""A compliance check that is a CIS benchmark.
 
@@ -4968,6 +5137,7 @@ class VulnerabilityDetails(_messages.Message):
     cvssScore: Output only. The CVSS score of this vulnerability. CVSS score
       is on a scale of 0-10 where 0 indicates low severity and 10 indicates
       high severity.
+    cvssV3: The CVSS v3 score of this vulnerability.
     effectiveSeverity: The distro assigned severity for this vulnerability
       when that is available and note provider assigned severity when distro
       has not yet assigned a severity for this vulnerability. When there are
@@ -5034,10 +5204,11 @@ class VulnerabilityDetails(_messages.Message):
     CRITICAL = 5
 
   cvssScore = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  effectiveSeverity = _messages.EnumField('EffectiveSeverityValueValuesEnum', 2)
-  packageIssue = _messages.MessageField('PackageIssue', 3, repeated=True)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 4)
-  type = _messages.StringField(5)
+  cvssV3 = _messages.MessageField('CVSS', 2)
+  effectiveSeverity = _messages.EnumField('EffectiveSeverityValueValuesEnum', 3)
+  packageIssue = _messages.MessageField('PackageIssue', 4, repeated=True)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 5)
+  type = _messages.StringField(6)
 
 
 class VulnerabilityLocation(_messages.Message):

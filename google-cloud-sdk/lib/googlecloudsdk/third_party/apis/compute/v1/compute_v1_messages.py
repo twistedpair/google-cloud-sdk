@@ -1748,15 +1748,13 @@ class AuditConfig(_messages.Message):
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
-    exemptedMembers: This is deprecated and has no effect. Do not use.
     service: Specifies a service that will be enabled for audit logging. For
       example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
       `allServices` is a special value that covers all services.
   """
 
   auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
-  exemptedMembers = _messages.StringField(2, repeated=True)
-  service = _messages.StringField(3)
+  service = _messages.StringField(2)
 
 
 class AuditLogConfig(_messages.Message):
@@ -50274,8 +50272,7 @@ class Scheduling(_messages.Message):
     OnHostMaintenanceValueValuesEnum: Defines the maintenance behavior for
       this instance. For standard instances, the default behavior is MIGRATE.
       For preemptible instances, the default and only possible behavior is
-      TERMINATE. For more information, see Setting Instance Scheduling
-      Options.
+      TERMINATE. For more information, see Set VM availability policies.
     ProvisioningModelValueValuesEnum: Specifies the provisioning model of the
       instance.
 
@@ -50299,7 +50296,7 @@ class Scheduling(_messages.Message):
     onHostMaintenance: Defines the maintenance behavior for this instance. For
       standard instances, the default behavior is MIGRATE. For preemptible
       instances, the default and only possible behavior is TERMINATE. For more
-      information, see Setting Instance Scheduling Options.
+      information, see Set VM availability policies.
     preemptible: Defines whether the instance is preemptible. This can only be
       set during instance creation or while the instance is stopped and
       therefore, in a `TERMINATED` state. See Instance Life Cycle for more
@@ -50324,7 +50321,7 @@ class Scheduling(_messages.Message):
     r"""Defines the maintenance behavior for this instance. For standard
     instances, the default behavior is MIGRATE. For preemptible instances, the
     default and only possible behavior is TERMINATE. For more information, see
-    Setting Instance Scheduling Options.
+    Set VM availability policies.
 
     Values:
       MIGRATE: *[Default]* Allows Compute Engine to automatically migrate
@@ -58799,11 +58796,44 @@ class UrlMapsScopedList(_messages.Message):
 class UrlMapsValidateRequest(_messages.Message):
   r"""A UrlMapsValidateRequest object.
 
+  Enums:
+    LoadBalancingSchemesValueListEntryValuesEnum:
+
   Fields:
+    loadBalancingSchemes: Specifies the load balancer type(s) this validation
+      request is for. Use EXTERNAL_MANAGED for HTTP/HTTPS External Global Load
+      Balancer with Advanced Traffic Management. Use EXTERNAL for Classic
+      HTTP/HTTPS External Global Load Balancer. Other load balancer types are
+      not supported. For more information, refer to Choosing a load balancer.
+      If unspecified, the load balancing scheme will be inferred from the
+      backend service resources this URL map references. If that can not be
+      inferred (for example, this URL map only references backend buckets, or
+      this Url map is for rewrites and redirects only and doesn't reference
+      any backends), EXTERNAL will be used as the default type. If specified,
+      the scheme(s) must not conflict with the load balancing scheme of the
+      backend service resources this Url map references.
     resource: Content of the UrlMap to be validated.
   """
 
-  resource = _messages.MessageField('UrlMap', 1)
+  class LoadBalancingSchemesValueListEntryValuesEnum(_messages.Enum):
+    r"""LoadBalancingSchemesValueListEntryValuesEnum enum type.
+
+    Values:
+      EXTERNAL: Signifies that this will be used for Classic L7 External Load
+        Balancing.
+      EXTERNAL_MANAGED: Signifies that this will be used for Envoy-based L7
+        External Load Balancing.
+      LOAD_BALANCING_SCHEME_UNSPECIFIED: If unspecified, the validation will
+        try to infer the scheme from the backend service resources this Url
+        map references. If the inferrence is not possible, EXTERNAL will be
+        used as the default type.
+    """
+    EXTERNAL = 0
+    EXTERNAL_MANAGED = 1
+    LOAD_BALANCING_SCHEME_UNSPECIFIED = 2
+
+  loadBalancingSchemes = _messages.EnumField('LoadBalancingSchemesValueListEntryValuesEnum', 1, repeated=True)
+  resource = _messages.MessageField('UrlMap', 2)
 
 
 class UrlMapsValidateResponse(_messages.Message):

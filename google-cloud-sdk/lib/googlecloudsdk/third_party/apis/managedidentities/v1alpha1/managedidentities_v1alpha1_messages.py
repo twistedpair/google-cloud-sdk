@@ -1410,8 +1410,7 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsBackupsListRequest(_message
   object.
 
   Fields:
-    filter: Optional. Filter specifying constraints of a list operation. For
-      example, `backup.location ="us-west1-a"`.
+    filter: Optional. Filter specifying constraints of a list operation.
     orderBy: Optional. Specifies the ordering of results following syntax at
       https://cloud.google.com/apis/design/design_patterns#sorting_order.
     pageSize: Optional. The maximum number of items to return. If not

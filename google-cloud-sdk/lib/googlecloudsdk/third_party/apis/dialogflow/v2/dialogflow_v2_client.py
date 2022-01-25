@@ -2912,6 +2912,33 @@ class DialogflowV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Import(self, request, global_params=None):
+      r"""Creates documents by importing data from external sources. Dialogflow supports up to 350 documents in each request. If you try to import more, Dialogflow will return an error. This method is a [long-running operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: ImportDocumentsResponse.
+
+      Args:
+        request: (DialogflowProjectsKnowledgeBasesDocumentsImportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Import')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Import.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/knowledgeBases/{knowledgeBasesId}/documents:import',
+        http_method='POST',
+        method_id='dialogflow.projects.knowledgeBases.documents.import',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/documents:import',
+        request_field='googleCloudDialogflowV2ImportDocumentsRequest',
+        request_type_name='DialogflowProjectsKnowledgeBasesDocumentsImportRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Returns the list of all documents of the knowledge base.
 
@@ -5640,6 +5667,33 @@ class DialogflowV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='DialogflowProjectsLocationsKnowledgeBasesDocumentsGetRequest',
         response_type_name='GoogleCloudDialogflowV2Document',
+        supports_download=False,
+    )
+
+    def Import(self, request, global_params=None):
+      r"""Creates documents by importing data from external sources. Dialogflow supports up to 350 documents in each request. If you try to import more, Dialogflow will return an error. This method is a [long-running operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: ImportDocumentsResponse.
+
+      Args:
+        request: (DialogflowProjectsLocationsKnowledgeBasesDocumentsImportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Import')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Import.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/knowledgeBases/{knowledgeBasesId}/documents:import',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.knowledgeBases.documents.import',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/documents:import',
+        request_field='googleCloudDialogflowV2ImportDocumentsRequest',
+        request_type_name='DialogflowProjectsLocationsKnowledgeBasesDocumentsImportRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

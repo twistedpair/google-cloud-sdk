@@ -1466,7 +1466,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Modifies a `PrivateCloud` resource. Only the following fields can be updated: `labels`, `description`, `network_config.external_ip_access`. Only fields specified in `updateMask` are applied."
+                  "description": "Modifies a `PrivateCloud` resource. Only the following fields can be updated: `labels`, `description`, `network_config.external_ip_access`. Only fields specified in `updateMask` are applied. During operation processing, the resource is temporarily in the `ACTIVE` state before the operation fully completes. For that period of time, you can't update the resource. Use the operation status to determine when the processing fully completes."
                 },
                 "delete": {
                   "id": "vmwareengine.projects.locations.privateClouds.delete",
@@ -1891,7 +1891,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Modifies a `Cluster` resource. Only the following fields can be updated: `labels`, `nodeCount`. Only fields specified in `updateMask` are applied."
+                      "description": "Modifies a `Cluster` resource. Only the following fields can be updated: `labels`, `nodeCount`. Only fields specified in `updateMask` are applied. During operation processing, the resource is temporarily in the `ACTIVE` state before the operation fully completes. For that period of time, you can't update the resource. Use the operation status to determine when the processing fully completes."
                     },
                     "delete": {
                       "id": "vmwareengine.projects.locations.privateClouds.clusters.delete",
@@ -2509,7 +2509,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Modifies a `NetworkPolicy` resource. Only the following fields can be updated: `labels`, `internet_access`, `external_ip`, `edge_services_cidr`. Only fields specified in `updateMask` are applied. When updating a network policy, the external IP network service can only be disabled if there are no external IP addresses present in the scope of the policy. Also, a `NetworkService` cannot be updated when `NetworkService.state` is set to `RECONCILING`."
+                  "description": "Modifies a `NetworkPolicy` resource. Only the following fields can be updated: `labels`, `internet_access`, `external_ip`, `edge_services_cidr`. Only fields specified in `updateMask` are applied. When updating a network policy, the external IP network service can only be disabled if there are no external IP addresses present in the scope of the policy. Also, a `NetworkService` cannot be updated when `NetworkService.state` is set to `RECONCILING`. During operation processing, the resource is temporarily in the `ACTIVE` state before the operation fully completes. For that period of time, you can't update the resource. Use the operation status to determine when the processing fully completes."
                 },
                 "delete": {
                   "id": "vmwareengine.projects.locations.networkPolicies.delete",

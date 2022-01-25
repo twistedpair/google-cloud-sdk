@@ -2765,7 +2765,7 @@
     },
     "GoogleCloudAiplatformV1beta1CustomJobSpec": {
       "id": "GoogleCloudAiplatformV1beta1CustomJobSpec",
-      "description": "Represents the spec of a CustomJob.",
+      "description": "Represents the spec of a CustomJob. Next Id: 14",
       "type": "object",
       "properties": {
         "workerPoolSpecs": {
@@ -12409,6 +12409,25 @@
         "deploymentGroup": {
           "description": "Optional. The deployment group can be no longer than 64 characters (eg: 'test', 'prod'). If not set, we will use the 'default' deployment group. Creating `deployment_groups` with `reserved_ip_ranges` is a recommended practice when the peered network has multiple peering ranges. This creates your deployments from predictable IP spaces for easier traffic administration. Also, one deployment_group (except 'default') can only be used with the same reserved_ip_ranges which means if the deployment_group has been used with reserved_ip_ranges: [a, b, c], using it with [a, b] or [d, e] is disallowed. Note: we only support up to 5 deployment groups(not including 'default').",
           "type": "string"
+        },
+        "uiState": {
+          "description": "Output only. The state of the index deployment. Different from public API, BEING_DEPLOYED and FAILED deployment state deployed indexes will also be returned in Ui ListEndpoints.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be used.",
+            "The deployment of the model is ongoing and not ready for use yet. The resource is not usable at this state.",
+            "The model is deployed.",
+            "The model is being undeployed. The resource is not usable at this state.",
+            "The model is failed to deploy or undeploy. The resource is not usable at this state."
+          ],
+          "enum": [
+            "UI_DEPLOYMENT_STATE_UNSPECIFIED",
+            "UI_DEPLOYMENT_STATE_BEING_DEPLOYED",
+            "UI_DEPLOYMENT_STATE_DEPLOYED",
+            "UI_DEPLOYMENT_STATE_BEING_UNDEPLOYED",
+            "UI_DEPLOYMENT_STATE_FAILED"
+          ]
         }
       }
     },
@@ -16101,6 +16120,17 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1beta1CreateDeploymentResourcePoolOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1CreateDeploymentResourcePoolOperationMetadata",
+      "description": "Runtime operation information for CreateDeploymentResourcePool method.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1beta1CreateEndpointOperationMetadata": {
       "id": "GoogleCloudAiplatformV1beta1CreateEndpointOperationMetadata",
       "description": "Runtime operation information for EndpointService.CreateEndpoint.",
@@ -16779,6 +16809,17 @@
       "description": "Response message for IndexEndpointService.UndeployIndex.",
       "type": "object",
       "properties": {
+      }
+    },
+    "GoogleCloudAiplatformV1beta1UpdateDeploymentResourcePoolOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1UpdateDeploymentResourcePoolOperationMetadata",
+      "description": "Runtime operation information for UpdateDeploymentResourcePool method.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        }
       }
     },
     "GoogleCloudAiplatformV1beta1UpdateFeaturestoreOperationMetadata": {
@@ -22616,7 +22657,7 @@
     },
     "GoogleCloudAiplatformV1CustomJobSpec": {
       "id": "GoogleCloudAiplatformV1CustomJobSpec",
-      "description": "Represents the spec of a CustomJob.",
+      "description": "Represents the spec of a CustomJob. Next Id: 14",
       "type": "object",
       "properties": {
         "workerPoolSpecs": {
@@ -23832,6 +23873,33 @@
       "id": "GoogleCloudAiplatformV1SchemaVisualInspectionMaskSavedQueryMetadata",
       "type": "object",
       "properties": {
+      }
+    },
+    "GoogleRpcContextHttpHeaderContext": {
+      "id": "GoogleRpcContextHttpHeaderContext",
+      "description": "`HttpHeaderContext` provides access to all HTTP headers of a request. Use this with care as it makes your API dependent from HTTP entry points.",
+      "type": "object",
+      "properties": {
+        "headers": {
+          "description": "A map from all headers in the request to their value. If a header occurs multiple times, it will be normalized into a comma-separated list of values as specified in [RFC2616](http:\/\/www.w3.org\/Protocols\/rfc2616\/rfc2616-sec4.html#sec4.2) Note: When used in the request path, there is no guarantee of casing for header keys. Please use ignore-case string comparison while searching for a header. Warning: The map keys are case-sensitive, and the case may be different between HTTP1.x and HTTP2 requests.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "requestPath": {
+          "description": "Request path string. It is the path following the host:port without the query parameters. For example, if the request URL is \"https:\/\/ml.googleapis.com\/v1\/parent\/jobs?key=key\", request_path will contain \"\/v1\/parent\/jobs\". Not used in response path.",
+          "type": "string"
+        },
+        "responseCode": {
+          "description": "HTTP status code. If the backend sets this code, it will be used to set HTTP status for the response. It is unused for HTTP requests reaching the backend.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "requestFirstline": {
+          "description": "The first line of the HTTP request, including the HTTP method, request url, and protocol. Not used in response path.",
+          "type": "string"
+        }
       }
     }
   },

@@ -1578,6 +1578,8 @@ class Service(_messages.Message):
   r"""A managed metastore service that serves metadata queries.
 
   Enums:
+    DatabaseTypeValueValuesEnum: Immutable. The database type that the
+      Metastore service stores its data.
     ReleaseChannelValueValuesEnum: Immutable. The release channel of the
       service. If unspecified, defaults to STABLE.
     StateValueValuesEnum: Output only. The current state of the metastore
@@ -1592,6 +1594,8 @@ class Service(_messages.Message):
       that specifies where artifacts related to the metastore service are
       stored.
     createTime: Output only. The time when the metastore service was created.
+    databaseType: Immutable. The database type that the Metastore service
+      stores its data.
     encryptionConfig: Immutable. Information used to configure the Dataproc
       Metastore service to encrypt customer data at rest. Cannot be updated.
     endpointUri: Output only. The URI of the endpoint used to access the
@@ -1624,6 +1628,19 @@ class Service(_messages.Message):
     updateTime: Output only. The time when the metastore service was last
       updated.
   """
+
+  class DatabaseTypeValueValuesEnum(_messages.Enum):
+    r"""Immutable. The database type that the Metastore service stores its
+    data.
+
+    Values:
+      DATABASE_TYPE_UNSPECIFIED: The DATABASE_TYPE is not set.
+      MYSQL: MySQL is used to persist the metastore data.
+      SPANNER: Spanner is used to persist the metastore data.
+    """
+    DATABASE_TYPE_UNSPECIFIED = 0
+    MYSQL = 1
+    SPANNER = 2
 
   class ReleaseChannelValueValuesEnum(_messages.Enum):
     r"""Immutable. The release channel of the service. If unspecified,
@@ -1710,21 +1727,22 @@ class Service(_messages.Message):
 
   artifactGcsUri = _messages.StringField(1)
   createTime = _messages.StringField(2)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 3)
-  endpointUri = _messages.StringField(4)
-  hiveMetastoreConfig = _messages.MessageField('HiveMetastoreConfig', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 7)
-  metadataManagementActivity = _messages.MessageField('MetadataManagementActivity', 8)
-  name = _messages.StringField(9)
-  network = _messages.StringField(10)
-  port = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  stateMessage = _messages.StringField(14)
-  tier = _messages.EnumField('TierValueValuesEnum', 15)
-  uid = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
+  databaseType = _messages.EnumField('DatabaseTypeValueValuesEnum', 3)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 4)
+  endpointUri = _messages.StringField(5)
+  hiveMetastoreConfig = _messages.MessageField('HiveMetastoreConfig', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 8)
+  metadataManagementActivity = _messages.MessageField('MetadataManagementActivity', 9)
+  name = _messages.StringField(10)
+  network = _messages.StringField(11)
+  port = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  stateMessage = _messages.StringField(15)
+  tier = _messages.EnumField('TierValueValuesEnum', 16)
+  uid = _messages.StringField(17)
+  updateTime = _messages.StringField(18)
 
 
 class SetIamPolicyRequest(_messages.Message):

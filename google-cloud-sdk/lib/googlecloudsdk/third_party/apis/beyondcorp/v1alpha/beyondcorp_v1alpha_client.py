@@ -820,7 +820,7 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete method for the projects_locations_clientConnectorServices service.
+      r"""Deletes a single ClientConnectorService.
 
       Args:
         request: (BeyondcorpProjectsLocationsClientConnectorServicesDeleteRequest) input message
@@ -924,6 +924,33 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='BeyondcorpProjectsLocationsClientConnectorServicesListRequest',
         response_type_name='ListClientConnectorServicesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single ClientConnectorService.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsClientConnectorServicesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/clientConnectorServices/{clientConnectorServicesId}',
+        http_method='PATCH',
+        method_id='beyondcorp.projects.locations.clientConnectorServices.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'requestId', 'updateMask', 'validateOnly'],
+        relative_path='v1alpha/{+name}',
+        request_field='clientConnectorService',
+        request_type_name='BeyondcorpProjectsLocationsClientConnectorServicesPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

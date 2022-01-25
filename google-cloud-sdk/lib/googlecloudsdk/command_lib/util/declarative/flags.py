@@ -229,3 +229,20 @@ def AddInitProviderArgs(parser):
 
   zone.AddToParser(parser)
   region.AddToParser(parser)
+
+
+# Apply Related flags
+def AddApplyPathArg(parser):
+  parser.add_argument(
+      'PATH',
+      help=('File or directory path containing the resources to apply.'))
+
+
+def AddResolveResourcesArg(parser):
+  parser.add_argument(
+      '--resolve-references',
+      action='store_true',
+      default=False,
+      hidden=True,
+      help=('If True, any resource references in the target file PATH will be '
+            'resolved, and those external resources will be applied as well.'))

@@ -52,14 +52,15 @@ ServiceFns = {
     'tagBindings': tags.TagBindingsService
 }
 
-MAX_TAG_KEYS = 300
+MAX_TAG_KEYS = 1000
+MAX_TAG_VALUES = 1000
 
 
 def GetTagKeyFromNamespacedName(namespaced_name):
   """Gets the tag key from the namespaced name.
 
   Args:
-    namespaced_name: Could be the resource name or namespaced name
+    namespaced_name: Namespaced name of a tag key
 
   Returns:
     TagKey resource
@@ -76,42 +77,54 @@ def GetTagKeyFromNamespacedName(namespaced_name):
         'ORGANIZATION_ID/TAG_KEY_SHORT_NAME'
         .format(namespaced_name))
 
+  next_page_token = None
+  name = '/'.join(['organizations', parts[0]])
   # ListTagKeys call requires the global CRM API endpoint.
   with endpoints.CrmEndpointOverrides('global'):
-    name = '/'.join(['organizations', parts[0]])
-    req = ListResourceFns['tagKeys'](parent=name, pageSize=MAX_TAG_KEYS)
+    while True:
+      response = ListTagKeys(name, namespaced_name, next_page_token)
 
-    service = ServiceFns['tagKeys']()
-
-    try:
-      response = service.List(req)
-    except HttpForbiddenError:
-      print(
-          'TagKey [{}] does not exist or user does not have permissions to '
-          'resolve namespaced name. Retry using tagKey\'s resource name, such '
-          'as tagKeys/123.'.format(namespaced_name))
-      raise
-    except HttpError as e:
-      if json.loads(e.content)['error']['status'] == 'INVALID_ARGUMENT':
-        print(
-            'TagKey namespaced name [{}] invalid. It should be the permanent '
-            'ID or namespaced name; for example: tagKeys/123456789012 or '
-            'ORGANIZATION_ID/TAG_KEY_SHORT_NAME'
-            .format(namespaced_name))
-      raise
-
-    for key in response.tagKeys:
-      if key.namespacedName == namespaced_name:
-        return key
+      for key in response.tagKeys:
+        if key.namespacedName == namespaced_name:
+          return key
+      if not response.nextPageToken:
+        break
+      next_page_token = response.nextPageToken
 
   raise InvalidInputError('TagKey [{}] not found'.format(namespaced_name))
+
+
+def ListTagKeys(parent_name, namespaced_name, next_page_token=None):
+  """Calls ListTagKeys given the parent name, namespaced name and the token."""
+  if next_page_token:
+    req = ListResourceFns['tagKeys'](
+        parent=parent_name, pageToken=next_page_token, pageSize=MAX_TAG_KEYS)
+  else:
+    req = ListResourceFns['tagKeys'](
+        parent=parent_name, pageSize=MAX_TAG_KEYS)
+
+  service = ServiceFns['tagKeys']()
+
+  try:
+    return service.List(req)
+  except HttpForbiddenError:
+    print('TagKey [{}] does not exist or user does not have permissions to '
+          'resolve namespaced name. Retry using tagKey\'s resource name, such '
+          'as tagKeys/123.'.format(namespaced_name))
+    raise
+  except HttpError as e:
+    if json.loads(e.content)['error']['status'] == 'INVALID_ARGUMENT':
+      print('TagKey namespaced name [{}] invalid. It should be the permanent '
+            'ID or namespaced name; for example: tagKeys/123456789012 or '
+            'ORGANIZATION_ID/TAG_KEY_SHORT_NAME'.format(namespaced_name))
+    raise
 
 
 def GetTagValueFromNamespacedName(namespaced_name):
   """Gets the tag value from the namespaced name.
 
   Args:
-    namespaced_name: Could be the resource name or namespaced name
+    namespaced_name: The namespaced name of the tag value
 
   Returns:
     TagValue resource
@@ -129,22 +142,38 @@ def GetTagValueFromNamespacedName(namespaced_name):
         .format(namespaced_name))
 
   name = GetTagKeyFromNamespacedName('/'.join(parts[:2])).name
+  next_page_token = None
   # ListTagValues call requires the global CRM API endpoint.
   with endpoints.CrmEndpointOverrides('global'):
-    req = ListResourceFns['tagValues'](parent=name)
-    service = ServiceFns['tagValues']()
+    while True:
+      response = ListTagValues(name, next_page_token)
 
-    response = service.List(req)
-
-    for value in response.tagValues:
-      if value.namespacedName == namespaced_name:
-        return value
+      for value in response.tagValues:
+        if value.namespacedName == namespaced_name:
+          return value
+      if not response.nextPageToken:
+        break
+      next_page_token = response.nextPageToken
 
   raise InvalidInputError(
       'TagValue [{}] not found. It should be the permanent ID or namespaced '
       'name; for example: tagValues/7890123456 or '
       'ORGANIZATION_ID/TAG_KEY_SHORT_NAME/TAG_VALUE_SHORT_NAME'
       .format(namespaced_name))
+
+
+def ListTagValues(parent_name, next_page_token=None):
+  """Calls ListTagValuess."""
+  if next_page_token:
+    req = ListResourceFns['tagValues'](
+        parent=parent_name, pageToken=next_page_token, pageSize=MAX_TAG_VALUES)
+  else:
+    req = ListResourceFns['tagValues'](
+        parent=parent_name, pageSize=MAX_TAG_VALUES)
+
+  service = ServiceFns['tagValues']()
+
+  return service.List(req)
 
 
 def GetResourceFromNamespacedName(namespaced_name, resource_type):

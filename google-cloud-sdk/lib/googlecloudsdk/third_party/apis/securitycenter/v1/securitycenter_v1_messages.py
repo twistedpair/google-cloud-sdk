@@ -604,13 +604,13 @@ class Finding(_messages.Message):
       "XSS_FLASH_INJECTION"
     createTime: The time at which the finding was created in Security Command
       Center.
-    eventTime: The time at which the event took place, or when an update to
-      the finding occurred. For example, if the finding represents an open
-      firewall it would capture the time the detector believes the firewall
-      became open. The accuracy is determined by the detector. If the finding
-      were to be resolved afterward, this time would reflect when the finding
-      was resolved. Must not be set to a value greater than the current
-      timestamp.
+    eventTime: The time the finding was first detected. If an existing finding
+      is updated, then this is the time the update occurred. For example, if
+      the finding represents an open firewall, this property captures the time
+      the detector believes the firewall became open. The accuracy is
+      determined by the detector. If the finding is later resolved, then this
+      time reflects when the finding was resolved. This must not be set to a
+      value greater than the current timestamp.
     externalSystems: Output only. Third party SIEM/SOAR fields within SCC,
       contains external system information and external system finding fields.
     externalUri: The URI that, if available, points to a web page outside of
@@ -2549,7 +2549,8 @@ class SecuritycenterFoldersAssetsUpdateSecurityMarksRequest(_messages.Message):
     securityMarks: A SecurityMarks resource to be passed as the request body.
     startTime: The time at which the updated SecurityMarks take effect. If not
       set uses current server time. Updates will be applied to the
-      SecurityMarks that are active immediately preceding this time.
+      SecurityMarks that are active immediately preceding this time. Must be
+      smaller or equal to the server time.
     updateMask: The FieldMask to use when updating the security marks
       resource. The field mask must not contain duplicate fields. If empty or
       set to "marks", all marks will be replaced. Individual marks can be
@@ -2867,7 +2868,8 @@ class SecuritycenterFoldersSourcesFindingsUpdateSecurityMarksRequest(_messages.M
     securityMarks: A SecurityMarks resource to be passed as the request body.
     startTime: The time at which the updated SecurityMarks take effect. If not
       set uses current server time. Updates will be applied to the
-      SecurityMarks that are active immediately preceding this time.
+      SecurityMarks that are active immediately preceding this time. Must be
+      smaller or equal to the server time.
     updateMask: The FieldMask to use when updating the security marks
       resource. The field mask must not contain duplicate fields. If empty or
       set to "marks", all marks will be replaced. Individual marks can be
@@ -3038,7 +3040,8 @@ class SecuritycenterOrganizationsAssetsUpdateSecurityMarksRequest(_messages.Mess
     securityMarks: A SecurityMarks resource to be passed as the request body.
     startTime: The time at which the updated SecurityMarks take effect. If not
       set uses current server time. Updates will be applied to the
-      SecurityMarks that are active immediately preceding this time.
+      SecurityMarks that are active immediately preceding this time. Must be
+      smaller or equal to the server time.
     updateMask: The FieldMask to use when updating the security marks
       resource. The field mask must not contain duplicate fields. If empty or
       set to "marks", all marks will be replaced. Individual marks can be
@@ -3522,7 +3525,8 @@ class SecuritycenterOrganizationsSourcesFindingsUpdateSecurityMarksRequest(_mess
     securityMarks: A SecurityMarks resource to be passed as the request body.
     startTime: The time at which the updated SecurityMarks take effect. If not
       set uses current server time. Updates will be applied to the
-      SecurityMarks that are active immediately preceding this time.
+      SecurityMarks that are active immediately preceding this time. Must be
+      smaller or equal to the server time.
     updateMask: The FieldMask to use when updating the security marks
       resource. The field mask must not contain duplicate fields. If empty or
       set to "marks", all marks will be replaced. Individual marks can be
@@ -3770,7 +3774,8 @@ class SecuritycenterProjectsAssetsUpdateSecurityMarksRequest(_messages.Message):
     securityMarks: A SecurityMarks resource to be passed as the request body.
     startTime: The time at which the updated SecurityMarks take effect. If not
       set uses current server time. Updates will be applied to the
-      SecurityMarks that are active immediately preceding this time.
+      SecurityMarks that are active immediately preceding this time. Must be
+      smaller or equal to the server time.
     updateMask: The FieldMask to use when updating the security marks
       resource. The field mask must not contain duplicate fields. If empty or
       set to "marks", all marks will be replaced. Individual marks can be
@@ -4089,7 +4094,8 @@ class SecuritycenterProjectsSourcesFindingsUpdateSecurityMarksRequest(_messages.
     securityMarks: A SecurityMarks resource to be passed as the request body.
     startTime: The time at which the updated SecurityMarks take effect. If not
       set uses current server time. Updates will be applied to the
-      SecurityMarks that are active immediately preceding this time.
+      SecurityMarks that are active immediately preceding this time. Must be
+      smaller or equal to the server time.
     updateMask: The FieldMask to use when updating the security marks
       resource. The field mask must not contain duplicate fields. If empty or
       set to "marks", all marks will be replaced. Individual marks can be

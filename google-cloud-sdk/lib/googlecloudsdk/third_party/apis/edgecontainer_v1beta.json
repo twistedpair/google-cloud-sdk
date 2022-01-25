@@ -274,7 +274,7 @@
           "$ref": "Authorization"
         },
         "defaultMaxPodsPerNode": {
-          "description": "The default maximum number of pods per node used if a maximum value is not specified explicitly for a node pool in this cluster. If unspecified, the Kubernetes default value will be used.",
+          "description": "Optional. The default maximum number of pods per node used if a maximum value is not specified explicitly for a node pool in this cluster. If unspecified, the Kubernetes default value will be used.",
           "type": "integer",
           "format": "int32"
         },

@@ -49,18 +49,24 @@ SUPPORTED_REGION = ('us-central1', 'europe-west4', 'asia-east1')
 # hp-tuning-jobs.
 SUPPORTED_TRAINING_REGIONS = (
     'asia-east1',
+    'asia-east2',
     'asia-northeast1',
     'asia-northeast3',
+    'asia-south1',
     'asia-southeast1',
     'australia-southeast1',
     'europe-west1',
     'europe-west2',
+    'europe-west3',
     'europe-west4',
+    'europe-west6',
     'northamerica-northeast1',
+    'northamerica-northeast2',
     'us-central1',
     'us-east1',
     'us-east4',
     'us-west1',
+    'us-west2',
 )
 
 # Available regions specifically for online prediction, including endpoints and

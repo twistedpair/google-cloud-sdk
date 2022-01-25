@@ -404,9 +404,9 @@ def AddStackType(parser):
       '--stack-type',
       choices={
           'IPV4_ONLY':
-              'Only IPv4 protocol is enabled on this interconnect.',
+              'Only IPv4 protocol is enabled on this attachment.',
           'IPV4_IPV6':
-              'Both IPv4 and IPv6 protocols are enabled on this interconnect.',
+              'Both IPv4 and IPv6 protocols are enabled on this attachment.',
       },
       type=arg_utils.ChoiceToEnumName,
       help=('The stack type of the protocol(s) enabled on this interconnect '
@@ -446,7 +446,7 @@ def AddCloudRouterIpv6InterfaceId(parser):
       metavar='INTERFACE_ID',
       help="""\
       If supplied, the interface id (index within the subnet) to be used for the
-      cloud router address. The id must be in the range of 1 to 6. If a subnet
+      Cloud Router address. The id must be in the range of 1 to 6. If a subnet
       mask is supplied, it must be /125, and the subnet should either be 0 or
       match the selected subnet.""")
 
@@ -462,6 +462,6 @@ def AddCustomerRouterIpv6InterfaceId(parser):
       metavar='PEER_INTERFACE_ID',
       help="""\
       If supplied, the interface id (index within the subnet) to be used for the
-      customer router address. The id must be in the range of 1 to 6. If a
+      Cloud Router address. The id must be in the range of 1 to 6. If a
       subnet mask is supplied, it must be /125, and the subnet should either be
       0 or match the selected subnet.""")

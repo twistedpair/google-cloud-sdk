@@ -23,10 +23,94 @@ from googlecloudsdk.core import exceptions as core_exceptions
 import six
 
 
-def CreateRuleMessage(args, compute_holder):
+class ActiveIpsRequiredError(core_exceptions.Error):
+  """Raised when active ranges are not specified for Public NAT."""
+
+  def __init__(self):
+    msg = '--source-nat-active-ips is required for Public NAT.'
+    super(ActiveIpsRequiredError, self).__init__(msg)
+
+
+class ActiveIpsNotSupportedError(core_exceptions.Error):
+  """Raised when active IPs are specified for Private NAT."""
+
+  def __init__(self):
+    msg = '--source-nat-active-ips is not supported for Private NAT.'
+    super(ActiveIpsNotSupportedError, self).__init__(msg)
+
+
+class ActiveRangesRequiredError(core_exceptions.Error):
+  """Raised when active ranges are not specified for Private NAT."""
+
+  def __init__(self):
+    msg = '--source-nat-active-ranges is required for Private NAT.'
+    super(ActiveRangesRequiredError, self).__init__(msg)
+
+
+class ActiveRangesNotSupportedError(core_exceptions.Error):
+  """Raised when active ranges are specified for Public NAT."""
+
+  def __init__(self):
+    msg = '--source-nat-active-ranges is not supported for Public NAT.'
+    super(ActiveRangesNotSupportedError, self).__init__(msg)
+
+
+class DrainIpsNotSupportedError(core_exceptions.Error):
+  """Raised when drain IPs are specified for Private NAT."""
+
+  def __init__(self):
+    msg = '--source-nat-drain-ips is not supported for Private NAT.'
+    super(DrainIpsNotSupportedError, self).__init__(msg)
+
+
+class DrainRangesNotSupportedError(core_exceptions.Error):
+  """Raised when drain ranges are specified for Public NAT."""
+
+  def __init__(self):
+    msg = '--source-nat-drain-ranges is not supported for Public NAT.'
+    super(DrainRangesNotSupportedError, self).__init__(msg)
+
+
+def _IsPrivateNat(nat, compute_holder):
+  return nat.type == (
+      compute_holder.client.messages.RouterNat.TypeValueValuesEnum.PRIVATE)
+
+
+def CreateRuleMessage(args, compute_holder, nat, with_private_nat=False):
   """Creates a Rule message from the specified arguments."""
+  if with_private_nat:
+    rule = compute_holder.client.messages.RouterNatRule(
+        ruleNumber=args.rule_number,
+        match=args.match,
+        action=compute_holder.client.messages.RouterNatRuleAction())
+    is_private_nat = _IsPrivateNat(nat, compute_holder)
+    if args.source_nat_active_ips:
+      if is_private_nat:
+        raise ActiveIpsNotSupportedError()
+      rule.action.sourceNatActiveIps = [
+          six.text_type(ip)
+          for ip in flags.ACTIVE_IPS_ARG_REQUIRED.ResolveAsResource(
+              args, compute_holder.resources)
+      ]
+    elif not is_private_nat:
+      raise ActiveIpsRequiredError()
+
+    if args.source_nat_active_ranges:
+      if not is_private_nat:
+        raise ActiveRangesNotSupportedError()
+      rule.action.sourceNatActiveRanges = [
+          six.text_type(subnet)
+          for subnet in flags.ACTIVE_RANGES_ARG.ResolveAsResource(
+              args, compute_holder.resources)
+      ]
+    elif is_private_nat:
+      raise ActiveRangesRequiredError()
+
+    return rule
+
   active_ips = [
-      six.text_type(ip) for ip in flags.ACTIVE_IPS_ARG_CREATE.ResolveAsResource(
+      six.text_type(ip)
+      for ip in flags.ACTIVE_IPS_ARG_REQUIRED.ResolveAsResource(
           args, compute_holder.resources)
   ]
   return compute_holder.client.messages.RouterNatRule(
@@ -52,20 +136,47 @@ def FindRuleOrRaise(nat, rule_number):
   raise RuleNotFoundError(rule_number)
 
 
-def UpdateRuleMessage(rule, args, compute_holder):
+def UpdateRuleMessage(rule, args, compute_holder, nat, with_private_nat=False):
   """Updates a Rule message from the specified arguments."""
   if args.match:
     rule.match = args.match
+  is_private_nat = with_private_nat and _IsPrivateNat(nat, compute_holder)
   if args.source_nat_active_ips:
+    if is_private_nat:
+      raise ActiveIpsNotSupportedError()
     rule.action.sourceNatActiveIps = [
         six.text_type(ip)
-        for ip in flags.ACTIVE_IPS_ARG_UPDATE.ResolveAsResource(
+        for ip in flags.ACTIVE_IPS_ARG_OPTIONAL.ResolveAsResource(
             args, compute_holder.resources)
     ]
   if args.source_nat_drain_ips:
+    if is_private_nat:
+      raise DrainIpsNotSupportedError()
     rule.action.sourceNatDrainIps = [
         six.text_type(ip) for ip in flags.DRAIN_IPS_ARG.ResolveAsResource(
             args, compute_holder.resources)
     ]
   elif args.clear_source_nat_drain_ips:
     rule.action.sourceNatDrainIps = []
+
+  if not with_private_nat:
+    return
+
+  if args.source_nat_active_ranges:
+    if not is_private_nat:
+      raise ActiveRangesNotSupportedError()
+    rule.action.sourceNatActiveRanges = [
+        six.text_type(subnet)
+        for subnet in flags.ACTIVE_RANGES_ARG.ResolveAsResource(
+            args, compute_holder.resources)
+    ]
+  if args.source_nat_drain_ranges:
+    if not is_private_nat:
+      raise DrainRangesNotSupportedError()
+    rule.action.sourceNatDrainRanges = [
+        six.text_type(subnet)
+        for subnet in flags.DRAIN_RANGES_ARG.ResolveAsResource(
+            args, compute_holder.resources)
+    ]
+  elif args.clear_source_nat_drain_ranges:
+    rule.action.sourceNatDrainRanges = []

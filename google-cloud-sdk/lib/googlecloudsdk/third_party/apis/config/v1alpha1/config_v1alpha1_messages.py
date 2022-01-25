@@ -551,10 +551,12 @@ class Deployment(_messages.Message):
 
   Fields:
     blueprint: Required. Blueprint to deploy.
+    clusterless: Required. If set, the deployment will create GCP resources
+      without deploying to a Config Controller instance.
     configController: Required. Config Controller instance to deploy to.
       Format:
       `projects/{project}/locations/{location}/krmApiHosts/{instance}`.
-    createConfigController: Optional. If set, then a Config Controller
+    createConfigController: Required. If set, then a Config Controller
       instance with a default, well-known name will be created as part of the
       deployment, if it does not already exist. Note that Blueprints
       Controller does not manage this Config Controller instance and only
@@ -562,7 +564,7 @@ class Deployment(_messages.Message):
     createTime: Output only. Time the deployment was created.
     deleteResults: Output only. Locations of outputs from delete operation.
     errorCode: Output only. Code describing any errors that may have occurred.
-    gitTarget: Optional. If set, then the hydrated blueprint will be uploaded
+    gitTarget: Required. If set, then the hydrated blueprint will be uploaded
       to the specified Git repository.
     labels: User-defined metadata for the deployment.
     latestRevision: Output only. Revision that was most recently applied.
@@ -661,19 +663,20 @@ class Deployment(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   blueprint = _messages.MessageField('Blueprint', 1)
-  configController = _messages.StringField(2)
-  createConfigController = _messages.BooleanField(3)
-  createTime = _messages.StringField(4)
-  deleteResults = _messages.MessageField('ApplyResults', 5)
-  errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 6)
-  gitTarget = _messages.MessageField('GitTarget', 7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  latestRevision = _messages.StringField(9)
-  name = _messages.StringField(10)
-  reconcileTimeout = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  stateDetail = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  clusterless = _messages.BooleanField(2)
+  configController = _messages.StringField(3)
+  createConfigController = _messages.BooleanField(4)
+  createTime = _messages.StringField(5)
+  deleteResults = _messages.MessageField('ApplyResults', 6)
+  errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 7)
+  gitTarget = _messages.MessageField('GitTarget', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  latestRevision = _messages.StringField(10)
+  name = _messages.StringField(11)
+  reconcileTimeout = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  stateDetail = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class DeploymentOperationMetadata(_messages.Message):

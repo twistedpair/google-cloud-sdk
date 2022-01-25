@@ -170,6 +170,31 @@ class RunAppsOperations(object):
       raise exceptions.IntegrationNotFoundError(
           'Integration [{}] cannot be found'.format(name))
 
+  def GetIntegrationStatus(self, name):
+    """Get status of an integration.
+
+    Args:
+      name: str, the name of the resource.
+
+    Raises:
+      IntegrationNotFoundError: If the integration is not found.
+
+    Returns:
+      The ResourceStatus of the integration, or None if not found
+    """
+    try:
+      application_status = api_utils.GetApplicationStatus(
+          self._client, self.GetAppRef(_DEFAULT_APP_NAME))
+      app_status_dict = encoding.MessageToDict(application_status)
+      for status in app_status_dict['resource']:
+        if status['resourceName'] == name:
+          return status
+      raise exceptions.IntegrationNotFoundError(
+          'Integration [{}] cannot be found'.format(name))
+    except KeyError:
+      raise exceptions.IntegrationNotFoundError(
+          'Integration [{}] cannot be found'.format(name))
+
   def CreateIntegration(self, integration_type, parameters, service, name=None):
     """Create an integration.
 

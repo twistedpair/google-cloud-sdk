@@ -962,7 +962,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The BigQuery project id for which data sources should be returned. Must be in the form: `projects\/{project_id}` or `projects\/{project_id}\/locations\/{location_id}",
+                  "description": "Required. The BigQuery project id for which data sources should be returned. Must be in the form: `projects\/{project_id}` or `projects\/{project_id}\/locations\/{location_id}`",
                   "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -1179,7 +1179,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The BigQuery project id for which data sources should be returned: `projects\/{project_id}` or `projects\/{project_id}\/locations\/{location_id}`",
+                  "description": "Required. The BigQuery project id for which transfer configs should be returned: `projects\/{project_id}` or `projects\/{project_id}\/locations\/{location_id}`",
                   "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -1612,7 +1612,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The BigQuery project id for which data sources should be returned. Must be in the form: `projects\/{project_id}` or `projects\/{project_id}\/locations\/{location_id}",
+                      "description": "Required. The BigQuery project id for which data sources should be returned. Must be in the form: `projects\/{project_id}` or `projects\/{project_id}\/locations\/{location_id}`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1829,7 +1829,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The BigQuery project id for which data sources should be returned: `projects\/{project_id}` or `projects\/{project_id}\/locations\/{location_id}`",
+                      "description": "Required. The BigQuery project id for which transfer configs should be returned: `projects\/{project_id}` or `projects\/{project_id}\/locations\/{location_id}`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,

@@ -559,13 +559,13 @@ class Finding(_messages.Message):
       "XSS_FLASH_INJECTION"
     createTime: The time at which the finding was created in Security Command
       Center.
-    eventTime: The time at which the event took place, or when an update to
-      the finding occurred. For example, if the finding represents an open
-      firewall it would capture the time the detector believes the firewall
-      became open. The accuracy is determined by the detector. If the finding
-      were to be resolved afterward, this time would reflect when the finding
-      was resolved. Must not be set to a value greater than the current
-      timestamp.
+    eventTime: The time the finding was first detected. If an existing finding
+      is updated, then this is the time the update occurred. For example, if
+      the finding represents an open firewall, this property captures the time
+      the detector believes the firewall became open. The accuracy is
+      determined by the detector. If the finding is later resolved, then this
+      time reflects when the finding was resolved. This must not be set to a
+      value greater than the current timestamp.
     externalSystems: Output only. Third party SIEM/SOAR fields within SCC,
       contains external system information and external system finding fields.
     externalUri: The URI that, if available, points to a web page outside of

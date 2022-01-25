@@ -326,3 +326,51 @@ def AddCommonListArgs(parser, additional_choices=None):
   parser.display_info.AddCacheUpdater(None)
   parser.display_info.AddTransforms({'done': _TransformOperationDone})
   parser.display_info.AddTransforms({'database': _TransformDatabaseId})
+
+
+def AddCommonDescribeArgs(parser):
+  """Adds common args to describe operations parsers shared across all stages.
+
+  The common arguments are Database, Backup and OperationId.
+
+  Args:
+    parser: argparse.ArgumentParser to register arguments with.
+  """
+  # TODO(b/199322841): Remove Common args function, after instance-config flag
+  # is present in all (GA/Beta/Alpha) stages. Currently, it is only present in
+  # the Alpha stage.
+  Database(
+      positional=False,
+      required=False,
+      text='For a database operation, the name of the database '
+      'the operation is executing on.').AddToParser(parser)
+  Backup(
+      positional=False,
+      required=False,
+      text='For a backup operation, the name of the backup '
+      'the operation is executing on.').AddToParser(parser)
+  OperationId().AddToParser(parser)
+
+
+def AddCommonCancelArgs(parser):
+  """Adds common args to cancel operations parsers shared across all stages.
+
+  The common arguments are Database, Backup and OperationId.
+
+  Args:
+    parser: argparse.ArgumentParser to register arguments with.
+  """
+  # TODO(b/199322841): Remove Common args function, after instance-config flag
+  # is present in all (GA/Beta/Alpha) stages. Currently, it is only present in
+  # the Alpha stage.
+  Database(
+      positional=False,
+      required=False,
+      text='For a database operation, the name of the database '
+      'the operation is executing on.').AddToParser(parser)
+  Backup(
+      positional=False,
+      required=False,
+      text='For a backup operation, the name of the backup '
+      'the operation is executing on.').AddToParser(parser)
+  OperationId().AddToParser(parser)

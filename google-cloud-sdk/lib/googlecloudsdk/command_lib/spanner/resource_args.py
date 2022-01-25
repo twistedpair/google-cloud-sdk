@@ -49,6 +49,27 @@ _CREATE_BACKUP_ENCRYPTION_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
              'selected, kms-key must be set.')
     })
 
+_COPY_BACKUP_ENCRYPTION_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
+    '--encryption-type',
+    apis.GetMessagesModule(
+        'spanner',
+        'v1').CopyBackupEncryptionConfig.EncryptionTypeValueValuesEnum,
+    help_str='The encryption type of the copied backup.',
+    required=False,
+    custom_mappings={
+        'USE_CONFIG_DEFAULT_OR_BACKUP_ENCRYPTION': (
+            'use-config-default-or-backup-encryption',
+            ('Use the default encryption configuration if one exists. '
+             'otherwise use the same encryption configuration as the source backup.'
+            )),
+        'GOOGLE_DEFAULT_ENCRYPTION':
+            ('google-default-encryption', 'Use Google default encryption.'),
+        'CUSTOMER_MANAGED_ENCRYPTION': (
+            'customer-managed-encryption',
+            ('Use the provided Cloud KMS key for encryption. If this option is '
+             'selected, kms-key must be set.'))
+    })
+
 _RESTORE_DB_ENCRYPTION_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
     '--encryption-type',
     apis.GetMessagesModule(
@@ -264,6 +285,41 @@ def AddCreateBackupEncryptionTypeArg(parser):
 
 def GetCreateBackupEncryptionType(args):
   return _CREATE_BACKUP_ENCRYPTION_TYPE_MAPPER.GetEnumForChoice(
+      args.encryption_type)
+
+
+def AddCopyBackupResourceArgs(parser):
+  """Add backup resource args (source, destination) for copy command."""
+  arg_specs = [
+      presentation_specs.ResourcePresentationSpec(
+          '--source',
+          GetBackupResourceSpec(),
+          'TEXT',
+          required=True,
+          flag_name_overrides={
+              'instance': '--source-instance',
+              'backup': '--source-backup'
+          }),
+      presentation_specs.ResourcePresentationSpec(
+          '--destination',
+          GetBackupResourceSpec(),
+          'TEXT',
+          required=True,
+          flag_name_overrides={
+              'instance': '--destination-instance',
+              'backup': '--destination-backup',
+          }),
+  ]
+
+  concept_parsers.ConceptParser(arg_specs).AddToParser(parser)
+
+
+def AddCopyBackupEncryptionTypeArg(parser):
+  return _COPY_BACKUP_ENCRYPTION_TYPE_MAPPER.choice_arg.AddToParser(parser)
+
+
+def GetCopyBackupEncryptionType(args):
+  return _COPY_BACKUP_ENCRYPTION_TYPE_MAPPER.GetEnumForChoice(
       args.encryption_type)
 
 

@@ -171,20 +171,37 @@ class InterconnectAttachment(object):
                 interconnectAttachmentResource=interconnect_attachment))
 
   def _MakePatchRequestTupleGa(self, description, admin_enabled, bandwidth,
-                               partner_metadata, mtu):
-    return (self._client.interconnectAttachments, 'Patch',
-            self._messages.ComputeInterconnectAttachmentsPatchRequest(
-                project=self.ref.project,
-                region=self.ref.region,
-                interconnectAttachment=self.ref.Name(),
-                interconnectAttachmentResource=self._messages
-                .InterconnectAttachment(
-                    name=self.ref.Name(),
-                    description=description,
-                    adminEnabled=admin_enabled,
-                    bandwidth=bandwidth,
-                    partnerMetadata=partner_metadata,
-                    mtu=mtu)))
+                               partner_metadata, mtu, stack_type,
+                               candidate_ipv6_subnets,
+                               cloud_router_ipv6_interface_id,
+                               customer_router_ipv6_interface_id):
+    """Make an interconnect attachment patch request."""
+    target_stack_type = None
+    if stack_type:
+      target_stack_type = self._messages.InterconnectAttachment.StackTypeValueValuesEnum(
+          stack_type)
+    target_candidate_ipv6_subnets = []
+    if candidate_ipv6_subnets:
+      target_candidate_ipv6_subnets = candidate_ipv6_subnets
+    return (
+        self._client.interconnectAttachments, 'Patch',
+        self._messages.ComputeInterconnectAttachmentsPatchRequest(
+            project=self.ref.project,
+            region=self.ref.region,
+            interconnectAttachment=self.ref.Name(),
+            interconnectAttachmentResource=self._messages
+            .InterconnectAttachment(
+                name=self.ref.Name(),
+                description=description,
+                adminEnabled=admin_enabled,
+                bandwidth=bandwidth,
+                partnerMetadata=partner_metadata,
+                mtu=mtu,
+                stackType=target_stack_type,
+                candidateIpv6Subnets=target_candidate_ipv6_subnets,
+                cloudRouterIpv6InterfaceId=cloud_router_ipv6_interface_id,
+                customerRouterIpv6InterfaceId=customer_router_ipv6_interface_id
+            )))
 
   def _MakeDescribeRequestTuple(self):
     return (self._client.interconnectAttachments, 'Get',
@@ -328,7 +345,11 @@ class InterconnectAttachment(object):
               partner_interconnect=None,
               partner_portal_url=None,
               only_generate_request=False,
-              mtu=None):
+              mtu=None,
+              stack_type=None,
+              candidate_ipv6_subnets=None,
+              cloud_router_ipv6_interface_id=None,
+              customer_router_ipv6_interface_id=None):
     """Patch an interconnectAttachment."""
     if bandwidth:
       bandwidth = (
@@ -345,7 +366,10 @@ class InterconnectAttachment(object):
       partner_metadata = None
     requests = [
         self._MakePatchRequestTupleGa(description, admin_enabled, bandwidth,
-                                      partner_metadata, mtu)
+                                      partner_metadata, mtu, stack_type,
+                                      candidate_ipv6_subnets,
+                                      cloud_router_ipv6_interface_id,
+                                      customer_router_ipv6_interface_id)
     ]
     if not only_generate_request:
       resources = self._compute_client.MakeRequests(requests)

@@ -205,9 +205,9 @@ class AppEngineRouting(_messages.Message):
       is available when the job is attempted. Requests can only be sent to a
       specific instance if [manual scaling is used in App Engine
       Standard](https://cloud.google.com/appengine/docs/python/an-overview-of-
-      app-engine?hl=en_US#scaling_types_and_instance_classes). App Engine Flex
-      does not support instances. For more information, see [App Engine
-      Standard request
+      app-engine?#scaling_types_and_instance_classes). App Engine Flex does
+      not support instances. For more information, see [App Engine Standard
+      request
       routing](https://cloud.google.com/appengine/docs/standard/python/how-
       requests-are-routed) and [App Engine Flex request
       routing](https://cloud.google.com/appengine/docs/flexible/python/how-
@@ -556,7 +556,7 @@ class Job(_messages.Message):
       can be viewed in execution logs. Cloud Scheduler will retry the job
       according to the RetryConfig. The allowed duration for this deadline is:
       * For HTTP targets, between 15 seconds and 30 minutes. * For App Engine
-      HTTP targets, between 15 seconds and 24 hours 15 seconds. * For PubSub
+      HTTP targets, between 15 seconds and 24 hours 15 seconds. * For Pub/Sub
       targets, this field is ignored.
     description: Optionally caller-specified in CreateJob or UpdateJob. A
       human-readable description for the job. This string must not contain
@@ -585,7 +585,7 @@ class Job(_messages.Message):
     schedule: Required, except when used with UpdateJob. Describes the
       schedule on which the job will be executed. The schedule can be either
       of the following types: *
-      [Crontab](http://en.wikipedia.org/wiki/Cron#Overview) * English-like
+      [Crontab](https://en.wikipedia.org/wiki/Cron#Overview) * English-like
       [schedule](https://cloud.google.com/scheduler/docs/configuring/cron-job-
       schedules) As a general rule, execution `n + 1` of a job will not begin
       until execution `n` has finished. Cloud Scheduler will never allow two
@@ -890,8 +890,8 @@ class PubsubTarget(_messages.Message):
       either non-empty data, or at least one attribute.
     topicName: Required. The name of the Cloud Pub/Sub topic to which messages
       will be published when a job is delivered. The topic name must be in the
-      same format as required by PubSub's [PublishRequest.name](https://cloud.
-      google.com/pubsub/docs/reference/rpc/google.pubsub.v1#publishrequest),
+      same format as required by Pub/Sub's [PublishRequest.name](https://cloud
+      .google.com/pubsub/docs/reference/rpc/google.pubsub.v1#publishrequest),
       for example `projects/PROJECT_ID/topics/TOPIC_ID`. The topic must be in
       the same project as the Cloud Scheduler job.
   """

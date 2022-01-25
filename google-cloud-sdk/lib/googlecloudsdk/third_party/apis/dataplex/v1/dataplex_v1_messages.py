@@ -2328,8 +2328,9 @@ class GoogleCloudDataplexV1Job(_messages.Message):
     name: Output only. The relative resource name of the job, of the form:
       projects/{project_number}/locations/{location_id}/lakes/{lake_id}/
       tasks/{task_id}/jobs/{job_id}.
-    retryCount: Output only. The number of times the job has been retried
-      (excluding the initial attempt).
+    retryCount: Output only. TODO (saurabhmaurya): Use int32 instead of
+      uint32. The number of times the job has been retried (excluding the
+      initial attempt).
     service: Output only. The underlying service running a job.
     serviceJob: Output only. The full resource name for the job run under a
       particular service.
@@ -2562,6 +2563,7 @@ class GoogleCloudDataplexV1LakeMetastoreStatus(_messages.Message):
     StateValueValuesEnum: Current state of association.
 
   Fields:
+    endpoint: The URI of the endpoint used to access the Metastore service.
     message: Additional information about the current status.
     state: Current state of association.
     updateTime: Last update time of the metastore status of the lake.
@@ -2583,9 +2585,10 @@ class GoogleCloudDataplexV1LakeMetastoreStatus(_messages.Message):
     UPDATING = 3
     ERROR = 4
 
-  message = _messages.StringField(1)
-  state = _messages.EnumField('StateValueValuesEnum', 2)
-  updateTime = _messages.StringField(3)
+  endpoint = _messages.StringField(1)
+  message = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  updateTime = _messages.StringField(4)
 
 
 class GoogleCloudDataplexV1ListActionsResponse(_messages.Message):
@@ -2855,6 +2858,7 @@ class GoogleCloudDataplexV1SchemaPartitionField(_messages.Message):
       TIME: Time field.
       RECORD: Structured field. Nested fields that define the structure of the
         map. If all nested fields are nullable, this field represents a union.
+      NULL: Null field that does not have values.
     """
     TYPE_UNSPECIFIED = 0
     BOOLEAN = 1
@@ -2871,6 +2875,7 @@ class GoogleCloudDataplexV1SchemaPartitionField(_messages.Message):
     DATE = 12
     TIME = 13
     RECORD = 14
+    NULL = 15
 
   name = _messages.StringField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -2926,6 +2931,7 @@ class GoogleCloudDataplexV1SchemaSchemaField(_messages.Message):
       TIME: Time field.
       RECORD: Structured field. Nested fields that define the structure of the
         map. If all nested fields are nullable, this field represents a union.
+      NULL: Null field that does not have values.
     """
     TYPE_UNSPECIFIED = 0
     BOOLEAN = 1
@@ -2942,6 +2948,7 @@ class GoogleCloudDataplexV1SchemaSchemaField(_messages.Message):
     DATE = 12
     TIME = 13
     RECORD = 14
+    NULL = 15
 
   description = _messages.StringField(1)
   fields = _messages.MessageField('GoogleCloudDataplexV1SchemaSchemaField', 2, repeated=True)
@@ -3250,8 +3257,7 @@ class GoogleCloudDataplexV1TaskInfrastructureSpec(_messages.Message):
   Fields:
     batch: Compute resources needed for a Task when using Dataproc Serverless.
     containerImage: Container Image Runtime Configuration.
-    vpcNetwork: A GoogleCloudDataplexV1TaskInfrastructureSpecVpcNetwork
-      attribute.
+    vpcNetwork: Vpc network.
   """
 
   batch = _messages.MessageField('GoogleCloudDataplexV1TaskInfrastructureSpecBatchComputeResources', 1)
@@ -3350,28 +3356,29 @@ class GoogleCloudDataplexV1TaskSparkTaskConfig(_messages.Message):
   r"""User-specified config for running a Spark task.
 
   Fields:
-    archiveUris: Optional. GCS URIs of archives to be extracted into the
-      working directory of each executor. Supported file types: .jar, .tar,
-      .tar.gz, .tgz, and .zip.
-    fileUris: Optional. GCS URIs of files to be placed in the working
-      directory of each executor.
+    archiveUris: Optional. Cloud Storage URIs of archives to be extracted into
+      the working directory of each executor. Supported file types: .jar,
+      .tar, .tar.gz, .tgz, and .zip.
+    fileUris: Optional. Cloud Storage URIs of files to be placed in the
+      working directory of each executor.
     infrastructureSpec: Optional. Infrastructure specification for the
       execution.
     mainClass: The name of the driver's main class. The jar file that contains
       the class must be in the default CLASSPATH or specified in
       jar_file_uris. The execution args are passed in as a sequence of named
       process arguments (--key=value).
-    mainJarFileUri: The GCS URI of the jar file that contains the main class.
-      The execution args are passed in as a sequence of named process
-      arguments (--key=value).
-    pythonScriptFile: The GCS URI of the main Python file to use as the
-      driver. Must be a .py file. The execution args are passed in as a
+    mainJarFileUri: The Cloud Storage URI of the jar file that contains the
+      main class. The execution args are passed in as a sequence of named
+      process arguments (--key=value).
+    pythonScriptFile: The Gcloud Storage URI of the main Python file to use as
+      the driver. Must be a .py file. The execution args are passed in as a
       sequence of named process arguments (--key=value).
     sqlScript: The query text. The execution args are used to declare a set of
       script variables (set key="value";).
-    sqlScriptFile: A reference to a query file. This can be the GCS URI of the
-      query file or it can the path to a SqlScript Content. The execution args
-      are used to declare a set of script variables (set key="value";).
+    sqlScriptFile: A reference to a query file. This can be the Cloud Storage
+      URI of the query file or it can the path to a SqlScript Content. The
+      execution args are used to declare a set of script variables (set
+      key="value";).
   """
 
   archiveUris = _messages.StringField(1, repeated=True)

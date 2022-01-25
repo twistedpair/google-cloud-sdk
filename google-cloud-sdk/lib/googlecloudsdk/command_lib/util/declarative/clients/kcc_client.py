@@ -127,6 +127,14 @@ class ExportPathException(client_base.ClientException):
   """Exception for any errors raised creating export Path."""
 
 
+class ApplyException(client_base.ClientException):
+  """General Exception for any errors raised applying configuration path."""
+
+
+class ApplyPathException(ApplyException):
+  """Exception for any errors raised reading apply configuration path."""
+
+
 # TODO(b/181223251): Remove this workaround once config-connector is updated.
 def _NormalizeResourceFormat(resource_format):
   """Translate Resource Format from gcloud values to config-connector values."""
@@ -395,7 +403,7 @@ class KccClient(client_base.DeclarativeClient):
                                 'Ensure that enclosing path '
                                 'exists and is writeable.'.format(path))
 
-  def _GetBinaryCommand(self, args, command_name, resource_uri=None):
+  def _GetBinaryExportCommand(self, args, command_name, resource_uri=None):
     # Populate universal flags to command.
     cmd = [
         self._export_service, '--oauth2-token',
@@ -406,7 +414,8 @@ class KccClient(client_base.DeclarativeClient):
     if command_name == 'export':
       if not resource_uri:
         raise ValueError(
-            '`_GetBinaryCommand` requires a resource uri for export commands.')
+            '`_GetBinaryExportCommand` requires a '
+            'resource uri for export commands.')
       cmd.extend([resource_uri])
 
     # Populate flags for bulk-export command.
@@ -445,7 +454,7 @@ class KccClient(client_base.DeclarativeClient):
     normalized_resource_uri = _NormalizeUri(resource_uri)
     with progress_tracker.ProgressTracker(
         message='Exporting resources', aborted_message='Aborted Export.'):
-      cmd = self._GetBinaryCommand(
+      cmd = self._GetBinaryExportCommand(
           args=args,
           command_name='export',
           resource_uri=normalized_resource_uri)
@@ -470,7 +479,7 @@ class KccClient(client_base.DeclarativeClient):
     return exit_code
 
   def ExportAll(self, args, collection):
-    cmd = self._GetBinaryCommand(args, 'bulk-export')
+    cmd = self._GetBinaryExportCommand(args, 'bulk-export')
     asset_type = [_TranslateCollectionToAssetType(collection)]
     asset_list_input = _GetAssetInventoryListInput(
         folder=getattr(args, 'folder', None),
@@ -479,7 +488,7 @@ class KccClient(client_base.DeclarativeClient):
         org=getattr(args, 'organization', None),
         asset_types_filter=asset_type,
         filter_expression=getattr(args, 'filter', None))
-    cmd = self._GetBinaryCommand(args, 'bulk-export')
+    cmd = self._GetBinaryExportCommand(args, 'bulk-export')
     return self._CallBulkExport(cmd, args, asset_list_input)
 
   def _CallBulkExport(self, cmd, args, asset_list_input=None):
@@ -518,7 +527,7 @@ class KccClient(client_base.DeclarativeClient):
 
   def BulkExport(self, args):
     CheckForAssetInventoryEnablementWithPrompt(getattr(args, 'project', None))
-    cmd = self._GetBinaryCommand(args, 'bulk-export')
+    cmd = self._GetBinaryExportCommand(args, 'bulk-export')
     return self._CallBulkExport(cmd, args, asset_list_input=None)
 
   def _ParseKindTypesFileData(self, file_data):
@@ -541,7 +550,7 @@ class KccClient(client_base.DeclarativeClient):
         org=getattr(args, 'organization', None),
         krm_kind_filter=kind_args,
         filter_expression=getattr(args, 'filter', None))
-    cmd = self._GetBinaryCommand(args, 'bulk-export')
+    cmd = self._GetBinaryExportCommand(args, 'bulk-export')
     return self._CallBulkExport(cmd, args, asset_list_input=asset_list_input)
 
   def _CallPrintResources(self, output_format='table'):
@@ -621,3 +630,40 @@ class KccClient(client_base.DeclarativeClient):
       except resource_name_translator.ResourceIdentifierNotFoundError:
         continue  # no KRM mapping for this Asset Inventory Type
     return sorted(exportable_kinds, key=lambda x: x.kind)
+
+  def ApplyConfig(self, input_path, try_resolve_refs=False):
+    """Call apply from config-connector binary.
+
+    Applys the KRM config file specified by `path`, creating or updating the
+    related GCP resources. If `try_resolve_refs` is supplied, then command will
+    attempt to resolve the references to related resources in config,
+    creating a directed graph of related resources and apply them in order.
+
+    Args:
+      input_path: string, KRM config file to apply.
+      try_resolve_refs: boolean, if true attempt to resolve the references to
+      related resources in config.
+
+    Returns:
+      Yaml Object representing the updated state of the resource if successful.
+
+    Raises:
+      ApplyException: if an error occurs applying config.
+      ApplyPathException: if an error occurs reading file path.
+    """
+    del try_resolve_refs  # not used currently
+    if not input_path or not input_path.strip() or not os.path.isfile(
+        input_path):
+      raise ApplyPathException(
+          'Resource file path [{}] not found.'.format(input_path))
+
+    cmd = [
+        self._export_service, 'apply', '-i', input_path, '--oauth2-token',
+        self._GetToken()
+    ]
+    exit_code, output_value, error_value = _ExecuteBinary(cmd)
+    if exit_code != 0:
+      raise ApplyException(
+          'Error occured while applying configuration path [{}]: [{}]'.format(
+              input_path, error_value))
+    return yaml.load(output_value)

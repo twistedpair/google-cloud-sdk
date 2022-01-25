@@ -23,6 +23,7 @@ import functools
 import os
 import re
 import sys
+import textwrap
 
 from googlecloudsdk.core import argv_utils
 from googlecloudsdk.core import config
@@ -943,6 +944,7 @@ class _SectionApiEndpointOverrides(_Section):
         'accesscontextmanager', command='gcloud access-context-manager')
     self.alloydb = self._Add('alloydb', command='gcloud alloydb', hidden=True)
     self.anthosevents = self._Add('anthosevents', command='gcloud anthos')
+    self.ai = self._Add('ai', command='gcloud ai')
     self.aiplatform = self._Add('aiplatform', command='gcloud ai-platform')
     self.apigateway = self._Add('apigateway', command='gcloud api-gateway')
     self.apigee = self._Add('apigee', command='gcloud apigee')
@@ -1346,17 +1348,17 @@ class _SectionBilling(_Section):
     self.quota_project = self._Add(
         'quota_project',
         default=_SectionBilling.CURRENT_PROJECT,
-        help_text="""\
+        help_text=textwrap.dedent("""\
         Project that will be charged quota for the
         operations performed in `gcloud`. When unset, the default is
         [CURRENT_PROJECT]; this will charge quota against the currently set
         project for operations performed on it. Additionally, some existing
         APIs will continue to use a shared project for quota by default, when
         this property is unset.
-
+        +
         If you need to operate on one project, but
         need quota against a different project, you can use this property to
-        specify the alternate project.""")
+        specify the alternate project."""))
 
 
 class _SectionBlueprints(_Section):
@@ -1797,18 +1799,18 @@ class _SectionCore(_Section):
         default='never',
         hidden=False,
         validator=ShowStructuredLogsValidator,
-        help_text="""\
+        help_text=textwrap.dedent("""\
         Control when JSON-structured log messages for the current verbosity
         level (and above) will be written to standard error. If this property
         is disabled, logs are formatted as `text` by default.
-
+        +
         Valid values are:
             *   `never` - Log messages as text
             *   `always` - Always log messages as JSON
             *   `log` - Only log messages as JSON if stderr is a file
             *    `terminal` - Only log messages as JSON if stderr is a terminal
-
-        If unset, default is `never`.""")
+        +
+        If unset, default is `never`."""))
 
     def MaxLogDaysValidator(max_log_days):
       if max_log_days is None:
@@ -2428,17 +2430,17 @@ class _SectionMetastore(_Section):
     self.tier = self._Add(
         'tier',
         validator=self.TierValidator,
-        help_text="""\
+        help_text=textwrap.dedent("""\
         Default tier to use when creating Dataproc Metastore services.
         When a `tier` is required but not provided by a flag,
         the command will fall back to this value, if set.
-
+        +
         Valid values are:
             *   `developer` - The developer tier provides limited scalability
             and no fault tolerance. Good for low-cost proof-of-concept.
             *   `enterprise` - The enterprise tier provides multi-zone high
             availability, and sufficient scalability for enterprise-level
-            Dataproc Metastore workloads.""",
+            Dataproc Metastore workloads."""),
         choices=[x.name for x in list(_SectionMetastore.Tier)])
 
 

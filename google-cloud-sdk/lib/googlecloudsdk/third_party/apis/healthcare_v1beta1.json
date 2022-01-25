@@ -1829,7 +1829,7 @@
           "type": "string"
         },
         "config": {
-          "description": "De-identify configuration.",
+          "description": "Deidentify configuration.",
           "$ref": "DeidentifyConfig"
         },
         "filterConfig": {

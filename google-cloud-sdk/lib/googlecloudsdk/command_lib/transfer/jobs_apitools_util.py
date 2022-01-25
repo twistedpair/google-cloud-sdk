@@ -190,6 +190,15 @@ def _create_or_modify_transfer_spec(job, args, messages):
   if args.source_agent_pool:
     job.transferSpec.sourceAgentPoolName = name_util.add_agent_pool_prefix(
         args.source_agent_pool)
+  if args.intermediate_storage_path:
+    intermediate_storage_url = storage_url.storage_url_from_string(
+        args.intermediate_storage_path)
+    job.transferSpec.gcsIntermediateDataLocation = messages.GcsData(
+        bucketName=intermediate_storage_url.bucket_name,
+        path=intermediate_storage_url.object_name)
+  if args.manifest_file:
+    job.transferSpec.transferManifest = messages.TransferManifest(
+        location=args.manifest_file)
 
   _create_or_modify_creds(job.transferSpec, args, messages)
   _create_or_modify_object_conditions(job.transferSpec, args, messages)

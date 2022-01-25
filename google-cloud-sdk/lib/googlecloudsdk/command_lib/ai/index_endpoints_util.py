@@ -21,6 +21,14 @@ from __future__ import unicode_literals
 from googlecloudsdk.core import resources
 
 
+def BuildParentOperation(project_id, location_id, index_endpoint_id,
+                         operation_id):
+  """Build multi-parent operation."""
+  return ParseIndexEndpointOperation(
+      'projects/{}/locations/{}/indexEndpoints/{}/operations/{}'.format(
+          project_id, location_id, index_endpoint_id, operation_id))
+
+
 def ParseIndexEndpointOperation(operation_name):
   """Parse operation relative resource name to the operation reference object.
 

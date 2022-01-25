@@ -1674,7 +1674,7 @@
           "type": "string"
         },
         "hostnames": {
-          "description": "Required. Service hostnames with an optional port for which this route describes traffic. Format: [:] Hostname is the fully qualified domain name of a network host. This matches the RFC 1123 definition of a hostname with 2 notable exceptions: - IPs are not allowed. - A hostname may be prefixed with a wildcard label (*.). The wildcard label must appear by itself as the first label. Hostname can be \u201Cprecise\u201D which is a domain name without the terminating dot of a network host (e.g. \u201Cfoo.example.com\u201D) or \u201Cwildcard\u201D, which is a domain name prefixed with a single wildcard label (e.g. *.example.com). Note that as per RFC1035 and RFC1123, a label must consist of lower case alphanumeric characters or \u2018-\u2019, and must start and end with an alphanumeric character. No other punctuation is allowed. The routes associated with a Router must have unique hostnames. If you attempt to attach multiple routes with conflicting hostnames, the configuration will be rejected. For example, while it is acceptable for routes for the hostnames \"*.foo.bar.com\" and \"*.bar.com\" to be associated with the same route, it is not possible to associate two routes both with \"*.bar.com\" or both with \"bar.com\". In the case that multiple routes match the hostname, the most specific match will be selected. For example, \"foo.bar.baz.com\" will take precedence over \"*.bar.baz.com\" and \"*.bar.baz.com\" will take precedence over \"*.baz.com\". If a port is specified, then gRPC clients must use the channel URI with the port to match this rule (i.e. \"xds:\/\/\/service:123\"), otherwise they must supply the URI without a port (i.e. \"xds:\/\/\/service\").",
+          "description": "Required. Service hostnames with an optional port for which this route describes traffic. Format: [:] Hostname is the fully qualified domain name of a network host. This matches the RFC 1123 definition of a hostname with 2 notable exceptions: - IPs are not allowed. - A hostname may be prefixed with a wildcard label (*.). The wildcard label must appear by itself as the first label. Hostname can be \"precise\" which is a domain name without the terminating dot of a network host (e.g. \"foo.example.com\") or \"wildcard\", which is a domain name prefixed with a single wildcard label (e.g. *.example.com). Note that as per RFC1035 and RFC1123, a label must consist of lower case alphanumeric characters or '-', and must start and end with an alphanumeric character. No other punctuation is allowed. The routes associated with a Router must have unique hostnames. If you attempt to attach multiple routes with conflicting hostnames, the configuration will be rejected. For example, while it is acceptable for routes for the hostnames \"*.foo.bar.com\" and \"*.bar.com\" to be associated with the same route, it is not possible to associate two routes both with \"*.bar.com\" or both with \"bar.com\". In the case that multiple routes match the hostname, the most specific match will be selected. For example, \"foo.bar.baz.com\" will take precedence over \"*.bar.baz.com\" and \"*.bar.baz.com\" will take precedence over \"*.baz.com\". If a port is specified, then gRPC clients must use the channel URI with the port to match this rule (i.e. \"xds:\/\/\/service:123\"), otherwise they must supply the URI without a port (i.e. \"xds:\/\/\/service\").",
           "type": "array",
           "items": {
             "type": "string"
@@ -1824,18 +1824,6 @@
           "description": "Optional. The specification for fault injection introduced into traffic to test the resiliency of clients to destination service failure. As part of fault injection, when clients send requests to a destination, delays can be introduced on a percentage of requests before sending those requests to the destination service. Similarly requests from clients can be aborted by for a percentage of requests. timeout and retry_policy will be ignored by clients that are configured with a fault_injection_policy",
           "$ref": "GrpcRouteFaultInjectionPolicy"
         },
-        "requestHeaderModifier": {
-          "description": "Optional. The specification for modifying the headers of a matching request prior to delivery of the request to the destination. Cannot be set if the route is attached to a Router whose type is PROXYLESS_GRPC.",
-          "$ref": "GrpcRouteHeaderModifier"
-        },
-        "responseHeaderModifier": {
-          "description": "Optional. The specification for modifying the headers of a response prior to sending the response back to the client. Cannot be set if the route is attached to a Router whose type is PROXYLESS_GRPC.",
-          "$ref": "GrpcRouteHeaderModifier"
-        },
-        "urlRewrite": {
-          "description": "Optional. The specification for rewrite URL before forwarding requests to the destination. Cannot be set if the route is attached to a Router whose type is PROXYLESS_GRPC.",
-          "$ref": "GrpcRouteURLRewrite"
-        },
         "timeout": {
           "description": "Optional. Specifies the timeout for selected route. Timeout is computed from the time the request has been fully processed (i.e. end of stream) up until the response has been completely processed. Timeout includes all retries.",
           "type": "string",
@@ -1844,10 +1832,6 @@
         "retryPolicy": {
           "description": "Optional. Specifies the retry policy associated with this route.",
           "$ref": "GrpcRouteRetryPolicy"
-        },
-        "requestMirrorPolicy": {
-          "description": "Optional. Specifies the policy on how requests intended for the route's destination are mirrored to a separate mirrored destination. The proxy will not wait for the mirrored destination to respond before returning the response. Prior to sending traffic to the mirrored service, the host \/ authority header is suffixed with -shadow. Cannot be set if the route is attached to a Router whose type is PROXYLESS_GRPC.",
-          "$ref": "GrpcRouteRequestMirrorPolicy"
         }
       }
     },
@@ -1916,49 +1900,6 @@
         }
       }
     },
-    "GrpcRouteHeaderModifier": {
-      "id": "GrpcRouteHeaderModifier",
-      "description": "Specifies how to modify gRPC headers in a request or a response.",
-      "type": "object",
-      "properties": {
-        "set": {
-          "description": "Completely overwrite\/replace the headers with given map where key is the name of the header, value is the value of the header.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "add": {
-          "description": "Add the headers with given map where key is the name of the header, value is the value of the header.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "remove": {
-          "description": "Remove headers (matching by header names) specified in the list.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "GrpcRouteURLRewrite": {
-      "id": "GrpcRouteURLRewrite",
-      "description": "The specification to modify the URL of the request, prior to forwarding the request to the destination.",
-      "type": "object",
-      "properties": {
-        "pathPrefixRewrite": {
-          "description": "Prior to forwarding the request to the selected destination, the matching portion of the requests path is replaced by this value.",
-          "type": "string"
-        },
-        "hostRewrite": {
-          "description": "Prior to forwarding the request to the selected destination, the requests host header is replaced by this value.",
-          "type": "string"
-        }
-      }
-    },
     "GrpcRouteRetryPolicy": {
       "id": "GrpcRouteRetryPolicy",
       "description": "The specifications for retries.",
@@ -1975,22 +1916,6 @@
           "description": "Specifies the allowed number of retries. This number must be > 0. If not specpfied, default to 1.",
           "type": "integer",
           "format": "uint32"
-        },
-        "perTryTimeout": {
-          "description": "If not specified, will use the timeout set in the RouteAction. If timeout is not set in the RouteAction, will use the largest timeout among all Backend Services associated with the route.",
-          "type": "string",
-          "format": "google-duration"
-        }
-      }
-    },
-    "GrpcRouteRequestMirrorPolicy": {
-      "id": "GrpcRouteRequestMirrorPolicy",
-      "description": "Specifies the policy on how requests are mirrored to a separate mirrored destination service. The proxy does not wait for responses from the mirrored service. Prior to sending traffic to the mirrored service, the host\/authority header is suffixed with -shadow.",
-      "type": "object",
-      "properties": {
-        "destination": {
-          "description": "The destination the requests will be mirrored to. The weight of the destination will be ignored.",
-          "$ref": "GrpcRouteDestination"
         }
       }
     },
@@ -2680,7 +2605,7 @@
       "type": "object",
       "properties": {
         "matches": {
-          "description": "Optional. RouteMatch defines the predicate used to match requests to a given action. Multiple match types are \u201COR\u201Ded for evaluation. If no routeMatch field is specified, this rule will unconditionally match traffic.",
+          "description": "Optional. RouteMatch defines the predicate used to match requests to a given action. Multiple match types are \"OR\"ed for evaluation. If no routeMatch field is specified, this rule will unconditionally match traffic.",
           "type": "array",
           "items": {
             "$ref": "TcpRouteRouteMatch"
@@ -2694,11 +2619,11 @@
     },
     "TcpRouteRouteMatch": {
       "id": "TcpRouteRouteMatch",
-      "description": "RouteMatch defines the predicate used to match requests to a given action. Multiple match types are \u201COR\u201Ded for evaluation. If no routeMatch field is specified, this rule will unconditionally match traffic.",
+      "description": "RouteMatch defines the predicate used to match requests to a given action. Multiple match types are \"OR\"ed for evaluation. If no routeMatch field is specified, this rule will unconditionally match traffic.",
       "type": "object",
       "properties": {
         "address": {
-          "description": "Required. Must be specified in the CIDR range format. A CIDR range consists of an IP Address and a prefix length to construct the subnet mask. By default, the prefix length is 32 (i.e. matches a single IP address). Only IPV4 addresses are supported. Examples: \u201C10.0.0.1\u201D - matches against this exact IP address. \u201C10.0.0.0\/8\" - matches against any IP address within the 10.0.0.0 subnet and 255.255.255.0 mask. \"0.0.0.0\/0\" - matches against any IP address'.",
+          "description": "Required. Must be specified in the CIDR range format. A CIDR range consists of an IP Address and a prefix length to construct the subnet mask. By default, the prefix length is 32 (i.e. matches a single IP address). Only IPV4 addresses are supported. Examples: \"10.0.0.1\" - matches against this exact IP address. \"10.0.0.0\/8\" - matches against any IP address within the 10.0.0.0 subnet and 255.255.255.0 mask. \"0.0.0.0\/0\" - matches against any IP address'.",
           "type": "string"
         },
         "port": {
@@ -2990,26 +2915,8 @@
           "description": "Optional. A free-text description of the resource. Max length 1024 characters.",
           "type": "string"
         },
-        "type": {
-          "description": "Immutable. The type of the Mesh resource.",
-          "type": "string",
-          "enumDescriptions": [
-            "The type of Mesh is unspecified.",
-            "The Mesh is used in Proxyless gRPC model. Routes being referenced must be gRPC routes for this type.",
-            "The Mesh is used in customer-managed sidecar proxy model."
-          ],
-          "enum": [
-            "TYPE_UNSPECIFIED",
-            "PROXYLESS_GRPC",
-            "SIDECAR"
-          ]
-        },
-        "scope": {
-          "description": "Optional. Scope defines a logical configuration boundary for mesh. The routes pointing to this particular mesh resource defines the mesh configuration and the scope field name is used by mesh clients to receive that configuration. There cannot be more than one Mesh resource instance of the same type (SIDECAR or PROXYLESS_GRPC) with the same scope. Max length 64 characters. Scope should start with a letter and can only have letters, numbers, hyphens. If no scope is supplied 'default' is used as the scope.",
-          "type": "string"
-        },
         "interceptionPort": {
-          "description": "Optional. If set to a valid TCP port (1-65535), instructs the SIDECAR proxy to listen on the specified port of localhost (127.0.0.1) address. The SIDECAR proxy will expect all traffic to be redirected to this port regardless of its actual ip:port destination. If unset, a port '15001' is used as the interception port. This field is only valid if the type of Mesh is SIDECAR.",
+          "description": "Optional. If set to a valid TCP port (1-65535), instructs the SIDECAR proxy to listen on the specified port of localhost (127.0.0.1) address. The SIDECAR proxy will expect all traffic to be redirected to this port regardless of its actual ip:port destination. If unset, a port '15001' is used as the interception port. This will is applicable only for sidecar proxy deployments.",
           "type": "integer",
           "format": "int32"
         }

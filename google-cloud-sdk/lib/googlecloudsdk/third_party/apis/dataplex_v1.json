@@ -532,7 +532,8 @@
             "Date and time field.",
             "Date field.",
             "Time field.",
-            "Structured field. Nested fields that define the structure of the map. If all nested fields are nullable, this field represents a union."
+            "Structured field. Nested fields that define the structure of the map. If all nested fields are nullable, this field represents a union.",
+            "Null field that does not have values."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
@@ -549,7 +550,8 @@
             "TIMESTAMP",
             "DATE",
             "TIME",
-            "RECORD"
+            "RECORD",
+            "NULL"
           ]
         },
         "mode": {
@@ -604,7 +606,8 @@
             "Date and time field.",
             "Date field.",
             "Time field.",
-            "Structured field. Nested fields that define the structure of the map. If all nested fields are nullable, this field represents a union."
+            "Structured field. Nested fields that define the structure of the map. If all nested fields are nullable, this field represents a union.",
+            "Null field that does not have values."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
@@ -621,7 +624,8 @@
             "TIMESTAMP",
             "DATE",
             "TIME",
-            "RECORD"
+            "RECORD",
+            "NULL"
           ]
         }
       }
@@ -922,6 +926,10 @@
           "description": "Last update time of the metastore status of the lake.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "endpoint": {
+          "description": "The URI of the endpoint used to access the Metastore service.",
+          "type": "string"
         }
       }
     },
@@ -1871,7 +1879,7 @@
       "type": "object",
       "properties": {
         "mainJarFileUri": {
-          "description": "The GCS URI of the jar file that contains the main class. The execution args are passed in as a sequence of named process arguments (--key=value).",
+          "description": "The Cloud Storage URI of the jar file that contains the main class. The execution args are passed in as a sequence of named process arguments (--key=value).",
           "type": "string"
         },
         "mainClass": {
@@ -1879,11 +1887,11 @@
           "type": "string"
         },
         "pythonScriptFile": {
-          "description": "The GCS URI of the main Python file to use as the driver. Must be a .py file. The execution args are passed in as a sequence of named process arguments (--key=value).",
+          "description": "The Gcloud Storage URI of the main Python file to use as the driver. Must be a .py file. The execution args are passed in as a sequence of named process arguments (--key=value).",
           "type": "string"
         },
         "sqlScriptFile": {
-          "description": "A reference to a query file. This can be the GCS URI of the query file or it can the path to a SqlScript Content. The execution args are used to declare a set of script variables (set key=\"value\";).",
+          "description": "A reference to a query file. This can be the Cloud Storage URI of the query file or it can the path to a SqlScript Content. The execution args are used to declare a set of script variables (set key=\"value\";).",
           "type": "string"
         },
         "sqlScript": {
@@ -1891,14 +1899,14 @@
           "type": "string"
         },
         "fileUris": {
-          "description": "Optional. GCS URIs of files to be placed in the working directory of each executor.",
+          "description": "Optional. Cloud Storage URIs of files to be placed in the working directory of each executor.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "archiveUris": {
-          "description": "Optional. GCS URIs of archives to be extracted into the working directory of each executor. Supported file types: .jar, .tar, .tar.gz, .tgz, and .zip.",
+          "description": "Optional. Cloud Storage URIs of archives to be extracted into the working directory of each executor. Supported file types: .jar, .tar, .tar.gz, .tgz, and .zip.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1924,6 +1932,7 @@
           "$ref": "GoogleCloudDataplexV1TaskInfrastructureSpecContainerImageRuntime"
         },
         "vpcNetwork": {
+          "description": "Vpc network.",
           "$ref": "GoogleCloudDataplexV1TaskInfrastructureSpecVpcNetwork"
         }
       }
@@ -2089,7 +2098,7 @@
           ]
         },
         "retryCount": {
-          "description": "Output only. The number of times the job has been retried (excluding the initial attempt).",
+          "description": "Output only. TODO (saurabhmaurya): Use int32 instead of uint32. The number of times the job has been retried (excluding the initial attempt).",
           "readOnly": true,
           "type": "integer",
           "format": "uint32"

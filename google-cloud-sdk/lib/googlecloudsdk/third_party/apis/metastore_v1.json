@@ -407,6 +407,20 @@
         "encryptionConfig": {
           "description": "Immutable. Information used to configure the Dataproc Metastore service to encrypt customer data at rest. Cannot be updated.",
           "$ref": "EncryptionConfig"
+        },
+        "databaseType": {
+          "description": "Immutable. The database type that the Metastore service stores its data.",
+          "type": "string",
+          "enumDescriptions": [
+            "The DATABASE_TYPE is not set.",
+            "MySQL is used to persist the metastore data.",
+            "Spanner is used to persist the metastore data."
+          ],
+          "enum": [
+            "DATABASE_TYPE_UNSPECIFIED",
+            "MYSQL",
+            "SPANNER"
+          ]
         }
       }
     },

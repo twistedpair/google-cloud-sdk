@@ -1380,7 +1380,7 @@
     },
     "GoogleCloudApigeeV1TlsInfo": {
       "id": "GoogleCloudApigeeV1TlsInfo",
-      "description": "TLS configuration information for VirtualHosts and TargetServers.",
+      "description": "TLS configuration information for virtual hosts and TargetServers.",
       "type": "object",
       "properties": {
         "enabled": {
@@ -2411,7 +2411,7 @@
           "type": "string"
         },
         "ipRange": {
-          "description": "Optional. IP range represents the customer-provided CIDR block of length 22 that will be used for the Apigee instance creation. This optional range, if provided, should be freely available as part of larger named range the customer has allocated to the Service Networking peering. If this is not provided, Apigee will automatically request for any available \/22 CIDR block from Service Networking. The customer should use this CIDR block for configuring their firewall needs to allow traffic from Apigee. Input format: \"a.b.c.d\/22\"",
+          "description": "Optional. IP range represents the customer-provided CIDR block of length 22 that will be used for the Apigee instance creation. This optional range, if provided, should be freely available as part of larger named range the customer has allocated to the Service Networking peering. If this is not provided, Apigee will automatically request for any available \/22 CIDR block from Service Networking. The customer should use this CIDR block for configuring their firewall needs to allow traffic from Apigee. Input format: \"a.b.c.d\/22\", Output format: a.b.c.d\/22, e.f.g.h\/28\"",
           "type": "string"
         }
       }
@@ -5042,7 +5042,7 @@
       "type": "object",
       "properties": {
         "adjustment": {
-          "description": "* A positive value of `adjustment` means that that the API provider wishes to adjust the balance for an over-charged developer i.e. the balance of the developer will increase. * A negative value of `adjustment` means that that the API provider wishes to adjust the balance for an under-charged developer i.e. the balance of the developer will decrease.",
+          "description": "* A positive value of `adjustment` means that that the API provider wants to adjust the balance for an under-charged developer i.e. the balance of the developer will decrease. * A negative value of `adjustment` means that that the API provider wants to adjust the balance for an over-charged developer i.e. the balance of the developer will increase.",
           "$ref": "GoogleTypeMoney"
         }
       }
@@ -5362,19 +5362,19 @@
     },
     "GoogleCloudApigeeV1KeyValueMap": {
       "id": "GoogleCloudApigeeV1KeyValueMap",
-      "description": "A collection of key, value string pairs",
+      "description": "Collection of key\/value string pairs.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. The id of the key value map.",
+          "description": "Required. ID of the key value map.",
           "type": "string"
         },
         "encrypted": {
-          "description": "Optional. If `true` entry values will be encrypted.",
+          "description": "Optional. Flag that specifies whether entry values will be encrypted. Enable to encrypt entry values.",
           "type": "boolean"
         },
         "resourceName": {
-          "description": "Output only. name refers to the resource URI on which the key value map is based on.",
+          "description": "Output only. Resource URI on which the key value map is based.",
           "readOnly": true,
           "type": "string"
         }
@@ -5386,29 +5386,29 @@
       "type": "object",
       "properties": {
         "keyValueEntries": {
-          "description": "One or more Key value map key and its value.",
+          "description": "One or more key value map keys and values.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudApigeeV1KeyValueEntry"
           }
         },
         "nextPageToken": {
-          "description": "A token that can be sent as `next_page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "description": "Token that can be sent as `next_page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
           "type": "string"
         }
       }
     },
     "GoogleCloudApigeeV1KeyValueEntry": {
       "id": "GoogleCloudApigeeV1KeyValueEntry",
-      "description": "Key value map pair, where the value represents the data associated with the corresponding key.",
+      "description": "Key value map pair where the value represents the data associated with the corresponding key.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name points to the resource URI which helps in identifying the scope of the key value map entries.",
+          "description": "Resource URI that can be used to identify the scope of the key value map entries.",
           "type": "string"
         },
         "value": {
-          "description": "Required. The data or the payload that is being retrieved and associated with the unique key.",
+          "description": "Required. Data or payload that is being retrieved and associated with the unique key.",
           "type": "string"
         }
       }
@@ -6975,7 +6975,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The name of the environment in which to create the key value map. Must be of the form `organizations\/{organization}\/apis\/{api}`.",
+                      "description": "Required. Name of the environment in which to create the key value map. Use the following structure in your request: `organizations\/{org}\/apis\/{api}`",
                       "pattern": "^organizations\/[^\/]+\/apis\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -6994,7 +6994,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a key value map in an api proxy."
+                  "description": "Creates a key value map in an API proxy."
                 },
                 "delete": {
                   "id": "apigee.organizations.apis.keyvaluemaps.delete",
@@ -7003,7 +7003,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the key value map. Must be of the form `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}`.",
+                      "description": "Required. Name of the key value map. Use the following structure in your request: `organizations\/{org}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}`",
                       "pattern": "^organizations\/[^\/]+\/apis\/[^\/]+\/keyvaluemaps\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -7019,7 +7019,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Delete a key value map in an api proxy."
+                  "description": "Deletes a key value map from an API proxy."
                 }
               }
               ,
@@ -7033,7 +7033,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The scope as indicated by the URI in which to list key value maps. Must be one of the form `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}`. `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}` `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}`.",
+                          "description": "Required. Scope as indicated by the URI in which to list key value maps. Use one of the following formats in your request: `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}`. `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}` `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}`.",
                           "pattern": "^organizations\/[^\/]+\/apis\/[^\/]+\/keyvaluemaps\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -7046,7 +7046,7 @@
                           "format": "int32"
                         },
                         "pageToken": {
-                          "description": "Optional. Page token, a KeyValueEntry returned from a previous call, that we can use to retrieve the next page.",
+                          "description": "Optional. Page token, a key value entry returned from a previous call that can use to retrieve the next page.",
                           "location": "query",
                           "type": "string"
                         }
@@ -7060,7 +7060,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "List key value entries for any one of org, env or proxy scoped key value maps."
+                      "description": "Lists key value entries for key values maps scoped to an organization, environment, or API proxy."
                     }
                   }
                 }
@@ -7529,7 +7529,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Updates an existing environment. When updating properties, you must pass all existing properties to the API, even if they are not being changed. If you omit properties from the payload, the properties are removed. To get the current list of properties for the environment, use the [Get Environment API](get)."
+              "description": "Updates an existing environment. When updating properties, you must pass all existing properties to the API, even if they are not being changed. If you omit properties from the payload, the properties are removed. To get the current list of properties for the environment, use the [Get Environment API](get). **Note**: Both `PUT` and `POST` methods are supported for updating an existing environment."
             },
             "update": {
               "id": "apigee.organizations.environments.update",
@@ -7557,7 +7557,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Updates an existing environment. When updating properties, you must pass all existing properties to the API, even if they are not being changed. If you omit properties from the payload, the properties are removed. To get the current list of properties for the environment, use the [Get Environment API](get)."
+              "description": "Updates an existing environment. When updating properties, you must pass all existing properties to the API, even if they are not being changed. If you omit properties from the payload, the properties are removed. To get the current list of properties for the environment, use the [Get Environment API](get). **Note**: Both `PUT` and `POST` methods are supported for updating an existing environment."
             },
             "getDeployedConfig": {
               "id": "apigee.organizations.environments.getDeployedConfig",
@@ -10128,7 +10128,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The name of the environment in which to create the key value map. Must be of the form `organizations\/{organization}\/environments\/{environment}`.",
+                      "description": "Required. Name of the environment in which to create the key value map. Use the following structure in your request: `organizations\/{org}\/environments\/{env}`",
                       "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -10156,7 +10156,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the key value map. Must be of the form `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}`.",
+                      "description": "Required. Name of the key value map. Use the following structure in your request: `organizations\/{org}\/environments\/{env}\/keyvaluemaps\/{keyvaluemap}`",
                       "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+\/keyvaluemaps\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -10172,7 +10172,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Delete a key value map in an environment."
+                  "description": "Deletes a key value map from an environment."
                 }
               }
               ,
@@ -10186,7 +10186,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The scope as indicated by the URI in which to list key value maps. Must be one of the form `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}`. `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}` `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}`.",
+                          "description": "Required. Scope as indicated by the URI in which to list key value maps. Use one of the following formats in your request: `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}`. `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}` `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}`.",
                           "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+\/keyvaluemaps\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -10199,7 +10199,7 @@
                           "format": "int32"
                         },
                         "pageToken": {
-                          "description": "Optional. Page token, a KeyValueEntry returned from a previous call, that we can use to retrieve the next page.",
+                          "description": "Optional. Page token, a key value entry returned from a previous call that can use to retrieve the next page.",
                           "location": "query",
                           "type": "string"
                         }
@@ -10213,7 +10213,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "List key value entries for any one of org, env or proxy scoped key value maps."
+                      "description": "Lists key value entries for key values maps scoped to an organization, environment, or API proxy."
                     }
                   }
                 }
@@ -13927,7 +13927,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The name of the organization in which to create the key value map file. Must be of the form `organizations\/{organization}`.",
+                  "description": "Required. Name of the organization in which to create the key value map file. Use the following structure in your request: `organizations\/{org}`",
                   "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -13955,7 +13955,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "Required. The name of the key value map. Must be of the form `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}`.",
+                  "description": "Required. Name of the key value map. Use the following structure in your request: `organizations\/{org}\/keyvaluemaps\/{keyvaluemap}`",
                   "pattern": "^organizations\/[^\/]+\/keyvaluemaps\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -13971,7 +13971,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Delete a key value map in an organization."
+              "description": "Deletes a key value map from an organization."
             }
           }
           ,
@@ -13985,7 +13985,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The scope as indicated by the URI in which to list key value maps. Must be one of the form `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}`. `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}` `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}`.",
+                      "description": "Required. Scope as indicated by the URI in which to list key value maps. Use one of the following formats in your request: `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}`. `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}` `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}`.",
                       "pattern": "^organizations\/[^\/]+\/keyvaluemaps\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -13998,7 +13998,7 @@
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "Optional. Page token, a KeyValueEntry returned from a previous call, that we can use to retrieve the next page.",
+                      "description": "Optional. Page token, a key value entry returned from a previous call that can use to retrieve the next page.",
                       "location": "query",
                       "type": "string"
                     }
@@ -14012,7 +14012,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "List key value entries for any one of org, env or proxy scoped key value maps."
+                  "description": "Lists key value entries for key values maps scoped to an organization, environment, or API proxy."
                 }
               }
             }

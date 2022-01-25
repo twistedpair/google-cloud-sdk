@@ -2436,6 +2436,20 @@
           "description": "Default settings which will be applied to builds on this worker pool if they are not specified in the build request.",
           "$ref": "HybridWorkerConfig"
         },
+        "dockerSecurityPolicy": {
+          "description": "Immutable. Specify the security policy for the hybrid worker pool. Once created, this setting cannot be changed on the hybrid worker pool, as we are unable to guarantee that the cluster has not been altered by misuse of privileged Docker daemon.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified - the default value will be used.",
+            "Users can only run builds using a non-privileged Docker daemon. This is suitable for most cases.",
+            "Users are allowed to run builds using a privileged Docker daemon. This setting should be used with caution, as using a privileged Docker daemon introduces a security risk."
+          ],
+          "enum": [
+            "DOCKER_SECURITY_POLICY_UNSPECIFIED",
+            "NON_PRIVILEGED_ONLY",
+            "PRIVILEGED_PERMITTED"
+          ]
+        },
         "builderImageCaching": {
           "description": "Immutable. Controls how the worker pool caches images. If unspecified during worker pool creation, this field is defaulted to CACHING_DISABLED.",
           "type": "string",

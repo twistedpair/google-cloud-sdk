@@ -41,6 +41,14 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_INSTANCECONFIGS_OPERATIONS = (
+      'projects.instanceConfigs.operations',
+      'projects/{projectsId}/instanceConfigs/{instanceConfigsId}/operations/'
+      '{operationsId}',
+      {},
+      ['projectsId', 'instanceConfigsId', 'operationsId'],
+      True
+  )
   PROJECTS_INSTANCES = (
       'projects.instances',
       '{+name}',
