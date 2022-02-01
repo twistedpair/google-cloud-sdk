@@ -354,15 +354,28 @@ def AddArchitectureArg(parser, messages):
           'different machine architectures.'))
 
 
-def AddGuestOsFeaturesArg(parser, messages):
+def AddGuestOsFeaturesArgForImport(parser, messages):
+  """Add the guest-os-features arg for import commands."""
+  AddGuestOsFeaturesArg(
+      parser,
+      messages,
+      supported_features=[
+          messages.GuestOsFeature.TypeValueValuesEnum.UEFI_COMPATIBLE.name
+      ])
+
+
+def AddGuestOsFeaturesArg(parser, messages, supported_features=None):
   """Add the guest-os-features arg."""
   features_enum_type = messages.GuestOsFeature.TypeValueValuesEnum
   excluded_enums = [
       'FEATURE_TYPE_UNSPECIFIED',
       'SECURE_BOOT',  # Still exists in API but deprecated and has no effect.
   ]
-  guest_os_features = sorted([
-      e for e in features_enum_type.names() if e not in excluded_enums])
+
+  guest_os_features = set(features_enum_type.names())
+  guest_os_features.difference_update(excluded_enums)
+  if supported_features:
+    guest_os_features.intersection_update(supported_features)
 
   if not guest_os_features:
     return
@@ -370,7 +383,7 @@ def AddGuestOsFeaturesArg(parser, messages):
       '--guest-os-features',
       metavar='GUEST_OS_FEATURE',
       type=arg_parsers.ArgList(
-          element_type=lambda x: x.upper(), choices=guest_os_features),
+          element_type=lambda x: x.upper(), choices=sorted(guest_os_features)),
       help="""\
       This parameter enables one or more features for VM instances that use the
       image for their boot disks. See
@@ -399,8 +412,7 @@ def GetFileContentAndFileType(file_path):
     file_type = 'BIN'
   else:
     if not IsDERForm(file_content):
-      raise utils.IncorrectX509FormError(
-          'File is not in X509 binary DER form.')
+      raise utils.IncorrectX509FormError('File is not in X509 binary DER form.')
     file_type = 'X509'
   return file_content, file_type
 
@@ -416,8 +428,8 @@ def CreateFileContentBuffer(messages, file_path):
   file_content_buffer = messages.FileContentBuffer()
   content, file_type = GetFileContentAndFileType(file_path)
   file_content_buffer.content = content
-  file_content_buffer.fileType =\
-      messages.FileContentBuffer.FileTypeValueValuesEnum(file_type)
+  file_content_buffer.fileType = (
+      messages.FileContentBuffer.FileTypeValueValuesEnum(file_type))
   return file_content_buffer
 
 

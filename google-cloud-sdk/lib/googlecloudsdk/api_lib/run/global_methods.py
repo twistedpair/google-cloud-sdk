@@ -111,21 +111,19 @@ def ListServices(client, region=_ALL_REGIONS):
   ]
 
 
-def ListJobs(client):
+def ListJobs(client, namespace):
   """Get the global services for a OnePlatform project.
 
   Args:
     client: (base_api.BaseApiClient), instance of a client to use for the list
       request.
+    namespace: namespace/project to list jobs in
 
   Returns:
     List of googlecloudsdk.api_lib.run import job.Job objects.
   """
-  project = properties.VALUES.core.project.Get(required=True)
-  namespace_ref = resources.REGISTRY.Parse(
-      project, collection='run.namespaces', api_version='v1alpha1')
   request = client.MESSAGES_MODULE.RunNamespacesJobsListRequest(
-      parent=namespace_ref.RelativeName())
+      parent=namespace.RelativeName())
   response = client.namespaces_jobs.List(request)
 
   # Log the regions that did not respond.
@@ -169,9 +167,9 @@ def ListClusters(location=None, project=None):
   crfa_cluster_names = ListCloudRunForAnthosClusters(project)
 
   return [
-      c for c in clusters if (c.name in crfa_cluster_names
-                              or (c.addonsConfig.cloudRunConfig and
-                                  not c.addonsConfig.cloudRunConfig.disabled))
+      c for c in clusters if (c.name in crfa_cluster_names or
+                              (c.addonsConfig.cloudRunConfig and
+                               not c.addonsConfig.cloudRunConfig.disabled))
   ]
 
 
@@ -258,14 +256,15 @@ def _IsResourceSettingsEnabled(project):
 
 
 def _MultiTenantProjectIds(project):
+  """Returns a list of Multitenant project ids."""
   setting_name = 'projects/{}/settings/cloudrun-multiTenancy'.format(project)
 
   messages = resourcesettings_service.ResourceSettingsMessages()
 
   get_request = messages.ResourcesettingsProjectsSettingsGetRequest(
       name=setting_name,
-      view=messages.ResourcesettingsProjectsSettingsGetRequest.
-      ViewValueValuesEnum.SETTING_VIEW_EFFECTIVE_VALUE)
+      view=messages.ResourcesettingsProjectsSettingsGetRequest
+      .ViewValueValuesEnum.SETTING_VIEW_EFFECTIVE_VALUE)
   settings_service = resourcesettings_service.ProjectsSettingsService()
   service_value = settings_service.LookupEffectiveValue(get_request)
   return [
@@ -284,9 +283,8 @@ def ListCloudRunForAnthosClusters(project):
   """Get all clusters with Cloud Run for Anthos enabled.
 
   Args:
-   project: str optional of project to search for clusters in. Leaving
-     this field blank will use the project defined by the corresponding
-     property.
+   project: str optional of project to search for clusters in. Leaving this
+     field blank will use the project defined by the corresponding property.
 
   Returns:
     List of Cluster string names

@@ -23,7 +23,6 @@ import abc
 import copy
 
 from googlecloudsdk.api_lib.run import container_resource
-from googlecloudsdk.api_lib.run import job
 from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.api_lib.run import service
@@ -252,13 +251,13 @@ class SetClientNameAndVersionAnnotationChange(ConfigChanger):
     if self._client_name is not None:
       resource.annotations[
           k8s_object.CLIENT_NAME_ANNOTATION] = self._client_name
-      if self._set_on_template:
+      if self._set_on_template and hasattr(resource.template, 'annotations'):
         resource.template.annotations[
             k8s_object.CLIENT_NAME_ANNOTATION] = self._client_name
     if self._client_version is not None:
       resource.annotations[
           k8s_object.CLIENT_VERSION_ANNOTATION] = self._client_version
-      if self._set_on_template:
+      if self._set_on_template and hasattr(resource.template, 'annotations'):
         resource.template.annotations[
             k8s_object.CLIENT_VERSION_ANNOTATION] = self._client_version
     return resource
@@ -490,9 +489,7 @@ class ConfigMapEnvVarChanges(ConfigChanger):
 
   def _MakeEnvVarSource(self, messages, name, key):
     return messages.EnvVarSource(
-        configMapKeyRef=messages.ConfigMapKeySelector(
-            name=name,
-            key=key))
+        configMapKeyRef=messages.ConfigMapKeySelector(name=name, key=key))
 
 
 class ResourceChanges(ConfigChanger):
@@ -554,6 +551,7 @@ class CloudSQLChanges(ConfigChanger):
     return [self._Augment(i) for i in val]
 
   def Adjust(self, resource):
+
     def GetCurrentInstances():
       annotation_val = resource.template.annotations.get(
           container_resource.CLOUDSQL_ANNOTATION)
@@ -561,8 +559,8 @@ class CloudSQLChanges(ConfigChanger):
         return annotation_val.split(',')
       return []
 
-    instances = repeated.ParsePrimitiveArgs(
-        self, 'cloudsql-instances', GetCurrentInstances)
+    instances = repeated.ParsePrimitiveArgs(self, 'cloudsql-instances',
+                                            GetCurrentInstances)
     if instances is not None:
       resource.template.annotations[
           container_resource.CLOUDSQL_ANNOTATION] = ','.join(instances)
@@ -584,8 +582,7 @@ class CloudSQLChanges(ConfigChanger):
       ret = self._project, self._region, instance[0]
     else:
       raise exceptions.CloudSQLError(
-          'Malformed CloudSQL instance string: {}'.format(
-              instance_str))
+          'Malformed CloudSQL instance string: {}'.format(instance_str))
     return ':'.join(ret)
 
 
@@ -981,6 +978,19 @@ class SpecChange(ConfigChanger):
     return resource
 
 
+class ExecutionTemplateSpecChange(ConfigChanger):
+  """Represents the intent to update field in an execution template's spec."""
+
+  def __init__(self, field, value):
+    super(ExecutionTemplateSpecChange, self).__init__(adjusts_template=True)
+    self._field = field
+    self._value = value
+
+  def Adjust(self, resource):
+    setattr(resource.execution_template.spec, self._field, self._value)
+    return resource
+
+
 class JobMaxRetriesChange(ConfigChanger):
   """Represents the user intent to update a job's restart policy."""
 
@@ -989,24 +999,19 @@ class JobMaxRetriesChange(ConfigChanger):
     self._max_retries = max_retries
 
   def Adjust(self, resource):
-    if self._max_retries == 0:
-      resource.template.restart_policy = job.RestartPolicy.NEVER
-      resource.backoff_limit = 0
-    else:
-      resource.template.restart_policy = job.RestartPolicy.ON_FAILURE
-      resource.backoff_limit = self._max_retries
+    resource.task_template.spec.maxRetries = self._max_retries
     return resource
 
 
-class JobInstanceDeadlineChange(ConfigChanger):
+class JobTaskTimeoutChange(ConfigChanger):
   """Represents the user intent to update a job's instance deadline."""
 
-  def __init__(self, deadline_seconds):
-    super(JobInstanceDeadlineChange, self).__init__(adjusts_template=True)
-    self._deadline_seconds = deadline_seconds
+  def __init__(self, timeout_seconds):
+    super(JobTaskTimeoutChange, self).__init__(adjusts_template=True)
+    self._timeout_seconds = timeout_seconds
 
   def Adjust(self, resource):
-    resource.template.spec.activeDeadlineSeconds = self._deadline_seconds
+    resource.task_template.spec.timeoutSeconds = self._timeout_seconds
     return resource
 
 

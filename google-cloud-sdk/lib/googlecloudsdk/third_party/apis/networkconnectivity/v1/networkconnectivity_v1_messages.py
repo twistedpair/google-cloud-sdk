@@ -454,11 +454,9 @@ class Hub(_messages.Message):
     name: Immutable. The name of the hub. Hub names must be unique. They use
       the following form:
       `projects/{project_number}/locations/global/hubs/{hub_id}`
-    routingVpcs: The VPC network associated with this hub's spokes. All of the
-      VPN tunnels, VLAN attachments, and router appliance instances referenced
-      by this hub's spokes must belong to this VPC network. This field is
-      read-only. Network Connectivity Center automatically populates it based
-      on the set of spokes attached to the hub.
+    routingVpcs: The VPC networks associated with this hub's spokes. This
+      field is read-only. Network Connectivity Center automatically populates
+      it based on the set of spokes attached to the hub.
     state: Output only. The current lifecycle state of this hub.
     uniqueId: Output only. The Google-generated UUID for the hub. This value
       is unique across all hub resources. If a hub is deleted and another with
@@ -536,9 +534,9 @@ class LinkedInterconnectAttachments(_messages.Message):
 
   Fields:
     siteToSiteDataTransfer: A value that controls whether site-to-site data
-      transfer is enabled for these resources. This field is set to false by
-      default, but you must set it to true. Note that data transfer is
-      available only in supported locations.
+      transfer is enabled for these resources. Data transfer is available only
+      in [supported locations](https://cloud.google.com/network-
+      connectivity/docs/network-connectivity-center/concepts/locations).
     uris: The URIs of linked interconnect attachment resources
   """
 
@@ -554,9 +552,9 @@ class LinkedRouterApplianceInstances(_messages.Message):
   Fields:
     instances: The list of router appliance instances.
     siteToSiteDataTransfer: A value that controls whether site-to-site data
-      transfer is enabled for these resources. This field is set to false by
-      default, but you must set it to true. Note that data transfer is
-      available only in supported locations.
+      transfer is enabled for these resources. Data transfer is available only
+      in [supported locations](https://cloud.google.com/network-
+      connectivity/docs/network-connectivity-center/concepts/locations).
   """
 
   instances = _messages.MessageField('RouterApplianceInstance', 1, repeated=True)
@@ -571,9 +569,9 @@ class LinkedVpnTunnels(_messages.Message):
 
   Fields:
     siteToSiteDataTransfer: A value that controls whether site-to-site data
-      transfer is enabled for these resources. This field is set to false by
-      default, but you must set it to true. Note that data transfer is
-      available only in supported locations.
+      transfer is enabled for these resources. Data transfer is available only
+      in [supported locations](https://cloud.google.com/network-
+      connectivity/docs/network-connectivity-center/concepts/locations).
     uris: The URIs of linked VPN tunnel resources.
   """
 
@@ -1539,8 +1537,8 @@ class RouterApplianceInstance(_messages.Message):
 
 
 class RoutingVPC(_messages.Message):
-  r"""RoutingVPC contains information about the VPC network that is associated
-  with a hub's spokes.
+  r"""RoutingVPC contains information about the VPC networks that are
+  associated with a hub's spokes.
 
   Fields:
     requiredForNewSiteToSiteDataTransferSpokes: Output only. If true,
@@ -1548,7 +1546,7 @@ class RoutingVPC(_messages.Message):
       use the data transfer feature (spokes where the
       site_to_site_data_transfer field is set to true). If you create new
       spokes that use data transfer, they must be associated with this VPC
-      network.
+      network. At most, one VPC network will have this field set to true.
     uri: The URI of the VPC network.
   """
 

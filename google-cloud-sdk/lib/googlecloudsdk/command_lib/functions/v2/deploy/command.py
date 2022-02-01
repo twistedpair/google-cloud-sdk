@@ -45,6 +45,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import transports
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import archive
 from googlecloudsdk.core.util import files as file_utils
 
@@ -117,6 +118,14 @@ _ZIP_MIME_TYPE = 'application/zip'
 
 _DEPLOYMENT_TOOL_LABEL = 'deployment-tool'
 _DEPLOYMENT_TOOL_VALUE = 'cli-gcloud'
+
+# cs/symbol:google.cloud.functions.v2main.Stage.Name.SERVICE_ROLLBACK
+_SERVICE_ROLLBACK_STAGE = progress_tracker.Stage(
+    '[Healthcheck]', key='SERVICE_ROLLBACK')
+_TRIGGER_ROLLBACK_STAGE = progress_tracker.Stage(
+    '[Triggercheck]', key='TRIGGER_ROLLBACK')
+
+_EXTRA_STAGES = [_SERVICE_ROLLBACK_STAGE, _TRIGGER_ROLLBACK_STAGE]
 
 # GCF 2nd generation control plane valid memory units
 _GCF_GEN2_UNITS = [
@@ -359,6 +368,9 @@ def _GetServiceConfig(args, messages, existing_function):
 
   updated_fields = set()
 
+  if args.serve_all_traffic_latest_revision:
+    # only set field if flag is specified, never explicitly set to false.
+    updated_fields.add('service_config.all_traffic_on_latest_revision')
   if args.memory is not None:
     updated_fields.add('service_config.available_memory')
   if args.max_instances is not None or args.clear_max_instances:
@@ -385,6 +397,8 @@ def _GetServiceConfig(args, messages, existing_function):
       ingressSettings=ingress_settings,
       vpcConnector=vpc_connector,
       vpcConnectorEgressSettings=vpc_egress_settings,
+      allTrafficOnLatestRevision=(args.serve_all_traffic_latest_revision
+                                  or None),
       environmentVariables=messages.ServiceConfig.EnvironmentVariablesValue(
           additionalProperties=[
               messages.ServiceConfig.EnvironmentVariablesValue
@@ -522,7 +536,8 @@ def _GetEventTriggerForEventType(args, messages):
   else:
     raise exceptions.InvalidArgumentException(
         '--trigger-event',
-        'Unsupported event type: {} specified.'.format(trigger_event))
+        'Event type {} is not supported by this flag, try using --trigger-event-filters.'
+        .format(trigger_event))
 
 
 def _GetEventTriggerForOther(args, messages):
@@ -906,7 +921,8 @@ def _CreateAndWait(client, messages, function_ref, function):
   operation = client.projects_locations_functions.Create(create_request)
   operation_description = 'Deploying function'
 
-  api_util.WaitForOperation(client, messages, operation, operation_description)
+  api_util.WaitForOperation(client, messages, operation, operation_description,
+                            _EXTRA_STAGES)
 
 
 def _UpdateAndWait(client, messages, function_ref, function,
@@ -939,7 +955,7 @@ def _UpdateAndWait(client, messages, function_ref, function,
     operation_description = 'Updating function (may take a while)'
 
     api_util.WaitForOperation(client, messages, operation,
-                              operation_description)
+                              operation_description, _EXTRA_STAGES)
   else:
     log.status.Print('Nothing to update.')
 
@@ -961,7 +977,7 @@ def Run(args, release_track):
     raise calliope_exceptions.RequiredArgumentException(
         'runtime', 'Flag `--runtime` is required for new functions.')
 
-  if existing_function:
+  if existing_function and existing_function.serviceConfig:
     has_all_traffic_on_latest_revision = existing_function.serviceConfig.allTrafficOnLatestRevision
     if (has_all_traffic_on_latest_revision is not None and
         not has_all_traffic_on_latest_revision):

@@ -964,7 +964,7 @@ def RunInstanceOVFImportBuild(
     network, network_tier, subnet, private_network_ip, no_restart_on_failure,
     os, tags, zone, project, output_filter, release_track, hostname, no_address,
     byol, compute_service_account, service_account, no_service_account, scopes,
-    no_scopes):
+    no_scopes, uefi_compatible):
   """Run a OVF into VM instance import build on Google Cloud Build.
 
   Args:
@@ -1011,6 +1011,7 @@ def RunInstanceOVFImportBuild(
     scopes: Access scopes to be assigned to the VM instance or machine image
     no_scopes: No access scopes are assigned to the VM instance or machine
       image.
+    uefi_compatible: Specifies that the instance should be booted from UEFI.
 
   Returns:
     A build object that either streams the output or is displayed as a
@@ -1031,8 +1032,7 @@ def RunInstanceOVFImportBuild(
   AppendArg(ovf_importer_args, 'instance-names', instance_name)
   AppendArg(ovf_importer_args, 'client-id', 'gcloud')
   AppendArg(ovf_importer_args, 'ovf-gcs-path', source_uri)
-  AppendBoolArg(ovf_importer_args, 'no-guest-environment',
-                no_guest_environment)
+  AppendBoolArg(ovf_importer_args, 'no-guest-environment', no_guest_environment)
   AppendBoolArg(ovf_importer_args, 'can-ip-forward', can_ip_forward)
   AppendBoolArg(ovf_importer_args, 'deletion-protection', deletion_protection)
   AppendArg(ovf_importer_args, 'description', description)
@@ -1048,6 +1048,8 @@ def RunInstanceOVFImportBuild(
                 no_restart_on_failure)
   if byol:
     AppendBoolArg(ovf_importer_args, 'byol', byol)
+  if uefi_compatible:
+    AppendBoolArg(ovf_importer_args, 'uefi-compatible', uefi_compatible)
   AppendArg(ovf_importer_args, 'os', os)
   if tags:
     AppendArg(ovf_importer_args, 'tags', ','.join(tags))
@@ -1089,7 +1091,7 @@ def RunInstanceOVFImportBuild(
       build_region=builder_region)
 
 
-def RunMachineImageOVFImportBuild(args, output_filter, release_track):
+def RunMachineImageOVFImportBuild(args, output_filter, release_track, messages):
   """Run a OVF into VM instance import build on Google Cloud Builder.
 
   Args:
@@ -1098,8 +1100,9 @@ def RunMachineImageOVFImportBuild(args, output_filter, release_track):
     output_filter: A list of strings indicating what lines from the log should
       be output. Only lines that start with one of the strings in output_filter
       will be displayed.
-    release_track: release track of the command used. One of - "alpha", "beta"
-      or "ga"
+    release_track: The release track of the command used. One of - "alpha",
+      "beta" or "ga".
+    messages: The definitions of messages for the machine images import API.
 
   Returns:
     A build object that either streams the output or is displayed as a
@@ -1111,11 +1114,10 @@ def RunMachineImageOVFImportBuild(args, output_filter, release_track):
   project_id = projects_util.ParseProject(
       properties.VALUES.core.project.GetOrFail())
 
-  _CheckIamPermissions(project_id,
-                       frozenset(IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT),
-                       frozenset(IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT),
-                       args.compute_service_account
-                       if 'compute_service_account' in args else '')
+  _CheckIamPermissions(
+      project_id, frozenset(IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT),
+      frozenset(IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT),
+      args.compute_service_account if 'compute_service_account' in args else '')
 
   machine_type = None
   if args.machine_type or args.custom_cpu or args.custom_memory:
@@ -1146,6 +1148,20 @@ def RunMachineImageOVFImportBuild(args, output_filter, release_track):
   AppendBoolArg(ovf_importer_args, 'no-restart-on-failure',
                 not args.restart_on_failure)
   AppendArg(ovf_importer_args, 'os', args.os)
+
+  # The value of the attribute 'guest_os_features' can be can be a list, None,
+  # or the attribute may not be present at all.
+  # We treat the case when it is None or when it is not present as if the list
+  # of features is empty. We need to use the trailing `or ()` rather than
+  # give () as a default value to getattr() to handle the case where
+  # args.guest_os_features is present, but it is None.
+  guest_os_features = getattr(args, 'guest_os_features', None) or ()
+  uefi_compatible = (
+      messages.GuestOsFeature.TypeValueValuesEnum.UEFI_COMPATIBLE.name
+      in guest_os_features)
+  if uefi_compatible:
+    AppendBoolArg(ovf_importer_args, 'uefi-compatible', True)
+
   if 'byol' in args:
     AppendBoolArg(ovf_importer_args, 'byol', args.byol)
   if args.tags:

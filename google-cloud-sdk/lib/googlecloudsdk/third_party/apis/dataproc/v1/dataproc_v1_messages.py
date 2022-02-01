@@ -851,7 +851,9 @@ class ClusterStatus(_messages.Message):
       CREATING: The cluster is being created and set up. It is not ready for
         use.
       RUNNING: The cluster is currently running and healthy. It is ready for
-        use.
+        use.Note: The cluster state changes from "creating" to "running"
+        status after the master node(s), first two primary worker nodes (and
+        the last primary worker node if primary workers > 2) are running.
       ERROR: The cluster encountered an error. It is not ready for use.
       ERROR_DUE_TO_UPDATE: The cluster has encountered an error while being
         updated. Jobs can be submitted to the cluster, but the cluster cannot
@@ -2298,13 +2300,34 @@ class DataprocProjectsRegionsWorkflowTemplatesTestIamPermissionsRequest(_message
 class DiagnoseClusterRequest(_messages.Message):
   r"""A request to collect cluster diagnostic information.
 
+  Enums:
+    TarballAccessValueValuesEnum: Optional. (Optional) The access type to the
+      diagnostic tarball. If not specified, falls back to default access of
+      the bucket
+
   Fields:
+    tarballAccess: Optional. (Optional) The access type to the diagnostic
+      tarball. If not specified, falls back to default access of the bucket
     tarballGcsDir: Optional. (Optional) The output Cloud Storage directory for
       the diagnostic tarball. If not specified, a task-specific directory in
       the cluster's staging bucket will be used.
   """
 
-  tarballGcsDir = _messages.StringField(1)
+  class TarballAccessValueValuesEnum(_messages.Enum):
+    r"""Optional. (Optional) The access type to the diagnostic tarball. If not
+    specified, falls back to default access of the bucket
+
+    Values:
+      TARBALL_ACCESS_UNSPECIFIED: Tarball Access unspecified. Falls back to
+        default access of the bucket
+      GOOGLE_CLOUD_SUPPORT: Google Cloud Support group has read access to the
+        diagnostic tarball
+    """
+    TARBALL_ACCESS_UNSPECIFIED = 0
+    GOOGLE_CLOUD_SUPPORT = 1
+
+  tarballAccess = _messages.EnumField('TarballAccessValueValuesEnum', 1)
+  tarballGcsDir = _messages.StringField(2)
 
 
 class DiagnoseClusterResults(_messages.Message):
@@ -2331,7 +2354,7 @@ class DiskConfig(_messages.Message):
       (https://cloud.google.com/compute/docs/disks#disk-types).
     localSsdInterface: Optional. Interface type of local SSDs (default is
       "scsi"). Valid values: "scsi" (Small Computer System Interface), "nvme"
-      (Non-Volatile Memory Express). See SSD Interface types
+      (Non-Volatile Memory Express). See local SSD performance
       (https://cloud.google.com/compute/docs/disks/local-ssd#performance).
     numLocalSsds: Optional. Number of attached SSDs, from 0 to 4 (default is
       0). If SSDs are not attached, the boot disk is used to store runtime
@@ -3941,12 +3964,16 @@ class Metric(_messages.Message):
       HDFS: Hdfs metric source
       SPARK: Spark metric source
       YARN: Yarn metric source
+      SPARK_HISTORY_SERVER: Spark history server metric source
+      HIVESERVER2: hiveserver2 metric source
     """
     METRIC_SOURCE_UNSPECIFIED = 0
     MONITORING_AGENT_DEFAULTS = 1
     HDFS = 2
     SPARK = 3
     YARN = 4
+    SPARK_HISTORY_SERVER = 5
+    HIVESERVER2 = 6
 
   metricOverrides = _messages.StringField(1, repeated=True)
   metricSource = _messages.EnumField('MetricSourceValueValuesEnum', 2)
@@ -5073,7 +5100,7 @@ class SoftwareConfig(_messages.Message):
 
 
 class SparkBatch(_messages.Message):
-  r"""A configuration for running an Apache Spark (http://spark.apache.org/)
+  r"""A configuration for running an Apache Spark (https://spark.apache.org/)
   batch workload.
 
   Fields:
@@ -5134,7 +5161,7 @@ class SparkHistoryServerConfig(_messages.Message):
 
 
 class SparkJob(_messages.Message):
-  r"""A Dataproc job for running Apache Spark (http://spark.apache.org/)
+  r"""A Dataproc job for running Apache Spark (https://spark.apache.org/)
   applications on YARN.
 
   Messages:
@@ -5290,7 +5317,7 @@ class SparkRJob(_messages.Message):
 
 class SparkSqlBatch(_messages.Message):
   r"""A configuration for running Apache Spark SQL
-  (http://spark.apache.org/sql/) queries as a batch workload.
+  (https://spark.apache.org/sql/) queries as a batch workload.
 
   Messages:
     QueryVariablesValue: Optional. Mapping of query variable names to values
@@ -5338,7 +5365,7 @@ class SparkSqlBatch(_messages.Message):
 
 class SparkSqlJob(_messages.Message):
   r"""A Dataproc job for running Apache Spark SQL
-  (http://spark.apache.org/sql/) queries.
+  (https://spark.apache.org/sql/) queries.
 
   Messages:
     PropertiesValue: Optional. A mapping of property names to values, used to

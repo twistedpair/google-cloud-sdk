@@ -963,6 +963,10 @@
         "maintenanceSettings": {
           "description": "Optional. The MaintenanceSettings associated with instance.",
           "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings"
+        },
+        "instanceType": {
+          "description": "Optional. The instance_type of this instance of format: projects\/{project_id}\/locations\/{location_id}\/instanceTypes\/{instance_type_id}. Instance Type represents a high-level tier or SKU of the service that this instance belong to. When enabled(eg: Maintenance Rollout), Rollout uses 'instance_type' along with 'software_versions' to determine whether instance needs an update or not.",
+          "type": "string"
         }
       }
     },

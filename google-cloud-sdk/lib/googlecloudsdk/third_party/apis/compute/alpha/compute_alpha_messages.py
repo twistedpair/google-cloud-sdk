@@ -1953,13 +1953,15 @@ class AuditConfig(_messages.Message):
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
+    exemptedMembers: This is deprecated and has no effect. Do not use.
     service: Specifies a service that will be enabled for audit logging. For
       example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
       `allServices` is a special value that covers all services.
   """
 
   auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
-  service = _messages.StringField(2)
+  exemptedMembers = _messages.StringField(2, repeated=True)
+  service = _messages.StringField(3)
 
 
 class AuditLogConfig(_messages.Message):
@@ -38718,6 +38720,8 @@ class InstanceGroupManager(_messages.Message):
     FailoverActionValueValuesEnum: The action to perform in case of zone
       failure. Only one value is supported, NO_FAILOVER. The default is
       NO_FAILOVER.
+    ListManagedInstancesResultsValueValuesEnum: Pagination behavior of
+      listManagedInstances API method for this Managed Instance Group.
 
   Fields:
     allInstancesConfig: Specifies the instances configs overrides that should
@@ -38757,6 +38761,8 @@ class InstanceGroupManager(_messages.Message):
       PROACTIVE.
     kind: [Output Only] The resource type, which is always
       compute#instanceGroupManager for managed instance groups.
+    listManagedInstancesResults: Pagination behavior of listManagedInstances
+      API method for this Managed Instance Group.
     name: The name of the managed instance group. The name must be 1-63
       characters long, and comply with RFC1035.
     namedPorts: Named ports configured for the Instance Groups complementary
@@ -38815,6 +38821,20 @@ class InstanceGroupManager(_messages.Message):
     NO_FAILOVER = 0
     UNKNOWN = 1
 
+  class ListManagedInstancesResultsValueValuesEnum(_messages.Enum):
+    r"""Pagination behavior of listManagedInstances API method for this
+    Managed Instance Group.
+
+    Values:
+      PAGELESS: (Default) Pagination is disabled for listManagedInstances API
+        method. maxResults and pageToken query parameters are ignored and all
+        instances are returned in a single response.
+      PAGINATED: Pagination is enabled for listManagedInstances API method.
+        maxResults and pageToken query parameters are respected.
+    """
+    PAGELESS = 0
+    PAGINATED = 1
+
   allInstancesConfig = _messages.MessageField('InstanceGroupManagerAllInstancesConfig', 1)
   autoHealingPolicies = _messages.MessageField('InstanceGroupManagerAutoHealingPolicy', 2, repeated=True)
   baseInstanceName = _messages.StringField(3)
@@ -38829,22 +38849,23 @@ class InstanceGroupManager(_messages.Message):
   instanceLifecyclePolicy = _messages.MessageField('InstanceGroupManagerInstanceLifecyclePolicy', 12)
   instanceTemplate = _messages.StringField(13)
   kind = _messages.StringField(14, default='compute#instanceGroupManager')
-  name = _messages.StringField(15)
-  namedPorts = _messages.MessageField('NamedPort', 16, repeated=True)
-  region = _messages.StringField(17)
-  selfLink = _messages.StringField(18)
-  selfLinkWithId = _messages.StringField(19)
-  serviceAccount = _messages.StringField(20)
-  standbyPolicy = _messages.MessageField('InstanceGroupManagerStandbyPolicy', 21)
-  statefulPolicy = _messages.MessageField('StatefulPolicy', 22)
-  status = _messages.MessageField('InstanceGroupManagerStatus', 23)
-  targetPools = _messages.StringField(24, repeated=True)
-  targetSize = _messages.IntegerField(25, variant=_messages.Variant.INT32)
-  targetStoppedSize = _messages.IntegerField(26, variant=_messages.Variant.INT32)
-  targetSuspendedSize = _messages.IntegerField(27, variant=_messages.Variant.INT32)
-  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 28)
-  versions = _messages.MessageField('InstanceGroupManagerVersion', 29, repeated=True)
-  zone = _messages.StringField(30)
+  listManagedInstancesResults = _messages.EnumField('ListManagedInstancesResultsValueValuesEnum', 15)
+  name = _messages.StringField(16)
+  namedPorts = _messages.MessageField('NamedPort', 17, repeated=True)
+  region = _messages.StringField(18)
+  selfLink = _messages.StringField(19)
+  selfLinkWithId = _messages.StringField(20)
+  serviceAccount = _messages.StringField(21)
+  standbyPolicy = _messages.MessageField('InstanceGroupManagerStandbyPolicy', 22)
+  statefulPolicy = _messages.MessageField('StatefulPolicy', 23)
+  status = _messages.MessageField('InstanceGroupManagerStatus', 24)
+  targetPools = _messages.StringField(25, repeated=True)
+  targetSize = _messages.IntegerField(26, variant=_messages.Variant.INT32)
+  targetStoppedSize = _messages.IntegerField(27, variant=_messages.Variant.INT32)
+  targetSuspendedSize = _messages.IntegerField(28, variant=_messages.Variant.INT32)
+  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 29)
+  versions = _messages.MessageField('InstanceGroupManagerVersion', 30, repeated=True)
+  zone = _messages.StringField(31)
 
 
 class InstanceGroupManagerActionsSummary(_messages.Message):
@@ -48769,12 +48790,9 @@ class NetworkInterface(_messages.Message):
     Values:
       EXTERNAL: This network interface can have external IPv6.
       INTERNAL: This network interface can have internal IPv6.
-      UNSPECIFIED_IPV6_ACCESS_TYPE: IPv6 access type not set. Means this
-        network interface hasn't been turned on IPv6 yet.
     """
     EXTERNAL = 0
     INTERNAL = 1
-    UNSPECIFIED_IPV6_ACCESS_TYPE = 2
 
   class NicTypeValueValuesEnum(_messages.Enum):
     r"""The type of vNIC to be used on this interface. This may be gVNIC or
@@ -48798,11 +48816,9 @@ class NetworkInterface(_messages.Message):
     Values:
       IPV4_IPV6: The network interface can have both IPv4 and IPv6 addresses.
       IPV4_ONLY: The network interface will be assigned IPv4 address.
-      UNSPECIFIED_STACK_TYPE: <no description>
     """
     IPV4_IPV6 = 0
     IPV4_ONLY = 1
-    UNSPECIFIED_STACK_TYPE = 2
 
   accessConfigs = _messages.MessageField('AccessConfig', 1, repeated=True)
   aliasIpRanges = _messages.MessageField('AliasIpRange', 2, repeated=True)
@@ -54238,6 +54254,13 @@ class PublicAdvertisedPrefix(_messages.Message):
   route advertisement and is announced globally to the internet.
 
   Enums:
+    PdpScopeValueValuesEnum: Specifies how child public delegated prefix will
+      be scoped. It could be one of following values: - `REGIONAL`: The public
+      delegated prefix is regional only. The provisioning will take a few
+      minutes. - `GLOBAL`: The public delegated prefix is global only. The
+      provisioning will take ~4 weeks. - `GLOBAL_AND_REGIONAL` [output only]:
+      The public delegated prefixes is BYOIP V1 legacy prefix. This is output
+      only value and no longer supported in BYOIP V2.
     StatusValueValuesEnum: The status of the public advertised prefix.
       Possible values include: - `INITIAL`: RPKI validation is complete. -
       `PTR_CONFIGURED`: User has configured the PTR. - `VALIDATED`: Reverse
@@ -54273,6 +54296,13 @@ class PublicAdvertisedPrefix(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    pdpScope: Specifies how child public delegated prefix will be scoped. It
+      could be one of following values: - `REGIONAL`: The public delegated
+      prefix is regional only. The provisioning will take a few minutes. -
+      `GLOBAL`: The public delegated prefix is global only. The provisioning
+      will take ~4 weeks. - `GLOBAL_AND_REGIONAL` [output only]: The public
+      delegated prefixes is BYOIP V1 legacy prefix. This is output only value
+      and no longer supported in BYOIP V2.
     publicDelegatedPrefixs: [Output Only] The list of public delegated
       prefixes that exist for this public advertised prefix.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -54288,6 +54318,27 @@ class PublicAdvertisedPrefix(_messages.Message):
       `PREFIX_REMOVAL_IN_PROGRESS`: The prefix is being removed.
   """
 
+  class PdpScopeValueValuesEnum(_messages.Enum):
+    r"""Specifies how child public delegated prefix will be scoped. It could
+    be one of following values: - `REGIONAL`: The public delegated prefix is
+    regional only. The provisioning will take a few minutes. - `GLOBAL`: The
+    public delegated prefix is global only. The provisioning will take ~4
+    weeks. - `GLOBAL_AND_REGIONAL` [output only]: The public delegated
+    prefixes is BYOIP V1 legacy prefix. This is output only value and no
+    longer supported in BYOIP V2.
+
+    Values:
+      GLOBAL: The public delegated prefix is global only. The provisioning
+        will take ~4 weeks.
+      GLOBAL_AND_REGIONAL: The public delegated prefixes is BYOIP V1 legacy
+        prefix. This is output only value and no longer supported in BYOIP V2.
+      REGIONAL: The public delegated prefix is regional only. The provisioning
+        will take a few minutes.
+    """
+    GLOBAL = 0
+    GLOBAL_AND_REGIONAL = 1
+    REGIONAL = 2
+
   class StatusValueValuesEnum(_messages.Enum):
     r"""The status of the public advertised prefix. Possible values include: -
     `INITIAL`: RPKI validation is complete. - `PTR_CONFIGURED`: User has
@@ -54298,21 +54349,26 @@ class PublicAdvertisedPrefix(_messages.Message):
     `PREFIX_REMOVAL_IN_PROGRESS`: The prefix is being removed.
 
     Values:
+      ANNOUNCED_TO_INTERNET: The prefix is announced to Internet.
       INITIAL: RPKI validation is complete.
       PREFIX_CONFIGURATION_COMPLETE: The prefix is fully configured.
       PREFIX_CONFIGURATION_IN_PROGRESS: The prefix is being configured.
       PREFIX_REMOVAL_IN_PROGRESS: The prefix is being removed.
       PTR_CONFIGURED: User has configured the PTR.
+      READY_TO_ANNOUNCE: The prefix is currently withdrawn but ready to be
+        announced.
       REVERSE_DNS_LOOKUP_FAILED: Reverse DNS lookup failed.
       VALIDATED: Reverse DNS lookup is successful.
     """
-    INITIAL = 0
-    PREFIX_CONFIGURATION_COMPLETE = 1
-    PREFIX_CONFIGURATION_IN_PROGRESS = 2
-    PREFIX_REMOVAL_IN_PROGRESS = 3
-    PTR_CONFIGURED = 4
-    REVERSE_DNS_LOOKUP_FAILED = 5
-    VALIDATED = 6
+    ANNOUNCED_TO_INTERNET = 0
+    INITIAL = 1
+    PREFIX_CONFIGURATION_COMPLETE = 2
+    PREFIX_CONFIGURATION_IN_PROGRESS = 3
+    PREFIX_REMOVAL_IN_PROGRESS = 4
+    PTR_CONFIGURED = 5
+    READY_TO_ANNOUNCE = 6
+    REVERSE_DNS_LOOKUP_FAILED = 7
+    VALIDATED = 8
 
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
@@ -54322,11 +54378,12 @@ class PublicAdvertisedPrefix(_messages.Message):
   ipCidrRange = _messages.StringField(6)
   kind = _messages.StringField(7, default='compute#publicAdvertisedPrefix')
   name = _messages.StringField(8)
-  publicDelegatedPrefixs = _messages.MessageField('PublicAdvertisedPrefixPublicDelegatedPrefix', 9, repeated=True)
-  selfLink = _messages.StringField(10)
-  selfLinkWithId = _messages.StringField(11)
-  sharedSecret = _messages.StringField(12)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
+  pdpScope = _messages.EnumField('PdpScopeValueValuesEnum', 9)
+  publicDelegatedPrefixs = _messages.MessageField('PublicAdvertisedPrefixPublicDelegatedPrefix', 10, repeated=True)
+  selfLink = _messages.StringField(11)
+  selfLinkWithId = _messages.StringField(12)
+  sharedSecret = _messages.StringField(13)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
 
 
 class PublicAdvertisedPrefixList(_messages.Message):
@@ -54572,6 +54629,9 @@ class PublicDelegatedPrefix(_messages.Message):
 
     Values:
       ANNOUNCED: The public delegated prefix is active.
+      ANNOUNCED_TO_GOOGLE: The prefix is announced within Google network.
+      ANNOUNCED_TO_INTERNET: The prefix is announced to Internet and within
+        Google.
       DELETING: The public delegated prefix is being deprovsioned.
       INITIALIZING: The public delegated prefix is being initialized and
         addresses cannot be created yet.
@@ -54579,9 +54639,11 @@ class PublicDelegatedPrefix(_messages.Message):
         but ready to be announced.
     """
     ANNOUNCED = 0
-    DELETING = 1
-    INITIALIZING = 2
-    READY_TO_ANNOUNCE = 3
+    ANNOUNCED_TO_GOOGLE = 1
+    ANNOUNCED_TO_INTERNET = 2
+    DELETING = 3
+    INITIALIZING = 4
+    READY_TO_ANNOUNCE = 5
 
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
@@ -65868,6 +65930,9 @@ class Subnetwork(_messages.Message):
       reach destination addresses outside this subnetwork.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
+    internalIpv6Prefix: [Output Only] The range of internal IPv6 addresses
+      that are owned by this subnetwork. Note this is for general VM to VM
+      communication, not to be confused with the ipv6_cidr_range field.
     ipCidrRange: The range of internal addresses that are owned by this
       subnetwork. Provide this property when you create the subnetwork. For
       example, 10.0.0.0/8 or 100.64.0.0/10. Ranges must be unique and non-
@@ -65988,12 +66053,9 @@ class Subnetwork(_messages.Message):
         accesible via the Internet, as well as the VPC network.
       INTERNAL: VMs on this subnet will be assigned IPv6 addresses that are
         only accessible over the VPC network.
-      UNSPECIFIED_IPV6_ACCESS_TYPE: IPv6 access type not set. Means this
-        subnet hasn't been turned on IPv6 yet.
     """
     EXTERNAL = 0
     INTERNAL = 1
-    UNSPECIFIED_IPV6_ACCESS_TYPE = 2
 
   class MetadataValueValuesEnum(_messages.Enum):
     r"""Can only be specified if VPC flow logging for this subnetwork is
@@ -66089,11 +66151,9 @@ class Subnetwork(_messages.Message):
     Values:
       IPV4_IPV6: New VMs in this subnet can have both IPv4 and IPv6 addresses.
       IPV4_ONLY: New VMs in this subnet will only be assigned IPv4 addresses.
-      UNSPECIFIED_STACK_TYPE: <no description>
     """
     IPV4_IPV6 = 0
     IPV4_ONLY = 1
-    UNSPECIFIED_STACK_TYPE = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""[Output Only] The state of the subnetwork, which can be one of the
@@ -66122,27 +66182,28 @@ class Subnetwork(_messages.Message):
   flowSampling = _messages.FloatField(10, variant=_messages.Variant.FLOAT)
   gatewayAddress = _messages.StringField(11)
   id = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
-  ipCidrRange = _messages.StringField(13)
-  ipv6AccessType = _messages.EnumField('Ipv6AccessTypeValueValuesEnum', 14)
-  ipv6CidrRange = _messages.StringField(15)
-  kind = _messages.StringField(16, default='compute#subnetwork')
-  logConfig = _messages.MessageField('SubnetworkLogConfig', 17)
-  metadata = _messages.EnumField('MetadataValueValuesEnum', 18)
-  name = _messages.StringField(19)
-  network = _messages.StringField(20)
-  privateIpGoogleAccess = _messages.BooleanField(21)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 22)
-  privateIpv6GoogleAccessServiceAccounts = _messages.StringField(23, repeated=True)
-  purpose = _messages.EnumField('PurposeValueValuesEnum', 24)
-  region = _messages.StringField(25)
-  reservedInternalRange = _messages.StringField(26)
-  role = _messages.EnumField('RoleValueValuesEnum', 27)
-  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 28, repeated=True)
-  selfLink = _messages.StringField(29)
-  selfLinkWithId = _messages.StringField(30)
-  stackType = _messages.EnumField('StackTypeValueValuesEnum', 31)
-  state = _messages.EnumField('StateValueValuesEnum', 32)
-  vlans = _messages.IntegerField(33, repeated=True, variant=_messages.Variant.INT32)
+  internalIpv6Prefix = _messages.StringField(13)
+  ipCidrRange = _messages.StringField(14)
+  ipv6AccessType = _messages.EnumField('Ipv6AccessTypeValueValuesEnum', 15)
+  ipv6CidrRange = _messages.StringField(16)
+  kind = _messages.StringField(17, default='compute#subnetwork')
+  logConfig = _messages.MessageField('SubnetworkLogConfig', 18)
+  metadata = _messages.EnumField('MetadataValueValuesEnum', 19)
+  name = _messages.StringField(20)
+  network = _messages.StringField(21)
+  privateIpGoogleAccess = _messages.BooleanField(22)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 23)
+  privateIpv6GoogleAccessServiceAccounts = _messages.StringField(24, repeated=True)
+  purpose = _messages.EnumField('PurposeValueValuesEnum', 25)
+  region = _messages.StringField(26)
+  reservedInternalRange = _messages.StringField(27)
+  role = _messages.EnumField('RoleValueValuesEnum', 28)
+  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 29, repeated=True)
+  selfLink = _messages.StringField(30)
+  selfLinkWithId = _messages.StringField(31)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 32)
+  state = _messages.EnumField('StateValueValuesEnum', 33)
+  vlans = _messages.IntegerField(34, repeated=True, variant=_messages.Variant.INT32)
 
 
 class SubnetworkAggregatedList(_messages.Message):

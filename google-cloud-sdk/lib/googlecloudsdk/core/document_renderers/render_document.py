@@ -723,10 +723,15 @@ class MarkdownRenderer(object):
       return i
     level = 1
     list_level = None
+    original_i = i
     i = index_at_definition_markdown + 2
     while i < len(self._line) and self._line[i] == ':':
       i += 1
       level += 1
+    # If the multiple colons are not followed by whitespace, assume that this
+    # is content, not markdown. (Important for IPv6 notation, etc.)
+    if i < len(self._line) and not self._line[i].isspace():
+      return original_i
     while i < len(self._line) and self._line[i].isspace():
       i += 1
     end = i >= len(self._line) and not index_at_definition_markdown

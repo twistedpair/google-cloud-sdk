@@ -449,7 +449,9 @@ class CloudassetAnalyzeIamPolicyRequest(_messages.Message):
       section of the result will expand any Google groups appearing in an IAM
       policy binding. If IamPolicyAnalysisQuery.identity_selector is
       specified, the identity in the result will be determined by the
-      selector, and this flag is not allowed to set. Default is false.
+      selector, and this flag is not allowed to set. If true, the default max
+      expansion per group is 1000 for AssetService.AnalyzeIamPolicy][].
+      Default is false.
     analysisQuery_options_expandResources: Optional. If true and
       IamPolicyAnalysisQuery.resource_selector is not specified, the resource
       section of the result will expand any resource attached to an IAM policy
@@ -464,7 +466,9 @@ class CloudassetAnalyzeIamPolicyRequest(_messages.Message):
       together with this option. For example, if the request analyzes for
       which users have permission P on a GCP project with this option enabled,
       the results will include all users who have permission P on that project
-      or any lower resource. Default is false.
+      or any lower resource. If true, the default max expansion per resource
+      is 1000 for AssetService.AnalyzeIamPolicy][] and 100000 for
+      AssetService.AnalyzeIamPolicyLongrunning][]. Default is false.
     analysisQuery_options_expandRoles: Optional. If true, the access section
       of result will expand any roles appearing in IAM policy bindings to
       include their permissions. If IamPolicyAnalysisQuery.access_selector is
@@ -3356,7 +3360,8 @@ class Options(_messages.Message):
       expand any Google groups appearing in an IAM policy binding. If
       IamPolicyAnalysisQuery.identity_selector is specified, the identity in
       the result will be determined by the selector, and this flag is not
-      allowed to set. Default is false.
+      allowed to set. If true, the default max expansion per group is 1000 for
+      AssetService.AnalyzeIamPolicy][]. Default is false.
     expandResources: Optional. If true and
       IamPolicyAnalysisQuery.resource_selector is not specified, the resource
       section of the result will expand any resource attached to an IAM policy
@@ -3371,7 +3376,9 @@ class Options(_messages.Message):
       together with this option. For example, if the request analyzes for
       which users have permission P on a GCP project with this option enabled,
       the results will include all users who have permission P on that project
-      or any lower resource. Default is false.
+      or any lower resource. If true, the default max expansion per resource
+      is 1000 for AssetService.AnalyzeIamPolicy][] and 100000 for
+      AssetService.AnalyzeIamPolicyLongrunning][]. Default is false.
     expandRoles: Optional. If true, the access section of result will expand
       any roles appearing in IAM policy bindings to include their permissions.
       If IamPolicyAnalysisQuery.access_selector is specified, the access

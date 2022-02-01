@@ -33,3 +33,14 @@ service:
     parameter_name: servicesId
     attribute_name: service
     help: The name of the Cloud Run service.
+
+job:
+  name: job
+  collection: run.projects.locations.jobs
+  attributes:
+  - *project
+  - *region
+  - &job
+    parameter_name: jobsId
+    attribute_name: job
+    help: The name of the Cloud Run job.

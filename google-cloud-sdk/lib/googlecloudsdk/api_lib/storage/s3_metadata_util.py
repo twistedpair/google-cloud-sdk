@@ -24,6 +24,7 @@ import re
 
 from googlecloudsdk.api_lib.storage import s3_metadata_field_converters
 from googlecloudsdk.command_lib.storage import storage_url
+from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import s3_resource_reference
 from googlecloudsdk.core import log
@@ -190,6 +191,14 @@ def get_bucket_metadata_dict_from_request_config(request_config):
   return metadata
 
 
+def _process_value_or_clear_flag(metadata, key, value):
+  """Sets appropriate metadata based on value."""
+  if value == user_request_args_factory.CLEAR:
+    metadata[key] = None
+  elif value is not None:
+    metadata[key] = value
+
+
 def get_object_metadata_dict_from_request_config(request_config):
   """Returns S3 object metadata dict fields based on RequestConfig."""
   metadata = {}
@@ -199,19 +208,18 @@ def get_object_metadata_dict_from_request_config(request_config):
 
   resource_args = request_config.resource_args
   if resource_args:
-    if resource_args.cache_control is not None:
-      metadata['CacheControl'] = resource_args.cache_control
-    if resource_args.content_disposition is not None:
-      metadata['ContentDisposition'] = resource_args.content_disposition
-    if resource_args.content_encoding is not None:
-      metadata['ContentEncoding'] = resource_args.content_encoding
-    if resource_args.content_language is not None:
-      metadata['ContentLanguage'] = resource_args.content_language
-    if resource_args.content_type is not None:
-      metadata['ContentType'] = resource_args.content_type
-    if resource_args.md5_hash is not None:
-      metadata['ContentMD5'] = resource_args.md5_hash
-    if resource_args.custom_metadata:
-      metadata['Metadata'] = resource_args.custom_metadata
+    _process_value_or_clear_flag(metadata, 'CacheControl',
+                                 resource_args.cache_control)
+    _process_value_or_clear_flag(metadata, 'ContentDisposition',
+                                 resource_args.content_disposition)
+    _process_value_or_clear_flag(metadata, 'ContentEncoding',
+                                 resource_args.content_encoding)
+    _process_value_or_clear_flag(metadata, 'ContentLanguage',
+                                 resource_args.content_language)
+    _process_value_or_clear_flag(metadata, 'ContentType',
+                                 resource_args.content_type)
+    _process_value_or_clear_flag(metadata, 'ContentMD5', resource_args.md5_hash)
+    _process_value_or_clear_flag(metadata, 'Metadata',
+                                 resource_args.custom_metadata)
 
   return metadata

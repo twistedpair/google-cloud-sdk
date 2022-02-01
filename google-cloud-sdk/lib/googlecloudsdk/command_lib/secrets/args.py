@@ -277,7 +277,7 @@ def AddUpdateRotationGroup(parser):
       action='store_true',
       help=('Remove timestamp at which to send rotation notification.'))
   group.add_argument(
-      _ArgOrFlag('rotation-period', False),\
+      _ArgOrFlag('rotation-period', False),
       help=('Duration of time (in seconds) between rotation notifications.'))
   group.add_argument(
       _ArgOrFlag('remove-rotation-period', False),

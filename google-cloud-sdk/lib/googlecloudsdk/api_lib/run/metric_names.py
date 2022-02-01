@@ -81,11 +81,32 @@ UPDATE_SERVICE = _SERVERLESS_PREFIX + 'update_service'
 # Time to create a job
 CREATE_JOB = _SERVERLESS_PREFIX + 'create_job'
 
+# Time to update a job
+UPDATE_JOB = _SERVERLESS_PREFIX + 'update_job'
+
 # Time to get a job
 GET_JOB = _SERVERLESS_PREFIX + 'get_job'
+
+# Time to get an execution
+GET_EXECUTION = _SERVERLESS_PREFIX + 'get_execution'
+
+# Time to get a task
+GET_TASK = _SERVERLESS_PREFIX + 'get_task'
 
 # Time to list jobs
 LIST_JOBS = _SERVERLESS_PREFIX + 'list_jobs'
 
+# Time to list executions
+LIST_EXECUTIONS = _SERVERLESS_PREFIX + 'list_executions'
+
+# Time to list tasks
+LIST_TASKS = _SERVERLESS_PREFIX + 'list_tasks'
+
 # Time to delete a job
 DELETE_JOB = _SERVERLESS_PREFIX + 'delete_job'
+
+# Time to delete an execution
+DELETE_EXECUTION = _SERVERLESS_PREFIX + 'delete_execution'
+
+# Time to run a job
+RUN_JOB = _SERVERLESS_PREFIX + 'run_job'

@@ -1,4 +1,4 @@
-The Google Cloud SDK and its source code are licensed under Apache
+The Google Cloud CLI and its source code are licensed under Apache
 License v. 2.0 (the "License"), unless otherwise specified by an alternate
 license file.
 
@@ -6,11 +6,11 @@ You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 
-Note that if you use the Cloud SDK with any Google Cloud Platform products,
+Note that if you use the Cloud CLI with any Google Cloud Platform products,
 your use is additionally going to be governed by the license agreement or
 terms of service, as applicable, of the underlying Google Cloud Platform
-product with which you are using the Cloud SDK. For example, if you are
-using the Cloud SDK with Google App Engine, your use would additionally be
+product with which you are using the Cloud CLI. For example, if you are
+using the Cloud CLI with Google App Engine, your use would additionally be
 governed by the Google App Engine Terms of Service.
 
 This also means that if you were to create works that call Google APIs, you

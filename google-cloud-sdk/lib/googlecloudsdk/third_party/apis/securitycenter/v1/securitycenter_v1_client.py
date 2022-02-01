@@ -40,6 +40,7 @@ class SecuritycenterV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.folders_assets = self.FoldersAssetsService(self)
+    self.folders_bigQueryExports = self.FoldersBigQueryExportsService(self)
     self.folders_findings = self.FoldersFindingsService(self)
     self.folders_muteConfigs = self.FoldersMuteConfigsService(self)
     self.folders_sources_findings_externalSystems = self.FoldersSourcesFindingsExternalSystemsService(self)
@@ -47,6 +48,7 @@ class SecuritycenterV1(base_api.BaseApiClient):
     self.folders_sources = self.FoldersSourcesService(self)
     self.folders = self.FoldersService(self)
     self.organizations_assets = self.OrganizationsAssetsService(self)
+    self.organizations_bigQueryExports = self.OrganizationsBigQueryExportsService(self)
     self.organizations_findings = self.OrganizationsFindingsService(self)
     self.organizations_muteConfigs = self.OrganizationsMuteConfigsService(self)
     self.organizations_notificationConfigs = self.OrganizationsNotificationConfigsService(self)
@@ -56,6 +58,7 @@ class SecuritycenterV1(base_api.BaseApiClient):
     self.organizations_sources = self.OrganizationsSourcesService(self)
     self.organizations = self.OrganizationsService(self)
     self.projects_assets = self.ProjectsAssetsService(self)
+    self.projects_bigQueryExports = self.ProjectsBigQueryExportsService(self)
     self.projects_findings = self.ProjectsFindingsService(self)
     self.projects_muteConfigs = self.ProjectsMuteConfigsService(self)
     self.projects_sources_findings_externalSystems = self.ProjectsSourcesFindingsExternalSystemsService(self)
@@ -151,6 +154,124 @@ class SecuritycenterV1(base_api.BaseApiClient):
         request_field='securityMarks',
         request_type_name='SecuritycenterFoldersAssetsUpdateSecurityMarksRequest',
         response_type_name='SecurityMarks',
+        supports_download=False,
+    )
+
+  class FoldersBigQueryExportsService(base_api.BaseApiService):
+    """Service class for the folders_bigQueryExports resource."""
+
+    _NAME = 'folders_bigQueryExports'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.FoldersBigQueryExportsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a big query export.
+
+      Args:
+        request: (SecuritycenterFoldersBigQueryExportsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1BigQueryExport) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/bigQueryExports',
+        http_method='POST',
+        method_id='securitycenter.folders.bigQueryExports.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['bigQueryExportId'],
+        relative_path='v1/{+parent}/bigQueryExports',
+        request_field='googleCloudSecuritycenterV1BigQueryExport',
+        request_type_name='SecuritycenterFoldersBigQueryExportsCreateRequest',
+        response_type_name='GoogleCloudSecuritycenterV1BigQueryExport',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an existing big query export.
+
+      Args:
+        request: (SecuritycenterFoldersBigQueryExportsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/bigQueryExports/{bigQueryExportsId}',
+        http_method='DELETE',
+        method_id='securitycenter.folders.bigQueryExports.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterFoldersBigQueryExportsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists BigQuery exports. Note that when requesting BigQuery exports at a given level all exports under that level are also returned e.g. if requesting BigQuery exports under a folder, then all BigQuery exports immediately under the folder plus the ones created under the projects within the folder are returned.
+
+      Args:
+        request: (SecuritycenterFoldersBigQueryExportsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBigQueryExportsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/bigQueryExports',
+        http_method='GET',
+        method_id='securitycenter.folders.bigQueryExports.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/bigQueryExports',
+        request_field='',
+        request_type_name='SecuritycenterFoldersBigQueryExportsListRequest',
+        response_type_name='ListBigQueryExportsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a BigQuery export.
+
+      Args:
+        request: (SecuritycenterFoldersBigQueryExportsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1BigQueryExport) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/bigQueryExports/{bigQueryExportsId}',
+        http_method='PATCH',
+        method_id='securitycenter.folders.bigQueryExports.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudSecuritycenterV1BigQueryExport',
+        request_type_name='SecuritycenterFoldersBigQueryExportsPatchRequest',
+        response_type_name='GoogleCloudSecuritycenterV1BigQueryExport',
         supports_download=False,
     )
 
@@ -707,6 +828,124 @@ class SecuritycenterV1(base_api.BaseApiClient):
         request_field='securityMarks',
         request_type_name='SecuritycenterOrganizationsAssetsUpdateSecurityMarksRequest',
         response_type_name='SecurityMarks',
+        supports_download=False,
+    )
+
+  class OrganizationsBigQueryExportsService(base_api.BaseApiService):
+    """Service class for the organizations_bigQueryExports resource."""
+
+    _NAME = 'organizations_bigQueryExports'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.OrganizationsBigQueryExportsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a big query export.
+
+      Args:
+        request: (SecuritycenterOrganizationsBigQueryExportsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1BigQueryExport) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/bigQueryExports',
+        http_method='POST',
+        method_id='securitycenter.organizations.bigQueryExports.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['bigQueryExportId'],
+        relative_path='v1/{+parent}/bigQueryExports',
+        request_field='googleCloudSecuritycenterV1BigQueryExport',
+        request_type_name='SecuritycenterOrganizationsBigQueryExportsCreateRequest',
+        response_type_name='GoogleCloudSecuritycenterV1BigQueryExport',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an existing big query export.
+
+      Args:
+        request: (SecuritycenterOrganizationsBigQueryExportsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/bigQueryExports/{bigQueryExportsId}',
+        http_method='DELETE',
+        method_id='securitycenter.organizations.bigQueryExports.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsBigQueryExportsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists BigQuery exports. Note that when requesting BigQuery exports at a given level all exports under that level are also returned e.g. if requesting BigQuery exports under a folder, then all BigQuery exports immediately under the folder plus the ones created under the projects within the folder are returned.
+
+      Args:
+        request: (SecuritycenterOrganizationsBigQueryExportsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBigQueryExportsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/bigQueryExports',
+        http_method='GET',
+        method_id='securitycenter.organizations.bigQueryExports.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/bigQueryExports',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsBigQueryExportsListRequest',
+        response_type_name='ListBigQueryExportsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a BigQuery export.
+
+      Args:
+        request: (SecuritycenterOrganizationsBigQueryExportsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1BigQueryExport) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/bigQueryExports/{bigQueryExportsId}',
+        http_method='PATCH',
+        method_id='securitycenter.organizations.bigQueryExports.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudSecuritycenterV1BigQueryExport',
+        request_type_name='SecuritycenterOrganizationsBigQueryExportsPatchRequest',
+        response_type_name='GoogleCloudSecuritycenterV1BigQueryExport',
         supports_download=False,
     )
 
@@ -1742,6 +1981,124 @@ class SecuritycenterV1(base_api.BaseApiClient):
         request_field='securityMarks',
         request_type_name='SecuritycenterProjectsAssetsUpdateSecurityMarksRequest',
         response_type_name='SecurityMarks',
+        supports_download=False,
+    )
+
+  class ProjectsBigQueryExportsService(base_api.BaseApiService):
+    """Service class for the projects_bigQueryExports resource."""
+
+    _NAME = 'projects_bigQueryExports'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.ProjectsBigQueryExportsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a big query export.
+
+      Args:
+        request: (SecuritycenterProjectsBigQueryExportsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1BigQueryExport) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/bigQueryExports',
+        http_method='POST',
+        method_id='securitycenter.projects.bigQueryExports.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['bigQueryExportId'],
+        relative_path='v1/{+parent}/bigQueryExports',
+        request_field='googleCloudSecuritycenterV1BigQueryExport',
+        request_type_name='SecuritycenterProjectsBigQueryExportsCreateRequest',
+        response_type_name='GoogleCloudSecuritycenterV1BigQueryExport',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an existing big query export.
+
+      Args:
+        request: (SecuritycenterProjectsBigQueryExportsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/bigQueryExports/{bigQueryExportsId}',
+        http_method='DELETE',
+        method_id='securitycenter.projects.bigQueryExports.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterProjectsBigQueryExportsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists BigQuery exports. Note that when requesting BigQuery exports at a given level all exports under that level are also returned e.g. if requesting BigQuery exports under a folder, then all BigQuery exports immediately under the folder plus the ones created under the projects within the folder are returned.
+
+      Args:
+        request: (SecuritycenterProjectsBigQueryExportsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBigQueryExportsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/bigQueryExports',
+        http_method='GET',
+        method_id='securitycenter.projects.bigQueryExports.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/bigQueryExports',
+        request_field='',
+        request_type_name='SecuritycenterProjectsBigQueryExportsListRequest',
+        response_type_name='ListBigQueryExportsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a BigQuery export.
+
+      Args:
+        request: (SecuritycenterProjectsBigQueryExportsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1BigQueryExport) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/bigQueryExports/{bigQueryExportsId}',
+        http_method='PATCH',
+        method_id='securitycenter.projects.bigQueryExports.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudSecuritycenterV1BigQueryExport',
+        request_type_name='SecuritycenterProjectsBigQueryExportsPatchRequest',
+        response_type_name='GoogleCloudSecuritycenterV1BigQueryExport',
         supports_download=False,
     )
 

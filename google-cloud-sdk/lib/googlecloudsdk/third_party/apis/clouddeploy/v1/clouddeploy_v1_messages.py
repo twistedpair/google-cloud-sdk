@@ -13,6 +13,18 @@ from apitools.base.py import extra_types
 package = 'clouddeploy'
 
 
+class AnthosCluster(_messages.Message):
+  r"""Information specifying an Anthos Cluster.
+
+  Fields:
+    membership: Membership of the GKE Hub registered cluster that the Skaffold
+      configuration should be applied to. Format is
+      `projects/{project}/locations/{location}/memberships/{membership_name}`.
+  """
+
+  membership = _messages.StringField(1)
+
+
 class ApproveRolloutRequest(_messages.Message):
   r"""The request object used by `ApproveRollout`.
 
@@ -749,8 +761,7 @@ class ClouddeployProjectsLocationsTargetsPatchRequest(_messages.Message):
     allowMissing: Optional. If set to true, updating a `Target` that does not
       exist will result in the creation of a new `Target`.
     name: Optional. Name of the `Target`. Format is
-      projects/{project}/locations/{location}/
-      deliveryPipelines/{deliveryPipeline}/targets/a-z{0,62}.
+      projects/{project}/locations/{location}/targets/a-z{0,62}.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -1005,9 +1016,21 @@ class ExecutionConfig(_messages.Message):
     UsagesValueListEntryValuesEnum:
 
   Fields:
+    artifactStorage: Optional. Cloud Storage location where execution outputs
+      should be stored. This can either be a bucket ("gs://my-bucket") or a
+      path within a bucket ("gs://my-bucket/my-dir"). If unspecified, a
+      default bucket located in the same region will be used.
     defaultPool: Optional. Use default Cloud Build pool.
     privatePool: Optional. Use private Cloud Build pool.
+    serviceAccount: Optional. Google service account to use for execution. If
+      unspecified, the project execution service account
+      (-compute@developer.gserviceaccount.com) will be used.
     usages: Required. Usages when this configuration should be applied.
+    workerPool: Optional. The resource name of the `WorkerPool`, with the
+      format
+      `projects/{project}/locations/{location}/workerPools/{worker_pool}`. If
+      this optional field is unspecified, the default Cloud Build pool will be
+      used.
   """
 
   class UsagesValueListEntryValuesEnum(_messages.Enum):
@@ -1023,9 +1046,12 @@ class ExecutionConfig(_messages.Message):
     RENDER = 1
     DEPLOY = 2
 
-  defaultPool = _messages.MessageField('DefaultPool', 1)
-  privatePool = _messages.MessageField('PrivatePool', 2)
-  usages = _messages.EnumField('UsagesValueListEntryValuesEnum', 3, repeated=True)
+  artifactStorage = _messages.StringField(1)
+  defaultPool = _messages.MessageField('DefaultPool', 2)
+  privatePool = _messages.MessageField('PrivatePool', 3)
+  serviceAccount = _messages.StringField(4)
+  usages = _messages.EnumField('UsagesValueListEntryValuesEnum', 5, repeated=True)
+  workerPool = _messages.StringField(6)
 
 
 class Expr(_messages.Message):
@@ -1070,9 +1096,18 @@ class GkeCluster(_messages.Message):
   Fields:
     cluster: Information specifying a GKE Cluster. Format is
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}.
+    internalIp: Optional. When true, `cluster` should be accessed using the
+      private IP address of the control plane endpoint. Otherwise, the default
+      IP address of the control plane endpoint is used. The default IP address
+      is the private IP address for clusters with private control plane
+      endpoints and the public IP address otherwise. This option should only
+      be specified when `cluster` is a [private GKE
+      cluster](https://cloud.google.com/kubernetes-
+      engine/docs/concepts/private-cluster-concept).
   """
 
   cluster = _messages.StringField(1)
+  internalIp = _messages.BooleanField(2)
 
 
 class ListDeliveryPipelinesResponse(_messages.Message):
@@ -1570,8 +1605,8 @@ class Release(_messages.Message):
       created during the render operation.
     targetRenders: Output only. Map from target ID to details of the render
       operation for that target.
-    targetSnapshots: Output only. Snapshot of the parent pipeline's targets
-      taken at release creation time.
+    targetSnapshots: Output only. Snapshot of the targets taken at release
+      creation time.
     uid: Output only. Unique identifier of the `Release`.
   """
 
@@ -1978,9 +2013,9 @@ class Stage(_messages.Message):
     targetId: The target_id to which this stage points. This field refers
       exclusively to the last segment of a target name. For example, this
       field would just be `my-target` (rather than
-      `projects/project/deliveryPipelines/pipeline/targets/my-target`). The
-      parent `DeliveryPipeline` of the `Target` is inferred to be the parent
-      `DeliveryPipeline` of the `Release` in which this `Stage` lives.
+      `projects/project/locations/location/targets/my-target`). The location
+      of the `Target` is inferred to be the same as the location of the
+      `DeliveryPipeline` that contains this `Stage`.
   """
 
   profiles = _messages.StringField(1, repeated=True)
@@ -2124,6 +2159,7 @@ class Target(_messages.Message):
       and used by the user, and not by Google Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
+    anthosCluster: Information specifying an Anthos Cluster.
     createTime: Output only. Time at which the `Target` was created.
     description: Optional. Description of the `Target`. Max length is 255
       characters.
@@ -2147,8 +2183,7 @@ class Target(_messages.Message):
       resource is limited to a maximum of 64 labels. Both keys and values are
       additionally constrained to be <= 128 bytes.
     name: Optional. Name of the `Target`. Format is
-      projects/{project}/locations/{location}/
-      deliveryPipelines/{deliveryPipeline}/targets/a-z{0,62}.
+      projects/{project}/locations/{location}/targets/a-z{0,62}.
     requireApproval: Optional. Whether or not the `Target` requires approval.
     targetId: Output only. Resource id of the `Target`.
     uid: Output only. Unique identifier of the `Target`.
@@ -2216,17 +2251,18 @@ class Target(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  executionConfigs = _messages.MessageField('ExecutionConfig', 5, repeated=True)
-  gke = _messages.MessageField('GkeCluster', 6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  requireApproval = _messages.BooleanField(9)
-  targetId = _messages.StringField(10)
-  uid = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  anthosCluster = _messages.MessageField('AnthosCluster', 2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  executionConfigs = _messages.MessageField('ExecutionConfig', 6, repeated=True)
+  gke = _messages.MessageField('GkeCluster', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  requireApproval = _messages.BooleanField(10)
+  targetId = _messages.StringField(11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class TargetArtifact(_messages.Message):

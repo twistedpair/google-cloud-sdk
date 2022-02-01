@@ -81,11 +81,14 @@ class AsymmetricDecryptResponse(_messages.Message):
       SOFTWARE: Crypto operations are performed in software.
       HSM: Crypto operations are performed in a Hardware Security Module.
       EXTERNAL: Crypto operations are performed by an external key manager.
+      EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
+        backend.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
     EXTERNAL = 3
+    EXTERNAL_VPC = 4
 
   plaintext = _messages.BytesField(1)
   plaintextCrc32c = _messages.IntegerField(2)
@@ -185,11 +188,14 @@ class AsymmetricSignResponse(_messages.Message):
       SOFTWARE: Crypto operations are performed in software.
       HSM: Crypto operations are performed in a Hardware Security Module.
       EXTERNAL: Crypto operations are performed by an external key manager.
+      EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
+        backend.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
     EXTERNAL = 3
+    EXTERNAL_VPC = 4
 
   name = _messages.StringField(1)
   protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 2)
@@ -314,6 +320,40 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class Certificate(_messages.Message):
+  r"""A Certificate represents an X.509 certificate used to authenticate HTTPS
+  connections to EKM replicas.
+
+  Fields:
+    issuer: Output only. The issuer distinguished name in RFC 2253 format.
+      Only present if parsed is true.
+    notAfterTime: Output only. The certificate is not valid after this time.
+      Only present if parsed is true.
+    notBeforeTime: Output only. The certificate is not valid before this time.
+      Only present if parsed is true.
+    parsed: Output only. True if the certificate was parsed successfully.
+    rawDer: Required. The raw certificate bytes in DER format.
+    serialNumber: Output only. The certificate serial number as a hex string.
+      Only present if parsed is true.
+    sha256Fingerprint: Output only. The SHA-256 certificate fingerprint as a
+      hex string. Only present if parsed is true.
+    subject: Output only. The subject distinguished name in RFC 2253 format.
+      Only present if parsed is true.
+    subjectAlternativeDnsNames: Output only. The subject Alternative DNS
+      names. Only present if parsed is true.
+  """
+
+  issuer = _messages.StringField(1)
+  notAfterTime = _messages.StringField(2)
+  notBeforeTime = _messages.StringField(3)
+  parsed = _messages.BooleanField(4)
+  rawDer = _messages.BytesField(5)
+  serialNumber = _messages.StringField(6)
+  sha256Fingerprint = _messages.StringField(7)
+  subject = _messages.StringField(8)
+  subjectAlternativeDnsNames = _messages.StringField(9, repeated=True)
+
+
 class CertificateChains(_messages.Message):
   r"""Certificate chains needed to verify the attestation. Certificates in
   chains are PEM-encoded and are ordered based on
@@ -330,6 +370,22 @@ class CertificateChains(_messages.Message):
   caviumCerts = _messages.StringField(1, repeated=True)
   googleCardCerts = _messages.StringField(2, repeated=True)
   googlePartitionCerts = _messages.StringField(3, repeated=True)
+
+
+class CloudkmsProjectsLocationsEkmConnectionsCreateRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsEkmConnectionsCreateRequest object.
+
+  Fields:
+    ekmConnection: A EkmConnection resource to be passed as the request body.
+    ekmConnectionId: Required. It must be unique within a location and match
+      the regular expression `[a-zA-Z0-9_-]{1,63}`.
+    parent: Required. The resource name of the location associated with the
+      EkmConnection, in the format `projects/*/locations/*`.
+  """
+
+  ekmConnection = _messages.MessageField('EkmConnection', 1)
+  ekmConnectionId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class CloudkmsProjectsLocationsEkmConnectionsGetIamPolicyRequest(_messages.Message):
@@ -355,6 +411,60 @@ class CloudkmsProjectsLocationsEkmConnectionsGetIamPolicyRequest(_messages.Messa
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
+
+
+class CloudkmsProjectsLocationsEkmConnectionsGetRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsEkmConnectionsGetRequest object.
+
+  Fields:
+    name: Required. The name of the EkmConnection to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudkmsProjectsLocationsEkmConnectionsListRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsEkmConnectionsListRequest object.
+
+  Fields:
+    filter: Optional. Only include resources that match the filter in the
+      response. For more information, see [Sorting and filtering list
+      results](https://cloud.google.com/kms/docs/sorting-and-filtering).
+    orderBy: Optional. Specify how the results should be sorted. If not
+      specified, the results will be sorted in the default order. For more
+      information, see [Sorting and filtering list
+      results](https://cloud.google.com/kms/docs/sorting-and-filtering).
+    pageSize: Optional. Optional limit on the number of EkmConnections to
+      include in the response. Further EkmConnections can subsequently be
+      obtained by including the ListEkmConnectionsResponse.next_page_token in
+      a subsequent request. If unspecified, the server will pick an
+      appropriate default.
+    pageToken: Optional. Optional pagination token, returned earlier via
+      ListEkmConnectionsResponse.next_page_token.
+    parent: Required. The resource name of the location associated with the
+      EkmConnections to list, in the format `projects/*/locations/*`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class CloudkmsProjectsLocationsEkmConnectionsPatchRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsEkmConnectionsPatchRequest object.
+
+  Fields:
+    ekmConnection: A EkmConnection resource to be passed as the request body.
+    name: Output only. The resource name for the EkmConnection in the format
+      `projects/*/locations/*/ekmConnections/*`.
+    updateMask: Required. List of fields to be updated in this request.
+  """
+
+  ekmConnection = _messages.MessageField('EkmConnection', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class CloudkmsProjectsLocationsEkmConnectionsSetIamPolicyRequest(_messages.Message):
@@ -1070,6 +1180,13 @@ class CryptoKey(_messages.Message):
 
   Fields:
     createTime: Output only. The time at which this CryptoKey was created.
+    cryptoKeyBackend: Immutable. The resource name of the backend environment
+      where the key material for all CryptoKeyVersions associated with this
+      CryptoKey reside and where all related cryptographic operations are
+      performed. Only applicable if CryptoKeyVersions have a ProtectionLevel
+      of EXTERNAL_VPC, with the resource name in the format
+      `projects/*/locations/*/ekmConnections/*`. Note, this list is non-
+      exhaustive and may apply to additional ProtectionLevels in the future.
     destroyScheduledDuration: Immutable. The period of time that versions of
       this key spend in the DESTROY_SCHEDULED state before transitioning to
       DESTROYED. If not specified at creation time, the default duration is 24
@@ -1148,15 +1265,16 @@ class CryptoKey(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  destroyScheduledDuration = _messages.StringField(2)
-  importOnly = _messages.BooleanField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  nextRotationTime = _messages.StringField(6)
-  primary = _messages.MessageField('CryptoKeyVersion', 7)
-  purpose = _messages.EnumField('PurposeValueValuesEnum', 8)
-  rotationPeriod = _messages.StringField(9)
-  versionTemplate = _messages.MessageField('CryptoKeyVersionTemplate', 10)
+  cryptoKeyBackend = _messages.StringField(2)
+  destroyScheduledDuration = _messages.StringField(3)
+  importOnly = _messages.BooleanField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  nextRotationTime = _messages.StringField(7)
+  primary = _messages.MessageField('CryptoKeyVersion', 8)
+  purpose = _messages.EnumField('PurposeValueValuesEnum', 9)
+  rotationPeriod = _messages.StringField(10)
+  versionTemplate = _messages.MessageField('CryptoKeyVersionTemplate', 11)
 
 
 class CryptoKeyVersion(_messages.Message):
@@ -1190,7 +1308,8 @@ class CryptoKeyVersion(_messages.Message):
       scheduled for destruction. Only present if state is DESTROY_SCHEDULED.
     externalProtectionLevelOptions: ExternalProtectionLevelOptions stores a
       group of additional fields for configuring a CryptoKeyVersion that are
-      specific to the EXTERNAL protection level.
+      specific to the EXTERNAL protection level and EXTERNAL_VPC protection
+      levels.
     generateTime: Output only. The time this CryptoKeyVersion's key material
       was generated.
     importFailureReason: Output only. The root cause of the most recent import
@@ -1290,11 +1409,14 @@ class CryptoKeyVersion(_messages.Message):
       SOFTWARE: Crypto operations are performed in software.
       HSM: Crypto operations are performed in a Hardware Security Module.
       EXTERNAL: Crypto operations are performed by an external key manager.
+      EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
+        backend.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
     EXTERNAL = 3
+    EXTERNAL_VPC = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""The current state of the CryptoKeyVersion.
@@ -1453,11 +1575,14 @@ class CryptoKeyVersionTemplate(_messages.Message):
       SOFTWARE: Crypto operations are performed in software.
       HSM: Crypto operations are performed in a Hardware Security Module.
       EXTERNAL: Crypto operations are performed by an external key manager.
+      EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
+        backend.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
     EXTERNAL = 3
+    EXTERNAL_VPC = 4
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 2)
@@ -1542,11 +1667,14 @@ class DecryptResponse(_messages.Message):
       SOFTWARE: Crypto operations are performed in software.
       HSM: Crypto operations are performed in a Hardware Security Module.
       EXTERNAL: Crypto operations are performed by an external key manager.
+      EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
+        backend.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
     EXTERNAL = 3
+    EXTERNAL_VPC = 4
 
   plaintext = _messages.BytesField(1)
   plaintextCrc32c = _messages.IntegerField(2)
@@ -1570,6 +1698,30 @@ class Digest(_messages.Message):
   sha256 = _messages.BytesField(1)
   sha384 = _messages.BytesField(2)
   sha512 = _messages.BytesField(3)
+
+
+class EkmConnection(_messages.Message):
+  r"""An EkmConnection represents an individual EKM connection. It can be used
+  for creating CryptoKeys and CryptoKeyVersions with a ProtectionLevel of
+  EXTERNAL_VPC, as well as performing cryptographic operations using keys
+  created within the EkmConnection.
+
+  Fields:
+    createTime: Output only. The time at which the EkmConnection was created.
+    etag: This checksum is computed by the server based on the value of other
+      fields, and may be sent on update requests to ensure the client has an
+      up-to-date value before proceeding.
+    name: Output only. The resource name for the EkmConnection in the format
+      `projects/*/locations/*/ekmConnections/*`.
+    serviceResolvers: A list of ServiceResolvers where the EKM can be reached.
+      There should be one ServiceResolver per EKM replica. Currently, only a
+      single ServiceResolver is supported.
+  """
+
+  createTime = _messages.StringField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3)
+  serviceResolvers = _messages.MessageField('ServiceResolver', 4, repeated=True)
 
 
 class EncryptRequest(_messages.Message):
@@ -1674,11 +1826,14 @@ class EncryptResponse(_messages.Message):
       SOFTWARE: Crypto operations are performed in software.
       HSM: Crypto operations are performed in a Hardware Security Module.
       EXTERNAL: Crypto operations are performed by an external key manager.
+      EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
+        backend.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
     EXTERNAL = 3
+    EXTERNAL_VPC = 4
 
   ciphertext = _messages.BytesField(1)
   ciphertextCrc32c = _messages.IntegerField(2)
@@ -1727,14 +1882,18 @@ class Expr(_messages.Message):
 class ExternalProtectionLevelOptions(_messages.Message):
   r"""ExternalProtectionLevelOptions stores a group of additional fields for
   configuring a CryptoKeyVersion that are specific to the EXTERNAL protection
-  level.
+  level and EXTERNAL_VPC protection levels.
 
   Fields:
+    ekmConnectionKeyPath: The path to the external key material on the EKM
+      when using EkmConnection e.g., "v0/my/key". Set this field instead of
+      external_key_uri when using an EkmConnection.
     externalKeyUri: The URI for an external resource that this
       CryptoKeyVersion represents.
   """
 
-  externalKeyUri = _messages.StringField(1)
+  ekmConnectionKeyPath = _messages.StringField(1)
+  externalKeyUri = _messages.StringField(2)
 
 
 class GenerateRandomBytesRequest(_messages.Message):
@@ -1760,11 +1919,14 @@ class GenerateRandomBytesRequest(_messages.Message):
       SOFTWARE: Crypto operations are performed in software.
       HSM: Crypto operations are performed in a Hardware Security Module.
       EXTERNAL: Crypto operations are performed by an external key manager.
+      EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
+        backend.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
     EXTERNAL = 3
+    EXTERNAL_VPC = 4
 
   lengthBytes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 2)
@@ -1994,11 +2156,14 @@ class ImportJob(_messages.Message):
       SOFTWARE: Crypto operations are performed in software.
       HSM: Crypto operations are performed in a Hardware Security Module.
       EXTERNAL: Crypto operations are performed by an external key manager.
+      EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
+        backend.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
     EXTERNAL = 3
+    EXTERNAL_VPC = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of the ImportJob, indicating if it can
@@ -2108,6 +2273,22 @@ class ListCryptoKeysResponse(_messages.Message):
   """
 
   cryptoKeys = _messages.MessageField('CryptoKey', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  totalSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class ListEkmConnectionsResponse(_messages.Message):
+  r"""Response message for KeyManagementService.ListEkmConnections.
+
+  Fields:
+    ekmConnections: The list of EkmConnections.
+    nextPageToken: A token to retrieve next page of results. Pass this value
+      in ListEkmConnectionsRequest.page_token to retrieve the next page of
+      results.
+    totalSize: The total number of EkmConnections that matched the query.
+  """
+
+  ekmConnections = _messages.MessageField('EkmConnection', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   totalSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
@@ -2314,11 +2495,14 @@ class MacSignResponse(_messages.Message):
       SOFTWARE: Crypto operations are performed in software.
       HSM: Crypto operations are performed in a Hardware Security Module.
       EXTERNAL: Crypto operations are performed by an external key manager.
+      EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
+        backend.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
     EXTERNAL = 3
+    EXTERNAL_VPC = 4
 
   mac = _messages.BytesField(1)
   macCrc32c = _messages.IntegerField(2)
@@ -2411,11 +2595,14 @@ class MacVerifyResponse(_messages.Message):
       SOFTWARE: Crypto operations are performed in software.
       HSM: Crypto operations are performed in a Hardware Security Module.
       EXTERNAL: Crypto operations are performed by an external key manager.
+      EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
+        backend.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
     EXTERNAL = 3
+    EXTERNAL_VPC = 4
 
   name = _messages.StringField(1)
   protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 2)
@@ -2611,11 +2798,14 @@ class PublicKey(_messages.Message):
       SOFTWARE: Crypto operations are performed in software.
       HSM: Crypto operations are performed in a Hardware Security Module.
       EXTERNAL: Crypto operations are performed by an external key manager.
+      EXTERNAL_VPC: Crypto operations are performed in an EKM-over-VPC
+        backend.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
     EXTERNAL = 3
+    EXTERNAL_VPC = 4
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   name = _messages.StringField(2)
@@ -2626,6 +2816,32 @@ class PublicKey(_messages.Message):
 
 class RestoreCryptoKeyVersionRequest(_messages.Message):
   r"""Request message for KeyManagementService.RestoreCryptoKeyVersion."""
+
+
+class ServiceResolver(_messages.Message):
+  r"""A ServiceResolver represents an EKM replica that can be reached within
+  an EkmConnection.
+
+  Fields:
+    endpointFilter: Optional. The filter applied to the endpoints of the
+      resolved service. If no filter is specified, all endpoints will be
+      considered. An endpoint will be chosen arbitrarily from the filtered
+      list for each request. For endpoint filter syntax and examples, see
+      https://cloud.google.com/service-directory/docs/reference/rpc/google.clo
+      ud.servicedirectory.v1#resolveservicerequest.
+    hostname: Required. The hostname of the EKM replica used at TLS and HTTP
+      layers.
+    serverCertificates: Required. A list of leaf server certificates used to
+      authenticate HTTPS connections to the EKM replica.
+    serviceDirectoryService: Required. The resource name of the Service
+      Directory service pointing to an EKM replica, in the format
+      `projects/*/locations/*/namespaces/*/services/*`.
+  """
+
+  endpointFilter = _messages.StringField(1)
+  hostname = _messages.StringField(2)
+  serverCertificates = _messages.MessageField('Certificate', 3, repeated=True)
+  serviceDirectoryService = _messages.StringField(4)
 
 
 class SetIamPolicyRequest(_messages.Message):

@@ -4927,8 +4927,9 @@ class MonitoredResource(_messages.Message):
   resource and its attributes according to the schema. For example, a
   particular Compute Engine VM instance could be represented by the following
   object, because the MonitoredResourceDescriptor for "gce_instance" has
-  labels "instance_id" and "zone": { "type": "gce_instance", "labels": {
-  "instance_id": "12345678901234", "zone": "us-central1-a" }}
+  labels "project_id", "instance_id" and "zone": { "type": "gce_instance",
+  "labels": { "project_id": "my-project", "instance_id": "12345678901234",
+  "zone": "us-central1-a" }}
 
   Messages:
     LabelsValue: Required. Values for all of the labels listed in the

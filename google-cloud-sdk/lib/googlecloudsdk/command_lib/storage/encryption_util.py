@@ -26,6 +26,7 @@ import re
 
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import hash_util
+from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.cache import function_result_cache
@@ -135,6 +136,8 @@ def _get_raw_key(args, key_field_name):
     key file.
   """
   flag_key = getattr(args, key_field_name, None)
+  if flag_key == user_request_args_factory.CLEAR:
+    return None
   if flag_key is not None:
     return flag_key
   return _read_key_store_file().get(key_field_name)

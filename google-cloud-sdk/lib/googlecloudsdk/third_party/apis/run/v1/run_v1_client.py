@@ -46,14 +46,18 @@ class RunV1(base_api.BaseApiClient):
     self.namespaces_authorizeddomains = self.NamespacesAuthorizeddomainsService(self)
     self.namespaces_configurations = self.NamespacesConfigurationsService(self)
     self.namespaces_domainmappings = self.NamespacesDomainmappingsService(self)
+    self.namespaces_executions = self.NamespacesExecutionsService(self)
+    self.namespaces_jobs = self.NamespacesJobsService(self)
     self.namespaces_revisions = self.NamespacesRevisionsService(self)
     self.namespaces_routes = self.NamespacesRoutesService(self)
     self.namespaces_services = self.NamespacesServicesService(self)
+    self.namespaces_tasks = self.NamespacesTasksService(self)
     self.namespaces = self.NamespacesService(self)
     self.projects_authorizeddomains = self.ProjectsAuthorizeddomainsService(self)
     self.projects_locations_authorizeddomains = self.ProjectsLocationsAuthorizeddomainsService(self)
     self.projects_locations_configurations = self.ProjectsLocationsConfigurationsService(self)
     self.projects_locations_domainmappings = self.ProjectsLocationsDomainmappingsService(self)
+    self.projects_locations_jobs = self.ProjectsLocationsJobsService(self)
     self.projects_locations_namespaces = self.ProjectsLocationsNamespacesService(self)
     self.projects_locations_revisions = self.ProjectsLocationsRevisionsService(self)
     self.projects_locations_routes = self.ProjectsLocationsRoutesService(self)
@@ -456,6 +460,269 @@ class RunV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class NamespacesExecutionsService(base_api.BaseApiService):
+    """Service class for the namespaces_executions resource."""
+
+    _NAME = 'namespaces_executions'
+
+    def __init__(self, client):
+      super(RunV1.NamespacesExecutionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Delete an execution.
+
+      Args:
+        request: (RunNamespacesExecutionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Status) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/run.googleapis.com/v1/namespaces/{namespacesId}/executions/{executionsId}',
+        http_method='DELETE',
+        method_id='run.namespaces.executions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['apiVersion', 'kind', 'propagationPolicy'],
+        relative_path='apis/run.googleapis.com/v1/{+name}',
+        request_field='',
+        request_type_name='RunNamespacesExecutionsDeleteRequest',
+        response_type_name='Status',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get information about an execution.
+
+      Args:
+        request: (RunNamespacesExecutionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Execution) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/run.googleapis.com/v1/namespaces/{namespacesId}/executions/{executionsId}',
+        http_method='GET',
+        method_id='run.namespaces.executions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='apis/run.googleapis.com/v1/{+name}',
+        request_field='',
+        request_type_name='RunNamespacesExecutionsGetRequest',
+        response_type_name='Execution',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List executions.
+
+      Args:
+        request: (RunNamespacesExecutionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListExecutionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/run.googleapis.com/v1/namespaces/{namespacesId}/executions',
+        http_method='GET',
+        method_id='run.namespaces.executions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'resourceVersion', 'watch'],
+        relative_path='apis/run.googleapis.com/v1/{+parent}/executions',
+        request_field='',
+        request_type_name='RunNamespacesExecutionsListRequest',
+        response_type_name='ListExecutionsResponse',
+        supports_download=False,
+    )
+
+  class NamespacesJobsService(base_api.BaseApiService):
+    """Service class for the namespaces_jobs resource."""
+
+    _NAME = 'namespaces_jobs'
+
+    def __init__(self, client):
+      super(RunV1.NamespacesJobsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a job.
+
+      Args:
+        request: (RunNamespacesJobsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Job) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/run.googleapis.com/v1/namespaces/{namespacesId}/jobs',
+        http_method='POST',
+        method_id='run.namespaces.jobs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='apis/run.googleapis.com/v1/{+parent}/jobs',
+        request_field='job',
+        request_type_name='RunNamespacesJobsCreateRequest',
+        response_type_name='Job',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a job.
+
+      Args:
+        request: (RunNamespacesJobsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Status) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/run.googleapis.com/v1/namespaces/{namespacesId}/jobs/{jobsId}',
+        http_method='DELETE',
+        method_id='run.namespaces.jobs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['apiVersion', 'kind', 'propagationPolicy'],
+        relative_path='apis/run.googleapis.com/v1/{+name}',
+        request_field='',
+        request_type_name='RunNamespacesJobsDeleteRequest',
+        response_type_name='Status',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get information about a job.
+
+      Args:
+        request: (RunNamespacesJobsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Job) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/run.googleapis.com/v1/namespaces/{namespacesId}/jobs/{jobsId}',
+        http_method='GET',
+        method_id='run.namespaces.jobs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='apis/run.googleapis.com/v1/{+name}',
+        request_field='',
+        request_type_name='RunNamespacesJobsGetRequest',
+        response_type_name='Job',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List jobs.
+
+      Args:
+        request: (RunNamespacesJobsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListJobsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/run.googleapis.com/v1/namespaces/{namespacesId}/jobs',
+        http_method='GET',
+        method_id='run.namespaces.jobs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'resourceVersion', 'watch'],
+        relative_path='apis/run.googleapis.com/v1/{+parent}/jobs',
+        request_field='',
+        request_type_name='RunNamespacesJobsListRequest',
+        response_type_name='ListJobsResponse',
+        supports_download=False,
+    )
+
+    def ReplaceJob(self, request, global_params=None):
+      r"""Replace a job. Only the spec and metadata labels and annotations are modifiable. After the Replace request, Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
+
+      Args:
+        request: (RunNamespacesJobsReplaceJobRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Job) The response message.
+      """
+      config = self.GetMethodConfig('ReplaceJob')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReplaceJob.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/run.googleapis.com/v1/namespaces/{namespacesId}/jobs/{jobsId}',
+        http_method='PUT',
+        method_id='run.namespaces.jobs.replaceJob',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='apis/run.googleapis.com/v1/{+name}',
+        request_field='job',
+        request_type_name='RunNamespacesJobsReplaceJobRequest',
+        response_type_name='Job',
+        supports_download=False,
+    )
+
+    def Run(self, request, global_params=None):
+      r"""Trigger creation of a new execution of this job.
+
+      Args:
+        request: (RunNamespacesJobsRunRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Execution) The response message.
+      """
+      config = self.GetMethodConfig('Run')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Run.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/run.googleapis.com/v1/namespaces/{namespacesId}/jobs/{jobsId}:run',
+        http_method='POST',
+        method_id='run.namespaces.jobs.run',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='apis/run.googleapis.com/v1/{+name}:run',
+        request_field='runJobRequest',
+        request_type_name='RunNamespacesJobsRunRequest',
+        response_type_name='Execution',
+        supports_download=False,
+    )
+
   class NamespacesRevisionsService(base_api.BaseApiService):
     """Service class for the namespaces_revisions resource."""
 
@@ -756,6 +1023,70 @@ class RunV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class NamespacesTasksService(base_api.BaseApiService):
+    """Service class for the namespaces_tasks resource."""
+
+    _NAME = 'namespaces_tasks'
+
+    def __init__(self, client):
+      super(RunV1.NamespacesTasksService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get information about a task.
+
+      Args:
+        request: (RunNamespacesTasksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Task) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/run.googleapis.com/v1/namespaces/{namespacesId}/tasks/{tasksId}',
+        http_method='GET',
+        method_id='run.namespaces.tasks.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='apis/run.googleapis.com/v1/{+name}',
+        request_field='',
+        request_type_name='RunNamespacesTasksGetRequest',
+        response_type_name='Task',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List tasks.
+
+      Args:
+        request: (RunNamespacesTasksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListTasksResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/run.googleapis.com/v1/namespaces/{namespacesId}/tasks',
+        http_method='GET',
+        method_id='run.namespaces.tasks.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'resourceVersion', 'watch'],
+        relative_path='apis/run.googleapis.com/v1/{+parent}/tasks',
+        request_field='',
+        request_type_name='RunNamespacesTasksListRequest',
+        response_type_name='ListTasksResponse',
+        supports_download=False,
+    )
+
   class NamespacesService(base_api.BaseApiService):
     """Service class for the namespaces resource."""
 
@@ -1019,6 +1350,97 @@ class RunV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='RunProjectsLocationsDomainmappingsListRequest',
         response_type_name='ListDomainMappingsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsJobsService(base_api.BaseApiService):
+    """Service class for the projects_locations_jobs resource."""
+
+    _NAME = 'projects_locations_jobs'
+
+    def __init__(self, client):
+      super(RunV1.ProjectsLocationsJobsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Get the IAM Access Control policy currently in effect for the given job. This result does not include any inherited policies.
+
+      Args:
+        request: (RunProjectsLocationsJobsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}:getIamPolicy',
+        http_method='GET',
+        method_id='run.projects.locations.jobs.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='RunProjectsLocationsJobsGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the IAM Access control policy for the specified job. Overwrites any existing policy.
+
+      Args:
+        request: (RunProjectsLocationsJobsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}:setIamPolicy',
+        http_method='POST',
+        method_id='run.projects.locations.jobs.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='RunProjectsLocationsJobsSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified job. There are no permissions required for making this API call.
+
+      Args:
+        request: (RunProjectsLocationsJobsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}:testIamPermissions',
+        http_method='POST',
+        method_id='run.projects.locations.jobs.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='RunProjectsLocationsJobsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 

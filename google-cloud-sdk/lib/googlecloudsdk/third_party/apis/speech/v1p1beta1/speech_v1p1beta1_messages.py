@@ -502,6 +502,9 @@ class RecognitionConfig(_messages.Message):
       standard rate. default Best for audio that is not one of the specific
       audio models. For example, long-form audio. Ideally the audio is high-
       fidelity, recorded at a 16khz or greater sampling rate.
+      medical_conversation Best for audio that originated from a conversation
+      between a medical provider and patient. medical_dictation Best for audio
+      that originated from dictation notes by a medical provider.
     profanityFilter: If set to `true`, the server will attempt to filter out
       profanities, replacing all but the initial character in each filtered
       word with asterisks, e.g. "f***". If set to `false` or omitted,

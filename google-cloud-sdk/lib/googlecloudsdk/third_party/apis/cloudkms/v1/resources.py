@@ -41,6 +41,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_EKMCONNECTIONS = (
+      'projects.locations.ekmConnections',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/ekmConnections/'
+              '{ekmConnectionsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_KEYRINGS = (
       'projects.locations.keyRings',
       '{+name}',

@@ -59,3 +59,20 @@ class WorkerConfigButNoWorkerpoolError(exceptions.Error):
     msg = ('Detected a worker pool config but no worker pool. Please specify a '
            'worker pool.')
     super(WorkerConfigButNoWorkerpoolError, self).__init__(msg)
+
+
+class TektonVersionError(exceptions.Error):
+  """The Tekton version user supplied is not supported."""
+
+  def __init__(self):
+    msg = ('Tekton version is not supported. Only tekton.dev/v1beta1 is '
+           'supported at the moment.')
+    super(TektonVersionError, self).__init__(msg)
+
+
+class InvalidYamlError(exceptions.Error):
+  """The Tekton Yaml user supplied is invalid."""
+
+  def __init__(self, msg):
+    msg = ('Invalid yaml: {msg}').format(msg=msg)
+    super(InvalidYamlError, self).__init__(msg)

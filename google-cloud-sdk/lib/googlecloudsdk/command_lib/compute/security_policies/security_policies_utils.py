@@ -94,6 +94,12 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
             .DdosProtectionValueValuesEnum(
                 parsed_security_policy['ddosProtectionConfig']
                 ['ddosProtection'])))
+  if 'recaptchaOptionsConfig' in parsed_security_policy:
+    security_policy.recaptchaOptionsConfig = (
+        messages.SecurityPolicyRecaptchaOptionsConfig())
+    if 'redirectSiteKey' in parsed_security_policy['recaptchaOptionsConfig']:
+      security_policy.recaptchaOptionsConfig.redirectSiteKey = (
+          parsed_security_policy['recaptchaOptionsConfig']['redirectSiteKey'])
 
   rules = []
   for rule in parsed_security_policy['rules']:
@@ -152,6 +158,17 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
                   ['intervalSec']),
               conformAction=rate_limit_options['conformAction'],
               exceedAction=rate_limit_options['exceedAction']))
+      if 'exceedRedirectOptions' in rate_limit_options:
+        exceed_redirect_options = messages.SecurityPolicyRuleRedirectOptions()
+        if 'type' in rate_limit_options['exceedRedirectOptions']:
+          exceed_redirect_options.type = (
+              messages.SecurityPolicyRuleRedirectOptions.TypeValueValuesEnum(
+                  rate_limit_options['exceedRedirectOptions']['type']))
+        if 'target' in rate_limit_options['exceedRedirectOptions']:
+          exceed_redirect_options.target = rate_limit_options[
+              'exceedRedirectOptions']['target']
+        security_policy_rule.rateLimitOptions.exceedRedirectOptions = (
+            exceed_redirect_options)
       if 'banThreshold' in rate_limit_options:
         security_policy_rule.rateLimitOptions.banThreshold = (
             messages.SecurityPolicyRuleRateLimitOptionsThreshold(
@@ -276,6 +293,21 @@ def CreateDdosProtectionConfig(client, args, existing_ddos_protection_config):
   return ddos_protection_config
 
 
+def CreateRecaptchaOptionsConfig(client, args,
+                                 existing_recaptcha_options_config):
+  """Returns a SecurityPolicyRecaptchaOptionsConfig message."""
+
+  messages = client.messages
+  recaptcha_options_config = (
+      existing_recaptcha_options_config if existing_recaptcha_options_config
+      is not None else messages.SecurityPolicyRecaptchaOptionsConfig())
+
+  if args.IsSpecified('recaptcha_redirect_site_key'):
+    recaptcha_options_config.redirectSiteKey = args.recaptcha_redirect_site_key
+
+  return recaptcha_options_config
+
+
 def CreateRateLimitOptions(client, args):
   """Returns a SecurityPolicyRuleRateLimitOptions message."""
 
@@ -300,6 +332,17 @@ def CreateRateLimitOptions(client, args):
     is_updated = True
   if args.IsSpecified('exceed_action'):
     rate_limit_options.exceedAction = _ConvertExceedAction(args.exceed_action)
+    is_updated = True
+  if (args.IsSpecified('exceed_redirect_type') or
+      args.IsSpecified('exceed_redirect_target')):
+    exceed_redirect_options = messages.SecurityPolicyRuleRedirectOptions()
+    if args.IsSpecified('exceed_redirect_type'):
+      exceed_redirect_options.type = (
+          messages.SecurityPolicyRuleRedirectOptions.TypeValueValuesEnum(
+              _ConvertRedirectType(args.exceed_redirect_type)))
+    if args.IsSpecified('exceed_redirect_target'):
+      exceed_redirect_options.target = args.exceed_redirect_target
+    rate_limit_options.exceedRedirectOptions = exceed_redirect_options
     is_updated = True
   if args.IsSpecified('enforce_on_key'):
     rate_limit_options.enforceOnKey = (
@@ -346,7 +389,8 @@ def _ConvertEnforceOnKey(enforce_on_key):
       'all-ips': 'ALL_IPS',
       'all': 'ALL',
       'http-header': 'HTTP_HEADER',
-      'xff-ip': 'XFF_IP'
+      'xff-ip': 'XFF_IP',
+      'http-cookie': 'HTTP_COOKIE'
   }.get(enforce_on_key, enforce_on_key)
 
 

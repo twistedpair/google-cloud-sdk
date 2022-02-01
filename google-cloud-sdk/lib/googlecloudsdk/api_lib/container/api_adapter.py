@@ -1027,7 +1027,8 @@ class CreateNodePoolOptions(object):
                node_pool_soak_duration=None,
                standard_rollout_policy=None,
                maintenance_interval=None,
-               network_performance_config=None):
+               network_performance_config=None,
+               enable_confidential_nodes=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -1085,6 +1086,7 @@ class CreateNodePoolOptions(object):
     self.standard_rollout_policy = standard_rollout_policy
     self.maintenance_interval = maintenance_interval
     self.network_performance_config = network_performance_config
+    self.enable_confidential_nodes = enable_confidential_nodes
 
 
 class UpdateNodePoolOptions(object):
@@ -1114,7 +1116,8 @@ class UpdateNodePoolOptions(object):
                enable_rolling_update=None,
                node_pool_soak_duration=None,
                standard_rollout_policy=None,
-               network_performance_config=None):
+               network_performance_config=None,
+               enable_confidential_nodes=None):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.enable_autoscaling = enable_autoscaling
@@ -1139,6 +1142,7 @@ class UpdateNodePoolOptions(object):
     self.node_pool_soak_duration = node_pool_soak_duration
     self.standard_rollout_policy = standard_rollout_policy
     self.network_performance_config = network_performance_config
+    self.enable_confidential_nodes = enable_confidential_nodes
 
   def IsAutoscalingUpdate(self):
     return (self.enable_autoscaling is not None or self.max_nodes is not None or
@@ -1164,7 +1168,8 @@ class UpdateNodePoolOptions(object):
             self.enable_blue_green_update is not None or
             self.node_pool_soak_duration is not None or
             self.standard_rollout_policy is not None or
-            self.network_performance_config is not None)
+            self.network_performance_config is not None or
+            self.enable_confidential_nodes is not None)
 
 
 class APIAdapter(object):
@@ -2979,6 +2984,11 @@ class APIAdapter(object):
       gvnic = self.messages.VirtualNIC(enabled=options.gvnic)
       node_config.gvnic = gvnic
 
+    if options.enable_confidential_nodes:
+      confidential_nodes = self.messages.ConfidentialNodes(
+          enabled=options.enable_confidential_nodes)
+      node_config.confidentialNodes = confidential_nodes
+
     if options.maintenance_interval:
       node_config.stableFleetConfig = _GetStableFleetConfig(
           options, self.messages)
@@ -3269,6 +3279,10 @@ class APIAdapter(object):
       network_config.networkPerformanceConfig = self._GetNetworkPerformanceConfig(
           options)
       update_request.nodeNetworkConfig = network_config
+    elif options.enable_confidential_nodes is not None:
+      confidential_nodes = self.messages.ConfidentialNodes(
+          enabled=options.enable_confidential_nodes)
+      update_request.confidentialNodes = confidential_nodes
     return update_request
 
   def UpdateNodePool(self, node_pool_ref, options):

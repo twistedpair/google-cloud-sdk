@@ -446,11 +446,11 @@
     },
     "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsResponse": {
       "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsResponse",
-      "description": "The response message from importing artifacts.",
+      "description": "The response message from importing APT artifacts.",
       "type": "object",
       "properties": {
         "aptArtifacts": {
-          "description": "The Apt artifacts updated.",
+          "description": "The Apt artifacts imported.",
           "type": "array",
           "items": {
             "$ref": "GoogleDevtoolsArtifactregistryV1alpha1AptArtifact"
@@ -588,11 +588,11 @@
     },
     "GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsResponse": {
       "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsResponse",
-      "description": "The response message from importing artifacts.",
+      "description": "The response message from importing YUM artifacts.",
       "type": "object",
       "properties": {
         "yumArtifacts": {
-          "description": "The yum artifacts updated.",
+          "description": "The yum artifacts imported.",
           "type": "array",
           "items": {
             "$ref": "GoogleDevtoolsArtifactregistryV1alpha1YumArtifact"
@@ -703,11 +703,11 @@
     },
     "ImportAptArtifactsResponse": {
       "id": "ImportAptArtifactsResponse",
-      "description": "The response message from importing artifacts.",
+      "description": "The response message from importing APT artifacts.",
       "type": "object",
       "properties": {
         "aptArtifacts": {
-          "description": "The Apt artifacts updated.",
+          "description": "The Apt artifacts imported.",
           "type": "array",
           "items": {
             "$ref": "AptArtifact"
@@ -805,11 +805,11 @@
     },
     "ImportYumArtifactsResponse": {
       "id": "ImportYumArtifactsResponse",
-      "description": "The response message from importing artifacts.",
+      "description": "The response message from importing YUM artifacts.",
       "type": "object",
       "properties": {
         "yumArtifacts": {
-          "description": "The yum artifacts updated.",
+          "description": "The yum artifacts imported.",
           "type": "array",
           "items": {
             "$ref": "YumArtifact"
@@ -944,6 +944,13 @@
         }
       }
     },
+    "OperationMetadata": {
+      "id": "OperationMetadata",
+      "description": "Metadata type for longrunning-operations, currently empty.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "DockerImage": {
       "id": "DockerImage",
       "description": "DockerImage represents a docker artifact. The following fields are returned as untyped metadata in the Version resource, using camelcase keys (i.e. metadata.imageSizeBytes): * imageSizeBytes * mediaType * buildTime",
@@ -983,13 +990,6 @@
           "type": "string",
           "format": "google-datetime"
         }
-      }
-    },
-    "OperationMetadata": {
-      "id": "OperationMetadata",
-      "description": "Metadata type for longrunning-operations, currently empty.",
-      "type": "object",
-      "properties": {
       }
     }
   },

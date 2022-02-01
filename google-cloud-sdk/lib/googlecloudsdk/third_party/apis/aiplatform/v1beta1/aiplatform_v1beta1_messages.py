@@ -3755,6 +3755,22 @@ class AiplatformProjectsLocationsModelsSetVersionAliasRequest(_messages.Message)
   name = _messages.StringField(2, required=True)
 
 
+class AiplatformProjectsLocationsModelsUpdateExplanationDatasetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelsUpdateExplanationDatasetRequest
+  object.
+
+  Fields:
+    googleCloudAiplatformV1beta1UpdateExplanationDatasetRequest: A
+      GoogleCloudAiplatformV1beta1UpdateExplanationDatasetRequest resource to
+      be passed as the request body.
+    model: Required. The resource name of the Model to update. Format:
+      `projects/{project}/locations/{location}/models/{model}`
+  """
+
+  googleCloudAiplatformV1beta1UpdateExplanationDatasetRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1UpdateExplanationDatasetRequest', 1)
+  model = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsModelsUploadRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsModelsUploadRequest object.
 
@@ -7771,6 +7787,16 @@ class GoogleCloudAiplatformInternalUpdateDeploymentResourcePoolOperationMetadata
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
 
 
+class GoogleCloudAiplatformInternalUpdateExplanationDatasetOperationMetadata(_messages.Message):
+  r"""Runtime operation information for ModelService.UpdateExplanationDataset.
+
+  Fields:
+    genericMetadata: The common part of the operation metadata.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
+
+
 class GoogleCloudAiplatformInternalUpdateFeaturestoreOperationMetadata(_messages.Message):
   r"""Details of operations that perform update Featurestore.
 
@@ -11743,6 +11769,16 @@ class GoogleCloudAiplatformUiUndeployModelOperationMetadata(_messages.Message):
 
 class GoogleCloudAiplatformUiUndeployModelResponse(_messages.Message):
   r"""Response message for EndpointService.UndeployModel."""
+
+
+class GoogleCloudAiplatformUiUpdateExplanationDatasetOperationMetadata(_messages.Message):
+  r"""Runtime operation information for ModelService.UpdateExplanationDataset.
+
+  Fields:
+    genericMetadata: The common part of the operation metadata.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 1)
 
 
 class GoogleCloudAiplatformUiUpdateFeaturestoreOperationMetadata(_messages.Message):
@@ -25455,8 +25491,9 @@ class GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringScheduleConfig(_messa
   r"""The config for scheduling monitoring job.
 
   Fields:
-    monitorInterval: Required. The model monitoring job running interval. It
-      will be rounded up to next full hour.
+    monitorInterval: Required. The model monitoring job scheduling interval.
+      It will be rounded up to next full hour. This defines how often the
+      monitoring jobs are triggered.
   """
 
   monitorInterval = _messages.StringField(1)
@@ -31170,6 +31207,26 @@ class GoogleCloudAiplatformV1beta1UpdateDeploymentResourcePoolOperationMetadata(
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1beta1UpdateExplanationDatasetOperationMetadata(_messages.Message):
+  r"""Runtime operation information for ModelService.UpdateExplanationDataset.
+
+  Fields:
+    genericMetadata: The common part of the operation metadata.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1beta1UpdateExplanationDatasetRequest(_messages.Message):
+  r"""Request message for ModelService.UpdateExplanationDataset.
+
+  Fields:
+    similarity: The similarity config containing the location of the dataset.
+  """
+
+  similarity = _messages.MessageField('GoogleCloudAiplatformV1beta1Similarity', 1)
 
 
 class GoogleCloudAiplatformV1beta1UpdateFeaturestoreOperationMetadata(_messages.Message):

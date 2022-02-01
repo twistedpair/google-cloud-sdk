@@ -35,6 +35,7 @@ from apitools.base.py import list_pager
 from apitools.base.py import transfer as apitools_transfer
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors as cloud_errors
+from googlecloudsdk.api_lib.storage import gcs_metadata_field_converters
 from googlecloudsdk.api_lib.storage import gcs_metadata_util
 from googlecloudsdk.api_lib.storage import gcs_upload
 from googlecloudsdk.api_lib.storage import patch_gcs_messages
@@ -277,15 +278,16 @@ class GcsApi(cloud_api.CloudApi):
                     request_config,
                     fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""
-    del request_config  # Unused. TODO(b/203088483): Extract values.
     projection = self._get_projection(fields_scope,
                                       self.messages.StorageBucketsInsertRequest)
-    if not bucket_resource.metadata:
-      bucket_resource.metadata = gcs_metadata_util.get_metadata_from_bucket_resource(
-          bucket_resource)
+
+    bucket_metadata = self.messages.Bucket(
+        name=bucket_resource.storage_url.bucket_name)
+    gcs_metadata_util.update_bucket_metadata_from_request_config(
+        bucket_metadata, request_config)
 
     request = self.messages.StorageBucketsInsertRequest(
-        bucket=bucket_resource.metadata,
+        bucket=bucket_metadata,
         project=properties.VALUES.core.project.GetOrFail(),
         projection=projection)
 
@@ -323,9 +325,10 @@ class GcsApi(cloud_api.CloudApi):
     """See super class."""
     projection = self._get_projection(fields_scope,
                                       self.messages.StorageBucketsPatchRequest)
-    metadata = (
-        bucket_resource.metadata or
-        gcs_metadata_util.get_metadata_from_bucket_resource(bucket_resource))
+    metadata = self.messages.Bucket(
+        name=bucket_resource.storage_url.bucket_name)
+    gcs_metadata_util.update_bucket_metadata_from_request_config(
+        metadata, request_config)
 
     # Blank metadata objects need to be explicitly emptied.
     apitools_include_fields = []
@@ -344,7 +347,8 @@ class GcsApi(cloud_api.CloudApi):
         setattr(metadata, metadata_field, None)
 
     # Handle nulling lists with sentinel values.
-    if metadata.cors and metadata.cors == gcs_metadata_util.REMOVE_CORS_CONFIG:
+    if (metadata.cors and
+        metadata.cors == gcs_metadata_field_converters.REMOVE_CORS_CONFIG):
       apitools_include_fields.append('cors')
       metadata.cors = []
     if (metadata.defaultObjectAcl and metadata.defaultObjectAcl[0]
@@ -370,7 +374,7 @@ class GcsApi(cloud_api.CloudApi):
       predefined_default_acl = None
 
     apitools_request = self.messages.StorageBucketsPatchRequest(
-        bucket=bucket_resource.name,
+        bucket=bucket_resource.storage_url.bucket_name,
         bucketResource=metadata,
         projection=projection,
         ifMetagenerationMatch=request_config.precondition_metageneration_match,

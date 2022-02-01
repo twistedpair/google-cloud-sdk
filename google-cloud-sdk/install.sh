@@ -3,7 +3,7 @@
 # Copyright 2013 Google Inc. All Rights Reserved.
 #
 
-echo Welcome to the Google Cloud SDK!
+echo Welcome to the Google Cloud CLI!
 
 # <cloud-sdk-sh-preamble>
 #
@@ -107,7 +107,9 @@ setup_cloudsdk_python() {
   # prefer python3 over python2
   if [ -z "$CLOUDSDK_PYTHON" ]; then
     # Is bundled python present?
-    if [ -x "$CLOUDSDK_ROOT_DIR/platform/bundledpythonunix/bin/python3" ];
+    ARCH=$(uname -m 2>/dev/null)
+    if [ -x "$CLOUDSDK_ROOT_DIR/platform/bundledpythonunix/bin/python3" ] &&  \
+       [ "$ARCH" = "x86_64" ] ;
     then
       CLOUDSDK_PYTHON="$CLOUDSDK_ROOT_DIR/platform/bundledpythonunix/bin/python3"
       CLOUDSDK_PYTHON_SITEPACKAGES=1
@@ -192,7 +194,7 @@ export PYTHONIOENCODING="$CLOUDSDK_ENCODING"
 if [ -z "$CLOUDSDK_PYTHON" ]; then
   if [ -z "$( _cloudsdk_which python)" ]; then
     echo
-    echo "To use the Google Cloud SDK, you must have Python installed and on your PATH."
+    echo "To use the Google Cloud CLI, you must have Python installed and on your PATH."
     echo "As an alternative, you may also set the CLOUDSDK_PYTHON environment variable"
     echo "to the location of your Python executable."
     exit 1

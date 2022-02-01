@@ -138,7 +138,9 @@ def AddRedirectOptions(parser):
       """)
 
 
-def AddRateLimitOptions(parser, support_tcp_ssl=False):
+def AddRateLimitOptions(parser,
+                        support_tcp_ssl=False,
+                        support_exceed_redirect=True):
   """Adds rate limiting related arguments to the argparse."""
   parser.add_argument(
       '--rate-limit-threshold-count',
@@ -164,14 +166,36 @@ def AddRateLimitOptions(parser, support_tcp_ssl=False):
   exceed_actions = ['deny-403', 'deny-404', 'deny-429', 'deny-502']
   if support_tcp_ssl:
     exceed_actions.append('deny')
+  if support_exceed_redirect:
+    exceed_actions.append('redirect')
   parser.add_argument(
       '--exceed-action',
       choices=exceed_actions,
       type=lambda x: x.lower(),
-      help=('When a request is denied, returns the HTTP response code '
-            'specified.'))
+      help="""\
+      Action to take when requests are above the given threshold. When a request
+      is denied, return the specified HTTP response code. When a request is
+      redirected, use the redirect options based on --exceed-redirect-type and
+      --exceed-redirect-target below.
+      """)
 
-  enforce_on_key = ['ip', 'all', 'http-header', 'xff-ip']
+  if support_exceed_redirect:
+    exceed_redirect_types = ['google-recaptcha', 'external-302']
+    parser.add_argument(
+        '--exceed-redirect-type',
+        choices=exceed_redirect_types,
+        type=lambda x: x.lower(),
+        help="""\
+        Type for the redirect action that is configured as the exceed action.
+        """)
+    parser.add_argument(
+        '--exceed-redirect-target',
+        help="""\
+        URL target for the redirect action that is configured as the exceed
+        action when the redirect type is ``external-302''.
+        """)
+
+  enforce_on_key = ['ip', 'all', 'http-header', 'xff-ip', 'http-cookie']
   parser.add_argument(
       '--enforce-on-key',
       choices=enforce_on_key,
@@ -184,6 +208,8 @@ def AddRateLimitOptions(parser, support_tcp_ssl=False):
                          in enforce-on-key-name as the key value
       - ``xff-ip'': takes the original IP address specified in the X-Forwarded-For
                     header as the key
+      - ``http-cookie'': key type takes the value of the HTTP cookie configured
+                         in enforce-on-key-name as the key value
       """)
 
   parser.add_argument(
@@ -192,6 +218,8 @@ def AddRateLimitOptions(parser, support_tcp_ssl=False):
       Determines the key name for the rate limit key. Applicable only for the
       following rate limit key types:
       - http-header: The name of the HTTP header whose value is taken as the key
+      value.
+      - http-cookie: The name of the HTTP cookie whose value is taken as the key
       value.
       """)
 

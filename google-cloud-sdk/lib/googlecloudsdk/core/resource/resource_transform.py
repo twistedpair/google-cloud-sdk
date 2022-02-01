@@ -555,7 +555,7 @@ def TransformFatal(r, message=None):
 
 
 def TransformFilter(r, expression):
-  """Selects elements of r that match the filter expression.
+  """Selects elements of x that match the filter expression.
 
   Args:
     r: A JSON-serializable object.
@@ -565,7 +565,7 @@ def TransformFilter(r, expression):
     The elements of r that match the filter expression.
 
   Example:
-    `x.filter("key:val")` selects elements of r that have 'key' fields containing
+    `x.filter("key:val")` selects elements of x that have 'key' fields containing
     'val'.
   """
 

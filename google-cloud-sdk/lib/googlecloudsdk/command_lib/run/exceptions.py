@@ -27,6 +27,19 @@ from googlecloudsdk.core import exceptions
 import six
 
 
+class SelfDocumentingError(exceptions.Error):
+  """An error that uses its own docstring as its message if no message given.
+
+  Somehow I think this was how all errors worked maybe back when this was Python
+  2, and it got lost in the shuffle at some point.
+  """
+
+  def __init__(self, message):
+    if message is None:
+      message = self.__class__.__doc__
+    super(SelfDocumentingError, self).__init__(message)
+
+
 class BucketAccessError(exceptions.Error):
   """Indicates a failed attempt to access a GCS bucket."""
 
@@ -50,6 +63,10 @@ class RevisionNotFoundError(exceptions.Error):
 
 class JobNotFoundError(exceptions.Error):
   """Indicates that a provided job name was not found."""
+
+
+class ExecutionNotFoundError(exceptions.Error):
+  """Indicates that a provided execution name was not found."""
 
 
 class IntegrationNotFoundError(exceptions.Error):
@@ -92,8 +109,12 @@ class AppNotReadyError(exceptions.InternalError):
   """The application must be uploaded before it can be deployed."""
 
 
-class DeploymentFailedError(exceptions.Error):
+class DeploymentFailedError(SelfDocumentingError):
   """An error was encountered during deployment."""
+
+
+class ExecutionFailedError(SelfDocumentingError):
+  """The execution failed."""
 
 
 class DomainMappingCreationError(exceptions.Error):

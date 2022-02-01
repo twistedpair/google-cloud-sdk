@@ -424,6 +424,17 @@ MAP = {
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
+    'batch': {
+        'v1alpha1':
+            APIDef(
+                ApitoolsClientDef(
+                    class_path='googlecloudsdk.third_party.apis.batch.v1alpha1',
+                    client_classpath='batch_v1alpha1_client.BatchV1alpha1',
+                    messages_modulepath='batch_v1alpha1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'beyondcorp': {
         'v1alpha':
             APIDef(

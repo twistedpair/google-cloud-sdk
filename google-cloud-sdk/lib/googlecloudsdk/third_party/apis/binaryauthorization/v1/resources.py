@@ -41,6 +41,24 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_PLATFORMS = (
+      'projects.platforms',
+      'projects/{projectsId}/platforms/{platformsId}',
+      {},
+      ['projectsId', 'platformsId'],
+      True
+  )
+  PROJECTS_PLATFORMS_POLICIES = (
+      'projects.platforms.policies',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/platforms/{platformsId}/policies/'
+              '{policyId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_POLICY = (
       'projects.policy',
       'projects/{projectsId}/policy',

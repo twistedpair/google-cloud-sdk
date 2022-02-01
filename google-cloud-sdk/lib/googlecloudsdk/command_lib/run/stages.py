@@ -35,23 +35,20 @@ _COMPLETED = 'Completed'
 
 
 def _CreateRepoStage():
-  return progress_tracker.Stage('Creating Container Repository...',
-                                key=CREATE_REPO)
+  return progress_tracker.Stage(
+      'Creating Container Repository...', key=CREATE_REPO)
 
 
 def _UploadSourceStage():
-  return progress_tracker.Stage(
-      'Uploading sources...', key=UPLOAD_SOURCE)
+  return progress_tracker.Stage('Uploading sources...', key=UPLOAD_SOURCE)
 
 
 def _BuildContainerStage():
-  return progress_tracker.Stage(
-      'Building Container...', key=BUILD_READY)
+  return progress_tracker.Stage('Building Container...', key=BUILD_READY)
 
 
 def _NewRoutingTrafficStage():
-  return progress_tracker.Stage(
-      'Routing traffic...', key=SERVICE_ROUTES_READY)
+  return progress_tracker.Stage('Routing traffic...', key=SERVICE_ROUTES_READY)
 
 
 def UpdateTrafficStages():
@@ -72,38 +69,45 @@ def ServiceStages(include_iam_policy_set=False,
   if include_build:
     stages.append(_UploadSourceStage())
     stages.append(_BuildContainerStage())
-  stages.append(progress_tracker.Stage(
-      'Creating Revision...', key=SERVICE_CONFIGURATIONS_READY))
+  stages.append(
+      progress_tracker.Stage(
+          'Creating Revision...', key=SERVICE_CONFIGURATIONS_READY))
   if include_route:
     stages.append(_NewRoutingTrafficStage())
   if include_iam_policy_set:
-    stages.append(progress_tracker.Stage(
-        'Setting IAM Policy...', key=SERVICE_IAM_POLICY_SET))
+    stages.append(
+        progress_tracker.Stage(
+            'Setting IAM Policy...', key=SERVICE_IAM_POLICY_SET))
   return stages
 
 
 def ServiceDependencies():
   """Dependencies for the Service resource, for passing to ConditionPoller."""
-  return {
-      SERVICE_ROUTES_READY: {SERVICE_CONFIGURATIONS_READY}
-  }
+  return {SERVICE_ROUTES_READY: {SERVICE_CONFIGURATIONS_READY}}
 
 
-def JobStages(include_completion=False):
+def JobStages(run_now=False, include_completion=False):
+  if run_now:
+    return ExecutionStages(include_completion)
+  return []
+
+
+def ExecutionStages(include_completion=False):
   """Returns the list of progress tracker Stages for Jobs."""
   stages = [
       progress_tracker.Stage(
           'Provisioning resources...', key=_RESOURCES_AVAILABLE)
   ]
   if include_completion:
-    stages.append(progress_tracker.Stage('Starting job...', key=_STARTED))
+    stages.append(progress_tracker.Stage('Starting execution...', key=_STARTED))
     # Normally the last terminal condition (e.g. Ready or in this case
     # Completed) wouldn't be included as a stage since it gates the entire
     # progress tracker. But in this case we want to include it so we can show
     # updates on this stage while the job is running.
-    stages.append(progress_tracker.Stage('Running job...', key=_COMPLETED))
+    stages.append(
+        progress_tracker.Stage('Running execution...', key=_COMPLETED))
   return stages
 
 
-def JobDependencies():
+def ExecutionDependencies():
   return {_STARTED: {_RESOURCES_AVAILABLE}, _COMPLETED: {_STARTED}}

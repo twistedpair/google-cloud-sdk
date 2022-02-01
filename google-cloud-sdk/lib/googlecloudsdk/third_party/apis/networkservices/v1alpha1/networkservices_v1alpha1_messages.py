@@ -956,6 +956,9 @@ class Gateway(_messages.Message):
       resource.
 
   Fields:
+    authorizationPolicy: Optional. A fully-qualified AuthorizationPolicy URL
+      reference. Specifies how traffic is authorized. If empty, authorization
+      checks are disabled.
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
@@ -971,6 +974,11 @@ class Gateway(_messages.Message):
       single coniguration to the proxy/load balancer. Max length 64
       characters. Scope should start with a letter and can only have letters,
       numbers, hyphens.
+    serverTlsPolicy: Optional. A fully-qualified ServerTLSPolicy URL
+      reference. Specifies how TLS traffic is terminated. If empty, TLS
+      termination is disabled.
+    swgConfig: Optional. This should be set when configuring a gateway of type
+      'Secure_Web_Gateway'
     type: Immutable. The type of the customer managed gateway.
     updateTime: Output only. The timestamp when the resource was updated.
   """
@@ -983,9 +991,12 @@ class Gateway(_messages.Message):
         unspecified.
       OPEN_MESH: The type of the customer managed gateway is TrafficDirector
         Open Mesh.
+      SECURE_WEB_GATEWAY: The type of the customer managed gateway is
+        SecureWebGateway (SWG).
     """
     TYPE_UNSPECIFIED = 0
     OPEN_MESH = 1
+    SECURE_WEB_GATEWAY = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1011,14 +1022,34 @@ class Gateway(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  ports = _messages.IntegerField(5, repeated=True, variant=_messages.Variant.INT32)
-  scope = _messages.StringField(6)
-  type = _messages.EnumField('TypeValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  authorizationPolicy = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  ports = _messages.IntegerField(6, repeated=True, variant=_messages.Variant.INT32)
+  scope = _messages.StringField(7)
+  serverTlsPolicy = _messages.StringField(8)
+  swgConfig = _messages.MessageField('GatewaySecureWebGatewayConfig', 9)
+  type = _messages.EnumField('TypeValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
+
+
+class GatewaySecureWebGatewayConfig(_messages.Message):
+  r"""Contains fields necessary for gateways of type 'Secure_Web_Gateway'
+
+  Fields:
+    certificateUrls: A fully-qualified Certificates URL reference. The proxy
+      presents a Certificate (selected based on SNI) when establishing a TLS
+      connection. This feature only applies to gateways of type
+      'SECURE_WEB_GATEWAY'.
+    securityPolicy: A fully-qualified SecurityPolicy URL reference. Defines
+      how a server should apply security policy to inbound (VM to Proxy)
+      initiated connections.
+  """
+
+  certificateUrls = _messages.StringField(1, repeated=True)
+  securityPolicy = _messages.StringField(2)
 
 
 class GrpcRoute(_messages.Message):

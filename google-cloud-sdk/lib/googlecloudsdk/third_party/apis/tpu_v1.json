@@ -633,44 +633,37 @@
     },
     "OperationMetadata": {
       "id": "OperationMetadata",
-      "description": "Represents the metadata of the long-running operation.",
+      "description": "Metadata describing an Operation",
       "type": "object",
       "properties": {
         "createTime": {
-          "description": "Output only. The time the operation was created.",
-          "readOnly": true,
+          "description": "The time the operation was created.",
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
-          "description": "Output only. The time the operation finished running.",
-          "readOnly": true,
+          "description": "The time the operation finished running.",
           "type": "string",
           "format": "google-datetime"
         },
         "target": {
-          "description": "Output only. Server-defined resource path for the target of the operation.",
-          "readOnly": true,
+          "description": "Target of the operation - for example projects\/project-1\/connectivityTests\/test-1",
           "type": "string"
         },
         "verb": {
-          "description": "Output only. Name of the verb executed by the operation.",
-          "readOnly": true,
+          "description": "Name of the verb executed by the operation.",
           "type": "string"
         },
         "statusDetail": {
-          "description": "Output only. Human-readable status of the operation, if any.",
-          "readOnly": true,
+          "description": "Human-readable status of the operation, if any.",
           "type": "string"
         },
         "cancelRequested": {
-          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have been cancelled successfully have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
-          "readOnly": true,
+          "description": "Specifies if cancellation was requested for the operation.",
           "type": "boolean"
         },
         "apiVersion": {
-          "description": "Output only. API version used to start the operation.",
-          "readOnly": true,
+          "description": "API version.",
           "type": "string"
         }
       }

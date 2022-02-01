@@ -22,13 +22,24 @@ from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 
-_WP_CONFIG_LINK = 'https://cloud.google.com/build/docs/private-pools/worker-pool-config-file-schema'
+_PWP_CONFIG_LINK = 'https://cloud.google.com/build/docs/private-pools/worker-pool-config-file-schema'
+_HWP_CONFIG_LINK = 'https://cloud.google.com/build/docs/hybrid/hybrid-pool-config-file-schema'
 
-_CREATE_FILE_DESC = ('A file that contains the configuration for the'
+_CREATE_FILE_DESC = ('File that contains the configuration for the'
                      ' worker pool to be created. See %s for options.' %
-                     _WP_CONFIG_LINK)
-_UPDATE_FILE_DESC = ('A file that contains updates to the configuration for'
-                     ' the worker pool. See %s for options.' % _WP_CONFIG_LINK)
+                     _PWP_CONFIG_LINK)
+_UPDATE_FILE_DESC = ('File that contains updates to the configuration for'
+                     ' the worker pool. See %s for options.' % _PWP_CONFIG_LINK)
+
+_CREATE_FILE_DESC_ALPHA = (
+    'File that contains the configuration for the worker pool to be created.\n\n'
+    'Private pool options:\n\n %s\n\nHybrid pool options:\n\n %s') % (
+        _PWP_CONFIG_LINK, _HWP_CONFIG_LINK)
+_UPDATE_FILE_DESC_ALPHA = (
+    'File that contains updates to the configuration for worker pool to be '
+    'created.\n\n'
+    'Private pool options:\n\n %s\n\nHybrid pool options:\n\n %s') % (
+        _PWP_CONFIG_LINK, _HWP_CONFIG_LINK)
 
 DEFAULT_FLAG_VALUES = {
     'BUILDER_IMAGE_CACHING': 'CACHING_DISABLED',
@@ -53,21 +64,27 @@ def AddWorkerpoolArgs(parser, release_track, update=False):
   verb = 'update' if update else 'create'
   parser.add_argument(
       'WORKER_POOL',
-      help='The unique identifier for the worker pool to %s. This value should be 1-63 characters, and valid characters are [a-z][0-9]-'
+      help='Unique identifier for the worker pool to %s. This value should be 1-63 characters, and valid characters are [a-z][0-9]-'
       % verb)
   parser.add_argument(
       '--region',
       required=True,
-      help='The Cloud region where the worker pool is %sd. See https://cloud.google.com/build/docs/locations for available locations.'
+      help='Cloud region where the worker pool is %sd. See https://cloud.google.com/build/docs/locations for available locations.'
       % verb)
   file_or_flags = parser.add_mutually_exclusive_group(required=update)
-  file_or_flags.add_argument(
-      '--config-from-file',
-      help=(_UPDATE_FILE_DESC if update else _CREATE_FILE_DESC),
-  )
+  if release_track != base.ReleaseTrack.ALPHA:
+    file_or_flags.add_argument(
+        '--config-from-file',
+        help=(_UPDATE_FILE_DESC if update else _CREATE_FILE_DESC),
+    )
+  else:
+    file_or_flags.add_argument(
+        '--config-from-file',
+        help=(_UPDATE_FILE_DESC_ALPHA if update else _CREATE_FILE_DESC_ALPHA),
+    )
   private_or_hybrid = file_or_flags.add_mutually_exclusive_group()
   private_flags = private_or_hybrid.add_argument_group(
-      'Command-line flags to configure the worker pool:')
+      'Command-line flags to configure the private pool:')
   if not update:
     private_flags.add_argument(
         '--peered-network',
@@ -81,7 +98,7 @@ If not specified, the workers are not peered to any network.
 
   if release_track == base.ReleaseTrack.ALPHA:
     hybrid_flags = private_or_hybrid.add_argument_group(
-        'Command-line flags to configure the hybrid worker pool:',
+        'Command-line flags for creating or updating a hybrid pool:',
         hidden=True,
     )
     if not update:
@@ -89,10 +106,11 @@ If not specified, the workers are not peered to any network.
           '--membership',
           required=True,
           help="""\
-            The Hub member to install a hybrid worker pool on.
+            Hub member to install Cloud Build hybrid pools on.
       """)
       hybrid_flags.add_argument(
           '--builder-image-caching',
+          hidden=True,
           choices={
               'CACHING_DISABLED':
                   'Disable image caching.',
@@ -101,14 +119,15 @@ If not specified, the workers are not peered to any network.
           },
           default=DEFAULT_FLAG_VALUES['BUILDER_IMAGE_CACHING'],
           help="""\
-            Controls whether the hybrid worker pool should cache Cloud Builders (https://cloud.google.com/build/docs/cloud-builders) and Skaffold.
+            Controls whether the hybrid pool should cache Cloud Builders (https://cloud.google.com/build/docs/cloud-builders) and Skaffold.
             Enabling VOLUME_CACHING may signficantly shorten build execution times.
       """)
       hybrid_flags.add_argument(
           '--caching-storage-class',
+          hidden=True,
           type=str,
           help="""\
-            The name of the Kubernetes StorageClass used by any PersistentVolumeClaims installed on the hybrid worker pool.
+            Name of the Kubernetes StorageClass used by any PersistentVolumeClaims installed on the hybrid pool.
             If this flag is omitted, PersistentVolumeClaims are created without a spec.storageClassName field during installation.
             The name should be formatted according to http://kubernetes.io/docs/user-guide/identifiers#names.
             """)
@@ -154,7 +173,7 @@ If not given, Cloud Build will use a standard disk size.
         type=arg_parsers.BinarySize(lower_bound='10GB', default_unit='GB'),
         default=default_build_disk_size,
         help="""\
-          The default disk size that each build requires.
+          Default disk size that each build requires.
     """)
     default_build_memory_gb = DEFAULT_FLAG_VALUES[
         'MEMORY'] if not update else None
@@ -163,7 +182,7 @@ If not given, Cloud Build will use a standard disk size.
         type=arg_parsers.BinarySize(default_unit='GB'),
         default=default_build_memory_gb,
         help="""\
-          The default memory size that each build requires.
+          Default memory size that each build requires.
     """)
     default_build_vcpu_count = DEFAULT_FLAG_VALUES[
         'VCPU_COUNT'] if not update else None
@@ -172,7 +191,7 @@ If not given, Cloud Build will use a standard disk size.
         type=float,
         default=default_build_vcpu_count,
         help="""\
-          The default vcpu count that each build requires.
+          Default vcpu count that each build requires.
     """)
 
   if update:

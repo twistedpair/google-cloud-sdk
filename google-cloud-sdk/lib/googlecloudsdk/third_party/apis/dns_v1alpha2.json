@@ -1026,6 +1026,11 @@
           "type": "integer",
           "format": "int32"
         },
+        "peeringZonesPerTargetNetwork": {
+          "description": "Maximum allowed number of consumer peering zones per target network owned by this producer project",
+          "type": "integer",
+          "format": "int32"
+        },
         "gkeClustersPerManagedZone": {
           "description": "Maximum allowed number of GKE clusters to which a privately scoped zone can be attached.",
           "type": "integer",

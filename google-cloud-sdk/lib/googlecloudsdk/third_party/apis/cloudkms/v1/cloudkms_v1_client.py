@@ -57,6 +57,60 @@ class CloudkmsV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Creates a new EkmConnection in a given Project and Location.
+
+      Args:
+        request: (CloudkmsProjectsLocationsEkmConnectionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EkmConnection) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/ekmConnections',
+        http_method='POST',
+        method_id='cloudkms.projects.locations.ekmConnections.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['ekmConnectionId'],
+        relative_path='v1/{+parent}/ekmConnections',
+        request_field='ekmConnection',
+        request_type_name='CloudkmsProjectsLocationsEkmConnectionsCreateRequest',
+        response_type_name='EkmConnection',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns metadata for a given EkmConnection.
+
+      Args:
+        request: (CloudkmsProjectsLocationsEkmConnectionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EkmConnection) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/ekmConnections/{ekmConnectionsId}',
+        http_method='GET',
+        method_id='cloudkms.projects.locations.ekmConnections.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='CloudkmsProjectsLocationsEkmConnectionsGetRequest',
+        response_type_name='EkmConnection',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
@@ -81,6 +135,60 @@ class CloudkmsV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='CloudkmsProjectsLocationsEkmConnectionsGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists EkmConnections.
+
+      Args:
+        request: (CloudkmsProjectsLocationsEkmConnectionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListEkmConnectionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/ekmConnections',
+        http_method='GET',
+        method_id='cloudkms.projects.locations.ekmConnections.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/ekmConnections',
+        request_field='',
+        request_type_name='CloudkmsProjectsLocationsEkmConnectionsListRequest',
+        response_type_name='ListEkmConnectionsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an EkmConnection's metadata.
+
+      Args:
+        request: (CloudkmsProjectsLocationsEkmConnectionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EkmConnection) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/ekmConnections/{ekmConnectionsId}',
+        http_method='PATCH',
+        method_id='cloudkms.projects.locations.ekmConnections.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='ekmConnection',
+        request_type_name='CloudkmsProjectsLocationsEkmConnectionsPatchRequest',
+        response_type_name='EkmConnection',
         supports_download=False,
     )
 

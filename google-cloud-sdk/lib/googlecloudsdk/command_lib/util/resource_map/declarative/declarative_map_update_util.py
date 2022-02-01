@@ -24,6 +24,7 @@ from googlecloudsdk.command_lib.util.declarative.clients import kcc_client
 from googlecloudsdk.command_lib.util.resource_map import base
 from googlecloudsdk.command_lib.util.resource_map import resource_map_update_util
 from googlecloudsdk.command_lib.util.resource_map.declarative import declarative_map
+from googlecloudsdk.core import name_parsing
 
 
 class KrmToApitoolsResourceNameError(base.ResourceMapError):
@@ -190,7 +191,8 @@ def krm_kind_to_apitools_collection_name(krm_kind, krm_group,
   apitools_collection_guess = remove_krm_group(apitools_collection_guess,
                                                krm_group)
   # Poluralize the collection name
-  apitools_collection_guess = pluralize(apitools_collection_guess)
+  apitools_collection_guess = name_parsing.pluralize(
+      apitools_collection_guess)
 
   # Convert first segment of collection name to lowercase.
   apitools_collection_guess = lowercase_first_segment(apitools_collection_guess)
@@ -233,22 +235,6 @@ def remove_krm_group(apitools_collection_guess, krm_group):
   """Remove krm_group prefix from krm_kind."""
   if krm_group.lower() in apitools_collection_guess.lower():
     apitools_collection_guess = apitools_collection_guess[len(krm_group):]
-  return apitools_collection_guess
-
-
-def pluralize(apitools_collection_guess):
-  """Pluralize krm_kind and handle common atypical pluralization cases."""
-  ending_plurals = [('Policy', 'Policies'), ('Proxy', 'Proxies'),
-                    ('Repository', 'Repositories'), ('Index', 'Indexes'),
-                    ('Address', 'Addresses')]
-  found_plural = False
-  for singular, replacement_plural in ending_plurals:
-    if apitools_collection_guess.endswith(singular):
-      apitools_collection_guess = apitools_collection_guess.replace(
-          singular, replacement_plural)
-      found_plural = True
-  if not found_plural:
-    apitools_collection_guess += 's'
   return apitools_collection_guess
 
 

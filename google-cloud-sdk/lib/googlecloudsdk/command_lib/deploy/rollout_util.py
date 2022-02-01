@@ -103,7 +103,8 @@ def CreateRollout(release_ref,
                   to_target,
                   rollout_id=None,
                   annotations=None,
-                  labels=None):
+                  labels=None,
+                  description=None):
   """Creates a rollout by calling the rollout create API and waits for the operation to finish.
 
   Args:
@@ -116,6 +117,7 @@ def CreateRollout(release_ref,
     labels: dict[str,str], a dict of label (key,value) pairs that can be used to
       select cloud deploy resources and to find collections of cloud deploy
       resources that satisfy certain conditions.
+    description: str, rollout description.
 
   Raises:
       ListRolloutsError: an error occurred calling rollout list API.
@@ -142,7 +144,9 @@ def CreateRollout(release_ref,
           'releasesId': release_ref.Name(),
       })
   rollout_obj = client_util.GetMessagesModule().Rollout(
-      name=rollout_ref.RelativeName(), targetId=to_target)
+      name=rollout_ref.RelativeName(),
+      targetId=to_target,
+      description=description)
 
   operation = rollout.RolloutClient().Create(rollout_ref, rollout_obj,
                                              annotations, labels)

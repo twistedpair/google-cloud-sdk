@@ -226,7 +226,7 @@
           "description": "Optional. Specifies to track usage for recurring calendar period. For example, assume that CalendarPeriod.QUARTER is set. The budget will track usage from April 1 to June 30, when the current calendar month is April, May, June. After that, it will track usage from July 1 to September 30 when the current calendar month is July, August, September, so on.",
           "type": "string",
           "enumDescriptions": [
-            "",
+            "Calendar period is unset. This is the default if the budget is for a custom time period (CustomPeriod).",
             "A month. Month starts on the first day of each month, such as January 1, February 1, March 1, and so on.",
             "A quarter. Quarters start on dates January 1, April 1, July 1, and October 1 of each year.",
             "A year. Year starts on January 1."

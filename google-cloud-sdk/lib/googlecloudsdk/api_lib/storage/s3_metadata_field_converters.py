@@ -19,10 +19,14 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.storage import metadata_util
+from googlecloudsdk.command_lib.storage import user_request_args_factory
 
 
 def process_cors(file_path):
   """Converts CORS file to S3 metadata dict."""
+  if file_path == user_request_args_factory.CLEAR:
+    return user_request_args_factory.CLEAR
+
   # Expect CORS file to already be in correct format for S3.
   # { "CORSRules": [...] }
   # https://boto3.amazonaws.com/v1/documentation/api/latest/reference
@@ -32,6 +36,9 @@ def process_cors(file_path):
 
 def process_labels(file_path):
   """Converts labels file to S3 metadata dict."""
+  if file_path == user_request_args_factory.CLEAR:
+    return user_request_args_factory.CLEAR
+
   labels_pair_list = metadata_util.get_label_pairs_from_file(file_path)
   s3_tag_set_list = []
   for key, value in labels_pair_list:
@@ -42,6 +49,9 @@ def process_labels(file_path):
 
 def process_lifecycle(file_path):
   """Converts lifecycle file to S3 metadata dict."""
+  if file_path == user_request_args_factory.CLEAR:
+    return user_request_args_factory.CLEAR
+
   # Expect lifecycle file to already be in correct format for S3.
   # { "Rules": [...] }
   # https://boto3.amazonaws.com/v1/documentation/api/latest/reference
@@ -57,9 +67,14 @@ def process_versioning(versioning):
 
 def process_website(web_error_page, web_main_page_suffix):
   """Converts website strings to S3 metadata dict."""
+  clear_error_page = web_error_page == user_request_args_factory.CLEAR
+  clear_main_page_suffix = web_main_page_suffix == user_request_args_factory.CLEAR
+  if clear_error_page and clear_main_page_suffix:
+    return user_request_args_factory.CLEAR
+
   metadata_dict = {}
-  if web_error_page:
+  if web_error_page and not clear_error_page:
     metadata_dict['ErrorDocument'] = {'Key': web_error_page}
-  if web_main_page_suffix:
+  if web_main_page_suffix and not clear_main_page_suffix:
     metadata_dict['IndexDocument'] = {'Suffix': web_main_page_suffix}
   return metadata_dict

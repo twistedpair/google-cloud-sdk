@@ -758,6 +758,7 @@ class Device(_messages.Message):
       compromised.
     createTime: Output only. When the Company-Owned device was imported. This
       field is empty for BYOD devices.
+    deviceId: Unique identifier for the device.
     deviceType: Output only. Type of device.
     enabledDeveloperOptions: Output only. Whether developer options is enabled
       on device.
@@ -886,27 +887,28 @@ class Device(_messages.Message):
   buildNumber = _messages.StringField(6)
   compromisedState = _messages.EnumField('CompromisedStateValueValuesEnum', 7)
   createTime = _messages.StringField(8)
-  deviceType = _messages.EnumField('DeviceTypeValueValuesEnum', 9)
-  enabledDeveloperOptions = _messages.BooleanField(10)
-  enabledUsbDebugging = _messages.BooleanField(11)
-  encryptionState = _messages.EnumField('EncryptionStateValueValuesEnum', 12)
-  endpointVerificationSpecificAttributes = _messages.MessageField('EndpointVerificationSpecificAttributes', 13)
-  imei = _messages.StringField(14)
-  kernelVersion = _messages.StringField(15)
-  lastSyncTime = _messages.StringField(16)
-  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 17)
-  manufacturer = _messages.StringField(18)
-  meid = _messages.StringField(19)
-  model = _messages.StringField(20)
-  name = _messages.StringField(21)
-  networkOperator = _messages.StringField(22)
-  osVersion = _messages.StringField(23)
-  otherAccounts = _messages.StringField(24, repeated=True)
-  ownerType = _messages.EnumField('OwnerTypeValueValuesEnum', 25)
-  releaseVersion = _messages.StringField(26)
-  securityPatchTime = _messages.StringField(27)
-  serialNumber = _messages.StringField(28)
-  wifiMacAddresses = _messages.StringField(29, repeated=True)
+  deviceId = _messages.StringField(9)
+  deviceType = _messages.EnumField('DeviceTypeValueValuesEnum', 10)
+  enabledDeveloperOptions = _messages.BooleanField(11)
+  enabledUsbDebugging = _messages.BooleanField(12)
+  encryptionState = _messages.EnumField('EncryptionStateValueValuesEnum', 13)
+  endpointVerificationSpecificAttributes = _messages.MessageField('EndpointVerificationSpecificAttributes', 14)
+  imei = _messages.StringField(15)
+  kernelVersion = _messages.StringField(16)
+  lastSyncTime = _messages.StringField(17)
+  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 18)
+  manufacturer = _messages.StringField(19)
+  meid = _messages.StringField(20)
+  model = _messages.StringField(21)
+  name = _messages.StringField(22)
+  networkOperator = _messages.StringField(23)
+  osVersion = _messages.StringField(24)
+  otherAccounts = _messages.StringField(25, repeated=True)
+  ownerType = _messages.EnumField('OwnerTypeValueValuesEnum', 26)
+  releaseVersion = _messages.StringField(27)
+  securityPatchTime = _messages.StringField(28)
+  serialNumber = _messages.StringField(29)
+  wifiMacAddresses = _messages.StringField(30, repeated=True)
 
 
 class DeviceUser(_messages.Message):

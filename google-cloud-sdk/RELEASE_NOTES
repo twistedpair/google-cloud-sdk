@@ -5,6 +5,88 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 371.0.0 (2022-02-01)
+
+### Cloud SDK
+
+*   Added support for specifying an OAuth 2.0 access token via the environment
+    variable `CLOUDSDK_AUTH_ACCESS_TOKEN`.
+
+### Anthos Multi-Cloud
+
+*   Added `--admin-users` flag to `gcloud container aws clusters create` and
+    `gcloud container azure clusters create` to add users that can perform
+    operations as a cluster administrator.
+
+### App Engine
+
+* Updated the Java SDK to version 1.9.94.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/java/release-notes>.
+
+### Cloud DataPipelines
+
+* Added `gcloud beta datapipelines pipeline job list` which lists all jobs for a given pipeline in a specific project and region.
+
+### Cloud Deploy
+
+* Add `--description` flag to `gcloud deploy targets rollback`.
+* Modified `gcloud deploy targets describe` to make `--delivery-pipeline` an optional flag.
+  * When `--delivery-pipeline` is not specified, displays deployment information
+    of the associated pipeline with the most recent successful rollout.
+  * Added `--list-all-pipelines` to list deployment information of all associated pipelines.
+
+### Cloud Speech API
+
+* Added `--enable-automatic-punctuation` to `gcloud ml speech recognize` commands.
+
+### Compute Engine
+
+* Added `--guest-os-features` (only `UEFI_COMPATIBLE` is supported) for:
+  * `gcloud compute images import` in beta;
+  * `gcloud compute instances import` in beta;
+  * `gcloud compute machine_images import` in beta.
+* Added a new key type `http-cookie` to `--enforce-on-key` in `gcloud compute security-policies rules`.
+* Added `--recaptcha-redirect-site-key` for `gcloud compute security-policies update`, and promoted it to beta and GA.
+* Added `--exceed-redirect-type` and `--exceed-redirect-target` for `gcloud compute security-policies rules create|update`, and promoted them to beta and GA.
+* Added support for `version`=`8` and `short-name`=`rocky` in `--os-types` for `gcloud beta compute instances ops-agents policies [create|update]`.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.72.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Dataproc Metastore
+
+* Added `--auxiliary-versions` and `--auxiliary-versions-from-file` flags to
+  `gcloud metastore services create` beta release track to allow creating
+  a Dataproc Metastore with auxiliary versions.
+* Added `--endpoint-protocol` flag to `gcloud beta metastore services create`
+  and `gcloud beta metastore services update` to specify the protocol to use for
+  the metastore service endpoint.
+
+### Kubernetes Engine
+
+* Updates default kubectl from 1.20 to 1.21.
+* Adds support for Mac M1 (darwin/arm64) version of kubectl (version 1.21 and greater).
+* Additional kubectl versions:
+  * kubectl.1.18 (1.18.20)
+  * kubectl.1.19 (1.19.14)
+  * kubectl.1.20 (1.20.14)
+  * kubectl.1.21 (1.21.9)
+  * kubectl.1.22 (1.22.5)
+  * kubectl.1.23 (1.23.1)
+
+### Miscellaneous
+
+* Added configuration property `core/console_log_format` to support alternative
+  logging formats. Use `gcloud config set core/console_log_format detailed` to
+  include timestamps in messages logged to the console.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 370.0.0 (2022-01-25)
 
 ### AI

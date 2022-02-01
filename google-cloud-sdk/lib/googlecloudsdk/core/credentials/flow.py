@@ -449,7 +449,7 @@ class UrlManager(object):
 
   def GetPort(self):
     try:
-      _, port = self._netloc.split(':')
+      _, port = self._netloc.rsplit(':', 1)
       return int(port)
     except ValueError:
       return None

@@ -38,7 +38,7 @@ from googlecloudsdk.core.console import console_attr
 
 READY_COLUMN = ('ready_symbol.color(red="[xX]",'
                 'green="[\N{CHECK MARK}\N{HEAVY CHECK MARK}]",'
-                'yellow="[!\N{HORIZONTAL ELLIPSIS}]"):label=""')
+                'yellow="[-!\N{HORIZONTAL ELLIPSIS}]"):label=""')
 
 
 def _Print(prefix, color, msg, **formatters):
@@ -72,4 +72,3 @@ def Info(msg, **formatters):
     **formatters: extra args acting like .format()
   """
   _Print('  ', None, msg, **formatters)
-

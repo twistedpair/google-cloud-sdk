@@ -223,6 +223,33 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListReferences(self, request, global_params=None):
+      r"""Lists references of the AddressGroup.
+
+      Args:
+        request: (NetworksecurityOrganizationsLocationsAddressGroupsListReferencesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAddressGroupReferencesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListReferences')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListReferences.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/organizations/{organizationsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:listReferences',
+        http_method='GET',
+        method_id='networksecurity.organizations.locations.addressGroups.listReferences',
+        ordered_params=['addressGroup'],
+        path_params=['addressGroup'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+addressGroup}:listReferences',
+        request_field='',
+        request_type_name='NetworksecurityOrganizationsLocationsAddressGroupsListReferencesRequest',
+        response_type_name='ListAddressGroupReferencesResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates the parameters of a single AddressGroup.
 
@@ -611,6 +638,33 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='NetworksecurityProjectsLocationsAddressGroupsListRequest',
         response_type_name='ListAddressGroupsResponse',
+        supports_download=False,
+    )
+
+    def ListReferences(self, request, global_params=None):
+      r"""Lists references of the AddressGroup.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsAddressGroupsListReferencesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAddressGroupReferencesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListReferences')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListReferences.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:listReferences',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.addressGroups.listReferences',
+        ordered_params=['addressGroup'],
+        path_params=['addressGroup'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+addressGroup}:listReferences',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsAddressGroupsListReferencesRequest',
+        response_type_name='ListAddressGroupReferencesResponse',
         supports_download=False,
     )
 

@@ -217,6 +217,8 @@ _APT_CODENAMES = {
 
 _SUSE_OS = ('sles-sap', 'sles')
 
+_YUM_OS = ('centos', 'rhel', 'rocky')
+
 _APT_OS = ('debian', 'ubuntu')
 
 _WINDOWS_OS = ('windows')
@@ -303,7 +305,7 @@ def _CreatePackageRepositories(messages, os_type, agent_rules):
   if os_type.short_name in _APT_OS:
     package_repos = _CreateAptPkgRepos(
         messages, _APT_CODENAMES.get(os_type.version), agent_rules)
-  elif os_type.short_name in {'rhel', 'centos'}:
+  elif os_type.short_name in _YUM_OS:
     version = os_type.version.split('.')[0]
     version = version.split('*')[0]
     package_repos = _CreateYumPkgRepos(messages, version, agent_rules)
@@ -555,7 +557,7 @@ def _CreateStepInScript(messages, agent_rule, os_type):
   step = messages.SoftwareRecipeStep()
   step.scriptRun = messages.SoftwareRecipeStepRunScript()
   agent_version = '' if agent_rule.version == 'latest' else agent_rule.version
-  if os_type.short_name in {'centos', 'rhel'}:
+  if os_type.short_name in _YUM_OS:
     clear_prev_repo = _AGENT_RULE_TEMPLATES[
         agent_rule.type].yum_package.clear_prev_repo
     install_with_version = _AGENT_RULE_TEMPLATES[

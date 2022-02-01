@@ -151,6 +151,10 @@ apis:
     v1:
       discovery_doc: assuredworkloads_v1.json
       default: true
+  batch:
+    v1alpha1:
+      discovery_doc: batch_v1alpha1.json
+      default: true
   bigtableadmin:
     v2:
       discovery_doc: bigtableadmin_v2.json
@@ -184,6 +188,8 @@ apis:
           path: projects/{projectsId}/policy
         systempolicy:
           path: locations/{locationsId}/policy
+        projects.platforms.policies:
+          path: projects/{projectsId}/platforms/{platformsId}/policies/{policyId}
   billingbudgets:
     v1beta1:
       discovery_doc: billingbudgets_v1beta1.json
@@ -479,6 +485,8 @@ apis:
       resources:
         projects:
           path: projects/{projectId}
+        projects.locations:
+          path: projects/{projectId}/locations/{location}
   datafusion:
     v1beta1:
       discovery_doc: datafusion_v1beta1.json
@@ -492,6 +500,9 @@ apis:
   datapipelines:
     v1:
       discovery_doc: datapipelines_v1.json
+      resources:
+        projects.locations.pipelines.jobs:
+          path: projects/{projectsId}/locations/{locationsId}/pipelines/{pipelinesId}/jobs/{jobsId}
   dataplex:
     v1:
       discovery_doc: dataplex_v1.json
@@ -1014,6 +1025,9 @@ apis:
     v1:
       discovery_doc: run_v1.json
       default: true
+      resources:
+        projects.locations.jobs:
+          path: projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}
   runapps:
     v1alpha1:
       discovery_doc: runapps_v1alpha1.json
@@ -1034,6 +1048,8 @@ apis:
           path: organizations/{organizationsId}/sources/{sourcesId}/findings/{findingId}
         organizations.assets:
           path: organizations/{organizationsId}/assets/{assetsId}
+        organizations.bigQueryExports:
+          path: organizations/{organizationsId}/bigQueryExports/{bigQueryExportId}
         organizations.notificationConfigs:
           path: organizations/{organizationsId}/notificationConfigs/{notificationConfigsId}
         # We have to explicitly add this resource collection for bulk mute API.

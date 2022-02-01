@@ -533,6 +533,7 @@
             "Initial state: packet originating from a VPC or on-premises network with internal source IP. If the source is a VPC network visible to the user, a NetworkInfo is populated with details of the network.",
             "Initial state: packet originating from a Google Kubernetes Engine cluster master. A GKEMasterInfo is populated with starting instance information.",
             "Initial state: packet originating from a Cloud SQL instance. A CloudSQLInstanceInfo is populated with starting instance information.",
+            "Initial state: packet originating from a Cloud function. A CloudFunctionInfo is populated with starting function information.",
             "Config checking state: verify ingress firewall rule.",
             "Config checking state: verify egress firewall rule.",
             "Config checking state: verify route.",
@@ -543,6 +544,7 @@
             "Forwarding state: arriving at a Compute Engine external load balancer.",
             "Forwarding state: arriving at a Cloud VPN gateway.",
             "Forwarding state: arriving at a Cloud VPN tunnel.",
+            "Forwarding state: arriving at a VPC connector.",
             "Transition state: packet header translated.",
             "Transition state: original connection is terminated and a new proxied connection is initiated.",
             "Final state: packet could be delivered.",
@@ -558,6 +560,7 @@
             "START_FROM_PRIVATE_NETWORK",
             "START_FROM_GKE_MASTER",
             "START_FROM_CLOUD_SQL_INSTANCE",
+            "START_FROM_CLOUD_FUNCTION",
             "APPLY_INGRESS_FIREWALL_RULE",
             "APPLY_EGRESS_FIREWALL_RULE",
             "APPLY_ROUTE",
@@ -568,6 +571,7 @@
             "ARRIVE_AT_EXTERNAL_LOAD_BALANCER",
             "ARRIVE_AT_VPN_GATEWAY",
             "ARRIVE_AT_VPN_TUNNEL",
+            "ARRIVE_AT_VPC_CONNECTOR",
             "NAT",
             "PROXY_CONNECTION",
             "DELIVER",
@@ -613,6 +617,10 @@
           "description": "Display information of a Compute Engine VPN tunnel.",
           "$ref": "VpnTunnelInfo"
         },
+        "vpcConnector": {
+          "description": "Display information of a VPC connector.",
+          "$ref": "VpcConnectorInfo"
+        },
         "deliver": {
           "description": "Display information of the final state \"deliver\" and reason.",
           "$ref": "DeliverInfo"
@@ -644,6 +652,10 @@
         "cloudSqlInstance": {
           "description": "Display information of a Cloud SQL instance.",
           "$ref": "CloudSQLInstanceInfo"
+        },
+        "cloudFunction": {
+          "description": "Display information of a Cloud function.",
+          "$ref": "CloudFunctionInfo"
         }
       }
     },
@@ -969,6 +981,25 @@
         }
       }
     },
+    "VpcConnectorInfo": {
+      "id": "VpcConnectorInfo",
+      "description": "Next id: 4",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "description": "Name of a VPC connector.",
+          "type": "string"
+        },
+        "uri": {
+          "description": "URI of a VPC connector.",
+          "type": "string"
+        },
+        "location": {
+          "description": "Location in which the VPC connector is deployed.",
+          "type": "string"
+        }
+      }
+    },
     "DeliverInfo": {
       "id": "DeliverInfo",
       "description": "Details of the final state \"deliver\" and associated resource.",
@@ -1114,7 +1145,10 @@
             "Packet was dropped inside Google Kubernetes Engine Service.",
             "Packet was dropped inside Cloud SQL Service.",
             "Packet was dropped because there is no peering between the originating network and the Google Managed Services Network.",
-            "Packet was dropped because the Cloud SQL instance has neither a private nor a public IP address."
+            "Packet was dropped because the Cloud SQL instance has neither a private nor a public IP address.",
+            "Packet could be dropped because the Cloud function is not in an active status.",
+            "Packet could be dropped because no VPC connector is set.",
+            "Packet could be dropped because the VPC connector is not in a running state."
           ],
           "enum": [
             "CAUSE_UNSPECIFIED",
@@ -1138,7 +1172,10 @@
             "DROPPED_INSIDE_GKE_SERVICE",
             "DROPPED_INSIDE_CLOUD_SQL_SERVICE",
             "GOOGLE_MANAGED_SERVICE_NO_PEERING",
-            "CLOUD_SQL_INSTANCE_NO_IP_ADDRESS"
+            "CLOUD_SQL_INSTANCE_NO_IP_ADDRESS",
+            "CLOUD_FUNCTION_NOT_ACTIVE",
+            "VPC_CONNECTOR_NOT_SET",
+            "VPC_CONNECTOR_NOT_RUNNING"
           ]
         },
         "resourceUri": {
@@ -1316,6 +1353,30 @@
         "region": {
           "description": "Region in which the Cloud SQL instance is running.",
           "type": "string"
+        }
+      }
+    },
+    "CloudFunctionInfo": {
+      "id": "CloudFunctionInfo",
+      "description": "Next id: 5",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "description": "Name of a Cloud function.",
+          "type": "string"
+        },
+        "uri": {
+          "description": "URI of a Cloud function.",
+          "type": "string"
+        },
+        "location": {
+          "description": "Location in which the Cloud function is deployed.",
+          "type": "string"
+        },
+        "versionId": {
+          "description": "Latest successfully deployed version id of the Cloud function.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },

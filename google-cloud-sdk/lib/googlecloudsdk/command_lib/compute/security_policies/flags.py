@@ -172,3 +172,14 @@ def AddDdosProtectionConfig(parser, required=False):
       help=(
           'The DDoS protection level for network load balancing and instances '
           'with external IPs'))
+
+
+def AddRecaptchaOptions(parser, required=False):
+  """Adds the cloud armor reCAPTCHA options arguments to the argparse."""
+  parser.add_argument(
+      '--recaptcha-redirect-site-key',
+      required=required,
+      help="""\
+      The reCAPTCHA site key to be used for rules using the ``redirect'' action
+      and the ``google-recaptcha'' redirect type under the security policy.
+      """)

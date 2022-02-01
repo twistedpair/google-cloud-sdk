@@ -507,3 +507,14 @@ def AddExecCredential(parser):
       default=False,
       action='store_true',
       help='If set, format access token as a Kubernetes execCredential object.')
+
+
+def AddAdminUsers(parser, create=True):
+  help_txt = 'Users that can perform operations as a cluster administrator.'
+  if create:
+    help_txt += ' If not specified, the value of property core/account is used.'
+  parser.add_argument(
+      '--admin-users',
+      type=arg_parsers.ArgList(min_length=1),
+      metavar='USER',
+      help=help_txt)

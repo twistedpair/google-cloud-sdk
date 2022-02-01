@@ -394,10 +394,10 @@ class GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsRequest(_messages.
 
 
 class GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsResponse(_messages.Message):
-  r"""The response message from importing artifacts.
+  r"""The response message from importing APT artifacts.
 
   Fields:
-    aptArtifacts: The Apt artifacts updated.
+    aptArtifacts: The Apt artifacts imported.
     errors: Detailed error info for packages that were not imported.
   """
 
@@ -488,11 +488,11 @@ class GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsRequest(_messages.
 
 
 class GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsResponse(_messages.Message):
-  r"""The response message from importing artifacts.
+  r"""The response message from importing YUM artifacts.
 
   Fields:
     errors: Detailed error info for packages that were not imported.
-    yumArtifacts: The yum artifacts updated.
+    yumArtifacts: The yum artifacts imported.
   """
 
   errors = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsErrorInfo', 1, repeated=True)
@@ -732,10 +732,10 @@ class ImportAptArtifactsGcsSource(_messages.Message):
 
 
 class ImportAptArtifactsResponse(_messages.Message):
-  r"""The response message from importing artifacts.
+  r"""The response message from importing APT artifacts.
 
   Fields:
-    aptArtifacts: The Apt artifacts updated.
+    aptArtifacts: The Apt artifacts imported.
     errors: Detailed error info for packages that were not imported.
   """
 
@@ -769,11 +769,11 @@ class ImportYumArtifactsGcsSource(_messages.Message):
 
 
 class ImportYumArtifactsResponse(_messages.Message):
-  r"""The response message from importing artifacts.
+  r"""The response message from importing YUM artifacts.
 
   Fields:
     errors: Detailed error info for packages that were not imported.
-    yumArtifacts: The yum artifacts updated.
+    yumArtifacts: The yum artifacts imported.
   """
 
   errors = _messages.MessageField('ImportYumArtifactsErrorInfo', 1, repeated=True)

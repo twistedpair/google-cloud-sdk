@@ -1385,8 +1385,8 @@
       "description": "Load environment state request.",
       "type": "object",
       "properties": {
-        "snapshotLocation": {
-          "description": "A Cloud Storage location of a snapshot to load, e.g.: \"gs:\/\/my-bucket\/snapshots\/project_id\/location\/environment_uuid\/timestamp\".",
+        "snapshotPath": {
+          "description": "A Cloud Storage path to a snapshot to load, e.g.: \"gs:\/\/my-bucket\/snapshots\/project_location_environment_timestamp\".",
           "type": "string"
         },
         "skipPypiPackagesInstallation": {
@@ -1584,8 +1584,8 @@
       "description": "Store environment state response.",
       "type": "object",
       "properties": {
-        "snapshotLocation": {
-          "description": "The fully-resolved Cloud Storage location of the created snapshot, e.g.: \"gs:\/\/my-bucket\/snapshots\/project_id\/location\/environment_uuid\/timestamp\". This field is populated only if the snapshot creation was successful.",
+        "snapshotPath": {
+          "description": "The fully-resolved Cloud Storage path of the created snapshot, e.g.: \"gs:\/\/my-bucket\/snapshots\/project_location_environment_timestamp\". This field is populated only if the snapshot creation was successful.",
           "type": "string"
         }
       }
@@ -2211,6 +2211,11 @@
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+\/dags\/[^\/]+$",
                               "location": "path",
                               "required": true,
+                              "type": "string"
+                            },
+                            "filter": {
+                              "description": "An expression for filtering the results. For example: executionDate<=\"2022-02-22T22:22:00Z\"",
+                              "location": "query",
                               "type": "string"
                             },
                             "pageSize": {

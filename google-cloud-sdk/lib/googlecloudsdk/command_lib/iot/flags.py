@@ -97,9 +97,9 @@ configs to the device registry. Configs are added to the registry in the order
 the flags are specified. Only one config with an empty subfolder field is
 allowed and must be specified last.
 
-*topic*::::A Google Cloud Pub/Sub topic name for event notifications
+*topic*:::: A Google Cloud Pub/Sub topic name for event notifications
 
-*subfolder*::::If the subfolder name matches this string exactly, this
+*subfolder*:::: If the subfolder name matches this string exactly, this
 configuration will be used to publish telemetry events. If empty all strings
 are matched.""")
   return [event_config]

@@ -30,14 +30,12 @@ def _GetNoteResourceSpec():
       resource_name='note',
       projectsId=concepts.ResourceParameterAttributeConfig(
           name='project',
-          help_text=(
-              'The Container Analysis project for the {resource}.'),
+          help_text=('The Container Analysis project for the {resource}.'),
       ),
       notesId=concepts.ResourceParameterAttributeConfig(
           name='note',
           help_text='The Container Analysis Note ID for the {resource}.',
-      )
-  )
+      ))
 
 
 def _FormatArgName(base_name, positional):
@@ -122,12 +120,11 @@ def _GetCryptoKeyVersionResourceSpec():
   )
 
 
-def GetCryptoKeyVersionPresentationSpec(
-    group_help,
-    base_name='keyversion',
-    required=True,
-    positional=True,
-    use_global_project_flag=True):
+def GetCryptoKeyVersionPresentationSpec(group_help,
+                                        base_name='keyversion',
+                                        required=True,
+                                        positional=True,
+                                        use_global_project_flag=True):
   """Construct a resource spec for a CryptoKeyVersion flag."""
   flag_overrides = None
   if not use_global_project_flag:
@@ -155,3 +152,30 @@ def AddArtifactUrlFlag(parser, required=True):
       type=str,
       help=('Container URL. May be in the `gcr.io/repository/image` format,'
             ' or may optionally contain the `http` or `https` scheme'))
+
+
+def _GetPlatformPolicyResourceSpec():
+  return concepts.ResourceSpec(
+      'binaryauthorization.projects.platforms.policies',
+      resource_name='policy',
+      api_version='v1',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      platformsId=concepts.ResourceParameterAttributeConfig(
+          name='platform',
+          help_text='The platform that the {resource} belongs to.'),
+      policyId=concepts.ResourceParameterAttributeConfig(
+          name='policy', help_text='The ID of the {resource}.'))
+
+
+def AddPlatformPolicyResourceArg(parser, verb):
+  """Add a resource argument for a policy.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+  concept_parsers.ConceptParser.ForResource(
+      'policy_resource_name',
+      _GetPlatformPolicyResourceSpec(),
+      'The policy {}.'.format(verb),
+      required=True).AddToParser(parser)

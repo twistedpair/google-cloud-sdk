@@ -414,6 +414,21 @@ class ContainerPort(_messages.Message):
   protocol = _messages.StringField(3)
 
 
+class ContainerStatus(_messages.Message):
+  r"""ContainerStatus holds the information of container name and image digest
+  value.
+
+  Fields:
+    imageDigest: ImageDigest holds the resolved digest for the image
+      specified, regardless of whether a tag or digest was originally
+      specified in the Container object.
+    name: The name of the container, if specified.
+  """
+
+  imageDigest = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
 class DomainMapping(_messages.Message):
   r"""Resource to hold the state and status of a user's domain mapping. NOTE:
   This resource is currently in Beta.
@@ -563,6 +578,139 @@ class ExecAction(_messages.Message):
   command = _messages.StringField(1, repeated=True)
 
 
+class Execution(_messages.Message):
+  r"""Execution represents the configuration of a single execution. A
+  execution an immutable resource that references a container image which is
+  run to completion.
+
+  Fields:
+    apiVersion: Optional. APIVersion defines the versioned schema of this
+      representation of an object. Servers should convert recognized schemas
+      to the latest internal value, and may reject unrecognized values. More
+      info: https://git.k8s.io/community/contributors/devel/sig-
+      architecture/api-conventions.md#resources +optional
+    kind: Optional. Kind is a string value representing the REST resource this
+      object represents. Servers may infer this from the endpoint the client
+      submits requests to. Cannot be updated. In CamelCase. More info:
+      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
+      conventions.md#types-kinds +optional
+    metadata: Optional. Standard object's metadata. More info:
+      https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#metadata +optional
+    spec: Optional. Specification of the desired behavior of an execution.
+      More info: https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#spec-and-status +optional
+    status: Output only. Current status of an execution. More info:
+      https://git.k8s.io/community/contributors/devel/api-conventions.md#spec-
+      and-status +optional
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  metadata = _messages.MessageField('ObjectMeta', 3)
+  spec = _messages.MessageField('ExecutionSpec', 4)
+  status = _messages.MessageField('ExecutionStatus', 5)
+
+
+class ExecutionReference(_messages.Message):
+  r"""Reference to an Execution. Use /Executions.GetExecution with the given
+  name to get full execution including the latest status.
+
+  Fields:
+    creationTimestamp: Optional. Creation timestamp of the execution.
+    name: Optional. Name of the execution.
+  """
+
+  creationTimestamp = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
+class ExecutionSpec(_messages.Message):
+  r"""ExecutionSpec describes how the execution will look.
+
+  Fields:
+    parallelism: Optional. Specifies the maximum desired number of tasks the
+      execution should run at any given time. Must be <= task_count. The
+      actual number of tasks running in steady state will be less than this
+      number when ((.spec.task_count - .status.successful) <
+      .spec.parallelism), i.e. when the work left to do is less than max
+      parallelism. More info:
+      https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-
+      completion/ +optional
+    taskCount: Optional. Specifies the desired number of tasks the execution
+      should run. Setting to 1 means that parallelism is limited to 1 and the
+      success of that task signals the success of the execution. More info:
+      https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-
+      completion/ +optional
+    template: Optional. Describes the task(s) that will be created when
+      executing an execution.
+  """
+
+  parallelism = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  taskCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  template = _messages.MessageField('TaskTemplateSpec', 3)
+
+
+class ExecutionStatus(_messages.Message):
+  r"""ExecutionStatus represents the current state of a Execution.
+
+  Fields:
+    completionTime: Optional. Represents time when the execution was
+      completed. It is not guaranteed to be set in happens-before order across
+      separate operations. It is represented in RFC3339 form and is in UTC.
+      +optional
+    conditions: Optional. The latest available observations of an execution's
+      current state. More info:
+      https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-
+      completion/ +optional
+    failedCount: Optional. The number of tasks which reached phase Failed.
+      +optional
+    logUri: Optional. URI where logs for this execution can be found in Cloud
+      Console.
+    observedGeneration: Optional. The 'generation' of the execution that was
+      last processed by the controller.
+    runningCount: Optional. The number of actively running tasks. +optional
+    startTime: Optional. Represents time when the execution started to run. It
+      is not guaranteed to be set in happens-before order across separate
+      operations. It is represented in RFC3339 form and is in UTC. +optional
+    succeededCount: Optional. The number of tasks which reached phase
+      Succeeded. +optional
+  """
+
+  completionTime = _messages.StringField(1)
+  conditions = _messages.MessageField('GoogleCloudRunV1Condition', 2, repeated=True)
+  failedCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  logUri = _messages.StringField(4)
+  observedGeneration = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  runningCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(7)
+  succeededCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+
+
+class ExecutionTemplateSpec(_messages.Message):
+  r"""ExecutionTemplateSpec describes the metadata and spec an Execution
+  should have when created from a job. Based on:
+  https://github.com/kubernetes/api/blob/e771f807/core/v1/types.go#L3179-L3190
+
+  Fields:
+    metadata: Optional. Optional metadata for this Execution, including labels
+      and annotations. The following annotation keys set properties of the
+      created execution: * `run.googleapis.com/cloudsql-instances` sets Cloud
+      SQL connections. Multiple values should be comma separated. *
+      `run.googleapis.com/vpc-access-connector` sets a Serverless VPC Access
+      connector. * `run.googleapis.com/vpc-access-egress` sets VPC egress.
+      Supported values are `all-traffic`, `all` (deprecated), and `private-
+      ranges-only`. `all-traffic` and `all` provide the same functionality.
+      `all` is deprecated but will continue to be supported. Prefer `all-
+      traffic`.
+    spec: Required. ExecutionSpec holds the desired configuration for
+      executions of this job.
+  """
+
+  metadata = _messages.MessageField('ObjectMeta', 1)
+  spec = _messages.MessageField('ExecutionSpec', 2)
+
+
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -627,6 +775,57 @@ class GoogleCloudRunV1Condition(_messages.Message):
   type = _messages.StringField(6)
 
 
+class GoogleRpcStatus(_messages.Message):
+  r"""The `Status` type defines a logical error model that is suitable for
+  different programming environments, including REST APIs and RPC APIs. It is
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details. You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    code: The status code, which should be an enum value of google.rpc.Code.
+    details: A list of messages that carry the error details. There is a
+      common set of message types for APIs to use.
+    message: A developer-facing error message, which should be in English. Any
+      user-facing error message should be localized and sent in the
+      google.rpc.Status.details field, or localized by the client.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  message = _messages.StringField(3)
+
+
 class HTTPGetAction(_messages.Message):
   r"""Not supported by Cloud Run HTTPGetAction describes an action based on
   HTTP Get requests.
@@ -658,6 +857,76 @@ class HTTPHeader(_messages.Message):
 
   name = _messages.StringField(1)
   value = _messages.StringField(2)
+
+
+class Job(_messages.Message):
+  r"""Job represents the configuration of a single job. A job an immutable
+  resource that references a container image which is run to completion.
+
+  Fields:
+    apiVersion: Optional. APIVersion defines the versioned schema of this
+      representation of an object. Servers should convert recognized schemas
+      to the latest internal value, and may reject unrecognized values. More
+      info: https://git.k8s.io/community/contributors/devel/sig-
+      architecture/api-conventions.md#resources +optional
+    kind: Optional. Kind is a string value representing the REST resource this
+      object represents. Servers may infer this from the endpoint the client
+      submits requests to. Cannot be updated. In CamelCase. More info:
+      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
+      conventions.md#types-kinds +optional
+    metadata: Optional. Standard object's metadata. More info:
+      https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#metadata +optional
+    spec: Optional. Specification of the desired behavior of a job. More info:
+      https://git.k8s.io/community/contributors/devel/api-conventions.md#spec-
+      and-status +optional
+    status: Output only. Current status of a job. More info:
+      https://git.k8s.io/community/contributors/devel/api-conventions.md#spec-
+      and-status +optional
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  metadata = _messages.MessageField('ObjectMeta', 3)
+  spec = _messages.MessageField('JobSpec', 4)
+  status = _messages.MessageField('JobStatus', 5)
+
+
+class JobSpec(_messages.Message):
+  r"""JobSpec describes how the job will look.
+
+  Fields:
+    template: Optional. Describes the execution that will be created when
+      running a job.
+  """
+
+  template = _messages.MessageField('ExecutionTemplateSpec', 1)
+
+
+class JobStatus(_messages.Message):
+  r"""JobStatus represents the current state of a Job.
+
+  Fields:
+    conditions: The latest available observations of a job's current state.
+      More info:
+      https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-
+      completion/
+    containerStatuses: Status information for each of the specified
+      containers. The status includes the resolved digest for specified
+      images, which occurs during creation of the job.
+    executionCount: Number of executions created for this job.
+    latestCreatedExecution: A pointer to the most recently created execution
+      for this job. This is set regardless of the eventual state of the
+      execution.
+    observedGeneration: The 'generation' of the job that was last processed by
+      the controller.
+  """
+
+  conditions = _messages.MessageField('GoogleCloudRunV1Condition', 1, repeated=True)
+  containerStatuses = _messages.MessageField('ContainerStatus', 2, repeated=True)
+  executionCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  latestCreatedExecution = _messages.MessageField('ExecutionReference', 4)
+  observedGeneration = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class KeyToPath(_messages.Message):
@@ -732,6 +1001,42 @@ class ListDomainMappingsResponse(_messages.Message):
 
   apiVersion = _messages.StringField(1)
   items = _messages.MessageField('DomainMapping', 2, repeated=True)
+  kind = _messages.StringField(3)
+  metadata = _messages.MessageField('ListMeta', 4)
+  unreachable = _messages.StringField(5, repeated=True)
+
+
+class ListExecutionsResponse(_messages.Message):
+  r"""ListExecutionsResponse is a list of Executions resources.
+
+  Fields:
+    apiVersion: The API version for this call such as "run.googleapis.com/v1".
+    items: List of Executions.
+    kind: The kind of this resource, in this case "ExecutionsList".
+    metadata: Metadata associated with this executions list.
+    unreachable: Locations that could not be reached.
+  """
+
+  apiVersion = _messages.StringField(1)
+  items = _messages.MessageField('Execution', 2, repeated=True)
+  kind = _messages.StringField(3)
+  metadata = _messages.MessageField('ListMeta', 4)
+  unreachable = _messages.StringField(5, repeated=True)
+
+
+class ListJobsResponse(_messages.Message):
+  r"""ListJobsResponse is a list of Jobs resources.
+
+  Fields:
+    apiVersion: The API version for this call such as "run.googleapis.com/v1".
+    items: List of Jobs.
+    kind: The kind of this resource, in this case "JobsList".
+    metadata: Metadata associated with this jobs list.
+    unreachable: Locations that could not be reached.
+  """
+
+  apiVersion = _messages.StringField(1)
+  items = _messages.MessageField('Job', 2, repeated=True)
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
   unreachable = _messages.StringField(5, repeated=True)
@@ -831,6 +1136,24 @@ class ListServicesResponse(_messages.Message):
 
   apiVersion = _messages.StringField(1)
   items = _messages.MessageField('Service', 2, repeated=True)
+  kind = _messages.StringField(3)
+  metadata = _messages.MessageField('ListMeta', 4)
+  unreachable = _messages.StringField(5, repeated=True)
+
+
+class ListTasksResponse(_messages.Message):
+  r"""ListTasksResponse is a list of Tasks resources.
+
+  Fields:
+    apiVersion: The API version for this call such as "run.googleapis.com/v1".
+    items: List of Tasks.
+    kind: The kind of this resource, in this case "TasksList".
+    metadata: Metadata associated with this tasks list.
+    unreachable: Locations that could not be reached.
+  """
+
+  apiVersion = _messages.StringField(1)
+  items = _messages.MessageField('Task', 2, repeated=True)
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
   unreachable = _messages.StringField(5, repeated=True)
@@ -1714,6 +2037,10 @@ class RunApiV1NamespacesSecretsReplaceSecretRequest(_messages.Message):
   secret = _messages.MessageField('Secret', 2)
 
 
+class RunJobRequest(_messages.Message):
+  r"""Request message for creating a new execution of a job."""
+
+
 class RunNamespacesAuthorizeddomainsListRequest(_messages.Message):
   r"""A RunNamespacesAuthorizeddomainsListRequest object.
 
@@ -1851,6 +2178,167 @@ class RunNamespacesDomainmappingsListRequest(_messages.Message):
   parent = _messages.StringField(6, required=True)
   resourceVersion = _messages.StringField(7)
   watch = _messages.BooleanField(8)
+
+
+class RunNamespacesExecutionsDeleteRequest(_messages.Message):
+  r"""A RunNamespacesExecutionsDeleteRequest object.
+
+  Fields:
+    apiVersion: Optional. Cloud Run currently ignores this parameter.
+    kind: Optional. Cloud Run currently ignores this parameter.
+    name: Required. The name of the execution to delete. Replace
+      {namespace_id} with the project ID or number.
+    propagationPolicy: Optional. Specifies the propagation policy of delete.
+      Cloud Run currently ignores this setting, and deletes in the background.
+      Please see kubernetes.io/docs/concepts/workloads/controllers/garbage-
+      collection/ for more information.
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  propagationPolicy = _messages.StringField(4)
+
+
+class RunNamespacesExecutionsGetRequest(_messages.Message):
+  r"""A RunNamespacesExecutionsGetRequest object.
+
+  Fields:
+    name: Required. The name of the execution to retrieve. Replace
+      {namespace_id} with the project ID or number.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RunNamespacesExecutionsListRequest(_messages.Message):
+  r"""A RunNamespacesExecutionsListRequest object.
+
+  Fields:
+    continue_: Optional. Optional encoded string to continue paging.
+    fieldSelector: Optional. Allows to filter resources based on a specific
+      value for a field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Optional. Not currently used by Cloud Run.
+    labelSelector: Optional. Allows to filter resources based on a label.
+      Supported operations are =, !=, exists, in, and notIn.
+    limit: Optional. The maximum number of records that should be returned.
+    parent: Required. The namespace from which the executions should be
+      listed. Replace {namespace_id} with the project ID or number.
+    resourceVersion: Optional. The baseline resource version from which the
+      list or watch operation should start. Not currently used by Cloud Run.
+    watch: Optional. Flag that indicates that the client expects to watch this
+      resource as well. Not currently used by Cloud Run.
+  """
+
+  continue_ = _messages.StringField(1)
+  fieldSelector = _messages.StringField(2)
+  includeUninitialized = _messages.BooleanField(3)
+  labelSelector = _messages.StringField(4)
+  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  parent = _messages.StringField(6, required=True)
+  resourceVersion = _messages.StringField(7)
+  watch = _messages.BooleanField(8)
+
+
+class RunNamespacesJobsCreateRequest(_messages.Message):
+  r"""A RunNamespacesJobsCreateRequest object.
+
+  Fields:
+    job: A Job resource to be passed as the request body.
+    parent: Required. The namespace in which the job should be created.
+      Replace {namespace_id} with the project ID or number.
+  """
+
+  job = _messages.MessageField('Job', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class RunNamespacesJobsDeleteRequest(_messages.Message):
+  r"""A RunNamespacesJobsDeleteRequest object.
+
+  Fields:
+    apiVersion: Optional. Cloud Run currently ignores this parameter.
+    kind: Optional. Cloud Run currently ignores this parameter.
+    name: Required. The name of the job to delete. Replace {namespace_id} with
+      the project ID or number.
+    propagationPolicy: Optional. Specifies the propagation policy of delete.
+      Cloud Run currently ignores this setting, and deletes in the background.
+      Please see kubernetes.io/docs/concepts/workloads/controllers/garbage-
+      collection/ for more information.
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  propagationPolicy = _messages.StringField(4)
+
+
+class RunNamespacesJobsGetRequest(_messages.Message):
+  r"""A RunNamespacesJobsGetRequest object.
+
+  Fields:
+    name: Required. The name of the job to retrieve. Replace {namespace_id}
+      with the project ID or number.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RunNamespacesJobsListRequest(_messages.Message):
+  r"""A RunNamespacesJobsListRequest object.
+
+  Fields:
+    continue_: Optional. Optional encoded string to continue paging.
+    fieldSelector: Optional. Allows to filter resources based on a specific
+      value for a field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Optional. Not currently used by Cloud Run.
+    labelSelector: Optional. Allows to filter resources based on a label.
+      Supported operations are =, !=, exists, in, and notIn.
+    limit: Optional. The maximum number of records that should be returned.
+    parent: Required. The namespace from which the jobs should be listed.
+      Replace {namespace_id} with the project ID or number.
+    resourceVersion: Optional. The baseline resource version from which the
+      list or watch operation should start. Not currently used by Cloud Run.
+    watch: Optional. Flag that indicates that the client expects to watch this
+      resource as well. Not currently used by Cloud Run.
+  """
+
+  continue_ = _messages.StringField(1)
+  fieldSelector = _messages.StringField(2)
+  includeUninitialized = _messages.BooleanField(3)
+  labelSelector = _messages.StringField(4)
+  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  parent = _messages.StringField(6, required=True)
+  resourceVersion = _messages.StringField(7)
+  watch = _messages.BooleanField(8)
+
+
+class RunNamespacesJobsReplaceJobRequest(_messages.Message):
+  r"""A RunNamespacesJobsReplaceJobRequest object.
+
+  Fields:
+    job: A Job resource to be passed as the request body.
+    name: Required. The name of the service being replaced. Replace
+      {namespace_id} with the project ID or number.
+  """
+
+  job = _messages.MessageField('Job', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class RunNamespacesJobsRunRequest(_messages.Message):
+  r"""A RunNamespacesJobsRunRequest object.
+
+  Fields:
+    name: Required. The name of the job to run. Replace {namespace_id} with
+      the project ID or number.
+    runJobRequest: A RunJobRequest resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  runJobRequest = _messages.MessageField('RunJobRequest', 2)
 
 
 class RunNamespacesRevisionsDeleteRequest(_messages.Message):
@@ -2058,6 +2546,47 @@ class RunNamespacesServicesReplaceServiceRequest(_messages.Message):
   service = _messages.MessageField('Service', 3)
 
 
+class RunNamespacesTasksGetRequest(_messages.Message):
+  r"""A RunNamespacesTasksGetRequest object.
+
+  Fields:
+    name: Required. The name of the task to retrieve. Replace {namespace_id}
+      with the project ID or number.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RunNamespacesTasksListRequest(_messages.Message):
+  r"""A RunNamespacesTasksListRequest object.
+
+  Fields:
+    continue_: Optional. Optional encoded string to continue paging.
+    fieldSelector: Optional. Allows to filter resources based on a specific
+      value for a field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Optional. Not currently used by Cloud Run.
+    labelSelector: Optional. Allows to filter resources based on a label.
+      Supported operations are =, !=, exists, in, and notIn.
+    limit: Optional. The maximum number of records that should be returned.
+    parent: Required. The namespace from which the tasks should be listed.
+      Replace {namespace_id} with the project ID or number.
+    resourceVersion: Optional. The baseline resource version from which the
+      list or watch operation should start. Not currently used by Cloud Run.
+    watch: Optional. Flag that indicates that the client expects to watch this
+      resource as well. Not currently used by Cloud Run.
+  """
+
+  continue_ = _messages.StringField(1)
+  fieldSelector = _messages.StringField(2)
+  includeUninitialized = _messages.BooleanField(3)
+  labelSelector = _messages.StringField(4)
+  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  parent = _messages.StringField(6, required=True)
+  resourceVersion = _messages.StringField(7)
+  watch = _messages.BooleanField(8)
+
+
 class RunProjectsAuthorizeddomainsListRequest(_messages.Message):
   r"""A RunProjectsAuthorizeddomainsListRequest object.
 
@@ -2210,6 +2739,61 @@ class RunProjectsLocationsDomainmappingsListRequest(_messages.Message):
   parent = _messages.StringField(6, required=True)
   resourceVersion = _messages.StringField(7)
   watch = _messages.BooleanField(8)
+
+
+class RunProjectsLocationsJobsGetIamPolicyRequest(_messages.Message):
+  r"""A RunProjectsLocationsJobsGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class RunProjectsLocationsJobsSetIamPolicyRequest(_messages.Message):
+  r"""A RunProjectsLocationsJobsSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class RunProjectsLocationsJobsTestIamPermissionsRequest(_messages.Message):
+  r"""A RunProjectsLocationsJobsTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class RunProjectsLocationsListRequest(_messages.Message):
@@ -3042,6 +3626,132 @@ class TCPSocketAction(_messages.Message):
 
   host = _messages.StringField(1)
   port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class Task(_messages.Message):
+  r"""Task represents a single run of a container to completion.
+
+  Fields:
+    apiVersion: Optional. APIVersion defines the versioned schema of this
+      representation of an object. Servers should convert recognized schemas
+      to the latest internal value, and may reject unrecognized values. More
+      info: https://git.k8s.io/community/contributors/devel/sig-
+      architecture/api-conventions.md#resources +optional
+    kind: Optional. Kind is a string value representing the REST resource this
+      object represents. Servers may infer this from the endpoint the client
+      submits requests to. Cannot be updated. In CamelCase. More info:
+      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
+      conventions.md#types-kinds +optional
+    metadata: Optional. Standard object's metadata. More info:
+      https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#metadata +optional
+    spec: Optional. Specification of the desired behavior of an execution.
+      More info: https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#spec-and-status +optional
+    status: Output only. Current status of an execution. More info:
+      https://git.k8s.io/community/contributors/devel/api-conventions.md#spec-
+      and-status +optional
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  metadata = _messages.MessageField('ObjectMeta', 3)
+  spec = _messages.MessageField('TaskSpec', 4)
+  status = _messages.MessageField('TaskStatus', 5)
+
+
+class TaskAttemptResult(_messages.Message):
+  r"""Result of a task attempt.
+
+  Fields:
+    exitCode: Optional. The exit code of this attempt. This may be unset if
+      the container was unable to exit cleanly with a code due to some other
+      failure. See status field for possible failure details.
+    status: Optional. The status of this attempt. If the status code is OK,
+      then the attempt succeeded.
+  """
+
+  exitCode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  status = _messages.MessageField('GoogleRpcStatus', 2)
+
+
+class TaskSpec(_messages.Message):
+  r"""TaskSpec is a description of a task.
+
+  Fields:
+    containers: Optional. List of containers belonging to the task. We
+      disallow a number of fields on this Container. Only a single container
+      may be provided.
+    maxRetries: Optional. Number of retries allowed per task, before marking
+      this job failed.
+    serviceAccountName: Optional. Email address of the IAM service account
+      associated with the task of a job execution. The service account
+      represents the identity of the running task, and determines what
+      permissions the task has. If not provided, the task will use the
+      project's default service account. +optional
+    timeoutSeconds: Optional. Optional duration in seconds the task may be
+      active before the system will actively try to mark it failed and kill
+      associated containers. This applies per attempt of a task, meaning each
+      retry can run for the full timeout. +optional
+    volumes: Optional. List of volumes that can be mounted by containers
+      belonging to the task. More info:
+      https://kubernetes.io/docs/concepts/storage/volumes +optional
+  """
+
+  containers = _messages.MessageField('Container', 1, repeated=True)
+  maxRetries = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  serviceAccountName = _messages.StringField(3)
+  timeoutSeconds = _messages.IntegerField(4)
+  volumes = _messages.MessageField('Volume', 5, repeated=True)
+
+
+class TaskStatus(_messages.Message):
+  r"""TaskStatus represents the status of a task of a job execution.
+
+  Fields:
+    completionTime: Optional. Represents time when the task was completed. It
+      is not guaranteed to be set in happens-before order across separate
+      operations. It is represented in RFC3339 form and is in UTC. +optional
+    conditions: Optional. The latest available observations of a task's
+      current state. More info:
+      https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-
+      completion/ +optional
+    index: Required. Index of the task, unique per execution, and beginning at
+      0.
+    lastAttemptResult: Optional. Result of the last attempt of this task.
+      +optional
+    logUri: Optional. URI where logs for this task can be found in Cloud
+      Console.
+    observedGeneration: Optional. The 'generation' of the execution that was
+      last processed by the controller.
+    retried: Optional. The number of times this task was retried. Instances
+      are retried when they fail up to the maxRetries limit. +optional
+    startTime: Optional. Represents time when the task started to run. It is
+      not guaranteed to be set in happens-before order across separate
+      operations. It is represented in RFC3339 form and is in UTC. +optional
+  """
+
+  completionTime = _messages.StringField(1)
+  conditions = _messages.MessageField('GoogleCloudRunV1Condition', 2, repeated=True)
+  index = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  lastAttemptResult = _messages.MessageField('TaskAttemptResult', 4)
+  logUri = _messages.StringField(5)
+  observedGeneration = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  retried = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(8)
+
+
+class TaskTemplateSpec(_messages.Message):
+  r"""TaskTemplateSpec describes the data a task should have when created from
+  a template.
+
+  Fields:
+    spec: Optional. Specification of the desired behavior of the task. More
+      info: https://git.k8s.io/community/contributors/devel/sig-
+      architecture/api-conventions.md#spec-and-status +optional
+  """
+
+  spec = _messages.MessageField('TaskSpec', 1)
 
 
 class TestIamPermissionsRequest(_messages.Message):

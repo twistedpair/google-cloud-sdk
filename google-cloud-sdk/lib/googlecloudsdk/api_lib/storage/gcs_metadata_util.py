@@ -24,23 +24,9 @@ from googlecloudsdk.api_lib.storage import gcs_metadata_field_converters
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import storage_url
+from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.command_lib.storage.resources import gcs_resource_reference
 
-
-# Since CORS is a list in apitools, we need special handling, or blank
-# CORS lists will get sent with other configuration commands, such as lifecycle,
-# which would cause CORS configuration to be unintentionally removed.
-# Protorpc defaults list values to an empty list and won't allow us to set the
-# value to None like other configuration fields, so there is no way to
-# distinguish the default value from when we actually want to remove the CORS
-# configuration. To work around this, we create a fake CORS entry that
-# signifies that we should nullify the CORS configuration.
-# A value of [] means don't modify the CORS configuration.
-# A value of REMOVE_CORS_CONFIG means remove the CORS configuration.
-REMOVE_CORS_CONFIG = [
-    apis.GetMessagesModule('storage', 'v1').Bucket.CorsValueListEntry(
-        maxAgeSeconds=-1, method=['REMOVE_CORS_CONFIG'])
-]
 
 # Similar to CORS above, we need a sentinel value allowing us to specify
 # when a default object ACL should be private (containing no entries).
@@ -106,7 +92,7 @@ def get_bucket_resource_from_metadata(metadata):
       location=metadata.location,
       metadata=metadata,
       retention_period=retention_period,
-      storage_class=metadata.storageClass,
+      default_storage_class=metadata.storageClass,
       uniform_bucket_level_access=uniform_bucket_level_access)
 
 
@@ -124,7 +110,7 @@ def get_metadata_from_bucket_resource(resource):
       name=resource.name,
       etag=resource.etag,
       location=resource.location,
-      storageClass=resource.storage_class)
+      storageClass=resource.default_storage_class)
 
   if resource.retention_period:
     metadata.retentionPolicy = messages.Bucket.RetentionPolicyValue(
@@ -178,7 +164,7 @@ def get_object_resource_from_metadata(metadata):
 
 def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
   """Sets Apitools Bucket fields based on values in request_config."""
-  resource_args = request_config.resource_args
+  resource_args = getattr(request_config, 'resource_args', None)
   if not resource_args:
     return
   if resource_args.cors_file_path is not None:
@@ -202,6 +188,10 @@ def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
             resource_args.lifecycle_file_path))
   if resource_args.location is not None:
     bucket_metadata.location = resource_args.location
+  if (resource_args.log_bucket is not None or
+      resource_args.log_object_prefix is not None):
+    bucket_metadata.logging = gcs_metadata_field_converters.process_log_config(
+        resource_args.log_bucket, resource_args.log_object_prefix)
   if resource_args.retention_period is not None:
     bucket_metadata.retentionPolicy = (
         gcs_metadata_field_converters.process_retention_period(
@@ -221,31 +211,41 @@ def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
         resource_args.web_error_page, resource_args.web_main_page_suffix)
 
 
+def _process_value_or_clear_flag(metadata, key, value):
+  """Sets appropriate metadata based on value."""
+  if value == user_request_args_factory.CLEAR:
+    setattr(metadata, key, None)
+  elif value is not None:
+    setattr(metadata, key, value)
+
+
 def update_object_metadata_from_request_config(object_metadata, request_config):
   """Sets Apitools Object fields based on values in request_config."""
   resource_args = request_config.resource_args
   if not resource_args:
     return
-  if resource_args.cache_control is not None:
-    object_metadata.cacheControl = resource_args.cache_control
-  if resource_args.content_disposition is not None:
-    object_metadata.contentDisposition = resource_args.content_disposition
-  if resource_args.content_encoding is not None:
-    object_metadata.contentEncoding = resource_args.content_encoding
-  if resource_args.content_language is not None:
-    object_metadata.contentLanguage = resource_args.content_language
-  if resource_args.custom_time is not None:
-    object_metadata.customTime = resource_args.custom_time
-  if resource_args.content_type is not None:
-    object_metadata.contentType = resource_args.content_type
-  if resource_args.md5_hash is not None:
-    object_metadata.md5Hash = resource_args.md5_hash
+  _process_value_or_clear_flag(object_metadata, 'cacheControl',
+                               resource_args.cache_control)
+  _process_value_or_clear_flag(object_metadata, 'contentDisposition',
+                               resource_args.content_disposition)
+  _process_value_or_clear_flag(object_metadata, 'contentEncoding',
+                               resource_args.content_encoding)
+  _process_value_or_clear_flag(object_metadata, 'contentLanguage',
+                               resource_args.content_language)
+  _process_value_or_clear_flag(object_metadata, 'customTime',
+                               resource_args.custom_time)
+  _process_value_or_clear_flag(object_metadata, 'contentType',
+                               resource_args.content_type)
+  _process_value_or_clear_flag(object_metadata, 'md5Hash',
+                               resource_args.md5_hash)
 
   if (resource_args.encryption_key and
       resource_args.encryption_key.type == encryption_util.KeyType.CMEK):
     object_metadata.kmsKeyName = resource_args.encryption_key.key
 
-  if resource_args.custom_metadata:
+  if resource_args.custom_metadata == user_request_args_factory.CLEAR:
+    object_metadata.metadata = None
+  elif resource_args.custom_metadata:
     messages = apis.GetMessagesModule('storage', 'v1')
 
     if not object_metadata.metadata:

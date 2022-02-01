@@ -85,6 +85,10 @@ def AddRunPipelineFlags(parser):
   GetPipelineResourceArg().AddToParser(parser)
 
 
+def AddListJobsFlags(parser):
+  GetPipelineResourceArg(positional=False).AddToParser(parser)
+
+
 def AddRegionResourceArg(parser, verb):
   """Add a resource argument for a Vertex AI region.
 

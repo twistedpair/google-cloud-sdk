@@ -21,7 +21,7 @@ from __future__ import unicode_literals
 import re
 
 
-def make_name_singular(collection_name):
+def singularize(collection_name):
   """Convert the input collection name to singular form."""
   ending_plurals = [('cies', 'cy'), ('xies', 'xy'), ('ries', 'ry'),
                     ('xes', 'x'), ('esses', 'ess')]
@@ -35,6 +35,18 @@ def make_name_singular(collection_name):
     if collection_name[-1] == 's':
       singular_collection_name = singular_collection_name[:-1]
   return singular_collection_name
+
+
+def pluralize(collection_name):
+  """Convert the input collection name to singular form."""
+  if re.search('[sxz]$', collection_name):
+    return re.sub('$', 'es', collection_name)
+  elif re.search('[^aeioudgkprt]h$', collection_name):
+    return re.sub('$', 'es', collection_name)
+  elif re.search('[aeioucxr]y$', collection_name):
+    return re.sub('y$', 'ies', collection_name)
+  else:
+    return collection_name + 's'
 
 
 def split_name_on_capitals(collection_name, delimiter=' '):
@@ -51,6 +63,6 @@ def convert_collection_name_to_delimited(collection_name,
   if '.' in collection_name:
     collection_name_modified = collection_name.split('.')[-1]
   if make_singular:
-    collection_name_modified = make_name_singular(collection_name_modified)
+    collection_name_modified = singularize(collection_name_modified)
   return split_name_on_capitals(
       collection_name_modified, delimiter=delimiter).lower()

@@ -19,6 +19,16 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.eventarc import types
+from googlecloudsdk.command_lib.eventarc.types import EventType
+
+
+# TODO(b/195970381): Integrate with Eventarc discovery API once ready.
+
+# cs/f:prod.event_providers.gcl%20remoteconfig
+_REMOTE_CONFIG_TYPE = EventType(
+    'google.firebase.remoteconfig.remoteConfig.v1.updated',
+    'Firebase Remote Config: Sent when a Remote Config template is updated.',
+    'type')
 
 
 def Run(args, release_track):
@@ -35,4 +45,4 @@ def Run(args, release_track):
   del args
   del release_track
 
-  return types.EVENT_TYPES
+  return types.EVENT_TYPES + [_REMOTE_CONFIG_TYPE]

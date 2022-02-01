@@ -1719,6 +1719,11 @@
           "description": "Output only. Human-readable status of the operation, if any.",
           "readOnly": true,
           "type": "string"
+        },
+        "errorDetail": {
+          "description": "Output only. Human-readable status of any error that occurred during the operation.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     }
@@ -1963,7 +1968,7 @@
                       "type": "boolean"
                     },
                     "updateMask": {
-                      "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field can only include these fields from AwsCluster: * `description`. * `annotations`. * `control_plane.version`. * `authorization.admin_users`. * `control_plane.aws_services_authentication.role_arn`. * `control_plane.aws_services_authentication.role_session_name`. * `control_plane.instance_type`.",
+                      "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field can only include these fields from AwsCluster: * `description`. * `annotations`. * `control_plane.version`. * `authorization.admin_users`. * `control_plane.aws_services_authentication.role_arn`. * `control_plane.aws_services_authentication.role_session_name`. * `control_plane.config_encryption.kms_key_arn`. * `control_plane.instance_type`.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"

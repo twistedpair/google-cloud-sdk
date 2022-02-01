@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import arg_parsers
+
 
 def AddBitbucketServerConfigArgs(parser, update=False):
   """Set up all the argparse flags for creating or updating a Bitbucket Server config.
@@ -59,7 +61,16 @@ def AddBitbucketServerConfigArgs(parser, update=False):
       required=not update,
       help='Secret Manager resource containing the webhook secret. The secret is specified in resource URL format projects/{secret_project}/secrets/{secret_name}/versions/{secret_version}.'
   )
+  parser.add_argument(
+      '--ssl-ca-file',
+      type=arg_parsers.FileContents(),
+      help='Path to a local file that contains SSL certificate to use for requests to Bitbucket Server. The certificate should be in PEM format.'
+  )
   if not update:
+    parser.add_argument(
+        '--name',
+        required=True,
+        help='The config name of the Bitbucket Server connection.')
     parser.add_argument(
         '--peered-network',
         help="""\

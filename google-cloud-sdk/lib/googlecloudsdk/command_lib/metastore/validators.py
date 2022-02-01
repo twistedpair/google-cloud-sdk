@@ -103,4 +103,11 @@ def ValidateServiceMutexConfig(unused_ref, unused_args, req):
         '--kerberos-principal',
         'Kerberos configuration cannot be used in conjunction with --network-config-from-file or --consumer-subnetworks.'
     )
+  if (req.service.hiveMetastoreConfig and
+      req.service.hiveMetastoreConfig.auxiliaryVersions and
+      req.service.networkConfig):
+    raise exceptions.BadArgumentException(
+        '--auxiliary-versions',
+        'Auxiliary versions configuration cannot be used in conjunction with --network-config-from-file or --consumer-subnetworks.'
+    )
   return req

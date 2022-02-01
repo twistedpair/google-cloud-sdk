@@ -172,8 +172,12 @@ class Client(object):
       raise UnsupportedPropertyError(
           'The property [auth/credential_file_override] '
           'is not supported by this command.')
-    username = properties.VALUES.core.account.GetOrFail()
-    a.adminUsers.append(self._CreateAwsClusterUser(username))
+    if args.admin_users:
+      for username in args.admin_users:
+        a.adminUsers.append(self._CreateAwsClusterUser(username))
+    else:
+      username = properties.VALUES.core.account.GetOrFail()
+      a.adminUsers.append(self._CreateAwsClusterUser(username))
 
     return self.service.Create(req)
 

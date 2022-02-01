@@ -751,7 +751,7 @@ def CheckForContainerFileSystemApiEnablementWithPrompt(project):
           'Please enable it for image streaming to fully work. '
           'For additional details, please refer to https://cloud.google.com/kubernetes-engine/docs/how-to/image-streaming#requirements'
       )
-  except (exceptions.GetServicesPermissionDeniedException,
+  except (exceptions.GetServicePermissionDeniedException,
           apitools_exceptions.HttpError):
     log.warning(
         'Failed to check if Container File System API (containerfilesystem.googleapis.com) has been enabled. '

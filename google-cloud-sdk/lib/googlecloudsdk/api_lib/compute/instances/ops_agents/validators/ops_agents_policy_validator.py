@@ -32,23 +32,24 @@ _PINNED_LEGACY_VERSION_RE = re.compile(r'^5\.5\.2-\d+$')
 _PINNED_VERSION_RE = re.compile(r'^\d+\.\d+\.\d+$')
 _SUPPORTED_OS_SHORT_NAMES_AND_VERSIONS = {
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.CENTOS: [
-        '7', '8'
+        '7', '8',
     ],
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.DEBIAN: [
-        '9', '10', '11'
+        '9', '10', '11',
     ],
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.RHEL: ['7', '8'],
+    agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.ROCKY: ['8'],
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.SLES: [
-        '12', '15'
+        '12', '15',
     ],
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.SLES_SAP: [
-        '12', '15'
+        '12', '15',
     ],
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.UBUNTU: [
-        '16.04', '18.04', '19.10', '20.04', '21.04', '21.10'
+        '16.04', '18.04', '19.10', '20.04', '21.04', '21.10',
     ],
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.WINDOWS: [
-        '10', '6'
+        '10', '6',
     ],
 }
 
@@ -57,26 +58,29 @@ _SUPPORTED_OS_SHORT_NAMES_AND_AGENT_TYPES = {
         agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.CENTOS,
         agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.DEBIAN,
         agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.RHEL,
+        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.ROCKY,
         agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.SLES,
         agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.SLES_SAP,
-        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.UBUNTU
+        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.UBUNTU,
     ],
     agent_policy.OpsAgentPolicy.AgentRule.Type.METRICS: [
         agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.CENTOS,
         agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.DEBIAN,
         agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.RHEL,
+        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.ROCKY,
         agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.SLES,
         agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.SLES_SAP,
-        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.UBUNTU
+        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.UBUNTU,
     ],
     agent_policy.OpsAgentPolicy.AgentRule.Type.OPS_AGENT: [
         agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.CENTOS,
         agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.DEBIAN,
         agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.RHEL,
+        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.ROCKY,
         agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.SLES,
         agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.SLES_SAP,
         agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.UBUNTU,
-        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.WINDOWS
+        agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.WINDOWS,
     ],
 }
 
@@ -84,6 +88,7 @@ _OS_SHORT_NAMES_WITH_OS_AGENT_PREINSTALLED = (
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.CENTOS,
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.DEBIAN,
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.RHEL,
+    agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.ROCKY,
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.WINDOWS,
 )
 

@@ -5658,6 +5658,12 @@
           "description": "Optional. The time in seconds after which this DebugSession should end. This value will override the value in query param, if both are provided.",
           "type": "string",
           "format": "int64"
+        },
+        "createTime": {
+          "description": "Output only. The first transaction creation timestamp, recorded by UAP.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -5688,7 +5694,7 @@
           "type": "string"
         },
         "timestampMs": {
-          "description": "The first transaction creation timestamp in millisecond, recoreded by UAP.",
+          "description": "The first transaction creation timestamp in millisecond, recorded by UAP.",
           "type": "string",
           "format": "int64"
         }

@@ -538,7 +538,7 @@ def StoreEnvironmentState(environment_ref,
 
 def LoadEnvironmentState(environment_ref,
                          skip_pypi_packages_installation,
-                         snapshot_location,
+                         snapshot_path,
                          release_track=base.ReleaseTrack.ALPHA):
   """Calls the Composer Environments.LoadEnvironmentState method.
 
@@ -547,7 +547,7 @@ def LoadEnvironmentState(environment_ref,
       state for.
     skip_pypi_packages_installation: skip installing the pypi packages during
       the operation
-    snapshot_location: location of the snapshots to load the state of the
+    snapshot_path: path of the specific snapshot to load the state of the
       environment.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
       which Composer client library will be used.
@@ -560,8 +560,7 @@ def LoadEnvironmentState(environment_ref,
       environment=environment_ref.RelativeName(),
       loadEnvironmentStateRequest=message_module.LoadEnvironmentStateRequest(
           skipPypiPackagesInstallation=skip_pypi_packages_installation,
-          snapshotLocation=snapshot_location
-          ))
+          snapshotPath=snapshot_path))
   return GetService(
       release_track=release_track).LoadEnvironmentState(request_message)
 

@@ -390,6 +390,40 @@
         }
       }
     },
+    "ListAddressGroupReferencesResponse": {
+      "id": "ListAddressGroupReferencesResponse",
+      "description": "Response of the ListAddressGroupReferences method.",
+      "type": "object",
+      "properties": {
+        "addressGroupReferences": {
+          "description": "A list of references that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "ListAddressGroupReferencesResponseAddressGroupReference"
+          }
+        },
+        "nextPageToken": {
+          "description": "If there might be more results than those appearing in this response, then `next_page_token` is included. To get the next set of results, call this method again using the value of `next_page_token` as `page_token`.",
+          "type": "string"
+        }
+      }
+    },
+    "ListAddressGroupReferencesResponseAddressGroupReference": {
+      "id": "ListAddressGroupReferencesResponseAddressGroupReference",
+      "description": "The Reference of AddressGroup.",
+      "type": "object",
+      "properties": {
+        "firewallPolicy": {
+          "description": "FirewallPolicy that is using the Address Group.",
+          "type": "string"
+        },
+        "rulePriority": {
+          "description": "Rule priority of the FirewallPolicy that is using the Address Group.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "ListAuthorizationPoliciesResponse": {
       "id": "ListAuthorizationPoliciesResponse",
       "description": "Response returned by the ListAuthorizationPolicies method.",
@@ -1436,6 +1470,42 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a single AddressGroup."
+                },
+                "listReferences": {
+                  "id": "networksecurity.projects.locations.addressGroups.listReferences",
+                  "path": "v1alpha1/{+addressGroup}:listReferences",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:listReferences",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "addressGroup": {
+                      "description": "Required. A name of the AddressGroup to clone items to. Must be in the format `projects|organization\/*\/locations\/{location}\/addressGroups\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of references to return. If unspecified, server will pick an appropriate default. Server may return fewer items than requested. A caller should only rely on response's next_page_token to determine if there are more AddressGroupUsers left to be queried.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The next_page_token value returned from a previous List request, if any.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "addressGroup"
+                  ],
+                  "response": {
+                    "$ref": "ListAddressGroupReferencesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists references of the AddressGroup."
                 },
                 "setIamPolicy": {
                   "id": "networksecurity.projects.locations.addressGroups.setIamPolicy",
@@ -2642,6 +2712,42 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a single AddressGroup."
+                },
+                "listReferences": {
+                  "id": "networksecurity.organizations.locations.addressGroups.listReferences",
+                  "path": "v1alpha1/{+addressGroup}:listReferences",
+                  "flatPath": "v1alpha1/organizations/{organizationsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:listReferences",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "addressGroup": {
+                      "description": "Required. A name of the AddressGroup to clone items to. Must be in the format `projects|organization\/*\/locations\/{location}\/addressGroups\/*`.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of references to return. If unspecified, server will pick an appropriate default. Server may return fewer items than requested. A caller should only rely on response's next_page_token to determine if there are more AddressGroupUsers left to be queried.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The next_page_token value returned from a previous List request, if any.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "addressGroup"
+                  ],
+                  "response": {
+                    "$ref": "ListAddressGroupReferencesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists references of the AddressGroup."
                 }
               }
             }

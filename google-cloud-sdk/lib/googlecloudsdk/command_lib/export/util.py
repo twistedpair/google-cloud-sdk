@@ -76,7 +76,7 @@ def AddImportFlags(parser, schema_path=None):
     if '$CLOUDSDKROOT' in schema_path:
       help_text += """
 
-      Note: $CLOUDSDKROOT represents the Cloud SDK's installation directory.
+      Note: $CLOUDSDKROOT represents the Google Cloud CLI's installation directory.
       """
 
   parser.add_argument(

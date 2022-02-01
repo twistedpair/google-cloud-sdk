@@ -92,42 +92,42 @@ _WORKER_POOL_SPEC = base.Argument(
 
       The spec can contain the following fields:
 
-      *machine-type*:::(Required): The type of the machine.
+      *machine-type*::: (Required): The type of the machine.
         see https://cloud.google.com/vertex-ai/docs/training/configure-compute#machine-types
         for supported types. This is corresponding to the `machineSpec.machineType`
         field in `WorkerPoolSpec` API message.
-      *replica-count*:::The number of worker replicas to use for this worker
+      *replica-count*::: The number of worker replicas to use for this worker
         pool, by default the value is 1. This is corresponding to the `replicaCount`
         field in `WorkerPoolSpec` API message.
-      *accelerator-type*:::The type of GPUs.
+      *accelerator-type*::: The type of GPUs.
         see https://cloud.google.com/vertex-ai/docs/training/configure-compute#specifying_gpus
         for more requirements. This is corresponding to the `machineSpec.acceleratorType`
         field in `WorkerPoolSpec` API message.
-      *accelerator-count*:::The number of GPUs for each VM in the worker pool to
+      *accelerator-count*::: The number of GPUs for each VM in the worker pool to
         use, by default the value if 1. This is corresponding to the
         `machineSpec.acceleratorCount` field in `WorkerPoolSpec` API message.
-      *container-image-uri*:::The URI of a container image to be directly run on
+      *container-image-uri*::: The URI of a container image to be directly run on
         each worker replica. This is corresponding to the
         `containerSpec.imageUri` field in `WorkerPoolSpec` API message.
-      *executor-image-uri*:::The URI of a container image that will run the
+      *executor-image-uri*::: The URI of a container image that will run the
         provided package.
-      *python-module*:::The Python module name to run within the provided
+      *python-module*::: The Python module name to run within the provided
         package.
-      *local-package-path*:::The local path of a folder that contains training
+      *local-package-path*::: The local path of a folder that contains training
         code.
-      *script*:::The relative path under the `local-package-path` to a file to
+      *script*::: The relative path under the `local-package-path` to a file to
         execute. It can be a Python file or an arbitrary bash script.
-      *requirements*:::Python dependencies to be installed from PyPI, separated
+      *requirements*::: Python dependencies to be installed from PyPI, separated
         by ";". This is supposed to be used when some public packages are
         required by your training application but not in the base images.
         It has the same effect as editing a "requirements.txt" file under
         `local-package-path`.
-      *extra-packages*:::Relative paths of local Python archives to be installed,
+      *extra-packages*::: Relative paths of local Python archives to be installed,
         separated by ";". This is supposed to be used when some custom packages
         are required by your training application but not in the base images.
         Every path should be relative to the `local-package-path`.
-      *extra-dirs*:::Relative paths of the folders under `local-package-path` to
-       be copied into the container, separated by ";". If not specified, only
+      *extra-dirs*::: Relative paths of the folders under `local-package-path`
+       to be copied into the container, separated by ";". If not specified, only
        the parent directory that contains the main executable (`script` or
        `python-module`) will be copied.
 

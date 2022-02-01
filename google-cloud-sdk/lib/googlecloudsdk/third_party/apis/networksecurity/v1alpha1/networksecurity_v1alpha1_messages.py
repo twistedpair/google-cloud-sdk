@@ -651,6 +651,35 @@ class HttpHeaderMatch(_messages.Message):
   regexMatch = _messages.StringField(2)
 
 
+class ListAddressGroupReferencesResponse(_messages.Message):
+  r"""Response of the ListAddressGroupReferences method.
+
+  Fields:
+    addressGroupReferences: A list of references that matches the specified
+      filter in the request.
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+  """
+
+  addressGroupReferences = _messages.MessageField('ListAddressGroupReferencesResponseAddressGroupReference', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListAddressGroupReferencesResponseAddressGroupReference(_messages.Message):
+  r"""The Reference of AddressGroup.
+
+  Fields:
+    firewallPolicy: FirewallPolicy that is using the Address Group.
+    rulePriority: Rule priority of the FirewallPolicy that is using the
+      Address Group.
+  """
+
+  firewallPolicy = _messages.StringField(1)
+  rulePriority = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class ListAddressGroupsResponse(_messages.Message):
   r"""Response returned by the ListAddressGroups method.
 
@@ -926,6 +955,28 @@ class NetworksecurityOrganizationsLocationsAddressGroupsGetRequest(_messages.Mes
   name = _messages.StringField(1, required=True)
 
 
+class NetworksecurityOrganizationsLocationsAddressGroupsListReferencesRequest(_messages.Message):
+  r"""A
+  NetworksecurityOrganizationsLocationsAddressGroupsListReferencesRequest
+  object.
+
+  Fields:
+    addressGroup: Required. A name of the AddressGroup to clone items to. Must
+      be in the format
+      `projects|organization/*/locations/{location}/addressGroups/*`.
+    pageSize: The maximum number of references to return. If unspecified,
+      server will pick an appropriate default. Server may return fewer items
+      than requested. A caller should only rely on response's next_page_token
+      to determine if there are more AddressGroupUsers left to be queried.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+  """
+
+  addressGroup = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
 class NetworksecurityOrganizationsLocationsAddressGroupsListRequest(_messages.Message):
   r"""A NetworksecurityOrganizationsLocationsAddressGroupsListRequest object.
 
@@ -1158,6 +1209,27 @@ class NetworksecurityProjectsLocationsAddressGroupsGetRequest(_messages.Message)
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsListReferencesRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsListReferencesRequest
+  object.
+
+  Fields:
+    addressGroup: Required. A name of the AddressGroup to clone items to. Must
+      be in the format
+      `projects|organization/*/locations/{location}/addressGroups/*`.
+    pageSize: The maximum number of references to return. If unspecified,
+      server will pick an appropriate default. Server may return fewer items
+      than requested. A caller should only rely on response's next_page_token
+      to determine if there are more AddressGroupUsers left to be queried.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+  """
+
+  addressGroup = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
 
 
 class NetworksecurityProjectsLocationsAddressGroupsListRequest(_messages.Message):

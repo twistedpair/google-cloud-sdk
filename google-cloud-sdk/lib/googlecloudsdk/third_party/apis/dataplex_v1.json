@@ -322,7 +322,7 @@
           "$ref": "GoogleCloudDataplexV1EntityCompatibilityStatus"
         },
         "schema": {
-          "description": "Required. The description of the data structure and layout. The schema is not included in list responses. It is only included in SCHEMA and FULL entity views of a get entity response.",
+          "description": "Required. The description of the data structure and layout. The schema is not included in list responses. It is only included in SCHEMA and FULL entity views of a GetEntity response.",
           "$ref": "GoogleCloudDataplexV1Schema"
         }
       }
@@ -343,11 +343,11 @@
             "Orc-formatted structured data.",
             "Csv-formatted semi-structured data.",
             "Json-formatted semi-structured data.",
-            "Image data formats (such as jpg and png)",
-            "Audio data formats (such as mp3, and wav)",
-            "Video data formats (such as mp4 and mpg)",
-            "Textual data formats (such as txt and xml)",
-            "TensorFlow record format",
+            "Image data formats (such as jpg and png).",
+            "Audio data formats (such as mp3, and wav).",
+            "Video data formats (such as mp4 and mpg).",
+            "Textual data formats (such as txt and xml).",
+            "TensorFlow record format.",
             "Data that doesn't match a specific format.",
             "Data of an unknown format."
           ],
@@ -421,7 +421,7 @@
     },
     "GoogleCloudDataplexV1StorageFormatJsonOptions": {
       "id": "GoogleCloudDataplexV1StorageFormatJsonOptions",
-      "description": "Describes JSON data format",
+      "description": "Describes JSON data format.",
       "type": "object",
       "properties": {
         "encoding": {
@@ -786,7 +786,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The relative resource name of the lake, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}",
+          "description": "Output only. The relative resource name of the lake, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}.",
           "readOnly": true,
           "type": "string"
         },
@@ -985,7 +985,7 @@
           "description": "The category of issue associated with the action.",
           "type": "string",
           "enumDescriptions": [
-            "Unspecified category",
+            "Unspecified category.",
             "Resource management related issues.",
             "Security policy related issues.",
             "Data and discovery related issues."
@@ -1007,27 +1007,27 @@
           "format": "google-datetime"
         },
         "name": {
-          "description": "Output only. The relative resource name of the action, of the form: projects\/{project}\/locations\/{location}\/lakes\/{lake}\/actions\/{action} projects\/{project}\/locations\/{location}\/lakes\/{lake}\/zones\/{zone}\/actions\/{action} projects\/{project}\/locations\/{location}\/lakes\/{lake}\/zones\/{zone}\/assets\/{asset}\/actions\/{action}",
+          "description": "Output only. The relative resource name of the action, of the form: projects\/{project}\/locations\/{location}\/lakes\/{lake}\/actions\/{action} projects\/{project}\/locations\/{location}\/lakes\/{lake}\/zones\/{zone}\/actions\/{action} projects\/{project}\/locations\/{location}\/lakes\/{lake}\/zones\/{zone}\/assets\/{asset}\/actions\/{action}.",
           "readOnly": true,
           "type": "string"
         },
         "lake": {
-          "description": "Output only. The relative resource name of the lake, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}",
+          "description": "Output only. The relative resource name of the lake, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}.",
           "readOnly": true,
           "type": "string"
         },
         "zone": {
-          "description": "Output only. The relative resource name of the zone, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}",
+          "description": "Output only. The relative resource name of the zone, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}.",
           "readOnly": true,
           "type": "string"
         },
         "asset": {
-          "description": "Output only. The relative resource name of the asset, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/assets\/{asset_id}",
+          "description": "Output only. The relative resource name of the asset, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/assets\/{asset_id}.",
           "readOnly": true,
           "type": "string"
         },
         "dataLocations": {
-          "description": "The list of data locations associated with this action. Cloud Storage locations are represented as URI paths(E.g. gs:\/\/bucket\/table1\/year=2020\/month=Jan\/). BigQuery locations refer to resource names(E.g. \/\/bigquery.googleapis.com\/projects\/project-id\/datasets\/dataset-id).",
+          "description": "The list of data locations associated with this action. Cloud Storage locations are represented as URI paths(E.g. gs:\/\/bucket\/table1\/year=2020\/month=Jan\/). BigQuery locations refer to resource names(E.g. bigquery.googleapis.com\/projects\/project-id\/datasets\/dataset-id).",
           "type": "array",
           "items": {
             "type": "string"
@@ -1195,7 +1195,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The relative resource name of the zone, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}",
+          "description": "Output only. The relative resource name of the zone, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}.",
           "readOnly": true,
           "type": "string"
         },
@@ -1400,7 +1400,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The relative resource name of the asset, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/assets\/{asset_id}",
+          "description": "Output only. The relative resource name of the asset, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/assets\/{asset_id}.",
           "readOnly": true,
           "type": "string"
         },
@@ -1486,7 +1486,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Immutable. Relative name of the cloud resource that contains the data that is being managed within a lake. For example: projects\/{project_number}\/buckets\/{bucket_id} projects\/{project_number}\/datasets\/{dataset_id} If the creation policy indicates ATTACH behavior, then an existing resource must be provided. If the policy indicates CREATE behavior, new resource will be created with the given name.However if it is empty, nthen the resource will be created using {asset_id}-{UUID} template for name. The location of the referenced resource must always match that of the asset.",
+          "description": "Immutable. Relative name of the cloud resource that contains the data that is being managed within a lake. For example: projects\/{project_number}\/buckets\/{bucket_id} projects\/{project_number}\/datasets\/{dataset_id} If the creation policy indicates ATTACH behavior, then an existing resource must be provided. If the policy indicates CREATE behavior, new resource will be created with the given name.However if it is empty, then the resource will be created using {asset_id}-{UUID} template for name. The location of the referenced resource must always match that of the asset.",
           "type": "string"
         },
         "type": {
@@ -1655,7 +1655,7 @@
             "State is unspecified.",
             "Discovery for the asset is scheduled.",
             "Discovery for the asset is running.",
-            "Discovery for the asset is currently paused--for example due to a lack of available resources. It will be automatically resumed.",
+            "Discovery for the asset is currently paused (e.g. due to a lack of available resources). It will be automatically resumed.",
             "Discovery for the asset is disabled."
           ],
           "enum": [
@@ -2098,7 +2098,7 @@
           ]
         },
         "retryCount": {
-          "description": "Output only. TODO (saurabhmaurya): Use int32 instead of uint32. The number of times the job has been retried (excluding the initial attempt).",
+          "description": "Output only. . The number of times the job has been retried (excluding the initial attempt).",
           "readOnly": true,
           "type": "integer",
           "format": "uint32"
@@ -2293,6 +2293,10 @@
           "description": "Optional. The idle time configuration of the session. The session will be auto-terminated at the end of this period.",
           "type": "string",
           "format": "google-duration"
+        },
+        "enableFastStartup": {
+          "description": "Optional. If True, this causes sessions to be pre-created and available for faster startup to enable interactive exploration use-cases. This defaults to False to avoid additional billed charges. These can only be set to True for the environment with name set to \"default\", and with default configuration.",
+          "type": "boolean"
         }
       }
     },
@@ -2664,6 +2668,152 @@
         }
       }
     },
+    "GoogleCloudDataplexV1DiscoveryEvent": {
+      "id": "GoogleCloudDataplexV1DiscoveryEvent",
+      "description": "The payload associated with Discovery data processing.",
+      "type": "object",
+      "properties": {
+        "message": {
+          "description": "The log message.",
+          "type": "string"
+        },
+        "lakeId": {
+          "description": "The id of the associated lake.",
+          "type": "string"
+        },
+        "zoneId": {
+          "description": "The id of the associated zone.",
+          "type": "string"
+        },
+        "assetId": {
+          "description": "The id of the associated asset.",
+          "type": "string"
+        },
+        "dataLocation": {
+          "description": "The data location associated with the event.",
+          "type": "string"
+        },
+        "type": {
+          "description": "The type of the event being logged.",
+          "type": "string",
+          "enumDescriptions": [
+            "An unspecified event type.",
+            "An event representing discovery configuration in effect.",
+            "An event representing a metadata entity being created.",
+            "An event representing a metadata entity being updated.",
+            "An event representing a metadata entity being deleted.",
+            "An event representing a partition being created.",
+            "An event representing a partition being updated.",
+            "An event representing a partition being deleted."
+          ],
+          "enum": [
+            "EVENT_TYPE_UNSPECIFIED",
+            "CONFIG",
+            "ENTITY_CREATED",
+            "ENTITY_UPDATED",
+            "ENTITY_DELETED",
+            "PARTITION_CREATED",
+            "PARTITION_UPDATED",
+            "PARTITION_DELETED"
+          ]
+        },
+        "config": {
+          "description": "Details about discovery configuration in effect.",
+          "$ref": "GoogleCloudDataplexV1DiscoveryEventConfigDetails"
+        },
+        "entity": {
+          "description": "Details about the entity associated with the event.",
+          "$ref": "GoogleCloudDataplexV1DiscoveryEventEntityDetails"
+        },
+        "partition": {
+          "description": "Details about the partition associated with the event.",
+          "$ref": "GoogleCloudDataplexV1DiscoveryEventPartitionDetails"
+        },
+        "action": {
+          "description": "Details about the action associated with the event.",
+          "$ref": "GoogleCloudDataplexV1DiscoveryEventActionDetails"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1DiscoveryEventConfigDetails": {
+      "id": "GoogleCloudDataplexV1DiscoveryEventConfigDetails",
+      "description": "Details about configuration events.",
+      "type": "object",
+      "properties": {
+        "parameters": {
+          "description": "A list of discovery configuration parameters in effect. The keys are the field paths within DiscoverySpec. Eg. includePatterns, excludePatterns, csvOptions.disableTypeInference, etc.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudDataplexV1DiscoveryEventEntityDetails": {
+      "id": "GoogleCloudDataplexV1DiscoveryEventEntityDetails",
+      "description": "Details about the entity.",
+      "type": "object",
+      "properties": {
+        "entity": {
+          "description": "The name of the entity resource. The name is the fully-qualified resource name.",
+          "type": "string"
+        },
+        "type": {
+          "description": "The type of the entity resource.",
+          "type": "string",
+          "enumDescriptions": [
+            "An unspecified event type.",
+            "Entities representing structured data.",
+            "Entities representing unstructured data."
+          ],
+          "enum": [
+            "ENTITY_TYPE_UNSPECIFIED",
+            "TABLE",
+            "FILESET"
+          ]
+        }
+      }
+    },
+    "GoogleCloudDataplexV1DiscoveryEventPartitionDetails": {
+      "id": "GoogleCloudDataplexV1DiscoveryEventPartitionDetails",
+      "description": "Details about the partition.",
+      "type": "object",
+      "properties": {
+        "partition": {
+          "description": "The name to the partition resource. The name is the fully-qualified resource name.",
+          "type": "string"
+        },
+        "entity": {
+          "description": "The name to the containing entity resource. The name is the fully-qualified resource name.",
+          "type": "string"
+        },
+        "type": {
+          "description": "The type of the containing entity resource.",
+          "type": "string",
+          "enumDescriptions": [
+            "An unspecified event type.",
+            "Entities representing structured data.",
+            "Entities representing unstructured data."
+          ],
+          "enum": [
+            "ENTITY_TYPE_UNSPECIFIED",
+            "TABLE",
+            "FILESET"
+          ]
+        }
+      }
+    },
+    "GoogleCloudDataplexV1DiscoveryEventActionDetails": {
+      "id": "GoogleCloudDataplexV1DiscoveryEventActionDetails",
+      "description": "Details about the action.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The type of action. Eg. IncompatibleDataSchema, InvalidDataFormat",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudDataplexV1JobEvent": {
       "id": "GoogleCloudDataplexV1JobEvent",
       "description": "The payload associated with Job logs that contains events describing jobs that have run within a Lake.",
@@ -2739,6 +2889,89 @@
         "serviceJob": {
           "description": "The reference to the job within the service.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1SessionEvent": {
+      "id": "GoogleCloudDataplexV1SessionEvent",
+      "description": "These messages contain information about sessions within an environment. The monitored resource is 'Environment'.",
+      "type": "object",
+      "properties": {
+        "message": {
+          "description": "The log message.",
+          "type": "string"
+        },
+        "userId": {
+          "description": "The information about the user that created the session.",
+          "type": "string"
+        },
+        "sessionId": {
+          "description": "Unique identifier for the session.",
+          "type": "string"
+        },
+        "type": {
+          "description": "The type of the event.",
+          "type": "string",
+          "enumDescriptions": [
+            "An unspecified event type.",
+            "Event for start of a session.",
+            "Event for stop of a session.",
+            "Query events in the session."
+          ],
+          "enum": [
+            "EVENT_TYPE_UNSPECIFIED",
+            "START",
+            "STOP",
+            "QUERY"
+          ]
+        },
+        "query": {
+          "description": "The execution details of the query.",
+          "$ref": "GoogleCloudDataplexV1SessionEventQueryDetail"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1SessionEventQueryDetail": {
+      "id": "GoogleCloudDataplexV1SessionEventQueryDetail",
+      "description": "Execution details of the query.",
+      "type": "object",
+      "properties": {
+        "queryId": {
+          "description": "The unique Query id identifying the query.",
+          "type": "string"
+        },
+        "queryText": {
+          "description": "The query text executed.",
+          "type": "string"
+        },
+        "engine": {
+          "description": "Query Execution engine.",
+          "type": "string",
+          "enumDescriptions": [
+            "An unspecified Engine type.",
+            "Spark-sql engine is specified in Query.",
+            "BigQuery engine is specified in Query."
+          ],
+          "enum": [
+            "ENGINE_UNSPECIFIED",
+            "SPARK_SQL",
+            "BIGQUERY"
+          ]
+        },
+        "duration": {
+          "description": "Time taken for execution of the query.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "resultSizeBytes": {
+          "description": "The size of results the query produced.",
+          "type": "string",
+          "format": "int64"
+        },
+        "dataProcessedBytes": {
+          "description": "The data processed by the query.",
+          "type": "string",
+          "format": "int64"
         }
       }
     }
@@ -2987,7 +3220,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Output only. The relative resource name of the lake, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}",
+                      "description": "Output only. The relative resource name of the lake, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -3474,7 +3707,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Output only. The relative resource name of the zone, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}",
+                          "description": "Output only. The relative resource name of the zone, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/zones\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3829,7 +4062,7 @@
                               "httpMethod": "GET",
                               "parameters": {
                                 "parent": {
-                                  "description": "Required. The resource name of the parent entity: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/entities\/{entity_id}`.",
+                                  "description": "Required. The resource name of the parent entity: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/entities\/{entity_id}.",
                                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/zones\/[^\/]+\/entities\/[^\/]+$",
                                   "location": "path",
                                   "required": true,
@@ -3954,7 +4187,7 @@
                           "httpMethod": "PATCH",
                           "parameters": {
                             "name": {
-                              "description": "Output only. The relative resource name of the asset, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/assets\/{asset_id}",
+                              "description": "Output only. The relative resource name of the asset, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/assets\/{asset_id}.",
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/zones\/[^\/]+\/assets\/[^\/]+$",
                               "location": "path",
                               "required": true,

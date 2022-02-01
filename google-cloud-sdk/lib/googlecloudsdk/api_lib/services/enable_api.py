@@ -32,7 +32,7 @@ def IsServiceEnabled(project_id, service_name):
     service_name: The name of the service.
 
   Raises:
-    exceptions.GetServicesPermissionDeniedException: if a 403 or 404
+    exceptions.GetServicePermissionDeniedException: if a 403 or 404
         error is returned by the Get request.
     apitools_exceptions.HttpError: Another miscellaneous error with the listing
         service.

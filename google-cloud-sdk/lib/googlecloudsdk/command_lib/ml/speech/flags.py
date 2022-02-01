@@ -161,6 +161,10 @@ class RecognizeArgsToRequestMapper:
         help='If True, the server will attempt to filter out profanities, '
         'replacing all but the initial character in each filtered word with '
         'asterisks, e.g. \"f***\".')
+    parser.add_argument(
+        '--enable-automatic-punctuation',
+        action='store_true',
+        help='Adds punctuation to recognition result hypotheses.')
 
   def MakeRecognitionConfig(self, args, messages):
     """Make RecognitionConfig message from given arguments."""
@@ -176,6 +180,8 @@ class RecognizeArgsToRequestMapper:
         enableSeparateRecognitionPerChannel=args.separate_channel_recognition,
         profanityFilter=args.filter_profanity,
         speechContexts=[messages.SpeechContext(phrases=args.hints)])
+    if args.enable_automatic_punctuation:
+      config.enableAutomaticPunctuation = args.enable_automatic_punctuation
     if args.model is not None:
       if args.model in ['default', 'command_and_search', 'phone_call']:
         config.model = args.model
@@ -229,15 +235,14 @@ in the most likely language detected including the main language-code.""")
 
   def AddAlphaRecognizeArgsToParser(self, parser, api_version):
     """Add alpha arguments."""
-    parser.add_argument(
-        '--enable-automatic-punctuation',
-        action='store_true',
-        help='Adds punctuation to recognition result hypotheses.')
-
     meta_args = parser.add_group(
-        required=False, help='Description of audio data to be recognized.')
+        required=False,
+        help='Description of audio data to be recognized. '
+        'Note that the Google Cloud Speech-to-text-api does not use this '
+        'information, and only passes it through back into response.')
     meta_args.add_argument(
         '--naics-code',
+        action=MakeDeprecatedRecgonitionFlagAction('naics-code'),
         type=int,
         help='The industry vertical to which this speech recognition request '
         'most closely applies.')
@@ -252,20 +257,22 @@ in the most likely language detected including the main language-code.""")
     self._device_type_mapper.choice_arg.AddToParser(meta_args)
     meta_args.add_argument(
         '--recording-device-name',
+        action=MakeDeprecatedRecgonitionFlagAction('recording-device-name'),
         help='The device used to make the recording.  Examples: `Nexus 5X`, '
         '`Polycom SoundStation IP 6000`')
     meta_args.add_argument(
         '--original-mime-type',
+        action=MakeDeprecatedRecgonitionFlagAction('original-mime-type'),
         help='Mime type of the original audio file. Examples: `audio/m4a`, '
         ' `audio/mp3`.')
     meta_args.add_argument(
         '--audio-topic',
+        action=MakeDeprecatedRecgonitionFlagAction('audio-topic'),
         help='Description of the content, e.g. "Recordings of federal supreme '
         'court hearings from 2012".')
 
   def UpdateAlphaArgsInRecognitionConfig(self, args, config):
     """Update RecognitionConfig with args."""
-    config.enableAutomaticPunctuation = args.enable_automatic_punctuation
     if (args.interaction_type is not None or
         args.original_media_type is not None or args.naics_code is not None or
         args.microphone_distance is not None or
@@ -290,11 +297,20 @@ in the most likely language detected including the main language-code.""")
       config.metadata.audioTopic = args.audio_topic
 
 
+def MakeDeprecatedRecgonitionFlagAction(flag_name):
+  return actions.DeprecationAction(
+      '--' + flag_name,
+      warn='The `{}` flag is deprecated and will be removed. '
+      'The Google Cloud Speech-to-text api does not use it, and only '
+      'passes it through back into response.'.format(flag_name))
+
+
 def GetRecordingDeviceTypeMapper(version):
   messages = apis.GetMessagesModule(util.SPEECH_API, version)
   return arg_utils.ChoiceEnumMapper(
       '--recording-device-type',
       messages.RecognitionMetadata.RecordingDeviceTypeValueValuesEnum,
+      action=MakeDeprecatedRecgonitionFlagAction('recording-device-type'),
       custom_mappings={
           'SMARTPHONE': ('smartphone', 'Speech was recorded on a smartphone.'),
           'PC': ('pc',
@@ -315,6 +331,7 @@ def GetMicrophoneDistanceTypeMapper(version):
   return arg_utils.ChoiceEnumMapper(
       '--microphone-distance',
       messages.RecognitionMetadata.MicrophoneDistanceValueValuesEnum,
+      action=MakeDeprecatedRecgonitionFlagAction('microphone-distance'),
       custom_mappings={
           'NEARFIELD': ('nearfield', """\
 The audio was captured from a microphone close to the speaker, generally within
@@ -335,6 +352,7 @@ def GetInteractionTypeMapper(version):
   return arg_utils.ChoiceEnumMapper(
       '--interaction-type',
       messages.RecognitionMetadata.InteractionTypeValueValuesEnum,
+      action=MakeDeprecatedRecgonitionFlagAction('interaction-type'),
       custom_mappings={
           'DICTATION': (
               'dictation',
@@ -371,6 +389,7 @@ def GetOriginalMediaTypeMapper(version):
   return arg_utils.ChoiceEnumMapper(
       '--original-media-type',
       messages.RecognitionMetadata.OriginalMediaTypeValueValuesEnum,
+      action=MakeDeprecatedRecgonitionFlagAction('original-media-type'),
       custom_mappings={
           'AUDIO': ('audio', 'The speech data is an audio recording.'),
           'VIDEO': ('video', 'The speech data originally recorded on a video.'),

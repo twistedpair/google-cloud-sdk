@@ -33,6 +33,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute.instances import flags as instances_flags
 from googlecloudsdk.command_lib.dataproc import flags
 from googlecloudsdk.command_lib.kms import resource_args as kms_resource_args
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -47,6 +48,7 @@ GENERATED_LABEL_PREFIX = 'goog-dataproc-'
 # beta is unused but still useful when we add new beta features
 # pylint: disable=unused-argument
 def ArgsForClusterRef(parser,
+                      dataproc,
                       beta=False,
                       include_deprecated=True,
                       include_ttl_config=False,
@@ -55,6 +57,7 @@ def ArgsForClusterRef(parser,
 
   Args:
     parser: The argparse.ArgParser to configure with dataproc cluster arguments.
+    dataproc: Dataproc object that contains client, messages, and resources.
     beta: whether or not this is a beta command (may affect flag visibility)
     include_deprecated: whether deprecated flags should be included
     include_ttl_config: whether to include Scheduled Delete(TTL) args
@@ -457,6 +460,17 @@ If you want to enable all scopes use the 'cloud-platform' scope.
 
   _AddAcceleratorArgs(parser)
 
+  if not beta:
+    parser.add_argument(
+        '--metric-sources',
+        metavar='METRIC_SOURCES',
+        type=arg_parsers.ArgList(
+            arg_utils.ChoiceToEnumName,
+            choices=_GetValidMetricSourceChoices(dataproc)),
+        hidden=True,
+        help='Specifies a list of Metric Sources to collect custom '
+        'metrics from the cluster.')
+
   AddReservationAffinityGroup(
       gce_platform_group,
       group_text='Specifies the reservation for the instance.',
@@ -484,6 +498,15 @@ If you want to enable all scopes use the 'cloud-platform' scope.
             Optional. Specify the name of the namespace to deploy Dataproc system
             components into. This namespace does not need to already exist.
             """)
+
+
+def _GetValidMetricSourceChoices(dataproc):
+  metric_sources_enum = dataproc.messages.Metric.MetricSourceValueValuesEnum
+  return [
+      arg_utils.ChoiceToEnumName(n)
+      for n in metric_sources_enum.names()
+      if n != 'METRIC_SOURCE_UNSPECIFIED'
+  ]
 
 
 def _AddAcceleratorArgs(parser):
@@ -837,8 +860,7 @@ def GetClusterConfig(args,
       else:
         kerberos_config.enableKerberos = True
       if args.kerberos_root_principal_password_uri:
-        kerberos_config.rootPrincipalPasswordUri = \
-          args.kerberos_root_principal_password_uri
+        kerberos_config.rootPrincipalPasswordUri = args.kerberos_root_principal_password_uri
         kerberos_kms_ref = args.CONCEPTS.kerberos_kms_key.Parse()
         if kerberos_kms_ref:
           kerberos_config.kmsKeyUri = kerberos_kms_ref.RelativeName()
@@ -969,6 +991,16 @@ def GetClusterConfig(args,
       cluster_config.workerConfig = None
       cluster_config.secondaryWorkerConfig = None
 
+  if not beta and args.metric_sources:
+    cluster_config.dataprocMetricConfig = (
+        dataproc.messages.DataprocMetricConfig(metrics=[]))
+
+    for metric_source in args.metric_sources:
+      cluster_config.dataprocMetricConfig.metrics.append(
+          dataproc.messages.Metric(
+              metricSource=arg_utils.ChoiceToEnum(
+                  metric_source,
+                  dataproc.messages.Metric.MetricSourceValueValuesEnum)))
   return cluster_config
 
 
@@ -1217,8 +1249,7 @@ def ValidateReservationAffinityGroup(args):
 def GetReservationAffinity(args, client):
   """Returns the message of reservation affinity for the instance."""
   if args.IsSpecified('reservation_affinity'):
-    type_msgs = client.messages.ReservationAffinity\
-      .ConsumeReservationTypeValueValuesEnum
+    type_msgs = client.messages.ReservationAffinity.ConsumeReservationTypeValueValuesEnum
 
     reservation_key = None
     reservation_values = []
@@ -1268,11 +1299,12 @@ def AddKerberosGroup(parser):
         principal password. Must be a Cloud Storage URL beginning with 'gs://'.
         """)
   # Add kerberos-kms-key args
-  kerberos_kms_flag_overrides = \
-      {'kms-key': '--kerberos-kms-key',
-       'kms-keyring': '--kerberos-kms-key-keyring',
-       'kms-location': '--kerberos-kms-key-location',
-       'kms-project': '--kerberos-kms-key-project'}
+  kerberos_kms_flag_overrides = {
+      'kms-key': '--kerberos-kms-key',
+      'kms-keyring': '--kerberos-kms-key-keyring',
+      'kms-location': '--kerberos-kms-key-location',
+      'kms-project': '--kerberos-kms-key-project'
+  }
   kms_resource_args.AddKmsKeyResourceArg(
       kerberos_flag_group,
       'password',

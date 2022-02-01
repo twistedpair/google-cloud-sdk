@@ -3034,10 +3034,6 @@ class HybridPoolConfig(_messages.Message):
     BuilderImageCachingValueValuesEnum: Immutable. Controls how the worker
       pool caches images. If unspecified during worker pool creation, this
       field is defaulted to CACHING_DISABLED.
-    DockerSecurityPolicyValueValuesEnum: Immutable. Specify the security
-      policy for the hybrid worker pool. Once created, this setting cannot be
-      changed on the hybrid worker pool, as we are unable to guarantee that
-      the cluster has not been altered by misuse of privileged Docker daemon.
 
   Fields:
     builderImageCaching: Immutable. Controls how the worker pool caches
@@ -3045,10 +3041,6 @@ class HybridPoolConfig(_messages.Message):
       defaulted to CACHING_DISABLED.
     defaultWorkerConfig: Default settings which will be applied to builds on
       this worker pool if they are not specified in the build request.
-    dockerSecurityPolicy: Immutable. Specify the security policy for the
-      hybrid worker pool. Once created, this setting cannot be changed on the
-      hybrid worker pool, as we are unable to guarantee that the cluster has
-      not been altered by misuse of privileged Docker daemon.
     membership: Required. Immutable. The Anthos/GKE Hub membership of the
       cluster which will run the actual build operations. Example:
       projects/{project}/locations/{location}/memberships/{cluster_name}
@@ -3069,29 +3061,9 @@ class HybridPoolConfig(_messages.Message):
     CACHING_DISABLED = 1
     VOLUME_CACHING = 2
 
-  class DockerSecurityPolicyValueValuesEnum(_messages.Enum):
-    r"""Immutable. Specify the security policy for the hybrid worker pool.
-    Once created, this setting cannot be changed on the hybrid worker pool, as
-    we are unable to guarantee that the cluster has not been altered by misuse
-    of privileged Docker daemon.
-
-    Values:
-      DOCKER_SECURITY_POLICY_UNSPECIFIED: Unspecified - the default value will
-        be used.
-      NON_PRIVILEGED_ONLY: Users can only run builds using a non-privileged
-        Docker daemon. This is suitable for most cases.
-      PRIVILEGED_PERMITTED: Users are allowed to run builds using a privileged
-        Docker daemon. This setting should be used with caution, as using a
-        privileged Docker daemon introduces a security risk.
-    """
-    DOCKER_SECURITY_POLICY_UNSPECIFIED = 0
-    NON_PRIVILEGED_ONLY = 1
-    PRIVILEGED_PERMITTED = 2
-
   builderImageCaching = _messages.EnumField('BuilderImageCachingValueValuesEnum', 1)
   defaultWorkerConfig = _messages.MessageField('HybridWorkerConfig', 2)
-  dockerSecurityPolicy = _messages.EnumField('DockerSecurityPolicyValueValuesEnum', 3)
-  membership = _messages.StringField(4)
+  membership = _messages.StringField(3)
 
 
 class HybridWorkerConfig(_messages.Message):

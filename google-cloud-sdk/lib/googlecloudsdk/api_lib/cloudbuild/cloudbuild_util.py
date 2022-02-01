@@ -555,6 +555,8 @@ def BitbucketServerConfigFromArgs(args, update=False):
     bbs.secrets = secret_location
   if not update and args.peered_network is not None:
     bbs.peeredNetwork = args.peered_network
+  if args.IsSpecified('ssl_ca_file'):
+    bbs.sslCa = args.ssl_ca_file
   return bbs
 
 

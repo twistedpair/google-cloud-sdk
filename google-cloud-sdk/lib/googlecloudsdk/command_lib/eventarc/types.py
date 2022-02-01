@@ -57,10 +57,11 @@ _GCS_METADATA_UPDATED_TYPE = EventType(
     'google.cloud.storage.object.v1.metadataUpdated',
     'Cloud Storage: Sent when the metadata of an existing object changes.',
     'type,bucket')
-EVENT_TYPES = [
-    _AUDIT_LOG_TYPE, _PUBSUB_TYPE, _GCS_ARCHIVED_TYPE, _GCS_DELETED_TYPE,
-    _GCS_FINALIZED_TYPE, _GCS_METADATA_UPDATED_TYPE
+_STORAGE_TYPES = [
+    _GCS_ARCHIVED_TYPE, _GCS_DELETED_TYPE, _GCS_FINALIZED_TYPE,
+    _GCS_METADATA_UPDATED_TYPE
 ]
+EVENT_TYPES = [_AUDIT_LOG_TYPE, _PUBSUB_TYPE] + _STORAGE_TYPES
 
 
 def Get(name):
@@ -76,6 +77,10 @@ def IsAuditLogType(name):
 
 def IsPubsubType(name):
   return name == _PUBSUB_TYPE.name
+
+
+def IsStorageType(name):
+  return name in [t.name for t in _STORAGE_TYPES]
 
 
 def EventFiltersDictToType(event_filters):

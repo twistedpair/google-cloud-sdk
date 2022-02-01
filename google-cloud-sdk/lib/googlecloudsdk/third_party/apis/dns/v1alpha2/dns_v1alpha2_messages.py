@@ -1817,6 +1817,8 @@ class Quota(_messages.Message):
     networksPerManagedZone: Maximum allowed number of networks to which a
       privately scoped zone can be attached.
     networksPerPolicy: Maximum allowed number of networks per policy.
+    peeringZonesPerTargetNetwork: Maximum allowed number of consumer peering
+      zones per target network owned by this producer project
     policies: Maximum allowed number of policies per project.
     resourceRecordsPerRrset: Maximum allowed number of ResourceRecords per
       ResourceRecordSet.
@@ -1848,16 +1850,17 @@ class Quota(_messages.Message):
   managedZonesPerNetwork = _messages.IntegerField(8, variant=_messages.Variant.INT32)
   networksPerManagedZone = _messages.IntegerField(9, variant=_messages.Variant.INT32)
   networksPerPolicy = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  policies = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  resourceRecordsPerRrset = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  responsePolicyRulesPerResponsePolicy = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  rrsetAdditionsPerChange = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  rrsetDeletionsPerChange = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  rrsetsPerManagedZone = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  targetNameServersPerManagedZone = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  targetNameServersPerPolicy = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  totalRrdataSizePerChange = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  whitelistedKeySpecs = _messages.MessageField('DnsKeySpec', 20, repeated=True)
+  peeringZonesPerTargetNetwork = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  policies = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  resourceRecordsPerRrset = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  responsePolicyRulesPerResponsePolicy = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  rrsetAdditionsPerChange = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  rrsetDeletionsPerChange = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  rrsetsPerManagedZone = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  targetNameServersPerManagedZone = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  targetNameServersPerPolicy = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  totalRrdataSizePerChange = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  whitelistedKeySpecs = _messages.MessageField('DnsKeySpec', 21, repeated=True)
 
 
 class RRSetRoutingPolicy(_messages.Message):

@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Shared resource flags for Cloud Run commands."""
 
 from __future__ import absolute_import
@@ -27,6 +26,7 @@ import re
 from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.calliope.concepts import util as concepts_util
 from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.command_lib.run import platforms
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
@@ -108,8 +108,7 @@ class ResourcePromptFallthrough(PromptFallthrough):
   def _Prompt(self, parsed_args):
     message = self.resource_type_lower.capitalize() + ' name'
     default_name = self._DefaultNameFromArgs(parsed_args)
-    return console_io.PromptWithDefault(
-        message=message, default=default_name)
+    return console_io.PromptWithDefault(message=message, default=default_name)
 
   def _DefaultNameFromArgs(self, parsed_args):
     if getattr(parsed_args, 'image', None):
@@ -129,6 +128,12 @@ class JobPromptFallthrough(ResourcePromptFallthrough):
 
   def __init__(self):
     super(JobPromptFallthrough, self).__init__('job')
+
+
+class ExecutionPromptFallthrough(ResourcePromptFallthrough):
+
+  def __init__(self):
+    super(ExecutionPromptFallthrough, self).__init__('execution')
 
 
 class DefaultFallthrough(deps.Fallthrough):
@@ -187,26 +192,22 @@ def ServiceAttributeConfig(prompt=False):
 
 def ConfigurationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='configuration',
-      help_text='Configuration for the {resource}.')
+      name='configuration', help_text='Configuration for the {resource}.')
 
 
 def RouteAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='route',
-      help_text='Route for the {resource}.')
+      name='route', help_text='Route for the {resource}.')
 
 
 def RevisionAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='revision',
-      help_text='Revision for the {resource}.')
+      name='revision', help_text='Revision for the {resource}.')
 
 
 def DomainAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='domain',
-      help_text='Name of the domain to be mapped to.')
+      name='domain', help_text='Name of the domain to be mapped to.')
 
 
 def JobAttributeConfig(prompt=False):
@@ -220,12 +221,49 @@ def JobAttributeConfig(prompt=False):
       fallthroughs=fallthroughs)
 
 
+def ExecutionAttributeConfig(prompt=False):
+  if prompt:
+    fallthroughs = [ExecutionPromptFallthrough()]
+  else:
+    fallthroughs = []
+  return concepts.ResourceParameterAttributeConfig(
+      name='executions', help_text='Execution.', fallthroughs=fallthroughs)
+
+
+class TaskExecutionAndIndexFallthrough(deps.ArgFallthrough):
+  """Allow the user to provide --execution and --index to find a task."""
+
+  def __init__(self, arg_name, plural=False):
+    super(TaskExecutionAndIndexFallthrough, self).__init__(
+        'provide the arguments `{}`  and `index` on the command line'.format(
+            arg_name),
+        active=True,
+        plural=plural)
+    self.arg_name = arg_name
+
+  def _Call(self, parsed_args):
+    prefix = getattr(parsed_args, concepts_util.NamespaceFormat(self.arg_name),
+                     None)
+    index = getattr(parsed_args, 'index', None)
+    return '{}-{}'.format(prefix, index)
+
+
+def TaskAttributeConfig(prompt=False):
+  if prompt:
+    fallthroughs = [TaskExecutionAndIndexFallthrough('task')]
+  else:
+    fallthroughs = []
+  return concepts.ResourceParameterAttributeConfig(
+      name='tasks', help_text='Task.', fallthroughs=fallthroughs)
+
+
 class ClusterPromptFallthrough(PromptFallthrough):
   """Fall through to reading the cluster name from an interactive prompt."""
 
   def __init__(self):
-    super(ClusterPromptFallthrough, self).__init__(
-        'specify the cluster from a list of available clusters')
+    super(
+        ClusterPromptFallthrough,
+        self).__init__('specify the cluster from a list of available clusters')
 
   def _Prompt(self, parsed_args):
     """Fallthrough to reading the cluster name from an interactive prompt.
@@ -339,13 +377,11 @@ class ClusterLocationPromptFallthrough(PromptFallthrough):
       if not clusters:
         raise exceptions.ConfigurationError(
             'No cluster locations found for cluster [{}]. '
-            'Ensure your clusters have Cloud Run enabled.'
-            .format(cluster_name))
+            'Ensure your clusters have Cloud Run enabled.'.format(cluster_name))
       cluster_locations = [c.zone for c in clusters]
       idx = console_io.PromptChoice(
           cluster_locations,
-          message='GKE cluster location for [{}]:'.format(
-              cluster_name),
+          message='GKE cluster location for [{}]:'.format(cluster_name),
           cancel_option=True)
       location = cluster_locations[idx]
       log.status.Print(
@@ -420,7 +456,25 @@ def GetJobResourceSpec(prompt=False):
       namespacesId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       jobsId=JobAttributeConfig(prompt=prompt),
       resource_name='Job',
-      api_version='v1alpha1')
+      api_version='v1')
+
+
+def GetExecutionResourceSpec(prompt=False):
+  return concepts.ResourceSpec(
+      'run.namespaces.executions',
+      namespacesId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      executionsId=ExecutionAttributeConfig(prompt=prompt),
+      resource_name='Execution',
+      api_version='v1')
+
+
+def GetTaskResourceSpec(prompt=False):
+  return concepts.ResourceSpec(
+      'run.namespaces.tasks',
+      namespacesId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      tasksId=TaskAttributeConfig(prompt=prompt),
+      resource_name='Task',
+      api_version='v1')
 
 
 def GetNamespaceResourceSpec():

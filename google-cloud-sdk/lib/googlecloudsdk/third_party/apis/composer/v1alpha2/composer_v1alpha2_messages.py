@@ -188,6 +188,8 @@ class ComposerProjectsLocationsEnvironmentsDagsDagRunsListRequest(_messages.Mess
   r"""A ComposerProjectsLocationsEnvironmentsDagsDagRunsListRequest object.
 
   Fields:
+    filter: An expression for filtering the results. For example:
+      executionDate<="2022-02-22T22:22:00Z"
     pageSize: The maximum number of DAG runs to return.
     pageToken: The next_page_token returned from a previous List request.
     parent: Required. List DAG runs in the given parent resource. Parent must
@@ -195,9 +197,10 @@ class ComposerProjectsLocationsEnvironmentsDagsDagRunsListRequest(_messages.Mess
       s/{environmentId}/dags/{dagId}".
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class ComposerProjectsLocationsEnvironmentsDagsDagRunsTaskInstancesListRequest(_messages.Message):
@@ -1108,13 +1111,12 @@ class LoadEnvironmentStateRequest(_messages.Message):
   Fields:
     skipPypiPackagesInstallation: Whether or not to skip installing Pypi
       packages when loading the environment's state.
-    snapshotLocation: A Cloud Storage location of a snapshot to load, e.g.:
-      "gs://my-
-      bucket/snapshots/project_id/location/environment_uuid/timestamp".
+    snapshotPath: A Cloud Storage path to a snapshot to load, e.g.: "gs://my-
+      bucket/snapshots/project_location_environment_timestamp".
   """
 
   skipPypiPackagesInstallation = _messages.BooleanField(1)
-  snapshotLocation = _messages.StringField(2)
+  snapshotPath = _messages.StringField(2)
 
 
 class LoadEnvironmentStateResponse(_messages.Message):
@@ -1927,13 +1929,13 @@ class StoreEnvironmentStateResponse(_messages.Message):
   r"""Store environment state response.
 
   Fields:
-    snapshotLocation: The fully-resolved Cloud Storage location of the created
+    snapshotPath: The fully-resolved Cloud Storage path of the created
       snapshot, e.g.: "gs://my-
-      bucket/snapshots/project_id/location/environment_uuid/timestamp". This
-      field is populated only if the snapshot creation was successful.
+      bucket/snapshots/project_location_environment_timestamp". This field is
+      populated only if the snapshot creation was successful.
   """
 
-  snapshotLocation = _messages.StringField(1)
+  snapshotPath = _messages.StringField(1)
 
 
 class Task(_messages.Message):

@@ -43,17 +43,19 @@ def Get(config, operation):
 
 
 def List(config, type_filter=None):
-  """List operations on the instance config."""
-  client = apis.GetClientInstance('spanner', 'v1')
-  msgs = apis.GetMessagesModule('spanner', 'v1')
+  """List operations on instanceConfig using the generic operation list API."""
+  # TODO(b/213356452): Replace v1alpha -> v1, once spanner prod (spanner/v1)
+  # contain rest bindings for instanceConfigs LROs.
+  client = apis.GetClientInstance('spanner', 'v1alpha')
+  msgs = apis.GetMessagesModule('spanner', 'v1alpha')
   ref = resources.REGISTRY.Parse(
       config,
       params={'projectsId': properties.VALUES.core.project.GetOrFail},
       collection='spanner.projects.instanceConfigs')
-  req = msgs.SpannerProjectsInstanceConfigOperationsListRequest(
-      parent=ref.RelativeName() + '/operations', filter=type_filter)
+  req = msgs.SpannerProjectsInstanceConfigsOperationsListRequest(
+      name=ref.RelativeName() + '/operations', filter=type_filter)
   return list_pager.YieldFromList(
-      client.projects_instanceConfigOperations,
+      client.projects_instanceConfigs_operations,
       req,
       field='operations',
       batch_size_attribute='pageSize')

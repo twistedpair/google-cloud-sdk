@@ -23,6 +23,9 @@ import enum
 from googlecloudsdk.core.util import debug_output
 
 
+CLEAR = '_clear'
+
+
 class MetadataType(enum.Enum):
   BUCKET = 'bucket'
   OBJECT = 'object'
@@ -39,6 +42,8 @@ class _UserBucketArgs:
                labels_file_path=None,
                lifecycle_file_path=None,
                location=None,
+               log_bucket=None,
+               log_object_prefix=None,
                retention_period=None,
                uniform_bucket_level_access=None,
                versioning=None,
@@ -52,6 +57,8 @@ class _UserBucketArgs:
     self.labels_file_path = labels_file_path
     self.lifecycle_file_path = lifecycle_file_path
     self.location = location
+    self.log_bucket = log_bucket
+    self.log_object_prefix = log_object_prefix
     self.retention_period = retention_period
     self.uniform_bucket_level_access = uniform_bucket_level_access
     self.versioning = versioning
@@ -68,6 +75,8 @@ class _UserBucketArgs:
             self.labels_file_path == other.labels_file_path and
             self.lifecycle_file_path == other.lifecycle_file_path and
             self.location == other.location and
+            self.log_bucket == other.log_bucket and
+            self.log_object_prefix == other.log_object_prefix and
             self.retention_period == other.retention_period and
             self.uniform_bucket_level_access
             == other.uniform_bucket_level_access and
@@ -158,39 +167,88 @@ class _UserRequestArgs:
     return debug_output.generic_repr(self)
 
 
+def _get_clear_or_value_from_flag(args, clear_flag, setter_flag):
+  """Returns CLEAR if clear flag present or setter value."""
+  if getattr(args, clear_flag, None):
+    return CLEAR
+  else:
+    return getattr(args, setter_flag, None)
+
+
 def get_user_request_args_from_command_args(args, metadata_type=None):
   """Returns UserRequestArgs from a command's Run method "args" parameter."""
   resource_args = None
   if metadata_type:
     if metadata_type == MetadataType.BUCKET:
+      cors_file_path = _get_clear_or_value_from_flag(args, 'clear_cors',
+                                                     'cors_file')
+      default_encryption_key = _get_clear_or_value_from_flag(
+          args, 'clear_default_encryption_key', 'default_encryption_key')
+      default_storage_class = _get_clear_or_value_from_flag(
+          args, 'clear_default_storage_class', 'default_storage_class')
+      labels_file_path = _get_clear_or_value_from_flag(args, 'clear_labels',
+                                                       'labels_file')
+      lifecycle_file_path = _get_clear_or_value_from_flag(
+          args, 'clear_lifecycle', 'lifecycle_file')
+      log_bucket = _get_clear_or_value_from_flag(args, 'clear_log_bucket',
+                                                 'log_bucket')
+      log_object_prefix = _get_clear_or_value_from_flag(
+          args, 'clear_log_object_prefix', 'log_object_prefix')
+      retention_period = _get_clear_or_value_from_flag(
+          args, 'clear_retention_period', 'retention_period')
+      web_error_page = _get_clear_or_value_from_flag(args,
+                                                     'clear_web_error_page',
+                                                     'web_error_page')
+      web_main_page_suffix = _get_clear_or_value_from_flag(
+          args, 'clear_web_main_page_suffix', 'web_main_page_suffix')
+
       resource_args = _UserBucketArgs(
-          cors_file_path=getattr(args, 'cors_file', None),
-          default_encryption_key=getattr(args, 'default_encryption_key', None),
+          cors_file_path=cors_file_path,
+          default_encryption_key=default_encryption_key,
           default_event_based_hold=getattr(args, 'default_event_based_hold',
                                            None),
-          default_storage_class=getattr(args, 'default_storage_class', None),
-          labels_file_path=getattr(args, 'labels_file', None),
-          lifecycle_file_path=getattr(args, 'lifecycle_file', None),
+          default_storage_class=default_storage_class,
+          labels_file_path=labels_file_path,
+          lifecycle_file_path=lifecycle_file_path,
           location=getattr(args, 'location', None),
-          retention_period=getattr(args, 'retention_period', None),
+          log_bucket=log_bucket,
+          log_object_prefix=log_object_prefix,
+          retention_period=retention_period,
           uniform_bucket_level_access=getattr(args,
                                               'uniform_bucket_level_access',
                                               None),
           versioning=getattr(args, 'versioning', None),
-          web_error_page=getattr(args, 'web_error_page', None),
-          web_main_page_suffix=getattr(args, 'web_main_page_suffix', None),
+          web_error_page=web_error_page,
+          web_main_page_suffix=web_main_page_suffix,
       )
     elif metadata_type == MetadataType.OBJECT:
+      cache_control = _get_clear_or_value_from_flag(args, 'clear_cache_control',
+                                                    'cache_control')
+      content_disposition = _get_clear_or_value_from_flag(
+          args, 'clear_content_disposition', 'content_disposition')
+      content_encoding = _get_clear_or_value_from_flag(
+          args, 'clear_content_encoding', 'content_encoding')
+      content_language = _get_clear_or_value_from_flag(
+          args, 'clear_content_language', 'content_language')
+      md5_hash = _get_clear_or_value_from_flag(args, 'clear_content_md5',
+                                               'content_md5')
+      content_type = _get_clear_or_value_from_flag(args, 'clear_content_type',
+                                                   'content_type')
+      custom_metadata = _get_clear_or_value_from_flag(args,
+                                                      'clear_custom_metadata',
+                                                      'custom_metadata')
+      custom_time = _get_clear_or_value_from_flag(args, 'clear_custom_time',
+                                                  'custom_time')
+
       resource_args = _UserObjectArgs(
-          cache_control=getattr(args, 'cache_control', None),
-          content_disposition=getattr(args, 'content_disposition', None),
-          content_encoding=getattr(args, 'content_encoding', None),
-          content_language=getattr(args, 'content_language', None),
-          content_type=getattr(args, 'content_type', None),
-          custom_metadata=getattr(args, 'custom_metadata', None),
-          custom_time=getattr(args, 'custom_time', None),
-          md5_hash=getattr(args, 'content_md5', None),
-      )
+          cache_control=cache_control,
+          content_disposition=content_disposition,
+          content_encoding=content_encoding,
+          content_language=content_language,
+          content_type=content_type,
+          custom_metadata=custom_metadata,
+          custom_time=custom_time,
+          md5_hash=md5_hash)
 
   return _UserRequestArgs(
       precondition_generation_match=getattr(args, 'if_generation_match', None),

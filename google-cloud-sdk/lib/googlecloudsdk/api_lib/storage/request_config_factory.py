@@ -92,6 +92,8 @@ class _GcsBucketConfig(_BucketConfig):
       automatically be applied to new objects in bucket.
     default_storage_class (str|None): Storage class assigned to objects in the
       bucket by default.
+    log_bucket (str|None): Destination bucket for current bucket's logs.
+    log_object_prefix (str|None): Prefix for objects containing logs.
     retention_period (int|None): Minimum retention period in seconds for objects
       in a bucket. Attempts to delete an object earlier will be denied.
     uniform_bucket_level_access (bool|None):
@@ -106,6 +108,8 @@ class _GcsBucketConfig(_BucketConfig):
                labels_file_path=None,
                lifecycle_file_path=None,
                location=None,
+               log_bucket=None,
+               log_object_prefix=None,
                retention_period=None,
                uniform_bucket_level_access=None,
                versioning=None,
@@ -118,6 +122,8 @@ class _GcsBucketConfig(_BucketConfig):
     self.default_encryption_key = default_encryption_key
     self.default_event_based_hold = default_event_based_hold
     self.default_storage_class = default_storage_class
+    self.log_bucket = log_bucket
+    self.log_object_prefix = log_object_prefix
     self.retention_period = retention_period
     self.uniform_bucket_level_access = uniform_bucket_level_access
 
@@ -126,6 +132,8 @@ class _GcsBucketConfig(_BucketConfig):
             self.default_encryption_key == other.default_encryption_key and
             self.default_event_based_hold == other.default_event_based_hold and
             self.default_storage_class == other.default_storage_class and
+            self.log_bucket == other.log_bucket and
+            self.log_object_prefix == other.log_object_prefix and
             self.retention_period == other.retention_period and
             self.uniform_bucket_level_access
             == other.uniform_bucket_level_access)
@@ -352,14 +360,17 @@ def _get_request_config_resource_args(url,
       if url.scheme == storage_url.ProviderPrefix.GCS:
         new_resource_args = _GcsBucketConfig()
         if user_resource_args:
+          new_resource_args.default_encryption_key = (
+              user_resource_args.default_encryption_key)
           new_resource_args.default_event_based_hold = (
               user_resource_args.default_event_based_hold)
           new_resource_args.default_storage_class = (
               user_resource_args.default_storage_class)
+          new_resource_args.log_bucket = user_resource_args.log_bucket
+          new_resource_args.log_object_prefix = (
+              user_resource_args.log_object_prefix)
           new_resource_args.retention_period = (
               user_resource_args.retention_period)
-          new_resource_args.default_encryption_key = (
-              user_resource_args.default_encryption_key)
           new_resource_args.uniform_bucket_level_access = (
               user_resource_args.uniform_bucket_level_access)
 

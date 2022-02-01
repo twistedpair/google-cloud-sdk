@@ -48,7 +48,7 @@ does not exist, it is generated the first time an SSH command is run,
 which may prompt you for a passphrase for the private key encryption.
 
 All SSH commands require the OpenSSH client suite to be installed on
-Linux and Mac OS X. On Windows, the Cloud SDK comes with a bundled
+Linux and Mac OS X. On Windows, the Google Cloud CLI comes with a bundled
 PuTTY suite instead, so it has no external dependencies."""
 
 

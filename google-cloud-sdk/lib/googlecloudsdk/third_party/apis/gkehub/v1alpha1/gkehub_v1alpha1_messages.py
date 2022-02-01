@@ -414,13 +414,6 @@ class CloudBuildFeatureSpec(_messages.Message):
   membershipConfigs = _messages.MessageField('MembershipConfigsValue', 1)
 
 
-class CloudBuildFeatureState(_messages.Message):
-  r"""An empty state for Cloud Build for Anthos feature. This is required
-  since FeatureStateDetails requires a state.
-  """
-
-
-
 class CloudBuildMembershipConfig(_messages.Message):
   r"""Configurations for each Cloud Build enabled cluster.
 
@@ -1079,7 +1072,6 @@ class FeatureStateDetails(_messages.Message):
     authorizerFeatureState: State for the Authorizer Feature.
     cloudauditloggingFeatureState: The state of the Anthos Cloud Audit Logging
       feature.
-    cloudbuildFeatureState: State for the Cloud Build for Anthos Feature.
     code: The code describes, at a high level, if the Feature is operating
       correctly. Non-`OK` codes should have details in the `description`
       describing what actions (if any) need to be taken to return the Feature
@@ -1126,20 +1118,19 @@ class FeatureStateDetails(_messages.Message):
   appdevexperienceFeatureState = _messages.MessageField('AppDevExperienceFeatureState', 3)
   authorizerFeatureState = _messages.MessageField('AuthorizerFeatureState', 4)
   cloudauditloggingFeatureState = _messages.MessageField('CloudAuditLoggingFeatureState', 5)
-  cloudbuildFeatureState = _messages.MessageField('CloudBuildFeatureState', 6)
-  code = _messages.EnumField('CodeValueValuesEnum', 7)
-  configmanagementFeatureState = _messages.MessageField('ConfigManagementFeatureState', 8)
-  description = _messages.StringField(9)
-  helloworldFeatureState = _messages.MessageField('HelloWorldFeatureState', 10)
-  identityserviceFeatureState = _messages.MessageField('IdentityServiceFeatureState', 11)
-  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 12)
-  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 13)
-  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 14)
-  policycontrollerFeatureState = _messages.MessageField('PolicyControllerFeatureState', 15)
-  servicedirectoryFeatureState = _messages.MessageField('ServiceDirectoryFeatureState', 16)
-  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 17)
-  updateTime = _messages.StringField(18)
-  workloadcertificateFeatureState = _messages.MessageField('WorkloadCertificateFeatureState', 19)
+  code = _messages.EnumField('CodeValueValuesEnum', 6)
+  configmanagementFeatureState = _messages.MessageField('ConfigManagementFeatureState', 7)
+  description = _messages.StringField(8)
+  helloworldFeatureState = _messages.MessageField('HelloWorldFeatureState', 9)
+  identityserviceFeatureState = _messages.MessageField('IdentityServiceFeatureState', 10)
+  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 11)
+  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 12)
+  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 13)
+  policycontrollerFeatureState = _messages.MessageField('PolicyControllerFeatureState', 14)
+  servicedirectoryFeatureState = _messages.MessageField('ServiceDirectoryFeatureState', 15)
+  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 16)
+  updateTime = _messages.StringField(17)
+  workloadcertificateFeatureState = _messages.MessageField('WorkloadCertificateFeatureState', 18)
 
 
 class FeatureTest(_messages.Message):

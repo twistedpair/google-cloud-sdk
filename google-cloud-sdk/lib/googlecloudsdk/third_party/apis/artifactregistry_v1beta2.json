@@ -788,11 +788,11 @@
     },
     "ImportAptArtifactsResponse": {
       "id": "ImportAptArtifactsResponse",
-      "description": "The response message from importing artifacts.",
+      "description": "The response message from importing APT artifacts.",
       "type": "object",
       "properties": {
         "aptArtifacts": {
-          "description": "The Apt artifacts updated.",
+          "description": "The Apt artifacts imported.",
           "type": "array",
           "items": {
             "$ref": "AptArtifact"
@@ -872,11 +872,11 @@
     },
     "ImportYumArtifactsResponse": {
       "id": "ImportYumArtifactsResponse",
-      "description": "The response message from importing artifacts.",
+      "description": "The response message from importing YUM artifacts.",
       "type": "object",
       "properties": {
         "yumArtifacts": {
-          "description": "The yum artifacts updated.",
+          "description": "The yum artifacts imported.",
           "type": "array",
           "items": {
             "$ref": "YumArtifact"
@@ -1684,7 +1684,7 @@
                               ]
                             },
                             "orderBy": {
-                              "description": "Optional. Sorting field and order",
+                              "description": "Optional. The field to order the results by.",
                               "location": "query",
                               "type": "string"
                             }

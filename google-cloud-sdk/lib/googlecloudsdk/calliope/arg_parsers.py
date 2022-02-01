@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """A module that provides parsing utilities for argparse.
 
 For details of how argparse argument pasers work, see:
@@ -70,7 +69,6 @@ from googlecloudsdk.core.util import times
 import six
 from six.moves import zip  # pylint: disable=redefined-builtin
 
-
 __all__ = ['Duration', 'BinarySize']
 
 
@@ -94,12 +92,12 @@ def _GenerateErrorMessage(error, user_input=None, error_idx=None):
   """Constructs an error message for an exception.
 
   Args:
-    error: str, The error message that should be displayed. This
-      message should not end with any punctuation--the full error
-      message is constructed by appending more information to error.
+    error: str, The error message that should be displayed. This message should
+      not end with any punctuation--the full error message is constructed by
+      appending more information to error.
     user_input: str, The user input that caused the error.
-    error_idx: int, The index at which the error occurred. If None,
-      the index will not be printed in the error message.
+    error_idx: int, The index at which the error occurred. If None, the index
+      will not be printed in the error message.
 
   Returns:
     str: The message to use for the exception.
@@ -110,9 +108,8 @@ def _GenerateErrorMessage(error, user_input=None, error_idx=None):
     return error + '; received empty string'
   elif error_idx is None:
     return error + '; received: ' + user_input
-  return ('{error_message} at index {error_idx}: {user_input}'
-          .format(error_message=error, user_input=user_input,
-                  error_idx=error_idx))
+  return ('{error_message} at index {error_idx}: {user_input}'.format(
+      error_message=error, user_input=user_input, error_idx=error_idx))
 
 
 def InvalidInputErrorMessage(unit_scales):
@@ -120,7 +117,7 @@ def InvalidInputErrorMessage(unit_scales):
 
   Args:
     unit_scales: list, A list of strings with units that will be recommended to
-    user.
+      user.
 
   Returns:
     str: The message to use for the exception.
@@ -167,7 +164,6 @@ _BINARY_SIZE_SCALES = {
     'Pi': 1 << 50,
 }
 
-
 _UnitToLowerUnitDict = {
     'PiB': 'TiB',
     'PB': 'TiB',
@@ -201,7 +197,8 @@ def ConvertToWholeNumber(amount, unit):
          return_unit in _UnitToLowerUnitDict):
     return_amount, return_unit = (
         # The units are binary so 1KB = 1024B
-        return_amount * 1024, _UnitToLowerUnitDict[return_unit])
+        return_amount * 1024,
+        _UnitToLowerUnitDict[return_unit])
   return return_amount, return_unit
 
 
@@ -214,6 +211,7 @@ def GetMultiCompleter(individual_completer):
   Returns:
     A function that completes the last element of the list.
   """
+
   def MultiCompleter(prefix, parsed_args, **kwargs):
     start = ''
     lst = prefix.rsplit(',', 1)
@@ -222,6 +220,7 @@ def GetMultiCompleter(individual_completer):
       prefix = lst[1]
     matches = individual_completer(prefix, parsed_args, **kwargs)
     return [start + match for match in matches]
+
   return MultiCompleter
 
 
@@ -258,8 +257,12 @@ def GetBinarySizePerUnit(suffix, type_abbr='B'):
   return _BINARY_SIZE_SCALES.get(unit)
 
 
-def _ValueParser(scales, default_unit, lower_bound=None, upper_bound=None,
-                 strict_case=True, type_abbr='B',
+def _ValueParser(scales,
+                 default_unit,
+                 lower_bound=None,
+                 upper_bound=None,
+                 strict_case=True,
+                 type_abbr='B',
                  suggested_binary_size_scales=None):
   """A helper that returns a function that can parse values with units.
 
@@ -268,15 +271,15 @@ def _ValueParser(scales, default_unit, lower_bound=None, upper_bound=None,
   Args:
     scales: {str: int}, A dictionary mapping units to their magnitudes in
       relation to the lowest magnitude unit in the dict.
-    default_unit: str, The default unit to use if the user's input is
-      missing unit.
+    default_unit: str, The default unit to use if the user's input is missing
+      unit.
     lower_bound: str, An inclusive lower bound.
     upper_bound: str, An inclusive upper bound.
     strict_case: bool, whether to be strict on case-checking
     type_abbr: str, the type suffix abbreviation, e.g., B for bytes, b/s for
       bits/sec.
     suggested_binary_size_scales: list, A list of strings with units that will
-                                    be recommended to user.
+      be recommended to user.
 
   Returns:
     A function that can parse values.
@@ -284,12 +287,15 @@ def _ValueParser(scales, default_unit, lower_bound=None, upper_bound=None,
 
   def UnitsByMagnitude(suggested_binary_size_scales=None):
     """Returns a list of the units in scales sorted by magnitude."""
-    scale_items = sorted(six.iteritems(scales),
-                         key=lambda value: (value[1], value[0]))
+    scale_items = sorted(
+        six.iteritems(scales), key=lambda value: (value[1], value[0]))
     if suggested_binary_size_scales is None:
       return [key + type_abbr for key, _ in scale_items]
-    return [key + type_abbr for key, _ in scale_items
-            if key + type_abbr in suggested_binary_size_scales]
+    return [
+        key + type_abbr
+        for key, _ in scale_items
+        if key + type_abbr in suggested_binary_size_scales
+    ]
 
   def Parse(value):
     """Parses value that can contain a unit and type abbreviation."""
@@ -324,9 +330,10 @@ def _ValueParser(scales, default_unit, lower_bound=None, upper_bound=None,
     elif unit_case in scales_case:
       return amount * scales_case[unit_case]
     else:
-      raise ArgumentTypeError(_GenerateErrorMessage(
-          'unit must be one of {0}'.format(', '.join(UnitsByMagnitude())),
-          user_input=unit))
+      raise ArgumentTypeError(
+          _GenerateErrorMessage(
+              'unit must be one of {0}'.format(', '.join(UnitsByMagnitude())),
+              user_input=unit))
 
   if lower_bound is None:
     parsed_lower_bound = None
@@ -345,13 +352,16 @@ def _ValueParser(scales, default_unit, lower_bound=None, upper_bound=None,
     else:
       parsed_value = Parse(value)
       if parsed_lower_bound is not None and parsed_value < parsed_lower_bound:
-        raise ArgumentTypeError(_GenerateErrorMessage(
-            'value must be greater than or equal to {0}'.format(lower_bound),
-            user_input=value))
+        raise ArgumentTypeError(
+            _GenerateErrorMessage(
+                'value must be greater than or equal to {0}'.format(
+                    lower_bound),
+                user_input=value))
       elif parsed_upper_bound is not None and parsed_value > parsed_upper_bound:
-        raise ArgumentTypeError(_GenerateErrorMessage(
-            'value must be less than or equal to {0}'.format(upper_bound),
-            user_input=value))
+        raise ArgumentTypeError(
+            _GenerateErrorMessage(
+                'value must be less than or equal to {0}'.format(upper_bound),
+                user_input=value))
       else:
         return parsed_value
 
@@ -378,10 +388,12 @@ def RegexpValidator(pattern, description):
   Returns:
     function: str -> str, usable as an argparse type
   """
+
   def Parse(value):
     if not re.match(pattern + '$', value):
       raise ArgumentTypeError('Bad value [{0}]: {1}'.format(value, description))
     return value
+
   return Parse
 
 
@@ -448,7 +460,7 @@ def Duration(default_unit='s',
     lower_bound: str, An inclusive lower bound for values.
     upper_bound: str, An inclusive upper bound for values.
     parsed_unit: str, The unit that the result should be returned as. Can be
-    's', 'ms', or 'us'.
+      's', 'ms', or 'us'.
 
   Raises:
     ArgumentTypeError: If either the lower_bound or upper_bound
@@ -494,20 +506,24 @@ def Duration(default_unit='s',
       return None
     parsed_value = Parse(value)
     if parsed_lower_bound is not None and parsed_value < parsed_lower_bound:
-      raise ArgumentTypeError(_GenerateErrorMessage(
-          'value must be greater than or equal to {0}'.format(lower_bound),
-          user_input=value))
+      raise ArgumentTypeError(
+          _GenerateErrorMessage(
+              'value must be greater than or equal to {0}'.format(lower_bound),
+              user_input=value))
     if parsed_upper_bound is not None and parsed_value > parsed_upper_bound:
-      raise ArgumentTypeError(_GenerateErrorMessage(
-          'value must be less than or equal to {0}'.format(upper_bound),
-          user_input=value))
+      raise ArgumentTypeError(
+          _GenerateErrorMessage(
+              'value must be less than or equal to {0}'.format(upper_bound),
+              user_input=value))
     return parsed_value
 
   return ParseWithBoundsChecking
 
 
-def BinarySize(lower_bound=None, upper_bound=None,
-               suggested_binary_size_scales=None, default_unit='G',
+def BinarySize(lower_bound=None,
+               upper_bound=None,
+               suggested_binary_size_scales=None,
+               default_unit='G',
                type_abbr='B'):
   """Returns a function that can parse binary sizes.
 
@@ -536,7 +552,7 @@ def BinarySize(lower_bound=None, upper_bound=None,
     lower_bound: str, An inclusive lower bound for values.
     upper_bound: str, An inclusive upper bound for values.
     suggested_binary_size_scales: list, A list of strings with units that will
-                                    be recommended to user.
+      be recommended to user.
     default_unit: str, unit used when user did not specify unit.
     type_abbr: str, the type suffix abbreviation, e.g., B for bytes, b/s for
       bits/sec.
@@ -553,8 +569,12 @@ def BinarySize(lower_bound=None, upper_bound=None,
       parsed.
   """
   return _ValueParser(
-      _BINARY_SIZE_SCALES, default_unit=default_unit, lower_bound=lower_bound,
-      upper_bound=upper_bound, strict_case=False, type_abbr=type_abbr,
+      _BINARY_SIZE_SCALES,
+      default_unit=default_unit,
+      lower_bound=lower_bound,
+      upper_bound=upper_bound,
+      strict_case=False,
+      type_abbr=type_abbr,
       suggested_binary_size_scales=suggested_binary_size_scales)
 
 
@@ -573,9 +593,9 @@ class Range(object):
     """Creates Range object out of given string value."""
     match = re.match(_RANGE_PATTERN, string_value)
     if not match:
-      raise ArgumentTypeError('Expected a non-negative integer value or a '
-                              'range of such values instead of "{0}"'
-                              .format(string_value))
+      raise ArgumentTypeError(
+          'Expected a non-negative integer value or a '
+          'range of such values instead of "{0}"'.format(string_value))
     start = int(match.group('start'))
     end = match.group('end')
     if end is None:
@@ -631,8 +651,7 @@ class HostPort(object):
     Args:
       s: str, The string to parse. If ipv6_enabled and host is an IPv6 address,
       it should be placed in square brackets: e.g.
-        [2001:db8:0:0:0:ff00:42:8329]
-        or
+        [2001:db8:0:0:0:ff00:42:8329] or
         [2001:db8:0:0:0:ff00:42:8329]:8080
       ipv6_enabled: boolean, If True then accept IPv6 addresses.
 
@@ -649,19 +668,21 @@ class HostPort(object):
     if ipv6_enabled and not match:
       match = re.match(HostPort.IPV6_PATTERN, s, re.UNICODE)
       if not match:
-        raise ArgumentTypeError(_GenerateErrorMessage(
-            'Failed to parse host and port. Expected format \n\n'
-            '  IPv4_ADDRESS_OR_HOSTNAME:PORT\n\n'
-            'or\n\n'
-            '  [IPv6_ADDRESS]:PORT\n\n'
-            '(where :PORT is optional).',
-            user_input=s))
+        raise ArgumentTypeError(
+            _GenerateErrorMessage(
+                'Failed to parse host and port. Expected format \n\n'
+                '  IPv4_ADDRESS_OR_HOSTNAME:PORT\n\n'
+                'or\n\n'
+                '  [IPv6_ADDRESS]:PORT\n\n'
+                '(where :PORT is optional).',
+                user_input=s))
     elif not match:
-      raise ArgumentTypeError(_GenerateErrorMessage(
-          'Failed to parse host and port. Expected format \n\n'
-          '  IPv4_ADDRESS_OR_HOSTNAME:PORT\n\n'
-          '(where :PORT is optional).',
-          user_input=s))
+      raise ArgumentTypeError(
+          _GenerateErrorMessage(
+              'Failed to parse host and port. Expected format \n\n'
+              '  IPv4_ADDRESS_OR_HOSTNAME:PORT\n\n'
+              '(where :PORT is optional).',
+              user_input=s))
     return HostPort(match.group('address'), match.group('port'))
 
 
@@ -731,19 +752,22 @@ class DayOfWeek(object):
     return fixed
 
 
-def _BoundedType(type_builder, type_description,
-                 lower_bound=None, upper_bound=None, unlimited=False):
+def _BoundedType(type_builder,
+                 type_description,
+                 lower_bound=None,
+                 upper_bound=None,
+                 unlimited=False):
   """Returns a function that can parse given type within some bound.
 
   Args:
     type_builder: A callable for building the requested type from the value
-        string.
+      string.
     type_description: str, Description of the requested type (for verbose
-        messages).
-    lower_bound: of type compatible with type_builder,
-        The value must be >= lower_bound.
-    upper_bound: of type compatible with type_builder,
-        The value must be <= upper_bound.
+      messages).
+    lower_bound: of type compatible with type_builder, The value must be >=
+      lower_bound.
+    upper_bound: of type compatible with type_builder, The value must be <=
+      upper_bound.
     unlimited: bool, If True then a value of 'unlimited' means no limit.
 
   Returns:
@@ -769,8 +793,8 @@ def _BoundedType(type_builder, type_description,
       v = type_builder(value)
     except ValueError:
       raise ArgumentTypeError(
-          _GenerateErrorMessage('Value must be {0}'.format(type_description),
-                                user_input=value))
+          _GenerateErrorMessage(
+              'Value must be {0}'.format(type_description), user_input=value))
 
     if lower_bound is not None and v < lower_bound:
       raise ArgumentTypeError(
@@ -821,8 +845,10 @@ class ArgType(object):
 class ArgBoolean(ArgType):
   """Interpret an argument value as a bool."""
 
-  def __init__(
-      self, truthy_strings=None, falsey_strings=None, case_sensitive=False):
+  def __init__(self,
+               truthy_strings=None,
+               falsey_strings=None,
+               case_sensitive=False):
     self._case_sensitive = case_sensitive
     if truthy_strings:
       self._truthy_strings = truthy_strings
@@ -844,10 +870,7 @@ class ArgBoolean(ArgType):
       return False
     raise ArgumentTypeError(
         'Invalid flag value [{0}], expected one of [{1}]'.format(
-            arg_value,
-            ', '.join(self._truthy_strings + self._falsey_strings)
-        )
-    )
+            arg_value, ', '.join(self._truthy_strings + self._falsey_strings)))
 
 
 class ArgList(ArgType):
@@ -881,10 +904,10 @@ class ArgList(ArgType):
       min_length: int, The minimum size of the list.
       max_length: int, The maximum size of the list.
       choices: [element_type], a list of valid possibilities for elements. If
-          None, then no constraints are imposed.
+        None, then no constraints are imposed.
       custom_delim_char: char, A customized delimiter character.
       visible_choices: [element_type], a list of valid possibilities for
-          elements to be shown to the user. If None, defaults to choices.
+        elements to be shown to the user. If None, defaults to choices.
 
     Returns:
       (str)->[str], A function to parse the list of values in the argument.
@@ -898,6 +921,7 @@ class ArgList(ArgType):
         visible_choices if visible_choices is not None else choices)
 
     if self.visible_choices:
+
       def ChoiceType(raw_value):
         if element_type:
           typed_value = element_type(raw_value)
@@ -909,6 +933,7 @@ class ArgList(ArgType):
               choices=', '.join(
                   [six.text_type(choice) for choice in self.visible_choices])))
         return typed_value
+
       self.element_type = ChoiceType
 
     self.min_length = min_length
@@ -1014,19 +1039,25 @@ class ArgDict(ArgList):
   key-value pairs to get a dict.
   """
 
-  def __init__(self, key_type=None, value_type=None, spec=None, min_length=0,
-               max_length=None, allow_key_only=False, required_keys=None,
+  def __init__(self,
+               key_type=None,
+               value_type=None,
+               spec=None,
+               min_length=0,
+               max_length=None,
+               allow_key_only=False,
+               required_keys=None,
                operators=None):
     """Initialize an ArgDict.
 
     Args:
       key_type: (str)->str, A function to apply to each of the dict keys.
       value_type: (str)->str, A function to apply to each of the dict values.
-      spec: {str: (str)->str}, A mapping of expected keys to functions.
-        The functions are applied to the values. If None, an arbitrary
-        set of keys will be accepted. If not None, it is an error for the
-        user to supply a key that is not in the spec. If the function specified
-        is None, then accept a key only without '=value'.
+      spec: {str: (str)->str}, A mapping of expected keys to functions. The
+        functions are applied to the values. If None, an arbitrary set of keys
+        will be accepted. If not None, it is an error for the user to supply a
+        key that is not in the spec. If the function specified is None, then
+        accept a key only without '=value'.
       min_length: int, The minimum number of keys in the dict.
       max_length: int, The maximum number of keys in the dict.
       allow_key_only: bool, Allow empty values.
@@ -1071,8 +1102,8 @@ class ArgDict(ArgList):
     else:
       raise ArgumentTypeError(
           _GenerateErrorMessage(
-              'valid keys are [{0}]'.format(
-                  ', '.join(sorted(self.spec.keys()))),
+              'valid keys are [{0}]'.format(', '.join(sorted(
+                  self.spec.keys()))),
               user_input=key))
 
   def _ValidateKeyValue(self, key, value, op='='):
@@ -1204,22 +1235,25 @@ class UpdateAction(argparse.Action):
       user_input = None
     else:
       user_input = ', '.join([existing_value, new_value])
-    raise argparse.ArgumentError(self, _GenerateErrorMessage(
-        '"{0}" cannot be specified multiple times'.format(key),
-        user_input=user_input))
+    raise argparse.ArgumentError(
+        self,
+        _GenerateErrorMessage(
+            '"{0}" cannot be specified multiple times'.format(key),
+            user_input=user_input))
 
-  def __init__(self,
-               option_strings,
-               dest,
-               nargs=None,
-               const=None,
-               default=None,
-               type=None,  # pylint:disable=redefined-builtin
-               choices=None,
-               required=False,
-               help=None,  # pylint:disable=redefined-builtin
-               metavar=None,
-               onduplicatekey_handler=OnDuplicateKeyRaiseError):
+  def __init__(
+      self,
+      option_strings,
+      dest,
+      nargs=None,
+      const=None,
+      default=None,
+      type=None,  # pylint:disable=redefined-builtin
+      choices=None,
+      required=False,
+      help=None,  # pylint:disable=redefined-builtin
+      metavar=None,
+      onduplicatekey_handler=OnDuplicateKeyRaiseError):
     if nargs == 0:
       raise ValueError('nargs for append actions must be > 0; if arg '
                        'strings are not supplying the value to append, '
@@ -1252,8 +1286,8 @@ class UpdateAction(argparse.Action):
 
     if isinstance(values, dict):
       # Get the existing arg value (if any)
-      items = copy.copy(self._EnsureValue(
-          namespace, self.dest, collections.OrderedDict()))
+      items = copy.copy(
+          self._EnsureValue(namespace, self.dest, collections.OrderedDict()))
       # Merge the new key/value pair(s) in
       for k, v in six.iteritems(values):
         if k in items:
@@ -1295,18 +1329,19 @@ class UpdateActionWithAppend(UpdateAction):
     else:
       return [existing_value, new_value]
 
-  def __init__(self,
-               option_strings,
-               dest,
-               nargs=None,
-               const=None,
-               default=None,
-               type=None,  # pylint:disable=redefined-builtin
-               choices=None,
-               required=False,
-               help=None,  # pylint:disable=redefined-builtin
-               metavar=None,
-               onduplicatekey_handler=OnDuplicateKeyAppend):
+  def __init__(
+      self,
+      option_strings,
+      dest,
+      nargs=None,
+      const=None,
+      default=None,
+      type=None,  # pylint:disable=redefined-builtin
+      choices=None,
+      required=False,
+      help=None,  # pylint:disable=redefined-builtin
+      metavar=None,
+      onduplicatekey_handler=OnDuplicateKeyAppend):
     super(UpdateActionWithAppend, self).__init__(
         option_strings=option_strings,
         dest=dest,
@@ -1338,15 +1373,14 @@ class RemainderAction(argparse._StoreAction):  # pylint: disable=protected-acces
 
   def __init__(self, *args, **kwargs):
     if kwargs['nargs'] is not argparse.REMAINDER:
-      raise ValueError(
-          'The RemainderAction should only be used when '
-          'nargs=argparse.REMAINDER.')
+      raise ValueError('The RemainderAction should only be used when '
+                       'nargs=argparse.REMAINDER.')
 
     # Create detailed help.
     self.explanation = (
         "The '--' argument must be specified between gcloud specific args on "
-        'the left and {metavar} on the right.'
-    ).format(metavar=kwargs['metavar'])
+        'the left and {metavar} on the right.').format(
+            metavar=kwargs['metavar'])
     if 'help' in kwargs:
       kwargs['help'] += '\n+\n' + self.explanation
       if 'example' in kwargs:
@@ -1404,8 +1438,8 @@ class RemainderAction(argparse._StoreAction):  # pylint: disable=protected-acces
     remaining_args = remaining_args[:split_index]
 
     if pass_through_args:
-      msg = ('unrecognized args: {args}\n' + self.explanation).format(
-          args=' '.join(pass_through_args))
+      msg = ('unrecognized args: {args}\n' +
+             self.explanation).format(args=' '.join(pass_through_args))
       raise parser_errors.UnrecognizedArgumentsError(msg)
     self(None, namespace, pass_through_args)
     return namespace, remaining_args
@@ -1442,8 +1476,11 @@ class StoreOnceAction(argparse.Action):
   """
 
   def OnSecondArgumentRaiseError(self):
-    raise argparse.ArgumentError(self, _GenerateErrorMessage(
-        '"{0}" argument cannot be specified multiple times'.format(self.dest)))
+    raise argparse.ArgumentError(
+        self,
+        _GenerateErrorMessage(
+            '"{0}" argument cannot be specified multiple times'.format(
+                self.dest)))
 
   def __init__(self, *args, **kwargs):
     self.dest_is_populated = False
@@ -1532,6 +1569,7 @@ def HandleNoArgAction(none_arg, deprecation_message):
     An argparse action.
 
   """
+
   def HandleNoArgActionInit(**kwargs):
     return _HandleNoArgAction(none_arg, deprecation_message, **kwargs)
 
@@ -1584,8 +1622,8 @@ class YAMLFileContents(object):
   is the file's contents parsed as a YAML object.
 
   Attributes:
-    validator: function, Function that will validate the provided input
-    file contents.
+    validator: function, Function that will validate the provided input file
+      contents.
 
   Returns:
     A function that accepts a filename that should be parsed as a YAML
@@ -1721,6 +1759,18 @@ def StoreFilePathAndContentsAction(binary=False):
       setattr(namespace, new_dest, value)
 
   return Action
+
+
+class ExtendConstAction(argparse.Action):
+  """Extends the dest arg with a constant list."""
+
+  def __init__(self, *args, **kwargs):
+    super(ExtendConstAction, self).__init__(*args, nargs=0, **kwargs)
+
+  def __call__(self, parser, namespace, value, option_string=None):
+    """Extends the dest with the const list."""
+    cur = getattr(self, self.dest, [])
+    setattr(namespace, self.dest, cur + self.const)
 
 
 class FilePathOrStdinContents(object):

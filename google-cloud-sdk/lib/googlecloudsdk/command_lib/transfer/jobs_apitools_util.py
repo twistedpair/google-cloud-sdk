@@ -33,6 +33,10 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import times
 
 
+UPDATE_FIELD_MASK = ('description,logging_config,notification_config,schedule,'
+                     'status,transfer_spec')
+
+
 def _raise_no_scheme_error(url):
   raise errors.InvalidUrlError('Did you mean "posix://{}"'.format(
       url.object_name))
@@ -317,6 +321,42 @@ def _create_or_modify_notification_config(job, args, messages, is_update=False):
     ]
 
 
+def _create_or_modify_logging_config(job, args, messages):
+  """Creates or modifies transfer LoggingConfig object based on args."""
+  if not (args.log_actions or args.log_action_states):
+    # Nothing to modify with.
+    return
+
+  existing_log_actions = job.loggingConfig and job.loggingConfig.logActions
+  existing_log_action_states = (
+      job.loggingConfig and job.loggingConfig.logActionStates)
+
+  if (not (args.log_actions and args.log_action_states) and
+      ((args.log_actions and not existing_log_action_states) or
+       (args.log_action_states and not existing_log_actions))):
+    raise ValueError('Both --log-actions and --log-action-states are required'
+                     ' for a complete log config.')
+
+  if not job.loggingConfig:
+    job.loggingConfig = messages.LoggingConfig()
+
+  if args.log_actions:
+    actions = []
+    for action in args.log_actions:
+      actions.append(
+          getattr(job.loggingConfig.LogActionsValueListEntryValuesEnum,
+                  action.upper()))
+    job.loggingConfig.logActions = actions
+
+  if args.log_action_states:
+    action_states = []
+    for action_state in args.log_action_states:
+      action_states.append(
+          getattr(job.loggingConfig.LogActionStatesValueListEntryValuesEnum,
+                  action_state.upper()))
+    job.loggingConfig.logActionStates = action_states
+
+
 def generate_patch_transfer_job_message(messages, job):
   """Generates Apitools patch message for transfer jobs."""
   project_id = job.projectId
@@ -332,8 +372,7 @@ def generate_patch_transfer_job_message(messages, job):
       updateTransferJobRequest=messages.UpdateTransferJobRequest(
           projectId=project_id,
           transferJob=job,
-          updateTransferJobFieldMask=(
-              'description,notification_config,schedule,status,transfer_spec'),
+          updateTransferJobFieldMask=UPDATE_FIELD_MASK,
       ))
 
 
@@ -366,6 +405,7 @@ def generate_transfer_job_message(args, messages, existing_job=None):
   _create_or_modify_schedule(job, args, messages, is_update=bool(existing_job))
   _create_or_modify_notification_config(
       job, args, messages, is_update=bool(existing_job))
+  _create_or_modify_logging_config(job, args, messages)
 
   if existing_job:
     return generate_patch_transfer_job_message(messages, job)

@@ -2165,12 +2165,16 @@ class IPAllocationPolicy(_messages.Message):
       notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
       `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
       range to use.
+    servicesIpv6CidrBlock: Output only. [Output only] The services IPv6 CIDR
+      block for the cluster.
     servicesSecondaryRangeName: The name of the secondary range to be used as
       for the services CIDR block. The secondary range will be used for
       service ClusterIPs. This must be an existing secondary range associated
       with the cluster subnetwork. This field is only applicable with
       use_ip_aliases is true and create_subnetwork is false.
     stackType: IP stack type
+    subnetIpv6CidrBlock: Output only. [Output only] The subnet's IPv6 CIDR
+      block used by nodes and pods.
     subnetworkName: A custom subnetwork name to be used if `create_subnetwork`
       is true. If this field is empty, then an automatic name will be chosen
       for the new subnetwork.
@@ -2261,16 +2265,18 @@ class IPAllocationPolicy(_messages.Message):
   podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 9)
   servicesIpv4Cidr = _messages.StringField(10)
   servicesIpv4CidrBlock = _messages.StringField(11)
-  servicesSecondaryRangeName = _messages.StringField(12)
-  stackType = _messages.EnumField('StackTypeValueValuesEnum', 13)
-  subnetworkName = _messages.StringField(14)
-  targetNodeIpv4Range = _messages.StringField(15)
-  targetPodIpv4Range = _messages.StringField(16)
-  targetServiceIpv4Range = _messages.StringField(17)
-  tpuIpv4CidrBlock = _messages.StringField(18)
-  tpuUseServiceNetworking = _messages.BooleanField(19)
-  useIpAliases = _messages.BooleanField(20)
-  useRoutes = _messages.BooleanField(21)
+  servicesIpv6CidrBlock = _messages.StringField(12)
+  servicesSecondaryRangeName = _messages.StringField(13)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 14)
+  subnetIpv6CidrBlock = _messages.StringField(15)
+  subnetworkName = _messages.StringField(16)
+  targetNodeIpv4Range = _messages.StringField(17)
+  targetPodIpv4Range = _messages.StringField(18)
+  targetServiceIpv4Range = _messages.StringField(19)
+  tpuIpv4CidrBlock = _messages.StringField(20)
+  tpuUseServiceNetworking = _messages.BooleanField(21)
+  useIpAliases = _messages.BooleanField(22)
+  useRoutes = _messages.BooleanField(23)
 
 
 class IdentityServiceConfig(_messages.Message):

@@ -763,6 +763,7 @@ class Dataset(_messages.Message):
       organize and group your datasets. You can set this property when
       inserting or updating a dataset. See Creating and Updating Dataset
       Labels for more information.
+    TagsValueListEntry: A TagsValueListEntry object.
 
   Fields:
     access: [Optional] An array of objects that define dataset access for one
@@ -824,6 +825,8 @@ class Dataset(_messages.Message):
     satisfiesPZS: [Output-only] Reserved for future use.
     selfLink: [Output-only] A URL that can be used to access the resource
       again. You can use this URL in Get or Update requests to the resource.
+    tags: [Optional]The tags associated with this dataset. Tag keys are
+      globally unique.
   """
 
   class AccessValueListEntry(_messages.Message):
@@ -907,6 +910,19 @@ class Dataset(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  class TagsValueListEntry(_messages.Message):
+    r"""A TagsValueListEntry object.
+
+    Fields:
+      tagKey: [Required] The namespaced friendly name of the tag key, e.g.
+        "12345/environment" where 12345 is org id.
+      tagValue: [Required] Friendly short name of the tag value, e.g.
+        "production".
+    """
+
+    tagKey = _messages.StringField(1)
+    tagValue = _messages.StringField(2)
+
   access = _messages.MessageField('AccessValueListEntry', 1, repeated=True)
   creationTime = _messages.IntegerField(2)
   datasetReference = _messages.MessageField('DatasetReference', 3)
@@ -925,6 +941,7 @@ class Dataset(_messages.Message):
   location = _messages.StringField(16)
   satisfiesPZS = _messages.BooleanField(17)
   selfLink = _messages.StringField(18)
+  tags = _messages.MessageField('TagsValueListEntry', 19, repeated=True)
 
 
 class DatasetAccessEntry(_messages.Message):

@@ -519,6 +519,41 @@
         "machineFilter": {
           "description": "Only machines matching this filter will be allowed to join the node pool. The filtering language accepts strings like \"name=\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
           "type": "string"
+        },
+        "localDiskEncryption": {
+          "description": "Optional. Local disk encryption options. This field is only used when enabling CMEK support.",
+          "$ref": "LocalDiskEncryption"
+        }
+      }
+    },
+    "LocalDiskEncryption": {
+      "id": "LocalDiskEncryption",
+      "description": "Configuration for CMEK support for edge machine local disk encryption.",
+      "type": "object",
+      "properties": {
+        "kmsKey": {
+          "description": "Immutable. The Cloud KMS CryptoKey e.g. projects\/{project}\/locations\/{location}\/keyRings\/{keyRing}\/cryptoKeys\/{cryptoKey} to use for protecting node local disks. If not specified, a Google-managed key will be used instead.",
+          "type": "string"
+        },
+        "kmsKeyActiveVersion": {
+          "description": "Output only. The Cloud KMS CryptoKeyVersion currently in use for protecting node local disks. Only applicable if kms_key is set.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "kmsKeyState": {
+          "description": "Output only. Availability of the Cloud KMS CryptoKey. If not `KEY_AVAILABLE`, then nodes may go offline as they cannot access their local data. This can be caused by a lack of permissions to use the key, or if the key is disabled or deleted.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified.",
+            "The key is available for use, and dependent resources should be accessible.",
+            "The key is unavailable for an unspecified reason. Dependent resources may be inaccessible."
+          ],
+          "enum": [
+            "KMS_KEY_STATE_UNSPECIFIED",
+            "KMS_KEY_STATE_KEY_AVAILABLE",
+            "KMS_KEY_STATE_KEY_UNAVAILABLE"
+          ]
         }
       }
     },

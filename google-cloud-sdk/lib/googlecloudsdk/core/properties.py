@@ -1251,7 +1251,7 @@ class _SectionAuth(_Section):
         'access_token_file',
         help_text='A file path to read the access token. Use this property to '
         'authenticate gcloud with an access token. The credentials '
-        'of the active account (if exists) will be ignored. '
+        'of the active account (if it exists) will be ignored. '
         'The file should contain an access token with no other '
         'information.')
     self.impersonate_service_account = self._Add(
@@ -1458,7 +1458,7 @@ class _SectionComponentManager(_Section):
         '`gcloud components repositories` commands.')
     self.disable_update_check = self._AddBool(
         'disable_update_check',
-        help_text='If True, Cloud SDK will not automatically check for '
+        help_text='If True, Google Cloud CLI will not automatically check for '
         'updates.')
     self.fixed_sdk_version = self._Add('fixed_sdk_version', hidden=True)
     self.snapshot_url = self._Add('snapshot_url', hidden=True)
@@ -1760,7 +1760,7 @@ class _SectionCore(_Section):
     self.pass_credentials_to_gsutil = self._AddBool(
         'pass_credentials_to_gsutil',
         default=True,
-        help_text='If True, pass the configured Cloud SDK authentication '
+        help_text='If True, pass the configured Google Cloud CLI authentication '
         'to gsutil.')
     self.api_key = self._Add(
         'api_key',
@@ -1808,7 +1808,7 @@ class _SectionCore(_Section):
             *   `never` - Log messages as text
             *   `always` - Always log messages as JSON
             *   `log` - Only log messages as JSON if stderr is a file
-            *    `terminal` - Only log messages as JSON if stderr is a terminal
+            *   `terminal` - Only log messages as JSON if stderr is a terminal
         +
         If unset, default is `never`."""))
 
@@ -1879,6 +1879,27 @@ class _SectionCore(_Section):
         hidden=True)
     self.credentialed_hosted_repo_domains = self._Add(
         'credentialed_hosted_repo_domains', hidden=True)
+
+    def ConsoleLogFormatValidator(console_log_format):
+      if console_log_format is None:
+        return
+      if console_log_format not in ['standard', 'detailed']:
+        raise InvalidValueError(('console_log_format must be one of: '
+                                 '[standard, detailed]'))
+
+    self.console_log_format = self._Add(
+        'console_log_format',
+        choices=['standard', 'detailed'],
+        default='standard',
+        validator=ConsoleLogFormatValidator,
+        help_text=textwrap.dedent("""\
+        Control the format used to display log messages to the console.
+        +
+        Valid values are:
+            *   `standard` - Simplified log messages are displayed on the console.
+            *   `detailed` - More detailed messages are displayed on the console.
+        +
+        If unset, default is `standard`."""))
 
 
 class _SectionDataPipelines(_Section):
@@ -2698,23 +2719,23 @@ class CheckHashes(enum.Enum):
 class _SectionStorage(_Section):
   """Contains the properties for the 'storage' section."""
 
-  _CHECK_HASHES_HELP_TEXT = ("""\
+  _CHECK_HASHES_HELP_TEXT = textwrap.dedent("""\
       'check_hashes' specifies how strictly to require integrity checking for
       downloaded data. Legal values are:
-
-      'if_fast_else_fail' - (default) Only integrity check if the digest
+      +
+      * 'if_fast_else_fail' - (default) Only integrity check if the digest
       will run efficiently (using compiled code), else fail the download.
-
-      'if_fast_else_skip' - Only integrity check if the server supplies a hash
+      +
+      * 'if_fast_else_skip' - Only integrity check if the server supplies a hash
       and the local digest computation will run quickly, else skip the check.
-
-      'always' - Always check download integrity regardless of possible
+      +
+      * 'always' - Always check download integrity regardless of possible
       performance costs.
-
-      'never' - Don't perform download integrity checks. This setting is
+      +
+      * 'never' - Don't perform download integrity checks. This setting is
       not recommended except for special cases such as measuring download
       performance excluding time for integrity checking.
-
+      +
       This option exists to assist users who wish to download a composite
       object and are unable to install crcmod with the C-extension. CRC32c is
       the only available integrity check for composite objects, and without the

@@ -69,7 +69,7 @@ class GoogleCloudRecommenderV1alpha2Impact(_messages.Message):
 
 class GoogleCloudRecommenderV1alpha2Insight(_messages.Message):
   r"""An insight along with the information used to derive the insight. The
-  insight may have associated recomendations as well.
+  insight may have associated recommendations as well.
 
   Enums:
     CategoryValueValuesEnum: Category being targeted by the insight.

@@ -145,12 +145,12 @@ def GetStackType():
       '--stack-type',
       choices={
           'IPV4_ONLY':
-              'Only IPv4 protocol is enabled on this vpn gateway.',
+              'Only IPv4 protocol is enabled on this VPN gateway.',
           'IPV4_IPV6':
-              'Both IPv4 and IPv6 protocols are enabled on this vpn gateway.',
+              'Both IPv4 and IPv6 protocols are enabled on this VPN gateway.',
       },
       type=arg_utils.ChoiceToEnumName,
       help="""\
-      The stack type of the protocol(s) enabled on this vpn gateway.
+      The stack type of the protocol(s) enabled on this VPN gateway.
       If not provided, `IPV4_ONLY` will be used.
       """)

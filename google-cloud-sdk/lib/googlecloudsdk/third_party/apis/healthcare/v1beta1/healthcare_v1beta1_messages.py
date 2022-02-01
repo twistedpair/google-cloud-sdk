@@ -1811,7 +1811,7 @@ class FhirStore(_messages.Message):
       this FHIR store to this destination. The Pub/Sub message attributes
       contain a map with a string describing the action that has triggered the
       notification. For example, "action":"CreateResource".
-    searchConfig: Configuration for how FHIR resource can be searched.
+    searchConfig: Configuration for how FHIR resources can be searched.
     streamConfigs: A list of streaming configs that configure the destinations
       of streaming export for every resource mutation in this FHIR store. Each
       store is allowed to have up to 10 streaming configs. After a new config

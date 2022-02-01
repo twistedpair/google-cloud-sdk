@@ -345,7 +345,7 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsListRequest(_
     ViewValueValuesEnum: The view that should be returned in the response.
 
   Fields:
-    orderBy: Optional. Sorting field and order
+    orderBy: Optional. The field to order the results by.
     pageSize: The maximum number of versions to return. Maximum page size is
       1,000.
     pageToken: The next_page_token value returned from a previous list

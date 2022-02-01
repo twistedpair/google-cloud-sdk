@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 from argcomplete.completers import FilesCompleter
 from googlecloudsdk.api_lib.spanner import databases
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.spanner import ddl_parser
 from googlecloudsdk.command_lib.util import completers
@@ -243,6 +244,27 @@ def Session(positional=True, required=True, text='Cloud Spanner session ID'):
         help=text)
 
 
+def ReplicaFlag(parser, name, text, required=True):
+  return parser.add_argument(
+      name,
+      required=required,
+      metavar='location=LOCATION,type=TYPE',
+      action='store',
+      type=arg_parsers.ArgList(
+          custom_delim_char=';',
+          min_length=1,
+          element_type=arg_parsers.ArgDict(
+              spec={
+                  'location': str,
+                  # TODO(b/399093071): Change type to
+                  # ReplicaInfo.TypeValueValuesEnum instead of str.
+                  'type': str
+              },
+              required_keys=['location', 'type']),
+      ),
+      help=text)
+
+
 def _TransformOperationDone(resource):
   """Combines done and throttled fields into a single column."""
   done_cell = '{0}'.format(resource.get('done', False))
@@ -336,7 +358,7 @@ def AddCommonDescribeArgs(parser):
   Args:
     parser: argparse.ArgumentParser to register arguments with.
   """
-  # TODO(b/199322841): Remove Common args function, after instance-config flag
+  # TODO(b/215646847): Remove Common args function, after instance-config flag
   # is present in all (GA/Beta/Alpha) stages. Currently, it is only present in
   # the Alpha stage.
   Database(
@@ -360,7 +382,7 @@ def AddCommonCancelArgs(parser):
   Args:
     parser: argparse.ArgumentParser to register arguments with.
   """
-  # TODO(b/199322841): Remove Common args function, after instance-config flag
+  # TODO(b/215646847): Remove Common args function, after instance-config flag
   # is present in all (GA/Beta/Alpha) stages. Currently, it is only present in
   # the Alpha stage.
   Database(

@@ -39,7 +39,8 @@ def Promote(release_ref,
             is_create,
             rollout_id=None,
             annotations=None,
-            labels=None):
+            labels=None,
+            description=None):
   """Creates a rollout for the given release in the destination target.
 
   If to_target is not specified and there is a rollout in progress, the promote
@@ -59,7 +60,7 @@ def Promote(release_ref,
     labels: dict[str,str], a dict of label (key,value) pairs that can be used to
       select cloud deploy resources and to find collections of cloud deploy
       resources that satisfy certain conditions.
-
+    description: str, rollout description.
   Raises:
     googlecloudsdk.command_lib.deploy.exceptions.RolloutIdExhausted
     googlecloudsdk.command_lib.deploy.exceptions.ReleaseInactiveError
@@ -69,7 +70,7 @@ def Promote(release_ref,
     dest_target = GetToTargetID(release_obj, is_create)
 
   rollout_util.CreateRollout(release_ref, dest_target, rollout_id, annotations,
-                             labels)
+                             labels, description)
 
   # Check if it requires approval.
   target_obj = release_util.GetSnappedTarget(release_obj, dest_target)

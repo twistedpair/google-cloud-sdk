@@ -229,6 +229,18 @@ def AddAllowUnauthenticatedFlag(parser):
             'callers, without checking authentication.'))
 
 
+def AddServeAllTrafficLatestRevisionFlag(parser, track):
+  help_text = (
+      'If specified, latest function revision will be served all traffic. '
+      'This is only relevant when `--gen2` is provided.')
+  parser.add_argument(
+      '--serve-all-traffic-latest-revision',
+      action='store_true',
+      default=False,
+      hidden=track is not base.ReleaseTrack.ALPHA,
+      help=help_text)
+
+
 def AddGen2Flag(parser, track):
   """Add the --gen2 flag."""
   help_text = (

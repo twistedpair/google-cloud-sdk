@@ -3487,6 +3487,32 @@
         "name": {
           "description": "The `WorkerPool` resource to execute the build on. You must have `cloudbuild.workerpools.use` on the project hosting the WorkerPool. Format projects\/{project}\/locations\/{location}\/workerPools\/{workerPoolId}",
           "type": "string"
+        },
+        "workerConfig": {
+          "description": "Configuration per workload.",
+          "$ref": "ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptionsPoolOptionWorkerConfig"
+        }
+      }
+    },
+    "ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptionsPoolOptionWorkerConfig": {
+      "id": "ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptionsPoolOptionWorkerConfig",
+      "description": "Configuration per workload for both Private Pools and Hybrid Pools.",
+      "type": "object",
+      "properties": {
+        "vcpuCount": {
+          "description": "The number of vCPUs which are requested for the build container. If unset, a value of 1 will be used.",
+          "type": "number",
+          "format": "float"
+        },
+        "memoryGb": {
+          "description": "The memory (in GB) which is requested for the build container. If unset, a value of 4 GB will be used.",
+          "type": "number",
+          "format": "float"
+        },
+        "diskSizeGb": {
+          "description": "The disk size (in GB) which is requested for the build container. If unset, a value of 10 GB will be used.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },

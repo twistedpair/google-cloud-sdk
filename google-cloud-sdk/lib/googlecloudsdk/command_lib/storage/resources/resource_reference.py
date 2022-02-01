@@ -109,7 +109,8 @@ class BucketResource(CloudResource):
       bucket metadata.
     retention_period (int|None): Default time to hold items in bucket before
       before deleting in seconds.
-    storage_class (str|None): Default storage class for objects in bucket.
+    default_storage_class (str|None): Default storage class for objects in
+      bucket.
     uniform_bucket_level_access (bool): True if all objects in the bucket share
       ACLs rather than the default, fine-grain ACL control.
   """
@@ -121,7 +122,7 @@ class BucketResource(CloudResource):
                location=None,
                metadata=None,
                retention_period=None,
-               storage_class=None,
+               default_storage_class=None,
                uniform_bucket_level_access=False):
     """Initializes resource. Args are a subset of attributes."""
     super(BucketResource, self).__init__(storage_url_object)
@@ -129,7 +130,7 @@ class BucketResource(CloudResource):
     self.location = location
     self.metadata = metadata
     self.retention_period = retention_period
-    self.storage_class = storage_class
+    self.default_storage_class = default_storage_class
     self.uniform_bucket_level_access = uniform_bucket_level_access
 
   @property
@@ -141,7 +142,7 @@ class BucketResource(CloudResource):
             self.etag == other.etag and self.location == other.location and
             self.metadata == other.metadata and
             self.retention_period == other.retention_period and
-            self.storage_class == other.storage_class and
+            self.default_storage_class == other.default_storage_class and
             self.uniform_bucket_level_access
             == other.uniform_bucket_level_access)
 

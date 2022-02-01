@@ -1602,11 +1602,13 @@
           "type": "string",
           "enumDescriptions": [
             "The type of the customer managed gateway is unspecified.",
-            "The type of the customer managed gateway is TrafficDirector Open Mesh."
+            "The type of the customer managed gateway is TrafficDirector Open Mesh.",
+            "The type of the customer managed gateway is SecureWebGateway (SWG)."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
-            "OPEN_MESH"
+            "OPEN_MESH",
+            "SECURE_WEB_GATEWAY"
           ]
         },
         "ports": {
@@ -1619,6 +1621,36 @@
         },
         "scope": {
           "description": "Required. Immutable. Scope determines how configuration across multiple Gateway instances are merged. The configuration for multiple Gateway instances with the same scope will be merged as presented as a single coniguration to the proxy\/load balancer. Max length 64 characters. Scope should start with a letter and can only have letters, numbers, hyphens.",
+          "type": "string"
+        },
+        "serverTlsPolicy": {
+          "description": "Optional. A fully-qualified ServerTLSPolicy URL reference. Specifies how TLS traffic is terminated. If empty, TLS termination is disabled.",
+          "type": "string"
+        },
+        "authorizationPolicy": {
+          "description": "Optional. A fully-qualified AuthorizationPolicy URL reference. Specifies how traffic is authorized. If empty, authorization checks are disabled.",
+          "type": "string"
+        },
+        "swgConfig": {
+          "description": "Optional. This should be set when configuring a gateway of type \u2018Secure_Web_Gateway\u2019",
+          "$ref": "GatewaySecureWebGatewayConfig"
+        }
+      }
+    },
+    "GatewaySecureWebGatewayConfig": {
+      "id": "GatewaySecureWebGatewayConfig",
+      "description": "Contains fields necessary for gateways of type \u2018Secure_Web_Gateway\u2019",
+      "type": "object",
+      "properties": {
+        "certificateUrls": {
+          "description": "A fully-qualified Certificates URL reference. The proxy presents a Certificate (selected based on SNI) when establishing a TLS connection. This feature only applies to gateways of type 'SECURE_WEB_GATEWAY'.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "securityPolicy": {
+          "description": "A fully-qualified SecurityPolicy URL reference. Defines how a server should apply security policy to inbound (VM to Proxy) initiated connections.",
           "type": "string"
         }
       }

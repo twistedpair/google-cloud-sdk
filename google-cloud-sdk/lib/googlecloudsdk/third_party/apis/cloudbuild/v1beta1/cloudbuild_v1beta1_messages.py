@@ -1006,6 +1006,23 @@ class FileHashes(_messages.Message):
   fileHash = _messages.MessageField('Hash', 1, repeated=True)
 
 
+class GoogleDevtoolsCloudbuildV1BuildOptionsPoolOptionWorkerConfig(_messages.Message):
+  r"""Configuration per workload for both Private Pools and Hybrid Pools.
+
+  Fields:
+    diskSizeGb: The disk size (in GB) which is requested for the build
+      container. If unset, a value of 10 GB will be used.
+    memoryGb: The memory (in GB) which is requested for the build container.
+      If unset, a value of 4 GB will be used.
+    vcpuCount: The number of vCPUs which are requested for the build
+      container. If unset, a value of 1 will be used.
+  """
+
+  diskSizeGb = _messages.IntegerField(1)
+  memoryGb = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  vcpuCount = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
 class GoogleDevtoolsCloudbuildV2OperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
@@ -1420,9 +1437,11 @@ class PoolOption(_messages.Message):
       `cloudbuild.workerpools.use` on the project hosting the WorkerPool.
       Format
       projects/{project}/locations/{location}/workerPools/{workerPoolId}
+    workerConfig: Configuration per workload.
   """
 
   name = _messages.StringField(1)
+  workerConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV1BuildOptionsPoolOptionWorkerConfig', 2)
 
 
 class ProcessAppManifestCallbackOperationMetadata(_messages.Message):

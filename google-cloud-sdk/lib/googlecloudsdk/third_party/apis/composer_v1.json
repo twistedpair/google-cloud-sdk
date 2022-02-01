@@ -481,6 +481,10 @@
           "description": "Output only. The IP range reserved for the tenant project's Cloud Composer network. This field is supported for Cloud Composer environments in versions composer-2.*.*-airflow-*.*.* and newer.",
           "readOnly": true,
           "type": "string"
+        },
+        "cloudComposerConnectionSubnetwork": {
+          "description": "Optional. When specified, the environment will use Private Service Connect instead of VPC peerings to connect to Cloud SQL in the Tenant Project, and the PSC endpoint in the Customer Project will use an IP address from this subnetwork.",
+          "type": "string"
         }
       }
     },

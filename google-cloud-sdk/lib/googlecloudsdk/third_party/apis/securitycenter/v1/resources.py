@@ -55,6 +55,13 @@ class Collections(enum.Enum):
       ['organizationsId', 'assetsId'],
       True
   )
+  ORGANIZATIONS_BIGQUERYEXPORTS = (
+      'organizations.bigQueryExports',
+      'organizations/{organizationsId}/bigQueryExports/{bigQueryExportId}',
+      {},
+      ['organizationsId', 'bigQueryExportId'],
+      True
+  )
   ORGANIZATIONS_FINDINGS = (
       'organizations.findings',
       'organizations/{organizationsId}/findings/{findingId}',

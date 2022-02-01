@@ -142,7 +142,7 @@ class ComposerV1alpha2(base_api.BaseApiClient):
         method_id='composer.projects.locations.environments.dags.dagRuns.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v1alpha2/{+parent}/dagRuns',
         request_field='',
         request_type_name='ComposerProjectsLocationsEnvironmentsDagsDagRunsListRequest',

@@ -4586,7 +4586,7 @@
       "type": "object",
       "properties": {
         "monitorInterval": {
-          "description": "Required. The model monitoring job running interval. It will be rounded up to next full hour.",
+          "description": "Required. The model monitoring job scheduling interval. It will be rounded up to next full hour. This defines how often the monitoring jobs are triggered.",
           "type": "string",
           "format": "google-duration"
         }
@@ -5988,6 +5988,17 @@
         "nextPageToken": {
           "description": "A token to retrieve the next page of results. Pass to ListModelVersionsRequest.page_token to obtain that page.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1UpdateExplanationDatasetRequest": {
+      "id": "GoogleCloudAiplatformV1beta1UpdateExplanationDatasetRequest",
+      "description": "Request message for ModelService.UpdateExplanationDataset.",
+      "type": "object",
+      "properties": {
+        "similarity": {
+          "description": "The similarity config containing the location of the dataset.",
+          "$ref": "GoogleCloudAiplatformV1beta1Similarity"
         }
       }
     },
@@ -10107,6 +10118,17 @@
         }
       }
     },
+    "GoogleCloudAiplatformInternalUpdateExplanationDatasetOperationMetadata": {
+      "id": "GoogleCloudAiplatformInternalUpdateExplanationDatasetOperationMetadata",
+      "description": "Runtime operation information for ModelService.UpdateExplanationDataset.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The common part of the operation metadata.",
+          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        }
+      }
+    },
     "GoogleCloudAiplatformInternalUpdateFeaturestoreOperationMetadata": {
       "id": "GoogleCloudAiplatformInternalUpdateFeaturestoreOperationMetadata",
       "description": "Details of operations that perform update Featurestore.",
@@ -13214,6 +13236,17 @@
       "description": "Response message for IndexEndpointService.UndeployIndex.",
       "type": "object",
       "properties": {
+      }
+    },
+    "GoogleCloudAiplatformUiUpdateExplanationDatasetOperationMetadata": {
+      "id": "GoogleCloudAiplatformUiUpdateExplanationDatasetOperationMetadata",
+      "description": "Runtime operation information for ModelService.UpdateExplanationDataset.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The common part of the operation metadata.",
+          "$ref": "GoogleCloudAiplatformUiGenericOperationMetadata"
+        }
       }
     },
     "GoogleCloudAiplatformUiUpdateIndexOperationMetadata": {
@@ -16818,6 +16851,17 @@
       "properties": {
         "genericMetadata": {
           "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1UpdateExplanationDatasetOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1UpdateExplanationDatasetOperationMetadata",
+      "description": "Runtime operation information for ModelService.UpdateExplanationDataset.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The common part of the operation metadata.",
           "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
         }
       }
@@ -30805,6 +30849,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Updates a Model."
+                },
+                "updateExplanationDataset": {
+                  "id": "aiplatform.projects.locations.models.updateExplanationDataset",
+                  "path": "v1beta1/{+model}:updateExplanationDataset",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:updateExplanationDataset",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "model": {
+                      "description": "Required. The resource name of the Model to update. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/models\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "model"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1beta1UpdateExplanationDatasetRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Incremental update the dataset used for a similarity model."
                 },
                 "delete": {
                   "id": "aiplatform.projects.locations.models.delete",

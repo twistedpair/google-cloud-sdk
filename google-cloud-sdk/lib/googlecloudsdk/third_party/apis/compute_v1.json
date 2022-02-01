@@ -4,7 +4,7 @@
   "id": "compute:v1",
   "name": "compute",
   "version": "v1",
-  "revision": "20220114",
+  "revision": "20220124",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -1417,6 +1417,13 @@
         "service": {
           "description": "Specifies a service that will be enabled for audit logging. For example, `storage.googleapis.com`, `cloudsql.googleapis.com`. `allServices` is a special value that covers all services.",
           "type": "string"
+        },
+        "exemptedMembers": {
+          "description": "This is deprecated and has no effect. Do not use.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "auditLogConfigs": {
           "description": "The configuration for logging of each type of permission.",
@@ -3239,25 +3246,21 @@
           "type": "string",
           "enumDescriptions": [
             "The network interface can have both IPv4 and IPv6 addresses.",
-            "The network interface will be assigned IPv4 address.",
-            ""
+            "The network interface will be assigned IPv4 address."
           ],
           "enum": [
             "IPV4_IPV6",
-            "IPV4_ONLY",
-            "UNSPECIFIED_STACK_TYPE"
+            "IPV4_ONLY"
           ]
         },
         "ipv6AccessType": {
           "description": "[Output Only] One of EXTERNAL, INTERNAL to indicate whether the IP can be accessed from the Internet. This field is always inherited from its subnetwork. Valid only if stackType is IPV4_IPV6.",
           "type": "string",
           "enumDescriptions": [
-            "This network interface can have external IPv6.",
-            "IPv6 access type not set. Means this network interface hasn't been turned on IPv6 yet."
+            "This network interface can have external IPv6."
           ],
           "enum": [
-            "EXTERNAL",
-            "UNSPECIFIED_IPV6_ACCESS_TYPE"
+            "EXTERNAL"
           ]
         },
         "queueCount": {
@@ -27578,25 +27581,21 @@
           "type": "string",
           "enumDescriptions": [
             "New VMs in this subnet can have both IPv4 and IPv6 addresses.",
-            "New VMs in this subnet will only be assigned IPv4 addresses.",
-            ""
+            "New VMs in this subnet will only be assigned IPv4 addresses."
           ],
           "enum": [
             "IPV4_IPV6",
-            "IPV4_ONLY",
-            "UNSPECIFIED_STACK_TYPE"
+            "IPV4_ONLY"
           ]
         },
         "ipv6AccessType": {
           "description": "The access type of IPv6 address this subnet holds. It's immutable and can only be specified during creation or the first time the subnet is updated into IPV4_IPV6 dual stack. If the ipv6_type is EXTERNAL then this subnet cannot enable direct path.",
           "type": "string",
           "enumDescriptions": [
-            "VMs on this subnet will be assigned IPv6 addresses that are accesible via the Internet, as well as the VPC network.",
-            "IPv6 access type not set. Means this subnet hasn't been turned on IPv6 yet."
+            "VMs on this subnet will be assigned IPv6 addresses that are accesible via the Internet, as well as the VPC network."
           ],
           "enum": [
-            "EXTERNAL",
-            "UNSPECIFIED_IPV6_ACCESS_TYPE"
+            "EXTERNAL"
           ]
         },
         "kind": {

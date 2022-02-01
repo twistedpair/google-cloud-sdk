@@ -513,6 +513,12 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
       consumer_defined_name is used for notification/UI purposes for consumer
       to recognize their instances.
     createTime: Output only. Timestamp when the resource was created.
+    instanceType: Optional. The instance_type of this instance of format: proj
+      ects/{project_id}/locations/{location_id}/instanceTypes/{instance_type_i
+      d}. Instance Type represents a high-level tier or SKU of the service
+      that this instance belong to. When enabled(eg: Maintenance Rollout),
+      Rollout uses 'instance_type' along with 'software_versions' to determine
+      whether instance needs an update or not.
     labels: Optional. Resource labels to represent user provided metadata.
       Each label is a key-value pair, where both the key and the value are
       arbitrary strings provided by the user.
@@ -715,19 +721,20 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
 
   consumerDefinedName = _messages.StringField(1)
   createTime = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  maintenancePolicyNames = _messages.MessageField('MaintenancePolicyNamesValue', 4)
-  maintenanceSchedules = _messages.MessageField('MaintenanceSchedulesValue', 5)
-  maintenanceSettings = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings', 6)
-  name = _messages.StringField(7)
-  producerMetadata = _messages.MessageField('ProducerMetadataValue', 8)
-  provisionedResources = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource', 9, repeated=True)
-  slmInstanceTemplate = _messages.StringField(10)
-  sloMetadata = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata', 11)
-  softwareVersions = _messages.MessageField('SoftwareVersionsValue', 12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  tenantProjectId = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
+  instanceType = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  maintenancePolicyNames = _messages.MessageField('MaintenancePolicyNamesValue', 5)
+  maintenanceSchedules = _messages.MessageField('MaintenanceSchedulesValue', 6)
+  maintenanceSettings = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings', 7)
+  name = _messages.StringField(8)
+  producerMetadata = _messages.MessageField('ProducerMetadataValue', 9)
+  provisionedResources = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource', 10, repeated=True)
+  slmInstanceTemplate = _messages.StringField(11)
+  sloMetadata = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata', 12)
+  softwareVersions = _messages.MessageField('SoftwareVersionsValue', 13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  tenantProjectId = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule(_messages.Message):

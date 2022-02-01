@@ -606,6 +606,23 @@ class DataDiskAssignment(_messages.Message):
   vmInstance = _messages.StringField(2)
 
 
+class DataflowClassicTemplateConfig(_messages.Message):
+  r"""Dataflow Job information of Classic Template Type. More info about
+  dataflow classic templates can be found here
+  https://cloud.google.com/dataflow/docs/guides/templates/creating-templates.
+  """
+
+
+
+class DataflowFlexTemplateConfig(_messages.Message):
+  r"""Dataflow Job information of Flex Template Type. More info about dataflow
+  flex templates can be found here
+  https://cloud.google.com/dataflow/docs/guides/templates/using-flex-
+  templates.
+  """
+
+
+
 class DataflowProjectsCatalogTemplatesCommitRequest(_messages.Message):
   r"""A DataflowProjectsCatalogTemplatesCommitRequest object.
 
@@ -1113,6 +1130,163 @@ class DataflowProjectsJobsWorkItemsReportStatusRequest(_messages.Message):
   jobId = _messages.StringField(1, required=True)
   projectId = _messages.StringField(2, required=True)
   reportWorkItemStatusRequest = _messages.MessageField('ReportWorkItemStatusRequest', 3)
+
+
+class DataflowProjectsLocationsDeploymentsCreateRequest(_messages.Message):
+  r"""A DataflowProjectsLocationsDeploymentsCreateRequest object.
+
+  Fields:
+    deployment: A Deployment resource to be passed as the request body.
+    parent: Required. The parent resource where this deployment will be
+      created. Format: projects/{project}/locations/{location}
+    requestId: A unique identifier for this request. Restricted to 36 ASCII
+      characters. A random UUID is recommended. This request is only
+      idempotent if a `request_id` is provided.
+    validateOnly: Validate an intended change to see what the result will be
+      before actually making the change.
+  """
+
+  deployment = _messages.MessageField('Deployment', 1)
+  parent = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
+class DataflowProjectsLocationsDeploymentsDeleteRequest(_messages.Message):
+  r"""A DataflowProjectsLocationsDeploymentsDeleteRequest object.
+
+  Fields:
+    allowMissing: If set to true, and the `Deployment` is not found, the
+      request will succeed but no action will be taken on the server.
+    etag: The current etag of the Deployment. Checksum computed by the server.
+      Ensure that the client has an up-to-date value before proceeding. If an
+      etag is provided and does not match the current etag of the
+      `Deployment`, request will be blocked and an ABORTED error will be
+      returned.
+    name: Required. The name of the `Deployment`. Format:
+      projects/{project}/locations/{location}/deployments/{deployment_id}
+    validateOnly: Validate an intended change to see what the result will be
+      before actually making the change.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class DataflowProjectsLocationsDeploymentsGetRequest(_messages.Message):
+  r"""A DataflowProjectsLocationsDeploymentsGetRequest object.
+
+  Enums:
+    ViewValueValuesEnum:
+
+  Fields:
+    name: Required. The name of the `Deployment`. Format:
+      projects/{project}/locations/{location}/deployments/{deployment_id}
+    view: A ViewValueValuesEnum attribute.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""ViewValueValuesEnum enum type.
+
+    Values:
+      DEPLOYMENT_VIEW_UNSPECIFIED: The deployment view to return isn't
+        specified, or is unknown. Responses will contain at least the
+        `DEPLOYMENT_VIEW_ALL` information, and may contain additional
+        information.
+      DEPLOYMENT_VIEW_ALL: Request all information available for this
+        depoyment.
+      DEPLOYMENT_VIEW_MUTABLE: Request all mutable information available for
+        this depoyment.
+    """
+    DEPLOYMENT_VIEW_UNSPECIFIED = 0
+    DEPLOYMENT_VIEW_ALL = 1
+    DEPLOYMENT_VIEW_MUTABLE = 2
+
+  name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
+
+
+class DataflowProjectsLocationsDeploymentsListRequest(_messages.Message):
+  r"""A DataflowProjectsLocationsDeploymentsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of deployments to return. The service may
+      return fewer than this value. If unspecified, at most 50 deployments
+      will be returned. The maximum value is 1000; values above 1000 will be
+      coerced to 1000.
+    pageToken: A page token, received from a previous `ListDeployments` call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to `ListDeployments` must match the call that
+      provided the page token.
+    parent: Required. The `location`, which owns this collection of
+      deployments. Format: projects/{project}/locations/{location}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DataflowProjectsLocationsDeploymentsListRevisionsRequest(_messages.Message):
+  r"""A DataflowProjectsLocationsDeploymentsListRevisionsRequest object.
+
+  Fields:
+    name: Required. The name of the `Deployment`. Format:
+      projects/{project}/locations/{location}/deployments/{deployment_id}
+    pageSize: The maximum number of deployments to return. The service may
+      return fewer than this value. If unspecified, at most 50 deployments
+      will be returned. The maximum value is 1000; values above 1000 will be
+      coerced to 1000.
+    pageToken: A page token, received from a previous `ListDeployments` call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to `ListDeployments` must match the call that
+      provided the page token.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
+class DataflowProjectsLocationsDeploymentsPatchRequest(_messages.Message):
+  r"""A DataflowProjectsLocationsDeploymentsPatchRequest object.
+
+  Fields:
+    allowMissing: If set to true, and the `Deployment` is not found, a new
+      `Deployment` will be created.
+    deployment: A Deployment resource to be passed as the request body.
+    name: Required. The name of the `Deployment`. Format:
+      projects/{project}/locations/{location}/deployments/{deployment_id}
+    requestId: A unique identifier for this request. Restricted to 36 ASCII
+      characters. A random UUID is recommended. This request is only
+      idempotent if a `request_id` is provided.
+    updateMask: The list of fields to update.
+    validateOnly: Validate an intended change to see what the result will be
+      before actually making the change.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  deployment = _messages.MessageField('Deployment', 2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  updateMask = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
+
+
+class DataflowProjectsLocationsDeploymentsRollbackRequest(_messages.Message):
+  r"""A DataflowProjectsLocationsDeploymentsRollbackRequest object.
+
+  Fields:
+    name: Required. The name of the `Deployment`. Format:
+      projects/{project}/locations/{location}/deployments/{deployment_id}
+    rollbackDeploymentRequest: A RollbackDeploymentRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rollbackDeploymentRequest = _messages.MessageField('RollbackDeploymentRequest', 2)
 
 
 class DataflowProjectsLocationsFlexTemplatesLaunchRequest(_messages.Message):
@@ -1877,6 +2051,143 @@ class DebugOptions(_messages.Message):
 
 class DeleteSnapshotResponse(_messages.Message):
   r"""Response from deleting a snapshot."""
+
+
+class Deployment(_messages.Message):
+  r"""A Deployment object.
+
+  Enums:
+    DeploymentStateValueValuesEnum: Output only. `Deployment` resource
+      deployment current state.
+
+  Messages:
+    AnnotationsValue: User specified annotations. See
+      https://google.aip.dev/128#annotations for more details such as format
+      and size limitations.
+
+  Fields:
+    annotations: User specified annotations. See
+      https://google.aip.dev/128#annotations for more details such as format
+      and size limitations.
+    classicTemplateConfig: Required. Dataflow Job information of Classic
+      Template Type.
+    createTime: Output only. Time at which the request to create the
+      `Deployment` was received.
+    deleteTime: Output only. Time at which the request to delete the
+      `Deployment` was received.
+    deploymentState: Output only. `Deployment` resource deployment current
+      state.
+    deploymentWorkflowConfig: Dataflow job deployment workflow config.
+    displayName: A user-specified, human-readable name for the `Deployment`.
+      If provided, this value must be 1-63 characters.
+    etag: Checksum computed by the server at the time of resource creation or
+      update time. Ensure that the client has an up-to-date value before
+      proceeding. If an etag is provided and does not match the current etag
+      of the `Deployment`, request will be blocked and an ABORTED error will
+      be returned.
+    flexTemplateConfig: Required. Dataflow Job information of Flex Template
+      Type.
+    name: Required. The name of the `Deployment`. Format:
+      projects/{project}/locations/{location}/deployments/{deployment_id}
+    reconciling: Output only. A resource must set the reconciling field to
+      true if the current state of the resource does not match the user's
+      intended state, and the system is working to reconcile them. This is
+      regardless of whether the root cause of going into reconciliation was
+      user or system action.
+    revisionCreateTime: Output only. The timestamp that the revision was
+      created.
+    revisionId: Output only. A system generated revision ID of the
+      `Deployment`. A new revision is committed whenever the `Deployment` is
+      changed in any way.
+    uid: Output only. A unique identifier (UUID4) for the `Deployment`.
+    updateTime: Output only. Time at which the request to update the
+      `Deployment` was received.
+  """
+
+  class DeploymentStateValueValuesEnum(_messages.Enum):
+    r"""Output only. `Deployment` resource deployment current state.
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: State of the `Deployment` is unspecified.
+      DEPLOYMENT_IN_PROGRESS: `Deployment` workflow is progress.
+      DEPLOYMENT_SUCCEEDED: `Deployment` workflow is finished successfully.
+      DEPLOYMENT_FAILED: `Deployment` workflow failed.
+      DEPLOYMENT_CANCELLING: `Deployment` workflow is cancelling.
+      DEPLOYMENT_CANCELLED: `Deployment` workflow is cancelled.
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    DEPLOYMENT_IN_PROGRESS = 1
+    DEPLOYMENT_SUCCEEDED = 2
+    DEPLOYMENT_FAILED = 3
+    DEPLOYMENT_CANCELLING = 4
+    DEPLOYMENT_CANCELLED = 5
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""User specified annotations. See https://google.aip.dev/128#annotations
+    for more details such as format and size limitations.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  classicTemplateConfig = _messages.MessageField('DataflowClassicTemplateConfig', 2)
+  createTime = _messages.StringField(3)
+  deleteTime = _messages.StringField(4)
+  deploymentState = _messages.EnumField('DeploymentStateValueValuesEnum', 5)
+  deploymentWorkflowConfig = _messages.MessageField('DeploymentWorkflowConfig', 6)
+  displayName = _messages.StringField(7)
+  etag = _messages.StringField(8)
+  flexTemplateConfig = _messages.MessageField('DataflowFlexTemplateConfig', 9)
+  name = _messages.StringField(10)
+  reconciling = _messages.BooleanField(11)
+  revisionCreateTime = _messages.StringField(12)
+  revisionId = _messages.StringField(13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
+
+
+class DeploymentWorkflowConfig(_messages.Message):
+  r"""Dataflow job deployment workflow config.
+
+  Enums:
+    JobTypeValueValuesEnum: Streaming or batch job.
+
+  Fields:
+    jobType: Streaming or batch job.
+  """
+
+  class JobTypeValueValuesEnum(_messages.Enum):
+    r"""Streaming or batch job.
+
+    Values:
+      JOB_TYPE_UNSPECIFIED: <no description>
+      JOB_TYPE_BATCH: Batch job.
+      JOB_TYPE_STREAMING: Streaming job.
+    """
+    JOB_TYPE_UNSPECIFIED = 0
+    JOB_TYPE_BATCH = 1
+    JOB_TYPE_STREAMING = 2
+
+  jobType = _messages.EnumField('JobTypeValueValuesEnum', 1)
 
 
 class DerivedSource(_messages.Message):
@@ -3723,6 +4034,35 @@ class LeaseWorkItemResponse(_messages.Message):
   workItems = _messages.MessageField('WorkItem', 2, repeated=True)
 
 
+class ListDeploymentRevisionsResponse(_messages.Message):
+  r"""Response of a request to list `Cloud Dataflow job deployment revisions`.
+
+  Fields:
+    deployments: The deployments from the specified publisher.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages. Use
+      `next_token.SerializeAsString` + `absl::WebSafeBase64Escape`.
+  """
+
+  deployments = _messages.MessageField('Deployment', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListDeploymentsResponse(_messages.Message):
+  r"""Response of a request to list `Cloud Dataflow job deployments` in a
+  project.
+
+  Fields:
+    deployments: The deployments from the specified publisher.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages. Use
+      `next_token.SerializeAsString` + `absl::WebSafeBase64Escape`.
+  """
+
+  deployments = _messages.MessageField('Deployment', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListJobMessagesResponse(_messages.Message):
   r"""Response to a request to list job messages.
 
@@ -3809,15 +4149,18 @@ class MemInfo(_messages.Message):
 
   Fields:
     currentLimitBytes: Instantenous memory limit in bytes.
+    currentOoms: Number of Out of Memory (OOM) events recorded since the
+      previous measurement.
     currentRssBytes: Instantenous memory (RSS) size in bytes.
     timestamp: Timestamp of the measurement.
     totalGbMs: Total memory (RSS) usage since start up in GB * ms.
   """
 
   currentLimitBytes = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
-  currentRssBytes = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
-  timestamp = _messages.StringField(3)
-  totalGbMs = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  currentOoms = _messages.IntegerField(2)
+  currentRssBytes = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  timestamp = _messages.StringField(4)
+  totalGbMs = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
 
 
 class MetricShortId(_messages.Message):
@@ -4103,6 +4446,114 @@ class NameAndKind(_messages.Message):
 
   kind = _messages.EnumField('KindValueValuesEnum', 1)
   name = _messages.StringField(2)
+
+
+class Operation(_messages.Message):
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
+
+  Messages:
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
+      that returns a long-running operation should document the metadata type,
+      if any.
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
+      methods, the response should have the type `XxxResponse`, where `Xxx` is
+      the original method name. For example, if the original method name is
+      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+
+  Fields:
+    done: If the value is `false`, it means the operation is still in
+      progress. If `true`, the operation is completed, and either `error` or
+      `response` is available.
+    error: The error result of the operation in case of failure or
+      cancellation.
+    metadata: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
+      that returns a long-running operation should document the metadata type,
+      if any.
+    name: The server-assigned name, which is only unique within the same
+      service that originally returns it. If you use the default HTTP mapping,
+      the `name` should be a resource name ending with
+      `operations/{unique_id}`.
+    response: The normal response of the operation in case of success. If the
+      original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
+      methods, the response should have the type `XxxResponse`, where `Xxx` is
+      the original method name. For example, if the original method name is
+      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Service-specific metadata associated with the operation. It typically
+    contains progress information and common metadata such as create time.
+    Some services might not provide such metadata. Any method that returns a
+    long-running operation should document the metadata type, if any.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResponseValue(_messages.Message):
+    r"""The normal response of the operation in case of success. If the
+    original method returns no data on success, such as `Delete`, the response
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
+    methods, the response should have the type `XxxResponse`, where `Xxx` is
+    the original method name. For example, if the original method name is
+    `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResponseValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResponseValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  done = _messages.BooleanField(1)
+  error = _messages.MessageField('Status', 2)
+  metadata = _messages.MessageField('MetadataValue', 3)
+  name = _messages.StringField(4)
+  response = _messages.MessageField('ResponseValue', 5)
 
 
 class Package(_messages.Message):
@@ -4710,6 +5161,31 @@ class ResourceUtilizationReportResponse(_messages.Message):
   r"""Service-side response to WorkerMessage reporting resource utilization.
   """
 
+
+
+class RollbackDeploymentRequest(_messages.Message):
+  r"""Request to rollback a Cloud Dataflow job deployment to a specific
+  revision.
+
+  Fields:
+    etag: The current etag of the Deployment. Checksum computed by the server.
+      Ensure that the client has an up-to-date value before proceeding. If an
+      etag is provided and does not match the current etag of the
+      `Deployment`, request will be blocked and an ABORTED error will be
+      returned.
+    requestId: A unique identifier for this request. Restricted to 36 ASCII
+      characters. A random UUID is recommended. This request is only
+      idempotent if a `request_id` is provided.
+    revisionId: Required. The revision ID to roll back to. It must be a
+      revision of the same `Deployment`. Example: c7cfa2a8
+    validateOnly: Validate an intended change to see what the result will be
+      before actually making the change.
+  """
+
+  etag = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+  revisionId = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
 
 
 class RuntimeEnvironment(_messages.Message):

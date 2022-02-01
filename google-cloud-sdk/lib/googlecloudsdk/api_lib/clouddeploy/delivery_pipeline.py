@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import list_pager
+
 from googlecloudsdk.api_lib.clouddeploy import client_util
 
 
@@ -47,3 +49,34 @@ class DeliveryPipelinesClient(object):
     request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesGetRequest(
         name=name)
     return self._service.Get(request)
+
+  def List(self,
+           location,
+           filter_str=None,
+           order_by=None,
+           page_size=0,
+           limit=None):
+    """Lists Delivery Pipeline resources that belong to a location.
+
+    Args:
+      location: str, the full name of the location which owns the Delivery
+        Pipelines.
+      filter_str: optional[str], list filter.
+      order_by: optional[str], field to sort by.
+      page_size: optional[int], the maximum number of `DeliveryPipeline` objects
+        to return.
+      limit: int, The maximum number of records to yield. None if all available
+        records should be yielded.
+
+    Returns:
+      Delivery Pipeline list response.
+    """
+    list_req = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesListRequest(
+        parent=location, filter=filter_str, orderBy=order_by)
+    return list_pager.YieldFromList(
+        self._service,
+        list_req,
+        field='deliveryPipelines',
+        batch_size=page_size,
+        limit=limit,
+        batch_size_attribute='pageSize')

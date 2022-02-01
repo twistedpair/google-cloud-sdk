@@ -24,12 +24,15 @@ from googlecloudsdk.command_lib.storage import optimize_parameters_util
 from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
 from googlecloudsdk.command_lib.storage.tasks import task_graph_executor
 from googlecloudsdk.command_lib.storage.tasks import task_status
+from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 
 def _execute_tasks_sequential(task_iterator,
                               received_messages=None,
-                              task_status_queue=None):
+                              task_status_queue=None,
+                              continue_on_error=False):
   """Executes task objects sequentially.
 
   Args:
@@ -38,16 +41,29 @@ def _execute_tasks_sequential(task_iterator,
       task in task_iterator.
     task_status_queue (multiprocessing.Queue|None): Used by task to report it
       progress to a central location.
+    continue_on_error (bool): If True, execution will continue even if
+      errors occur.
 
   Returns:
-    Iterable[task.Message] emitted by tasks in task_iterator.
+    Tuple[int, Iterable[task.Message]]: The first element in the tuple
+      is the exit code and the second element is an iterable of messages
+      emitted by the tasks in task_iterator.
   """
+  exit_code = 0
   messages_from_current_task_iterator = []
   for task in task_iterator:
     if received_messages is not None:
       task.received_messages = received_messages
 
-    task_output = task.execute(task_status_queue=task_status_queue)
+    try:
+      task_output = task.execute(task_status_queue=task_status_queue)
+    except core_exceptions.Error as e:
+      if continue_on_error:
+        log.warning(str(e))
+        exit_code = 1
+        continue
+      else:
+        raise
 
     if task_output is None:
       continue
@@ -58,12 +74,15 @@ def _execute_tasks_sequential(task_iterator,
     if task_output.additional_task_iterators is not None:
       messages_for_dependent_tasks = []
       for additional_task_iterator in task_output.additional_task_iterators:
-        messages_for_dependent_tasks = _execute_tasks_sequential(
-            additional_task_iterator,
-            messages_for_dependent_tasks,
-            task_status_queue=task_status_queue)
+        exit_code_from_dependent_tasks, messages_for_dependent_tasks = (
+            _execute_tasks_sequential(
+                additional_task_iterator,
+                messages_for_dependent_tasks,
+                task_status_queue=task_status_queue,
+                continue_on_error=continue_on_error))
+        exit_code = max(exit_code_from_dependent_tasks, exit_code)
 
-  return messages_from_current_task_iterator
+  return exit_code, messages_from_current_task_iterator
 
 
 def should_use_parallelism():
@@ -83,7 +102,8 @@ def should_use_parallelism():
 def execute_tasks(task_iterator,
                   parallelizable=False,
                   task_status_queue=None,
-                  progress_type=None):
+                  progress_type=None,
+                  continue_on_error=False):
   """Call appropriate executor.
 
   Args:
@@ -93,6 +113,8 @@ def execute_tasks(task_iterator,
       progress to a central location.
     progress_type (task_status.ProgressType|None): Determines what type of
       progress indicator to display.
+    continue_on_error (bool): Only applicable for sequential mode. If True,
+      execution will continue even if errors occur.
 
   Returns:
     An integer indicating the exit_code. Zero indicates no fatal errors were
@@ -116,9 +138,8 @@ def execute_tasks(task_iterator,
         progress_type=progress_type).run()
   else:
     with task_status.progress_manager(task_status_queue, progress_type):
-      _execute_tasks_sequential(
+      exit_code, _ = _execute_tasks_sequential(
           plurality_checkable_task_iterator,
-          task_status_queue=task_status_queue)
-    # TODO(b/188092601) Deterimine the exit_code in _execute_tasks_sequential.
-    exit_code = 0
+          task_status_queue=task_status_queue,
+          continue_on_error=continue_on_error)
   return exit_code

@@ -93,6 +93,20 @@ class AdmissionWhitelistPattern(_messages.Message):
   namePattern = _messages.StringField(1)
 
 
+class AllowlistPattern(_messages.Message):
+  r"""An allowlist pattern exempts images from checks by evaluation rules.
+
+  Fields:
+    namePattern: An image name pattern to allowlist, in the form
+      `registry/path/to/image`. This supports a trailing `*` as a wildcard,
+      but this is allowed only in text after the `registry/` part. Examples of
+      valid patterns: gcr.io/nginx, gcr.io/nginx:2.*, gcr.io/*,
+      gcr.io/nginx[@:]*, gcr.io/im@sha256:*,gcr.io/im@sha256:ab2345*.
+  """
+
+  namePattern = _messages.StringField(1)
+
+
 class AttestationOccurrence(_messages.Message):
   r"""Occurrence that represents a single "attestation". The authenticity of
   an attestation can be verified using the attached signature. If the verifier
@@ -315,6 +329,80 @@ class BinaryauthorizationProjectsGetPolicyRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class BinaryauthorizationProjectsPlatformsListRequest(_messages.Message):
+  r"""A BinaryauthorizationProjectsPlatformsListRequest object.
+
+  Fields:
+    pageSize: Requested page size. The server may return fewer results than
+      requested. If unspecified, the server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+      Typically, this is the value of ListPlatformsResponse.next_page_token
+      returned from the previous call to the `ListPlatforms` method.
+    parent: Required. Contains the name of the resource requested. Specified
+      in the format `projects/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class BinaryauthorizationProjectsPlatformsPoliciesCreateRequest(_messages.Message):
+  r"""A BinaryauthorizationProjectsPlatformsPoliciesCreateRequest object.
+
+  Fields:
+    parent: Required. The parent of this platform policy.
+    platformPolicy: A PlatformPolicy resource to be passed as the request
+      body.
+    policyId: Required. The platform policy ID.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  platformPolicy = _messages.MessageField('PlatformPolicy', 2)
+  policyId = _messages.StringField(3)
+
+
+class BinaryauthorizationProjectsPlatformsPoliciesDeleteRequest(_messages.Message):
+  r"""A BinaryauthorizationProjectsPlatformsPoliciesDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the platform policy to delete, in the format
+      `projects/*/platforms/*/policies/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BinaryauthorizationProjectsPlatformsPoliciesGetRequest(_messages.Message):
+  r"""A BinaryauthorizationProjectsPlatformsPoliciesGetRequest object.
+
+  Fields:
+    name: Required. The name of the platform policy to retrieve, in the format
+      `projects/*/platforms/*/policies/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BinaryauthorizationProjectsPlatformsPoliciesListRequest(_messages.Message):
+  r"""A BinaryauthorizationProjectsPlatformsPoliciesListRequest object.
+
+  Fields:
+    pageSize: Requested page size. The server may return fewer results than
+      requested. If unspecified, the server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+      Typically, this is the value of
+      ListPlatformPoliciesResponse.next_page_token returned from the previous
+      call to the `ListPlatformPolicies` method.
+    parent: Required. The resource name of the platform associated with the
+      platform policies, in the format `projects/*/platforms/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class BinaryauthorizationProjectsPolicyGetIamPolicyRequest(_messages.Message):
   r"""A BinaryauthorizationProjectsPolicyGetIamPolicyRequest object.
 
@@ -443,6 +531,60 @@ class Empty(_messages.Message):
 
 
 
+class EvaluationRule(_messages.Message):
+  r"""An evaluation rule specifies either that all container images used in a
+  deployment request must be attested to by one or more Attestor, that the
+  deployment will be always allowed, or that it is always denied.
+
+  Enums:
+    EnforcementModeValueValuesEnum: Required. Define the possible actions when
+      a deployment is denied by an evaluation rule.
+    EvaluationModeValueValuesEnum: Required. How this rule will be evaluated.
+
+  Fields:
+    enforcementMode: Required. Define the possible actions when a deployment
+      is denied by an evaluation rule.
+    evaluationMode: Required. How this rule will be evaluated.
+    requiredAttestors: Optional. If the `evaluation_mode` is
+      `REQUIRE_ATTESTATION`, this is the list of the attestors required for
+      the deployment.
+  """
+
+  class EnforcementModeValueValuesEnum(_messages.Enum):
+    r"""Required. Define the possible actions when a deployment is denied by
+    an evaluation rule.
+
+    Values:
+      ENFORCEMENT_MODE_UNSPECIFIED: Do not use.
+      ENFORCED_BLOCK_AND_AUDIT_LOG: Enforce the admission rule by blocking the
+        deployment.
+      DRYRUN_AUDIT_LOG_ONLY: Dryrun mode: Audit logging only. This will allow
+        the deployment as if the admission request had specified break-glass.
+    """
+    ENFORCEMENT_MODE_UNSPECIFIED = 0
+    ENFORCED_BLOCK_AND_AUDIT_LOG = 1
+    DRYRUN_AUDIT_LOG_ONLY = 2
+
+  class EvaluationModeValueValuesEnum(_messages.Enum):
+    r"""Required. How this rule will be evaluated.
+
+    Values:
+      EVALUATION_MODE_UNSPECIFIED: Do not use.
+      ALWAYS_ALLOW: The deployment is always allowed.
+      REQUIRE_ATTESTATION: The deployment requires attestations from certain
+        attestors.
+      ALWAYS_DENY: The deployment is always denied.
+    """
+    EVALUATION_MODE_UNSPECIFIED = 0
+    ALWAYS_ALLOW = 1
+    REQUIRE_ATTESTATION = 2
+    ALWAYS_DENY = 3
+
+  enforcementMode = _messages.EnumField('EnforcementModeValueValuesEnum', 1)
+  evaluationMode = _messages.EnumField('EvaluationModeValueValuesEnum', 2)
+  requiredAttestors = _messages.MessageField('InlineAttestor', 3, repeated=True)
+
+
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -555,6 +697,50 @@ class IamPolicy(_messages.Message):
   version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class InlineAttestor(_messages.Message):
+  r"""An attestor that attests to container image artifacts. This attestor is
+  to be inlined as part of the policy.
+
+  Fields:
+    attestationNote: Required. The Grafeas resource name of an ATTESTATION
+      Note, created by the user, in the form of `projects/*/notes/*`. An
+      attestation by this attestor is stored as a Grafeas Attestation
+      Occurrence that names a container image and that links to this Note.
+      Grafeas is an external dependency.
+    description: Optional. A description, for information purposes only.
+    id: Required. An id used to identify the attestor in the policy. It should
+      be unique within the same policy.
+    publicKeys: Optional. Public keys that verify attestations signed by this
+      attestor. If this field is non-empty, one of the specified public keys
+      must verify that an attestation was signed by this attestor for the
+      image specified in the evaluation request. If this field is empty, this
+      attestor always returns that no valid attestations exist.
+  """
+
+  attestationNote = _messages.StringField(1)
+  description = _messages.StringField(2)
+  id = _messages.StringField(3)
+  publicKeys = _messages.MessageField('AttestorPublicKey', 4, repeated=True)
+
+
+class InlineCloudRunPolicy(_messages.Message):
+  r"""A binary authorization policy for Cloud Run deployments.
+
+  Fields:
+    allowlistPatterns: Optional. List of images that will be allowed
+      regardless of the platform-based policies. Allowlists are always
+      evaluated prior to evaluating any platform-based policies. An image name
+      pattern to allowlist is in the form `registry/path/to/image`. A trailing
+      `*` is supported as a wildcard, but this is allowed only in text after
+      the `registry/` part.
+    rule: Required. The evaluation rule used for evaluating a Cloud Run
+      deployment.
+  """
+
+  allowlistPatterns = _messages.MessageField('AllowlistPattern', 1, repeated=True)
+  rule = _messages.MessageField('EvaluationRule', 2)
+
+
 class Jwt(_messages.Message):
   r"""A Jwt object.
 
@@ -579,6 +765,36 @@ class ListAttestorsResponse(_messages.Message):
 
   attestors = _messages.MessageField('Attestor', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListPlatformPoliciesResponse(_messages.Message):
+  r"""Response message for
+  PlatformPolicyManagementService.ListPlatformPolicies.
+
+  Fields:
+    nextPageToken: A token to retrieve the next page of results. Pass this
+      value in the ListPlatformPoliciesRequest.page_token field in the
+      subsequent call to the `ListPlatformPolicies` method to retrieve the
+      next page of results.
+    platformPolicies: The list of platform policies.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  platformPolicies = _messages.MessageField('PlatformPolicy', 2, repeated=True)
+
+
+class ListPlatformsResponse(_messages.Message):
+  r"""Response message for PlatformPolicyManagementService.ListPlatforms.
+
+  Fields:
+    nextPageToken: A token to retrieve the next page of results. Pass this
+      value in the ListPlatformsRequest.page_token field in the subsequent
+      call to the `ListPlatforms` method to retrieve the next page of results.
+    platforms: The list of platforms supported by binary authorization.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  platforms = _messages.MessageField('Platform', 2, repeated=True)
 
 
 class PkixPublicKey(_messages.Message):
@@ -647,6 +863,36 @@ class PkixPublicKey(_messages.Message):
 
   publicKeyPem = _messages.StringField(1)
   signatureAlgorithm = _messages.EnumField('SignatureAlgorithmValueValuesEnum', 2)
+
+
+class Platform(_messages.Message):
+  r"""A platform supported by binary authorization platform policy.
+
+  Fields:
+    name: Output only. The relative resource name of the platform supported by
+      binary authorization platform policies, in the form of
+      `projects/*/platforms/*`.
+  """
+
+  name = _messages.StringField(1)
+
+
+class PlatformPolicy(_messages.Message):
+  r"""A binary authorization platform policy for deployments on various
+  platforms.
+
+  Fields:
+    cloudRunPolicy: Optional. Cloud Run platform specific policy.
+    description: Optional. A description comment about the policy.
+    name: Output only. The relative resource name of the BinAuthz platform
+      policy, in the form of `projects/*/platforms/*/policies/*`.
+    updateTime: Output only. Time when the policy was last updated.
+  """
+
+  cloudRunPolicy = _messages.MessageField('InlineCloudRunPolicy', 1)
+  description = _messages.StringField(2)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
 
 
 class Policy(_messages.Message):

@@ -2045,6 +2045,18 @@ def AddSecureTagsArgs(parser):
       """)
 
 
+def AddResourceManagerTagsArgs(parser):
+  """Adds resource manager tag related args."""
+  parser.add_argument(
+      '--resource-manager-tags',
+      type=arg_parsers.ArgDict(),
+      metavar='KEY=VALUE',
+      action=arg_parsers.UpdateAction,
+      help="""\
+      Specifies a list of resource manager tags to apply to the instance.
+      """)
+
+
 def AddNoRestartOnFailureArgs(parser):
   parser.add_argument(
       '--restart-on-failure',

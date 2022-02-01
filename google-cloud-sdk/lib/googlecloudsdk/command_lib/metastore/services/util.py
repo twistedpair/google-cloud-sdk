@@ -63,6 +63,50 @@ def GenerateNetworkConfigFromSubnetList(unused_ref, args, req):
   return req
 
 
+def GenerateAuxiliaryVersionsConfigFromList(unused_ref, args, req):
+  """Generates the auxiliary versions map from the list of auxiliary versions.
+
+  Args:
+    args: The request arguments.
+    req: A request with `service` field.
+
+  Returns:
+    If `auxiliary-versions` is present in the arguments, a request with hive
+    metastore config's auxiliary versions map field is returned.
+    Otherwise the original request is returned.
+  """
+  if args.auxiliary_versions:
+    if req.service.hiveMetastoreConfig is None:
+      req.service.hiveMetastoreConfig = {}
+    req.service.hiveMetastoreConfig.auxiliaryVersions = _GenerateAdditionalProperties(
+        {
+            'aux-' + version.replace('.', '-'): {
+                'version': version
+            } for version in args.auxiliary_versions
+        })
+  return req
+
+
+def LoadAuxiliaryVersionsConfigsFromYamlFile(file_contents):
+  """Convert Input YAML file into auxiliary versions configurations map.
+
+  Args:
+    file_contents: The YAML file contents of the file containing the auxiliary
+      versions configurations.
+
+  Returns:
+    The auxiliary versions configuration mapping with service name as the key
+    and config as the value.
+  """
+  aux_versions = {}
+  for aux_config in file_contents:
+    aux_versions[aux_config['name']] = {'version': aux_config['version']}
+    if 'config_overrides' in aux_config:
+      aux_versions[aux_config['name']]['configOverrides'] = aux_config[
+          'config_overrides']
+  return aux_versions
+
+
 def _GenerateAdditionalProperties(values_dict):
   """Format values_dict into additionalProperties-style dict."""
   props = [{'key': k, 'value': v} for k, v in sorted(values_dict.items())]
@@ -105,6 +149,8 @@ def _GenerateUpdateMask(args):
           'metadataIntegration.dataCatalogConfig.enabled',
       '--no-data-catalog-sync':
           'metadataIntegration.dataCatalogConfig.enabled',
+      '--endpoint-protocol':
+          'hive_metastore_config.endpoint_protocol',
   }
 
   update_mask = set()

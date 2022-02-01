@@ -1810,6 +1810,16 @@
         "podCidrOverprovisionConfig": {
           "description": "Pod CIDR size overprovisioning config for the nodepool. Pod CIDR size per node depends on max_pods_per_node. By default, the value of max_pods_per_node is doubled and then rounded off to next power of 2 to get the size of pod CIDR block per node. Example: max_pods_per_node of 30 would result in 64 IPs (\/26). This config can disable the doubling of IPs (we still round off to next power of 2) Example: max_pods_per_node of 30 will result in 32 IPs (\/27) when overprovisioning is disabled.",
           "$ref": "PodCIDROverprovisionConfig"
+        },
+        "subnetIpv6CidrBlock": {
+          "description": "Output only. [Output only] The subnet's IPv6 CIDR block used by nodes and pods.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "servicesIpv6CidrBlock": {
+          "description": "Output only. [Output only] The services IPv6 CIDR block for the cluster.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },

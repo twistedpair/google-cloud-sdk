@@ -44,6 +44,7 @@ from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.credentials import creds as c_creds
 from googlecloudsdk.core.credentials import exceptions as creds_exceptions
 from googlecloudsdk.core.credentials import gce as c_gce
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import times
 import httplib2
@@ -56,6 +57,8 @@ import six
 from six.moves import urllib
 
 
+ACCESS_TOKEN_ENV_VAR_NAME = (
+    'CLOUDSDK_AUTH_ACCESS_TOKEN')
 GOOGLE_OAUTH2_PROVIDER_AUTHORIZATION_URI = (
     'https://accounts.google.com/o/oauth2/auth')
 GOOGLE_OAUTH2_PROVIDER_REVOKE_URI = (
@@ -630,6 +633,29 @@ def _LoadFromFileOverride(cred_file_override, scopes, use_google_auth):
   return cred
 
 
+def _LoadAccessTokenCredsFromValue(access_token, use_google_auth):
+  """Loads an AccessTokenCredentials from access_token."""
+  log.info('Using access token from environment variable [%s]',
+           ACCESS_TOKEN_ENV_VAR_NAME)
+  # All commands should be using google-auth, we have this check in case some
+  # users disabled google-auth using the hidden auth/disable_load_google_auth.
+  if not use_google_auth:
+    raise UnsupportedCredentialsError(
+        'You may have passed an access token to gcloud using the environment '
+        'variable {}. At the same time, google-auth is disabled by '
+        'auth/disable_load_google_auth. They do not work together. Please '
+        'unset auth/disable_load_google_auth and retry.'.format(
+            ACCESS_TOKEN_ENV_VAR_NAME)
+    )
+  access_token = access_token.strip()
+  # Import only when necessary to decrease the startup time. Move it to
+  # global once google-auth replaces oauth2client.
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.core.credentials import google_auth_credentials as c_google_auth
+  # pylint: enable=g-import-not-at-top
+  return c_google_auth.AccessTokenCredentials(access_token)
+
+
 def _LoadAccessTokenCredsFromFile(token_file, use_google_auth):
   """Loads an AccessTokenCredentials from token_file."""
   log.info('Using access token from file: [%s]', token_file)
@@ -654,12 +680,15 @@ def _LoadAccessTokenCredsFromFile(token_file, use_google_auth):
 
 def _Load(account, scopes, prevent_refresh, use_google_auth=True):
   """Helper for Load()."""
-  # If a credential file is set, just use that and ignore the active account
-  # and whatever is in the credential store.
+  # If an access token, access token file, or credential file is set, just use
+  # that and ignore the active account and whatever is in the credential store.
+  access_token = encoding.GetEncodedValue(os.environ, ACCESS_TOKEN_ENV_VAR_NAME)
   access_token_file = properties.VALUES.auth.access_token_file.Get()
   cred_file_override = properties.VALUES.auth.credential_file_override.Get()
 
-  if access_token_file:
+  if access_token:
+    cred = _LoadAccessTokenCredsFromValue(access_token, use_google_auth)
+  elif access_token_file:
     cred = _LoadAccessTokenCredsFromFile(access_token_file, use_google_auth)
   elif cred_file_override:
     cred = _LoadFromFileOverride(cred_file_override, scopes, use_google_auth)

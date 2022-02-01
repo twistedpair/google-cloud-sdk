@@ -515,7 +515,7 @@
     },
     "SparkBatch": {
       "id": "SparkBatch",
-      "description": "A configuration for running an Apache Spark (http:\/\/spark.apache.org\/) batch workload.",
+      "description": "A configuration for running an Apache Spark (https:\/\/spark.apache.org\/) batch workload.",
       "type": "object",
       "properties": {
         "mainJarFileUri": {
@@ -590,7 +590,7 @@
     },
     "SparkSqlBatch": {
       "id": "SparkSqlBatch",
-      "description": "A configuration for running Apache Spark SQL (http:\/\/spark.apache.org\/sql\/) queries as a batch workload.",
+      "description": "A configuration for running Apache Spark SQL (https:\/\/spark.apache.org\/sql\/) queries as a batch workload.",
       "type": "object",
       "properties": {
         "queryFileUri": {
@@ -1213,7 +1213,7 @@
           "format": "int32"
         },
         "localSsdInterface": {
-          "description": "Optional. Interface type of local SSDs (default is \"scsi\"). Valid values: \"scsi\" (Small Computer System Interface), \"nvme\" (Non-Volatile Memory Express). See SSD Interface types (https:\/\/cloud.google.com\/compute\/docs\/disks\/local-ssd#performance).",
+          "description": "Optional. Interface type of local SSDs (default is \"scsi\"). Valid values: \"scsi\" (Small Computer System Interface), \"nvme\" (Non-Volatile Memory Express). See local SSD performance (https:\/\/cloud.google.com\/compute\/docs\/disks\/local-ssd#performance).",
           "type": "string"
         }
       }
@@ -1721,14 +1721,18 @@
             "all default monitoring agent metrics that are published with prefix \"agent.googleapis.com\" when we enable a monitoring agent in Compute Engine",
             "Hdfs metric source",
             "Spark metric source",
-            "Yarn metric source"
+            "Yarn metric source",
+            "Spark history server metric source",
+            "hiveserver2 metric source"
           ],
           "enum": [
             "METRIC_SOURCE_UNSPECIFIED",
             "MONITORING_AGENT_DEFAULTS",
             "HDFS",
             "SPARK",
-            "YARN"
+            "YARN",
+            "SPARK_HISTORY_SERVER",
+            "HIVESERVER2"
           ]
         },
         "metricOverrides": {
@@ -1794,7 +1798,7 @@
           "enumDescriptions": [
             "The cluster state is unknown.",
             "The cluster is being created and set up. It is not ready for use.",
-            "The cluster is currently running and healthy. It is ready for use.",
+            "The cluster is currently running and healthy. It is ready for use.Note: The cluster state changes from \"creating\" to \"running\" status after the master node(s), first two primary worker nodes (and the last primary worker node if primary workers > 2) are running.",
             "The cluster encountered an error. It is not ready for use.",
             "The cluster has encountered an error while being updated. Jobs can be submitted to the cluster, but the cluster cannot be updated.",
             "The cluster is being deleted. It cannot be used.",
@@ -1948,6 +1952,18 @@
         "tarballGcsDir": {
           "description": "Optional. (Optional) The output Cloud Storage directory for the diagnostic tarball. If not specified, a task-specific directory in the cluster's staging bucket will be used.",
           "type": "string"
+        },
+        "tarballAccess": {
+          "description": "Optional. (Optional) The access type to the diagnostic tarball. If not specified, falls back to default access of the bucket",
+          "type": "string",
+          "enumDescriptions": [
+            "Tarball Access unspecified. Falls back to default access of the bucket",
+            "Google Cloud Support group has read access to the diagnostic tarball"
+          ],
+          "enum": [
+            "TARBALL_ACCESS_UNSPECIFIED",
+            "GOOGLE_CLOUD_SUPPORT"
+          ]
         }
       }
     },
@@ -2218,7 +2234,7 @@
     },
     "SparkJob": {
       "id": "SparkJob",
-      "description": "A Dataproc job for running Apache Spark (http:\/\/spark.apache.org\/) applications on YARN.",
+      "description": "A Dataproc job for running Apache Spark (https:\/\/spark.apache.org\/) applications on YARN.",
       "type": "object",
       "properties": {
         "mainJarFileUri": {
@@ -2470,7 +2486,7 @@
     },
     "SparkSqlJob": {
       "id": "SparkSqlJob",
-      "description": "A Dataproc job for running Apache Spark SQL (http:\/\/spark.apache.org\/sql\/) queries.",
+      "description": "A Dataproc job for running Apache Spark SQL (https:\/\/spark.apache.org\/sql\/) queries.",
       "type": "object",
       "properties": {
         "queryFileUri": {

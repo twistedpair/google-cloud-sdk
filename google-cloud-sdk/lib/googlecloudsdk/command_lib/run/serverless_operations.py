@@ -12,6 +12,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# pylint: disable=raise-missing-from
+
 """Allows you to write surfaces in terms of logical Serverless operations."""
 
 from __future__ import absolute_import
@@ -31,12 +34,14 @@ from googlecloudsdk.api_lib.run import condition as run_condition
 from googlecloudsdk.api_lib.run import configuration
 from googlecloudsdk.api_lib.run import container_resource
 from googlecloudsdk.api_lib.run import domain_mapping
+from googlecloudsdk.api_lib.run import execution
 from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.api_lib.run import job
 from googlecloudsdk.api_lib.run import metric_names
 from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.api_lib.run import route
 from googlecloudsdk.api_lib.run import service
+from googlecloudsdk.api_lib.run import task
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import waiter
@@ -453,12 +458,13 @@ class NonceBasedRevisionPoller(waiter.OperationPoller):
     return None
 
 
-class JobConditionPoller(ConditionPoller):
+class ExecutionConditionPoller(ConditionPoller):
   """A ConditionPoller for jobs."""
 
   def __init__(self, getter, tracker, terminal_condition, dependencies=None):
-    super(JobConditionPoller, self).__init__(getter, tracker, dependencies)
-    self._resource_fail_type = serverless_exceptions.DeploymentFailedError
+    super(ExecutionConditionPoller, self).__init__(getter, tracker,
+                                                   dependencies)
+    self._resource_fail_type = serverless_exceptions.ExecutionFailedError
     self._terminal_condition = terminal_condition
 
   def _PotentiallyUpdateInstanceCompletions(self, job_obj, conditions):
@@ -470,8 +476,8 @@ class JobConditionPoller(ConditionPoller):
 
     self._tracker.UpdateStage(
         terminal_condition,
-        '{} / {} complete'.format(job_obj.status.succeeded or 0,
-                                  job_obj.completions))
+        '{} / {} complete'.format(job_obj.status.succeededCount or 0,
+                                  job_obj.task_count))
 
   def GetConditions(self):
     """Returns the resource conditions wrapped in condition.Conditions.
@@ -483,6 +489,7 @@ class JobConditionPoller(ConditionPoller):
 
     if job_obj is None:
       return None
+
     conditions = job_obj.GetConditions(self._terminal_condition)
 
     # This is a bit of a cheat to hook into the polling method. This is done
@@ -1058,9 +1065,10 @@ class ServerlessOperations(object):
     """
     if tracker is None:
       tracker = progress_tracker.NoOpStagedProgressTracker(
-          stages.ServiceStages(allow_unauthenticated is not None,
-                               include_build=build_source is not None,
-                               include_create_repo=repo_to_create is not None),
+          stages.ServiceStages(
+              allow_unauthenticated is not None,
+              include_build=build_source is not None,
+              include_create_repo=repo_to_create is not None),
           interruptable=True,
           aborted_message='aborted')
 
@@ -1164,6 +1172,92 @@ class ServerlessOperations(object):
       for msg in run_condition.GetNonTerminalMessages(poller.GetConditions()):
         tracker.AddWarning(msg)
     return created_or_updated_service
+
+  def ListExecutions(self, namespace_ref, job_name, limit=None, page_size=100):
+    """List all executions for the given job.
+
+    Executions list gets sorted by job name, creation timestamp, and completion
+    timestamp.
+
+    Args:
+      namespace_ref: Resource, namespace to list executions in
+      job_name: str, The job for which to list executions.
+      limit: Optional[int], max number of executions to list.
+      page_size: Optional[int], number of executions to fetch at a time
+
+    Yields:
+      Executions for the given surface
+    """
+    messages = self.messages_module
+    # NB: This is a hack to compensate for apitools not generating this line.
+    #     It's necessary to make the URL parameter be "continue".
+    encoding.AddCustomJsonFieldMapping(
+        messages.RunNamespacesExecutionsListRequest, 'continue_', 'continue')
+    request = messages.RunNamespacesExecutionsListRequest(
+        parent=namespace_ref.RelativeName())
+    if job_name is not None:
+      request.labelSelector = '{label} = {name}'.format(
+          label=execution.JOB_LABEL, name=job_name)
+    try:
+      for result in list_pager.YieldFromList(
+          service=self._client.namespaces_executions,
+          request=request,
+          limit=limit,
+          batch_size=page_size,
+          current_token_attribute='continue_',
+          next_token_attribute=('metadata', 'continue_'),
+          batch_size_attribute='limit'):
+        yield execution.Execution(result, messages)
+    except api_exceptions.InvalidDataFromServerError as e:
+      serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
+
+  def ListTasks(self,
+                namespace_ref,
+                execution_name,
+                include_states=None,
+                limit=None,
+                page_size=100):
+    """List all tasks for the given execution.
+
+    Args:
+      namespace_ref: Resource, namespace to list tasks in
+      execution_name: str, The execution for which to list tasks.
+      include_states: List[str], states of tasks to include in the list.
+      limit: Optional[int], max number of tasks to list.
+      page_size: Optional[int], number of tasks to fetch at a time
+
+    Yields:
+      Executions for the given surface
+    """
+    messages = self.messages_module
+    # NB: This is a hack to compensate for apitools not generating this line.
+    #     It's necessary to make the URL parameter be "continue".
+    encoding.AddCustomJsonFieldMapping(messages.RunNamespacesTasksListRequest,
+                                       'continue_', 'continue')
+    request = messages.RunNamespacesTasksListRequest(
+        parent=namespace_ref.RelativeName())
+    label_selectors = []
+    if execution_name is not None:
+      label_selectors.append('{label} = {name}'.format(
+          label=task.EXECUTION_LABEL, name=execution_name))
+    if include_states is not None:
+      status_selector = '{label} in ({states})'.format(
+          label=task.STATE_LABEL, states=','.join(include_states))
+      label_selectors.append(status_selector)
+    if label_selectors:
+      request.labelSelector = ','.join(label_selectors)
+    try:
+      for result in list_pager.YieldFromList(
+          service=self._client.namespaces_tasks,
+          request=request,
+          limit=limit,
+          batch_size=page_size,
+          current_token_attribute='continue_',
+          next_token_attribute=('metadata', 'continue_'),
+          batch_size_attribute='limit'):
+        yield task.Task(result, messages)
+    except api_exceptions.InvalidDataFromServerError as e:
+      serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
 
   def ListRevisions(self,
                     namespace_ref,
@@ -1314,21 +1408,14 @@ class ServerlessOperations(object):
       response = self._client.namespaces_domainmappings.Get(request)
     return domain_mapping.DomainMapping(response, messages)
 
-  def CreateJob(self,
-                job_ref,
-                config_changes,
-                wait_for_completion,
-                tracker=None,
-                asyn=False):
+  def CreateJob(self, job_ref, config_changes, tracker=None, asyn=False):
     """Create a new Cloud Run Job.
 
     Args:
       job_ref: Resource, the job to create.
       config_changes: list, objects that implement Adjust().
-      wait_for_completion: bool, if True, continues polling until the job
-        completes. If False, continues polling until the job starts.
       tracker: StagedProgressTracker, to report on the progress of releasing.
-      asyn: bool, if True, return without waiting for the service to be updated.
+      asyn: bool, if True, return without waiting for the job to be updated.
 
     Returns:
       A job.Job object.
@@ -1348,33 +1435,101 @@ class ServerlessOperations(object):
       except api_exceptions.HttpConflictError:
         raise serverless_exceptions.DeploymentFailedError(
             'Job [{}] already exists.'.format(job_ref.Name()))
-      except api_exceptions.HttpError as e:
-        if e.status_code == 429:  # resource exhausted
-          raise serverless_exceptions.DeploymentFailedError(
-              'Too many jobs are already running. Please wait until a job '
-              'completes before creating a new one.')
-        raise e
 
     if not asyn:
       getter = functools.partial(self.GetJob, job_ref)
-      poller = JobConditionPoller(
-          getter,
-          tracker,
-          terminal_condition=(job.COMPLETED_CONDITION if wait_for_completion
-                              else job.STARTED_CONDITION),
-          dependencies=stages.JobDependencies())
-      conditions = self.WaitForCondition(poller)
-      # Don't print the Retry condition, because there will always be a retry
-      # either to continue polling (if stopping at Started) or to clean up
-      # backing resources (if stopping at Completed).
-      for msg in run_condition.GetNonTerminalMessages(
-          conditions, ignore_retry=True):
-        tracker.AddWarning(msg)
+      poller = ConditionPoller(getter, tracker)
+      self.WaitForCondition(poller)
 
     return job.Job(created_job, messages)
 
+  def UpdateJob(self, job_ref, config_changes, tracker=None, asyn=False):
+    """Update an existing Cloud Run Job.
+
+    Args:
+      job_ref: Resource, the job to update.
+      config_changes: list, objects that implement Adjust().
+      tracker: StagedProgressTracker, to report on the progress of updating.
+      asyn: bool, if True, return without waiting for the job to be updated.
+
+    Returns:
+      A job.Job object.
+    """
+    messages = self.messages_module
+    update_job = self.GetJob(job_ref)
+    if update_job is None:
+      raise serverless_exceptions.JobNotFoundError(
+          'Job [{}] could not be found.'.format(job_ref.Name()))
+    for config_change in config_changes:
+      update_job = config_change.Adjust(update_job)
+    replace_request = (
+        messages.RunNamespacesJobsReplaceJobRequest(
+            job=update_job.Message(), name=job_ref.RelativeName()))
+    with metrics.RecordDuration(metric_names.UPDATE_JOB):
+      returned_job = self._client.namespaces_jobs.ReplaceJob(replace_request)
+
+    if not asyn:
+      getter = functools.partial(self.GetJob, job_ref)
+      poller = ConditionPoller(getter, tracker)
+      self.WaitForCondition(poller)
+
+    return job.Job(returned_job, messages)
+
+  def RunJob(self,
+             job_ref,
+             wait_for_completion=False,
+             tracker=None,
+             asyn=False):
+    """Run a Cloud Run Job, creating an Execution.
+
+    Args:
+      job_ref: Resource, the job to run
+      wait_for_completion: boolean, True to wait until the job is complete
+      tracker: StagedProgressTracker, to report on the progress of running
+      asyn: bool, if True, return without waiting for anything.
+
+    Returns:
+      An Execution Resource in its state when RunJob returns.
+    """
+    messages = self.messages_module
+    run_request = messages.RunNamespacesJobsRunRequest(
+        name=job_ref.RelativeName())
+
+    with metrics.RecordDuration(metric_names.RUN_JOB):
+      try:
+        execution_message = self._client.namespaces_jobs.Run(run_request)
+      except api_exceptions.HttpError as e:
+        if e.status_code == 429:  # resource exhausted
+          raise serverless_exceptions.DeploymentFailedError(
+              'Resource exhausted error. This may mean that '
+              'too many executions are already running. Please wait until one '
+              'completes before creating a new one.')
+        raise e
+    if asyn:
+      return execution.Execution(execution_message, messages)
+
+    execution_ref = self._registry.Parse(
+        execution_message.metadata.name,
+        params={'namespacesId': execution_message.metadata.namespace},
+        collection='run.namespaces.executions')
+    getter = functools.partial(self.GetExecution, execution_ref)
+    terminal_condition = (
+        execution.COMPLETED_CONDITION
+        if wait_for_completion else execution.STARTED_CONDITION)
+    ex = self.GetExecution(execution_ref)
+    for msg in run_condition.GetNonTerminalMessages(
+        ex.conditions, ignore_retry=True):
+      tracker.AddWarning(msg)
+    poller = ExecutionConditionPoller(
+        getter,
+        tracker,
+        terminal_condition,
+        dependencies=stages.ExecutionDependencies())
+    self.WaitForCondition(poller)
+    return self.GetExecution(execution_ref)
+
   def GetJob(self, job_ref):
-    """Return the relevant Service from the server, or None if 404."""
+    """Return the relevant Job from the server, or None if 404."""
     messages = self.messages_module
     get_request = messages.RunNamespacesJobsGetRequest(
         name=job_ref.RelativeName())
@@ -1388,6 +1543,38 @@ class ServerlessOperations(object):
       return None
 
     return job.Job(job_response, messages)
+
+  def GetTask(self, task_ref):
+    """Return the relevant Task from the server, or None if 404."""
+    messages = self.messages_module
+    get_request = messages.RunNamespacesTasksGetRequest(
+        name=task_ref.RelativeName())
+
+    try:
+      with metrics.RecordDuration(metric_names.GET_TASK):
+        task_response = self._client.namespaces_tasks.Get(get_request)
+    except api_exceptions.InvalidDataFromServerError as e:
+      serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
+    except api_exceptions.HttpNotFoundError:
+      return None
+
+    return task.Task(task_response, messages)
+
+  def GetExecution(self, execution_ref):
+    """Return the relevant Execution from the server, or None if 404."""
+    messages = self.messages_module
+    get_request = messages.RunNamespacesExecutionsGetRequest(
+        name=execution_ref.RelativeName())
+
+    try:
+      with metrics.RecordDuration(metric_names.GET_EXECUTION):
+        execution_response = self._client.namespaces_executions.Get(get_request)
+    except api_exceptions.InvalidDataFromServerError as e:
+      serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
+    except api_exceptions.HttpNotFoundError:
+      return None
+
+    return execution.Execution(execution_response, messages)
 
   def ListJobs(self, namespace_ref):
     """Returns all jobs in the namespace."""
@@ -1420,6 +1607,26 @@ class ServerlessOperations(object):
     except api_exceptions.HttpNotFoundError:
       raise serverless_exceptions.JobNotFoundError(
           'Job [{}] could not be found.'.format(job_ref.Name()))
+
+  def DeleteExecution(self, execution_ref):
+    """Delete the provided Job.
+
+    Args:
+      execution_ref: Resource, a reference to the Job to delete
+
+    Raises:
+      ExecutionNotFoundError: if provided job is not found.
+    """
+    messages = self.messages_module
+    request = messages.RunNamespacesExecutionsDeleteRequest(
+        name=execution_ref.RelativeName())
+    try:
+      with metrics.RecordDuration(metric_names.DELETE_EXECUTION):
+        self._client.namespaces_executions.Delete(request)
+    except api_exceptions.HttpNotFoundError:
+      raise serverless_exceptions.ExecutionNotFoundError(
+          'Execution [{}] could not be found.'.format(
+              execution_ref.Name()))
 
   def _GetIamPolicy(self, service_name):
     """Gets the IAM policy for the service."""

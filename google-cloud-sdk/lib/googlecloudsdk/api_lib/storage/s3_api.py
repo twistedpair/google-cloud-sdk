@@ -93,9 +93,10 @@ class S3Api(cloud_api.CloudApi):
     if bucket_resource.retention_period:
       raise ValueError(
           'S3 API does not accept retention_period argument for create_bucket.')
-    if bucket_resource.storage_class:
+    if bucket_resource.default_storage_class:
       raise ValueError(
-          'S3 API does not accept storage_class argument for create_bucket.')
+          'S3 API does not accept default_storage_class argument for create_bucket.'
+      )
     if bucket_resource.uniform_bucket_level_access:
       raise ValueError(
           'S3 API does not accept uniform_bucket_level_access argument for create_bucket.'

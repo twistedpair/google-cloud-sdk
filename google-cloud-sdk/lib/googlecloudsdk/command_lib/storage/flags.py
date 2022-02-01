@@ -35,7 +35,7 @@ def add_precondition_flags(parser):
       ' the requested object.')
 
 
-def add_object_metadata_flags(parser):
+def add_object_metadata_flags(parser, allow_patch=False):
   """Add flags that allow setting object metadata."""
   parser.add_argument(
       '--cache-control',
@@ -67,8 +67,42 @@ def add_object_metadata_flags(parser):
       type=arg_parsers.Datetime.Parse,
       help='Custom time for Google Cloud Storage objects in RFC 3339 format.')
 
+  if allow_patch:
+    parser.add_argument(
+        '--clear-cache-control',
+        action='store_true',
+        help='Clears object cache control.')
+    parser.add_argument(
+        '--clear-content-disposition',
+        action='store_true',
+        help='Clears object content disposition.')
+    parser.add_argument(
+        '--clear-content-encoding',
+        action='store_true',
+        help='Clears content encoding.')
+    parser.add_argument(
+        '--clear-content-md5',
+        action='store_true',
+        help='Clears object content MD5.')
+    parser.add_argument(
+        '--clear-content-language',
+        action='store_true',
+        help='Clears object content language.')
+    parser.add_argument(
+        '--clear-content-type',
+        action='store_true',
+        help='Clears object content type.')
+    parser.add_argument(
+        '--clear-custom-metadata',
+        action='store_true',
+        help='Clears object custom metadata.')
+    parser.add_argument(
+        '--clear-custom-time',
+        action='store_true',
+        help='Clears object custom time.')
 
-def add_encryption_flags(parser):
+
+def add_encryption_flags(parser, allow_patch=False):
   """Adds flags for encryption and decryption keys."""
   parser.add_argument(
       '--encryption-key',
@@ -94,3 +128,21 @@ def add_encryption_flags(parser):
           ' automatically, so CMEKs do not need to be listed here.'
       )
   )
+  if allow_patch:
+    parser.add_argument(
+        '--clear-encryption-key',
+        action='store_true',
+        hidden=True,
+        help='Clears encryption key associated with an object.')
+
+
+def add_continue_on_error_flag(parser):
+  """Adds flag to indicate error should be skipped instead of being raised."""
+  parser.add_argument(
+      '--continue-on-error',
+      action='store_true',
+      help='If an error occurs, continue to perform the operation on remaining'
+      ' resources. If any operations are unsuccessful, the command will exit'
+      ' with a non-zero exit status, even if this flag is set.'
+      ' This option is implicitly set when running operations'
+      ' in parallel mode.')

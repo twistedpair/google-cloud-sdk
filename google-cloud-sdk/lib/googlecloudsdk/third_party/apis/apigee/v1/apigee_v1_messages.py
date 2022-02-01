@@ -5101,6 +5101,8 @@ class GoogleCloudApigeeV1DebugSession(_messages.Message):
   Fields:
     count: Optional. The number of request to be traced. Min = 1, Max = 15,
       Default = 10.
+    createTime: Output only. The first transaction creation timestamp,
+      recorded by UAP.
     filter: Optional. A conditional statement which is evaluated against the
       request message to determine if it should be traced. Syntax matches that
       of on API Proxy bundle flow Condition.
@@ -5116,11 +5118,12 @@ class GoogleCloudApigeeV1DebugSession(_messages.Message):
   """
 
   count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  filter = _messages.StringField(2)
-  name = _messages.StringField(3)
-  timeout = _messages.IntegerField(4)
-  tracesize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  validity = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  createTime = _messages.StringField(2)
+  filter = _messages.StringField(3)
+  name = _messages.StringField(4)
+  timeout = _messages.IntegerField(5)
+  tracesize = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  validity = _messages.IntegerField(7, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudApigeeV1DebugSessionTransaction(_messages.Message):
@@ -8385,7 +8388,7 @@ class GoogleCloudApigeeV1Session(_messages.Message):
   Fields:
     id: The debug session ID.
     timestampMs: The first transaction creation timestamp in millisecond,
-      recoreded by UAP.
+      recorded by UAP.
   """
 
   id = _messages.StringField(1)

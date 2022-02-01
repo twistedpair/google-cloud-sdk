@@ -63,6 +63,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_NFSSHARES = (
+      'projects.locations.nfsShares',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/nfsShares/'
+              '{nfsSharesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_SNAPSHOTSCHEDULEPOLICIES = (
       'projects.locations.snapshotSchedulePolicies',
       '{+name}',

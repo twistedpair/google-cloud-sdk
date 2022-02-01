@@ -213,3 +213,46 @@ def AddSkaffoldFileFlag(parser):
   parser.add_argument(
       '--skaffold-file',
       help=help_text)
+
+
+def AddDescriptionFlag(parser):
+  """Add --description flag."""
+  parser.add_argument(
+      '--description',
+      help='Description of rollout created during a rollback.',
+      hidden=False,
+      default=None,
+      required=False)
+
+
+def AddListAllPipelines(parser):
+  """Add --list-all-pipelines flag."""
+  help_text = textwrap.dedent("""\
+  List all Delivery Pipelines associated with a target.
+
+  Usage:
+
+    $ {command} --list-all-pipelines
+
+""")
+
+  parser.add_argument(
+      '--list-all-pipelines', action='store_true', default=None, help=help_text)
+
+
+def AddSkipPipelineLookup(parser):
+  """Add --skip-pipeline-lookup flag."""
+  help_text = textwrap.dedent("""\
+  If set, skip fetching details of associated pipelines when describing a target.
+
+  Usage:
+
+    $ {command} --skip-pipeline-lookup
+
+""")
+
+  parser.add_argument(
+      '--skip-pipeline-lookup',
+      action='store_true',
+      default=False,
+      help=help_text)

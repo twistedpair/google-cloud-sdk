@@ -877,6 +877,10 @@
           "description": "Config Management-specific spec.",
           "$ref": "ConfigManagementMembershipSpec"
         },
+        "cloudbuild": {
+          "description": "Cloud Build-specific spec",
+          "$ref": "CloudBuildMembershipSpec"
+        },
         "apigee": {
           "description": "Apigee-specific spec.",
           "$ref": "ApigeeMembershipSpec"
@@ -1070,6 +1074,31 @@
         "enableHierarchicalResourceQuota": {
           "description": "Whether hierarchical resource quota is enabled in this cluster.",
           "type": "boolean"
+        }
+      }
+    },
+    "CloudBuildMembershipSpec": {
+      "id": "CloudBuildMembershipSpec",
+      "description": "**Cloud Build**: Configurations for each Cloud Build enabled cluster.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "Version of the cloud build software on the cluster.",
+          "type": "string"
+        },
+        "securityPolicy": {
+          "description": "Whether it is allowed to run the privileged builds on the cluster or not.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified policy",
+            "Privileged build pods are disallowed",
+            "Privileged build pods are allowed"
+          ],
+          "enum": [
+            "SECURITY_POLICY_UNSPECIFIED",
+            "NON_PRIVILEGED",
+            "PRIVILEGED"
+          ]
         }
       }
     },

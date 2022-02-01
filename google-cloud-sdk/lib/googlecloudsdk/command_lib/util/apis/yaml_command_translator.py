@@ -169,13 +169,13 @@ class CommandBuilder(object):
       command = RemoveIamPolicyBindingCommandGenerator(
           self.spec, self.path).Generate()
     elif self.spec.command_type == yaml_command_schema.CommandType.UPDATE:
-      command = self._GenerateUpdateCommand()
+      command = UpdateCommandGenerator(self.spec, self.path).Generate()
     elif self.spec.command_type == yaml_command_schema.CommandType.IMPORT:
-      command = self._GenerateImportCommand()
+      command = ImportCommandGenerator(self.spec, self.path).Generate()
     elif self.spec.command_type == yaml_command_schema.CommandType.EXPORT:
-      command = self._GenerateExportCommand()
+      command = ExportCommandGenerator(self.spec, self.path).Generate()
     elif self.spec.command_type == yaml_command_schema.CommandType.CONFIG_EXPORT:
-      command = self._GenerateConfigExportCommand()
+      command = ConfigExportCommandGenerator(self.spec, self.path).Generate()
     elif self.spec.command_type == yaml_command_schema.CommandType.GENERIC:
       command = self._GenerateGenericCommand()
     else:
@@ -219,269 +219,6 @@ class CommandBuilder(object):
           response = self._HandleAsync(
               args, ref, response, request_string=request_string)
         return self._HandleResponse(response, args)
-
-    return Command
-
-  def _GenerateImportCommand(self):
-    """Generates an export command.
-
-    An export command has a single resource argument and an API method to call
-    to get the resource. The result is exported to a local yaml file provided
-    by the `--destination` flag, or to stdout if nothing is provided.
-
-    Returns:
-      calliope.base.Command, The command that implements the spec.
-    """
-    # Lazy import to prevent drag on startup time.
-    from googlecloudsdk.command_lib.export import util as export_util  # pylint:disable=g-import-not-at-top
-
-    # pylint: disable=no-self-argument, The class closure throws off the linter
-    # a bit. We want to use the generator class, not the class being generated.
-    # pylint: disable=protected-access, The linter gets confused about 'self'
-    # and thinks we are accessing something protected.
-    class Command(base.ImportCommand):
-      """Export command enclosure."""
-
-      @staticmethod
-      def Args(parser):
-        self._CommonArgs(parser)
-        if self.spec.async_:
-          base.ASYNC_FLAG.AddToParser(parser)
-        parser.add_argument(
-            '--source',
-            help="""
-            Path to a YAML file containing the configuration export data. The
-            YAML file must not contain any output-only fields. Alternatively, you
-            may omit this flag to read from standard input. For a schema
-            describing the export/import format, see:
-            $CLOUDSDKROOT/lib/googlecloudsdk/schemas/...
-
-            $CLOUDSDKROOT is can be obtained with the following command:
-
-              $ gcloud info --format='value(installation.sdk_root)'
-          """)
-
-      def Run(self_, args):
-        # Determine message to parse resource into from yaml
-        message_type = self.method.GetRequestType()
-        request_field = self.method.request_field
-        resource_message_class = message_type.field_by_name(request_field).type
-
-        # Set up information for export utility.
-        data = console_io.ReadFromFileOrStdin(args.source or '-', binary=False)
-        schema_path = export_util.GetSchemaPath(self.method.collection.api_name,
-                                                self.spec.request.api_version,
-                                                resource_message_class.__name__)
-        # Import resource from yaml.
-        imported_resource = export_util.Import(
-            message_type=resource_message_class,
-            stream=data,
-            schema_path=schema_path)
-
-        # If any special configuration has been made for the import command...
-        existing_resource = None
-        if self.spec.import_:
-          abort_if_equivalent = self.spec.import_.abort_if_equivalent
-          create_if_not_exists = self.spec.import_.create_if_not_exists
-
-          # Try to get the existing resource from the service.
-          try:
-            existing_resource = self._GetExistingResource(args)
-          except apitools_exceptions.HttpError as error:
-            # Raise error if command is configured to not create a new resource
-            # or if error other than "Does Not Exist" occurs.
-            if error.status_code != 404 or not create_if_not_exists:
-              raise error
-            else:
-              # Configure command to use fallback create request configuration.
-              self.spec.request = self.spec.import_.create_request
-
-              # Configure command to use fallback create async configuration.
-              if self.spec.import_.no_create_async:
-                self.spec.async_ = None
-              elif self.spec.import_.create_async:
-                self.spec.async_ = self.spec.import_.create_async
-              # Reset command with updated configuration.
-              self.ConfigureCommand()
-
-          # Abort command early if no changes are detected.
-          if abort_if_equivalent:
-            if imported_resource == existing_resource:
-              return log.status.Print(
-                  'Request not sent for [{}]: No changes detected.'.format(
-                      imported_resource.name))
-
-        ref, response = self._CommonRun(
-            args, existing_message=imported_resource)
-
-        # Handle asynchronous behavior.
-        if self.spec.async_:
-          request_string = None
-          if ref is not None:
-            request_string = 'Request issued for: [{{{}}}]'.format(
-                yaml_command_schema.NAME_FORMAT_KEY)
-          response = self._HandleAsync(args, ref, response, request_string)
-
-        return self._HandleResponse(response, args)
-
-    return Command
-
-  def _GenerateExportCommand(self):
-    """Generates an export command.
-
-    An export command has a single resource argument and an API method to call
-    to get the resource. The result is exported to a local yaml file provided
-    by the `--destination` flag, or to stdout if nothing is provided.
-
-    Returns:
-      calliope.base.Command, The command that implements the spec.
-    """
-
-    # Lazy import to prevent drag on startup time.
-    from googlecloudsdk.command_lib.export import util as export_util  # pylint:disable=g-import-not-at-top
-
-    # pylint: disable=no-self-argument, The class closure throws off the linter
-    # a bit. We want to use the generator class, not the class being generated.
-    # pylint: disable=protected-access, The linter gets confused about 'self'
-    # and thinks we are accessing something protected.
-    class Command(base.ExportCommand):
-      """Export command enclosure."""
-
-      @staticmethod
-      def Args(parser):
-        self._CommonArgs(parser)
-        parser.add_argument(
-            '--destination',
-            help="""
-            Path to a YAML file where the configuration will be exported.
-            The exported data will not contain any output-only fields.
-            Alternatively, you may omit this flag to write to standard output.
-            For a schema describing the export/import format, see
-            $CLOUDSDKROOT/lib/googlecloudsdk/schemas/...
-          """)
-
-      def Run(self_, args):
-        unused_ref, response = self._CommonRun(args)
-        schema_path = export_util.GetSchemaPath(self.method.collection.api_name,
-                                                self.spec.request.api_version,
-                                                type(response).__name__)
-
-        # Export parsed yaml to selected destination.
-        if args.IsSpecified('destination'):
-          with files.FileWriter(args.destination) as stream:
-            export_util.Export(
-                message=response, stream=stream, schema_path=schema_path)
-          return log.status.Print('Exported [{}] to \'{}\'.'.format(
-              response.name, args.destination))
-        else:
-          export_util.Export(
-              message=response, stream=sys.stdout, schema_path=schema_path)
-
-    return Command
-
-  def _GenerateUpdateCommand(self):
-    """Generates an update command.
-
-    An update command has a resource argument, additional fields, and calls an
-    API method. It supports async if the async configuration is given. Any
-    fields is message_params will be generated as arguments and inserted into
-    the request message.
-
-    Currently, the Update command is the same as Generic command.
-
-    Returns:
-      calliope.base.Command, The command that implements the spec.
-    """
-
-    # pylint: disable=no-self-argument, The class closure throws off the linter
-    # a bit. We want to use the generator class, not the class being generated.
-    # pylint: disable=protected-access, The linter gets confused about 'self'
-    # and thinks we are accessing something protected.
-    class Command(base.Command):
-      # pylint: disable=missing-docstring
-
-      @staticmethod
-      def Args(parser):
-        self._CommonArgs(parser)
-        if self.spec.async_:
-          base.ASYNC_FLAG.AddToParser(parser)
-        if self.spec.arguments.labels:
-          labels_util.AddUpdateLabelsFlags(parser)
-
-      def Run(self_, args):
-        # Check if mask is required for an update request, if required, return
-        # the dotted path, e.g updateRequest.fieldMask.
-        mask_path = update.GetMaskFieldPath(self.method)
-        if mask_path:
-          # If user sets to disable the auto-generated field mask, set the value
-          # to the empty string instead so that custom hooks can be used.
-          if self.spec.update and self.spec.update.disable_auto_field_mask:
-            mask_string = ''
-          else:
-            mask_string = update.GetMaskString(args, self.spec, mask_path)
-          self.spec.request.static_fields[mask_path] = mask_string
-
-        # Check if the update is full-update, which requires a get request.
-        existing_message = None
-        if self.spec.update:
-          if self.spec.update.read_modify_update:
-            existing_message = self._GetExistingResource(args)
-
-        ref, response = self._CommonRun(args, existing_message)
-        if self.spec.async_:
-          request_string = None
-          if ref:
-            request_string = 'Request issued for: [{{{}}}]'.format(
-                yaml_command_schema.NAME_FORMAT_KEY)
-          response = self._HandleAsync(
-              args, ref, response, request_string=request_string)
-
-        log.UpdatedResource(
-            self._GetDisplayName(ref, args), kind=self.display_resource_type)
-        return self._HandleResponse(response, args)
-
-    return Command
-
-  def _GenerateConfigExportCommand(self):
-    """Generates a config export command.
-
-    A config export command has a resource argument as well as configuration
-    export flags (such as --output-format and --path). It will export the
-    configuration for one resource to stdout or to file, or will output a stream
-    of configurations for all resources of the same type within a project to
-    stdout, or to multiple files. Supported formats are `KRM` and `Terraform`.
-
-    Returns:
-      calliope.base.Command, The command that implements the spec.
-    """
-
-    class Command(base.Command):
-      # pylint: disable=missing-docstring
-
-      @staticmethod
-      def Args(parser):
-        mutex_group = parser.add_group(mutex=True, required=True)
-        resource_group = mutex_group.add_group()
-        args = self.arg_generator.GenerateArgs()
-        # Resource arg concepts have to be manually changed to not required.
-        for arg in args:
-          for _, value in arg.specs.items():
-            value.required = False
-          arg.AddToParser(resource_group)
-        declarative_config_flags.AddAllFlag(mutex_group, collection='project')
-        declarative_config_flags.AddPathFlag(parser)
-        declarative_config_flags.AddFormatFlag(parser)
-
-      def Run(self_, args):  # pylint: disable=no-self-argument
-        # pylint: disable=missing-docstring
-        collection = self.spec.arguments.resource.GenerateResourceSpec(
-        ).collection
-        if getattr(args, 'all', None):
-          return python_command_util.RunExport(
-              args=args, collection=collection, resource_ref=None)
-        ref = self.arg_generator.GetRequestResourceRef(args).SelfLink()
-        return python_command_util.RunExport(
-            args=args, collection=collection, resource_ref=ref)
 
     return Command
 
@@ -574,15 +311,6 @@ class CommandBuilder(object):
                                 limit=self.arg_generator.Limit(args),
                                 page_size=self.arg_generator.PageSize(args))
     return ref, response
-
-  def _GetExistingResource(self, args):
-    get_method = registry.GetMethod(self.spec.request.collection, 'get',
-                                    self.spec.request.api_version)
-    get_arg_generator = arg_marshalling.DeclarativeArgumentGenerator(
-        get_method, [], self.spec.arguments.resource,
-        get_method.resource_argument_collection)
-
-    return get_method.Call(get_arg_generator.CreateRequest(args))
 
   def _HandleAsync(self, args, resource_ref, operation,
                    request_string, extract_resource_result=True):
@@ -1156,6 +884,15 @@ class BaseCommandGenerator(object):
           return obj
     return self._FindPopulatedAttribute(obj, attributes[1:])
 
+  def _GetExistingResource(self, args):
+    get_method = registry.GetMethod(self.spec.request.collection, 'get',
+                                    self.spec.request.api_version)
+    get_arg_generator = arg_marshalling.DeclarativeArgumentGenerator(
+        get_method, [], self.spec.arguments.resource,
+        get_method.resource_argument_collection)
+
+    return get_method.Call(get_arg_generator.CreateRequest(args))
+
 
 class DescribeCommandGenerator(BaseCommandGenerator):
   """Generator for describe commands."""
@@ -1403,6 +1140,73 @@ class WaitCommandGenerator(BaseCommandGenerator):
             args=args)
         response = self._HandleResponse(response, args)
         return response
+
+    return Command
+
+
+class UpdateCommandGenerator(BaseCommandGenerator):
+  """Generator for update commands."""
+
+  def Generate(self):
+    """Generates an update command.
+
+    An update command has a resource argument, additional fields, and calls an
+    API method. It supports async if the async configuration is given. Any
+    fields is message_params will be generated as arguments and inserted into
+    the request message.
+
+    Currently, the Update command is the same as Generic command.
+
+    Returns:
+      calliope.base.Command, The command that implements the spec.
+    """
+
+    # pylint: disable=no-self-argument, The class closure throws off the linter
+    # a bit. We want to use the generator class, not the class being generated.
+    # pylint: disable=protected-access, The linter gets confused about 'self'
+    # and thinks we are accessing something protected.
+    class Command(base.Command):
+      # pylint: disable=missing-docstring
+
+      @staticmethod
+      def Args(parser):
+        self._CommonArgs(parser)
+        if self.spec.async_:
+          base.ASYNC_FLAG.AddToParser(parser)
+        if self.spec.arguments.labels:
+          labels_util.AddUpdateLabelsFlags(parser)
+
+      def Run(self_, args):
+        # Check if mask is required for an update request, if required, return
+        # the dotted path, e.g. updateRequest.fieldMask.
+        mask_path = update.GetMaskFieldPath(self.method)
+        if mask_path:
+          # If user sets to disable the auto-generated field mask, set the value
+          # to the empty string instead so that custom hooks can be used.
+          if self.spec.update and self.spec.update.disable_auto_field_mask:
+            mask_string = ''
+          else:
+            mask_string = update.GetMaskString(args, self.spec, mask_path)
+          self.spec.request.static_fields[mask_path] = mask_string
+
+        # Check if the update is full-update, which requires a get request.
+        existing_message = None
+        if self.spec.update:
+          if self.spec.update.read_modify_update:
+            existing_message = self._GetExistingResource(args)
+
+        ref, response = self._CommonRun(args, existing_message)
+        if self.spec.async_:
+          request_string = None
+          if ref:
+            request_string = 'Request issued for: [{{{}}}]'.format(
+                yaml_command_schema.NAME_FORMAT_KEY)
+          response = self._HandleAsync(
+              args, ref, response, request_string=request_string)
+
+        log.UpdatedResource(
+            self._GetDisplayName(ref, args), kind=self.display_resource_type)
+        return self._HandleResponse(response, args)
 
     return Command
 
@@ -1758,5 +1562,217 @@ class RemoveIamPolicyBindingCommandGenerator(
         ref, response = self._CommonRun(args)
         iam_util.LogSetIamPolicy(ref.Name(), self.display_resource_type)
         return self._HandleResponse(response, args)
+
+    return Command
+
+
+class ImportCommandGenerator(BaseCommandGenerator):
+  """Generator for import commands."""
+
+  def Generate(self):
+    """Generates an import command.
+
+    An import command has a single resource argument and an API method to call
+    to get the resource. The result is from a local yaml file provided
+    by the `--source` flag, or from stdout if nothing is provided.
+
+    Returns:
+      calliope.base.Command, The command that implements the spec.
+    """
+    # Lazy import to prevent drag on startup time.
+    from googlecloudsdk.command_lib.export import util as export_util  # pylint:disable=g-import-not-at-top
+
+    # pylint: disable=no-self-argument, The class closure throws off the linter
+    # a bit. We want to use the generator class, not the class being generated.
+    # pylint: disable=protected-access, The linter gets confused about 'self'
+    # and thinks we are accessing something protected.
+    class Command(base.ImportCommand):
+      """Import command enclosure."""
+
+      @staticmethod
+      def Args(parser):
+        self._CommonArgs(parser)
+        if self.spec.async_:
+          base.ASYNC_FLAG.AddToParser(parser)
+        parser.add_argument(
+            '--source',
+            help="""
+            Path to a YAML file containing the configuration export data. The
+            YAML file must not contain any output-only fields. Alternatively, you
+            may omit this flag to read from standard input. For a schema
+            describing the export/import format, see:
+            $CLOUDSDKROOT/lib/googlecloudsdk/schemas/...
+
+            $CLOUDSDKROOT is can be obtained with the following command:
+
+              $ gcloud info --format='value(installation.sdk_root)'
+          """)
+
+      def Run(self_, args):
+        # Determine message to parse resource into from yaml
+        message_type = self.method.GetRequestType()
+        request_field = self.method.request_field
+        resource_message_class = message_type.field_by_name(request_field).type
+
+        # Set up information for export utility.
+        data = console_io.ReadFromFileOrStdin(args.source or '-', binary=False)
+        schema_path = export_util.GetSchemaPath(self.method.collection.api_name,
+                                                self.spec.request.api_version,
+                                                resource_message_class.__name__)
+        # Import resource from yaml.
+        imported_resource = export_util.Import(
+            message_type=resource_message_class,
+            stream=data,
+            schema_path=schema_path)
+
+        # If any special configuration has been made for the import command...
+        existing_resource = None
+        if self.spec.import_:
+          abort_if_equivalent = self.spec.import_.abort_if_equivalent
+          create_if_not_exists = self.spec.import_.create_if_not_exists
+
+          # Try to get the existing resource from the service.
+          try:
+            existing_resource = self._GetExistingResource(args)
+          except apitools_exceptions.HttpError as error:
+            # Raise error if command is configured to not create a new resource
+            # or if error other than "Does Not Exist" occurs.
+            if error.status_code != 404 or not create_if_not_exists:
+              raise error
+            else:
+              # Configure command to use fallback create request configuration.
+              self.spec.request = self.spec.import_.create_request
+
+              # Configure command to use fallback create async configuration.
+              if self.spec.import_.no_create_async:
+                self.spec.async_ = None
+              elif self.spec.import_.create_async:
+                self.spec.async_ = self.spec.import_.create_async
+              # Reset command with updated configuration.
+              self.ConfigureCommand()
+
+          # Abort command early if no changes are detected.
+          if abort_if_equivalent:
+            if imported_resource == existing_resource:
+              return log.status.Print(
+                  'Request not sent for [{}]: No changes detected.'.format(
+                      imported_resource.name))
+
+        ref, response = self._CommonRun(
+            args, existing_message=imported_resource)
+
+        # Handle asynchronous behavior.
+        if self.spec.async_:
+          request_string = None
+          if ref is not None:
+            request_string = 'Request issued for: [{{{}}}]'.format(
+                yaml_command_schema.NAME_FORMAT_KEY)
+          response = self._HandleAsync(args, ref, response, request_string)
+
+        return self._HandleResponse(response, args)
+
+    return Command
+
+
+class ExportCommandGenerator(BaseCommandGenerator):
+  """Generator for export commands."""
+
+  def Generate(self):
+    """Generates an export command.
+
+    An export command has a single resource argument and an API method to call
+    to get the resource. The result is exported to a local yaml file provided
+    by the `--destination` flag, or to stdout if nothing is provided.
+
+    Returns:
+      calliope.base.Command, The command that implements the spec.
+    """
+
+    # Lazy import to prevent drag on startup time.
+    from googlecloudsdk.command_lib.export import util as export_util  # pylint:disable=g-import-not-at-top
+
+    # pylint: disable=no-self-argument, The class closure throws off the linter
+    # a bit. We want to use the generator class, not the class being generated.
+    # pylint: disable=protected-access, The linter gets confused about 'self'
+    # and thinks we are accessing something protected.
+    class Command(base.ExportCommand):
+      """Export command enclosure."""
+
+      @staticmethod
+      def Args(parser):
+        self._CommonArgs(parser)
+        parser.add_argument(
+            '--destination',
+            help="""
+            Path to a YAML file where the configuration will be exported.
+            The exported data will not contain any output-only fields.
+            Alternatively, you may omit this flag to write to standard output.
+            For a schema describing the export/import format, see
+            $CLOUDSDKROOT/lib/googlecloudsdk/schemas/...
+          """)
+
+      def Run(self_, args):
+        unused_ref, response = self._CommonRun(args)
+        schema_path = export_util.GetSchemaPath(self.method.collection.api_name,
+                                                self.spec.request.api_version,
+                                                type(response).__name__)
+
+        # Export parsed yaml to selected destination.
+        if args.IsSpecified('destination'):
+          with files.FileWriter(args.destination) as stream:
+            export_util.Export(
+                message=response, stream=stream, schema_path=schema_path)
+          return log.status.Print('Exported [{}] to \'{}\'.'.format(
+              response.name, args.destination))
+        else:
+          export_util.Export(
+              message=response, stream=sys.stdout, schema_path=schema_path)
+
+    return Command
+
+
+class ConfigExportCommandGenerator(BaseCommandGenerator):
+  """Generator for config export commands."""
+
+  def Generate(self):
+    """Generates a config export command.
+
+    A config export command has a resource argument as well as configuration
+    export flags (such as --output-format and --path). It will export the
+    configuration for one resource to stdout or to file, or will output a stream
+    of configurations for all resources of the same type within a project to
+    stdout, or to multiple files. Supported formats are `KRM` and `Terraform`.
+
+    Returns:
+      calliope.base.Command, The command that implements the spec.
+    """
+
+    class Command(base.Command):
+      # pylint: disable=missing-docstring
+
+      @staticmethod
+      def Args(parser):
+        mutex_group = parser.add_group(mutex=True, required=True)
+        resource_group = mutex_group.add_group()
+        args = self.arg_generator.GenerateArgs()
+        # Resource arg concepts have to be manually changed to not required.
+        for arg in args:
+          for _, value in arg.specs.items():
+            value.required = False
+          arg.AddToParser(resource_group)
+        declarative_config_flags.AddAllFlag(mutex_group, collection='project')
+        declarative_config_flags.AddPathFlag(parser)
+        declarative_config_flags.AddFormatFlag(parser)
+
+      def Run(self_, args):  # pylint: disable=no-self-argument
+        # pylint: disable=missing-docstring
+        collection = self.spec.arguments.resource.GenerateResourceSpec(
+        ).collection
+        if getattr(args, 'all', None):
+          return python_command_util.RunExport(
+              args=args, collection=collection, resource_ref=None)
+        ref = self.arg_generator.GetRequestResourceRef(args).SelfLink()
+        return python_command_util.RunExport(
+            args=args, collection=collection, resource_ref=ref)
 
     return Command

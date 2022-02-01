@@ -113,6 +113,141 @@
     }
   },
   "schemas": {
+    "ListEkmConnectionsResponse": {
+      "id": "ListEkmConnectionsResponse",
+      "description": "Response message for KeyManagementService.ListEkmConnections.",
+      "type": "object",
+      "properties": {
+        "ekmConnections": {
+          "description": "The list of EkmConnections.",
+          "type": "array",
+          "items": {
+            "$ref": "EkmConnection"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to retrieve next page of results. Pass this value in ListEkmConnectionsRequest.page_token to retrieve the next page of results.",
+          "type": "string"
+        },
+        "totalSize": {
+          "description": "The total number of EkmConnections that matched the query.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "EkmConnection": {
+      "id": "EkmConnection",
+      "description": "An EkmConnection represents an individual EKM connection. It can be used for creating CryptoKeys and CryptoKeyVersions with a ProtectionLevel of EXTERNAL_VPC, as well as performing cryptographic operations using keys created within the EkmConnection.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name for the EkmConnection in the format `projects\/*\/locations\/*\/ekmConnections\/*`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time at which the EkmConnection was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "serviceResolvers": {
+          "description": "A list of ServiceResolvers where the EKM can be reached. There should be one ServiceResolver per EKM replica. Currently, only a single ServiceResolver is supported.",
+          "type": "array",
+          "items": {
+            "$ref": "ServiceResolver"
+          }
+        },
+        "etag": {
+          "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update requests to ensure the client has an up-to-date value before proceeding.",
+          "type": "string"
+        }
+      }
+    },
+    "ServiceResolver": {
+      "id": "ServiceResolver",
+      "description": "A ServiceResolver represents an EKM replica that can be reached within an EkmConnection.",
+      "type": "object",
+      "properties": {
+        "serviceDirectoryService": {
+          "description": "Required. The resource name of the Service Directory service pointing to an EKM replica, in the format `projects\/*\/locations\/*\/namespaces\/*\/services\/*`.",
+          "type": "string"
+        },
+        "endpointFilter": {
+          "description": "Optional. The filter applied to the endpoints of the resolved service. If no filter is specified, all endpoints will be considered. An endpoint will be chosen arbitrarily from the filtered list for each request. For endpoint filter syntax and examples, see https:\/\/cloud.google.com\/service-directory\/docs\/reference\/rpc\/google.cloud.servicedirectory.v1#resolveservicerequest.",
+          "type": "string"
+        },
+        "hostname": {
+          "description": "Required. The hostname of the EKM replica used at TLS and HTTP layers.",
+          "type": "string"
+        },
+        "serverCertificates": {
+          "description": "Required. A list of leaf server certificates used to authenticate HTTPS connections to the EKM replica.",
+          "type": "array",
+          "items": {
+            "$ref": "Certificate"
+          }
+        }
+      }
+    },
+    "Certificate": {
+      "id": "Certificate",
+      "description": "A Certificate represents an X.509 certificate used to authenticate HTTPS connections to EKM replicas.",
+      "type": "object",
+      "properties": {
+        "rawDer": {
+          "description": "Required. The raw certificate bytes in DER format.",
+          "type": "string",
+          "format": "byte"
+        },
+        "parsed": {
+          "description": "Output only. True if the certificate was parsed successfully.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "issuer": {
+          "description": "Output only. The issuer distinguished name in RFC 2253 format. Only present if parsed is true.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "subject": {
+          "description": "Output only. The subject distinguished name in RFC 2253 format. Only present if parsed is true.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "subjectAlternativeDnsNames": {
+          "description": "Output only. The subject Alternative DNS names. Only present if parsed is true.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notBeforeTime": {
+          "description": "Output only. The certificate is not valid before this time. Only present if parsed is true.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "notAfterTime": {
+          "description": "Output only. The certificate is not valid after this time. Only present if parsed is true.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "serialNumber": {
+          "description": "Output only. The certificate serial number as a hex string. Only present if parsed is true.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "sha256Fingerprint": {
+          "description": "Output only. The SHA-256 certificate fingerprint as a hex string. Only present if parsed is true.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
     "ListKeyRingsResponse": {
       "id": "ListKeyRingsResponse",
       "description": "Response message for KeyManagementService.ListKeyRings.",
@@ -245,6 +380,10 @@
           "description": "Immutable. The period of time that versions of this key spend in the DESTROY_SCHEDULED state before transitioning to DESTROYED. If not specified at creation time, the default duration is 24 hours.",
           "type": "string",
           "format": "google-duration"
+        },
+        "cryptoKeyBackend": {
+          "description": "Immutable. The resource name of the backend environment where the key material for all CryptoKeyVersions associated with this CryptoKey reside and where all related cryptographic operations are performed. Only applicable if CryptoKeyVersions have a ProtectionLevel of EXTERNAL_VPC, with the resource name in the format `projects\/*\/locations\/*\/ekmConnections\/*`. Note, this list is non-exhaustive and may apply to additional ProtectionLevels in the future.",
+          "type": "string"
         }
       }
     },
@@ -290,13 +429,15 @@
             "Not specified.",
             "Crypto operations are performed in software.",
             "Crypto operations are performed in a Hardware Security Module.",
-            "Crypto operations are performed by an external key manager."
+            "Crypto operations are performed by an external key manager.",
+            "Crypto operations are performed in an EKM-over-VPC backend."
           ],
           "enum": [
             "PROTECTION_LEVEL_UNSPECIFIED",
             "SOFTWARE",
             "HSM",
-            "EXTERNAL"
+            "EXTERNAL",
+            "EXTERNAL_VPC"
           ]
         },
         "algorithm": {
@@ -404,7 +545,7 @@
           "type": "string"
         },
         "externalProtectionLevelOptions": {
-          "description": "ExternalProtectionLevelOptions stores a group of additional fields for configuring a CryptoKeyVersion that are specific to the EXTERNAL protection level.",
+          "description": "ExternalProtectionLevelOptions stores a group of additional fields for configuring a CryptoKeyVersion that are specific to the EXTERNAL protection level and EXTERNAL_VPC protection levels.",
           "$ref": "ExternalProtectionLevelOptions"
         },
         "reimportEligible": {
@@ -477,11 +618,15 @@
     },
     "ExternalProtectionLevelOptions": {
       "id": "ExternalProtectionLevelOptions",
-      "description": "ExternalProtectionLevelOptions stores a group of additional fields for configuring a CryptoKeyVersion that are specific to the EXTERNAL protection level.",
+      "description": "ExternalProtectionLevelOptions stores a group of additional fields for configuring a CryptoKeyVersion that are specific to the EXTERNAL protection level and EXTERNAL_VPC protection levels.",
       "type": "object",
       "properties": {
         "externalKeyUri": {
           "description": "The URI for an external resource that this CryptoKeyVersion represents.",
+          "type": "string"
+        },
+        "ekmConnectionKeyPath": {
+          "description": "The path to the external key material on the EKM when using EkmConnection e.g., \"v0\/my\/key\". Set this field instead of external_key_uri when using an EkmConnection.",
           "type": "string"
         }
       }
@@ -498,13 +643,15 @@
             "Not specified.",
             "Crypto operations are performed in software.",
             "Crypto operations are performed in a Hardware Security Module.",
-            "Crypto operations are performed by an external key manager."
+            "Crypto operations are performed by an external key manager.",
+            "Crypto operations are performed in an EKM-over-VPC backend."
           ],
           "enum": [
             "PROTECTION_LEVEL_UNSPECIFIED",
             "SOFTWARE",
             "HSM",
-            "EXTERNAL"
+            "EXTERNAL",
+            "EXTERNAL_VPC"
           ]
         },
         "algorithm": {
@@ -644,13 +791,15 @@
             "Not specified.",
             "Crypto operations are performed in software.",
             "Crypto operations are performed in a Hardware Security Module.",
-            "Crypto operations are performed by an external key manager."
+            "Crypto operations are performed by an external key manager.",
+            "Crypto operations are performed in an EKM-over-VPC backend."
           ],
           "enum": [
             "PROTECTION_LEVEL_UNSPECIFIED",
             "SOFTWARE",
             "HSM",
-            "EXTERNAL"
+            "EXTERNAL",
+            "EXTERNAL_VPC"
           ]
         },
         "createTime": {
@@ -800,13 +949,15 @@
             "Not specified.",
             "Crypto operations are performed in software.",
             "Crypto operations are performed in a Hardware Security Module.",
-            "Crypto operations are performed by an external key manager."
+            "Crypto operations are performed by an external key manager.",
+            "Crypto operations are performed in an EKM-over-VPC backend."
           ],
           "enum": [
             "PROTECTION_LEVEL_UNSPECIFIED",
             "SOFTWARE",
             "HSM",
-            "EXTERNAL"
+            "EXTERNAL",
+            "EXTERNAL_VPC"
           ]
         }
       }
@@ -975,13 +1126,15 @@
             "Not specified.",
             "Crypto operations are performed in software.",
             "Crypto operations are performed in a Hardware Security Module.",
-            "Crypto operations are performed by an external key manager."
+            "Crypto operations are performed by an external key manager.",
+            "Crypto operations are performed in an EKM-over-VPC backend."
           ],
           "enum": [
             "PROTECTION_LEVEL_UNSPECIFIED",
             "SOFTWARE",
             "HSM",
-            "EXTERNAL"
+            "EXTERNAL",
+            "EXTERNAL_VPC"
           ]
         }
       }
@@ -1039,13 +1192,15 @@
             "Not specified.",
             "Crypto operations are performed in software.",
             "Crypto operations are performed in a Hardware Security Module.",
-            "Crypto operations are performed by an external key manager."
+            "Crypto operations are performed by an external key manager.",
+            "Crypto operations are performed in an EKM-over-VPC backend."
           ],
           "enum": [
             "PROTECTION_LEVEL_UNSPECIFIED",
             "SOFTWARE",
             "HSM",
-            "EXTERNAL"
+            "EXTERNAL",
+            "EXTERNAL_VPC"
           ]
         }
       }
@@ -1132,13 +1287,15 @@
             "Not specified.",
             "Crypto operations are performed in software.",
             "Crypto operations are performed in a Hardware Security Module.",
-            "Crypto operations are performed by an external key manager."
+            "Crypto operations are performed by an external key manager.",
+            "Crypto operations are performed in an EKM-over-VPC backend."
           ],
           "enum": [
             "PROTECTION_LEVEL_UNSPECIFIED",
             "SOFTWARE",
             "HSM",
-            "EXTERNAL"
+            "EXTERNAL",
+            "EXTERNAL_VPC"
           ]
         }
       }
@@ -1186,13 +1343,15 @@
             "Not specified.",
             "Crypto operations are performed in software.",
             "Crypto operations are performed in a Hardware Security Module.",
-            "Crypto operations are performed by an external key manager."
+            "Crypto operations are performed by an external key manager.",
+            "Crypto operations are performed in an EKM-over-VPC backend."
           ],
           "enum": [
             "PROTECTION_LEVEL_UNSPECIFIED",
             "SOFTWARE",
             "HSM",
-            "EXTERNAL"
+            "EXTERNAL",
+            "EXTERNAL_VPC"
           ]
         }
       }
@@ -1244,13 +1403,15 @@
             "Not specified.",
             "Crypto operations are performed in software.",
             "Crypto operations are performed in a Hardware Security Module.",
-            "Crypto operations are performed by an external key manager."
+            "Crypto operations are performed by an external key manager.",
+            "Crypto operations are performed in an EKM-over-VPC backend."
           ],
           "enum": [
             "PROTECTION_LEVEL_UNSPECIFIED",
             "SOFTWARE",
             "HSM",
-            "EXTERNAL"
+            "EXTERNAL",
+            "EXTERNAL_VPC"
           ]
         }
       }
@@ -1314,13 +1475,15 @@
             "Not specified.",
             "Crypto operations are performed in software.",
             "Crypto operations are performed in a Hardware Security Module.",
-            "Crypto operations are performed by an external key manager."
+            "Crypto operations are performed by an external key manager.",
+            "Crypto operations are performed in an EKM-over-VPC backend."
           ],
           "enum": [
             "PROTECTION_LEVEL_UNSPECIFIED",
             "SOFTWARE",
             "HSM",
-            "EXTERNAL"
+            "EXTERNAL",
+            "EXTERNAL_VPC"
           ]
         }
       }
@@ -1342,13 +1505,15 @@
             "Not specified.",
             "Crypto operations are performed in software.",
             "Crypto operations are performed in a Hardware Security Module.",
-            "Crypto operations are performed by an external key manager."
+            "Crypto operations are performed by an external key manager.",
+            "Crypto operations are performed in an EKM-over-VPC backend."
           ],
           "enum": [
             "PROTECTION_LEVEL_UNSPECIFIED",
             "SOFTWARE",
             "HSM",
-            "EXTERNAL"
+            "EXTERNAL",
+            "EXTERNAL_VPC"
           ]
         }
       }
@@ -1711,6 +1876,242 @@
           }
           ,
           "resources": {
+            "ekmConnections": {
+              "methods": {
+                "list": {
+                  "id": "cloudkms.projects.locations.ekmConnections.list",
+                  "path": "v1/{+parent}/ekmConnections",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/ekmConnections",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the location associated with the EkmConnections to list, in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. Optional limit on the number of EkmConnections to include in the response. Further EkmConnections can subsequently be obtained by including the ListEkmConnectionsResponse.next_page_token in a subsequent request. If unspecified, the server will pick an appropriate default.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. Optional pagination token, returned earlier via ListEkmConnectionsResponse.next_page_token.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Optional. Only include resources that match the filter in the response. For more information, see [Sorting and filtering list results](https:\/\/cloud.google.com\/kms\/docs\/sorting-and-filtering).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Optional. Specify how the results should be sorted. If not specified, the results will be sorted in the default order. For more information, see [Sorting and filtering list results](https:\/\/cloud.google.com\/kms\/docs\/sorting-and-filtering).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListEkmConnectionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloudkms"
+                  ],
+                  "description": "Lists EkmConnections."
+                },
+                "get": {
+                  "id": "cloudkms.projects.locations.ekmConnections.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/ekmConnections/{ekmConnectionsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the EkmConnection to get.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/ekmConnections\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "EkmConnection"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloudkms"
+                  ],
+                  "description": "Returns metadata for a given EkmConnection."
+                },
+                "create": {
+                  "id": "cloudkms.projects.locations.ekmConnections.create",
+                  "path": "v1/{+parent}/ekmConnections",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/ekmConnections",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the location associated with the EkmConnection, in the format `projects\/*\/locations\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "ekmConnectionId": {
+                      "description": "Required. It must be unique within a location and match the regular expression `[a-zA-Z0-9_-]{1,63}`.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "EkmConnection"
+                  },
+                  "response": {
+                    "$ref": "EkmConnection"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloudkms"
+                  ],
+                  "description": "Creates a new EkmConnection in a given Project and Location."
+                },
+                "patch": {
+                  "id": "cloudkms.projects.locations.ekmConnections.patch",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/ekmConnections/{ekmConnectionsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The resource name for the EkmConnection in the format `projects\/*\/locations\/*\/ekmConnections\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/ekmConnections\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. List of fields to be updated in this request.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "EkmConnection"
+                  },
+                  "response": {
+                    "$ref": "EkmConnection"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloudkms"
+                  ],
+                  "description": "Updates an EkmConnection's metadata."
+                },
+                "setIamPolicy": {
+                  "id": "cloudkms.projects.locations.ekmConnections.setIamPolicy",
+                  "path": "v1/{+resource}:setIamPolicy",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/ekmConnections/{ekmConnectionsId}:setIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/ekmConnections\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "SetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloudkms"
+                  ],
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                },
+                "getIamPolicy": {
+                  "id": "cloudkms.projects.locations.ekmConnections.getIamPolicy",
+                  "path": "v1/{+resource}:getIamPolicy",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/ekmConnections/{ekmConnectionsId}:getIamPolicy",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/ekmConnections\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "options.requestedPolicyVersion": {
+                      "description": "Optional. The maximum policy version that will be used to format the policy. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset. The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloudkms"
+                  ],
+                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                },
+                "testIamPermissions": {
+                  "id": "cloudkms.projects.locations.ekmConnections.testIamPermissions",
+                  "path": "v1/{+resource}:testIamPermissions",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/ekmConnections/{ekmConnectionsId}:testIamPermissions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/ekmConnections\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "TestIamPermissionsRequest"
+                  },
+                  "response": {
+                    "$ref": "TestIamPermissionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloudkms"
+                  ],
+                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+            },
             "keyRings": {
               "methods": {
                 "list": {
@@ -2840,100 +3241,6 @@
                       "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                     }
                   }
-                }
-              }
-            },
-            "ekmConnections": {
-              "methods": {
-                "setIamPolicy": {
-                  "id": "cloudkms.projects.locations.ekmConnections.setIamPolicy",
-                  "path": "v1/{+resource}:setIamPolicy",
-                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/ekmConnections/{ekmConnectionsId}:setIamPolicy",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/ekmConnections\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "request": {
-                    "$ref": "SetIamPolicyRequest"
-                  },
-                  "response": {
-                    "$ref": "Policy"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/cloudkms"
-                  ],
-                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
-                },
-                "getIamPolicy": {
-                  "id": "cloudkms.projects.locations.ekmConnections.getIamPolicy",
-                  "path": "v1/{+resource}:getIamPolicy",
-                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/ekmConnections/{ekmConnectionsId}:getIamPolicy",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/ekmConnections\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "options.requestedPolicyVersion": {
-                      "description": "Optional. The maximum policy version that will be used to format the policy. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset. The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "response": {
-                    "$ref": "Policy"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/cloudkms"
-                  ],
-                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
-                },
-                "testIamPermissions": {
-                  "id": "cloudkms.projects.locations.ekmConnections.testIamPermissions",
-                  "path": "v1/{+resource}:testIamPermissions",
-                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/ekmConnections/{ekmConnectionsId}:testIamPermissions",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/ekmConnections\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "request": {
-                    "$ref": "TestIamPermissionsRequest"
-                  },
-                  "response": {
-                    "$ref": "TestIamPermissionsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/cloudkms"
-                  ],
-                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                 }
               }
             }

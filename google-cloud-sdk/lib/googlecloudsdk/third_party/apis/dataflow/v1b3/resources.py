@@ -55,6 +55,17 @@ class Collections(enum.Enum):
       ['projectId', 'location'],
       True
   )
+  PROJECTS_LOCATIONS_DEPLOYMENTS = (
+      'projects.locations.deployments',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/deployments/'
+              '{deploymentsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_JOBS = (
       'projects.locations.jobs',
       'projects/{projectId}/locations/{location}/jobs/{jobId}',

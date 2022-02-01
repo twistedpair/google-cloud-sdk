@@ -222,14 +222,29 @@ def _GetOperationStatus(client, request, tracker, messages):
   return operation.done
 
 
-def WaitForOperation(client, messages, operation, description):
-  """Wait for a long-running operation (LRO) to complete."""
+def WaitForOperation(client,
+                     messages,
+                     operation,
+                     description,
+                     extra_stages=None):
+  """Wait for a long-running operation (LRO) to complete.
+
+  Args:
+    client: The GCFv2 API client.
+    messages: The GCFv2 message stubs.
+    operation: The operation message response.
+    description: str, the description of the waited operation.
+    extra_stages: List[progress_tracker.Stage]|None, list of optional stages for
+      the progress tracker to watch. The GCF 2nd api returns unexpected stages
+      in the case of rollbacks.
+  """
   request = messages.CloudfunctionsProjectsLocationsOperationsGetRequest(
       name=operation.name)
   # Wait for stages to be loaded.
   with progress_tracker.ProgressTracker('Preparing function') as tracker:
     retryer = retry.Retryer(max_wait_ms=MAX_WAIT_MS)
     try:
+      # List[progress_tracker.Stage]
       stages = retryer.RetryOnResult(
           _GetStages,
           args=[client, request, messages],
@@ -238,6 +253,9 @@ def WaitForOperation(client, messages, operation, description):
     except retry.WaitException:
       raise exceptions.FunctionsError('Operation {0} is taking too long'.format(
           request.name))
+
+  if extra_stages is not None:
+    stages += extra_stages
 
   # Wait for LRO to complete.
   description += '...'
@@ -275,7 +293,7 @@ def OperationErrorToString(error):
   Returns:
     A human readable string representation of the error.
   """
-  message__format = 'OperationError: code={0}, message={1}'.format(
+  error_message = 'OperationError: code={0}, message={1}'.format(
       error.code, encoder.Decode(error.message))
   messages = apis.GetMessagesModule('cloudfunctions', _V2_ALPHA)
   if error.details:
@@ -283,5 +301,5 @@ def OperationErrorToString(error):
       sub_error = encoding.PyValueToMessage(messages.Status,
                                             encoding.MessageToPyValue(detail))
       if sub_error.code is not None or sub_error.message is not None:
-        message__format += '\n' + OperationErrorToString(sub_error)
-  return message__format
+        error_message += '\n' + OperationErrorToString(sub_error)
+  return error_message

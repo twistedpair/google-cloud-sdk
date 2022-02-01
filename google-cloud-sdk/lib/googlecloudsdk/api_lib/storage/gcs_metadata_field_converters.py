@@ -20,12 +20,32 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.storage import metadata_util
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.core.util import iso_duration
 from googlecloudsdk.core.util import times
 
 
+# Since CORS is a list in apitools, we need special handling, or blank
+# CORS lists will get sent with other configuration commands, such as lifecycle,
+# which would cause CORS configuration to be unintentionally removed.
+# Protorpc defaults list values to an empty list and won't allow us to set the
+# value to None like other configuration fields, so there is no way to
+# distinguish the default value from when we actually want to remove the CORS
+# configuration. To work around this, we create a fake CORS entry that
+# signifies that we should nullify the CORS configuration.
+# A value of [] means don't modify the CORS configuration.
+# A value of REMOVE_CORS_CONFIG means remove the CORS configuration.
+REMOVE_CORS_CONFIG = [
+    apis.GetMessagesModule('storage', 'v1').Bucket.CorsValueListEntry(
+        maxAgeSeconds=-1, method=['REMOVE_CORS_CONFIG'])
+]
+
+
 def process_cors(file_path):
   """Converts CORS file to Apitools objects."""
+  if file_path == user_request_args_factory.CLEAR:
+    return REMOVE_CORS_CONFIG
+
   # Expected JSON file format:
   # List[Dict<
   #   max_age_seconds: int | None,
@@ -48,6 +68,9 @@ def process_cors(file_path):
 
 def process_default_encryption_key(default_encryption_key):
   """Converts default_encryption_key string to Apitools object."""
+  if default_encryption_key == user_request_args_factory.CLEAR:
+    return None
+
   messages = apis.GetMessagesModule('storage', 'v1')
   return messages.Bucket.EncryptionValue(
       defaultKmsKeyName=default_encryption_key)
@@ -55,8 +78,11 @@ def process_default_encryption_key(default_encryption_key):
 
 def process_labels(file_path):
   """Converts labels file to Apitools objects."""
-  messages = apis.GetMessagesModule('storage', 'v1')
+  if file_path == user_request_args_factory.CLEAR:
+    return None
+
   labels_pair_list = metadata_util.get_label_pairs_from_file(file_path)
+  messages = apis.GetMessagesModule('storage', 'v1')
   labels_property_list = [
       messages.Bucket.LabelsValue.AdditionalProperty(key=key, value=value)
       for key, value in labels_pair_list
@@ -122,8 +148,29 @@ def process_lifecycle(file_path):
   return messages.Bucket.LifecycleValue(rule=apitools_lifecycle_rules)
 
 
+def process_log_config(log_bucket, log_object_prefix):
+  """Converts log setting strings to Apitools object."""
+  if log_bucket == user_request_args_factory.CLEAR:
+    validated_log_bucket = None
+  else:
+    validated_log_bucket = log_bucket
+  if log_object_prefix == user_request_args_factory.CLEAR:
+    validated_log_object_prefix = None
+  else:
+    validated_log_object_prefix = log_object_prefix
+
+  if not (validated_log_bucket or validated_log_object_prefix):
+    return None
+  messages = apis.GetMessagesModule('storage', 'v1')
+  return messages.Bucket.LoggingValue(
+      logBucket=validated_log_bucket,
+      logObjectPrefix=validated_log_object_prefix)
+
+
 def process_retention_period(retention_period_string):
   """Converts retention_period string to Apitools object."""
+  if retention_period_string == user_request_args_factory.CLEAR:
+    return None
   messages = apis.GetMessagesModule('storage', 'v1')
   return messages.Bucket.RetentionPolicyValue(
       retentionPeriod=int(iso_duration.Duration().Parse(
@@ -153,6 +200,18 @@ def process_versioning(versioning):
 
 def process_website(web_error_page, web_main_page_suffix):
   """Converts website strings to Apitools objects."""
+  if web_error_page == user_request_args_factory.CLEAR:
+    validated_error_page = None
+  else:
+    validated_error_page = web_error_page
+  if web_main_page_suffix == user_request_args_factory.CLEAR:
+    validated_main_page_suffix = None
+  else:
+    validated_main_page_suffix = web_main_page_suffix
+
+  if not (validated_error_page or validated_main_page_suffix):
+    return None
   messages = apis.GetMessagesModule('storage', 'v1')
   return messages.Bucket.WebsiteValue(
-      mainPageSuffix=web_main_page_suffix, notFoundPage=web_error_page)
+      mainPageSuffix=validated_main_page_suffix,
+      notFoundPage=validated_error_page)

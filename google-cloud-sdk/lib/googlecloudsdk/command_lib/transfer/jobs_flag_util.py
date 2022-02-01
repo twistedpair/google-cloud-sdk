@@ -68,6 +68,17 @@ class JobStatus(enum.Enum):
   DELETED = 'deleted'
 
 
+class LogAction(enum.Enum):
+  FIND = 'find'
+  DELETE = 'delete'
+  COPY = 'copy'
+
+
+class LogActionState(enum.Enum):
+  SUCCEEDED = 'succeeded'
+  FAILED = 'failed'
+
+
 class OverwriteOption(enum.Enum):
   DIFFERENT = 'different'
   ALWAYS = 'always'
@@ -353,6 +364,34 @@ def setup_parser(parser, is_update=False):
       " notifications. If 'json', a json representation of the relevant"
       ' transfer operation is included in notification messages (e.g., to'
       ' see errors after an operation fails).')
+
+  logging_config = parser.add_group(
+      help=('LOGGING CONFIG\n\nConfigure which transfer actions and action'
+            ' states are reported when logs are generated for this job. Logs'
+            ' can be viewed by running the following command:\n'
+            'gcloud logging read "resource.type=storage_transfer_job"'),
+      sort_args=False)
+  if is_update:
+    logging_config.add_argument(
+        '--clear-log-config',
+        action='store_true',
+        help="Remove the job's full logging config.")
+  logging_config.add_argument(
+      '--log-actions',
+      type=arg_parsers.ArgList(
+          choices=sorted([option.value for option in LogAction])),
+      metavar='LOG_ACTIONS',
+      help='Define the transfer operation actions to report in logs. Separate'
+      ' multiple actions with commas, omitting spaces after the commas'
+      ' (e.g., --log-actions=find,copy).')
+  logging_config.add_argument(
+      '--log-action-states',
+      type=arg_parsers.ArgList(
+          choices=sorted([option.value for option in LogActionState])),
+      metavar='LOG_ACTION_STATES',
+      help='The states in which the actions specified in --log-actions are'
+      ' logged. Separate multiple states with a comma, omitting the space after'
+      ' the comma (e.g., --log-action-states=succeeded,failed).')
 
   if not is_update:
     execution_options = parser.add_group(

@@ -84,6 +84,7 @@ class OpsAgentPolicy(object):
         DEBIAN = 'debian'
         WINDOWS = 'windows'
         RHEL = 'rhel'
+        ROCKY = 'rocky'
         SLES = 'sles'
         SLES_SAP = 'sles-sap'
         UBUNTU = 'ubuntu'

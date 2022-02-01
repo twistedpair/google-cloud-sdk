@@ -424,7 +424,7 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsListRequest(_
     ViewValueValuesEnum: The view that should be returned in the response.
 
   Fields:
-    orderBy: Optional. Sorting field and order
+    orderBy: Optional. The field to order the results by.
     pageSize: The maximum number of versions to return. Maximum page size is
       1,000.
     pageToken: The next_page_token value returned from a previous list
@@ -734,10 +734,10 @@ class ImportAptArtifactsRequest(_messages.Message):
 
 
 class ImportAptArtifactsResponse(_messages.Message):
-  r"""The response message from importing artifacts.
+  r"""The response message from importing APT artifacts.
 
   Fields:
-    aptArtifacts: The Apt artifacts updated.
+    aptArtifacts: The Apt artifacts imported.
     errors: Detailed error info for packages that were not imported.
   """
 
@@ -781,11 +781,11 @@ class ImportYumArtifactsRequest(_messages.Message):
 
 
 class ImportYumArtifactsResponse(_messages.Message):
-  r"""The response message from importing artifacts.
+  r"""The response message from importing YUM artifacts.
 
   Fields:
     errors: Detailed error info for packages that were not imported.
-    yumArtifacts: The yum artifacts updated.
+    yumArtifacts: The yum artifacts imported.
   """
 
   errors = _messages.MessageField('ImportYumArtifactsErrorInfo', 1, repeated=True)

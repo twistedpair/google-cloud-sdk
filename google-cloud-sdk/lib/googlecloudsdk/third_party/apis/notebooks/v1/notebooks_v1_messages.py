@@ -2643,7 +2643,7 @@ class RuntimeSoftwareConfig(_messages.Message):
   r"""Specifies the selection and configuration of software inside the
   runtime. The properties to set on runtime. Properties keys are specified in
   `key:value` format, for example: * `idle_shutdown: true` *
-  `idle_shutdown_timeout: 180` * `report-system-health: true`
+  `idle_shutdown_timeout: 180` * `enable_health_monitoring: true`
 
   Fields:
     customGpuDriverPath: Specify a custom Cloud Storage path where the GPU
@@ -2656,6 +2656,8 @@ class RuntimeSoftwareConfig(_messages.Message):
     idleShutdownTimeout: Time in minutes to wait before shutting down runtime.
       Default: 180 minutes
     installGpuDriver: Install Nvidia Driver automatically.
+    kernels: Optional. Use a list of container images to use as Kernels in the
+      notebook instance.
     notebookUpgradeSchedule: Cron expression in UTC timezone, used to schedule
       instance auto upgrade. Please follow the [cron
       format](https://en.wikipedia.org/wiki/Cron).
@@ -2669,8 +2671,9 @@ class RuntimeSoftwareConfig(_messages.Message):
   idleShutdown = _messages.BooleanField(3)
   idleShutdownTimeout = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   installGpuDriver = _messages.BooleanField(5)
-  notebookUpgradeSchedule = _messages.StringField(6)
-  postStartupScript = _messages.StringField(7)
+  kernels = _messages.MessageField('ContainerImage', 6, repeated=True)
+  notebookUpgradeSchedule = _messages.StringField(7)
+  postStartupScript = _messages.StringField(8)
 
 
 class Schedule(_messages.Message):
@@ -3410,8 +3413,8 @@ class VirtualMachineConfig(_messages.Message):
   Fields:
     acceleratorConfig: Optional. The Compute Engine accelerator configuration
       for this runtime.
-    containerImages: Optional. Use a list of container images to start the
-      notebook instance.
+    containerImages: Optional. Use a list of container images to use as
+      Kernels in the notebook instance.
     dataDisk: Required. Data disk option configuration settings.
     encryptionConfig: Optional. Encryption settings for virtual machine data
       disk.

@@ -83,10 +83,8 @@ _INGRESS_MODES = {
 }
 
 _SANDBOX_CHOICES = {
-    'gen1':
-        'Run the application in a first generation execution environment.',
-    'gen2':
-        'Run the application in a second generation execution environment.',
+    'gen1': 'Run the application in a first generation execution environment.',
+    'gen2': 'Run the application in a second generation execution environment.',
 }
 
 _DEFAULT_KUBECONFIG_PATH = '~/.kube/config'
@@ -269,6 +267,12 @@ def AddServiceFlag(parser):
       '--service',
       required=False,
       help='Limit matched revisions to the given service.')
+
+
+def AddJobFlag(parser):
+  """Add a job resource flag."""
+  parser.add_argument(
+      '--job', required=False, help='Limit matched resources to the given job.')
 
 
 def AddRegionArg(parser):
@@ -700,10 +704,7 @@ def AddSetSecretsFlag(parser):
       '--set-secrets',
       metavar='KEY=SECRET_NAME:SECRET_VERSION',
       action=arg_parsers.UpdateAction,
-      type=arg_parsers.ArgDict(
-          key_type=arg_parsers.CustomFunctionValidator(
-              lambda k: not _IsVolumeMountKey(k),
-              'Volume mounted secrets are not supported at this time.')),
+      type=arg_parsers.ArgDict(),
       help=('Specify secrets to provide as environment variables. '
             "For example: '--set-secrets=ENV=mysecret:latest,"
             "OTHER_ENV=othersecret:1' "
@@ -961,14 +962,18 @@ def AddMaxRetriesFlag(parser):
       'retried on failure.')
 
 
-def AddWaitForCompletionFlag(parser):
+def AddWaitForCompletionFlag(parser, implies_run_now=False):
   """Add job flag to poll until completion on create."""
+  help_text = (
+      'Wait until the execution has completed running before exiting. '
+      'If not set, gcloud exits successfully when the execution has started.')
+  if implies_run_now:
+    help_text += '  Implies --run-now.'
   parser.add_argument(
       '--wait-for-completion',
       default=False,
       action='store_true',
-      help='Wait until the job has completed running before finishing polling. '
-      'If not set, polling completes when the job has started.')
+      help=help_text)
 
 
 def AddTaskTimeoutFlags(parser):
@@ -1488,13 +1493,16 @@ def GetJobConfigurationChanges(args):
   changes = _GetConfigurationChanges(args)
 
   if FlagIsExplicitlySet(args, 'parallelism'):
-    changes.append(config_changes.SpecChange('parallelism', args.parallelism))
+    changes.append(
+        config_changes.ExecutionTemplateSpecChange('parallelism',
+                                                   args.parallelism))
   if 'tasks' in args:
-    changes.append(config_changes.SpecChange('completions', args.tasks))
+    changes.append(
+        config_changes.ExecutionTemplateSpecChange('taskCount', args.tasks))
   if 'max_retries' in args:
     changes.append(config_changes.JobMaxRetriesChange(args.max_retries))
   if FlagIsExplicitlySet(args, 'task_timeout'):
-    changes.append(config_changes.JobInstanceDeadlineChange(args.task_timeout))
+    changes.append(config_changes.JobTaskTimeoutChange(args.task_timeout))
 
   _PrependClientNameAndVersionChange(args, changes)
   return changes
@@ -2090,6 +2098,78 @@ def GetAndValidatePlatform(args, release_track, product):
                 '- {}: {}'.format(k, v) for k, v in platforms.PLATFORMS.items()
             ])))
   return platform
+
+
+def AddTaskFilterFlags(parser):
+  """Add filter flags for task list."""
+  parser.add_argument(
+      '--succeeded',
+      action='append_const',
+      dest='filter_flags',
+      const='Succeeded',
+      help='Include succeeded tasks.')
+  parser.add_argument(
+      '--failed',
+      action='append_const',
+      dest='filter_flags',
+      const='Failed',
+      help='Include failed tasks.')
+  parser.add_argument(
+      '--cancelled',
+      action='append_const',
+      dest='filter_flags',
+      const='Cancelled',
+      help='Include cancelled tasks.')
+  parser.add_argument(
+      '--running',
+      action='append_const',
+      dest='filter_flags',
+      const='Running',
+      help='Include running tasks.')
+  parser.add_argument(
+      '--abandoned',
+      action='append_const',
+      dest='filter_flags',
+      const='Abandoned',
+      help='Include abandoned tasks.')
+  parser.add_argument(
+      '--pending',
+      action='append_const',
+      dest='filter_flags',
+      const='Pending',
+      help='Include pending tasks.')
+  parser.add_argument(
+      '--completed',
+      action=arg_parsers.ExtendConstAction,
+      dest='filter_flags',
+      const=['Succeeded', 'Failed', 'Cancelled'],
+      help='Include suceeded, failed, and canceled tasks.')
+  parser.add_argument(
+      '--no-completed',
+      action=arg_parsers.ExtendConstAction,
+      dest='filter_flags',
+      const=['Running', 'Pending'],
+      help='Include running and pending tasks.')
+  parser.add_argument(
+      '--started',
+      action=arg_parsers.ExtendConstAction,
+      dest='filter_flags',
+      const=['Succeeded', 'Failed', 'Cancelled', 'Running'],
+      help='Include running, suceeded, failed, and cancelled tasks.')
+  parser.add_argument(
+      '--no-started',
+      action=arg_parsers.ExtendConstAction,
+      dest='filter_flags',
+      const=['Pending', 'Abandoned'],
+      help='Include pending and abandoned tasks.')
+
+
+def AddRunNowFlag(parser):
+  """Add --run-now flag for Job creation."""
+  parser.add_argument(
+      '--run-now',
+      action='store_true',
+      help='Run the job immediately after creation.')
 
 
 def AddSourceAndImageFlags(parser):

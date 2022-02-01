@@ -2783,7 +2783,7 @@
           "type": "boolean"
         },
         "searchConfig": {
-          "description": "Configuration for how FHIR resource can be searched.",
+          "description": "Configuration for how FHIR resources can be searched.",
           "$ref": "SearchConfig"
         }
       }

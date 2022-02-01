@@ -46,7 +46,7 @@ class Dataproc(object):
 
   @property
   def messages(self):
-    return self.client.MESSAGES_MODULE
+    return apis.GetMessagesModule('dataproc', self.api_version)
 
   @property
   def resources(self):

@@ -317,6 +317,7 @@ def AddMutationArgs(parser, required=True):
         debian             9
         rhel               8.*
         rhel               7.*
+        rocky              8.*
         sles               12.*
         sles               15.*
         sles_sap           12.*

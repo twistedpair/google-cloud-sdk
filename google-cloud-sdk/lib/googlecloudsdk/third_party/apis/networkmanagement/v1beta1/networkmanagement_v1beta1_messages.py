@@ -217,6 +217,22 @@ class CloudFunctionEndpoint(_messages.Message):
   uri = _messages.StringField(1)
 
 
+class CloudFunctionInfo(_messages.Message):
+  r"""Next id: 5
+
+  Fields:
+    displayName: Name of a Cloud function.
+    location: Location in which the Cloud function is deployed.
+    uri: URI of a Cloud function.
+    versionId: Latest successfully deployed version id of the Cloud function.
+  """
+
+  displayName = _messages.StringField(1)
+  location = _messages.StringField(2)
+  uri = _messages.StringField(3)
+  versionId = _messages.IntegerField(4)
+
+
 class CloudSQLInstanceInfo(_messages.Message):
   r"""For display only. Metadata associated with a Cloud SQL instance.
 
@@ -438,6 +454,12 @@ class DropInfo(_messages.Message):
         Services Network.
       CLOUD_SQL_INSTANCE_NO_IP_ADDRESS: Packet was dropped because the Cloud
         SQL instance has neither a private nor a public IP address.
+      CLOUD_FUNCTION_NOT_ACTIVE: Packet could be dropped because the Cloud
+        function is not in an active status.
+      VPC_CONNECTOR_NOT_SET: Packet could be dropped because no VPC connector
+        is set.
+      VPC_CONNECTOR_NOT_RUNNING: Packet could be dropped because the VPC
+        connector is not in a running state.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -461,6 +483,9 @@ class DropInfo(_messages.Message):
     DROPPED_INSIDE_CLOUD_SQL_SERVICE = 19
     GOOGLE_MANAGED_SERVICE_NO_PEERING = 20
     CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 21
+    CLOUD_FUNCTION_NOT_ACTIVE = 22
+    VPC_CONNECTOR_NOT_SET = 23
+    VPC_CONNECTOR_NOT_RUNNING = 24
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   resourceUri = _messages.StringField(2)
@@ -1833,6 +1858,7 @@ class Step(_messages.Message):
   Fields:
     abort: Display information of the final state "abort" and reason.
     causesDrop: This is a step that leads to the final state Drop.
+    cloudFunction: Display information of a Cloud function.
     cloudSqlInstance: Display information of a Cloud SQL instance.
     deliver: Display information of the final state "deliver" and reason.
     description: A description of the step. Usually this is a summary of the
@@ -1854,6 +1880,7 @@ class Step(_messages.Message):
       validating.
     route: Display information of a Compute Engine route.
     state: Each step is in one of the pre-defined states.
+    vpcConnector: Display information of a VPC connector.
     vpnGateway: Display information of a Compute Engine VPN gateway.
     vpnTunnel: Display information of a Compute Engine VPN tunnel.
   """
@@ -1878,6 +1905,9 @@ class Step(_messages.Message):
       START_FROM_CLOUD_SQL_INSTANCE: Initial state: packet originating from a
         Cloud SQL instance. A CloudSQLInstanceInfo is populated with starting
         instance information.
+      START_FROM_CLOUD_FUNCTION: Initial state: packet originating from a
+        Cloud function. A CloudFunctionInfo is populated with starting
+        function information.
       APPLY_INGRESS_FIREWALL_RULE: Config checking state: verify ingress
         firewall rule.
       APPLY_EGRESS_FIREWALL_RULE: Config checking state: verify egress
@@ -1895,6 +1925,7 @@ class Step(_messages.Message):
       ARRIVE_AT_VPN_GATEWAY: Forwarding state: arriving at a Cloud VPN
         gateway.
       ARRIVE_AT_VPN_TUNNEL: Forwarding state: arriving at a Cloud VPN tunnel.
+      ARRIVE_AT_VPC_CONNECTOR: Forwarding state: arriving at a VPC connector.
       NAT: Transition state: packet header translated.
       PROXY_CONNECTION: Transition state: original connection is terminated
         and a new proxied connection is initiated.
@@ -1912,43 +1943,47 @@ class Step(_messages.Message):
     START_FROM_PRIVATE_NETWORK = 3
     START_FROM_GKE_MASTER = 4
     START_FROM_CLOUD_SQL_INSTANCE = 5
-    APPLY_INGRESS_FIREWALL_RULE = 6
-    APPLY_EGRESS_FIREWALL_RULE = 7
-    APPLY_ROUTE = 8
-    APPLY_FORWARDING_RULE = 9
-    SPOOFING_APPROVED = 10
-    ARRIVE_AT_INSTANCE = 11
-    ARRIVE_AT_INTERNAL_LOAD_BALANCER = 12
-    ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 13
-    ARRIVE_AT_VPN_GATEWAY = 14
-    ARRIVE_AT_VPN_TUNNEL = 15
-    NAT = 16
-    PROXY_CONNECTION = 17
-    DELIVER = 18
-    DROP = 19
-    FORWARD = 20
-    ABORT = 21
-    VIEWER_PERMISSION_MISSING = 22
+    START_FROM_CLOUD_FUNCTION = 6
+    APPLY_INGRESS_FIREWALL_RULE = 7
+    APPLY_EGRESS_FIREWALL_RULE = 8
+    APPLY_ROUTE = 9
+    APPLY_FORWARDING_RULE = 10
+    SPOOFING_APPROVED = 11
+    ARRIVE_AT_INSTANCE = 12
+    ARRIVE_AT_INTERNAL_LOAD_BALANCER = 13
+    ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 14
+    ARRIVE_AT_VPN_GATEWAY = 15
+    ARRIVE_AT_VPN_TUNNEL = 16
+    ARRIVE_AT_VPC_CONNECTOR = 17
+    NAT = 18
+    PROXY_CONNECTION = 19
+    DELIVER = 20
+    DROP = 21
+    FORWARD = 22
+    ABORT = 23
+    VIEWER_PERMISSION_MISSING = 24
 
   abort = _messages.MessageField('AbortInfo', 1)
   causesDrop = _messages.BooleanField(2)
-  cloudSqlInstance = _messages.MessageField('CloudSQLInstanceInfo', 3)
-  deliver = _messages.MessageField('DeliverInfo', 4)
-  description = _messages.StringField(5)
-  drop = _messages.MessageField('DropInfo', 6)
-  endpoint = _messages.MessageField('EndpointInfo', 7)
-  firewall = _messages.MessageField('FirewallInfo', 8)
-  forward = _messages.MessageField('ForwardInfo', 9)
-  forwardingRule = _messages.MessageField('ForwardingRuleInfo', 10)
-  gkeMaster = _messages.MessageField('GKEMasterInfo', 11)
-  instance = _messages.MessageField('InstanceInfo', 12)
-  loadBalancer = _messages.MessageField('LoadBalancerInfo', 13)
-  network = _messages.MessageField('NetworkInfo', 14)
-  projectId = _messages.StringField(15)
-  route = _messages.MessageField('RouteInfo', 16)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  vpnGateway = _messages.MessageField('VpnGatewayInfo', 18)
-  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 19)
+  cloudFunction = _messages.MessageField('CloudFunctionInfo', 3)
+  cloudSqlInstance = _messages.MessageField('CloudSQLInstanceInfo', 4)
+  deliver = _messages.MessageField('DeliverInfo', 5)
+  description = _messages.StringField(6)
+  drop = _messages.MessageField('DropInfo', 7)
+  endpoint = _messages.MessageField('EndpointInfo', 8)
+  firewall = _messages.MessageField('FirewallInfo', 9)
+  forward = _messages.MessageField('ForwardInfo', 10)
+  forwardingRule = _messages.MessageField('ForwardingRuleInfo', 11)
+  gkeMaster = _messages.MessageField('GKEMasterInfo', 12)
+  instance = _messages.MessageField('InstanceInfo', 13)
+  loadBalancer = _messages.MessageField('LoadBalancerInfo', 14)
+  network = _messages.MessageField('NetworkInfo', 15)
+  projectId = _messages.StringField(16)
+  route = _messages.MessageField('RouteInfo', 17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  vpcConnector = _messages.MessageField('VpcConnectorInfo', 19)
+  vpnGateway = _messages.MessageField('VpnGatewayInfo', 20)
+  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 21)
 
 
 class TestIamPermissionsRequest(_messages.Message):
@@ -1998,6 +2033,20 @@ class Trace(_messages.Message):
 
   endpointInfo = _messages.MessageField('EndpointInfo', 1)
   steps = _messages.MessageField('Step', 2, repeated=True)
+
+
+class VpcConnectorInfo(_messages.Message):
+  r"""Next id: 4
+
+  Fields:
+    displayName: Name of a VPC connector.
+    location: Location in which the VPC connector is deployed.
+    uri: URI of a VPC connector.
+  """
+
+  displayName = _messages.StringField(1)
+  location = _messages.StringField(2)
+  uri = _messages.StringField(3)
 
 
 class VpnGatewayInfo(_messages.Message):

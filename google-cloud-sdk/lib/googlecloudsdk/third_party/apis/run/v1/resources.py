@@ -64,6 +64,26 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  NAMESPACES_EXECUTIONS = (
+      'namespaces.executions',
+      '{+name}',
+      {
+          '':
+              'namespaces/{namespacesId}/executions/{executionsId}',
+      },
+      ['name'],
+      True
+  )
+  NAMESPACES_JOBS = (
+      'namespaces.jobs',
+      '{+name}',
+      {
+          '':
+              'namespaces/{namespacesId}/jobs/{jobsId}',
+      },
+      ['name'],
+      True
+  )
   NAMESPACES_REVISIONS = (
       'namespaces.revisions',
       '{+name}',
@@ -90,6 +110,16 @@ class Collections(enum.Enum):
       {
           '':
               'namespaces/{namespacesId}/services/{servicesId}',
+      },
+      ['name'],
+      True
+  )
+  NAMESPACES_TASKS = (
+      'namespaces.tasks',
+      '{+name}',
+      {
+          '':
+              'namespaces/{namespacesId}/tasks/{tasksId}',
       },
       ['name'],
       True
@@ -128,6 +158,13 @@ class Collections(enum.Enum):
               '{domainmappingsId}',
       },
       ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_JOBS = (
+      'projects.locations.jobs',
+      'projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}',
+      {},
+      ['projectsId', 'locationsId', 'jobsId'],
       True
   )
   PROJECTS_LOCATIONS_NAMESPACES = (

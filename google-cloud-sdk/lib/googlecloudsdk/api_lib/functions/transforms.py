@@ -46,6 +46,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.command_lib.eventarc import types as trigger_types
+
 
 def _TransformState(data, undefined=''):
   """Returns textual information about functions state.
@@ -91,6 +93,18 @@ def TransformTrigger(data, undefined=''):
   elif generation == '2nd gen':
     if 'eventTrigger' in data:
       event_trigger = data['eventTrigger']
+      event_type = event_trigger.get('eventType')
+
+      if trigger_types.IsAuditLogType(event_type):
+        return 'Cloud Audit Log'
+      elif trigger_types.IsStorageType(event_type):
+        event_filters = event_trigger['eventFilters']
+        bucket = next((f.get('value')
+                       for f in event_filters
+                       if f.get('attribute') == 'bucket'), None)
+        if bucket:
+          return 'bucket: ' + bucket
+
       if 'pubsubTopic' in event_trigger:
         return 'topic: ' + event_trigger['pubsubTopic'].split('/')[-1]
       return 'Event Trigger'

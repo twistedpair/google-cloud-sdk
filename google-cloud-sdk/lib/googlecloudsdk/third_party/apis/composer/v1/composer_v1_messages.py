@@ -983,6 +983,10 @@ class PrivateEnvironmentConfig(_messages.Message):
   Composer environment.
 
   Fields:
+    cloudComposerConnectionSubnetwork: Optional. When specified, the
+      environment will use Private Service Connect instead of VPC peerings to
+      connect to Cloud SQL in the Tenant Project, and the PSC endpoint in the
+      Customer Project will use an IP address from this subnetwork.
     cloudComposerNetworkIpv4CidrBlock: Optional. The CIDR block from which IP
       range for Cloud Composer Network in tenant project will be reserved.
       Needs to be disjoint from private_cluster_config.master_ipv4_cidr_block
@@ -1012,13 +1016,14 @@ class PrivateEnvironmentConfig(_messages.Message):
       Composer environments in versions composer-1.*.*-airflow-*.*.*.
   """
 
-  cloudComposerNetworkIpv4CidrBlock = _messages.StringField(1)
-  cloudComposerNetworkIpv4ReservedRange = _messages.StringField(2)
-  cloudSqlIpv4CidrBlock = _messages.StringField(3)
-  enablePrivateEnvironment = _messages.BooleanField(4)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 5)
-  webServerIpv4CidrBlock = _messages.StringField(6)
-  webServerIpv4ReservedRange = _messages.StringField(7)
+  cloudComposerConnectionSubnetwork = _messages.StringField(1)
+  cloudComposerNetworkIpv4CidrBlock = _messages.StringField(2)
+  cloudComposerNetworkIpv4ReservedRange = _messages.StringField(3)
+  cloudSqlIpv4CidrBlock = _messages.StringField(4)
+  enablePrivateEnvironment = _messages.BooleanField(5)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 6)
+  webServerIpv4CidrBlock = _messages.StringField(7)
+  webServerIpv4ReservedRange = _messages.StringField(8)
 
 
 class SchedulerResource(_messages.Message):

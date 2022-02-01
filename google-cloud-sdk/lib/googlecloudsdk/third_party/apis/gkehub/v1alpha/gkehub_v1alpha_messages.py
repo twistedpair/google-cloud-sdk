@@ -229,6 +229,36 @@ class CloudAuditLoggingFeatureSpec(_messages.Message):
   allowlistedServiceAccounts = _messages.StringField(1, repeated=True)
 
 
+class CloudBuildMembershipSpec(_messages.Message):
+  r"""**Cloud Build**: Configurations for each Cloud Build enabled cluster.
+
+  Enums:
+    SecurityPolicyValueValuesEnum: Whether it is allowed to run the privileged
+      builds on the cluster or not.
+
+  Fields:
+    securityPolicy: Whether it is allowed to run the privileged builds on the
+      cluster or not.
+    version: Version of the cloud build software on the cluster.
+  """
+
+  class SecurityPolicyValueValuesEnum(_messages.Enum):
+    r"""Whether it is allowed to run the privileged builds on the cluster or
+    not.
+
+    Values:
+      SECURITY_POLICY_UNSPECIFIED: Unspecified policy
+      NON_PRIVILEGED: Privileged build pods are disallowed
+      PRIVILEGED: Privileged build pods are allowed
+    """
+    SECURITY_POLICY_UNSPECIFIED = 0
+    NON_PRIVILEGED = 1
+    PRIVILEGED = 2
+
+  securityPolicy = _messages.EnumField('SecurityPolicyValueValuesEnum', 1)
+  version = _messages.StringField(2)
+
+
 class CommonFeatureSpec(_messages.Message):
   r"""CommonFeatureSpec contains Hub-wide configuration information
 
@@ -2617,6 +2647,7 @@ class MembershipFeatureSpec(_messages.Message):
   Fields:
     anthosobservability: Anthos Observability-specific spec
     apigee: Apigee-specific spec.
+    cloudbuild: Cloud Build-specific spec
     configmanagement: Config Management-specific spec.
     helloworld: Hello World-specific spec.
     identityservice: Identity Service-specific spec.
@@ -2626,11 +2657,12 @@ class MembershipFeatureSpec(_messages.Message):
 
   anthosobservability = _messages.MessageField('AnthosObservabilityMembershipSpec', 1)
   apigee = _messages.MessageField('ApigeeMembershipSpec', 2)
-  configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 3)
-  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 4)
-  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 5)
-  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 6)
-  policycontroller = _messages.MessageField('PolicycontrollerMembershipSpec', 7)
+  cloudbuild = _messages.MessageField('CloudBuildMembershipSpec', 3)
+  configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 4)
+  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 5)
+  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 6)
+  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 7)
+  policycontroller = _messages.MessageField('PolicycontrollerMembershipSpec', 8)
 
 
 class MembershipFeatureState(_messages.Message):

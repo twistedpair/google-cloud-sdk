@@ -339,31 +339,49 @@ class _LogFileFormatter(logging.Formatter):
 class _ConsoleFormatter(logging.Formatter):
   """A formatter for the console logger, handles colorizing messages."""
 
+  TIMESTAMP = _FmtString('%(asctime)s ')
   LEVEL = _FmtString('%(levelname)s:')
   MESSAGE = _FmtString(' %(message)s')
-  DEFAULT_FORMAT = LEVEL + MESSAGE
 
   RED = _FmtString('\033[1;31m')
   YELLOW = _FmtString('\033[1;33m')
   END = _FmtString('\033[0m')
 
-  FORMATS = {}
+  DEFAULT_FORMAT = LEVEL + MESSAGE
+  DEFAULT_FORMATS = {
+      'detailed': TIMESTAMP + LEVEL + MESSAGE,
+  }
+
   COLOR_FORMATS = {
-      logging.WARNING: YELLOW + LEVEL + END + MESSAGE,
-      logging.ERROR: RED + LEVEL + END + MESSAGE,
-      logging.FATAL: RED + LEVEL + MESSAGE + END,
+      'standard': {
+          logging.WARNING: YELLOW + LEVEL + END + MESSAGE,
+          logging.ERROR: RED + LEVEL + END + MESSAGE,
+          logging.FATAL: RED + LEVEL + MESSAGE + END,
+      },
+      'detailed': {
+          logging.WARNING: TIMESTAMP + YELLOW + LEVEL + END + MESSAGE,
+          logging.ERROR: TIMESTAMP + RED + LEVEL + END + MESSAGE,
+          logging.FATAL: RED + TIMESTAMP + LEVEL + MESSAGE + END,
+      }
   }
 
   def __init__(self, out_stream):
     super(_ConsoleFormatter, self).__init__()
-    use_color = not properties.VALUES.core.disable_color.GetBool(validate=False)
+
+    console_log_format = properties.VALUES.core.console_log_format.Get()
+    use_color = not properties.VALUES.core.disable_color.GetBool(
+        validate=False)
     use_color &= out_stream.isatty()
     use_color &= console_attr.GetConsoleAttr().SupportsAnsi()
-    self._formats = (_ConsoleFormatter.COLOR_FORMATS
-                     if use_color else _ConsoleFormatter.FORMATS)
+
+    self._formats = (
+        _ConsoleFormatter.COLOR_FORMATS.get(console_log_format)
+        if use_color else {})
+    self._default_format = _ConsoleFormatter.DEFAULT_FORMATS.get(
+        console_log_format, _ConsoleFormatter.DEFAULT_FORMAT)
 
   def format(self, record):
-    fmt = self._formats.get(record.levelno, _ConsoleFormatter.DEFAULT_FORMAT)
+    fmt = self._formats.get(record.levelno, self._default_format)
     # We are doing some hackery here to change the log format on the fly. In
     # Python 3, they changed the internal workings of the formatter class so we
     # need to do something a little different to maintain the behavior.

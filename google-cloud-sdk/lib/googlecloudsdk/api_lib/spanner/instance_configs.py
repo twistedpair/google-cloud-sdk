@@ -22,9 +22,19 @@ from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.ai import errors
 from googlecloudsdk.command_lib.util.args import labels_util
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 import six
+
+
+class MissingReplicaError(core_exceptions.Error):
+  """Indicates that the replica is missing in the source config."""
+
+  def __init__(self, replica_location, replica_type):
+    super(MissingReplicaError, self).__init__(
+        'The replica {0} of type {1} is not in the source config\'s replicas'
+        .format(replica_location, replica_type))
 
 
 def Get(config):
@@ -66,36 +76,41 @@ def Delete(config, etag=None, validate_only=False):
   return client.projects_instanceConfigs.Delete(req)
 
 
-def Create(config,
-           display_name,
-           base_config,
-           replicas,
-           validate_only,
-           labels=None,
-           etag=None):
-  """Create instance configs in the project."""
-  client = apis.GetClientInstance('spanner', 'v1')
+def CreateUsingExistingConfig(args, config):
+  """Create a new CMMR instance config based on an existing GMMR/CMMR config."""
   msgs = apis.GetMessagesModule('spanner', 'v1')
-  project_ref = resources.REGISTRY.Create(
-      'spanner.projects', projectsId=properties.VALUES.core.project.GetOrFail)
-  config_ref = resources.REGISTRY.Parse(
-      config,
-      params={'projectsId': properties.VALUES.core.project.GetOrFail},
-      collection='spanner.projects.instanceConfigs')
-  replica_info = []
-  for replica in replicas:
-    # TODO(b/399093071): Change type to ReplicaInfo.TypeValueValuesEnum instead
-    # of str.
-    replica_type = msgs.ReplicaInfo.TypeValueValuesEnum.TYPE_UNSPECIFIED
-    if replica['type'] == 'READ_ONLY':
-      replica_type = msgs.ReplicaInfo.TypeValueValuesEnum.READ_ONLY
-    elif replica['type'] == 'READ_WRITE':
-      replica_type = msgs.ReplicaInfo.TypeValueValuesEnum.READ_WRITE
-    elif replica['type'] == 'WITNESS':
-      replica_type = msgs.ReplicaInfo.TypeValueValuesEnum.WITNESS
 
-    replica_info.append(
-        msgs.ReplicaInfo(location=replica['location'], type=replica_type))
+  # Override the user provided values, if any. Otherwise, clone the same from
+  # an existing config values.
+  display_name = args.display_name if args.display_name else config.displayName
+  labels = args.labels if args.labels else config.labels
+
+  # Note: baseConfig field is only set for user managed configurations.
+  # Use config name if this is not set.
+  base_config = config.baseConfig if config.baseConfig else config.name
+
+  replica_info_list = config.replicas
+  if args.skip_replicas:
+    _SkipReplicas(msgs, args.skip_replicas, replica_info_list)
+  if args.add_replicas:
+    _AppendReplicas(msgs, args.add_replicas, replica_info_list)
+
+  return _Create(msgs, args.config, display_name, base_config,
+                 replica_info_list, labels, args.validate_only, args.etag)
+
+
+def CreateUsingReplicas(config,
+                        display_name,
+                        base_config,
+                        replicas_arg,
+                        validate_only,
+                        labels=None,
+                        etag=None):
+  """Create a new instance configs based on provided list of replicas."""
+  msgs = apis.GetMessagesModule('spanner', 'v1')
+
+  replica_info_list = []
+  _AppendReplicas(msgs, replicas_arg, replica_info_list)
 
   labels_message = {}
   if labels is not None:
@@ -104,12 +119,32 @@ def Create(config,
             key=key, value=value) for key, value in six.iteritems(labels)
     ])
 
+  return _Create(msgs, config, display_name, base_config, replica_info_list,
+                 labels_message, validate_only, etag)
+
+
+def _Create(msgs,
+            config,
+            display_name,
+            base_config,
+            replica_info_list,
+            labels,
+            validate_only,
+            etag=None):
+  """Create instance configs in the project."""
+  client = apis.GetClientInstance('spanner', 'v1')
+  project_ref = resources.REGISTRY.Create(
+      'spanner.projects', projectsId=properties.VALUES.core.project.GetOrFail)
+  config_ref = resources.REGISTRY.Parse(
+      config,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection='spanner.projects.instanceConfigs')
   instance_config = msgs.InstanceConfig(
       name=config_ref.RelativeName(),
       displayName=display_name,
       baseConfig=base_config,
-      labels=labels_message,
-      replicas=replica_info)
+      labels=labels,
+      replicas=replica_info_list)
   if etag:
     instance_config.etag = etag
 
@@ -119,6 +154,46 @@ def Create(config,
       instanceConfig=instance_config,
       validateOnly=validate_only)
   return client.projects_instanceConfigs.Create(req)
+
+
+def _AppendReplicas(msgs, add_replicas_arg, replica_info_list):
+  """Appends each in add_replicas_arg to the given ReplicaInfo list."""
+  for replica in add_replicas_arg:
+    replica_type = _TypeValueValuesEnum(msgs, replica['type'])
+    replica_info_list.append(
+        msgs.ReplicaInfo(location=replica['location'], type=replica_type))
+
+
+def _SkipReplicas(msgs, skip_replicas_arg, replica_info_list):
+  """Skips each in skip_replicas_arg from the given ReplicaInfo list."""
+  for replica_to_skip in skip_replicas_arg:
+    index_to_delete = None
+    replica_type = _TypeValueValuesEnum(msgs, replica_to_skip['type'])
+    for index, replica in enumerate(replica_info_list):
+      # Only skip the first found matching replica.
+      if (replica.location == replica_to_skip['location'] and
+          replica.type == replica_type):
+        index_to_delete = index
+        pass
+
+    if index_to_delete is None:
+      raise MissingReplicaError(replica_to_skip['location'], replica_type)
+
+    replica_info_list.pop(index_to_delete)
+
+
+def _TypeValueValuesEnum(msgs, replica_type):
+  """Converts str replica_type to ReplicaInfo.TypeValueValuesEnum."""
+  # TODO(b/399093071): Change type to ReplicaInfo.TypeValueValuesEnum instead
+  # of str.
+  if replica_type == 'READ_ONLY':
+    return msgs.ReplicaInfo.TypeValueValuesEnum.READ_ONLY
+  elif replica_type == 'READ_WRITE':
+    return msgs.ReplicaInfo.TypeValueValuesEnum.READ_WRITE
+  elif replica_type == 'WITNESS':
+    return msgs.ReplicaInfo.TypeValueValuesEnum.WITNESS
+  else:
+    return msgs.ReplicaInfo.TypeValueValuesEnum.TYPE_UNSPECIFIED
 
 
 def Patch(args):

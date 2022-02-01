@@ -45,6 +45,7 @@ class DataflowV1b3(base_api.BaseApiClient):
     self.projects_jobs_messages = self.ProjectsJobsMessagesService(self)
     self.projects_jobs_workItems = self.ProjectsJobsWorkItemsService(self)
     self.projects_jobs = self.ProjectsJobsService(self)
+    self.projects_locations_deployments = self.ProjectsLocationsDeploymentsService(self)
     self.projects_locations_flexTemplates = self.ProjectsLocationsFlexTemplatesService(self)
     self.projects_locations_jobs_debug = self.ProjectsLocationsJobsDebugService(self)
     self.projects_locations_jobs_messages = self.ProjectsLocationsJobsMessagesService(self)
@@ -592,6 +593,205 @@ class DataflowV1b3(base_api.BaseApiClient):
         request_field='job',
         request_type_name='DataflowProjectsJobsUpdateRequest',
         response_type_name='Job',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsDeploymentsService(base_api.BaseApiService):
+    """Service class for the projects_locations_deployments resource."""
+
+    _NAME = 'projects_locations_deployments'
+
+    def __init__(self, client):
+      super(DataflowV1b3.ProjectsLocationsDeploymentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Request that creates a new `Deployment`. The result is an `Operation` which can be used to track the creation process. This process usually takes a few seconds, but can sometimes take much longer. The tracking `Operation` is automatically deleted after a few hours, so there is no need to call `DeleteOperation`.
+
+      Args:
+        request: (DataflowProjectsLocationsDeploymentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1b3/projects/{projectsId}/locations/{locationsId}/deployments',
+        http_method='POST',
+        method_id='dataflow.projects.locations.deployments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'validateOnly'],
+        relative_path='v1b3/{+parent}/deployments',
+        request_field='deployment',
+        request_type_name='DataflowProjectsLocationsDeploymentsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Request that deletes `Deployment`. The result is an `Operation` which can be used to track the creation process. This process usually takes a few seconds, but can sometimes take much longer. The tracking `Operation` is automatically deleted after a few hours, so there is no need to call `DeleteOperation`.
+
+      Args:
+        request: (DataflowProjectsLocationsDeploymentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1b3/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}',
+        http_method='DELETE',
+        method_id='dataflow.projects.locations.deployments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'etag', 'validateOnly'],
+        relative_path='v1b3/{+name}',
+        request_field='',
+        request_type_name='DataflowProjectsLocationsDeploymentsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Request to get Deployment.
+
+      Args:
+        request: (DataflowProjectsLocationsDeploymentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Deployment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1b3/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}',
+        http_method='GET',
+        method_id='dataflow.projects.locations.deployments.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v1b3/{+name}',
+        request_field='',
+        request_type_name='DataflowProjectsLocationsDeploymentsGetRequest',
+        response_type_name='Deployment',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Request that lists `Deployments`.
+
+      Args:
+        request: (DataflowProjectsLocationsDeploymentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDeploymentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1b3/projects/{projectsId}/locations/{locationsId}/deployments',
+        http_method='GET',
+        method_id='dataflow.projects.locations.deployments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1b3/{+parent}/deployments',
+        request_field='',
+        request_type_name='DataflowProjectsLocationsDeploymentsListRequest',
+        response_type_name='ListDeploymentsResponse',
+        supports_download=False,
+    )
+
+    def ListRevisions(self, request, global_params=None):
+      r"""Request that lists revisions of a `Deployment`.
+
+      Args:
+        request: (DataflowProjectsLocationsDeploymentsListRevisionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDeploymentRevisionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListRevisions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListRevisions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1b3/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}:listRevisions',
+        http_method='GET',
+        method_id='dataflow.projects.locations.deployments.listRevisions',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1b3/{+name}:listRevisions',
+        request_field='',
+        request_type_name='DataflowProjectsLocationsDeploymentsListRevisionsRequest',
+        response_type_name='ListDeploymentRevisionsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Request that updates or optionally creates a new `Deployment`. The result is an `Operation` which can be used to track the update/creation process. This process usually takes a few seconds, but can sometimes take much longer. The tracking `Operation` is automatically deleted after a few hours, so there is no need to call `DeleteOperation`.
+
+      Args:
+        request: (DataflowProjectsLocationsDeploymentsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1b3/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}',
+        http_method='PATCH',
+        method_id='dataflow.projects.locations.deployments.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'requestId', 'updateMask', 'validateOnly'],
+        relative_path='v1b3/{+name}',
+        request_field='deployment',
+        request_type_name='DataflowProjectsLocationsDeploymentsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Rollback(self, request, global_params=None):
+      r"""Request that rollback `Deployment` to any of the previous revisions.
+
+      Args:
+        request: (DataflowProjectsLocationsDeploymentsRollbackRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Rollback')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Rollback.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1b3/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}:rollback',
+        http_method='POST',
+        method_id='dataflow.projects.locations.deployments.rollback',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1b3/{+name}:rollback',
+        request_field='rollbackDeploymentRequest',
+        request_type_name='DataflowProjectsLocationsDeploymentsRollbackRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

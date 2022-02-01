@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2020 Google LLC. All Rights Reserved.
+# Copyright 2021 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,25 +12,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Wraps a Cloud Run job message with convenience methods."""
+"""Wraps a Cloud Run Job message with convenience methods."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import enum
-from googlecloudsdk.api_lib.run import container_resource
+from googlecloudsdk.api_lib.run import execution
 from googlecloudsdk.api_lib.run import k8s_object
 
 AUTHOR_ANNOTATION = k8s_object.RUN_GROUP + '/creator'
-
-STARTED_CONDITION = 'Started'
-COMPLETED_CONDITION = 'Completed'
-
-
-class RestartPolicy(enum.Enum):
-  NEVER = 'Never'
-  ON_FAILURE = 'OnFailure'
 
 
 class Job(k8s_object.KubernetesObject):
@@ -38,8 +29,6 @@ class Job(k8s_object.KubernetesObject):
 
   API_CATEGORY = 'run.googleapis.com'
   KIND = 'Job'
-  READY_CONDITION = COMPLETED_CONDITION
-  TERMINAL_CONDITIONS = frozenset({STARTED_CONDITION, READY_CONDITION})
 
   @classmethod
   def New(cls, client, namespace):
@@ -50,74 +39,24 @@ class Job(k8s_object.KubernetesObject):
       namespace: str, The serving namespace.
 
     Returns:
-      A new Job object to be deployed.
+      A new Job object.
     """
     ret = super(Job, cls).New(client, namespace)
-    ret.spec.template.spec.containers = [client.MESSAGES_MODULE.Container()]
+    ret.template.spec.containers = [client.MESSAGES_MODULE.Container()]
     return ret
 
-  class InstanceTemplateSpec(container_resource.ContainerResource):
-    """Wrapper class for Job subfield InstanceTemplateSpec."""
+  @property
+  def execution_template(self):
+    return execution.Execution.Template(self.spec.template,
+                                        self.MessagesModule())
 
-    KIND = 'InstanceTemplateSpec'
-
-    @classmethod
-    def SpecAndAnnotationsOnly(cls, job):
-      """Special wrapper for spec only that also covers metadata annotations.
-
-      For a message type without its own metadata, like InstanceTemplateSpec,
-      metadata fields should either raise AttributeErrors or refer to the
-      metadata of a different message depending on use case. This method handles
-      the annotations of metadata by referencing the parent job's annotations.
-      All other metadata fields will fall through to k8s_object which will
-      lead to AttributeErrors.
-
-      Args:
-        job: The parent job for this InstanceTemplateSpec
-
-      Returns:
-        A new k8s_object to wrap the InstanceTemplateSpec with only the spec
-        fields and the metadata annotations.
-      """
-      spec_wrapper = super(Job.InstanceTemplateSpec,
-                           cls).SpecOnly(job.spec.template.spec,
-                                         job.MessagesModule())
-      # pylint: disable=protected-access
-      spec_wrapper._annotations = job.annotations
-      return spec_wrapper
-
-    @property
-    def annotations(self):
-      """Override to return the parent job's annotations."""
-      try:
-        return self._annotations
-      except AttributeError:
-        raise ValueError(
-            'Job templates do not have their own annotations. Initialize the '
-            'wrapper with SpecAndAnnotationsOnly to be able to use annotations.'
-        )
-
-    @property
-    def restart_policy(self):
-      """Returns the enum version of the restart policy."""
-      return RestartPolicy(self.spec.restartPolicy)
-
-    @restart_policy.setter
-    def restart_policy(self, enum_value):
-      self.spec.restartPolicy = enum_value.value
-
-    @property
-    def service_account(self):
-      """The service account to use as the container identity."""
-      return self.spec.serviceAccountName
-
-    @service_account.setter
-    def service_account(self, value):
-      self.spec.serviceAccountName = value
+  @property
+  def task_template(self):
+    return self.template
 
   @property
   def template(self):
-    return Job.InstanceTemplateSpec.SpecAndAnnotationsOnly(self)
+    return self.execution_template.template
 
   @property
   def author(self):
@@ -133,29 +72,24 @@ class Job(k8s_object.KubernetesObject):
 
   @property
   def parallelism(self):
-    return self.spec.parallelism
+    return self.execution_template.spec.parallelism
 
   @parallelism.setter
   def parallelism(self, value):
-    self.spec.parallelism = value
+    self.execution_template.spec.parallelism = value
 
   @property
-  def completions(self):
-    return self.spec.completions
+  def task_count(self):
+    return self.execution_template.spec.taskCount
 
-  @completions.setter
-  def completions(self, value):
-    self.spec.completions = value
-
-  @property
-  def backoff_limit(self):
-    return self.spec.backoffLimit
-
-  @backoff_limit.setter
-  def backoff_limit(self, value):
-    self.spec.backoffLimit = value
+  @task_count.setter
+  def task_count(self, value):
+    self.execution_template.spec.taskCount = value
 
   @property
-  def started_condition(self):
-    if self.conditions and STARTED_CONDITION in self.conditions:
-      return self.conditions[STARTED_CONDITION]
+  def max_retries(self):
+    return self.task_template.spec.maxRetries
+
+  @max_retries.setter
+  def max_retries(self, value):
+    self.task_template.spec.maxRetries = value

@@ -156,6 +156,10 @@ def CreateCLI(surfaces, translator=None):
       'container.hub.anthosobservability',
       os.path.join(pkg_root, 'surface', 'container', 'fleet',
                    'anthosobservability'))
+  loader.AddModule(
+      'container.hub.build',
+      os.path.join(pkg_root, 'surface', 'container', 'fleet',
+                   'build'))
 
   # Check for updates on shutdown but not for any of the updater commands.
   # Skip update checks for 'gcloud version' command as it does that manually.

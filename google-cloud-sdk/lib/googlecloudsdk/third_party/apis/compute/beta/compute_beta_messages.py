@@ -1842,13 +1842,15 @@ class AuditConfig(_messages.Message):
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
+    exemptedMembers: This is deprecated and has no effect. Do not use.
     service: Specifies a service that will be enabled for audit logging. For
       example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
       `allServices` is a special value that covers all services.
   """
 
   auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
-  service = _messages.StringField(2)
+  exemptedMembers = _messages.StringField(2, repeated=True)
+  service = _messages.StringField(3)
 
 
 class AuditLogConfig(_messages.Message):
@@ -41794,11 +41796,8 @@ class NetworkInterface(_messages.Message):
 
     Values:
       EXTERNAL: This network interface can have external IPv6.
-      UNSPECIFIED_IPV6_ACCESS_TYPE: IPv6 access type not set. Means this
-        network interface hasn't been turned on IPv6 yet.
     """
     EXTERNAL = 0
-    UNSPECIFIED_IPV6_ACCESS_TYPE = 1
 
   class NicTypeValueValuesEnum(_messages.Enum):
     r"""The type of vNIC to be used on this interface. This may be gVNIC or
@@ -41822,11 +41821,9 @@ class NetworkInterface(_messages.Message):
     Values:
       IPV4_IPV6: The network interface can have both IPv4 and IPv6 addresses.
       IPV4_ONLY: The network interface will be assigned IPv4 address.
-      UNSPECIFIED_STACK_TYPE: <no description>
     """
     IPV4_IPV6 = 0
     IPV4_ONLY = 1
-    UNSPECIFIED_STACK_TYPE = 2
 
   accessConfigs = _messages.MessageField('AccessConfig', 1, repeated=True)
   aliasIpRanges = _messages.MessageField('AliasIpRange', 2, repeated=True)
@@ -56845,11 +56842,8 @@ class Subnetwork(_messages.Message):
     Values:
       EXTERNAL: VMs on this subnet will be assigned IPv6 addresses that are
         accesible via the Internet, as well as the VPC network.
-      UNSPECIFIED_IPV6_ACCESS_TYPE: IPv6 access type not set. Means this
-        subnet hasn't been turned on IPv6 yet.
     """
     EXTERNAL = 0
-    UNSPECIFIED_IPV6_ACCESS_TYPE = 1
 
   class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
     r"""The private IPv6 google access type for the VMs in this subnet. This
@@ -56916,11 +56910,9 @@ class Subnetwork(_messages.Message):
     Values:
       IPV4_IPV6: New VMs in this subnet can have both IPv4 and IPv6 addresses.
       IPV4_ONLY: New VMs in this subnet will only be assigned IPv4 addresses.
-      UNSPECIFIED_STACK_TYPE: <no description>
     """
     IPV4_IPV6 = 0
     IPV4_ONLY = 1
-    UNSPECIFIED_STACK_TYPE = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""[Output Only] The state of the subnetwork, which can be one of the

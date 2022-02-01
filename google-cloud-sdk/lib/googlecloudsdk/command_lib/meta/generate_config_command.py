@@ -359,7 +359,7 @@ def _MakeResourceArgFlags(collection_info, resource_data):
       formatted_resource_arg_flag_names = []
       for resource_arg in filtered_resource_arg_flag_names[:-1]:
         formatted_name = name_parsing.split_name_on_capitals(
-            name_parsing.make_name_singular(resource_arg),
+            name_parsing.singularize(resource_arg),
             delimiter='-').lower()
         formatted_resource_arg_flag_names.append(formatted_name)
 

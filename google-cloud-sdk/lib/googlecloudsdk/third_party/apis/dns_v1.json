@@ -4,7 +4,7 @@
  "id": "dns:v1",
  "name": "dns",
  "version": "v1",
- "revision": "20220114",
+ "revision": "20220124",
  "title": "Google Cloud DNS API",
  "description": "Configures and serves authoritative DNS records.",
  "ownerDomain": "google.com",
@@ -881,6 +881,10 @@
      "format": "int32"
     },
     "networksPerPolicy": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "peeringZonesPerTargetNetwork": {
      "type": "integer",
      "format": "int32"
     },

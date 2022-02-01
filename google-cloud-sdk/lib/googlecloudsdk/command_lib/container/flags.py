@@ -4016,14 +4016,14 @@ either a node-pool upgrade or node-pool creation.
       '--enable-gvnic', help=help_text, default=None, action='store_true')
 
 
-def AddEnableConfidentialNodesFlag(parser, hidden=False):
+def AddEnableConfidentialNodesFlag(parser, for_node_pool=False, hidden=False):
   """Adds a --enable-confidential-nodes flag to the given parser."""
-  help_text = """
-Enable Confidential Nodes for this cluster. Enabling Confidential Nodes will
-create nodes on Confidential VM https://cloud.google.com/compute/confidential-vm/docs/about-cvm.
-Note that, this flag needs to be used together with --machine-type with a
-N2D machine type https://cloud.google.com/compute/docs/machine-types#n2d_machine_types.
-"""
+  target = 'node pool' if for_node_pool else 'cluster'
+  help_text = """\
+Enable confidential nodes for the {}. Enabling Confidential Nodes
+will create nodes using Confidential VM
+https://cloud.google.com/compute/confidential-vm/docs/about-cvm.""".format(
+    target)
 
   parser.add_argument(
       '--enable-confidential-nodes',

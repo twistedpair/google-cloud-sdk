@@ -19,6 +19,8 @@ class Backup(_messages.Message):
   r"""A backup of a Cloud Spanner database.
 
   Enums:
+    DatabaseDialectValueValuesEnum: Output only. The database dialect
+      information for the backup.
     StateValueValuesEnum: Output only. The current state of the backup.
 
   Fields:
@@ -29,6 +31,8 @@ class Backup(_messages.Message):
       from which this backup was created. This needs to be in the same
       instance as the backup. Values are of the form
       `projects//instances//databases/`.
+    databaseDialect: Output only. The database dialect information for the
+      backup.
     encryptionInfo: Output only. The encryption information for the backup.
     expireTime: Required for the CreateBackup operation. The expiration time
       of the backup, with microseconds granularity that must be at least 6
@@ -70,6 +74,19 @@ class Backup(_messages.Message):
       `create_time` of the backup.
   """
 
+  class DatabaseDialectValueValuesEnum(_messages.Enum):
+    r"""Output only. The database dialect information for the backup.
+
+    Values:
+      DATABASE_DIALECT_UNSPECIFIED: Default value. This value will create a
+        database with the GOOGLE_STANDARD_SQL dialect.
+      GOOGLE_STANDARD_SQL: Google standard SQL.
+      POSTGRESQL: PostgreSQL supported SQL.
+    """
+    DATABASE_DIALECT_UNSPECIFIED = 0
+    GOOGLE_STANDARD_SQL = 1
+    POSTGRESQL = 2
+
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of the backup.
 
@@ -85,15 +102,16 @@ class Backup(_messages.Message):
 
   createTime = _messages.StringField(1)
   database = _messages.StringField(2)
-  encryptionInfo = _messages.MessageField('EncryptionInfo', 3)
-  expireTime = _messages.StringField(4)
-  maxExpireTime = _messages.StringField(5)
-  name = _messages.StringField(6)
-  referencingBackups = _messages.StringField(7, repeated=True)
-  referencingDatabases = _messages.StringField(8, repeated=True)
-  sizeBytes = _messages.IntegerField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  versionTime = _messages.StringField(11)
+  databaseDialect = _messages.EnumField('DatabaseDialectValueValuesEnum', 3)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 4)
+  expireTime = _messages.StringField(5)
+  maxExpireTime = _messages.StringField(6)
+  name = _messages.StringField(7)
+  referencingBackups = _messages.StringField(8, repeated=True)
+  referencingDatabases = _messages.StringField(9, repeated=True)
+  sizeBytes = _messages.IntegerField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  versionTime = _messages.StringField(12)
 
 
 class BackupInfo(_messages.Message):
@@ -1611,9 +1629,9 @@ class ListBackupOperationsResponse(_messages.Message):
     nextPageToken: `next_page_token` can be sent in a subsequent
       ListBackupOperations call to fetch more of the matching metadata.
     operations: The list of matching backup long-running operations. Each
-      operation's name will be prefixed by the backup's name and the
-      operation's metadata will be of type CreateBackupMetadata. Operations
-      returned include those that are pending or have
+      operation's name will be prefixed by the backup's name. The operation's
+      metadata field type `metadata.type_url` describes the type of the
+      metadata. Operations returned include those that are pending or have
       completed/failed/canceled within the last 7 days. Operations returned
       are ordered by `operation.metadata.value.progress.start_time` in
       descending order starting from the most recently started operation.
@@ -3444,16 +3462,20 @@ class SpannerProjectsInstancesBackupOperationsListRequest(_messages.Message):
       `metadata.@type` - the type of metadata. For example, the type string
       for CreateBackupMetadata is `type.googleapis.com/google.spanner.admin.da
       tabase.v1.CreateBackupMetadata`. * `metadata.` - any field in
-      metadata.value. * `error` - Error associated with the long-running
+      metadata.value. `metadata.type_url` must be specified if filtering on
+      metadata fields. * `error` - Error associated with the long-running
       operation. * `response.@type` - the type of response. * `response.` -
       any field in response.value. You can combine multiple expressions by
       enclosing each expression in parentheses. By default, expressions are
       combined with AND logic, but you can specify AND, OR, and NOT logic
       explicitly. Here are a few examples: * `done:true` - The operation is
-      complete. * `metadata.database:prod` - The database the backup was taken
-      from has a name containing the string "prod". * `(metadata.@type=type.go
-      ogleapis.com/google.spanner.admin.database.v1.CreateBackupMetadata) AND`
-      \ `(metadata.name:howl) AND` \ `(metadata.progress.start_time <
+      complete. * `(metadata.@type=type.googleapis.com/google.spanner.admin.da
+      tabase.v1.CreateBackupMetadata) AND` \ `metadata.database:prod` -
+      Returns operations where: * The operation's metadata type is
+      CreateBackupMetadata. * The database the backup was taken from has a
+      name containing the string "prod". * `(metadata.@type=type.googleapis.co
+      m/google.spanner.admin.database.v1.CreateBackupMetadata) AND` \
+      `(metadata.name:howl) AND` \ `(metadata.progress.start_time <
       \"2018-03-28T14:50:00Z\") AND` \ `(error:*)` - Returns operations where:
       * The operation's metadata type is CreateBackupMetadata. * The backup
       name contains the string "howl". * The operation started before

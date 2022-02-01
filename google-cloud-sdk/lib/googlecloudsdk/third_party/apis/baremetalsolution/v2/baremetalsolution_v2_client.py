@@ -41,6 +41,7 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
     self.projects_locations_networks = self.ProjectsLocationsNetworksService(self)
+    self.projects_locations_nfsShares = self.ProjectsLocationsNfsSharesService(self)
     self.projects_locations_snapshotSchedulePolicies = self.ProjectsLocationsSnapshotSchedulePoliciesService(self)
     self.projects_locations_volumes_luns = self.ProjectsLocationsVolumesLunsService(self)
     self.projects_locations_volumes_snapshots = self.ProjectsLocationsVolumesSnapshotsService(self)
@@ -166,6 +167,33 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Start(self, request, global_params=None):
+      r"""Starts a server that was shutdown.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsInstancesStartRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Start')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Start.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:start',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.instances.start',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:start',
+        request_field='startInstanceRequest',
+        request_type_name='BaremetalsolutionProjectsLocationsInstancesStartRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsNetworksService(base_api.BaseApiService):
     """Service class for the projects_locations_networks resource."""
 
@@ -254,6 +282,70 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         request_field='network',
         request_type_name='BaremetalsolutionProjectsLocationsNetworksPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsNfsSharesService(base_api.BaseApiService):
+    """Service class for the projects_locations_nfsShares resource."""
+
+    _NAME = 'projects_locations_nfsShares'
+
+    def __init__(self, client):
+      super(BaremetalsolutionV2.ProjectsLocationsNfsSharesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get details of a single NFS share.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsNfsSharesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NfsShare) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/nfsShares/{nfsSharesId}',
+        http_method='GET',
+        method_id='baremetalsolution.projects.locations.nfsShares.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsNfsSharesGetRequest',
+        response_type_name='NfsShare',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List NFS shares.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsNfsSharesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListNfsSharesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/nfsShares',
+        http_method='GET',
+        method_id='baremetalsolution.projects.locations.nfsShares.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/nfsShares',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsNfsSharesListRequest',
+        response_type_name='ListNfsSharesResponse',
         supports_download=False,
     )
 

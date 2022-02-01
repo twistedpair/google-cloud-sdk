@@ -19,7 +19,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import io
+import json
 import os
+import re
 
 from googlecloudsdk.api_lib.container import util
 from googlecloudsdk.core import exceptions
@@ -58,8 +60,39 @@ def KubeconfigForMembership(project, membership):
   # run a gcloud command to get the credential of the given
   # membership
 
+  # Check if the membership is for a GKE cluster.
+  # If it is, use the kubeconfig for the GKE cluster.
   args = [
-      'container', 'hub', 'memberships', 'get-credentials', membership,
+      'container', 'fleet', 'memberships', 'describe', membership, '--project',
+      project, '--format', 'json'
+  ]
+  output, err = _RunGcloud(args)
+  if err:
+    raise exceptions.Error('Error describing the membership {}: {}'.format(
+        membership, err))
+  if output:
+    description = json.loads(output)
+    cluster_link = description.get('endpoint',
+                                   {}).get('gkeCluster',
+                                           {}).get('resourceLink', '')
+    if cluster_link:
+      m = re.compile('.*/projects/(.*)/locations/(.*)/clusters/(.*)').match(
+          cluster_link)
+      project = ''
+      location = ''
+      cluster = ''
+      try:
+        project = m.group(1)
+        location = m.group(2)
+        cluster = m.group(3)
+      except IndexError:
+        pass
+      if project and location and cluster:
+        KubeconfigForCluster(project, location, cluster)
+        return
+
+  args = [
+      'container', 'fleet', 'memberships', 'get-credentials', membership,
       '--project', project
   ]
   _, err = _RunGcloud(args)
@@ -154,7 +187,7 @@ def ListMemberships(project):
   # TODO(b/202418506) Check if there is any library
   # function to list the memberships.
   args = [
-      'container', 'hub', 'memberships', 'list', '--format', 'table(name)',
+      'container', 'fleet', 'memberships', 'list', '--format', 'table(name)',
       '--project', project
   ]
   output, err = _RunGcloud(args)

@@ -668,6 +668,51 @@ class ListVpnConnectionsResponse(_messages.Message):
   vpnConnections = _messages.MessageField('VpnConnection', 3, repeated=True)
 
 
+class LocalDiskEncryption(_messages.Message):
+  r"""Configuration for CMEK support for edge machine local disk encryption.
+
+  Enums:
+    KmsKeyStateValueValuesEnum: Output only. Availability of the Cloud KMS
+      CryptoKey. If not `KEY_AVAILABLE`, then nodes may go offline as they
+      cannot access their local data. This can be caused by a lack of
+      permissions to use the key, or if the key is disabled or deleted.
+
+  Fields:
+    kmsKey: Immutable. The Cloud KMS CryptoKey e.g. projects/{project}/locatio
+      ns/{location}/keyRings/{keyRing}/cryptoKeys/{cryptoKey} to use for
+      protecting node local disks. If not specified, a Google-managed key will
+      be used instead.
+    kmsKeyActiveVersion: Output only. The Cloud KMS CryptoKeyVersion currently
+      in use for protecting node local disks. Only applicable if kms_key is
+      set.
+    kmsKeyState: Output only. Availability of the Cloud KMS CryptoKey. If not
+      `KEY_AVAILABLE`, then nodes may go offline as they cannot access their
+      local data. This can be caused by a lack of permissions to use the key,
+      or if the key is disabled or deleted.
+  """
+
+  class KmsKeyStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Availability of the Cloud KMS CryptoKey. If not
+    `KEY_AVAILABLE`, then nodes may go offline as they cannot access their
+    local data. This can be caused by a lack of permissions to use the key, or
+    if the key is disabled or deleted.
+
+    Values:
+      KMS_KEY_STATE_UNSPECIFIED: Unspecified.
+      KMS_KEY_STATE_KEY_AVAILABLE: The key is available for use, and dependent
+        resources should be accessible.
+      KMS_KEY_STATE_KEY_UNAVAILABLE: The key is unavailable for an unspecified
+        reason. Dependent resources may be inaccessible.
+    """
+    KMS_KEY_STATE_UNSPECIFIED = 0
+    KMS_KEY_STATE_KEY_AVAILABLE = 1
+    KMS_KEY_STATE_KEY_UNAVAILABLE = 2
+
+  kmsKey = _messages.StringField(1)
+  kmsKeyActiveVersion = _messages.StringField(2)
+  kmsKeyState = _messages.EnumField('KmsKeyStateValueValuesEnum', 3)
+
+
 class Location(_messages.Message):
   r"""A resource that represents Google Cloud Platform location.
 
@@ -870,6 +915,8 @@ class NodePool(_messages.Message):
   Fields:
     createTime: Output only. The time when the node pool was created.
     labels: Labels associated with this resource.
+    localDiskEncryption: Optional. Local disk encryption options. This field
+      is only used when enabling CMEK support.
     machineFilter: Only machines matching this filter will be allowed to join
       the node pool. The filtering language accepts strings like "name=", and
       is documented in more detail in [AIP-160](https://google.aip.dev/160).
@@ -908,12 +955,13 @@ class NodePool(_messages.Message):
 
   createTime = _messages.StringField(1)
   labels = _messages.MessageField('LabelsValue', 2)
-  machineFilter = _messages.StringField(3)
-  name = _messages.StringField(4)
-  nodeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  nodeLocation = _messages.StringField(6)
-  site = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  localDiskEncryption = _messages.MessageField('LocalDiskEncryption', 3)
+  machineFilter = _messages.StringField(4)
+  name = _messages.StringField(5)
+  nodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  nodeLocation = _messages.StringField(7)
+  site = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class Operation(_messages.Message):

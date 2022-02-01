@@ -282,6 +282,7 @@ class GkemulticloudProjectsLocationsAwsClustersPatchRequest(_messages.Message):
       `annotations`. * `control_plane.version`. * `authorization.admin_users`.
       * `control_plane.aws_services_authentication.role_arn`. *
       `control_plane.aws_services_authentication.role_session_name`. *
+      `control_plane.config_encryption.kms_key_arn`. *
       `control_plane.instance_type`.
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
@@ -2394,6 +2395,8 @@ class GoogleCloudGkemulticloudV1OperationMetadata(_messages.Message):
   Fields:
     createTime: Output only. The time at which this operation was created.
     endTime: Output only. The time at which this operation was completed.
+    errorDetail: Output only. Human-readable status of any error that occurred
+      during the operation.
     statusDetail: Output only. Human-readable status of the operation, if any.
     target: Output only. The name of the resource associated to this
       operation.
@@ -2401,8 +2404,9 @@ class GoogleCloudGkemulticloudV1OperationMetadata(_messages.Message):
 
   createTime = _messages.StringField(1)
   endTime = _messages.StringField(2)
-  statusDetail = _messages.StringField(3)
-  target = _messages.StringField(4)
+  errorDetail = _messages.StringField(3)
+  statusDetail = _messages.StringField(4)
+  target = _messages.StringField(5)
 
 
 class GoogleCloudGkemulticloudV1ReplicaPlacement(_messages.Message):

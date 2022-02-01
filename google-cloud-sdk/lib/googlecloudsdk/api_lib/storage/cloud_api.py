@@ -73,10 +73,9 @@ class CloudApi(object):
     """Creates a new bucket with the specified metadata.
 
     Args:
-      bucket_resource (resource_reference.BucketResource):
-        Resource containing metadata for new bucket.
-      request_config (RequestConfig): Object containing general API function
-        arguments. Subclasses for specific cloud providers are available.
+      bucket_resource (resource_reference.UnknownResource): The bucket to
+        create.
+      request_config (RequestConfig): Contains metadata for new bucket.
       fields_scope (FieldsScope): Determines the fields and projection
         parameters of API call.
 
@@ -129,9 +128,8 @@ class CloudApi(object):
     """Patches bucket metadata.
 
     Args:
-      bucket_resource (BucketResource): Contans metadata to patch.
-      request_config (RequestConfig): Object containing general API function
-        arguments. Subclasses for specific cloud providers are available.
+      bucket_resource (UnknownResource): The bucket to patch.
+      request_config (RequestConfig): Contains new metadata for the bucket.
       fields_scope (FieldsScope): Determines the fields and projection
         parameters of API call.
 
