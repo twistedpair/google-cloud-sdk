@@ -387,7 +387,6 @@ def _SetDiskSize(build_config, messages, arg_disk_size):
 def _SetWorkerPool(build_config, messages, arg_worker_pool):
   """Set the worker pool to run the build in."""
   if arg_worker_pool is not None:
-    # Only regional pools are supported here
     worker_pool = resources.REGISTRY.Parse(
         arg_worker_pool, collection='cloudbuild.projects.locations.workerPools')
     if not build_config.options:
@@ -515,7 +514,7 @@ def DetermineBuildRegion(build_config, desired_region=None):
   able to access new regions. This is aligned with the approach used by other
   teams.
   """
-  # If the build is configured to run in a regional worker pool, use the worker
+  # If the build is configured to run in a worker pool, use the worker
   # pool's resource ID to determine which regional GCB service to send it to.
   wp_options = build_config.options
   if not wp_options:
@@ -525,9 +524,9 @@ def DetermineBuildRegion(build_config, desired_region=None):
     wp_resource = wp_options.workerPool
   if not wp_resource:
     return desired_region
-  if not cloudbuild_util.IsRegionalWorkerPool(wp_resource):
+  if not cloudbuild_util.IsWorkerPool(wp_resource):
     return desired_region
-  wp_region = cloudbuild_util.RegionalWorkerPoolRegion(wp_resource)
+  wp_region = cloudbuild_util.WorkerPoolRegion(wp_resource)
   # If the configuration includes a substitution for the region, and the user
   # fails to include a --region flag, issue a warning
   matches = []

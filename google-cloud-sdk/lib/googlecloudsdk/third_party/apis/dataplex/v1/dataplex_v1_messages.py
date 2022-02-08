@@ -1044,6 +1044,38 @@ class DataplexProjectsLocationsLakesZonesDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class DataplexProjectsLocationsLakesZonesEntitiesCreateRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesZonesEntitiesCreateRequest object.
+
+  Fields:
+    googleCloudDataplexV1Entity: A GoogleCloudDataplexV1Entity resource to be
+      passed as the request body.
+    parent: Required. The resource name of the parent zone: projects/{project_
+      number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}.
+    validateOnly: Optional. Only validate the request, but do not perform
+      mutations. The default is false.
+  """
+
+  googleCloudDataplexV1Entity = _messages.MessageField('GoogleCloudDataplexV1Entity', 1)
+  parent = _messages.StringField(2, required=True)
+  validateOnly = _messages.BooleanField(3)
+
+
+class DataplexProjectsLocationsLakesZonesEntitiesDeleteRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesZonesEntitiesDeleteRequest object.
+
+  Fields:
+    etag: Optional. The etag associated with the partition if it was
+      previously retrieved.
+    name: Required. The resource name of the entity: projects/{project_number}
+      /locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/entities/{entit
+      y_id}.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
 class DataplexProjectsLocationsLakesZonesEntitiesGetRequest(_messages.Message):
   r"""A DataplexProjectsLocationsLakesZonesEntitiesGetRequest object.
 
@@ -1120,6 +1152,41 @@ class DataplexProjectsLocationsLakesZonesEntitiesListRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 5)
 
 
+class DataplexProjectsLocationsLakesZonesEntitiesPartitionsCreateRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesZonesEntitiesPartitionsCreateRequest
+  object.
+
+  Fields:
+    googleCloudDataplexV1Partition: A GoogleCloudDataplexV1Partition resource
+      to be passed as the request body.
+    parent: Required. The resource name of the parent zone: projects/{project_
+      number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/entities
+      /{entity_id}.
+    validateOnly: Optional. Only validate the request, but do not perform
+      mutations. The default is false.
+  """
+
+  googleCloudDataplexV1Partition = _messages.MessageField('GoogleCloudDataplexV1Partition', 1)
+  parent = _messages.StringField(2, required=True)
+  validateOnly = _messages.BooleanField(3)
+
+
+class DataplexProjectsLocationsLakesZonesEntitiesPartitionsDeleteRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesZonesEntitiesPartitionsDeleteRequest
+  object.
+
+  Fields:
+    etag: Optional. The etag associated with the partition if it was
+      previously retrieved.
+    name: Required. The resource name of the partition. format: projects/{proj
+      ect_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/enti
+      ties/{entity_id}/partitions/{partition_id}.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
 class DataplexProjectsLocationsLakesZonesEntitiesPartitionsGetRequest(_messages.Message):
   r"""A DataplexProjectsLocationsLakesZonesEntitiesPartitionsGetRequest
   object.
@@ -1156,6 +1223,24 @@ class DataplexProjectsLocationsLakesZonesEntitiesPartitionsListRequest(_messages
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class DataplexProjectsLocationsLakesZonesEntitiesUpdateRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesZonesEntitiesUpdateRequest object.
+
+  Fields:
+    googleCloudDataplexV1Entity: A GoogleCloudDataplexV1Entity resource to be
+      passed as the request body.
+    name: Output only. The resource name of the entity, of the form: projects/
+      {project_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}
+      /entities/{id}.
+    validateOnly: Optional. Only validate the request, but do not perform
+      mutations. The default is false.
+  """
+
+  googleCloudDataplexV1Entity = _messages.MessageField('GoogleCloudDataplexV1Entity', 1)
+  name = _messages.StringField(2, required=True)
+  validateOnly = _messages.BooleanField(3)
 
 
 class DataplexProjectsLocationsLakesZonesGetIamPolicyRequest(_messages.Message):

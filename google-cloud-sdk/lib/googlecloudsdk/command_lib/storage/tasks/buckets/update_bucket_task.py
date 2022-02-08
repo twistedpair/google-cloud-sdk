@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import request_config_factory
+from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.core import log
 
@@ -48,3 +49,6 @@ class UpdateBucketTask(task.Task):
         user_request_args=self._user_request_args)
     api_factory.get_api(provider).patch_bucket(
         self._bucket_resource, request_config=request_config)
+
+    if task_status_queue:
+      progress_callbacks.increment_count_callback(task_status_queue)

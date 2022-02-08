@@ -42,9 +42,9 @@ RELEASE_TRACK_TO_API_VERSION = {
     base.ReleaseTrack.ALPHA: _GA_API_VERSION,
 }
 
-REGIONAL_WORKERPOOL_NAME_MATCHER = r'projects/.*/locations/.*/workerPools/.*'
-REGIONAL_WORKERPOOL_NAME_SELECTOR = r'projects/.*/locations/.*/workerPools/(.*)'
-REGIONAL_WORKERPOOL_REGION_SELECTOR = r'projects/.*/locations/(.*)/workerPools/.*'
+WORKERPOOL_NAME_MATCHER = r'projects/.*/locations/.*/workerPools/.*'
+WORKERPOOL_NAME_SELECTOR = r'projects/.*/locations/.*/workerPools/(.*)'
+WORKERPOOL_REGION_SELECTOR = r'projects/.*/locations/(.*)/workerPools/.*'
 
 # Default for optionally-regional requests when the user does not specify.
 DEFAULT_REGION = 'global'
@@ -439,25 +439,25 @@ def LoadMessagesFromPath(path,
                                   skip_camel_case, path)
 
 
-def IsRegionalWorkerPool(resource_name):
-  """Determine if the provided full resource name is a regional worker pool.
+def IsWorkerPool(resource_name):
+  """Determine if the provided full resource name is a worker pool.
 
   Args:
     resource_name: str, The string to test.
 
   Returns:
-    bool, True if the string is a regional worker pool's full resource name.
+    bool, True if the string is a worker pool's full resource name.
   """
-  return bool(re.match(REGIONAL_WORKERPOOL_NAME_MATCHER, resource_name))
+  return bool(re.match(WORKERPOOL_NAME_MATCHER, resource_name))
 
 
-def RegionalWorkerPoolShortName(resource_name):
-  """Get the name part of a regional worker pool's full resource name.
+def WorkerPoolShortName(resource_name):
+  """Get the name part of a worker pool's full resource name.
 
   For example, "projects/abc/locations/def/workerPools/ghi" returns "ghi".
 
   Args:
-    resource_name: A regional worker pool's full resource name.
+    resource_name: A worker pool's full resource name.
 
   Raises:
     ValueError: If the full resource name was not well-formatted.
@@ -465,20 +465,20 @@ def RegionalWorkerPoolShortName(resource_name):
   Returns:
     The worker pool's short name.
   """
-  match = re.search(REGIONAL_WORKERPOOL_NAME_SELECTOR, resource_name)
+  match = re.search(WORKERPOOL_NAME_SELECTOR, resource_name)
   if match:
     return match.group(1)
   raise ValueError('The worker pool resource name must match "%s"' %
-                   (REGIONAL_WORKERPOOL_NAME_MATCHER,))
+                   (WORKERPOOL_NAME_MATCHER,))
 
 
-def RegionalWorkerPoolRegion(resource_name):
-  """Get the region part of a regional worker pool's full resource name.
+def WorkerPoolRegion(resource_name):
+  """Get the region part of a worker pool's full resource name.
 
   For example, "projects/abc/locations/def/workerPools/ghi" returns "def".
 
   Args:
-    resource_name: str, A regional worker pool's full resource name.
+    resource_name: str, A worker pool's full resource name.
 
   Raises:
     ValueError: If the full resource name was not well-formatted.
@@ -486,11 +486,11 @@ def RegionalWorkerPoolRegion(resource_name):
   Returns:
     str, The worker pool's region string.
   """
-  match = re.search(REGIONAL_WORKERPOOL_REGION_SELECTOR, resource_name)
+  match = re.search(WORKERPOOL_REGION_SELECTOR, resource_name)
   if match:
     return match.group(1)
   raise ValueError('The worker pool resource name must match "%s"' %
-                   (REGIONAL_WORKERPOOL_NAME_MATCHER,))
+                   (WORKERPOOL_NAME_MATCHER,))
 
 
 def GitHubEnterpriseConfigFromArgs(args, update=False):

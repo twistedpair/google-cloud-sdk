@@ -66,6 +66,7 @@ def AddServiceCreateArg(parser):
   """Adds a service arg for create."""
   parser.add_argument(
       '--service',
+      required=True,
       help='Name of the Cloud Run service to attach to the integration.')
 
 
@@ -95,7 +96,7 @@ def AddParametersArg(parser):
 
 def ValidateParameters(integration_type, parameters, is_create=True):
   """Validates given params conform to what's expected from the integration."""
-  if integration_type == 'router':
+  if integration_type == 'custom-domain':
     if is_create:
       requires = ['domain', 'dns-zone']
       for key in requires:
@@ -103,6 +104,9 @@ def ValidateParameters(integration_type, parameters, is_create=True):
           raise exceptions.ArgumentError(
               '[{}] is required to create integration of type [{}]'.format(
                   key, integration_type))
+  else:
+    raise exceptions.ArgumentError(
+        'Integration of type {} is not supported'.format(integration_type))
 
 
 def GetParameters(args):

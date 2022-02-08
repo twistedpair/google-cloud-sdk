@@ -498,6 +498,17 @@
         }
       }
     },
+    "RestoreDomainRequest": {
+      "id": "RestoreDomainRequest",
+      "description": "RestoreDomainRequest is the request received by RestoreDomain rpc",
+      "type": "object",
+      "properties": {
+        "backupId": {
+          "description": "Required. ID of the backup to be restored",
+          "type": "string"
+        }
+      }
+    },
     "AttachTrustRequest": {
       "id": "AttachTrustRequest",
       "description": "Request message for AttachTrust",
@@ -701,6 +712,101 @@
           "type": "array",
           "items": {
             "$ref": "Peering"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Backup": {
+      "id": "Backup",
+      "description": "Represents a Managed Microsoft Identities backup.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The unique name of the Backup in the form of `projects\/{project_id}\/locations\/global\/domains\/{domain_name}\/backups\/{name}`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "labels": {
+          "description": "Optional. Resource labels to represent user provided metadata.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "createTime": {
+          "description": "Output only. The time the backups was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Last update time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "type": {
+          "description": "Output only. Indicates whether it\u2019s an on-demand backup or scheduled.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Backup was manually created.",
+            "Backup was manually created.",
+            "Backup was automatically created."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "ON_DEMAND",
+            "SCHEDULED"
+          ]
+        },
+        "state": {
+          "description": "Output only. The current state of the backup.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Not set.",
+            "Backup is being created.",
+            "Backup has been created and validated.",
+            "Backup has been created but failed validation.",
+            "Backup is being deleted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "ACTIVE",
+            "FAILED",
+            "DELETING"
+          ]
+        },
+        "statusMessage": {
+          "description": "Output only. Additional information about the current status of this backup, if available.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "ListBackupsResponse": {
+      "id": "ListBackupsResponse",
+      "description": "ListBackupsResponse is the response message for ListBackups method.",
+      "type": "object",
+      "properties": {
+        "backups": {
+          "description": "A list of Cloud AD backups in the domain.",
+          "type": "array",
+          "items": {
+            "$ref": "Backup"
           }
         },
         "nextPageToken": {
@@ -1166,6 +1272,13 @@
         "instanceType": {
           "description": "Optional. The instance_type of this instance of format: projects\/{project_id}\/locations\/{location_id}\/instanceTypes\/{instance_type_id}. Instance Type represents a high-level tier or SKU of the service that this instance belong to. When enabled(eg: Maintenance Rollout), Rollout uses 'instance_type' along with 'software_versions' to determine whether instance needs an update or not.",
           "type": "string"
+        },
+        "notificationParameters": {
+          "description": "Optional. notification_parameters are information that service producers may like to include that is not relevant to Rollout. This parameter will only be passed to Gamma and Cloud Logging for notification\/logging purpose.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1521,7 +1634,7 @@
     },
     "Date": {
       "id": "Date",
-      "description": "Represents a whole or partial calendar date, such as a birthday. The time of day and time zone are either specified elsewhere or are insignificant. The date is relative to the Gregorian Calendar. This can represent one of the following: * A full date, with non-zero year, month, and day values * A month and day value, with a zero year, such as an anniversary * A year on its own, with zero month and day values * A year and month value, with a zero day, such as a credit card expiration date Related types are google.type.TimeOfDay and `google.protobuf.Timestamp`.",
+      "description": "Represents a whole or partial calendar date, such as a birthday. The time of day and time zone are either specified elsewhere or are insignificant. The date is relative to the Gregorian Calendar. This can represent one of the following: * A full date, with non-zero year, month, and day values * A month and day, with a zero year (e.g., an anniversary) * A year on its own, with a zero month and a zero day * A year and month, with a zero day (e.g., a credit card expiration date) Related types: * google.type.TimeOfDay * google.type.DateTime * google.protobuf.Timestamp",
       "type": "object",
       "properties": {
         "year": {
@@ -1909,6 +2022,34 @@
                       ],
                       "description": "Updates the metadata and configuration of a domain."
                     },
+                    "restore": {
+                      "id": "managedidentities.projects.locations.global.domains.restore",
+                      "path": "v1/{+name}:restore",
+                      "flatPath": "v1/projects/{projectsId}/locations/global/domains/{domainsId}:restore",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. Resource name for the domain to which the backup belongs",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "RestoreDomainRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "RestoreDomain restores domain backup mentioned in the RestoreDomainRequest"
+                    },
                     "delete": {
                       "id": "managedidentities.projects.locations.global.domains.delete",
                       "path": "v1/{+name}",
@@ -2195,34 +2336,67 @@
                   }
                   ,
                   "resources": {
-                    "sqlIntegrations": {
+                    "backups": {
                       "methods": {
+                        "create": {
+                          "id": "managedidentities.projects.locations.global.domains.backups.create",
+                          "path": "v1/{+parent}/backups",
+                          "flatPath": "v1/projects/{projectsId}/locations/global/domains/{domainsId}/backups",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The domain resource name using the form: `projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
+                              "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "backupId": {
+                              "description": "Required. Backup Id, unique name to identify the backups with the following restrictions: * Must be lowercase letters, numbers, and hyphens * Must start with a letter. * Must contain between 1-63 characters. * Must end with a number or a letter. * Must be unique within the domain.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "request": {
+                            "$ref": "Backup"
+                          },
+                          "response": {
+                            "$ref": "Operation"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Creates a Backup for a domain."
+                        },
                         "list": {
-                          "id": "managedidentities.projects.locations.global.domains.sqlIntegrations.list",
-                          "path": "v1/{+parent}/sqlIntegrations",
-                          "flatPath": "v1/projects/{projectsId}/locations/global/domains/{domainsId}/sqlIntegrations",
+                          "id": "managedidentities.projects.locations.global.domains.backups.list",
+                          "path": "v1/{+parent}/backups",
+                          "flatPath": "v1/projects/{projectsId}/locations/global/domains/{domainsId}/backups",
                           "httpMethod": "GET",
                           "parameters": {
                             "parent": {
-                              "description": "Required. The resource name of the SqlIntegrations using the form: `projects\/{project_id}\/locations\/global\/domains\/*`",
+                              "description": "Required. The domain resource name using the form: `projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
                               "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
                               "location": "path",
                               "required": true,
                               "type": "string"
                             },
                             "pageSize": {
-                              "description": "Optional. The maximum number of items to return. If not specified, a default value of 1000 will be used by the service. Regardless of the page_size value, the response may include a partial list and a caller should only rely on response'ANIZATIONs next_page_token to determine if there are more instances left to be queried.",
+                              "description": "Optional. The maximum number of items to return. If not specified, a default value of 1000 will be used by the service. Regardless of the page_size value, the response may include a partial list and a caller should only rely on response's next_page_token to determine if there are more instances left to be queried.",
                               "location": "query",
                               "type": "integer",
                               "format": "int32"
                             },
                             "pageToken": {
-                              "description": "Optional. The next_page_token value returned from a previous List request, if any.",
+                              "description": "Optional. The `next_page_token` value returned from a previous List request, if any.",
                               "location": "query",
                               "type": "string"
                             },
                             "filter": {
-                              "description": "Optional. Filter specifying constraints of a list operation. For example, `SqlIntegration.name=\"sql\"`.",
+                              "description": "Optional. Filter specifying constraints of a list operation.",
                               "location": "query",
                               "type": "string"
                             },
@@ -2236,22 +2410,22 @@
                             "parent"
                           ],
                           "response": {
-                            "$ref": "ListSqlIntegrationsResponse"
+                            "$ref": "ListBackupsResponse"
                           },
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Lists SqlIntegrations in a given domain."
+                          "description": "Lists Backup in a given project."
                         },
                         "get": {
-                          "id": "managedidentities.projects.locations.global.domains.sqlIntegrations.get",
+                          "id": "managedidentities.projects.locations.global.domains.backups.get",
                           "path": "v1/{+name}",
-                          "flatPath": "v1/projects/{projectsId}/locations/global/domains/{domainsId}/sqlIntegrations/{sqlIntegrationsId}",
+                          "flatPath": "v1/projects/{projectsId}/locations/global/domains/{domainsId}/backups/{backupsId}",
                           "httpMethod": "GET",
                           "parameters": {
                             "name": {
-                              "description": "Required. SQLIntegration resource name using the form: `projects\/{project_id}\/locations\/global\/domains\/{domain}\/sqlIntegrations\/{name}`",
-                              "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+\/sqlIntegrations\/[^\/]+$",
+                              "description": "Required. The backup resource name using the form: `projects\/{project_id}\/locations\/global\/domains\/{domain_name}\/backups\/{backup_id}`",
+                              "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+\/backups\/[^\/]+$",
                               "location": "path",
                               "required": true,
                               "type": "string"
@@ -2261,17 +2435,72 @@
                             "name"
                           ],
                           "response": {
-                            "$ref": "SqlIntegration"
+                            "$ref": "Backup"
                           },
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Gets details of a single sqlIntegration."
-                        }
-                      }
-                    },
-                    "backups": {
-                      "methods": {
+                          "description": "Gets details of a single Backup."
+                        },
+                        "patch": {
+                          "id": "managedidentities.projects.locations.global.domains.backups.patch",
+                          "path": "v1/{+name}",
+                          "flatPath": "v1/projects/{projectsId}/locations/global/domains/{domainsId}/backups/{backupsId}",
+                          "httpMethod": "PATCH",
+                          "parameters": {
+                            "name": {
+                              "description": "Output only. The unique name of the Backup in the form of `projects\/{project_id}\/locations\/global\/domains\/{domain_name}\/backups\/{name}`",
+                              "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+\/backups\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "updateMask": {
+                              "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field may only include these fields from Backup: * `labels`",
+                              "location": "query",
+                              "type": "string",
+                              "format": "google-fieldmask"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "Backup"
+                          },
+                          "response": {
+                            "$ref": "Operation"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Updates the labels for specified Backup."
+                        },
+                        "delete": {
+                          "id": "managedidentities.projects.locations.global.domains.backups.delete",
+                          "path": "v1/{+name}",
+                          "flatPath": "v1/projects/{projectsId}/locations/global/domains/{domainsId}/backups/{backupsId}",
+                          "httpMethod": "DELETE",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. The backup resource name using the form: `projects\/{project_id}\/locations\/global\/domains\/{domain_name}\/backups\/{backup_id}`",
+                              "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+\/backups\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "Operation"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Deletes identified Backup."
+                        },
                         "setIamPolicy": {
                           "id": "managedidentities.projects.locations.global.domains.backups.setIamPolicy",
                           "path": "v1/{+resource}:setIamPolicy",
@@ -2358,6 +2587,81 @@
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
                           "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                        }
+                      }
+                    },
+                    "sqlIntegrations": {
+                      "methods": {
+                        "list": {
+                          "id": "managedidentities.projects.locations.global.domains.sqlIntegrations.list",
+                          "path": "v1/{+parent}/sqlIntegrations",
+                          "flatPath": "v1/projects/{projectsId}/locations/global/domains/{domainsId}/sqlIntegrations",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The resource name of the SqlIntegrations using the form: `projects\/{project_id}\/locations\/global\/domains\/*`",
+                              "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "Optional. The maximum number of items to return. If not specified, a default value of 1000 will be used by the service. Regardless of the page_size value, the response may include a partial list and a caller should only rely on response'ANIZATIONs next_page_token to determine if there are more instances left to be queried.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "Optional. The next_page_token value returned from a previous List request, if any.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "filter": {
+                              "description": "Optional. Filter specifying constraints of a list operation. For example, `SqlIntegration.name=\"sql\"`.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "orderBy": {
+                              "description": "Optional. Specifies the ordering of results following syntax at https:\/\/cloud.google.com\/apis\/design\/design_patterns#sorting_order.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "ListSqlIntegrationsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Lists SqlIntegrations in a given domain."
+                        },
+                        "get": {
+                          "id": "managedidentities.projects.locations.global.domains.sqlIntegrations.get",
+                          "path": "v1/{+name}",
+                          "flatPath": "v1/projects/{projectsId}/locations/global/domains/{domainsId}/sqlIntegrations/{sqlIntegrationsId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. SQLIntegration resource name using the form: `projects\/{project_id}\/locations\/global\/domains\/{domain}\/sqlIntegrations\/{name}`",
+                              "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+\/sqlIntegrations\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "SqlIntegration"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets details of a single sqlIntegration."
                         }
                       }
                     }

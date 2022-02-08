@@ -22,9 +22,39 @@ import json
 import os
 
 import boto3
+from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.util import files
 
 from six.moves import configparser
+
+
+def _assign_with_error_on_duplicate(key, value, result_dict):
+  """Assigns value to results_dict and raises error on duplicate key."""
+  if key in result_dict:
+    raise KeyError('Duplicate key in file: {}'.format(key))
+  result_dict[key] = value
+
+
+def _extract_keys(keys, search_dict, result_dict):
+  """Converts key to multiple cases and attempts to extract from search_dict."""
+  for original_key in keys:
+    if original_key in search_dict:
+      _assign_with_error_on_duplicate(original_key, search_dict[original_key],
+                                      result_dict)
+    else:
+      # Can error if both camel and snake case matches are present.
+      # Note: The below conversion utils don't work all the time.
+      # For example, they cannot handle kebab-case.
+      camel_case_key = resource_property.ConvertToCamelCase(original_key)
+      snake_case_key = resource_property.ConvertToSnakeCase(original_key)
+      if camel_case_key in search_dict:
+        _assign_with_error_on_duplicate(original_key,
+                                        search_dict[camel_case_key],
+                                        result_dict)
+      if snake_case_key in search_dict:
+        _assign_with_error_on_duplicate(original_key,
+                                        search_dict[snake_case_key],
+                                        result_dict)
 
 
 def get_values_for_keys_from_file(file_path, keys):
@@ -49,9 +79,7 @@ def get_values_for_keys_from_file(file_path, keys):
   with files.FileReader(real_path) as file_reader:
     try:
       file_dict = json.loads(file_reader.read())
-      for key in keys:
-        if key in file_dict:
-          result[key] = file_dict[key]
+      _extract_keys(keys, file_dict, result)
     except json.JSONDecodeError:
       # More file formats to try before raising error.
       config = configparser.ConfigParser()
@@ -62,11 +90,7 @@ def get_values_for_keys_from_file(file_path, keys):
       # Parse all sections of INI file into dict.
       for section in config:
         section_dict = dict(config[section])
-        for key in keys:
-          if key in section_dict:
-            if key in result:
-              raise KeyError('Duplicate key in file: {}'.format(key))
-            result[key] = section_dict[key]
+        _extract_keys(keys, section_dict, result)
 
   return result
 

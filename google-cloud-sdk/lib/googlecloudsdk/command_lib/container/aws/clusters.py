@@ -72,6 +72,13 @@ class Client(object):
     req.authorization = a
     return a
 
+  def _AddAwsServicesAuthentication(self, req):
+    msg = 'GoogleCloudGkemulticloud{}AwsServicesAuthentication'.format(
+        self.version)
+    sa = getattr(self.messages, msg)()
+    req.awsServicesAuthentication = sa
+    return sa
+
   def _CreateAwsClusterUser(self, username):
     msg = 'GoogleCloudGkemulticloud{}AwsClusterUser'.format(self.version)
     return getattr(self.messages, msg)(username=username)
@@ -229,9 +236,26 @@ class Client(object):
     update_mask = []
     c = self._AddAwsCluster(req)
     cp = self._AddAwsControlPlane(c)
+    a = self._AddAwsAuthorization(c)
     if args.cluster_version:
       cp.version = args.cluster_version
       update_mask.append('control_plane.version')
+    if args.instance_type:
+      cp.instanceType = args.instance_type
+      update_mask.append('control_plane.instance_type')
+
+    services_auth = self._AddAwsServicesAuthentication(cp)
+    if args.role_arn:
+      services_auth.roleArn = args.role_arn
+      update_mask.append('control_plane.aws_services_authentication.role_arn')
+    if args.role_session_name:
+      services_auth.roleSessionName = args.role_session_name
+      update_mask.append(
+          'control_plane.aws_services_authentication.role_session_name')
+    if args.admin_users:
+      for username in args.admin_users:
+        a.adminUsers.append(self._CreateAwsClusterUser(username))
+      update_mask.append('authorization.admin_users')
 
     req.updateMask = ','.join(update_mask)
 

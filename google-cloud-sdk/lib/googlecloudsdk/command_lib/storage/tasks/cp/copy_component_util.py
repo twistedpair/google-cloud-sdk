@@ -37,7 +37,7 @@ name. Note that there will be no problems with object name length since we
 hash the original name.
 """
 _PARALLEL_UPLOAD_TEMPORARY_NAMESPACE = (
-    '/gcloud/tmp/parallel_composite_uploads/'
+    'gcloud/tmp/parallel_composite_uploads/'
     'see_gcloud_storage_cp_help_for_details/')
 
 

@@ -95,19 +95,24 @@ def ValidateServiceMutexConfig(unused_ref, unused_args, req):
         '--data-catalog-sync',
         'Data Catalog synchronization cannot be used in conjunction with customer-managed encryption keys.'
     )
+
   if (req.service.hiveMetastoreConfig and
       req.service.hiveMetastoreConfig.kerberosConfig and
       req.service.hiveMetastoreConfig.kerberosConfig.principal and
-      req.service.networkConfig):
+      _IsNetworkConfigPresentInService(req.service)):
     raise exceptions.BadArgumentException(
         '--kerberos-principal',
         'Kerberos configuration cannot be used in conjunction with --network-config-from-file or --consumer-subnetworks.'
     )
   if (req.service.hiveMetastoreConfig and
       req.service.hiveMetastoreConfig.auxiliaryVersions and
-      req.service.networkConfig):
+      _IsNetworkConfigPresentInService(req.service)):
     raise exceptions.BadArgumentException(
         '--auxiliary-versions',
         'Auxiliary versions configuration cannot be used in conjunction with --network-config-from-file or --consumer-subnetworks.'
     )
   return req
+
+
+def _IsNetworkConfigPresentInService(service):
+  return service.networkConfig and service.networkConfig.consumers

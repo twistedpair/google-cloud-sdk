@@ -483,7 +483,7 @@ class AlloydbV1alpha1(base_api.BaseApiClient):
     )
 
     def Import(self, request, global_params=None):
-      r"""Creates a new Cluster in a given project and location, with a volume restored from the provided backup ID.
+      r"""Import method for the projects_locations_clusters service.
 
       Args:
         request: (AlloydbProjectsLocationsClustersImportRequest) input message
@@ -559,6 +559,33 @@ class AlloydbV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='cluster',
         request_type_name='AlloydbProjectsLocationsClustersPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Restore(self, request, global_params=None):
+      r"""Creates a new Cluster in a given project and location, with a volume restored from the provided backup ID.
+
+      Args:
+        request: (AlloydbProjectsLocationsClustersRestoreRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Restore')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Restore.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters:restore',
+        http_method='POST',
+        method_id='alloydb.projects.locations.clusters.restore',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['backupSource_backupName', 'clusterId', 'requestId', 'validateOnly'],
+        relative_path='v1alpha1/{+parent}/clusters:restore',
+        request_field='cluster',
+        request_type_name='AlloydbProjectsLocationsClustersRestoreRequest',
         response_type_name='Operation',
         supports_download=False,
     )

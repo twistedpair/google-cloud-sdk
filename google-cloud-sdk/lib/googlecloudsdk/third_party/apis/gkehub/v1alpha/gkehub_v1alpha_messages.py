@@ -267,12 +267,14 @@ class CommonFeatureSpec(_messages.Message):
     cloudauditlogging: Cloud Audit Logging-specific spec.
     helloworld: Hello World-specific spec.
     multiclusteringress: Multicluster Ingress-specific spec.
+    workloadcertificate: Workload Certificate spec.
   """
 
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureSpec', 1)
   cloudauditlogging = _messages.MessageField('CloudAuditLoggingFeatureSpec', 2)
   helloworld = _messages.MessageField('HelloWorldFeatureSpec', 3)
   multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 4)
+  workloadcertificate = _messages.MessageField('FeatureSpec', 5)
 
 
 class CommonFeatureState(_messages.Message):
@@ -1219,6 +1221,35 @@ class FeatureResourceState(_messages.Message):
     SERVICE_UPDATING = 5
 
   state = _messages.EnumField('StateValueValuesEnum', 1)
+
+
+class FeatureSpec(_messages.Message):
+  r"""**Workload Certificate**: The Hub-wide input for the WorkloadCertificate
+  feature.
+
+  Enums:
+    ProvisionGoogleCaValueValuesEnum: Immutable. Specifies CA configuration.
+
+  Fields:
+    defaultConfig: Specifies default membership spec. Users can override the
+      default in the member_configs for each member.
+    provisionGoogleCa: Immutable. Specifies CA configuration.
+  """
+
+  class ProvisionGoogleCaValueValuesEnum(_messages.Enum):
+    r"""Immutable. Specifies CA configuration.
+
+    Values:
+      GOOGLE_CA_PROVISIONING_UNSPECIFIED: Disable default Google managed CA.
+      DISABLED: Disable default Google managed CA.
+      ENABLED: Use default Google managed CA.
+    """
+    GOOGLE_CA_PROVISIONING_UNSPECIFIED = 0
+    DISABLED = 1
+    ENABLED = 2
+
+  defaultConfig = _messages.MessageField('MembershipSpec', 1)
+  provisionGoogleCa = _messages.EnumField('ProvisionGoogleCaValueValuesEnum', 2)
 
 
 class FeatureState(_messages.Message):
@@ -2231,9 +2262,12 @@ class IdentityServiceOidcConfig(_messages.Message):
   Fields:
     certificateAuthorityData: PEM-encoded CA for OIDC provider.
     clientId: ID for OIDC client application.
+    clientSecret: Unencrypted OIDC client secret will be passed to the GKE Hub
+      CLH.
     deployCloudConsoleProxy: Flag to denote if reverse proxy is used to
       connect to auth provider. This flag should be set to true when provider
       is not reachable by Google Cloud Console.
+    encryptedClientSecret: Output only. Encrypted OIDC Client secret
     extraParams: Comma-separated list of key-value pairs.
     groupPrefix: Prefix to prepend to group name.
     groupsClaim: Claim in OIDC ID token that holds group information.
@@ -2248,15 +2282,17 @@ class IdentityServiceOidcConfig(_messages.Message):
 
   certificateAuthorityData = _messages.StringField(1)
   clientId = _messages.StringField(2)
-  deployCloudConsoleProxy = _messages.BooleanField(3)
-  extraParams = _messages.StringField(4)
-  groupPrefix = _messages.StringField(5)
-  groupsClaim = _messages.StringField(6)
-  issuerUri = _messages.StringField(7)
-  kubectlRedirectUri = _messages.StringField(8)
-  scopes = _messages.StringField(9)
-  userClaim = _messages.StringField(10)
-  userPrefix = _messages.StringField(11)
+  clientSecret = _messages.StringField(3)
+  deployCloudConsoleProxy = _messages.BooleanField(4)
+  encryptedClientSecret = _messages.BytesField(5)
+  extraParams = _messages.StringField(6)
+  groupPrefix = _messages.StringField(7)
+  groupsClaim = _messages.StringField(8)
+  issuerUri = _messages.StringField(9)
+  kubectlRedirectUri = _messages.StringField(10)
+  scopes = _messages.StringField(11)
+  userClaim = _messages.StringField(12)
+  userPrefix = _messages.StringField(13)
 
 
 class KubernetesMetadata(_messages.Message):
@@ -2653,6 +2689,7 @@ class MembershipFeatureSpec(_messages.Message):
     identityservice: Identity Service-specific spec.
     mesh: Anthos Service Mesh-specific spec
     policycontroller: Policy Controller spec.
+    workloadcertificate: Workload Certificate spec.
   """
 
   anthosobservability = _messages.MessageField('AnthosObservabilityMembershipSpec', 1)
@@ -2662,7 +2699,8 @@ class MembershipFeatureSpec(_messages.Message):
   helloworld = _messages.MessageField('HelloWorldMembershipSpec', 5)
   identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 6)
   mesh = _messages.MessageField('ServiceMeshMembershipSpec', 7)
-  policycontroller = _messages.MessageField('PolicycontrollerMembershipSpec', 8)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 8)
+  workloadcertificate = _messages.MessageField('MembershipSpec', 9)
 
 
 class MembershipFeatureState(_messages.Message):
@@ -2685,9 +2723,37 @@ class MembershipFeatureState(_messages.Message):
   helloworld = _messages.MessageField('HelloWorldMembershipState', 3)
   identityservice = _messages.MessageField('IdentityServiceMembershipState', 4)
   metering = _messages.MessageField('MeteringMembershipState', 5)
-  policycontroller = _messages.MessageField('PolicycontrollerMembershipState', 6)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipState', 6)
   servicemesh = _messages.MessageField('ServiceMeshMembershipState', 7)
   state = _messages.MessageField('FeatureState', 8)
+
+
+class MembershipSpec(_messages.Message):
+  r"""**Workload Certificate**: The membership-specific input for
+  WorkloadCertificate feature.
+
+  Enums:
+    CertificateManagementValueValuesEnum: Specifies workload certificate
+      management.
+
+  Fields:
+    certificateManagement: Specifies workload certificate management.
+  """
+
+  class CertificateManagementValueValuesEnum(_messages.Enum):
+    r"""Specifies workload certificate management.
+
+    Values:
+      CERTIFICATE_MANAGEMENT_UNSPECIFIED: Disable workload certificate
+        feature.
+      DISABLED: Disable workload certificate feature.
+      ENABLED: Enable workload certificate feature.
+    """
+    CERTIFICATE_MANAGEMENT_UNSPECIFIED = 0
+    DISABLED = 1
+    ENABLED = 2
+
+  certificateManagement = _messages.EnumField('CertificateManagementValueValuesEnum', 1)
 
 
 class MembershipState(_messages.Message):
@@ -3020,7 +3086,7 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
-class PolicycontrollerMembershipSpec(_messages.Message):
+class PolicyControllerMembershipSpec(_messages.Message):
   r"""**Policy Controller**: Configuration for a single cluster. Intended to
   parallel the PolicyController CR.
 
@@ -3030,11 +3096,11 @@ class PolicycontrollerMembershipSpec(_messages.Message):
     version: Version of Policy Controller installed.
   """
 
-  policyControllerHubConfig = _messages.MessageField('PolicycontrollerPolicyControllerHubConfig', 1)
+  policyControllerHubConfig = _messages.MessageField('PolicyControllerPolicyControllerHubConfig', 1)
   version = _messages.StringField(2)
 
 
-class PolicycontrollerMembershipState(_messages.Message):
+class PolicyControllerMembershipState(_messages.Message):
   r"""**Policy Controller**: State for a single cluster.
 
   Enums:
@@ -3102,12 +3168,12 @@ class PolicycontrollerMembershipState(_messages.Message):
     HUB_ERROR = 7
 
   clusterName = _messages.StringField(1)
-  membershipSpec = _messages.MessageField('PolicycontrollerMembershipSpec', 2)
-  policyControllerHubState = _messages.MessageField('PolicycontrollerPolicyControllerHubState', 3)
+  membershipSpec = _messages.MessageField('PolicyControllerMembershipSpec', 2)
+  policyControllerHubState = _messages.MessageField('PolicyControllerPolicyControllerHubState', 3)
   state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
-class PolicycontrollerPolicyControllerHubConfig(_messages.Message):
+class PolicyControllerPolicyControllerHubConfig(_messages.Message):
   r"""Configuration for Policy Controller
 
   Enums:
@@ -3161,10 +3227,10 @@ class PolicycontrollerPolicyControllerHubConfig(_messages.Message):
   logDeniesEnabled = _messages.BooleanField(4)
   mutationEnabled = _messages.BooleanField(5)
   referentialRulesEnabled = _messages.BooleanField(6)
-  templateLibraryConfig = _messages.MessageField('PolicycontrollerTemplateLibraryConfig', 7)
+  templateLibraryConfig = _messages.MessageField('PolicyControllerTemplateLibraryConfig', 7)
 
 
-class PolicycontrollerPolicyControllerHubState(_messages.Message):
+class PolicyControllerPolicyControllerHubState(_messages.Message):
   r"""State of the Policy Controller.
 
   Messages:
@@ -3227,10 +3293,10 @@ class PolicycontrollerPolicyControllerHubState(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   deploymentStates = _messages.MessageField('DeploymentStatesValue', 1)
-  version = _messages.MessageField('PolicycontrollerPolicyControllerHubVersion', 2)
+  version = _messages.MessageField('PolicyControllerPolicyControllerHubVersion', 2)
 
 
-class PolicycontrollerPolicyControllerHubVersion(_messages.Message):
+class PolicyControllerPolicyControllerHubVersion(_messages.Message):
   r"""The build version of Gatekeeper that Policy Controller is using.
 
   Fields:
@@ -3241,7 +3307,7 @@ class PolicycontrollerPolicyControllerHubVersion(_messages.Message):
   version = _messages.StringField(1)
 
 
-class PolicycontrollerTemplateLibraryConfig(_messages.Message):
+class PolicyControllerTemplateLibraryConfig(_messages.Message):
   r"""The config specifying which default library templates to install.
 
   Fields:

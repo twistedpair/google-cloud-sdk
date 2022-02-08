@@ -29,7 +29,9 @@ _POSIX_SOURCE_OR_DESTINATION_HELP_TEXT = (
     'POSIX filesystem - Specify the `posix://` scheme followed by the absolute'
     ' path to the desired directory, starting from the root of the host machine'
     ' (denoted by a leading slash). For example:\n'
-    '* posix:///path/directory/')
+    '* posix:///path/directory/\n\n'
+    'A file transfer agent must be installed on the POSIX filesystem, and you'
+    ' need an agent pool flag on this `jobs` command to activate the agent.')
 _SOURCE_HELP_TEXT = (
     'The source of your data. Available sources and formatting information:\n\n'
     'Public clouds - For Google Cloud Storage and Amazon S3, specify the scheme'
@@ -63,25 +65,59 @@ class DeleteOption(enum.Enum):
 
 
 class JobStatus(enum.Enum):
-  ENABLED = 'enabled'
-  DISABLED = 'disabled'
   DELETED = 'deleted'
+  DISABLED = 'disabled'
+  ENABLED = 'enabled'
 
 
 class LogAction(enum.Enum):
-  FIND = 'find'
-  DELETE = 'delete'
   COPY = 'copy'
+  DELETE = 'delete'
+  FIND = 'find'
 
 
 class LogActionState(enum.Enum):
-  SUCCEEDED = 'succeeded'
   FAILED = 'failed'
+  SUCCEEDED = 'succeeded'
+
+
+class PreserveMetadataField(enum.Enum):
+  ACL = 'acl'
+  GID = 'gid'
+  KMS_KEY = 'kms-key'
+  MODE = 'mode'
+  STORAGE_CLASS = 'storage-class'
+  SYMLINK = 'symlink'
+  TEMPORARY_HOLD = 'temporary-hold'
+  UID = 'uid'
 
 
 class OverwriteOption(enum.Enum):
-  DIFFERENT = 'different'
   ALWAYS = 'always'
+  DIFFERENT = 'different'
+
+
+class StorageClass(enum.Enum):
+  ARCHIVE = 'archive'
+  COLDLINE = 'coldline'
+  NEARLINE = 'nearline'
+  PRESERVE = 'preserve'
+  STANDARD = 'standard'
+
+
+def add_source_creds_flag(parser):
+  parser.add_argument(
+      '--source-creds-file',
+      help='Path to a local file on your machine that includes credentials'
+      ' for an Amazon S3 or Azure Blob Storage source (not required for'
+      ' Google Cloud Storage sources). If not specified for an S3 source,'
+      ' gcloud will check your system for an AWS config file. For'
+      ' formatting, see:\n\n'
+      'S3: https://cloud.google.com/storage-transfer/docs/reference/'
+      'rest/v1/TransferSpec#AwsAccessKey\n'
+      'Note: Be sure to put quotations around the JSON value strings.\n\n'
+      'Azure: http://cloud/storage-transfer/docs/reference/rest/'
+      'v1/TransferSpec#AzureCredentials')
 
 
 def setup_parser(parser, is_update=False):
@@ -139,17 +175,7 @@ def setup_parser(parser, is_update=False):
       '--description',
       help='An optional description to help identify the job using details'
       " that don't fit in its name.")
-  job_information.add_argument(
-      '--source-creds-file',
-      help='Path to a local file on your machine that includes credentials'
-      ' for an Amazon S3 or Azure Blob Storage source (not required for'
-      ' Google Cloud Storage sources). If not specified for an S3 source,'
-      ' gcloud will check your system for an AWS config file. For'
-      ' formatting, see:\n\n'
-      'S3: https://cloud.google.com/storage-transfer/docs/reference/'
-      'rest/v1/TransferSpec#AwsAccessKey\n'
-      'Azure: http://cloud/storage-transfer/docs/reference/rest/'
-      'v1/TransferSpec#AzureCredentials')
+  add_source_creds_flag(job_information)
   job_information.add_argument(
       '--source-agent-pool',
       help='If using a POSIX filesystem source, specify the ID of the agent'
@@ -309,6 +335,15 @@ def setup_parser(parser, is_update=False):
         help='Remove a specified deletion option from the transfer job. If '
         " this flag is specified, the transfer job won't delete any data from"
         ' your source or destination.')
+    transfer_options.add_argument(
+        '--clear-preserve-metadata',
+        action='store_true',
+        help='Skips preserving optional metadata fields of objects being'
+        ' transferred.')
+    transfer_options.add_argument(
+        '--clear-custom-storage-class',
+        action='store_true',
+        help='Reverts to using destination default storage class.')
   transfer_options.add_argument(
       '--overwrite-when',
       choices=sorted([option.value for option in OverwriteOption]),
@@ -329,6 +364,21 @@ def setup_parser(parser, is_update=False):
       ' destination match source exactly)\n'
       " - 'source-after-transfer' - Delete files from source after they're"
       ' transferred')
+  transfer_options.add_argument(
+      '--preserve-metadata',
+      type=arg_parsers.ArgList(
+          choices=sorted([field.value for field in PreserveMetadataField])),
+      metavar='METADATA_FIELDS',
+      help='Specify object metadata values that can optionally be preserved.'
+      ' Example: --preserve-metadata=storage-class,uid\n\n'
+      'For more info, see: https://cloud.google.com/storage-transfer/docs/'
+      'metadata-preservation\n\n')
+  transfer_options.add_argument(
+      '--custom-storage-class',
+      help='Specifies the storage class to set on objects being transferred to'
+      ' Google Cloud Storage buckets. If unspecified, the behavior is'
+      ' to match the destination bucket default. The value "preserve" will'
+      " use the class from the object's Google Cloud Storage source bucket.")
 
   notification_config = parser.add_group(
       help=(

@@ -109,7 +109,7 @@ class OptionalMutexError(DetailedArgumentError):
 
   def __init__(self, conflict, **kwargs):
     super(OptionalMutexError, self).__init__(
-        'At most one of {conflict} may be specified.',
+        'At most one of {conflict} can be specified.',
         conflict=conflict,
         **kwargs)
 

@@ -47,14 +47,7 @@ class DailyCycle(_messages.Message):
 
 
 class Date(_messages.Message):
-  r"""Represents a whole or partial calendar date, such as a birthday. The
-  time of day and time zone are either specified elsewhere or are
-  insignificant. The date is relative to the Gregorian Calendar. This can
-  represent one of the following: * A full date, with non-zero year, month,
-  and day values * A month and day value, with a zero year, such as an
-  anniversary * A year on its own, with zero month and day values * A year and
-  month value, with a zero day, such as a credit card expiration date Related
-  types are google.type.TimeOfDay and `google.protobuf.Timestamp`.
+  r"""A Date object.
 
   Fields:
     day: Day of a month. Must be from 1 to 31 and valid for the year and
@@ -198,6 +191,10 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
     MaintenanceSchedulesValue: The MaintenanceSchedule contains the scheduling
       information of published maintenance schedule with same key as
       software_versions.
+    NotificationParametersValue: Optional. notification_parameters are
+      information that service producers may like to include that is not
+      relevant to Rollout. This parameter will only be passed to Gamma and
+      Cloud Logging for notification/logging purpose.
     ProducerMetadataValue: Output only. Custom string attributes used
       primarily to expose producer-specific information in monitoring
       dashboards. See go/get-instance-metadata.
@@ -234,6 +231,10 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
       |project_number}/locations/{location_id}/instances/{instance_id}` Note:
       Either project_id or project_number can be used, but keep it consistent
       with other APIs (e.g. RescheduleUpdate)
+    notificationParameters: Optional. notification_parameters are information
+      that service producers may like to include that is not relevant to
+      Rollout. This parameter will only be passed to Gamma and Cloud Logging
+      for notification/logging purpose.
     producerMetadata: Output only. Custom string attributes used primarily to
       expose producer-specific information in monitoring dashboards. See
       go/get-instance-metadata.
@@ -363,6 +364,35 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class NotificationParametersValue(_messages.Message):
+    r"""Optional. notification_parameters are information that service
+    producers may like to include that is not relevant to Rollout. This
+    parameter will only be passed to Gamma and Cloud Logging for
+    notification/logging purpose.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        NotificationParametersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        NotificationParametersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a NotificationParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class ProducerMetadataValue(_messages.Message):
     r"""Output only. Custom string attributes used primarily to expose
     producer-specific information in monitoring dashboards. See go/get-
@@ -425,14 +455,15 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
   maintenanceSchedules = _messages.MessageField('MaintenanceSchedulesValue', 6)
   maintenanceSettings = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings', 7)
   name = _messages.StringField(8)
-  producerMetadata = _messages.MessageField('ProducerMetadataValue', 9)
-  provisionedResources = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource', 10, repeated=True)
-  slmInstanceTemplate = _messages.StringField(11)
-  sloMetadata = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata', 12)
-  softwareVersions = _messages.MessageField('SoftwareVersionsValue', 13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  tenantProjectId = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
+  notificationParameters = _messages.MessageField('NotificationParametersValue', 9)
+  producerMetadata = _messages.MessageField('ProducerMetadataValue', 10)
+  provisionedResources = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource', 11, repeated=True)
+  slmInstanceTemplate = _messages.StringField(12)
+  sloMetadata = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata', 13)
+  softwareVersions = _messages.MessageField('SoftwareVersionsValue', 14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  tenantProjectId = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule(_messages.Message):

@@ -476,6 +476,10 @@
             "VIRTIO_NET",
             "GVNIC"
           ]
+        },
+        "reservedIpRange": {
+          "description": "Optional. Reserved IP Range name is used for VPC Peering. The subnetwork allocation will use the range *name* if it's assigned. Example: managed-notebooks-range-c PEERING_RANGE_NAME_3=managed-notebooks-range-c gcloud compute addresses create $PEERING_RANGE_NAME_3 \\ --global \\ --prefix-length=24 \\ --description=\"Google Cloud Managed Notebooks Range 24 c\" \\ --network=$NETWORK \\ --addresses=192.168.0.0 \\ --purpose=VPC_PEERING Field value will be: `managed-notebooks-range-c`",
+          "type": "string"
         }
       }
     },
@@ -759,6 +763,11 @@
           "items": {
             "$ref": "ContainerImage"
           }
+        },
+        "upgradeable": {
+          "description": "Output only. Bool indicating whether an newer image is available in an image family.",
+          "readOnly": true,
+          "type": "boolean"
         }
       }
     },
@@ -1108,6 +1117,11 @@
         "reservationAffinity": {
           "description": "Optional. The optional reservation affinity. Setting this field will apply the specified [Zonal Compute Reservation](https:\/\/cloud.google.com\/compute\/docs\/instances\/reserving-zonal-resources) to this notebook instance.",
           "$ref": "ReservationAffinity"
+        },
+        "creator": {
+          "description": "Output only. Email address of entity that sent original CreateInstance request.",
+          "readOnly": true,
+          "type": "string"
         },
         "createTime": {
           "description": "Output only. Instance creation time.",

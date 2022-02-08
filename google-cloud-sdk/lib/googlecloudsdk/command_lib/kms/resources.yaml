@@ -14,7 +14,18 @@ location:
   - &location
     parameter_name: locationsId
     attribute_name: location
-    help: The location of the key.
+    help: The location of the resource.
+
+ekm_connection:
+  name: ekm connection
+  collection: cloudkms.projects.locations.ekmConnections
+  attributes:
+  - *project
+  - *location
+  - &ekm_connection
+    parameter_name: ekmConnectionsId
+    attribute_name: ekm_connection
+    help: The name of the ekm connection.
 
 key_ring:
   name: keyring

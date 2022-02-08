@@ -46,7 +46,7 @@ from googlecloudsdk.core import resources as core_resources
 import six
 
 ZONE_PROPERTY_EXPLANATION = """\
-If not specified, you may be prompted to select a zone (interactive mode
+If not specified, you might be prompted to select a zone (interactive mode
 only). `gcloud` attempts to identify the appropriate zone by searching for
 resources in your currently active project. If the zone cannot be determined,
 `gcloud` prompts you for a selection with all available Google Cloud Platform
@@ -439,7 +439,7 @@ def AddLocalSsdArgs(parser):
       *interface*::: Optional. The kind of disk interface exposed to the VM
       for this SSD.  Valid values are ``SCSI'' and ``NVME''.  SCSI is
       the default and is supported by more guest operating systems.  NVME
-      may provide higher performance.
+      might provide higher performance.
       """)
 
 
@@ -478,7 +478,7 @@ def AddLocalSsdArgsWithSize(parser):
       help="""\
       Attaches a local SSD to the instances.
 
-      This flag is currently in BETA and may change without notice.
+      This flag is currently in BETA and might change without notice.
 
       *device-name*::: Optional. A name that indicates the disk name
       the guest operating system will see. Can only be specified if `interface`
@@ -488,7 +488,7 @@ def AddLocalSsdArgsWithSize(parser):
       *interface*::: Optional. The kind of disk interface exposed to the VM
       for this SSD.  Valid values are ``SCSI'' and ``NVME''.  SCSI is
       the default and is supported by more guest operating systems.  NVME
-      may provide higher performance.
+      might provide higher performance.
 
       *size*::: Optional. Size of the SSD disk. The value must be a whole number
       followed by a size unit of ``KB'' for kilobyte, ``MB'' for megabyte,
@@ -1312,7 +1312,7 @@ def AddAddressArgs(parser,
   if instances:
     address_help = """\
         Assigns the given external address to the instance that is created.
-        The address may be an IP address or the name or URI of an address
+        The address might be an IP address or the name or URI of an address
         resource. This option can only be used when creating a single instance.
         """
   else:
@@ -1608,8 +1608,8 @@ def AddPreemptibleVmArgs(parser):
       action='store_true',
       default=False,
       help="""\
-      If provided, instances will be preemptible and time-limited.
-      Instances may be preempted to free up resources for standard VM instances,
+      If provided, instances will be preemptible and time-limited. Instances
+      might be preempted to free up resources for standard VM instances,
       and will only be able to run for a limited amount of time. Preemptible
       instances can not be restarted and will not migrate.
       """)
@@ -2614,13 +2614,13 @@ def AddContainerMountDiskFlag(parser, for_update=False):
       command.
 
 *partition*::: Optional. The partition of the disk to mount. Multiple
-partitions of a disk may be mounted.{}
+partitions of a disk can be mounted.{}
 
 *mode*::: Volume mount mode: `rw` (read/write) or `ro` (read-only).
 Defaults to `rw`. Fails if the disk mode is `ro` and volume mount mode
 is `rw`.
 """.format(description, name_description,
-           '' if for_update else ' May not be used with --create-disk.'))
+           '' if for_update else ' Can\'t be used with --create-disk.'))
 
   spec = {
       'name': str,

@@ -378,6 +378,14 @@
         "identityservice": {
           "description": "Identity Service-specific spec.",
           "$ref": "IdentityServiceMembershipSpec"
+        },
+        "anthosobservability": {
+          "description": "Anthos Observability-specific spec",
+          "$ref": "AnthosObservabilityMembershipSpec"
+        },
+        "policycontroller": {
+          "description": "Policy Controller spec.",
+          "$ref": "PolicyControllerMembershipSpec"
         }
       }
     },
@@ -641,6 +649,104 @@
         },
         "deployCloudConsoleProxy": {
           "description": "Flag to denote if reverse proxy is used to connect to auth provider. This flag should be set to true when provider is not reachable by Google Cloud Console.",
+          "type": "boolean"
+        },
+        "clientSecret": {
+          "description": "Unencrypted OIDC client secret will be passed to the GKE Hub CLH.",
+          "type": "string"
+        },
+        "encryptedClientSecret": {
+          "description": "Output only. Encrypted OIDC Client secret",
+          "readOnly": true,
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "AnthosObservabilityMembershipSpec": {
+      "id": "AnthosObservabilityMembershipSpec",
+      "description": "**Anthosobservability**: Per-Membership Feature spec.",
+      "type": "object",
+      "properties": {
+        "enableStackdriverOnApplications": {
+          "description": "enable collecting and reporting metrics and logs from user apps See go\/onyx-application-metrics-logs-user-guide",
+          "type": "boolean"
+        },
+        "doNotOptimizeMetrics": {
+          "description": "use full of metrics rather than optimized metrics. See https:\/\/cloud.google.com\/anthos\/clusters\/docs\/on-prem\/1.8\/concepts\/logging-and-monitoring#optimized_metrics_default_metrics",
+          "type": "boolean"
+        }
+      }
+    },
+    "PolicyControllerMembershipSpec": {
+      "id": "PolicyControllerMembershipSpec",
+      "description": "**Policy Controller**: Configuration for a single cluster. Intended to parallel the PolicyController CR.",
+      "type": "object",
+      "properties": {
+        "policyControllerHubConfig": {
+          "description": "Policy Controller configuration for the cluster.",
+          "$ref": "PolicyControllerPolicyControllerHubConfig"
+        },
+        "version": {
+          "description": "Version of Policy Controller installed.",
+          "type": "string"
+        }
+      }
+    },
+    "PolicyControllerPolicyControllerHubConfig": {
+      "id": "PolicyControllerPolicyControllerHubConfig",
+      "description": "Configuration for Policy Controller",
+      "type": "object",
+      "properties": {
+        "installSpec": {
+          "description": "The install_spec represents the intended state specified by the latest request that mutated install_spec in the feature spec, not the lifecycle state of the feature observed by the Hub feature controller that is reported in the feature state.",
+          "type": "string",
+          "enumDescriptions": [
+            "Spec is unknown.",
+            "Request to uninstall Policy Controller.",
+            "Request to install and enable Policy Controller.",
+            "Request to disable Policy Controller. If Policy Controller is not installed, it will be installed but disabled."
+          ],
+          "enum": [
+            "INSTALL_SPEC_UNSPECIFIED",
+            "INSTALL_SPEC_NOT_INSTALLED",
+            "INSTALL_SPEC_ENABLED",
+            "INSTALL_SPEC_DISABLED"
+          ]
+        },
+        "auditIntervalSeconds": {
+          "description": "Sets the interval for Policy Controller Audit Scans (in seconds). When set to 0, this disables audit functionality altogether.",
+          "type": "string",
+          "format": "int64"
+        },
+        "exemptableNamespaces": {
+          "description": "The set of namespaces that are excluded from Policy Controller checks. Namespaces do not need to currently exist on the cluster.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "referentialRulesEnabled": {
+          "description": "Enables the ability to use Constraint Templates that reference to objects other than the object currently being evaluated.",
+          "type": "boolean"
+        },
+        "logDeniesEnabled": {
+          "description": "Logs all denies and dry run failures.",
+          "type": "boolean"
+        },
+        "templateLibraryConfig": {
+          "description": "Configures the library templates to install along with Policy Controller.",
+          "$ref": "PolicyControllerTemplateLibraryConfig"
+        }
+      }
+    },
+    "PolicyControllerTemplateLibraryConfig": {
+      "id": "PolicyControllerTemplateLibraryConfig",
+      "description": "The config specifying which default library templates to install.",
+      "type": "object",
+      "properties": {
+        "included": {
+          "description": "Whether the standard template library should be installed or not.",
           "type": "boolean"
         }
       }
@@ -1400,79 +1506,6 @@
             "CLUSTER_ERROR",
             "HUB_ERROR"
           ]
-        }
-      }
-    },
-    "PolicyControllerMembershipSpec": {
-      "id": "PolicyControllerMembershipSpec",
-      "description": "**Policy Controller**: Configuration for a single cluster. Intended to parallel the PolicyController CR.",
-      "type": "object",
-      "properties": {
-        "policyControllerHubConfig": {
-          "description": "Policy Controller configuration for the cluster.",
-          "$ref": "PolicyControllerPolicyControllerHubConfig"
-        },
-        "version": {
-          "description": "Version of Policy Controller installed.",
-          "type": "string"
-        }
-      }
-    },
-    "PolicyControllerPolicyControllerHubConfig": {
-      "id": "PolicyControllerPolicyControllerHubConfig",
-      "description": "Configuration for Policy Controller",
-      "type": "object",
-      "properties": {
-        "installSpec": {
-          "description": "The install_spec represents the intended state specified by the latest request that mutated install_spec in the feature spec, not the lifecycle state of the feature observed by the Hub feature controller that is reported in the feature state.",
-          "type": "string",
-          "enumDescriptions": [
-            "Spec is unknown.",
-            "Request to uninstall Policy Controller.",
-            "Request to install and enable Policy Controller.",
-            "Request to disable Policy Controller. If Policy Controller is not installed, it will be installed but disabled."
-          ],
-          "enum": [
-            "INSTALL_SPEC_UNSPECIFIED",
-            "INSTALL_SPEC_NOT_INSTALLED",
-            "INSTALL_SPEC_ENABLED",
-            "INSTALL_SPEC_DISABLED"
-          ]
-        },
-        "auditIntervalSeconds": {
-          "description": "Sets the interval for Policy Controller Audit Scans (in seconds). When set to 0, this disables audit functionality altogether.",
-          "type": "string",
-          "format": "int64"
-        },
-        "exemptableNamespaces": {
-          "description": "The set of namespaces that are excluded from Policy Controller checks. Namespaces do not need to currently exist on the cluster.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "referentialRulesEnabled": {
-          "description": "Enables the ability to use Constraint Templates that reference to objects other than the object currently being evaluated.",
-          "type": "boolean"
-        },
-        "logDeniesEnabled": {
-          "description": "Logs all denies and dry run failures.",
-          "type": "boolean"
-        },
-        "templateLibraryConfig": {
-          "description": "Configures the library templates to install along with Policy Controller.",
-          "$ref": "PolicyControllerTemplateLibraryConfig"
-        }
-      }
-    },
-    "PolicyControllerTemplateLibraryConfig": {
-      "id": "PolicyControllerTemplateLibraryConfig",
-      "description": "The config specifying which default library templates to install.",
-      "type": "object",
-      "properties": {
-        "included": {
-          "description": "Whether the standard template library should be installed or not.",
-          "type": "boolean"
         }
       }
     },

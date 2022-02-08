@@ -171,7 +171,7 @@ class InputConfig(_messages.Message):
 
 
 class Instance(_messages.Message):
-  r"""A Google Cloud Redis instance. next id = 41
+  r"""A Memorystore for Redis instance. next id = 41
 
   Enums:
     ConnectModeValueValuesEnum: Optional. The network connect mode of the

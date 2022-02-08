@@ -2235,6 +2235,33 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def UpdateSettings(self, request, global_params=None):
+      r"""Updates the Log Router settings for the given resource.Note: Settings for the Log Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.UpdateSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled. 4) location_id is not supported by Logging. 5) location_id violate OrgPolicy.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+
+      Args:
+        request: (LoggingFoldersUpdateSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Settings) The response message.
+      """
+      config = self.GetMethodConfig('UpdateSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateSettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/settings',
+        http_method='PATCH',
+        method_id='logging.folders.updateSettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}/settings',
+        request_field='settings',
+        request_type_name='LoggingFoldersUpdateSettingsRequest',
+        response_type_name='Settings',
+        supports_download=False,
+    )
+
   class LocationsBucketsViewsService(base_api.BaseApiService):
     """Service class for the locations_buckets_views resource."""
 

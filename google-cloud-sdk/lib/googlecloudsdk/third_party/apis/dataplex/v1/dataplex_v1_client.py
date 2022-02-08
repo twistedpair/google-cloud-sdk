@@ -1355,6 +1355,60 @@ class DataplexV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Create a metadata partition.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesZonesEntitiesPartitionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1Partition) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/entities/{entitiesId}/partitions',
+        http_method='POST',
+        method_id='dataplex.projects.locations.lakes.zones.entities.partitions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['validateOnly'],
+        relative_path='v1/{+parent}/partitions',
+        request_field='googleCloudDataplexV1Partition',
+        request_type_name='DataplexProjectsLocationsLakesZonesEntitiesPartitionsCreateRequest',
+        response_type_name='GoogleCloudDataplexV1Partition',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a metadata partition.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesZonesEntitiesPartitionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/entities/{entitiesId}/partitions/{partitionsId}',
+        http_method='DELETE',
+        method_id='dataplex.projects.locations.lakes.zones.entities.partitions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLakesZonesEntitiesPartitionsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Get a metadata partition of an entity.
 
@@ -1419,6 +1473,60 @@ class DataplexV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Create a metadata entity.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesZonesEntitiesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1Entity) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/entities',
+        http_method='POST',
+        method_id='dataplex.projects.locations.lakes.zones.entities.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['validateOnly'],
+        relative_path='v1/{+parent}/entities',
+        request_field='googleCloudDataplexV1Entity',
+        request_type_name='DataplexProjectsLocationsLakesZonesEntitiesCreateRequest',
+        response_type_name='GoogleCloudDataplexV1Entity',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a metadata entity.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesZonesEntitiesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/entities/{entitiesId}',
+        http_method='DELETE',
+        method_id='dataplex.projects.locations.lakes.zones.entities.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLakesZonesEntitiesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Get a metadata entity.
 
@@ -1470,6 +1578,33 @@ class DataplexV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataplexProjectsLocationsLakesZonesEntitiesListRequest',
         response_type_name='GoogleCloudDataplexV1ListEntitiesResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Update a metadata entity. Only supports full resource update.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesZonesEntitiesUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1Entity) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/entities/{entitiesId}',
+        http_method='PUT',
+        method_id='dataplex.projects.locations.lakes.zones.entities.update',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudDataplexV1Entity',
+        request_type_name='DataplexProjectsLocationsLakesZonesEntitiesUpdateRequest',
+        response_type_name='GoogleCloudDataplexV1Entity',
         supports_download=False,
     )
 

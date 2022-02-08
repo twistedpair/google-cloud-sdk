@@ -77,7 +77,7 @@ class OptionalMutexGroupError(Error):
 
   def __init__(self, concept_name, conflict):
     super(OptionalMutexGroupError, self).__init__(
-        'Failed to specify [{}]: At most one of {conflict} may be specified.'
+        'Failed to specify [{}]: At most one of {conflict} can be specified.'
         .format(concept_name, conflict=conflict))
 
 

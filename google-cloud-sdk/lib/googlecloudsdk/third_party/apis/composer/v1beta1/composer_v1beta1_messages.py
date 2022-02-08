@@ -403,14 +403,7 @@ class DatabaseConfig(_messages.Message):
 
 
 class Date(_messages.Message):
-  r"""Represents a whole or partial calendar date, such as a birthday. The
-  time of day and time zone are either specified elsewhere or are
-  insignificant. The date is relative to the Gregorian Calendar. This can
-  represent one of the following: * A full date, with non-zero year, month,
-  and day values * A month and day value, with a zero year, such as an
-  anniversary * A year on its own, with zero month and day values * A year and
-  month value, with a zero day, such as a credit card expiration date Related
-  types are google.type.TimeOfDay and `google.protobuf.Timestamp`.
+  r"""A Date object.
 
   Fields:
     day: Day of a month. Must be from 1 to 31 and valid for the year and
@@ -1493,13 +1486,13 @@ class StoreEnvironmentStateResponse(_messages.Message):
   r"""Store environment state response.
 
   Fields:
-    snapshotLocation: The fully-resolved Cloud Storage location of the created
+    snapshotPath: The fully-resolved Cloud Storage path of the created
       snapshot, e.g.: "gs://my-
-      bucket/snapshots/project_id/location/environment_uuid/timestamp". This
-      field is populated only if the snapshot creation was successful.
+      bucket/snapshots/project_location_environment_timestamp". This field is
+      populated only if the snapshot creation was successful.
   """
 
-  snapshotLocation = _messages.StringField(1)
+  snapshotPath = _messages.StringField(1)
 
 
 class WebServerConfig(_messages.Message):

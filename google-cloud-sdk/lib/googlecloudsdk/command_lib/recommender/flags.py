@@ -196,11 +196,11 @@ def AddAnnotationsToParser(parser, resource):
 
 def GetResourceSegment(args):
   """Returns the resource from up to the cloud entity."""
-  if args.project:
+  if hasattr(args, 'project') and args.project:
     return 'projects/%s' % args.project
-  elif args.folder:
+  elif hasattr(args, 'folder') and args.folder:
     return 'folders/%s' % args.folder
-  elif args.billing_account:
+  elif hasattr(args, 'billing_account') and args.billing_account:
     return 'billingAccounts/%s' % args.billing_account
   else:
     return 'organizations/%s' % args.organization

@@ -1059,6 +1059,24 @@
         }
       }
     },
+    "RemoveIamPolicyRequest": {
+      "id": "RemoveIamPolicyRequest",
+      "description": "Request message for DataprocMetastore.RemoveIamPolicy.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "RemoveIamPolicyResponse": {
+      "id": "RemoveIamPolicyResponse",
+      "description": "Response message for DataprocMetastore.RemoveIamPolicy.",
+      "type": "object",
+      "properties": {
+        "success": {
+          "description": "whether related policies are removed",
+          "type": "boolean"
+        }
+      }
+    },
     "SetIamPolicyRequest": {
       "id": "SetIamPolicyRequest",
       "description": "Request message for SetIamPolicy method.",
@@ -1705,6 +1723,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Restores a service from a backup."
+                },
+                "removeIamPolicy": {
+                  "id": "metastore.projects.locations.services.removeIamPolicy",
+                  "path": "v1alpha/{+resource}:removeIamPolicy",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/{servicesId1}:removeIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "Required. The relative resource name of the dataplane resource to remove IAM policy, in the following form:projects\/{project_id}\/locations\/{location_id}\/services\/{service_id}\/databases\/{database_id} or projects\/{project_id}\/locations\/{location_id}\/services\/{service_id}\/databases\/{database_id}\/tables\/{table_id}.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+\/.*$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "RemoveIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "RemoveIamPolicyResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Removes the attached IAM policies for a resource"
                 },
                 "setIamPolicy": {
                   "id": "metastore.projects.locations.services.setIamPolicy",

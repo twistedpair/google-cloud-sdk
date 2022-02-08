@@ -346,7 +346,7 @@
           "format": "google-datetime"
         },
         "kmsKeyName": {
-          "description": "The Cloud KMS resource name of the customer managed encryption key that\u2019s used to encrypt the contents of the Repository. Has the form: `projects\/my-project\/locations\/my-region\/keyRings\/my-kr\/cryptoKeys\/my-key`. This value may not be changed after the Repository has been created.",
+          "description": "The Cloud KMS resource name of the customer managed encryption key that's used to encrypt the contents of the Repository. Has the form: `projects\/my-project\/locations\/my-region\/keyRings\/my-kr\/cryptoKeys\/my-key`. This value may not be changed after the Repository has been created.",
           "type": "string"
         }
       }
@@ -1426,45 +1426,9 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Imports Apt artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored."
-                    }
-                  }
-                },
-                "yumArtifacts": {
-                  "methods": {
-                    "import": {
-                      "id": "artifactregistry.projects.locations.repositories.yumArtifacts.import",
-                      "path": "v1beta2/{+parent}/yumArtifacts:import",
-                      "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/yumArtifacts:import",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "parent": {
-                          "description": "The name of the parent resource where the artifacts will be imported.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "request": {
-                        "$ref": "ImportYumArtifactsRequest"
-                      },
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Imports Yum (RPM) artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored."
-                    }
-                  }
-                },
-                "aptartifacts": {
-                  "methods": {
+                    },
                     "upload": {
-                      "id": "artifactregistry.projects.locations.repositories.aptartifacts.upload",
+                      "id": "artifactregistry.projects.locations.repositories.aptArtifacts.upload",
                       "path": "v1beta2/{+parent}/aptArtifacts:create",
                       "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/aptArtifacts:create",
                       "httpMethod": "POST",
@@ -1505,10 +1469,38 @@
                     }
                   }
                 },
-                "yumartifacts": {
+                "yumArtifacts": {
                   "methods": {
+                    "import": {
+                      "id": "artifactregistry.projects.locations.repositories.yumArtifacts.import",
+                      "path": "v1beta2/{+parent}/yumArtifacts:import",
+                      "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/yumArtifacts:import",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the parent resource where the artifacts will be imported.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "ImportYumArtifactsRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Imports Yum (RPM) artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored."
+                    },
                     "upload": {
-                      "id": "artifactregistry.projects.locations.repositories.yumartifacts.upload",
+                      "id": "artifactregistry.projects.locations.repositories.yumArtifacts.upload",
                       "path": "v1beta2/{+parent}/yumArtifacts:create",
                       "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/yumArtifacts:create",
                       "httpMethod": "POST",

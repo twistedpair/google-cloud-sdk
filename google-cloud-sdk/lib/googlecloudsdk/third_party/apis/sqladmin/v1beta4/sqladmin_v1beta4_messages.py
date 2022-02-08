@@ -586,8 +586,7 @@ class DatabaseInstance(_messages.Message):
     secondaryGceZone: The Compute Engine zone that the failover instance is
       currently serving from for a regional instance. This value could be
       different from the zone that was specified when the instance was created
-      if the instance has failed over to its secondary/failover zone. Reserved
-      for future use.
+      if the instance has failed over to its secondary/failover zone.
     selfLink: The URI of this resource.
     serverCaCert: SSL configuration.
     serviceAccountEmailAddress: The service account email address assigned to
@@ -1647,7 +1646,6 @@ class LocationPreference(_messages.Message):
     kind: This is always `sql#locationPreference`.
     secondaryZone: The preferred Compute Engine zone for the
       secondary/failover (for example: us-central1-a, us-central1-b, etc.).
-      Reserved for future use.
     zone: The preferred Compute Engine zone (for example: us-central1-a, us-
       central1-b, etc.). WARNING: Changing this might restart the instance.
   """

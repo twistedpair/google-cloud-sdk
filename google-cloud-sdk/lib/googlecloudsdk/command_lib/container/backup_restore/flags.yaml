@@ -266,6 +266,7 @@ cluster_resource_restore_scope:
 restore_plan_all_namespaces:
   arg_name: all-namespaces
   api_field: restorePlan.restoreConfig.allNamespaces
+  processor: googlecloudsdk.command_lib.container.backup_restore.hooks:ProcessAllNamespaces
   type: bool
   action: store_true
   default: null

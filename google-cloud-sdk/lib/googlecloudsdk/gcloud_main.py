@@ -160,6 +160,14 @@ def CreateCLI(surfaces, translator=None):
       'container.hub.build',
       os.path.join(pkg_root, 'surface', 'container', 'fleet',
                    'build'))
+  loader.AddModule(
+      'container.hub.cloudrun',
+      os.path.join(pkg_root, 'surface', 'container', 'fleet',
+                   'cloudrun'))
+  loader.AddModule(
+      'container.hub.deploy',
+      os.path.join(pkg_root, 'surface', 'container', 'fleet',
+                   'deploy'))
 
   # Check for updates on shutdown but not for any of the updater commands.
   # Skip update checks for 'gcloud version' command as it does that manually.

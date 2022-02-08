@@ -164,14 +164,7 @@ class CancelOperationRequest(_messages.Message):
 
 
 class Date(_messages.Message):
-  r"""Represents a whole or partial calendar date, such as a birthday. The
-  time of day and time zone are either specified elsewhere or are
-  insignificant. The date is relative to the Gregorian Calendar. This can
-  represent one of the following: * A full date, with non-zero year, month,
-  and day values * A month and day value, with a zero year, such as an
-  anniversary * A year on its own, with zero month and day values * A year and
-  month value, with a zero day, such as a credit card expiration date Related
-  types are google.type.TimeOfDay and `google.protobuf.Timestamp`.
+  r"""A Date object.
 
   Fields:
     day: Day of a month. Must be from 1 to 31 and valid for the year and
@@ -498,33 +491,82 @@ class MetadataOptions(_messages.Message):
   r"""Specifies the metadata options for running a transfer.
 
   Enums:
+    AclValueValuesEnum: Specifies how each object's ACLs should be preserved
+      for transfers between Google Cloud Storage buckets. If unspecified, the
+      default behavior is the same as ACL_DESTINATION_BUCKET_DEFAULT.
     GidValueValuesEnum: Specifies how each file's GID attribute should be
       handled by the transfer. If unspecified, the default behavior is the
       same as GID_SKIP when the source is a POSIX file system.
+    KmsKeyValueValuesEnum: Specifies how each object's Cloud KMS customer-
+      managed encryption key (CMEK) is preserved for transfers between Google
+      Cloud Storage buckets. If unspecified, the default behavior is the same
+      as KMS_KEY_DESTINATION_BUCKET_DEFAULT.
     ModeValueValuesEnum: Specifies how each file's mode attribute should be
       handled by the transfer. If unspecified, the default behavior is the
       same as MODE_SKIP when the source is a POSIX file system.
+    StorageClassValueValuesEnum: Specifies the storage class to set on objects
+      being transferred to Google Cloud Storage buckets. If unspecified, the
+      default behavior is the same as
+      STORAGE_CLASS_DESTINATION_BUCKET_DEFAULT.
     SymlinkValueValuesEnum: Specifies how symlinks should be handled by the
       transfer. If unspecified, the default behavior is the same as
       SYMLINK_SKIP when the source is a POSIX file system.
+    TemporaryHoldValueValuesEnum: Specifies how each object's temporary hold
+      status should be preserved for transfers between Google Cloud Storage
+      buckets. If unspecified, the default behavior is the same as
+      TEMPORARY_HOLD_PRESERVE.
     UidValueValuesEnum: Specifies how each file's UID attribute should be
       handled by the transfer. If unspecified, the default behavior is the
       same as UID_SKIP when the source is a POSIX file system.
 
   Fields:
+    acl: Specifies how each object's ACLs should be preserved for transfers
+      between Google Cloud Storage buckets. If unspecified, the default
+      behavior is the same as ACL_DESTINATION_BUCKET_DEFAULT.
     gid: Specifies how each file's GID attribute should be handled by the
       transfer. If unspecified, the default behavior is the same as GID_SKIP
       when the source is a POSIX file system.
+    kmsKey: Specifies how each object's Cloud KMS customer-managed encryption
+      key (CMEK) is preserved for transfers between Google Cloud Storage
+      buckets. If unspecified, the default behavior is the same as
+      KMS_KEY_DESTINATION_BUCKET_DEFAULT.
     mode: Specifies how each file's mode attribute should be handled by the
       transfer. If unspecified, the default behavior is the same as MODE_SKIP
       when the source is a POSIX file system.
+    storageClass: Specifies the storage class to set on objects being
+      transferred to Google Cloud Storage buckets. If unspecified, the default
+      behavior is the same as STORAGE_CLASS_DESTINATION_BUCKET_DEFAULT.
     symlink: Specifies how symlinks should be handled by the transfer. If
       unspecified, the default behavior is the same as SYMLINK_SKIP when the
       source is a POSIX file system.
+    temporaryHold: Specifies how each object's temporary hold status should be
+      preserved for transfers between Google Cloud Storage buckets. If
+      unspecified, the default behavior is the same as
+      TEMPORARY_HOLD_PRESERVE.
     uid: Specifies how each file's UID attribute should be handled by the
       transfer. If unspecified, the default behavior is the same as UID_SKIP
       when the source is a POSIX file system.
   """
+
+  class AclValueValuesEnum(_messages.Enum):
+    r"""Specifies how each object's ACLs should be preserved for transfers
+    between Google Cloud Storage buckets. If unspecified, the default behavior
+    is the same as ACL_DESTINATION_BUCKET_DEFAULT.
+
+    Values:
+      ACL_UNSPECIFIED: ACL behavior is unspecified.
+      ACL_DESTINATION_BUCKET_DEFAULT: Use the destination bucket's default
+        object ACLS, if applicable.
+      ACL_PRESERVE: Preserve the object's original ACLs. This requires the
+        service account to have `storage.objects.getIamPolicy` permission for
+        the source object. [Uniform bucket-level
+        access](https://cloud.google.com/storage/docs/uniform-bucket-level-
+        access) must not be enabled on either the source or destination
+        buckets.
+    """
+    ACL_UNSPECIFIED = 0
+    ACL_DESTINATION_BUCKET_DEFAULT = 1
+    ACL_PRESERVE = 2
 
   class GidValueValuesEnum(_messages.Enum):
     r"""Specifies how each file's GID attribute should be handled by the
@@ -540,6 +582,25 @@ class MetadataOptions(_messages.Message):
     GID_SKIP = 1
     GID_NUMBER = 2
 
+  class KmsKeyValueValuesEnum(_messages.Enum):
+    r"""Specifies how each object's Cloud KMS customer-managed encryption key
+    (CMEK) is preserved for transfers between Google Cloud Storage buckets. If
+    unspecified, the default behavior is the same as
+    KMS_KEY_DESTINATION_BUCKET_DEFAULT.
+
+    Values:
+      KMS_KEY_UNSPECIFIED: KmsKey behavior is unspecified.
+      KMS_KEY_DESTINATION_BUCKET_DEFAULT: Use the destination bucket's default
+        encryption settings.
+      KMS_KEY_PRESERVE: Preserve the object's original Cloud KMS customer-
+        managed encryption key (CMEK) if present. Objects that do not use a
+        Cloud KMS encryption key will be encrypted using the destination
+        bucket's encryption settings.
+    """
+    KMS_KEY_UNSPECIFIED = 0
+    KMS_KEY_DESTINATION_BUCKET_DEFAULT = 1
+    KMS_KEY_PRESERVE = 2
+
   class ModeValueValuesEnum(_messages.Enum):
     r"""Specifies how each file's mode attribute should be handled by the
     transfer. If unspecified, the default behavior is the same as MODE_SKIP
@@ -553,6 +614,31 @@ class MetadataOptions(_messages.Message):
     MODE_UNSPECIFIED = 0
     MODE_SKIP = 1
     MODE_PRESERVE = 2
+
+  class StorageClassValueValuesEnum(_messages.Enum):
+    r"""Specifies the storage class to set on objects being transferred to
+    Google Cloud Storage buckets. If unspecified, the default behavior is the
+    same as STORAGE_CLASS_DESTINATION_BUCKET_DEFAULT.
+
+    Values:
+      STORAGE_CLASS_UNSPECIFIED: Storage class behavior is unspecified.
+      STORAGE_CLASS_DESTINATION_BUCKET_DEFAULT: Use the destination bucket's
+        default storage class.
+      STORAGE_CLASS_PRESERVE: Preserve the object's original storage class.
+        This is only supported for transfers from Google Cloud Storage
+        buckets.
+      STORAGE_CLASS_STANDARD: Set the storage class to STANDARD.
+      STORAGE_CLASS_NEARLINE: Set the storage class to NEARLINE.
+      STORAGE_CLASS_COLDLINE: Set the storage class to COLDLINE.
+      STORAGE_CLASS_ARCHIVE: Set the storage class to ARCHIVE.
+    """
+    STORAGE_CLASS_UNSPECIFIED = 0
+    STORAGE_CLASS_DESTINATION_BUCKET_DEFAULT = 1
+    STORAGE_CLASS_PRESERVE = 2
+    STORAGE_CLASS_STANDARD = 3
+    STORAGE_CLASS_NEARLINE = 4
+    STORAGE_CLASS_COLDLINE = 5
+    STORAGE_CLASS_ARCHIVE = 6
 
   class SymlinkValueValuesEnum(_messages.Enum):
     r"""Specifies how symlinks should be handled by the transfer. If
@@ -569,6 +655,22 @@ class MetadataOptions(_messages.Message):
     SYMLINK_SKIP = 1
     SYMLINK_PRESERVE = 2
 
+  class TemporaryHoldValueValuesEnum(_messages.Enum):
+    r"""Specifies how each object's temporary hold status should be preserved
+    for transfers between Google Cloud Storage buckets. If unspecified, the
+    default behavior is the same as TEMPORARY_HOLD_PRESERVE.
+
+    Values:
+      TEMPORARY_HOLD_UNSPECIFIED: Temporary hold behavior is unspecified.
+      TEMPORARY_HOLD_SKIP: Do not set a temporary hold on the destination
+        object.
+      TEMPORARY_HOLD_PRESERVE: Preserve the object's original temporary hold
+        status.
+    """
+    TEMPORARY_HOLD_UNSPECIFIED = 0
+    TEMPORARY_HOLD_SKIP = 1
+    TEMPORARY_HOLD_PRESERVE = 2
+
   class UidValueValuesEnum(_messages.Enum):
     r"""Specifies how each file's UID attribute should be handled by the
     transfer. If unspecified, the default behavior is the same as UID_SKIP
@@ -583,10 +685,14 @@ class MetadataOptions(_messages.Message):
     UID_SKIP = 1
     UID_NUMBER = 2
 
-  gid = _messages.EnumField('GidValueValuesEnum', 1)
-  mode = _messages.EnumField('ModeValueValuesEnum', 2)
-  symlink = _messages.EnumField('SymlinkValueValuesEnum', 3)
-  uid = _messages.EnumField('UidValueValuesEnum', 4)
+  acl = _messages.EnumField('AclValueValuesEnum', 1)
+  gid = _messages.EnumField('GidValueValuesEnum', 2)
+  kmsKey = _messages.EnumField('KmsKeyValueValuesEnum', 3)
+  mode = _messages.EnumField('ModeValueValuesEnum', 4)
+  storageClass = _messages.EnumField('StorageClassValueValuesEnum', 5)
+  symlink = _messages.EnumField('SymlinkValueValuesEnum', 6)
+  temporaryHold = _messages.EnumField('TemporaryHoldValueValuesEnum', 7)
+  uid = _messages.EnumField('UidValueValuesEnum', 8)
 
 
 class NotificationConfig(_messages.Message):
@@ -1516,7 +1622,7 @@ class TransferOptions(_messages.Message):
       should be deleted. **Note:** This option and
       delete_objects_from_source_after_transfer are mutually exclusive.
     metadataOptions: Represents the selected metadata options for a transfer
-      job.
+      job. This feature is in Preview.
     overwriteObjectsAlreadyExistingInSink: When to overwrite objects that
       already exist in the sink. The default is that only objects that are
       different from the source are ovewritten. If true, all objects in the

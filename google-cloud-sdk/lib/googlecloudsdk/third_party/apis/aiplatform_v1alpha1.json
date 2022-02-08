@@ -8563,17 +8563,6 @@
         }
       }
     },
-    "GoogleCloudAiplatformInternalUpdateExplanationDatasetOperationMetadata": {
-      "id": "GoogleCloudAiplatformInternalUpdateExplanationDatasetOperationMetadata",
-      "description": "Runtime operation information for ModelService.UpdateExplanationDataset.",
-      "type": "object",
-      "properties": {
-        "genericMetadata": {
-          "description": "The common part of the operation metadata.",
-          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
-        }
-      }
-    },
     "GoogleCloudAiplatformInternalUpdateFeaturestoreOperationMetadata": {
       "id": "GoogleCloudAiplatformInternalUpdateFeaturestoreOperationMetadata",
       "description": "Details of operations that perform update Featurestore.",
@@ -11681,17 +11670,6 @@
       "description": "Response message for IndexEndpointService.UndeployIndex.",
       "type": "object",
       "properties": {
-      }
-    },
-    "GoogleCloudAiplatformUiUpdateExplanationDatasetOperationMetadata": {
-      "id": "GoogleCloudAiplatformUiUpdateExplanationDatasetOperationMetadata",
-      "description": "Runtime operation information for ModelService.UpdateExplanationDataset.",
-      "type": "object",
-      "properties": {
-        "genericMetadata": {
-          "description": "The common part of the operation metadata.",
-          "$ref": "GoogleCloudAiplatformUiGenericOperationMetadata"
-        }
       }
     },
     "GoogleCloudAiplatformUiUpdateIndexOperationMetadata": {
@@ -15873,17 +15851,6 @@
       "properties": {
         "genericMetadata": {
           "description": "The operation generic information.",
-          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1UpdateExplanationDatasetOperationMetadata": {
-      "id": "GoogleCloudAiplatformV1beta1UpdateExplanationDatasetOperationMetadata",
-      "description": "Runtime operation information for ModelService.UpdateExplanationDataset.",
-      "type": "object",
-      "properties": {
-        "genericMetadata": {
-          "description": "The common part of the operation metadata.",
           "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
         }
       }

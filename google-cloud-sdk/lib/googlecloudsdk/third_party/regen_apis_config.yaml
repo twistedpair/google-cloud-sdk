@@ -599,6 +599,9 @@ apis:
       discovery_doc: edgecontainer_v1alpha.json
       enable_mtls: false
       default: true
+  edgenetwork:
+    v1alpha1:
+      discovery_doc: edgenetwork_v1alpha1.json
   essentialcontacts:
     v1alpha1:
       discovery_doc: essentialcontacts_v1alpha1.json
@@ -707,10 +710,6 @@ apis:
       resources:
         projects.locations.services.nlp:
           path: projects/{projectsId}/locations/{locationsId}/services/nlp
-  kubernetesedge:
-    v1alpha1:
-      discovery_doc: kubernetesedge_v1alpha1.json
-      default: true
   oslogin:
     v1alpha:
       discovery_doc: oslogin_v1alpha.json

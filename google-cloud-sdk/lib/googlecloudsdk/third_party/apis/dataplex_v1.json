@@ -3927,6 +3927,102 @@
                   "resources": {
                     "entities": {
                       "methods": {
+                        "create": {
+                          "id": "dataplex.projects.locations.lakes.zones.entities.create",
+                          "path": "v1/{+parent}/entities",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/entities",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The resource name of the parent zone: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/zones\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "validateOnly": {
+                              "description": "Optional. Only validate the request, but do not perform mutations. The default is false.",
+                              "location": "query",
+                              "type": "boolean"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "request": {
+                            "$ref": "GoogleCloudDataplexV1Entity"
+                          },
+                          "response": {
+                            "$ref": "GoogleCloudDataplexV1Entity"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Create a metadata entity."
+                        },
+                        "update": {
+                          "id": "dataplex.projects.locations.lakes.zones.entities.update",
+                          "path": "v1/{+name}",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/entities/{entitiesId}",
+                          "httpMethod": "PUT",
+                          "parameters": {
+                            "name": {
+                              "description": "Output only. The resource name of the entity, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/entities\/{id}.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/zones\/[^\/]+\/entities\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "validateOnly": {
+                              "description": "Optional. Only validate the request, but do not perform mutations. The default is false.",
+                              "location": "query",
+                              "type": "boolean"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "GoogleCloudDataplexV1Entity"
+                          },
+                          "response": {
+                            "$ref": "GoogleCloudDataplexV1Entity"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Update a metadata entity. Only supports full resource update."
+                        },
+                        "delete": {
+                          "id": "dataplex.projects.locations.lakes.zones.entities.delete",
+                          "path": "v1/{+name}",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/entities/{entitiesId}",
+                          "httpMethod": "DELETE",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. The resource name of the entity: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/entities\/{entity_id}.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/zones\/[^\/]+\/entities\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "etag": {
+                              "description": "Optional. The etag associated with the partition if it was previously retrieved.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "Empty"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Delete a metadata entity."
+                        },
                         "get": {
                           "id": "dataplex.projects.locations.lakes.zones.entities.get",
                           "path": "v1/{+name}",
@@ -4030,6 +4126,69 @@
                       "resources": {
                         "partitions": {
                           "methods": {
+                            "create": {
+                              "id": "dataplex.projects.locations.lakes.zones.entities.partitions.create",
+                              "path": "v1/{+parent}/partitions",
+                              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/entities/{entitiesId}/partitions",
+                              "httpMethod": "POST",
+                              "parameters": {
+                                "parent": {
+                                  "description": "Required. The resource name of the parent zone: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/entities\/{entity_id}.",
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/zones\/[^\/]+\/entities\/[^\/]+$",
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                },
+                                "validateOnly": {
+                                  "description": "Optional. Only validate the request, but do not perform mutations. The default is false.",
+                                  "location": "query",
+                                  "type": "boolean"
+                                }
+                              },
+                              "parameterOrder": [
+                                "parent"
+                              ],
+                              "request": {
+                                "$ref": "GoogleCloudDataplexV1Partition"
+                              },
+                              "response": {
+                                "$ref": "GoogleCloudDataplexV1Partition"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Create a metadata partition."
+                            },
+                            "delete": {
+                              "id": "dataplex.projects.locations.lakes.zones.entities.partitions.delete",
+                              "path": "v1/{+name}",
+                              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/entities/{entitiesId}/partitions/{partitionsId}",
+                              "httpMethod": "DELETE",
+                              "parameters": {
+                                "name": {
+                                  "description": "Required. The resource name of the partition. format: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/entities\/{entity_id}\/partitions\/{partition_id}.",
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/zones\/[^\/]+\/entities\/[^\/]+\/partitions\/.*$",
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                },
+                                "etag": {
+                                  "description": "Optional. The etag associated with the partition if it was previously retrieved.",
+                                  "location": "query",
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "name"
+                              ],
+                              "response": {
+                                "$ref": "Empty"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Delete a metadata partition."
+                            },
                             "get": {
                               "id": "dataplex.projects.locations.lakes.zones.entities.partitions.get",
                               "path": "v1/{+name}",

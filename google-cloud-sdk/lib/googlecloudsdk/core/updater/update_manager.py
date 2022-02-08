@@ -54,7 +54,7 @@ from six.moves import map  # pylint: disable=redefined-builtin
 # scripts and installers that use them from getting errors, we will just warn
 # and move on.  This can be removed once we think enough time has passed.
 _GAE_REDIRECT_MSG = ("""\
-The standalone App Engine SDKs are no longer distributed through the Cloud SDK
+The standalone App Engine SDKs are no longer distributed through the Google Cloud CLI
 (however, the appcfg and dev_appserver commands remain the official and
 supported way of using App Engine from the command line).  If you want to
 continue using these tools, they are available for download from the official
@@ -157,7 +157,7 @@ class MissingUpdateURLError(Error):
   def __init__(self):
     super(MissingUpdateURLError, self).__init__(
         'The update action could not be performed because the component manager'
-        ' is incorrectly configured.  Please re-install the Cloud SDK and try '
+        ' is incorrectly configured.  Please re-install the Google Cloud CLI and try '
         'again.')
 
 
@@ -398,7 +398,7 @@ class UpdateManager(object):
     #    don't know what's wrong.
 
     raise InvalidCWDError(
-        'Your current working directory is inside the Cloud SDK install root:'
+        'Your current working directory is inside the Google Cloud CLI install root:'
         ' {root}.  In order to perform this update, run the command from '
         'outside of this directory.'.format(root=self.__sdk_root))
 
@@ -499,7 +499,7 @@ class UpdateManager(object):
     if mapped_packages or not components:
       # Message presented when mapping is successful.
       final_message += (
-          '\nYou cannot perform this action because the Cloud SDK '
+          '\nYou cannot perform this action because the Google Cloud CLI '
           'component manager \nis disabled for this installation. You can '
           'run the following command \nto achieve the same result for this '
           'installation: \n\n{correct_command}\n\n'.format(
@@ -510,7 +510,7 @@ class UpdateManager(object):
       final_message += (
           '\nThe {component} component(s) is unavailable through the '
           'packaging system \nyou are currently using. Please consider '
-          'using a separate installation \nof the Cloud SDK created '
+          'using a separate installation \nof the Google Cloud CLI created '
           'through the default mechanism described at: \n\n{doc_url} '
           '\n\n'.format(
               component=', '.join(unavailable_components),
@@ -542,10 +542,10 @@ class UpdateManager(object):
       UpdaterDisabledError: If the updater is disabled.
     """
     default_message = (
-        'You cannot perform this action because this Cloud SDK '
+        'You cannot perform this action because this Google Cloud CLI '
         'installation is managed by an external package manager.\n'
-        'Please consider using a separate installation of the Cloud '
-        'SDK created through the default mechanism described at: '
+        'Please consider using a separate installation of the Google Cloud '
+        'CLI created through the default mechanism described at: '
         '{doc_url}\n'.format(
             doc_url=config.INSTALLATION_CONFIG.documentation_url))
 
@@ -596,19 +596,19 @@ class UpdateManager(object):
       # We manually specified a version, make sure the SDK has not pinned to a
       # version or if it is, that it matches.
       if self.__fixed_version and self.__fixed_version != version:
-        raise MismatchedFixedVersionsError(
-            """\
-You have configured your Cloud SDK installation
+        raise MismatchedFixedVersionsError("""\
+You have configured your Google Cloud CLI installation
 to be fixed to version [{0}] but are attempting to install components at
 version [{1}].  To clear your fixed version setting, run:
-    $ gcloud config unset component_manager/fixed_sdk_version"""
-            .format(self.__fixed_version, version))
+    $ gcloud config unset component_manager/fixed_sdk_version""".format(
+        self.__fixed_version, version))
     elif self.__fixed_version:
       # No specific version asked for, see if the SDK is pinned to a version
       # and use it if found.
       if self.__warn:
-        log.warning('You have configured your Cloud SDK installation to be '
-                    'fixed to version [{0}].'.format(self.__fixed_version))
+        log.warning(
+            'You have configured your Google Cloud CLI installation to be '
+            'fixed to version [{0}].'.format(self.__fixed_version))
       version = self.__fixed_version
 
     # Change the snapshot URL to point to a fixed SDK version if specified.
@@ -637,13 +637,13 @@ version [{1}].  To clear your fixed version setting, run:
     except snapshots.URLFetchError:
       if version:
         log.error(
-            'The component listing for Cloud SDK version [{0}] could not be '
-            'found.  Make sure this is a valid archived Cloud SDK version.'
+            'The component listing for Google Cloud CLI version [{0}] could not be '
+            'found.  Make sure this is a valid archived Google Cloud CLI version.'
             .format(version))
       elif self.__fixed_version:
         log.error(
-            'You have configured your Cloud SDK installation to be fixed to '
-            'version [{0}]. Make sure this is a valid archived Cloud SDK '
+            'You have configured your Google Cloud CLI installation to be fixed to '
+            'version [{0}]. Make sure this is a valid archived Google Cloud CLI '
             'version.'.format(self.__fixed_version))
       raise
 
@@ -746,8 +746,9 @@ version [{1}].  To clear your fixed version setting, run:
       to_print_x86_64 = (c for c in darwin_x86_64_all if c.id not in native_ids)
       to_print.extend(to_print_x86_64)
     current_version = config.INSTALLATION_CONFIG.version
-    self.__Write(log.status,
-                 '\nYour current Cloud SDK version is: ' + current_version)
+    self.__Write(
+        log.status,
+        '\nYour current Googgle Cloud CLI version is: ' + current_version)
     return to_print, current_version
 
   def _GetPrintListWithDiff(self):
@@ -788,8 +789,9 @@ version [{1}].  To clear your fixed version setting, run:
     current_version = config.INSTALLATION_CONFIG.version
     latest_version = diff.latest.version
 
-    self.__Write(log.status,
-                 '\nYour current Cloud SDK version is: ' + current_version)
+    self.__Write(
+        log.status,
+        '\nYour current Google Cloud CLI version is: ' + current_version)
     if latest_version and latest_msg:
       self.__Write(log.status, latest_msg + latest_version)
     self.__Write(log.status)
@@ -1340,7 +1342,7 @@ To revert your SDK to the previously installed version, you may run:
     self._RestartIfUsingBundledPython()
 
     if not console_io.PromptContinue(
-        message='Your Cloud SDK installation will be restored to its previous '
+        message='Your Google Cloud CLI installation will be restored to its previous '
         'state.'):
       return
 
@@ -1427,7 +1429,7 @@ To revert your SDK to the previously installed version, you may run:
         staging_state = install_state.CreateStagingFromDownload(
             download_url, progress_callback=pb.SetProgress)
     except local_state.Error:
-      log.error('An updated Cloud SDK failed to download')
+      log.error('An updated Google Cloud CLI failed to download')
       log.debug('Handling re-installation error', exc_info=True)
       self._RaiseReinstallationFailedError()
 
@@ -1453,7 +1455,7 @@ To revert your SDK to the previously installed version, you may run:
 
   def _RaiseReinstallationFailedError(self):
     raise ReinstallationFailedError(
-        'An error occurred while reinstalling the Cloud SDK.  Please download'
+        'An error occurred while reinstalling the Google Cloud CLI.  Please download'
         ' a new copy from: {url}'.format(
             url=config.INSTALLATION_CONFIG.documentation_url))
 
@@ -1602,7 +1604,7 @@ def RestartIfUsingBundledPython(sdk_root, args=None, command=None):
       gcloud_cmd_path = os.path.realpath(
           os.path.join(config.Paths().sdk_bin_path or '', 'gcloud.cmd'))
       log.error('''\
-Cannot use bundled Python installation to update Cloud SDK in
+Cannot use bundled Python installation to update Google Cloud CLI in
 non-interactive mode. Please run again in interactive mode.\n\n
 
 If you really want to run in non-interactive mode, please run the

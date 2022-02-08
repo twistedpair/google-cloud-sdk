@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.ai import errors
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
@@ -159,7 +160,8 @@ def _Create(msgs,
 def _AppendReplicas(msgs, add_replicas_arg, replica_info_list):
   """Appends each in add_replicas_arg to the given ReplicaInfo list."""
   for replica in add_replicas_arg:
-    replica_type = _TypeValueValuesEnum(msgs, replica['type'])
+    replica_type = arg_utils.ChoiceToEnum(replica['type'],
+                                          msgs.ReplicaInfo.TypeValueValuesEnum)
     replica_info_list.append(
         msgs.ReplicaInfo(location=replica['location'], type=replica_type))
 
@@ -168,7 +170,8 @@ def _SkipReplicas(msgs, skip_replicas_arg, replica_info_list):
   """Skips each in skip_replicas_arg from the given ReplicaInfo list."""
   for replica_to_skip in skip_replicas_arg:
     index_to_delete = None
-    replica_type = _TypeValueValuesEnum(msgs, replica_to_skip['type'])
+    replica_type = arg_utils.ChoiceToEnum(replica_to_skip['type'],
+                                          msgs.ReplicaInfo.TypeValueValuesEnum)
     for index, replica in enumerate(replica_info_list):
       # Only skip the first found matching replica.
       if (replica.location == replica_to_skip['location'] and
@@ -180,20 +183,6 @@ def _SkipReplicas(msgs, skip_replicas_arg, replica_info_list):
       raise MissingReplicaError(replica_to_skip['location'], replica_type)
 
     replica_info_list.pop(index_to_delete)
-
-
-def _TypeValueValuesEnum(msgs, replica_type):
-  """Converts str replica_type to ReplicaInfo.TypeValueValuesEnum."""
-  # TODO(b/399093071): Change type to ReplicaInfo.TypeValueValuesEnum instead
-  # of str.
-  if replica_type == 'READ_ONLY':
-    return msgs.ReplicaInfo.TypeValueValuesEnum.READ_ONLY
-  elif replica_type == 'READ_WRITE':
-    return msgs.ReplicaInfo.TypeValueValuesEnum.READ_WRITE
-  elif replica_type == 'WITNESS':
-    return msgs.ReplicaInfo.TypeValueValuesEnum.WITNESS
-  else:
-    return msgs.ReplicaInfo.TypeValueValuesEnum.TYPE_UNSPECIFIED
 
 
 def Patch(args):

@@ -622,8 +622,8 @@ def AddNetwork(parser):
       help=('Network in the current project that the instance will be part '
             'of. To specify using a network with a shared VPC, use the full '
             'URL of the network. For an example host project, \'testproject\', '
-            'and shared network, \'testsharednetwork\', this would be of the '
-            'form:'
+            'and shared network, \'testsharednetwork\', this would use the '
+            'form: '
             '`--network`=`projects/testproject/global/networks/'
             'testsharednetwork`'))
 

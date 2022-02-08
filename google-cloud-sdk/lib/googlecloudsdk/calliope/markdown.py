@@ -452,7 +452,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
         if arg.is_required:
           heading.append('Exactly one of these must be specified:')
         else:
-          heading.append('At most one of these may be specified:')
+          heading.append('At most one of these can be specified:')
       elif arg.is_required:
         heading.append('At least one of these must be specified:')
 

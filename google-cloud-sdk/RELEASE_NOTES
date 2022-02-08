@@ -1,6 +1,97 @@
-# Google Cloud SDK - Release Notes
+# Google Cloud CLI - Release Notes
 
 Copyright 2014-2022 Google Inc. All rights reserved.
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
+## 372.0.0 (2022-02-08)
+
+### Breaking Changes
+
+*   **(Kpt)** The `kpt live apply` and `kpt live destroy` default behavior changed to wait forever
+*   **(Kpt)** for reconciliation if no timeouts are specified.
+*   **(Kpt)** The `kpt live` output for `events` and `json` printer is changed to omit resource-specific
+*   **(Kpt)** health information by default.
+*   **(Kpt)** The default `image-pull-policy` for `kpt fn render` and `kpt fn eval` changed
+*   **(Kpt)** from `AlwaysPull` to `IfNotPresent`.
+
+
+### Cloud SDK
+
+* Deprecated `--[no-]launch-browser` flags and added `--no-browser`
+    to `gcloud auth login` and `gcloud auth application-default login`
+    commands. Use `--no-browser` to authorize gcloud on machines which
+    cannot launch a web browser.
+* Deprecated `--no-launch-browser` and `--console-only` flags and
+    added `--no-browser` flag to `gcloud init`. Use `--no-browser` to
+    initialize gcloud command-line tool on machines which cannot launch a web
+    browser.
+
+### Anthos Multi-Cloud
+
+*   Added `--role-arn` flag to `gcloud container aws clusters update` command to
+    update the IAM role to assume when managing AWS resources.
+*   Added `--role-session-name` flag to `gcloud container aws clusters update`
+    command to update the identifier for the assumed role session.
+*   Added `--instance-type` flag to `gcloud container aws clusters update`
+    command to update the AWS ec2 instance type for the control plane.
+*   Added `--admin-users` flag to `gcloud container aws clusters update` and
+    `gcloud container azure clusters update` to update the users that can
+    perform operations as a cluster administrator.
+*   Added `--vm-size` flag to `gcloud container azure clusters update` to update
+    the Azure Virtual Machine size for the control plane.
+
+### Certificate Manager
+
+*   Unified usage of `--location` flag in `gcloud certificate-manager` subcommands.
+
+### Cloud Composer
+
+* Added `--connection-subnetwork` flag to `gcloud composer environments create` command to enable using Private Service Connect for internal communication.
+
+### Cloud Identity-Aware Proxy
+
+*   Promoted `gcloud iap oauth-clients` from alpha to beta.
+*   Promoted `gcloud iap oauth-brands` from alpha to beta.
+
+### Cloud Key Management Service
+
+*   Add `kms ekm-connections` commands to alpha, beta.
+*   Add support for `external-vpc` crypto keys.
+*   Added support for the following "raw" PKCS#1 signing algorithms to
+`gcloud kms keys create|update` and `gcloud kms keys versions import`:
+  * `rsa-sign-raw-pkcs1-2048`
+  * `rsa-sign-raw-pkcs1-3072`
+  * `rsa-sign-raw-pkcs1-4096`
+
+### Cloud On Demand Scanning
+
+*   Upgrade `local-extract` to version 1.4.0 to improve the stability and
+    quality of extraction.
+
+### Cloud SQL
+
+* Promoted `--network` flag of `gcloud sql instances create` to GA.
+* Promoted `--network` flag of `gcloud sql instances patch` to GA.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.72.1.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Dataproc Metastore
+
+* Added `--update-auxiliary-versions-from-file`, `--add-auxiliary-versions` and
+  `--clear-auxiliary-versions` flags to `gcloud metastore services update` beta
+  release track to allow updating a Dataproc Metastore with auxiliary versions.
+
+### Kpt
+
+* Updated kpt from v1.0.0-beta.9 to v1.0.0-beta.13. Refer to OSS releases page <https://github.com/GoogleContainerTools/kpt/releases> for detailed release notes.
+* Improved the merge handling for `pipeline` section of the Kptfile.
+* Added `exec` support for running functions in `kpt fn render`.
+
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 

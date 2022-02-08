@@ -78,12 +78,8 @@ def GenerateAuxiliaryVersionsConfigFromList(unused_ref, args, req):
   if args.auxiliary_versions:
     if req.service.hiveMetastoreConfig is None:
       req.service.hiveMetastoreConfig = {}
-    req.service.hiveMetastoreConfig.auxiliaryVersions = _GenerateAdditionalProperties(
-        {
-            'aux-' + version.replace('.', '-'): {
-                'version': version
-            } for version in args.auxiliary_versions
-        })
+    req.service.hiveMetastoreConfig.auxiliaryVersions = _GenerateAuxiliaryVersionsVersionList(
+        args.auxiliary_versions)
   return req
 
 
@@ -151,6 +147,12 @@ def _GenerateUpdateMask(args):
           'metadataIntegration.dataCatalogConfig.enabled',
       '--endpoint-protocol':
           'hive_metastore_config.endpoint_protocol',
+      '--add-auxiliary-versions':
+          'hive_metastore_config.auxiliary_versions',
+      '--update-auxiliary-versions-from-file':
+          'hive_metastore_config.auxiliary_versions',
+      '--clear-auxiliary-versions':
+          'hive_metastore_config.auxiliary_versions',
   }
 
   update_mask = set()
@@ -165,7 +167,6 @@ def _GenerateUpdateMask(args):
     if args.remove_hive_metastore_configs:
       for key in args.remove_hive_metastore_configs:
         update_mask.add(hive_metastore_configs_update_mask_prefix + key)
-
   labels_update_mask_prefix = labels + '.'
   if labels not in update_mask:
     if args.update_labels:
@@ -198,6 +199,37 @@ def SetServiceRequestUpdateHiveMetastoreConfigs(unused_job_ref, args,
   update_service_req.service.hiveMetastoreConfig.configOverrides = _GenerateAdditionalProperties(
       hive_metastore_configs)
   return update_service_req
+
+
+def GenerateUpdateAuxiliaryVersionsConfigs(unused_job_ref, args,
+                                           update_service_req):
+  """Modify the Service update request to add or clear list of auxiliary versions configurations.
+
+  Args:
+    unused_ref: A resource ref to the parsed Service resource.
+    args: The parsed args namespace from CLI.
+    update_service_req: Created Update request for the API call.
+
+  Returns:
+    Modified request for the API call containing auxiliary version updates if
+    specified else the original request.
+  """
+  if update_service_req.service.hiveMetastoreConfig is None:
+    update_service_req.service.hiveMetastoreConfig = {}
+  if args.clear_auxiliary_versions:
+    update_service_req.service.hiveMetastoreConfig.auxiliaryVersions = {}
+  if args.add_auxiliary_versions:
+    update_service_req.service.hiveMetastoreConfig.auxiliaryVersions = _GenerateAuxiliaryVersionsVersionList(
+        args.add_auxiliary_versions)
+  return update_service_req
+
+
+def _GenerateAuxiliaryVersionsVersionList(aux_versions):
+  return _GenerateAdditionalProperties({
+      'aux-' + version.replace('.', '-'): {
+          'version': version
+      } for version in aux_versions
+  })
 
 
 def UpdateServiceMaskHook(unused_ref, args, update_service_req):

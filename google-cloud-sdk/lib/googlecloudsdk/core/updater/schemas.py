@@ -575,7 +575,7 @@ class Notification(object):
       else:
         version_string = ''
       msg += """\
-Updates are available for some Cloud SDK components.  To install them,
+Updates are available for some Google Cloud CLI components.  To install them,
 please run:
   $ gcloud components update{version}""".format(version=version_string)
 

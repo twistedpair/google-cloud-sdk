@@ -353,7 +353,7 @@ class StoragetransferV1(base_api.BaseApiClient):
     )
 
     def Run(self, request, global_params=None):
-      r"""Attempts to start a new TransferOperation for the current TransferJob. A TransferJob has a maximum of one active TransferOperation. If this method is called while a TransferOperation is active, an error wil be returned.
+      r"""Attempts to start a new TransferOperation for the current TransferJob. A TransferJob has a maximum of one active TransferOperation. If this method is called while a TransferOperation is active, an error will be returned.
 
       Args:
         request: (StoragetransferTransferJobsRunRequest) input message

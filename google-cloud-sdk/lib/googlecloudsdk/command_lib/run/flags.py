@@ -955,7 +955,6 @@ def AddMaxRetriesFlag(parser):
   parser.add_argument(
       '--max-retries',
       type=arg_parsers.BoundedInt(lower_bound=0),
-      default=6,
       help='Number of times an task is allowed to restart in case of '
       'failure before being failed permanently. This applies per-task, not '
       'per-job. If set to 0, tasks will only run once and never be '
@@ -970,7 +969,7 @@ def AddWaitForCompletionFlag(parser, implies_run_now=False):
   if implies_run_now:
     help_text += '  Implies --run-now.'
   parser.add_argument(
-      '--wait-for-completion',
+      '--wait',
       default=False,
       action='store_true',
       help=help_text)
@@ -1496,10 +1495,10 @@ def GetJobConfigurationChanges(args):
     changes.append(
         config_changes.ExecutionTemplateSpecChange('parallelism',
                                                    args.parallelism))
-  if 'tasks' in args:
+  if FlagIsExplicitlySet(args, 'tasks'):
     changes.append(
         config_changes.ExecutionTemplateSpecChange('taskCount', args.tasks))
-  if 'max_retries' in args:
+  if FlagIsExplicitlySet(args, 'max_retries'):
     changes.append(config_changes.JobMaxRetriesChange(args.max_retries))
   if FlagIsExplicitlySet(args, 'task_timeout'):
     changes.append(config_changes.JobTaskTimeoutChange(args.task_timeout))

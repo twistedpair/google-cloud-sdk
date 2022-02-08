@@ -1748,15 +1748,13 @@ class AuditConfig(_messages.Message):
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
-    exemptedMembers: This is deprecated and has no effect. Do not use.
     service: Specifies a service that will be enabled for audit logging. For
       example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
       `allServices` is a special value that covers all services.
   """
 
   auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
-  exemptedMembers = _messages.StringField(2, repeated=True)
-  service = _messages.StringField(3)
+  service = _messages.StringField(2)
 
 
 class AuditLogConfig(_messages.Message):
@@ -3654,7 +3652,12 @@ class BackendService(_messages.Message):
       Affinity](https://cloud.google.com/load-balancing/docs/backend-
       service#session_affinity).
     subsetting: A Subsetting attribute.
-    timeoutSec: Not supported when the backend service is referenced by a URL
+    timeoutSec: The backend service timeout has a different meaning depending
+      on the type of load balancer. For more information see, Backend service
+      settings The default is 30 seconds. The full range of timeout values
+      allowed is 1 - 2,147,483,647 seconds. This value can be overridden in
+      the PathMatcher configuration of the UrlMap that references this backend
+      service. Not supported when the backend service is referenced by a URL
       map that is bound to target gRPC proxy that has validateForProxyless
       field set to true. Instead, use maxStreamDuration.
   """
@@ -5231,20 +5234,26 @@ class CircuitBreakers(_messages.Message):
   this backend service.
 
   Fields:
-    maxConnections: Not supported when the backend service is referenced by a
-      URL map that is bound to target gRPC proxy that has validateForProxyless
-      field set to true.
-    maxPendingRequests: Not supported when the backend service is referenced
-      by a URL map that is bound to target gRPC proxy that has
-      validateForProxyless field set to true.
+    maxConnections: The maximum number of connections to the backend service.
+      If not specified, there is no limit. Not supported when the backend
+      service is referenced by a URL map that is bound to target gRPC proxy
+      that has validateForProxyless field set to true.
+    maxPendingRequests: The maximum number of pending requests allowed to the
+      backend service. If not specified, there is no limit. Not supported when
+      the backend service is referenced by a URL map that is bound to target
+      gRPC proxy that has validateForProxyless field set to true.
     maxRequests: The maximum number of parallel requests that allowed to the
       backend service. If not specified, there is no limit.
-    maxRequestsPerConnection: Not supported when the backend service is
-      referenced by a URL map that is bound to target gRPC proxy that has
-      validateForProxyless field set to true.
-    maxRetries: Not supported when the backend service is referenced by a URL
-      map that is bound to target gRPC proxy that has validateForProxyless
-      field set to true.
+    maxRequestsPerConnection: Maximum requests for a single connection to the
+      backend service. This parameter is respected by both the HTTP/1.1 and
+      HTTP/2 implementations. If not specified, there is no limit. Setting
+      this parameter to 1 will effectively disable keep alive. Not supported
+      when the backend service is referenced by a URL map that is bound to
+      target gRPC proxy that has validateForProxyless field set to true.
+    maxRetries: The maximum number of parallel retries allowed to the backend
+      cluster. If not specified, the default is 1. Not supported when the
+      backend service is referenced by a URL map that is bound to target gRPC
+      proxy that has validateForProxyless field set to true.
   """
 
   maxConnections = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -31013,6 +31022,8 @@ class Instance(_messages.Message):
       network services, such as connecting to the internet. Multiple
       interfaces are supported per instance.
     networkPerformanceConfig: A NetworkPerformanceConfig attribute.
+    params: Input only. [Input Only] Additional params passed with the
+      request, but not persisted as part of resource payload.
     privateIpv6GoogleAccess: The private IPv6 google access type for the VM.
       If not specified, use INHERIT_FROM_SUBNETWORK as default.
     reservationAffinity: Specifies the reservations that this instance can
@@ -31154,22 +31165,23 @@ class Instance(_messages.Message):
   name = _messages.StringField(23)
   networkInterfaces = _messages.MessageField('NetworkInterface', 24, repeated=True)
   networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 25)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 26)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 27)
-  resourcePolicies = _messages.StringField(28, repeated=True)
-  satisfiesPzs = _messages.BooleanField(29)
-  scheduling = _messages.MessageField('Scheduling', 30)
-  selfLink = _messages.StringField(31)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 32, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 33)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 34)
-  sourceMachineImage = _messages.StringField(35)
-  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 36)
-  startRestricted = _messages.BooleanField(37)
-  status = _messages.EnumField('StatusValueValuesEnum', 38)
-  statusMessage = _messages.StringField(39)
-  tags = _messages.MessageField('Tags', 40)
-  zone = _messages.StringField(41)
+  params = _messages.MessageField('InstanceParams', 26)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 27)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 28)
+  resourcePolicies = _messages.StringField(29, repeated=True)
+  satisfiesPzs = _messages.BooleanField(30)
+  scheduling = _messages.MessageField('Scheduling', 31)
+  selfLink = _messages.StringField(32)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 33, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 34)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 35)
+  sourceMachineImage = _messages.StringField(36)
+  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 37)
+  startRestricted = _messages.BooleanField(38)
+  status = _messages.EnumField('StatusValueValuesEnum', 39)
+  statusMessage = _messages.StringField(40)
+  tags = _messages.MessageField('Tags', 41)
+  zone = _messages.StringField(42)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -33838,6 +33850,56 @@ class InstanceMoveRequest(_messages.Message):
 
   destinationZone = _messages.StringField(1)
   targetInstance = _messages.StringField(2)
+
+
+class InstanceParams(_messages.Message):
+  r"""Additional instance params.
+
+  Messages:
+    ResourceManagerTagsValue: Resource manager tags to be bound to the
+      instance. Tag keys and values have the same definition as resource
+      manager tags. Keys must be in the format `tagKeys/{tag_key_id}`, and
+      values are in the format `tagValues/456`. The field is ignored (both PUT
+      & PATCH) when empty.
+
+  Fields:
+    resourceManagerTags: Resource manager tags to be bound to the instance.
+      Tag keys and values have the same definition as resource manager tags.
+      Keys must be in the format `tagKeys/{tag_key_id}`, and values are in the
+      format `tagValues/456`. The field is ignored (both PUT & PATCH) when
+      empty.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceManagerTagsValue(_messages.Message):
+    r"""Resource manager tags to be bound to the instance. Tag keys and values
+    have the same definition as resource manager tags. Keys must be in the
+    format `tagKeys/{tag_key_id}`, and values are in the format
+    `tagValues/456`. The field is ignored (both PUT & PATCH) when empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ResourceManagerTagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ResourceManagerTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceManagerTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 1)
 
 
 class InstanceProperties(_messages.Message):
@@ -38232,6 +38294,8 @@ class Network(_messages.Message):
       Used by Cloud Router to determine what type of network-wide routing
       behavior to enforce.
     selfLink: [Output Only] Server-defined URL for the resource.
+    selfLinkWithId: [Output Only] Server-defined URL for this resource with
+      the resource id.
     subnetworks: [Output Only] Server-defined fully-qualified URLs for all
       subnetworks in this VPC network.
   """
@@ -38248,7 +38312,8 @@ class Network(_messages.Message):
   peerings = _messages.MessageField('NetworkPeering', 10, repeated=True)
   routingConfig = _messages.MessageField('NetworkRoutingConfig', 11)
   selfLink = _messages.StringField(12)
-  subnetworks = _messages.StringField(13, repeated=True)
+  selfLinkWithId = _messages.StringField(13)
+  subnetworks = _messages.StringField(14, repeated=True)
 
 
 class NetworkEndpoint(_messages.Message):
@@ -54164,8 +54229,8 @@ class SubnetworkLogConfig(_messages.Message):
       the default behavior is determined by the org policy, if there is no org
       policy specified, then it will default to disabled.
     filterExpr: Can only be specified if VPC flow logs for this subnetwork is
-      enabled. Export filter used to define which VPC flow logs should be
-      logged.
+      enabled. The filter expression is used to define which VPC flow logs
+      should be exported to Cloud Logging.
     flowSampling: Can only be specified if VPC flow logging for this
       subnetwork is enabled. The value of the field must be in [0, 1]. Set the
       sampling rate of VPC flow logs within the subnetwork where 1.0 means all

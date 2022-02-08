@@ -1154,6 +1154,66 @@ class CloudidentityGroupsUpdateSecuritySettingsRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class CloudidentityOrgUnitsMembershipsListRequest(_messages.Message):
+  r"""A CloudidentityOrgUnitsMembershipsListRequest object.
+
+  Fields:
+    customer: Required. Immutable. Customer that this OrgMembership belongs
+      to. All authorization will happen on the role assignments of this
+      customer. Format: customers/{$customerId} where `$customerId` is the
+      `id` from the [Admin SDK `Customer`
+      resource](https://developers.google.com/admin-
+      sdk/directory/reference/rest/v1/customers). You may also use
+      `customers/my_customer` to specify your own organization.
+    filter: The search query. Must be specified in [Common Expression
+      Language](https://opensource.google/projects/cel). May only contain
+      equality operators on the `type` (e.g., `type == 'shared_drive'`).
+    pageSize: The maximum number of results to return. The service may return
+      fewer than this value. If omitted (or defaulted to zero) the server will
+      default to 50. The maximum allowed value is 100, though requests with
+      page_size greater than that will be silently interpreted as 100.
+    pageToken: A page token, received from a previous
+      `OrgMembershipsService.ListOrgMemberships` call. Provide this to
+      retrieve the subsequent page. When paginating, all other parameters
+      provided to `ListOrgMembershipsRequest` must match the call that
+      provided the page token.
+    parent: Required. Immutable. OrgUnit which is queried for a list of
+      memberships. Format: orgUnits/{$orgUnitId} where `$orgUnitId` is the
+      `orgUnitId` from the [Admin SDK `OrgUnit`
+      resource](https://developers.google.com/admin-
+      sdk/directory/reference/rest/v1/orgunits).
+  """
+
+  customer = _messages.StringField(1)
+  filter = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class CloudidentityOrgUnitsMembershipsMoveRequest(_messages.Message):
+  r"""A CloudidentityOrgUnitsMembershipsMoveRequest object.
+
+  Fields:
+    moveOrgMembershipRequest: A MoveOrgMembershipRequest resource to be passed
+      as the request body.
+    name: Required. Immutable. The [resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      OrgMembership. Format: orgUnits/{$orgUnitId}/memberships/{$membership}
+      The `$orgUnitId` is the `orgUnitId` from the [Admin SDK `OrgUnit`
+      resource](https://developers.google.com/admin-
+      sdk/directory/reference/rest/v1/orgunits), The `$membership` shall be of
+      the form `{$entityType};{$memberId}`, where `$entityType` is the enum
+      value of OrgMembership.EntityType, and `memberId` is the `id` from
+      [Drive API (V3) `Drive` resource](https://developers.google.com/drive/ap
+      i/v3/reference/drives#resource) for
+      OrgMembership.EntityType.SHARED_DRIVE.
+  """
+
+  moveOrgMembershipRequest = _messages.MessageField('MoveOrgMembershipRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class CreateDeviceRequest(_messages.Message):
   r"""Request message for creating a Company Owned device.
 
@@ -2222,7 +2282,7 @@ class Group(_messages.Message):
     displayName: The display name of the `Group`.
     dynamicGroupMetadata: Optional. Dynamic group metadata like queries and
       status.
-    groupKey: Required. Immutable. The `EntityKey` of the `Group`.
+    groupKey: Required. The `EntityKey` of the `Group`.
     labels: Required. One or more label entries that apply to the Group.
       Currently supported labels contain a key with an empty value. Google
       Groups are the default type of group and have a label with a key of
@@ -2436,6 +2496,19 @@ class ListMembershipsResponse(_messages.Message):
 
   memberships = _messages.MessageField('Membership', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListOrgMembershipsResponse(_messages.Message):
+  r"""The response message for OrgMembershipsService.ListOrgMemberships.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is empty, there are no subsequent pages.
+    orgMemberships: The non-vacuous membership in an orgUnit.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  orgMemberships = _messages.MessageField('OrgMembership', 2, repeated=True)
 
 
 class ListUserInvitationsResponse(_messages.Message):
@@ -2718,6 +2791,28 @@ class ModifyMembershipRolesResponse(_messages.Message):
   membership = _messages.MessageField('Membership', 1)
 
 
+class MoveOrgMembershipRequest(_messages.Message):
+  r"""The request message for OrgMembershipsService.MoveOrgMembership.
+
+  Fields:
+    customer: Required. Immutable. Customer on whose membership change is
+      made. All authorization will happen on the role assignments of this
+      customer. Format: customers/{$customerId} where `$customerId` is the
+      `id` from the [Admin SDK `Customer`
+      resource](https://developers.google.com/admin-
+      sdk/directory/reference/rest/v1/customers). You may also use
+      `customers/my_customer` to specify your own organization.
+    destinationOrgUnit: Required. Immutable. OrgUnit where the membership will
+      be moved to. Format: orgUnits/{$orgUnitId} where `$orgUnitId` is the
+      `orgUnitId` from the [Admin SDK `OrgUnit`
+      resource](https://developers.google.com/admin-
+      sdk/directory/reference/rest/v1/orgunits).
+  """
+
+  customer = _messages.StringField(1)
+  destinationOrgUnit = _messages.StringField(2)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -2824,6 +2919,54 @@ class Operation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
+
+
+class OrgMembership(_messages.Message):
+  r"""A membership in an OrgUnit. An `OrgMembership` defines a relationship
+  between an `OrgUnit` and an entity belonging to that `OrgUnit`, referred to
+  as a "member".
+
+  Enums:
+    TypeValueValuesEnum: Immutable. Entity type for the org member.
+
+  Fields:
+    member: Immutable. Org member id as full resource name. Format for shared
+      drive resource: //drive.googleapis.com/drives/{$memberId} where
+      `$memberId` is the `id` from [Drive API (V3) `Drive` resource](https://d
+      evelopers.google.com/drive/api/v3/reference/drives#resource).
+    memberUri: Uri with which you can read the member. This follows
+      https://aip.dev/122 Format for shared drive resource:
+      https://drive.googleapis.com/drive/v3/drives/{$memberId} where
+      `$memberId` is the `id` from [Drive API (V3) `Drive` resource](https://d
+      evelopers.google.com/drive/api/v3/reference/drives#resource).
+    name: Required. Immutable. The [resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      OrgMembership. Format: orgUnits/{$orgUnitId}/memberships/{$membership}
+      The `$orgUnitId` is the `orgUnitId` from the [Admin SDK `OrgUnit`
+      resource](https://developers.google.com/admin-
+      sdk/directory/reference/rest/v1/orgunits). The `$membership` shall be of
+      the form `{$entityType};{$memberId}`, where `$entityType` is the enum
+      value of [OrgMembership.EntityType], and `memberId` is the `id` from
+      [Drive API (V3) `Drive` resource](https://developers.google.com/drive/ap
+      i/v3/reference/drives#resource) for
+      OrgMembership.EntityType.SHARED_DRIVE.
+    type: Immutable. Entity type for the org member.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Immutable. Entity type for the org member.
+
+    Values:
+      ENTITY_TYPE_UNSPECIFIED: Equivalent to no resource type mentioned
+      SHARED_DRIVE: Shared drive as resource type
+    """
+    ENTITY_TYPE_UNSPECIFIED = 0
+    SHARED_DRIVE = 1
+
+  member = _messages.StringField(1)
+  memberUri = _messages.StringField(2)
+  name = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
 
 
 class PosixGroup(_messages.Message):

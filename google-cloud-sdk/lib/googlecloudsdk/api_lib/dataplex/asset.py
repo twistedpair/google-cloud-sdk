@@ -95,14 +95,25 @@ def GenerateAssetForUpdateRequest(args):
 
 def GenerateDiscoverySpec(args):
   """Create Discovery Spec for Assets."""
-  discovery_spec = dataplex_api.GetMessageModule(
-  ).GoogleCloudDataplexV1AssetDiscoverySpec(
+  module = dataplex_api.GetMessageModule()
+
+  discovery_spec = module.GoogleCloudDataplexV1AssetDiscoverySpec(
       enabled=args.discovery_enabled,
       includePatterns=args.discovery_include_patterns,
-      excludePatterns=args.discovery_exclude_patterns,
-      schedule=args.discovery_schedule,
-      csvOptions=GenerateCsvOptions(args),
-      jsonOptions=GenerateJsonOptions(args))
+      excludePatterns=args.discovery_exclude_patterns)
+
+  if args.discovery_schedule:
+    discovery_spec.schedule = args.discovery_schedule
+
+  csv_options = GenerateCsvOptions(args)
+  if csv_options != module.GoogleCloudDataplexV1AssetDiscoverySpecCsvOptions():
+    discovery_spec.csvOptions = csv_options
+
+  json_options = GenerateJsonOptions(args)
+  if json_options != module.GoogleCloudDataplexV1AssetDiscoverySpecJsonOptions(
+  ):
+    discovery_spec.jsonOptions = json_options
+
   return discovery_spec
 
 

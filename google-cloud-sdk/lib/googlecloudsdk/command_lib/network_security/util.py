@@ -40,7 +40,7 @@ def FormatSourceAddressGroup(_, arg, request):
   source_name = arg.source
   if os.path.basename(source_name) == source_name:
     location = os.path.dirname(request.addressGroup)
-    request.cloneItemsRequest.sourceAddressGroup = '%s/%s' % (
+    request.cloneAddressGroupItemsRequest.sourceAddressGroup = '%s/%s' % (
         location, source_name)
   return request
 

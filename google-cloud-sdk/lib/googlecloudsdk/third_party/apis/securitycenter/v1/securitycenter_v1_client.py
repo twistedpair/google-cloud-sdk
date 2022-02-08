@@ -221,6 +221,33 @@ class SecuritycenterV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      r"""Gets a big query export.
+
+      Args:
+        request: (SecuritycenterFoldersBigQueryExportsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1BigQueryExport) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/bigQueryExports/{bigQueryExportsId}',
+        http_method='GET',
+        method_id='securitycenter.folders.bigQueryExports.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterFoldersBigQueryExportsGetRequest',
+        response_type_name='GoogleCloudSecuritycenterV1BigQueryExport',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists BigQuery exports. Note that when requesting BigQuery exports at a given level all exports under that level are also returned e.g. if requesting BigQuery exports under a folder, then all BigQuery exports immediately under the folder plus the ones created under the projects within the folder are returned.
 
@@ -892,6 +919,33 @@ class SecuritycenterV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='SecuritycenterOrganizationsBigQueryExportsDeleteRequest',
         response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a big query export.
+
+      Args:
+        request: (SecuritycenterOrganizationsBigQueryExportsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1BigQueryExport) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/bigQueryExports/{bigQueryExportsId}',
+        http_method='GET',
+        method_id='securitycenter.organizations.bigQueryExports.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsBigQueryExportsGetRequest',
+        response_type_name='GoogleCloudSecuritycenterV1BigQueryExport',
         supports_download=False,
     )
 
@@ -2045,6 +2099,33 @@ class SecuritycenterV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='SecuritycenterProjectsBigQueryExportsDeleteRequest',
         response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a big query export.
+
+      Args:
+        request: (SecuritycenterProjectsBigQueryExportsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1BigQueryExport) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/bigQueryExports/{bigQueryExportsId}',
+        http_method='GET',
+        method_id='securitycenter.projects.bigQueryExports.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterProjectsBigQueryExportsGetRequest',
+        response_type_name='GoogleCloudSecuritycenterV1BigQueryExport',
         supports_download=False,
     )
 

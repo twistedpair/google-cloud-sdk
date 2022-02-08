@@ -13,8 +13,8 @@ from apitools.base.py import extra_types
 package = 'networksecurity'
 
 
-class AddItemsRequest(_messages.Message):
-  r"""Request used by the AddItems method.
+class AddAddressGroupItemsRequest(_messages.Message):
+  r"""Request used by the AddAddressGroupItems method.
 
   Fields:
     items: Required. List of items to add.
@@ -273,8 +273,8 @@ class ClientTlsPolicy(_messages.Message):
   updateTime = _messages.StringField(8)
 
 
-class CloneItemsRequest(_messages.Message):
-  r"""Request used by the CloneItems method.
+class CloneAddressGroupItemsRequest(_messages.Message):
+  r"""Request used by the CloneAddressGroupItems method.
 
   Fields:
     requestId: Optional. An optional request ID to identify requests. Specify
@@ -862,14 +862,14 @@ class NetworksecurityOrganizationsLocationsAddressGroupsAddItemsRequest(_message
   object.
 
   Fields:
-    addItemsRequest: A AddItemsRequest resource to be passed as the request
-      body.
+    addAddressGroupItemsRequest: A AddAddressGroupItemsRequest resource to be
+      passed as the request body.
     addressGroup: Required. A name of the AddressGroup to add items to. Must
       be in the format
       `projects|organization/*/locations/{location}/addressGroups/*`.
   """
 
-  addItemsRequest = _messages.MessageField('AddItemsRequest', 1)
+  addAddressGroupItemsRequest = _messages.MessageField('AddAddressGroupItemsRequest', 1)
   addressGroup = _messages.StringField(2, required=True)
 
 
@@ -881,12 +881,12 @@ class NetworksecurityOrganizationsLocationsAddressGroupsCloneItemsRequest(_messa
     addressGroup: Required. A name of the AddressGroup to clone items to. Must
       be in the format
       `projects|organization/*/locations/{location}/addressGroups/*`.
-    cloneItemsRequest: A CloneItemsRequest resource to be passed as the
-      request body.
+    cloneAddressGroupItemsRequest: A CloneAddressGroupItemsRequest resource to
+      be passed as the request body.
   """
 
   addressGroup = _messages.StringField(1, required=True)
-  cloneItemsRequest = _messages.MessageField('CloneItemsRequest', 2)
+  cloneAddressGroupItemsRequest = _messages.MessageField('CloneAddressGroupItemsRequest', 2)
 
 
 class NetworksecurityOrganizationsLocationsAddressGroupsCreateRequest(_messages.Message):
@@ -1034,12 +1034,12 @@ class NetworksecurityOrganizationsLocationsAddressGroupsRemoveItemsRequest(_mess
     addressGroup: Required. A name of the AddressGroup to remove items from.
       Must be in the format
       `projects|organization/*/locations/{location}/addressGroups/*`.
-    removeItemsRequest: A RemoveItemsRequest resource to be passed as the
-      request body.
+    removeAddressGroupItemsRequest: A RemoveAddressGroupItemsRequest resource
+      to be passed as the request body.
   """
 
   addressGroup = _messages.StringField(1, required=True)
-  removeItemsRequest = _messages.MessageField('RemoveItemsRequest', 2)
+  removeAddressGroupItemsRequest = _messages.MessageField('RemoveAddressGroupItemsRequest', 2)
 
 
 class NetworksecurityOrganizationsLocationsOperationsCancelRequest(_messages.Message):
@@ -1095,14 +1095,14 @@ class NetworksecurityProjectsLocationsAddressGroupsAddItemsRequest(_messages.Mes
   r"""A NetworksecurityProjectsLocationsAddressGroupsAddItemsRequest object.
 
   Fields:
-    addItemsRequest: A AddItemsRequest resource to be passed as the request
-      body.
+    addAddressGroupItemsRequest: A AddAddressGroupItemsRequest resource to be
+      passed as the request body.
     addressGroup: Required. A name of the AddressGroup to add items to. Must
       be in the format
       `projects|organization/*/locations/{location}/addressGroups/*`.
   """
 
-  addItemsRequest = _messages.MessageField('AddItemsRequest', 1)
+  addAddressGroupItemsRequest = _messages.MessageField('AddAddressGroupItemsRequest', 1)
   addressGroup = _messages.StringField(2, required=True)
 
 
@@ -1113,12 +1113,12 @@ class NetworksecurityProjectsLocationsAddressGroupsCloneItemsRequest(_messages.M
     addressGroup: Required. A name of the AddressGroup to clone items to. Must
       be in the format
       `projects|organization/*/locations/{location}/addressGroups/*`.
-    cloneItemsRequest: A CloneItemsRequest resource to be passed as the
-      request body.
+    cloneAddressGroupItemsRequest: A CloneAddressGroupItemsRequest resource to
+      be passed as the request body.
   """
 
   addressGroup = _messages.StringField(1, required=True)
-  cloneItemsRequest = _messages.MessageField('CloneItemsRequest', 2)
+  cloneAddressGroupItemsRequest = _messages.MessageField('CloneAddressGroupItemsRequest', 2)
 
 
 class NetworksecurityProjectsLocationsAddressGroupsCreateRequest(_messages.Message):
@@ -1289,12 +1289,12 @@ class NetworksecurityProjectsLocationsAddressGroupsRemoveItemsRequest(_messages.
     addressGroup: Required. A name of the AddressGroup to remove items from.
       Must be in the format
       `projects|organization/*/locations/{location}/addressGroups/*`.
-    removeItemsRequest: A RemoveItemsRequest resource to be passed as the
-      request body.
+    removeAddressGroupItemsRequest: A RemoveAddressGroupItemsRequest resource
+      to be passed as the request body.
   """
 
   addressGroup = _messages.StringField(1, required=True)
-  removeItemsRequest = _messages.MessageField('RemoveItemsRequest', 2)
+  removeAddressGroupItemsRequest = _messages.MessageField('RemoveAddressGroupItemsRequest', 2)
 
 
 class NetworksecurityProjectsLocationsAddressGroupsSetIamPolicyRequest(_messages.Message):
@@ -1973,8 +1973,8 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
-class RemoveItemsRequest(_messages.Message):
-  r"""Request used by the RemoveItems method.
+class RemoveAddressGroupItemsRequest(_messages.Message):
+  r"""Request used by the RemoveAddressGroupItems method.
 
   Fields:
     items: Required. List of items to remove.

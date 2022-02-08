@@ -119,8 +119,8 @@ class ArtifactregistryProjectsLocationsRepositoriesAptArtifactsImportRequest(_me
   parent = _messages.StringField(2, required=True)
 
 
-class ArtifactregistryProjectsLocationsRepositoriesAptartifactsUploadRequest(_messages.Message):
-  r"""A ArtifactregistryProjectsLocationsRepositoriesAptartifactsUploadRequest
+class ArtifactregistryProjectsLocationsRepositoriesAptArtifactsUploadRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesAptArtifactsUploadRequest
   object.
 
   Fields:
@@ -518,8 +518,8 @@ class ArtifactregistryProjectsLocationsRepositoriesYumArtifactsImportRequest(_me
   parent = _messages.StringField(2, required=True)
 
 
-class ArtifactregistryProjectsLocationsRepositoriesYumartifactsUploadRequest(_messages.Message):
-  r"""A ArtifactregistryProjectsLocationsRepositoriesYumartifactsUploadRequest
+class ArtifactregistryProjectsLocationsRepositoriesYumArtifactsUploadRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesYumArtifactsUploadRequest
   object.
 
   Fields:

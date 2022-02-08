@@ -237,6 +237,12 @@ class PosixFileSystemUrl(StorageUrl):
     self.bucket_name = None
     # Use object_name to represent a schemeless root URL.
     self.object_name = url_string[len(ProviderPrefix.POSIX.value + '://'):]
+    if not self.object_name.startswith(self.delimiter):
+      log.warning(
+          'POSIX URLs typically start at the root directory. Did you mean:'
+          ' {}://{}{}'.format(self.scheme.value, self.delimiter,
+                              self.object_name))
+
     self.generation = None
 
   @property

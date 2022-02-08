@@ -36,6 +36,8 @@ LOCATIONS_RESOURCE_PATH = 'locations/'
 RESERVATIONS_RESOURCE_PATH = 'reservations/'
 TOPICS_RESOURCE_PATH = 'topics/'
 SUBSCRIPTIONS_RESOURCE_PATH = 'subscriptions/'
+PUBSUBLITE_API_NAME = 'pubsublite'
+PUBSUBLITE_API_VERSION = 'v1'
 
 
 class UnexpectedResourceField(exceptions.Error):
@@ -62,27 +64,12 @@ class InvalidSeekTarget(exceptions.Error):
 
 def PubsubLiteMessages():
   """Returns the Pub/Sub Lite v1 messages module."""
-  return apis.GetMessagesModule('pubsublite', 'v1')
+  return apis.GetMessagesModule(PUBSUBLITE_API_NAME, PUBSUBLITE_API_VERSION)
 
 
 def DurationToSeconds(duration):
   """Convert Duration object to total seconds for backend compatibility."""
   return six.text_type(int(duration.total_seconds)) + 's'
-
-
-def StripPathFromUrl(url):
-  """Returns the url stripped of the path.
-
-  (e.g.
-
-  Args:
-    url: A str of the form `https://base.url.com/v1/foobar/path`.
-
-  Returns:
-    The url with the path removed. Example: `https://base.url.com/`.
-  """
-  parsed = urlparse(url)
-  return parsed.scheme + '://' + parsed.netloc + '/'
 
 
 def DeriveRegionFromLocation(location):
@@ -200,12 +187,13 @@ def ParseResource(request):
   return request
 
 
-def OverrideEndpointWithRegion(request, url):
+def OverrideEndpointWithRegion(request):
   """Sets the pubsublite endpoint override to include the region."""
   resource, _ = GetResourceInfo(request)
   region = DeriveRegionFromLocation(DeriveLocationFromResource(resource))
 
-  endpoint = StripPathFromUrl(url)
+  endpoint = apis.GetEffectiveApiEndpoint(PUBSUBLITE_API_NAME,
+                                          PUBSUBLITE_API_VERSION)
 
   # Remove any region from the endpoint in case it was previously set.
   # Specifically this effects scenario tests where multiple tests are run in a
@@ -242,11 +230,11 @@ def OverrideProjectIdToProjectNumber(request):
 def UpdateAdminRequest(resource_ref, args, request):
   """Returns an updated `request` with values for a valid Admin request."""
   # Unused resource reference.
-  del args
+  del resource_ref, args
 
   request = ParseResource(request)
   request = OverrideProjectIdToProjectNumber(request)
-  OverrideEndpointWithRegion(request, resource_ref.SelfLink())
+  OverrideEndpointWithRegion(request)
 
   return request
 
@@ -254,13 +242,13 @@ def UpdateAdminRequest(resource_ref, args, request):
 def UpdateCommitCursorRequest(resource_ref, args, request):
   """Updates a CommitCursorRequest by adding 1 to the provided offset."""
   # Unused resource reference.
-  del args
+  del resource_ref, args
 
   request = ParseResource(request)
   # Add 1 to the offset so that the message corresponding to the provided offset
   # is included in the list of messages that are acknowledged.
   request.commitCursorRequest.cursor.offset += 1
-  OverrideEndpointWithRegion(request, resource_ref.SelfLink())
+  OverrideEndpointWithRegion(request)
 
   return request
 

@@ -24,10 +24,11 @@ accesscontextmanager:
     home_directory: access_context_manager.policies
     krm_group: accesscontextmanager
     krm_kind: AccessContextManagerAccessPolicy
-    resource_spec_path: accesscontextmanager.resources:policy
     resource_attribute_renames:
       access-policy: policy
-    support_bulk_export: true
+    resource_spec_path: accesscontextmanager.resources:policy
+    support_bulk_export: false
+    support_iam: false
     support_single_export: false
     supported_apis:
     - v1
@@ -39,10 +40,11 @@ accesscontextmanager:
     home_directory: access_context_manager.levels
     krm_group: accesscontextmanager
     krm_kind: AccessContextManagerAccessLevel
-    resource_spec_path: accesscontextmanager.resources:level
     resource_attribute_renames:
       access-policy: policy
-    support_bulk_export: true
+    resource_spec_path: accesscontextmanager.resources:level
+    support_bulk_export: false
+    support_iam: false
     support_single_export: false
     supported_apis:
     - v1
@@ -54,10 +56,11 @@ accesscontextmanager:
     home_directory: access_context_manager.perimeters
     krm_group: accesscontextmanager
     krm_kind: AccessContextManagerServicePerimeter
-    resource_spec_path: accesscontextmanager.resources:perimeter
     resource_attribute_renames:
       access-policy: policy
-    support_bulk_export: true
+    resource_spec_path: accesscontextmanager.resources:perimeter
+    support_bulk_export: false
+    support_iam: false
     support_single_export: false
     supported_apis:
     - v1
@@ -275,6 +278,7 @@ aiplatform:
     - v1beta1
   projects.locations.indexEndpoints.operations:
     supported_apis:
+    - v1
     - v1alpha1
     - v1beta1
   projects.locations.indexes:
@@ -848,6 +852,9 @@ assuredworkloads:
     - v1
     - v1beta1
 baremetalsolution:
+  operations:
+    supported_apis:
+    - v1
   projects:
     supported_apis:
     - v2
@@ -860,7 +867,7 @@ baremetalsolution:
   projects.locations.networks:
     supported_apis:
     - v2
-  projects.locations.operations:
+  projects.locations.nfsShares:
     supported_apis:
     - v2
   projects.locations.snapshotSchedulePolicies:
@@ -875,11 +882,45 @@ baremetalsolution:
   projects.locations.volumes.snapshots:
     supported_apis:
     - v2
+batch:
+  projects:
+    supported_apis:
+    - v1alpha1
+  projects.locations:
+    supported_apis:
+    - v1alpha1
+  projects.locations.jobs:
+    supported_apis:
+    - v1alpha1
+  projects.locations.jobs.taskGroups:
+    supported_apis:
+    - v1alpha1
+  projects.locations.jobs.taskGroups.tasks:
+    supported_apis:
+    - v1alpha1
+  projects.locations.operations:
+    supported_apis:
+    - v1alpha1
 beyondcorp:
   projects:
     supported_apis:
     - v1alpha
   projects.locations:
+    supported_apis:
+    - v1alpha
+  projects.locations.appConnections:
+    supported_apis:
+    - v1alpha
+  projects.locations.appConnectors:
+    supported_apis:
+    - v1alpha
+  projects.locations.appGateways:
+    supported_apis:
+    - v1alpha
+  projects.locations.clientConnectorServices:
+    supported_apis:
+    - v1alpha
+  projects.locations.clientGateways:
     supported_apis:
     - v1alpha
   projects.locations.connections:
@@ -1028,6 +1069,12 @@ binaryauthorization:
   projects.continuousValidationConfig:
     supported_apis:
     - v1alpha2
+  projects.platforms:
+    supported_apis:
+    - v1
+  projects.platforms.policies:
+    supported_apis:
+    - v1
   projects.policy:
     supported_apis:
     - v1
@@ -1107,6 +1154,7 @@ cloudbuild:
     - v1alpha1
     - v1alpha2
     - v1beta1
+    - v2
   projects.builds:
     supported_apis:
     - v1
@@ -1119,6 +1167,7 @@ cloudbuild:
     - v1alpha1
     - v1alpha2
     - v1beta1
+    - v2
   projects.locations.bitbucketServerConfigs:
     supported_apis:
     - v1
@@ -1134,6 +1183,19 @@ cloudbuild:
     - v1alpha1
     - v1alpha2
     - v1beta1
+    - v2
+  projects.locations.pipelineRuns:
+    supported_apis:
+    - v2
+  projects.locations.results:
+    supported_apis:
+    - v2
+  projects.locations.results.records:
+    supported_apis:
+    - v2
+  projects.locations.taskRuns:
+    supported_apis:
+    - v2
   projects.locations.triggers:
     supported_apis:
     - v1
@@ -1149,7 +1211,8 @@ cloudbuild:
     krm_group: cloudbuild
     krm_kind: CloudBuildTrigger
     resource_spec_path: cloudbuild.resources:trigger
-    support_bulk_export: true
+    support_bulk_export: false
+    support_iam: false
     support_single_export: false
     supported_apis:
     - v1
@@ -1319,6 +1382,9 @@ cloudkms:
   projects.locations:
     supported_apis:
     - v1
+  projects.locations.ekmConnections:
+    supported_apis:
+    - v1
   projects.locations.keyRings:
     asset_inventory_type: cloudkms.googleapis.com/KeyRing
     enable_single_resource_autogen: true
@@ -1334,12 +1400,12 @@ cloudkms:
   projects.locations.keyRings.cryptoKeys:
     asset_inventory_type: cloudkms.googleapis.com/CryptoKey
     enable_single_resource_autogen: true
-    resource_spec_path: kms.resources:key
     home_directory: kms.keys
     krm_group: kms
     krm_kind: KMSCryptoKey
     resource_attribute_renames:
       key-ring: keyring
+    resource_spec_path: kms.resources:key
     support_bulk_export: true
     support_iam: true
     support_single_export: false
@@ -1736,7 +1802,7 @@ compute:
     krm_kind: ComputeInstance
     support_bulk_export: true
     support_iam: true
-    support_single_export: false
+    support_single_export: true
     supported_apis:
     - alpha
     - beta
@@ -1862,9 +1928,9 @@ compute:
     - beta
     - v1
   projects:
-    asset_inventory_type: compute.googleapis.com/SharedVPCServiceProject
+    asset_inventory_type: compute.googleapis.com/SharedVPCHostProject
     krm_group: compute
-    krm_kind: ComputeSharedVPCServiceProject
+    krm_kind: ComputeSharedVPCHostProject
     support_bulk_export: false
     support_iam: false
     support_single_export: false
@@ -1945,6 +2011,9 @@ compute:
   regionNetworkFirewallPolicies:
     supported_apis:
     - alpha
+  regionNetworks:
+    supported_apis:
+    - alpha
   regionNotificationEndpoints:
     supported_apis:
     - alpha
@@ -1963,6 +2032,9 @@ compute:
     - alpha
     - beta
     - v1
+  regionSslPolicies:
+    supported_apis:
+    - alpha
   regionTargetHttpProxies:
     supported_apis:
     - alpha
@@ -2341,9 +2413,6 @@ container:
     - v1alpha1
     - v1beta1
 containeranalysis:
-  operations:
-    supported_apis:
-    - v1
   projects:
     supported_apis:
     - v1
@@ -2439,17 +2508,20 @@ dataflow:
     supported_apis:
     - v1b3
   projects.jobs:
-    asset_inventory_type: dataflow.googleapis.com/Job
+    asset_inventory_type: dataflow.googleapis.com/FlexTemplateJob
     enable_single_resource_autogen: true
     home_directory: dataflow.jobs
     krm_group: dataflow
-    krm_kind: DataflowJob
+    krm_kind: DataflowFlexTemplateJob
     support_bulk_export: false
     support_iam: false
     support_single_export: false
     supported_apis:
     - v1b3
   projects.locations:
+    supported_apis:
+    - v1b3
+  projects.locations.deployments:
     supported_apis:
     - v1b3
   projects.locations.jobs:
@@ -2511,6 +2583,9 @@ datapipelines:
   projects.locations.pipelines:
     supported_apis:
     - v1
+  projects.locations.pipelines.jobs:
+    supported_apis:
+    - v1
 dataplex:
   projects:
     supported_apis:
@@ -2525,6 +2600,9 @@ dataplex:
     supported_apis:
     - v1
   projects.locations.lakes.content:
+    supported_apis:
+    - v1
+  projects.locations.lakes.contentitems:
     supported_apis:
     - v1
   projects.locations.lakes.environments:
@@ -2613,27 +2691,35 @@ datastore:
 datastream:
   projects:
     supported_apis:
+    - v1
     - v1alpha1
   projects.locations:
     supported_apis:
+    - v1
     - v1alpha1
   projects.locations.connectionProfiles:
     supported_apis:
+    - v1
     - v1alpha1
   projects.locations.operations:
     supported_apis:
+    - v1
     - v1alpha1
   projects.locations.privateConnections:
     supported_apis:
+    - v1
     - v1alpha1
   projects.locations.privateConnections.routes:
     supported_apis:
+    - v1
     - v1alpha1
   projects.locations.streams:
     supported_apis:
+    - v1
     - v1alpha1
   projects.locations.streams.objects:
     supported_apis:
+    - v1
     - v1alpha1
 deploymentmanager:
   compositeTypes:
@@ -3479,14 +3565,14 @@ iam:
     home_directory: iam.service_accounts.keys
     krm_group: iam
     krm_kind: IAMServiceAccountKey
+    resource_attribute_renames:
+      service-account: iam-account
     resource_spec_path: iam.resources:iam_key
     support_bulk_export: false
     support_iam: false
     support_single_export: false
     supported_apis:
     - v1
-    resource_attribute_renames:
-      service-account: iam-account
   roles:
     asset_inventory_type: iam.googleapis.com/CustomRole
     # Complex resource with potential folder,org,project parent.
@@ -3800,14 +3886,14 @@ memcache:
     home_directory: memcache.instances
     krm_group: memcache
     krm_kind: MemcacheInstance
+    resource_attribute_renames:
+      location: region
     support_bulk_export: true
     support_iam: false
     support_single_export: true
     supported_apis:
     - v1
     - v1beta2
-    resource_attribute_renames:
-      location: region
   projects.locations.operations:
     supported_apis:
     - v1
@@ -3885,10 +3971,10 @@ monitoring:
   projects.alertPolicies:
     asset_inventory_type: monitoring.googleapis.com/AlertPolicy
     enable_single_resource_autogen: true
-    resource_spec_path: monitoring.resources:policy
     home_directory: monitoring.policies
     krm_group: monitoring
     krm_kind: MonitoringAlertPolicy
+    resource_spec_path: monitoring.resources:policy
     support_bulk_export: true
     support_iam: false
     support_single_export: false
@@ -4074,7 +4160,14 @@ networkservices:
   projects.locations.serviceBindings:
     supported_apis:
     - v1alpha1
+    - v1beta1
+  projects.locations.serviceLbPolicies:
+    supported_apis:
+    - v1alpha1
   projects.locations.tcpRoutes:
+    supported_apis:
+    - v1alpha1
+  projects.locations.tlsRoutes:
     supported_apis:
     - v1alpha1
 notebooks:
@@ -4136,6 +4229,9 @@ orgpolicy:
     supported_apis:
     - v2
   organizations:
+    supported_apis:
+    - v2
+  organizations.customConstraints:
     supported_apis:
     - v2
   organizations.policies:
@@ -4391,6 +4487,9 @@ recaptchaenterprise:
   projects:
     supported_apis:
     - v1
+  projects.firewallpolicies:
+    supported_apis:
+    - v1
   projects.keys:
     supported_apis:
     - v1
@@ -4532,6 +4631,8 @@ redis:
     home_directory: redis.instances
     krm_group: redis
     krm_kind: RedisInstance
+    resource_attribute_renames:
+      location: region
     support_bulk_export: true
     support_iam: false
     support_single_export: true
@@ -4539,8 +4640,6 @@ redis:
     - v1
     - v1alpha1
     - v1beta1
-    resource_attribute_renames:
-      location: region
   projects.locations.operations:
     supported_apis:
     - v1
@@ -4595,8 +4694,12 @@ run:
     supported_apis:
     - v1
     - v1alpha1
+  namespaces.executions:
+    supported_apis:
+    - v1
   namespaces.jobs:
     supported_apis:
+    - v1
     - v1alpha1
   namespaces.revisions:
     supported_apis:
@@ -4605,6 +4708,9 @@ run:
     supported_apis:
     - v1
   namespaces.services:
+    supported_apis:
+    - v1
+  namespaces.tasks:
     supported_apis:
     - v1
   projects:
@@ -4637,7 +4743,7 @@ run:
   projects.locations.services:
     supported_apis:
     - v1
-run_apps:
+runapps:
   projects:
     supported_apis:
     - v1alpha1
@@ -4731,6 +4837,12 @@ securitycenter:
     supported_apis:
     - v1
   organizations.assets:
+    supported_apis:
+    - v1
+  organizations.bigQueryExports:
+    supported_apis:
+    - v1
+  organizations.findings:
     supported_apis:
     - v1
   organizations.muteConfigs:
@@ -4897,9 +5009,15 @@ spanner:
   projects:
     supported_apis:
     - v1
+    - v1alpha
   projects.instanceConfigs:
     supported_apis:
     - v1
+    - v1alpha
+  projects.instanceConfigs.operations:
+    supported_apis:
+    - v1
+    - v1alpha
   projects.instances:
     asset_inventory_type: spanner.googleapis.com/Instance
     enable_single_resource_autogen: true
@@ -4911,12 +5029,15 @@ spanner:
     support_single_export: true
     supported_apis:
     - v1
+    - v1alpha
   projects.instances.backups:
     supported_apis:
     - v1
+    - v1alpha
   projects.instances.backups.operations:
     supported_apis:
     - v1
+    - v1alpha
   projects.instances.databases:
     asset_inventory_type: spanner.googleapis.com/Database
     enable_single_resource_autogen: true
@@ -4928,15 +5049,19 @@ spanner:
     support_single_export: true
     supported_apis:
     - v1
+    - v1alpha
   projects.instances.databases.operations:
     supported_apis:
     - v1
+    - v1alpha
   projects.instances.databases.sessions:
     supported_apis:
     - v1
+    - v1alpha
   projects.instances.operations:
     supported_apis:
     - v1
+    - v1alpha
 speech:
   operations:
     supported_apis:
@@ -5004,13 +5129,13 @@ sqladmin:
     home_directory: sql.ssl_certs
     krm_group: sql
     krm_kind: SQLSSLCert
+    resource_attribute_renames:
+      sha1-fingerprint: policy
     support_bulk_export: false
     support_iam: false
     support_single_export: false
     supported_apis:
     - v1beta4
-    resource_attribute_renames:
-      sha1-fingerprint: policy
 storage:
   bucketAccessControls:
     asset_inventory_type: storage.googleapis.com/BucketAccessControl
@@ -5027,10 +5152,10 @@ storage:
     asset_inventory_type: storage.googleapis.com/Bucket
     # Storage lacks standard resource parsing.
     enable_single_resource_autogen: true
-    resource_spec_path: storage.resources.resources:bucket
     home_directory: storage.buckets
     krm_group: storage
     krm_kind: StorageBucket
+    resource_spec_path: storage.resources.resources:bucket
     support_bulk_export: true
     support_iam: true
     support_single_export: false
@@ -5139,29 +5264,35 @@ tpu:
     supported_apis:
     - v1
     - v1alpha1
+    - v2
     - v2alpha1
   projects.locations:
     supported_apis:
     - v1
     - v1alpha1
+    - v2
     - v2alpha1
   projects.locations.acceleratorTypes:
     supported_apis:
     - v1
     - v1alpha1
+    - v2
     - v2alpha1
   projects.locations.nodes:
     supported_apis:
     - v1
     - v1alpha1
+    - v2
     - v2alpha1
   projects.locations.operations:
     supported_apis:
     - v1
     - v1alpha1
+    - v2
     - v2alpha1
   projects.locations.runtimeVersions:
     supported_apis:
+    - v2
     - v2alpha1
   projects.locations.tensorflowVersions:
     supported_apis:

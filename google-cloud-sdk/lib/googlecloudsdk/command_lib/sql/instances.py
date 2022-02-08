@@ -278,6 +278,12 @@ class _BaseInstances(object):
       settings.availabilityType = _ParseAvailabilityType(
           sql_messages, args.availability_type)
 
+    if args.IsSpecified('network'):
+      if not settings.ipConfiguration:
+        settings.ipConfiguration = sql_messages.IpConfiguration()
+      settings.ipConfiguration.privateNetwork = reducers.PrivateNetworkUrl(
+          args.network)
+
     # BETA args.
     if _IsBetaOrNewer(release_track):
       if args.IsSpecified('storage_auto_increase_limit'):
@@ -294,12 +300,6 @@ class _BaseInstances(object):
               '--storage-auto-increase', 'To set the storage capacity limit '
               'using [--storage-auto-increase-limit], '
               '[--storage-auto-increase] must be enabled.')
-
-      if args.IsSpecified('network'):
-        if not settings.ipConfiguration:
-          settings.ipConfiguration = sql_messages.IpConfiguration()
-        settings.ipConfiguration.privateNetwork = reducers.PrivateNetworkUrl(
-            args.network)
 
     return settings
 

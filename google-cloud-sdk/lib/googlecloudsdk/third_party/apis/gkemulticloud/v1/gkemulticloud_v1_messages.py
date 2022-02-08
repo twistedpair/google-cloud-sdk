@@ -127,7 +127,9 @@ class GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsPatchRequest(_message
       Names](https://cloud.google.com/apis/design/resource_names)
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field can
-      only include these fields from AwsNodePool: * `annotations`.
+      only include these fields from AwsNodePool: *. `annotations`. *
+      `version`. * `autoscaling.min_node_count`. *
+      `autoscaling.max_node_count`.
     validateOnly: If set, only validate the request, but don't actually update
       the node pool.
   """
@@ -497,7 +499,9 @@ class GkemulticloudProjectsLocationsAzureClustersAzureNodePoolsPatchRequest(_mes
       Names](https://cloud.google.com/apis/design/resource_names)
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field can
-      only include these fields from AzureNodePool: * `description`.
+      only include these fields from AzureNodePool: *. `annotations`. *
+      `version`. * `autoscaling.min_node_count`. *
+      `autoscaling.max_node_count`.
     validateOnly: If set, only validate the request, but don't actually update
       the node pool.
   """
@@ -654,7 +658,7 @@ class GkemulticloudProjectsLocationsAzureClustersPatchRequest(_messages.Message)
       supplied in this field. The elements of the repeated paths field can
       only include these fields from AzureCluster: * `description`. *
       `annotations`. * `azureClient`. * `control_plane.version`. *
-      `authorization.admin_users`.
+      `control_plane.vm_size`. * `authorization.admin_users`.
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """

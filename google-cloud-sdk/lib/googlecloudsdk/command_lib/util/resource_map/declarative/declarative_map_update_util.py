@@ -105,6 +105,7 @@ def generate_cc_update_map():
   config_connector_data = kcc_client.KccClient().ListResources()
   apitools_resource_map = build_collection_map()
   update_map = {}
+  resources_already_seen = set()
   unmatched_resources = set()
 
   for resource_spec in config_connector_data:
@@ -121,6 +122,11 @@ def generate_cc_update_map():
       if (krm_group, krm_kind) not in _ALLOWED_MISMATCHES:
         unmatched_resources.add((krm_group, krm_kind))
       continue
+
+    if (apitools_api_name, apitools_collection_name) in resources_already_seen:
+      if not resource_spec['ResourceNameFormat']:
+        continue
+    resources_already_seen.add((apitools_api_name, apitools_collection_name))
 
     asset_inventory_api_name = apitools_api_name
     asset_inventory_resource_name = krm_kind
@@ -149,6 +155,7 @@ def generate_cc_update_map():
         'krm_group'] = krm_group
     update_map[apitools_api_name][apitools_collection_name][
         'asset_inventory_type'] = asset_inventory_type
+    # If the resource does not have ResourceNameFormat then these will be False.
     update_map[apitools_api_name][apitools_collection_name][
         'support_bulk_export'] = bool(bulk_support)
     update_map[apitools_api_name][apitools_collection_name][

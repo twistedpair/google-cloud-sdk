@@ -122,14 +122,14 @@ class ReleaseTrack(object):
   BETA = _TRACK(
       'BETA', 'beta',
       '{0}(BETA){0} '.format(MARKDOWN_BOLD),
-      'This command is currently in BETA and may change without notice.')
+      'This command is currently in beta and might change without notice.')
   ALPHA = _TRACK(
       'ALPHA', 'alpha',
       '{0}(ALPHA){0} '.format(MARKDOWN_BOLD),
-      'This command is currently in ALPHA and may change without notice. '
-      'If this command fails with API permission errors despite specifying '
-      'the right project, you may be trying to access an API with '
-      'an invitation-only early access allowlist.')
+      'This command is currently in alpha and might change without notice. If '
+      'this command fails with API permission errors despite specifying the '
+      'correct project, you might be trying to access an API with an '
+      'invitation-only early access allowlist.')
   _ALL = [GA, BETA, ALPHA]
 
   @staticmethod

@@ -1477,14 +1477,14 @@ class ServerlessOperations(object):
 
   def RunJob(self,
              job_ref,
-             wait_for_completion=False,
+             wait=False,
              tracker=None,
              asyn=False):
     """Run a Cloud Run Job, creating an Execution.
 
     Args:
       job_ref: Resource, the job to run
-      wait_for_completion: boolean, True to wait until the job is complete
+      wait: boolean, True to wait until the job is complete
       tracker: StagedProgressTracker, to report on the progress of running
       asyn: bool, if True, return without waiting for anything.
 
@@ -1514,8 +1514,7 @@ class ServerlessOperations(object):
         collection='run.namespaces.executions')
     getter = functools.partial(self.GetExecution, execution_ref)
     terminal_condition = (
-        execution.COMPLETED_CONDITION
-        if wait_for_completion else execution.STARTED_CONDITION)
+        execution.COMPLETED_CONDITION if wait else execution.STARTED_CONDITION)
     ex = self.GetExecution(execution_ref)
     for msg in run_condition.GetNonTerminalMessages(
         ex.conditions, ignore_retry=True):

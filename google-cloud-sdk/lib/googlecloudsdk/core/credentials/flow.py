@@ -491,12 +491,11 @@ class NoBrowserFlow(InstalledAppFlow):
   (exchanging for the refresh/access tokens).
   """
 
-  # TODO(b/204090784): Updates the required gcloud version.
-  _REQUIRED_GCLOUD_VERSION = 'xxx.x.x'
+  _REQUIRED_GCLOUD_VERSION = '372.0.0'
   _HELPER_MSG = ('You are authorizing {target} without access to a web '
                  'browser. Please run the following command on a machine with '
                  'a web browser and copy its output back here. Make sure the '
-                 'installed gcloud is newer than {version}.\n\n'
+                 'installed gcloud version is {version} or newer.\n\n'
                  '{command} --remote-bootstrap="{partial_url}"')
   _PROMPT_MSG = 'Enter the output of the above command: '
 

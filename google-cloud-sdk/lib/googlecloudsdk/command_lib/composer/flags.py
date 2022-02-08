@@ -742,9 +742,6 @@ CONNECTION_SUBNETWORK_FLAG = base.Argument(
     connected. Can be the same subnetwork as the one to which the environment is
     connected.
 
-    If specified, the environment will use a Private Service Connect-based
-    configuration, instead of using VPC peerings.
-
     Can be specified for Composer 2.X or greater. Cannot be specified
     unless '--enable-private-environment' is also specified.
     """)
@@ -1156,9 +1153,9 @@ def AddPrivateIpEnvironmentFlags(update_type_group, release_track):
   WEB_SERVER_IPV4_CIDR_FLAG.AddToParser(group)
   CLOUD_SQL_IPV4_CIDR_FLAG.AddToParser(group)
   COMPOSER_NETWORK_IPV4_CIDR_FLAG.AddToParser(group)
+  CONNECTION_SUBNETWORK_FLAG.AddToParser(group)
   if release_track != base.ReleaseTrack.GA:
     ENABLE_PRIVATELY_USED_PUBLIC_IPS_FLAG.AddToParser(group)
-    CONNECTION_SUBNETWORK_FLAG.AddToParser(group)
 
 
 def AddPypiUpdateFlagsToGroup(update_type_group):

@@ -31,6 +31,7 @@ from six.moves.urllib import parse
 _VALID_LOCATIONS = frozenset([
     'asia-southeast1',
     'europe-west1',
+    'southamerica-east1',
     'us-east4',
     'us-west1',
 ])

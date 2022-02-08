@@ -477,11 +477,6 @@
           "readOnly": true,
           "type": "string"
         },
-        "gcfUri": {
-          "description": "Output only. URIs of the Service deployed",
-          "readOnly": true,
-          "type": "string"
-        },
         "serviceAccountEmail": {
           "description": "The email of the service's service account. If empty, defaults to `{project_number}-compute@developer.gserviceaccount.com`.",
           "type": "string"
@@ -673,6 +668,10 @@
       "properties": {
         "name": {
           "description": "The name of the runtime, e.g., 'go113', 'nodejs12', etc.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The user facing name, eg 'Go 1.13', 'Node.js 12', etc.",
           "type": "string"
         },
         "stage": {

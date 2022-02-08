@@ -45,7 +45,8 @@ def LocationAttributeConfig():
       name='location',
       help_text='The Cloud location for the {resource}.',
       fallthroughs=[
-          deps.Fallthrough(lambda: 'global', 'location is always global')
+          deps.Fallthrough(lambda: 'global',
+                           'default value of location is [global]')
       ])
 
 
@@ -109,7 +110,25 @@ def _GetCertificateResourcePresentationSpec(flag,
                                             verb,
                                             required=True,
                                             plural=False,
-                                            group=None):
+                                            group=None,
+                                            with_location=True):
+  """Returns ResourcePresentationSpec for certificate resource.
+
+  Args:
+    flag: str, the flag name.
+    noun: str, the resource; default: 'The certificate map'.
+    verb: str, the verb to describe the resource, such as 'to update'.
+    required: bool, if False, means that map ID is optional.
+    plural: bool.
+    group: args group.
+    with_location: bool, if False, means that location flag is hidden.
+
+  Returns:
+    presentation_specs.ResourcePresentationSpec.
+  """
+  flag_name_overrides = {}
+  if not with_location:
+    flag_name_overrides['location'] = ''
   return presentation_specs.ResourcePresentationSpec(
       flag,
       GetCertificateResourceSpec(),
@@ -117,9 +136,7 @@ def _GetCertificateResourcePresentationSpec(flag,
       required=required,
       plural=plural,
       group=group,
-      flag_name_overrides={
-          'location': ''  # location is always global so don't create a flag.
-      })
+      flag_name_overrides=flag_name_overrides)
 
 
 def _GetCertificateMapEntryResourcePresentationSpec(flag,
@@ -134,10 +151,7 @@ def _GetCertificateMapEntryResourcePresentationSpec(flag,
       '{} {}.'.format(noun, verb),
       required=required,
       plural=plural,
-      group=group,
-      flag_name_overrides={
-          'location': ''  # location is always global so don't create a flag.
-      })
+      group=group)
 
 
 def AddCertificateMapResourceArg(parser,
@@ -145,7 +159,8 @@ def AddCertificateMapResourceArg(parser,
                                  name='map',
                                  noun=None,
                                  positional=True,
-                                 required=True):
+                                 required=True,
+                                 with_location=True):
   """Add a resource argument for a Certificate Manager certificate map.
 
   NOTE: Must be used only if it's the only resource arg in the command.
@@ -158,16 +173,18 @@ def AddCertificateMapResourceArg(parser,
     positional: bool, if True, means that the map ID is a positional arg rather
       than a flag.
     required: bool, if False, means that map ID is optional.
+    with_location: bool, if False, means that location flag is hidden.
   """
+  flag_name_overrides = {}
+  if not with_location:
+    flag_name_overrides['location'] = ''
   noun = noun or 'The certificate map'
   concept_parsers.ConceptParser.ForResource(
       name if positional else '--' + name,
       GetCertificateMapResourceSpec(),
       '{} {}.'.format(noun, verb),
       required=required,
-      flag_name_overrides={
-          'location': ''  # location is always global so don't create a flag.
-      }).AddToParser(parser)
+      flag_name_overrides=flag_name_overrides).AddToParser(parser)
 
 
 def GetClearCertificateMapArgumentForOtherResource(resource_type,
@@ -232,7 +249,8 @@ def AddCertificateMapEntryAndCertificatesResourceArgs(parser,
           cert_verb,
           required=False,
           plural=True,
-          group=cert_group),
+          group=cert_group,
+          with_location=False),
   ]).AddToParser(parser)
 
 
@@ -268,7 +286,4 @@ def AddLocationResourceArg(parser, verb=''):
       '--location',
       GetLocationResourceSpec(),
       'The Cloud location {}.'.format(verb),
-      required=True,
-      flag_name_overrides={
-          'location': ''  # location is always global so don't create a flag.
-      }).AddToParser(parser)
+      required=True).AddToParser(parser)

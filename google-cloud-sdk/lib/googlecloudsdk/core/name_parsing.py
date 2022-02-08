@@ -43,7 +43,9 @@ def pluralize(collection_name):
     return re.sub('$', 'es', collection_name)
   elif re.search('[^aeioudgkprt]h$', collection_name):
     return re.sub('$', 'es', collection_name)
-  elif re.search('[aeioucxr]y$', collection_name):
+  elif re.search('[aeiou]y$', collection_name):
+    return re.sub('y$', 'ys', collection_name)
+  elif re.search('[crx]y$', collection_name):
     return re.sub('y$', 'ies', collection_name)
   else:
     return collection_name + 's'

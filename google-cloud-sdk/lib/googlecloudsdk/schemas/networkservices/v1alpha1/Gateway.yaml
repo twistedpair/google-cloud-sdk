@@ -5,8 +5,8 @@ description: A gcloud export/import command YAML validation schema.
 type: object
 required:
 - name
-- scope
 - ports
+- scope
 additionalProperties: false
 properties:
   COMMENT:
@@ -29,6 +29,11 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
+  authorizationPolicy:
+    description: |-
+      A fully-qualified AuthorizationPolicy URL reference. Specifies how traffic
+      is authorized. If empty, authorization checks are disabled.
+    type: string
   description:
     description: |-
       A free-text description of the resource. Max length 1024 characters.
@@ -41,31 +46,37 @@ properties:
       Name of the Gateway resource. It matches pattern
       `projects/*/locations/global/gateways/`.
     type: string
-  scope:
-    description: |-
-      Scope determines how configuration across multiple Gateway instances are
-      merged. The configuration for multiple Gateway instances with the same
-      scope will be merged as presented as a single coniguration to the
-      proxy/load balancer.
-    type: string
-  type:
-    description: The type of the customer managed gateway.
-    type: string
-    enum:
-    - OPEN_MESH
-    - TYPE_UNSPECIFIED
   ports:
     description: |-
-      One or more ports that the Gateway must receive traffic on.
-      The proxy binds to the ports specified. Gateway listen on 0.0.0.0 on the ports specified
+      One or more ports that the Gateway must receive traffic on. The proxy
+      binds to the ports specified. Gateway listen on 0.0.0.0 on the ports
+      specified below.
     type: array
     items:
       type: integer
-  server_tls_policy:
+  scope:
+    description: |-
+      Immutable. Scope determines how configuration across multiple Gateway
+      instances are merged. The configuration for multiple Gateway instances
+      with the same scope will be merged as presented as a single
+      coniguration to the proxy/load balancer. Max length 64 characters.
+      Scope should start with a letter and can only have letters, numbers,
+      hyphens.
+    type: string
+  serverTlsPolicy:
     description: |-
       A fully-qualified ServerTLSPolicy URL reference. Specifies how TLS
       traffic is terminated. If empty, TLS termination is disabled.
-  authorization_policy:
+    type: string
+  swgConfig:
     description: |-
-      A fully-qualified AuthorizationPolicy URL reference. Specifies how
-      traffic is authorized. If empty, authorization checks are disabled.
+      This should be set when configuring a gateway of type
+      'Secure_Web_Gateway'
+    $ref: GatewaySecureWebGatewayConfig.yaml
+  type:
+    description: Immutable. The type of the customer managed gateway.
+    type: string
+    enum:
+    - OPEN_MESH
+    - SECURE_WEB_GATEWAY
+    - TYPE_UNSPECIFIED

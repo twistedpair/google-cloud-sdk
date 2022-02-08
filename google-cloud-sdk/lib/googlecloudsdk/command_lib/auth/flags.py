@@ -17,6 +17,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import actions
+
 
 def AddAccountArg(parser):
   parser.add_argument(
@@ -125,7 +127,24 @@ def AddRemoteBootstrapFlag(parser):
 
 
 def AddRemoteLoginArgGroup(parser, for_adc=False):
-  group = parser.add_mutually_exclusive_group(hidden=True)
+  group = parser.add_mutually_exclusive_group()
   auth_target = 'client libraries' if for_adc else 'gcloud CLI'
   AddNoBrowserFlag(group, auth_target=auth_target)
   AddRemoteBootstrapFlag(group)
+
+
+def AddNoLaunchBrowserFlag(parser):
+  parser.add_argument(
+      '--launch-browser',
+      default=True,
+      dest='launch_browser',
+      help='Launch a browser for authorization. If not enabled or if it '
+      'is not possible to launch a browser, prints a URL to standard output '
+      'to be copied.',
+      action=actions.DeprecationAction(
+          '--launch-browser',
+          warn='The --[no-]launch-browser flags are deprecated and will be '
+          'removed in future updates. '
+          'Use --no-browser to replace --no-launch-browser.\n',
+          removed=False,
+          action='store_true'))

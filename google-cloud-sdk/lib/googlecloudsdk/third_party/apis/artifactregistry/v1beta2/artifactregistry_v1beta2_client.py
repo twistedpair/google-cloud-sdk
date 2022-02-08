@@ -41,13 +41,11 @@ class ArtifactregistryV1beta2(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_repositories_aptArtifacts = self.ProjectsLocationsRepositoriesAptArtifactsService(self)
-    self.projects_locations_repositories_aptartifacts = self.ProjectsLocationsRepositoriesAptartifactsService(self)
     self.projects_locations_repositories_files = self.ProjectsLocationsRepositoriesFilesService(self)
     self.projects_locations_repositories_packages_tags = self.ProjectsLocationsRepositoriesPackagesTagsService(self)
     self.projects_locations_repositories_packages_versions = self.ProjectsLocationsRepositoriesPackagesVersionsService(self)
     self.projects_locations_repositories_packages = self.ProjectsLocationsRepositoriesPackagesService(self)
     self.projects_locations_repositories_yumArtifacts = self.ProjectsLocationsRepositoriesYumArtifactsService(self)
-    self.projects_locations_repositories_yumartifacts = self.ProjectsLocationsRepositoriesYumartifactsService(self)
     self.projects_locations_repositories = self.ProjectsLocationsRepositoriesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -97,6 +95,14 @@ class ArtifactregistryV1beta2(base_api.BaseApiClient):
     def __init__(self, client):
       super(ArtifactregistryV1beta2.ProjectsLocationsRepositoriesAptArtifactsService, self).__init__(client)
       self._upload_configs = {
+          'Upload': base_api.ApiUploadInfo(
+              accept=['*/*'],
+              max_size=None,
+              resumable_multipart=None,
+              resumable_path=None,
+              simple_multipart=True,
+              simple_path='/upload/v1beta2/{+parent}/aptArtifacts:create',
+          ),
           }
 
     def Import(self, request, global_params=None):
@@ -126,29 +132,11 @@ class ArtifactregistryV1beta2(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationsRepositoriesAptartifactsService(base_api.BaseApiService):
-    """Service class for the projects_locations_repositories_aptartifacts resource."""
-
-    _NAME = 'projects_locations_repositories_aptartifacts'
-
-    def __init__(self, client):
-      super(ArtifactregistryV1beta2.ProjectsLocationsRepositoriesAptartifactsService, self).__init__(client)
-      self._upload_configs = {
-          'Upload': base_api.ApiUploadInfo(
-              accept=['*/*'],
-              max_size=None,
-              resumable_multipart=None,
-              resumable_path=None,
-              simple_multipart=True,
-              simple_path='/upload/v1beta2/{+parent}/aptArtifacts:create',
-          ),
-          }
-
     def Upload(self, request, global_params=None, upload=None):
       r"""Directly uploads an Apt artifact. The returned Operation will complete once the resources are uploaded. Package, Version, and File resources are created based on the imported artifact. Imported artifacts that conflict with existing resources are ignored.
 
       Args:
-        request: (ArtifactregistryProjectsLocationsRepositoriesAptartifactsUploadRequest) input message
+        request: (ArtifactregistryProjectsLocationsRepositoriesAptArtifactsUploadRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
         upload: (Upload, default: None) If present, upload
             this stream with the request.
@@ -164,13 +152,13 @@ class ArtifactregistryV1beta2(base_api.BaseApiClient):
     Upload.method_config = lambda: base_api.ApiMethodInfo(
         flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/aptArtifacts:create',
         http_method='POST',
-        method_id='artifactregistry.projects.locations.repositories.aptartifacts.upload',
+        method_id='artifactregistry.projects.locations.repositories.aptArtifacts.upload',
         ordered_params=['parent'],
         path_params=['parent'],
         query_params=[],
         relative_path='v1beta2/{+parent}/aptArtifacts:create',
         request_field='uploadAptArtifactRequest',
-        request_type_name='ArtifactregistryProjectsLocationsRepositoriesAptartifactsUploadRequest',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesAptArtifactsUploadRequest',
         response_type_name='UploadAptArtifactMediaResponse',
         supports_download=False,
     )
@@ -574,6 +562,14 @@ class ArtifactregistryV1beta2(base_api.BaseApiClient):
     def __init__(self, client):
       super(ArtifactregistryV1beta2.ProjectsLocationsRepositoriesYumArtifactsService, self).__init__(client)
       self._upload_configs = {
+          'Upload': base_api.ApiUploadInfo(
+              accept=['*/*'],
+              max_size=None,
+              resumable_multipart=None,
+              resumable_path=None,
+              simple_multipart=True,
+              simple_path='/upload/v1beta2/{+parent}/yumArtifacts:create',
+          ),
           }
 
     def Import(self, request, global_params=None):
@@ -603,29 +599,11 @@ class ArtifactregistryV1beta2(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationsRepositoriesYumartifactsService(base_api.BaseApiService):
-    """Service class for the projects_locations_repositories_yumartifacts resource."""
-
-    _NAME = 'projects_locations_repositories_yumartifacts'
-
-    def __init__(self, client):
-      super(ArtifactregistryV1beta2.ProjectsLocationsRepositoriesYumartifactsService, self).__init__(client)
-      self._upload_configs = {
-          'Upload': base_api.ApiUploadInfo(
-              accept=['*/*'],
-              max_size=None,
-              resumable_multipart=None,
-              resumable_path=None,
-              simple_multipart=True,
-              simple_path='/upload/v1beta2/{+parent}/yumArtifacts:create',
-          ),
-          }
-
     def Upload(self, request, global_params=None, upload=None):
       r"""Directly uploads a Yum artifact. The returned Operation will complete once the resources are uploaded. Package, Version, and File resources are created based on the imported artifact. Imported artifacts that conflict with existing resources are ignored.
 
       Args:
-        request: (ArtifactregistryProjectsLocationsRepositoriesYumartifactsUploadRequest) input message
+        request: (ArtifactregistryProjectsLocationsRepositoriesYumArtifactsUploadRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
         upload: (Upload, default: None) If present, upload
             this stream with the request.
@@ -641,13 +619,13 @@ class ArtifactregistryV1beta2(base_api.BaseApiClient):
     Upload.method_config = lambda: base_api.ApiMethodInfo(
         flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/yumArtifacts:create',
         http_method='POST',
-        method_id='artifactregistry.projects.locations.repositories.yumartifacts.upload',
+        method_id='artifactregistry.projects.locations.repositories.yumArtifacts.upload',
         ordered_params=['parent'],
         path_params=['parent'],
         query_params=[],
         relative_path='v1beta2/{+parent}/yumArtifacts:create',
         request_field='uploadYumArtifactRequest',
-        request_type_name='ArtifactregistryProjectsLocationsRepositoriesYumartifactsUploadRequest',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesYumArtifactsUploadRequest',
         response_type_name='UploadYumArtifactMediaResponse',
         supports_download=False,
     )

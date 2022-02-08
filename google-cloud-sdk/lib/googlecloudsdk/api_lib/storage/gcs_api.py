@@ -317,6 +317,47 @@ class GcsApi(cloud_api.CloudApi):
     metadata = self.client.buckets.Get(request)
     return gcs_metadata_util.get_bucket_resource_from_metadata(metadata)
 
+  def _handle_append_and_remove_bucket_updates(
+      self, bucket_resource, request_config, update_request_metadata):
+    """Handles bucket patch requests which append/remove to/from list fields.
+
+    Requires getting bucket metadata first, so that non-removed values can stay
+    in list fields.
+
+    Args:
+      bucket_resource (UnknownResource): Names the bucket to update.
+      request_config (GcsRequestConfig): Metadata to update the bucket with.
+      update_request_metadata (Bucket): Apitools message sent in update request.
+
+    Returns:
+      None, but updates list fields in update_request_metadata.
+    """
+    if not request_config.resource_args:
+      return
+
+    labels_to_append = request_config.resource_args.labels_to_append or {}
+    labels_to_remove = request_config.resource_args.labels_to_remove or []
+    if not (labels_to_append or labels_to_remove):
+      return
+
+    existing_resource = self.get_bucket(bucket_resource.storage_url.bucket_name)
+    existing_labels = getattr(
+        existing_resource.metadata.labels, 'additionalProperties', [])
+
+    new_labels = []
+
+    for label in existing_labels:
+      if label.key not in labels_to_remove:
+        new_labels.append(label)
+
+    for key, value in labels_to_append.items():
+      new_labels.append(
+          self.messages.Bucket.LabelsValue.AdditionalProperty(
+              key=key, value=value))
+
+    update_request_metadata.labels = self.messages.Bucket.LabelsValue(
+        additionalProperties=new_labels)
+
   @_catch_http_error_raise_gcs_api_error()
   def patch_bucket(self,
                    bucket_resource,
@@ -329,6 +370,9 @@ class GcsApi(cloud_api.CloudApi):
         name=bucket_resource.storage_url.bucket_name)
     gcs_metadata_util.update_bucket_metadata_from_request_config(
         metadata, request_config)
+
+    self._handle_append_and_remove_bucket_updates(
+        bucket_resource, request_config, metadata)
 
     # Blank metadata objects need to be explicitly emptied.
     apitools_include_fields = []

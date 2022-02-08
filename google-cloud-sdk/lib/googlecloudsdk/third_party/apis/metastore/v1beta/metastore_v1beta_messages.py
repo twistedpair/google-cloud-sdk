@@ -1440,6 +1440,23 @@ class MetastoreProjectsLocationsServicesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class MetastoreProjectsLocationsServicesRemoveIamPolicyRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesRemoveIamPolicyRequest object.
+
+  Fields:
+    removeIamPolicyRequest: A RemoveIamPolicyRequest resource to be passed as
+      the request body.
+    resource: Required. The relative resource name of the dataplane resource
+      to remove IAM policy, in the following form:projects/{project_id}/locati
+      ons/{location_id}/services/{service_id}/databases/{database_id} or proje
+      cts/{project_id}/locations/{location_id}/services/{service_id}/databases
+      /{database_id}/tables/{table_id}.
+  """
+
+  removeIamPolicyRequest = _messages.MessageField('RemoveIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class MetastoreProjectsLocationsServicesRestoreRequest(_messages.Message):
   r"""A MetastoreProjectsLocationsServicesRestoreRequest object.
 
@@ -1704,6 +1721,20 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class RemoveIamPolicyRequest(_messages.Message):
+  r"""Request message for DataprocMetastore.RemoveIamPolicy."""
+
+
+class RemoveIamPolicyResponse(_messages.Message):
+  r"""Response message for DataprocMetastore.RemoveIamPolicy.
+
+  Fields:
+    success: whether related policies are removed
+  """
+
+  success = _messages.BooleanField(1)
 
 
 class Restore(_messages.Message):

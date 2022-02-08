@@ -196,6 +196,8 @@ class ClustersClient(_AzureClientBase):
              cluster_ref,
              client_ref=None,
              cluster_version=None,
+             vm_size=None,
+             admin_users=None,
              validate_only=False):
     """Updates an Anthos cluster on Azure.
 
@@ -203,6 +205,8 @@ class ClustersClient(_AzureClientBase):
       cluster_ref: obj, Cluster object to be updated.
       client_ref: obj, Client to use in the cluster update.
       cluster_version: str, Cluster version to use in the cluster update.
+      vm_size: str, control plane VM size to use in the cluster update.
+      admin_users: list, Users that can act as a cluster administrator.
       validate_only: bool, Validate the update of the cluster.
 
     Returns:
@@ -224,6 +228,13 @@ class ClustersClient(_AzureClientBase):
     if cluster_version:
       cp.version = cluster_version
       update_mask.append('control_plane.version')
+    if vm_size:
+      cp.vmSize = vm_size
+      update_mask.append('control_plane.vm_size')
+
+    if admin_users:
+      c.authorization = self._CreateAuthorization(admin_users)
+      update_mask.append('authorization.admin_users')
 
     req.updateMask = ','.join(update_mask)
 

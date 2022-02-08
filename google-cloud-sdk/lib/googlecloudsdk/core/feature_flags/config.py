@@ -123,7 +123,7 @@ def GetFeatureFlagsConfig(account_id):
                         feature_flags_config_path, e)
 
   if yaml_data:
-    return FeatureFlagsConfig(account_id, yaml_data)
+    return FeatureFlagsConfig(yaml_data, account_id)
   return None
 
 

@@ -86,6 +86,7 @@ def GenerateSessionSpec(args):
   """Generate SessionSpec From Arguments."""
   module = dataplex_api.GetMessageModule()
   session_spec = module.GoogleCloudDataplexV1EnvironmentSessionSpec(
+      enableFastStartup=args.session_enable_fast_startup,
       maxIdleDuration=args.session_max_idle_duration)
   return session_spec
 
@@ -140,6 +141,8 @@ def GenerateUpdateMask(args):
     update_mask.append('infrastructureSpec.osImage.properties')
   if args.IsSpecified('session_max_idle_duration'):
     update_mask.append('sessionSpec.maxIdleDuration')
+  if args.IsSpecified('session_enable_fast_startup'):
+    update_mask.append('sessionSpec.enableFastStartup')
   return update_mask
 
 

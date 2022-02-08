@@ -276,20 +276,6 @@
               "RELATED_ACCOUNTS_NUMBER_HIGH"
             ]
           }
-        },
-        "recommendedAction": {
-          "description": "Recommended action after this request.",
-          "type": "string",
-          "enumDescriptions": [
-            "Default unspecified type.",
-            "The customer should probably request 2FA to their user.",
-            "This is likely an already seen and safe request. 2FA can be skipped."
-          ],
-          "enum": [
-            "RECOMMENDED_ACTION_UNSPECIFIED",
-            "REQUEST_2FA",
-            "SKIP_2FA"
-          ]
         }
       }
     },

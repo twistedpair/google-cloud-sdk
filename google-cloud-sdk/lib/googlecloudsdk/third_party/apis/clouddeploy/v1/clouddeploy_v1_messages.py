@@ -17,8 +17,8 @@ class AnthosCluster(_messages.Message):
   r"""Information specifying an Anthos Cluster.
 
   Fields:
-    membership: Membership of the GKE Hub registered cluster that the Skaffold
-      configuration should be applied to. Format is
+    membership: Membership of the GKE Hub-registered cluster to which to apply
+      the Skaffold configuration. Format is
       `projects/{project}/locations/{location}/memberships/{membership_name}`.
   """
 
@@ -838,14 +838,7 @@ class Config(_messages.Message):
 
 
 class Date(_messages.Message):
-  r"""Represents a whole or partial calendar date, such as a birthday. The
-  time of day and time zone are either specified elsewhere or are
-  insignificant. The date is relative to the Gregorian Calendar. This can
-  represent one of the following: * A full date, with non-zero year, month,
-  and day values * A month and day value, with a zero year, such as an
-  anniversary * A year on its own, with zero month and day values * A year and
-  month value, with a zero day, such as a credit card expiration date Related
-  types are google.type.TimeOfDay and `google.protobuf.Timestamp`.
+  r"""A Date object.
 
   Fields:
     day: Day of a month. Must be from 1 to 31 and valid for the year and
@@ -1016,15 +1009,15 @@ class ExecutionConfig(_messages.Message):
     UsagesValueListEntryValuesEnum:
 
   Fields:
-    artifactStorage: Optional. Cloud Storage location where execution outputs
-      should be stored. This can either be a bucket ("gs://my-bucket") or a
+    artifactStorage: Optional. Cloud Storage location in which to store
+      execution outputs. This can either be a bucket ("gs://my-bucket") or a
       path within a bucket ("gs://my-bucket/my-dir"). If unspecified, a
       default bucket located in the same region will be used.
     defaultPool: Optional. Use default Cloud Build pool.
     privatePool: Optional. Use private Cloud Build pool.
     serviceAccount: Optional. Google service account to use for execution. If
       unspecified, the project execution service account
-      (-compute@developer.gserviceaccount.com) will be used.
+      (-compute@developer.gserviceaccount.com) is used.
     usages: Required. Usages when this configuration should be applied.
     workerPool: Optional. The resource name of the `WorkerPool`, with the
       format
@@ -1096,13 +1089,12 @@ class GkeCluster(_messages.Message):
   Fields:
     cluster: Information specifying a GKE Cluster. Format is
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}.
-    internalIp: Optional. When true, `cluster` should be accessed using the
-      private IP address of the control plane endpoint. Otherwise, the default
-      IP address of the control plane endpoint is used. The default IP address
-      is the private IP address for clusters with private control plane
-      endpoints and the public IP address otherwise. This option should only
-      be specified when `cluster` is a [private GKE
-      cluster](https://cloud.google.com/kubernetes-
+    internalIp: Optional. If true, `cluster` is accessed using the private IP
+      address of the control plane endpoint. Otherwise, the default IP address
+      of the control plane endpoint is used. The default IP address is the
+      private IP address for clusters with private control-plane endpoints and
+      the public IP address otherwise. Only specify this option when `cluster`
+      is a [private GKE cluster](https://cloud.google.com/kubernetes-
       engine/docs/concepts/private-cluster-concept).
   """
 

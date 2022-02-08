@@ -1418,6 +1418,7 @@ class Runtime(_messages.Message):
       GA, etc.
 
   Fields:
+    displayName: The user facing name, eg 'Go 1.13', 'Node.js 12', etc.
     environment: The environment for the runtime.
     name: The name of the runtime, e.g., 'go113', 'nodejs12', etc.
     stage: The stage of life this runtime is in, e.g., BETA, GA, etc.
@@ -1456,10 +1457,11 @@ class Runtime(_messages.Message):
     DEPRECATED = 5
     DECOMMISSIONED = 6
 
-  environment = _messages.EnumField('EnvironmentValueValuesEnum', 1)
-  name = _messages.StringField(2)
-  stage = _messages.EnumField('StageValueValuesEnum', 3)
-  warnings = _messages.StringField(4, repeated=True)
+  displayName = _messages.StringField(1)
+  environment = _messages.EnumField('EnvironmentValueValuesEnum', 2)
+  name = _messages.StringField(3)
+  stage = _messages.EnumField('StageValueValuesEnum', 4)
+  warnings = _messages.StringField(5, repeated=True)
 
 
 class ServiceConfig(_messages.Message):
@@ -1489,7 +1491,6 @@ class ServiceConfig(_messages.Message):
       y.go a full description.
     environmentVariables: Environment variables that shall be available during
       function execution.
-    gcfUri: Output only. URIs of the Service deployed
     ingressSettings: The ingress settings for the function, controlling what
       traffic can reach it.
     maxInstanceCount: The limit on the maximum number of function instances
@@ -1586,16 +1587,15 @@ class ServiceConfig(_messages.Message):
   allTrafficOnLatestRevision = _messages.BooleanField(1)
   availableMemory = _messages.StringField(2)
   environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 3)
-  gcfUri = _messages.StringField(4)
-  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 5)
-  maxInstanceCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  minInstanceCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  service = _messages.StringField(8)
-  serviceAccountEmail = _messages.StringField(9)
-  timeoutSeconds = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  uri = _messages.StringField(11)
-  vpcConnector = _messages.StringField(12)
-  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 13)
+  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 4)
+  maxInstanceCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  minInstanceCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  service = _messages.StringField(7)
+  serviceAccountEmail = _messages.StringField(8)
+  timeoutSeconds = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  uri = _messages.StringField(10)
+  vpcConnector = _messages.StringField(11)
+  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 12)
 
 
 class SetIamPolicyRequest(_messages.Message):

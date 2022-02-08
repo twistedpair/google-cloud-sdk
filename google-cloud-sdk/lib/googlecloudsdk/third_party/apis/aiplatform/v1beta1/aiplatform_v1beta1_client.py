@@ -6604,33 +6604,6 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def UpdateExplanationDataset(self, request, global_params=None):
-      r"""Incremental update the dataset used for a similarity model.
-
-      Args:
-        request: (AiplatformProjectsLocationsModelsUpdateExplanationDatasetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('UpdateExplanationDataset')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    UpdateExplanationDataset.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:updateExplanationDataset',
-        http_method='POST',
-        method_id='aiplatform.projects.locations.models.updateExplanationDataset',
-        ordered_params=['model'],
-        path_params=['model'],
-        query_params=[],
-        relative_path='v1beta1/{+model}:updateExplanationDataset',
-        request_field='googleCloudAiplatformV1beta1UpdateExplanationDatasetRequest',
-        request_type_name='AiplatformProjectsLocationsModelsUpdateExplanationDatasetRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
     def Upload(self, request, global_params=None):
       r"""Uploads a Model artifact into Vertex AI.
 

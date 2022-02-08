@@ -837,6 +837,33 @@ class MetastoreV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RemoveIamPolicy(self, request, global_params=None):
+      r"""Removes the attached IAM policies for a resource.
+
+      Args:
+        request: (MetastoreProjectsLocationsServicesRemoveIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RemoveIamPolicyResponse) The response message.
+      """
+      config = self.GetMethodConfig('RemoveIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/{servicesId1}:removeIamPolicy',
+        http_method='POST',
+        method_id='metastore.projects.locations.services.removeIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha/{+resource}:removeIamPolicy',
+        request_field='removeIamPolicyRequest',
+        request_type_name='MetastoreProjectsLocationsServicesRemoveIamPolicyRequest',
+        response_type_name='RemoveIamPolicyResponse',
+        supports_download=False,
+    )
+
     def Restore(self, request, global_params=None):
       r"""Restores a service from a backup.
 

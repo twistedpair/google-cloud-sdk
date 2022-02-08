@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager",
  "version": "v2",
- "revision": "20220124",
+ "revision": "20220131",
  "title": "Google Cloud Deployment Manager API",
  "description": "Declares, configures, and deploys complex solutions on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -95,13 +95,6 @@
      "description": "The configuration for logging of each type of permission.",
      "items": {
       "$ref": "AuditLogConfig"
-     }
-    },
-    "exemptedMembers": {
-     "type": "array",
-     "description": "",
-     "items": {
-      "type": "string"
      }
     },
     "service": {

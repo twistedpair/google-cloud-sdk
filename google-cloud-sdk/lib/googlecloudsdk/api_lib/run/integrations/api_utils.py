@@ -146,23 +146,55 @@ def CreateDeployment(client, app_ref, deployment, validate_only=False):
       )
 
 
-def WaitForOperation(client, operation, message):
-  """Wait for an operation to complete.
+def WaitForApplicationOperation(client, operation, message):
+  """Waits for an operation to complete.
 
   Args:
-    client:  the client used to make requests.
-    operation: the operation object to wait for.
-    message: the message to display during the wait.
+    client:  GAPIC API client, client used to make requests.
+    operation: run_apps.v1alpha1.operation object to wait for.
+    message: str, the message to display during the wait.
 
   Returns:
-    The resulting application.
+    run_apps.v1alpha1.application, from operation.
   """
 
+  return _WaitForOperation(client, operation, message,
+                           client.projects_locations_applications)
+
+
+def WaitForDeploymentOperation(client, operation, message):
+  """Waits for an operation to complete.
+
+  Args:
+    client:  GAPIC API client, client used to make requests.
+    operation: run_apps.v1alpha1.operation, object to wait for.
+    message: str, message to display during the wait.
+
+  Returns:
+    run_apps.v1alpha1.Deployment, from operation.
+  """
+
+  return _WaitForOperation(client, operation, message,
+                           client.projects_locations_applications_deployments)
+
+
+def _WaitForOperation(client, operation, message, resource_type):
+  """Waits for an operation to complete.
+
+  Args:
+    client:  GAPIC API client, client used to make requests.
+    operation: run_apps.v1alpha1.operation, object to wait for.
+    message: str, the message to display during the wait.
+    resource_type: type, the expected type of resource response
+
+  Returns:
+    The resulting resource of input paramater resource_type.
+  """
+  poller = waiter.CloudOperationPoller(resource_type,
+                                       client.projects_locations_operations)
   operation_ref = resources.REGISTRY.ParseRelativeName(
       operation.name,
       collection='{}.projects.locations.operations'.format(API_NAME))
-  poller = waiter.CloudOperationPoller(client.projects_locations_applications,
-                                       client.projects_locations_operations)
   try:
     return waiter.WaitFor(
         poller,

@@ -6878,16 +6878,6 @@ class GoogleCloudAiplatformInternalUpdateDeploymentResourcePoolOperationMetadata
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
 
 
-class GoogleCloudAiplatformInternalUpdateExplanationDatasetOperationMetadata(_messages.Message):
-  r"""Runtime operation information for ModelService.UpdateExplanationDataset.
-
-  Fields:
-    genericMetadata: The common part of the operation metadata.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
-
-
 class GoogleCloudAiplatformInternalUpdateFeaturestoreOperationMetadata(_messages.Message):
   r"""Details of operations that perform update Featurestore.
 
@@ -10860,16 +10850,6 @@ class GoogleCloudAiplatformUiUndeployModelOperationMetadata(_messages.Message):
 
 class GoogleCloudAiplatformUiUndeployModelResponse(_messages.Message):
   r"""Response message for EndpointService.UndeployModel."""
-
-
-class GoogleCloudAiplatformUiUpdateExplanationDatasetOperationMetadata(_messages.Message):
-  r"""Runtime operation information for ModelService.UpdateExplanationDataset.
-
-  Fields:
-    genericMetadata: The common part of the operation metadata.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 1)
 
 
 class GoogleCloudAiplatformUiUpdateFeaturestoreOperationMetadata(_messages.Message):
@@ -30054,16 +30034,6 @@ class GoogleCloudAiplatformV1beta1UpdateDeploymentResourcePoolOperationMetadata(
 
   Fields:
     genericMetadata: The operation generic information.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
-
-
-class GoogleCloudAiplatformV1beta1UpdateExplanationDatasetOperationMetadata(_messages.Message):
-  r"""Runtime operation information for ModelService.UpdateExplanationDataset.
-
-  Fields:
-    genericMetadata: The common part of the operation metadata.
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)

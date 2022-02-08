@@ -721,6 +721,10 @@
           "description": "Cloud Audit Logging-specific spec.",
           "$ref": "CloudAuditLoggingFeatureSpec"
         },
+        "workloadcertificate": {
+          "description": "Workload Certificate spec.",
+          "$ref": "FeatureSpec"
+        },
         "appdevexperience": {
           "description": "Appdevexperience specific spec.",
           "$ref": "AppDevExperienceFeatureSpec"
@@ -857,6 +861,52 @@
         }
       }
     },
+    "FeatureSpec": {
+      "id": "FeatureSpec",
+      "description": "**Workload Certificate**: The Hub-wide input for the WorkloadCertificate feature.",
+      "type": "object",
+      "properties": {
+        "provisionGoogleCa": {
+          "description": "Immutable. Specifies CA configuration.",
+          "type": "string",
+          "enumDescriptions": [
+            "Disable default Google managed CA.",
+            "Disable default Google managed CA.",
+            "Use default Google managed CA."
+          ],
+          "enum": [
+            "GOOGLE_CA_PROVISIONING_UNSPECIFIED",
+            "DISABLED",
+            "ENABLED"
+          ]
+        },
+        "defaultConfig": {
+          "description": "Specifies default membership spec. Users can override the default in the member_configs for each member.",
+          "$ref": "MembershipSpec"
+        }
+      }
+    },
+    "MembershipSpec": {
+      "id": "MembershipSpec",
+      "description": "**Workload Certificate**: The membership-specific input for WorkloadCertificate feature.",
+      "type": "object",
+      "properties": {
+        "certificateManagement": {
+          "description": "Specifies workload certificate management.",
+          "type": "string",
+          "enumDescriptions": [
+            "Disable workload certificate feature.",
+            "Disable workload certificate feature.",
+            "Enable workload certificate feature."
+          ],
+          "enum": [
+            "CERTIFICATE_MANAGEMENT_UNSPECIFIED",
+            "DISABLED",
+            "ENABLED"
+          ]
+        }
+      }
+    },
     "AppDevExperienceFeatureSpec": {
       "id": "AppDevExperienceFeatureSpec",
       "description": "Spec for App Dev Experience Feature.",
@@ -889,6 +939,10 @@
           "description": "Identity Service-specific spec.",
           "$ref": "IdentityServiceMembershipSpec"
         },
+        "workloadcertificate": {
+          "description": "Workload Certificate spec.",
+          "$ref": "MembershipSpec"
+        },
         "mesh": {
           "description": "Anthos Service Mesh-specific spec",
           "$ref": "ServiceMeshMembershipSpec"
@@ -899,7 +953,7 @@
         },
         "policycontroller": {
           "description": "Policy Controller spec.",
-          "$ref": "PolicycontrollerMembershipSpec"
+          "$ref": "PolicyControllerMembershipSpec"
         }
       }
     },
@@ -1201,6 +1255,16 @@
         "deployCloudConsoleProxy": {
           "description": "Flag to denote if reverse proxy is used to connect to auth provider. This flag should be set to true when provider is not reachable by Google Cloud Console.",
           "type": "boolean"
+        },
+        "clientSecret": {
+          "description": "Unencrypted OIDC client secret will be passed to the GKE Hub CLH.",
+          "type": "string"
+        },
+        "encryptedClientSecret": {
+          "description": "Output only. Encrypted OIDC Client secret",
+          "readOnly": true,
+          "type": "string",
+          "format": "byte"
         }
       }
     },
@@ -1240,14 +1304,14 @@
         }
       }
     },
-    "PolicycontrollerMembershipSpec": {
-      "id": "PolicycontrollerMembershipSpec",
+    "PolicyControllerMembershipSpec": {
+      "id": "PolicyControllerMembershipSpec",
       "description": "**Policy Controller**: Configuration for a single cluster. Intended to parallel the PolicyController CR.",
       "type": "object",
       "properties": {
         "policyControllerHubConfig": {
           "description": "Policy Controller configuration for the cluster.",
-          "$ref": "PolicycontrollerPolicyControllerHubConfig"
+          "$ref": "PolicyControllerPolicyControllerHubConfig"
         },
         "version": {
           "description": "Version of Policy Controller installed.",
@@ -1255,8 +1319,8 @@
         }
       }
     },
-    "PolicycontrollerPolicyControllerHubConfig": {
-      "id": "PolicycontrollerPolicyControllerHubConfig",
+    "PolicyControllerPolicyControllerHubConfig": {
+      "id": "PolicyControllerPolicyControllerHubConfig",
       "description": "Configuration for Policy Controller",
       "type": "object",
       "properties": {
@@ -1302,12 +1366,12 @@
         },
         "templateLibraryConfig": {
           "description": "Configures the library templates to install along with Policy Controller.",
-          "$ref": "PolicycontrollerTemplateLibraryConfig"
+          "$ref": "PolicyControllerTemplateLibraryConfig"
         }
       }
     },
-    "PolicycontrollerTemplateLibraryConfig": {
-      "id": "PolicycontrollerTemplateLibraryConfig",
+    "PolicyControllerTemplateLibraryConfig": {
+      "id": "PolicyControllerTemplateLibraryConfig",
       "description": "The config specifying which default library templates to install.",
       "type": "object",
       "properties": {
@@ -1540,7 +1604,7 @@
         },
         "policycontroller": {
           "description": "Policycontroller-specific state.",
-          "$ref": "PolicycontrollerMembershipState"
+          "$ref": "PolicyControllerMembershipState"
         },
         "state": {
           "description": "The high-level state of this Feature for a single membership.",
@@ -2328,8 +2392,8 @@
         }
       }
     },
-    "PolicycontrollerMembershipState": {
-      "id": "PolicycontrollerMembershipState",
+    "PolicyControllerMembershipState": {
+      "id": "PolicyControllerMembershipState",
       "description": "**Policy Controller**: State for a single cluster.",
       "type": "object",
       "properties": {
@@ -2339,11 +2403,11 @@
         },
         "membershipSpec": {
           "description": "Membership configuration in the cluster. This represents the actual state in the cluster, while the MembershipSpec in the FeatureSpec represents the intended state",
-          "$ref": "PolicycontrollerMembershipSpec"
+          "$ref": "PolicyControllerMembershipSpec"
         },
         "policyControllerHubState": {
           "description": "Policy Controller state observed by the Policy Controller Hub",
-          "$ref": "PolicycontrollerPolicyControllerHubState"
+          "$ref": "PolicyControllerPolicyControllerHubState"
         },
         "state": {
           "description": "The lifecycle state Policy Controller is in.",
@@ -2371,14 +2435,14 @@
         }
       }
     },
-    "PolicycontrollerPolicyControllerHubState": {
-      "id": "PolicycontrollerPolicyControllerHubState",
+    "PolicyControllerPolicyControllerHubState": {
+      "id": "PolicyControllerPolicyControllerHubState",
       "description": "State of the Policy Controller.",
       "type": "object",
       "properties": {
         "version": {
           "description": "The version of Gatekeeper Policy Controller deployed.",
-          "$ref": "PolicycontrollerPolicyControllerHubVersion"
+          "$ref": "PolicyControllerPolicyControllerHubVersion"
         },
         "deploymentStates": {
           "description": "Map from deployment name to deployment state. Example deployments are gatekeeper-controller-manager, gatekeeper-audit deployment, and gatekeeper-mutation.",
@@ -2401,8 +2465,8 @@
         }
       }
     },
-    "PolicycontrollerPolicyControllerHubVersion": {
-      "id": "PolicycontrollerPolicyControllerHubVersion",
+    "PolicyControllerPolicyControllerHubVersion": {
+      "id": "PolicyControllerPolicyControllerHubVersion",
       "description": "The build version of Gatekeeper that Policy Controller is using.",
       "type": "object",
       "properties": {

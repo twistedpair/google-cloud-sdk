@@ -27,6 +27,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import times
 
+EKM_CONNECTION_COLLECTION = 'cloudkms.projects.locations.ekmConnections'
 KEY_RING_COLLECTION = 'cloudkms.projects.locations.keyRings'
 LOCATION_COLLECTION = 'cloudkms.projects.locations'
 
@@ -72,6 +73,17 @@ class LocationCompleter(ListCommandCompleter):
     super(LocationCompleter, self).__init__(
         collection=LOCATION_COLLECTION,
         list_command='kms locations list --uri',
+        **kwargs)
+
+
+@base.ReleaseTracks(base.ReleaseTrack.ALPHA)
+class EkmConnectionCompleter(ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(EkmConnectionCompleter, self).__init__(
+        collection=EKM_CONNECTION_COLLECTION,
+        list_command='kms ekm-connections list --uri',
+        flags=['location'],
         **kwargs)
 
 
@@ -250,7 +262,7 @@ def AddAadFileFlag(parser):
 def AddProtectionLevelFlag(parser):
   parser.add_argument(
       '--protection-level',
-      choices=['software', 'hsm', 'external'],
+      choices=['software', 'hsm', 'external', 'external-vpc'],
       default='software',
       help='Protection level of the key.')
 
@@ -326,6 +338,13 @@ def AddExternalKeyUriFlag(parser):
       ' "external".')
 
 
+def AddEkmConnectionKeyPathFlag(parser):
+  parser.add_argument(
+      '--ekm-connection-key-path',
+      help='The path to the external key material on the EKM for keys with '
+      'protection level "external-vpc".')
+
+
 def AddStateFlag(parser):
   parser.add_argument('--state', dest='state', help='State of the key version.')
 
@@ -346,6 +365,17 @@ def AddDestroyScheduledDurationFlag(parser):
       help='The amount of time that versions of the key should spend in the '
       'DESTROY_SCHEDULED state before transitioning to DESTROYED. See '
       '$ gcloud topic datetimes for information on duration formats.')
+
+
+def AddCryptoKeyBackendFlag(parser):
+  parser.add_argument(
+      '--crypto-key-backend',
+      help='The resource name of the backend environment where the key '
+      'material for all CryptoKeyVersions associated with this CryptoKey '
+      'reside and where all related cryptographic operations are performed. '
+      'Currently only applicable for EXTERNAL_VPC and EkmConnection '
+      'resource names.'
+  )
 
 
 def AddImportOnlyFlag(parser):
@@ -413,12 +443,55 @@ def AddCertificateChainFlag(parser):
       help='Certificate chain to retrieve.')
 
 
+def AddServiceDirectoryServiceFlag(parser, required=False):
+  parser.add_argument(
+      '--service-directory-service',
+      help='The resource name of the Service Directory service pointing to '
+      'an EKM replica.',
+      required=required)
+
+
+def AddEndpointFilterFlag(parser):
+  parser.add_argument(
+      '--endpoint-filter',
+      help='The filter applied to the endpoints of the resolved service. '
+      'If no filter is specified, all endpoints will be considered.')
+
+
+def AddHostnameFlag(parser, required=False):
+  parser.add_argument(
+      '--hostname',
+      help='The hostname of the EKM replica used at TLS and HTTP layers.',
+      required=required)
+
+
+def AddServerCertificatesFilesFlag(parser, required=False):
+  parser.add_argument(
+      '--server-certificates-files',
+      type=arg_parsers.ArgList(),
+      metavar='SERVER_CERTIFICATES',
+      help='A list of filenames of leaf server certificates used to '
+      'authenticate HTTPS connections to the EKM replica in PEM format. If '
+      'files are not in PEM, the assumed format will be DER.',
+      required=required)
+
+
 # Parsing.
 def ParseLocationName(args):
   return resources.REGISTRY.Parse(
       args.location,
       params={'projectsId': properties.VALUES.core.project.GetOrFail},
       collection=LOCATION_COLLECTION)
+
+
+def ParseEkmConnectionName(args):
+  return resources.REGISTRY.Parse(
+      args.ekm_connection,
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'locationsId': args.MakeGetOrRaise('--location'),
+      },
+      collection=EKM_CONNECTION_COLLECTION)
 
 
 def ParseKeyRingName(args):

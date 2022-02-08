@@ -43,6 +43,12 @@ def KeyringAttributeConfig(kms_prefix=True):
       name=name, help_text='The KMS keyring of the {resource}.')
 
 
+def EkmConnectionAttributeConfig(kms_prefix=True):
+  name = 'kms-ekmconnection' if kms_prefix else 'ekmconnection'
+  return concepts.ResourceParameterAttributeConfig(
+      name=name, help_text='The KMS ekm connection of the {resource}.')
+
+
 def LocationAttributeConfig(kms_prefix=True, region_fallthrough=False):
   name = 'kms-location' if kms_prefix else 'location'
   fallthroughs = []
@@ -91,6 +97,17 @@ def GetKmsKeyRingResourceSpec(kms_prefix=True, region_fallthrough=False):
       'cloudkms.projects.locations.keyRings',
       resource_name='keyring',
       keyRingsId=KeyringAttributeConfig(kms_prefix),
+      locationsId=LocationAttributeConfig(
+          kms_prefix=kms_prefix, region_fallthrough=region_fallthrough),
+      projectsId=ProjectAttributeConfig(kms_prefix),
+      disable_auto_completers=False)
+
+
+def GetKmsEkmConnectionResourceSpec(kms_prefix=True, region_fallthrough=False):
+  return concepts.ResourceSpec(
+      'cloudkms.projects.locations.ekmConnections',
+      resource_name='ekmconnection',
+      ekmConnectionsId=EkmConnectionAttributeConfig(kms_prefix),
       locationsId=LocationAttributeConfig(
           kms_prefix=kms_prefix, region_fallthrough=region_fallthrough),
       projectsId=ProjectAttributeConfig(kms_prefix),
@@ -198,6 +215,14 @@ def AddKmsKeyringResourceArgForKMS(parser, required, name):
       name,
       GetKmsKeyRingResourceSpec(kms_prefix=False),
       'The KMS keyring resource.',
+      required=required).AddToParser(parser)
+
+
+def AddKmsEkmConnectionResourceArgForKMS(parser, required, name):
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetKmsEkmConnectionResourceSpec(kms_prefix=False),
+      'The KMS ekm connection resource.',
       required=required).AddToParser(parser)
 
 

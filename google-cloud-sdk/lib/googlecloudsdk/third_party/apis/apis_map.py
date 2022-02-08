@@ -1380,6 +1380,17 @@ MAP = {
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
+    'edgenetwork': {
+        'v1alpha1':
+            APIDef(
+                ApitoolsClientDef(
+                    class_path='googlecloudsdk.third_party.apis.edgenetwork.v1alpha1',
+                    client_classpath='edgenetwork_v1alpha1_client.EdgenetworkV1alpha1',
+                    messages_modulepath='edgenetwork_v1alpha1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'essentialcontacts': {
         'v1':
             APIDef(
@@ -1781,17 +1792,6 @@ MAP = {
                     class_path='googlecloudsdk.third_party.apis.krmapihosting.v1alpha1',
                     client_classpath='krmapihosting_v1alpha1_client.KrmapihostingV1alpha1',
                     messages_modulepath='krmapihosting_v1alpha1_messages'),
-                default_version=True,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
-    },
-    'kubernetesedge': {
-        'v1alpha1':
-            APIDef(
-                ApitoolsClientDef(
-                    class_path='googlecloudsdk.third_party.apis.kubernetesedge.v1alpha1',
-                    client_classpath='kubernetesedge_v1alpha1_client.KubernetesedgeV1alpha1',
-                    messages_modulepath='kubernetesedge_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),

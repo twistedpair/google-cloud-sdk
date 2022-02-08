@@ -491,10 +491,13 @@ def AddAndroidBetaArgs(parser):
       metavar='int',
       type=arg_validate.POSITIVE_INT_PARSER,
       help="""\
-      Specifies the number of shards into which you want to evenly distribute
-      test cases. The shards are run in parallel on separate devices. For
-      example, if your test execution contains 20 test cases and you specify
-      four shards, each shard executes five test cases.
+      Specifies the number of shards across which to distribute test cases. The
+      shards are run in parallel on separate devices. For example, if your test
+      execution contains 20 test cases and you specify four shards, the
+      instrumentation command passes arguments of `-e numShards 4` to
+      AndroidJUnitRunner and each shard executes about five test cases. Based on
+      the sharding mechanism AndroidJUnitRunner uses, there is no guarantee that
+      test cases will be distributed with perfect uniformity.
 
       The number of shards should be less than the total number of test
       cases. When one or more physical devices are selected, the number of

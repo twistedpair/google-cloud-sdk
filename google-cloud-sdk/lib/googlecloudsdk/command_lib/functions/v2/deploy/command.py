@@ -81,12 +81,6 @@ _CSR_SOURCE_ERROR_MESSAGE = (
     '/fixed-aliases/<tagName>, or the desired commit with /revisions/<commit>. '
 )
 
-_INVALID_NON_HTTP_SIGNATURE_TYPE_ERROR_MESSAGE = (
-    'When `--trigger_http` is provided, `--signature-type` must be omitted '
-    'or set to `http`.')
-_INVALID_HTTP_SIGNATURE_TYPE_ERROR_MESSAGE = (
-    'When an event trigger is provided, `--signature-type` cannot be set to '
-    '`http`.')
 _INVALID_RETRY_FLAG_ERROR_MESSAGE = (
     '`--retry` is only supported with an event trigger not http triggers.')
 
@@ -611,31 +605,8 @@ def _BuildFullPubsubTopic(pubsub_topic):
       properties.VALUES.core.project.GetOrFail(), pubsub_topic)
 
 
-def _GetSignatureType(args, event_trigger):
-  """Determines the function signature type from the command-line arguments.
-
-  Args:
-    args: argparse.Namespace, arguments that this command was invoked with
-    event_trigger: cloudfunctions_v2alpha_messages.EventTrigger, used to request
-      events sent from another service
-
-  Returns:
-    signature_type: str, the desired functions signature type
-    updated_fields_set: frozenset[str], set of update mask fields
-  """
-  if not args.IsSpecified('signature_type'):
-    return None, frozenset()
-  if args.trigger_http and args.signature_type != 'http':
-    raise exceptions.FunctionsError(
-        _INVALID_NON_HTTP_SIGNATURE_TYPE_ERROR_MESSAGE)
-  elif event_trigger and args.signature_type == 'http':
-    # event_trigger should be either 'event' or 'cloudevent'
-    raise exceptions.FunctionsError(_INVALID_HTTP_SIGNATURE_TYPE_ERROR_MESSAGE)
-  return args.signature_type, frozenset(['build_config.environment_variables'])
-
-
 def _GetBuildConfig(args, client, messages, region, function_name,
-                    event_trigger, existing_function):
+                    existing_function):
   """Constructs a BuildConfig message from the command-line arguments.
 
   Args:
@@ -644,8 +615,6 @@ def _GetBuildConfig(args, client, messages, region, function_name,
     messages: messages module, the GCFv2 message stubs
     region: str, the region to deploy the function to
     function_name: str, the name of the function
-    event_trigger: cloudfunctions_v2alpha_messages.EventTrigger, used to request
-      events sent from another service
     existing_function: cloudfunctions_v2alpha_messages.Function | None
 
   Returns:
@@ -670,12 +639,6 @@ def _GetBuildConfig(args, client, messages, region, function_name,
   build_env_vars = map_util.ApplyMapFlags(old_build_env_vars,
                                           **build_env_var_flags)
 
-  signature_type, signature_updated_fields = _GetSignatureType(
-      args, event_trigger)
-
-  if signature_updated_fields:
-    build_env_vars['GOOGLE_FUNCTION_SIGNATURE_TYPE'] = signature_type
-
   updated_fields = set()
 
   if build_env_vars != old_build_env_vars:
@@ -692,8 +655,7 @@ def _GetBuildConfig(args, client, messages, region, function_name,
   if args.build_worker_pool is not None or args.clear_build_worker_pool:
     updated_fields.add('build_config.worker_pool')
 
-  build_updated_fields = frozenset.union(signature_updated_fields,
-                                         source_updated_fields, updated_fields)
+  build_updated_fields = frozenset.union(source_updated_fields, updated_fields)
   return messages.BuildConfig(
       entryPoint=args.entry_point,
       runtime=args.runtime,
@@ -989,7 +951,6 @@ def Run(args, release_track):
   build_config, build_updated_fields = _GetBuildConfig(args, client, messages,
                                                        function_ref.locationsId,
                                                        function_ref.Name(),
-                                                       event_trigger,
                                                        existing_function)
 
   service_config, service_updated_fields = _GetServiceConfig(

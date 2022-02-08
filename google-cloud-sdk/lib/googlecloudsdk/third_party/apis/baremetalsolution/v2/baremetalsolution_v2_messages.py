@@ -1056,6 +1056,9 @@ class SnapshotReservationDetail(_messages.Message):
 class SnapshotSchedulePolicy(_messages.Message):
   r"""A snapshot schedule policy.
 
+  Enums:
+    StateValueValuesEnum: The state of the snapshot schedule policy.
+
   Messages:
     LabelsValue: Labels as key value pairs.
 
@@ -1067,7 +1070,18 @@ class SnapshotSchedulePolicy(_messages.Message):
     name: Output only. The name of the snapshot schedule policy.
     schedules: The snapshot schedules contained in this policy. You can
       specify a maximum of 5 schedules.
+    state: The state of the snapshot schedule policy.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The state of the snapshot schedule policy.
+
+    Values:
+      STATE_UNSPECIFIED: The policy is in an unknown state.
+      PROVISIONED: The policy is been provisioned.
+    """
+    STATE_UNSPECIFIED = 0
+    PROVISIONED = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1098,6 +1112,7 @@ class SnapshotSchedulePolicy(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
   schedules = _messages.MessageField('Schedule', 5, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
 
 
 class StandardQueryParameters(_messages.Message):

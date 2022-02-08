@@ -107,7 +107,7 @@ def process_lifecycle(file_path):
   #     "storage_class": str|None
   #     "type": str
   #   },
-  #   "": {
+  #   "condition": {
   #     "age": int|None
   #     (See rest of fields below in implementation.)
   #   }

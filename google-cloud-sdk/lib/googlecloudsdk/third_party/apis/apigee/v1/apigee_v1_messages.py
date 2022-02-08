@@ -6161,6 +6161,11 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
       than `ACTIVE` means the resource is not ready to use.
 
   Fields:
+    consumerAcceptList: Optional. Customer accept list represents the list of
+      projects (id/number) on customer side that can privately connect to the
+      service attachment. It is an optional field which the customers can
+      provide during the instance creation. By default, the customer project
+      associated with the Apigee organization will be included to the list.
     createdAt: Output only. Time the instance was created in milliseconds
       since epoch.
     description: Optional. Description of the instance.
@@ -6198,6 +6203,11 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
     runtimeVersion: Output only. Version of the runtime system running in the
       instance. The runtime system is the set of components that serve the API
       Proxy traffic in your Environments.
+    serviceAttachment: Output only. Resource name of the service attachment
+      created for the instance in the format:
+      `projects/*/regions/*/serviceAttachments/*` Apigee customers can
+      privately forward traffic to this service attachment using the PSC
+      endpoints.
     state: Output only. State of the instance. Values other than `ACTIVE`
       means the resource is not ready to use.
   """
@@ -6243,22 +6253,24 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
     DELETING = 3
     UPDATING = 4
 
-  createdAt = _messages.IntegerField(1)
-  description = _messages.StringField(2)
-  diskEncryptionKeyName = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  externalHost = _messages.StringField(5)
-  externalHostEnabled = _messages.BooleanField(6)
-  host = _messages.StringField(7)
-  ipRange = _messages.StringField(8)
-  lastModifiedAt = _messages.IntegerField(9)
-  location = _messages.StringField(10)
-  name = _messages.StringField(11)
-  nodeConfig = _messages.MessageField('GoogleCloudApigeeV1NodeConfig', 12)
-  peeringCidrRange = _messages.EnumField('PeeringCidrRangeValueValuesEnum', 13)
-  port = _messages.StringField(14)
-  runtimeVersion = _messages.StringField(15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
+  consumerAcceptList = _messages.StringField(1, repeated=True)
+  createdAt = _messages.IntegerField(2)
+  description = _messages.StringField(3)
+  diskEncryptionKeyName = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  externalHost = _messages.StringField(6)
+  externalHostEnabled = _messages.BooleanField(7)
+  host = _messages.StringField(8)
+  ipRange = _messages.StringField(9)
+  lastModifiedAt = _messages.IntegerField(10)
+  location = _messages.StringField(11)
+  name = _messages.StringField(12)
+  nodeConfig = _messages.MessageField('GoogleCloudApigeeV1NodeConfig', 13)
+  peeringCidrRange = _messages.EnumField('PeeringCidrRangeValueValuesEnum', 14)
+  port = _messages.StringField(15)
+  runtimeVersion = _messages.StringField(16)
+  serviceAttachment = _messages.StringField(17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
 
 
 class GoogleCloudApigeeV1InstanceAttachment(_messages.Message):

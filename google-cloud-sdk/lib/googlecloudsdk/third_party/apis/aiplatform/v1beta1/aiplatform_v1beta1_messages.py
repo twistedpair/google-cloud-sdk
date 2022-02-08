@@ -3755,22 +3755,6 @@ class AiplatformProjectsLocationsModelsSetVersionAliasRequest(_messages.Message)
   name = _messages.StringField(2, required=True)
 
 
-class AiplatformProjectsLocationsModelsUpdateExplanationDatasetRequest(_messages.Message):
-  r"""A AiplatformProjectsLocationsModelsUpdateExplanationDatasetRequest
-  object.
-
-  Fields:
-    googleCloudAiplatformV1beta1UpdateExplanationDatasetRequest: A
-      GoogleCloudAiplatformV1beta1UpdateExplanationDatasetRequest resource to
-      be passed as the request body.
-    model: Required. The resource name of the Model to update. Format:
-      `projects/{project}/locations/{location}/models/{model}`
-  """
-
-  googleCloudAiplatformV1beta1UpdateExplanationDatasetRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1UpdateExplanationDatasetRequest', 1)
-  model = _messages.StringField(2, required=True)
-
-
 class AiplatformProjectsLocationsModelsUploadRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsModelsUploadRequest object.
 
@@ -7787,16 +7771,6 @@ class GoogleCloudAiplatformInternalUpdateDeploymentResourcePoolOperationMetadata
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
 
 
-class GoogleCloudAiplatformInternalUpdateExplanationDatasetOperationMetadata(_messages.Message):
-  r"""Runtime operation information for ModelService.UpdateExplanationDataset.
-
-  Fields:
-    genericMetadata: The common part of the operation metadata.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
-
-
 class GoogleCloudAiplatformInternalUpdateFeaturestoreOperationMetadata(_messages.Message):
   r"""Details of operations that perform update Featurestore.
 
@@ -11769,16 +11743,6 @@ class GoogleCloudAiplatformUiUndeployModelOperationMetadata(_messages.Message):
 
 class GoogleCloudAiplatformUiUndeployModelResponse(_messages.Message):
   r"""Response message for EndpointService.UndeployModel."""
-
-
-class GoogleCloudAiplatformUiUpdateExplanationDatasetOperationMetadata(_messages.Message):
-  r"""Runtime operation information for ModelService.UpdateExplanationDataset.
-
-  Fields:
-    genericMetadata: The common part of the operation metadata.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 1)
 
 
 class GoogleCloudAiplatformUiUpdateFeaturestoreOperationMetadata(_messages.Message):
@@ -23240,10 +23204,31 @@ class GoogleCloudAiplatformV1beta1FeaturestoreOnlineServingConfig(_messages.Mess
   Fields:
     fixedNodeCount: The number of nodes for each cluster. The number of nodes
       will not scale automatically but can be scaled manually by providing
-      different values when updating.
+      different values when updating. Only one of `fixed_node_count` and
+      `scaling` can be set. Setting one will reset the other.
+    scaling: Online serving scaling configuration. Only one of
+      `fixed_node_count` and `scaling` can be set. Setting one will reset the
+      other.
   """
 
   fixedNodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  scaling = _messages.MessageField('GoogleCloudAiplatformV1beta1FeaturestoreOnlineServingConfigScaling', 2)
+
+
+class GoogleCloudAiplatformV1beta1FeaturestoreOnlineServingConfigScaling(_messages.Message):
+  r"""Online serving scaling configuration. If min_node_count and
+  max_node_count are set to the same value, the cluster will be configured
+  with the fixed number of node (no auto-scaling).
+
+  Fields:
+    maxNodeCount: The maximum number of nodes to scale up to. Must be greater
+      or equal to min_node_count.
+    minNodeCount: Required. The minimum number of nodes to scale down to. Must
+      be greater than or equal to 1.
+  """
+
+  maxNodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minNodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1beta1FilterSplit(_messages.Message):
@@ -31207,26 +31192,6 @@ class GoogleCloudAiplatformV1beta1UpdateDeploymentResourcePoolOperationMetadata(
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
-
-
-class GoogleCloudAiplatformV1beta1UpdateExplanationDatasetOperationMetadata(_messages.Message):
-  r"""Runtime operation information for ModelService.UpdateExplanationDataset.
-
-  Fields:
-    genericMetadata: The common part of the operation metadata.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
-
-
-class GoogleCloudAiplatformV1beta1UpdateExplanationDatasetRequest(_messages.Message):
-  r"""Request message for ModelService.UpdateExplanationDataset.
-
-  Fields:
-    similarity: The similarity config containing the location of the dataset.
-  """
-
-  similarity = _messages.MessageField('GoogleCloudAiplatformV1beta1Similarity', 1)
 
 
 class GoogleCloudAiplatformV1beta1UpdateFeaturestoreOperationMetadata(_messages.Message):

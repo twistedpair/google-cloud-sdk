@@ -17,11 +17,9 @@ class GoogleCloudRecaptchaenterpriseV1AccountDefenderAssessment(_messages.Messag
 
   Enums:
     LabelsValueListEntryValuesEnum:
-    RecommendedActionValueValuesEnum: Recommended action after this request.
 
   Fields:
     labels: Labels for this request.
-    recommendedAction: Recommended action after this request.
   """
 
   class LabelsValueListEntryValuesEnum(_messages.Enum):
@@ -46,21 +44,7 @@ class GoogleCloudRecaptchaenterpriseV1AccountDefenderAssessment(_messages.Messag
     SUSPICIOUS_ACCOUNT_CREATION = 3
     RELATED_ACCOUNTS_NUMBER_HIGH = 4
 
-  class RecommendedActionValueValuesEnum(_messages.Enum):
-    r"""Recommended action after this request.
-
-    Values:
-      RECOMMENDED_ACTION_UNSPECIFIED: Default unspecified type.
-      REQUEST_2FA: The customer should probably request 2FA to their user.
-      SKIP_2FA: This is likely an already seen and safe request. 2FA can be
-        skipped.
-    """
-    RECOMMENDED_ACTION_UNSPECIFIED = 0
-    REQUEST_2FA = 1
-    SKIP_2FA = 2
-
   labels = _messages.EnumField('LabelsValueListEntryValuesEnum', 1, repeated=True)
-  recommendedAction = _messages.EnumField('RecommendedActionValueValuesEnum', 2)
 
 
 class GoogleCloudRecaptchaenterpriseV1AndroidKeySettings(_messages.Message):

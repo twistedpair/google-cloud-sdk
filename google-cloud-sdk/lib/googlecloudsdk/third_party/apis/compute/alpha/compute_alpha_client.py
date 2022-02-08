@@ -1763,6 +1763,84 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def StartAsyncReplication(self, request, global_params=None):
+      r"""Starts asynchronous replication. Must be invoked on the primary disk.
+
+      Args:
+        request: (ComputeDisksStartAsyncReplicationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StartAsyncReplication')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StartAsyncReplication.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.disks.startAsyncReplication',
+        ordered_params=['project', 'zone', 'disk'],
+        path_params=['disk', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/disks/{disk}/startAsyncReplication',
+        request_field='disksStartAsyncReplicationRequest',
+        request_type_name='ComputeDisksStartAsyncReplicationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def StopAsyncReplication(self, request, global_params=None):
+      r"""Stops asynchronous replication. Can be invoked either on the primary or on the secondary disk.
+
+      Args:
+        request: (ComputeDisksStopAsyncReplicationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StopAsyncReplication')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StopAsyncReplication.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.disks.stopAsyncReplication',
+        ordered_params=['project', 'zone', 'disk'],
+        path_params=['disk', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/disks/{disk}/stopAsyncReplication',
+        request_field='disksStopAsyncReplicationRequest',
+        request_type_name='ComputeDisksStopAsyncReplicationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def StopGroupAsyncReplication(self, request, global_params=None):
+      r"""Stops asynchronous replication for a consistency group of disks. Can be invoked either in the primary or secondary scope.
+
+      Args:
+        request: (ComputeDisksStopGroupAsyncReplicationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StopGroupAsyncReplication')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StopGroupAsyncReplication.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.disks.stopGroupAsyncReplication',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/disks/stopGroupAsyncReplication',
+        request_field='disksStopGroupAsyncReplicationRequest',
+        request_type_name='ComputeDisksStopGroupAsyncReplicationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource.
 
@@ -13133,6 +13211,84 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def StartAsyncReplication(self, request, global_params=None):
+      r"""Starts asynchronous replication. Must be invoked on the primary disk.
+
+      Args:
+        request: (ComputeRegionDisksStartAsyncReplicationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StartAsyncReplication')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StartAsyncReplication.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionDisks.startAsyncReplication',
+        ordered_params=['project', 'region', 'disk'],
+        path_params=['disk', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/disks/{disk}/startAsyncReplication',
+        request_field='regionDisksStartAsyncReplicationRequest',
+        request_type_name='ComputeRegionDisksStartAsyncReplicationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def StopAsyncReplication(self, request, global_params=None):
+      r"""Stops asynchronous replication. Can be invoked either on the primary or on the secondary disk.
+
+      Args:
+        request: (ComputeRegionDisksStopAsyncReplicationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StopAsyncReplication')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StopAsyncReplication.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionDisks.stopAsyncReplication',
+        ordered_params=['project', 'region', 'disk'],
+        path_params=['disk', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/disks/{disk}/stopAsyncReplication',
+        request_field='regionDisksStopAsyncReplicationRequest',
+        request_type_name='ComputeRegionDisksStopAsyncReplicationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def StopGroupAsyncReplication(self, request, global_params=None):
+      r"""Stops asynchronous replication for a consistency group of disks. Can be invoked either in the primary or secondary scope.
+
+      Args:
+        request: (ComputeRegionDisksStopGroupAsyncReplicationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StopGroupAsyncReplication')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StopGroupAsyncReplication.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionDisks.stopGroupAsyncReplication',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/disks/stopGroupAsyncReplication',
+        request_field='regionDisksStopGroupAsyncReplicationRequest',
+        request_type_name='ComputeRegionDisksStopGroupAsyncReplicationRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource.
 
@@ -16078,32 +16234,6 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeRegionSslPoliciesGetRequest',
         response_type_name='SslPolicy',
-        supports_download=False,
-    )
-
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeRegionSslPoliciesGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='compute.regionSslPolicies.getIamPolicy',
-        ordered_params=['project', 'region', 'resource'],
-        path_params=['project', 'region', 'resource'],
-        query_params=['optionsRequestedPolicyVersion'],
-        relative_path='projects/{project}/regions/{region}/sslPolicies/{resource}/getIamPolicy',
-        request_field='',
-        request_type_name='ComputeRegionSslPoliciesGetIamPolicyRequest',
-        response_type_name='Policy',
         supports_download=False,
     )
 

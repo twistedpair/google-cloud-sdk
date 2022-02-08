@@ -20,6 +20,7 @@ location:
     attribute_name: location
     help: |
       The location of the Dataplex resource.
+    property: dataplex/location
 
 lake:
   name: lake
@@ -130,7 +131,7 @@ session:
 
 content:
   name: content
-  collection: dataplex.projects.locations.lakes.content
+  collection: dataplex.projects.locations.lakes.contentitems
   request_id_field: contentId
   disable_auto_completers: false
   attributes:
@@ -138,7 +139,7 @@ content:
   - *location
   - *lake
   - &content
-    parameter_name: contentId
+    parameter_name: contentitemsId
     attribute_name: content
     help: |
       The content_id for the Content Resource of the Dataplex service.

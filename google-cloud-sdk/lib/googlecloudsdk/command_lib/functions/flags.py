@@ -229,7 +229,7 @@ def AddAllowUnauthenticatedFlag(parser):
             'callers, without checking authentication.'))
 
 
-def AddServeAllTrafficLatestRevisionFlag(parser, track):
+def AddServeAllTrafficLatestRevisionFlag(parser):
   help_text = (
       'If specified, latest function revision will be served all traffic. '
       'This is only relevant when `--gen2` is provided.')
@@ -237,7 +237,6 @@ def AddServeAllTrafficLatestRevisionFlag(parser, track):
       '--serve-all-traffic-latest-revision',
       action='store_true',
       default=False,
-      hidden=track is not base.ReleaseTrack.ALPHA,
       help=help_text)
 
 
@@ -779,21 +778,6 @@ def AddIgnoreFileFlag(parser):
       '--ignore-file',
       help='Override the .gcloudignore file and use the specified file instead.'
   )
-
-
-def AddSignatureTypeFlag(parser):
-  base.ChoiceArgument(
-      '--signature-type',
-      choices=SIGNATURE_TYPES,
-      hidden=True,
-      help_str=(
-          'The type of event signature for the function. `http` '
-          'indicates that the function is triggered by HTTP requests. '
-          '`event` indicates that the function consumes legacy events. '
-          '`cloudevent` indicates that the function consumes events in '
-          'the new CloudEvent format. This is only relevant when `--gen2` '
-          'is provided.'),
-  ).AddToParser(parser)
 
 
 # Flags for CMEK

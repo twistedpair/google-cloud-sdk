@@ -44,7 +44,6 @@ class PrivatecaV1(base_api.BaseApiClient):
     self.projects_locations_caPools_certificates = self.ProjectsLocationsCaPoolsCertificatesService(self)
     self.projects_locations_caPools = self.ProjectsLocationsCaPoolsService(self)
     self.projects_locations_certificateTemplates = self.ProjectsLocationsCertificateTemplatesService(self)
-    self.projects_locations_managedPkis = self.ProjectsLocationsManagedPkisService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -1122,43 +1121,6 @@ class PrivatecaV1(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='PrivatecaProjectsLocationsCertificateTemplatesTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsManagedPkisService(base_api.BaseApiService):
-    """Service class for the projects_locations_managedPkis resource."""
-
-    _NAME = 'projects_locations_managedPkis'
-
-    def __init__(self, client):
-      super(PrivatecaV1.ProjectsLocationsManagedPkisService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
-
-      Args:
-        request: (PrivatecaProjectsLocationsManagedPkisGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/managedPkis/{managedPkisId}:getIamPolicy',
-        http_method='GET',
-        method_id='privateca.projects.locations.managedPkis.getIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=['options_requestedPolicyVersion'],
-        relative_path='v1/{+resource}:getIamPolicy',
-        request_field='',
-        request_type_name='PrivatecaProjectsLocationsManagedPkisGetIamPolicyRequest',
-        response_type_name='Policy',
         supports_download=False,
     )
 

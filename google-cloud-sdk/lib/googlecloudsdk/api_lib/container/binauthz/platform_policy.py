@@ -40,3 +40,16 @@ class Client(object):
     get_req = self.messages.BinaryauthorizationProjectsPlatformsPoliciesGetRequest(
         name=policy_ref,)
     return self.client.projects_platforms_policies.Get(get_req)
+
+  def Update(self, policy_ref, policy):
+    """Update a policy.
+
+    Args:
+      policy_ref: the resource name of the policy being updated.
+      policy: the contents of the new policy.
+
+    Returns:
+      The updated policy resource.
+    """
+    policy.name = policy_ref
+    return self.client.projects_platforms_policies.ReplacePlatformPolicy(policy)

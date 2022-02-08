@@ -101,9 +101,6 @@ class RunAppsOperations(object):
         If not given, default messages will be used.
       match_type_names: array of type/name pairs used for create selector.
       etag: the etag of the application if it's an incremental patch.
-
-    Returns:
-      The updated application.
     """
     app_ref = self.GetAppRef(appname)
     application = self.messages.Application(
@@ -118,7 +115,7 @@ class RunAppsOperations(object):
                                               application)
       if message is None:
         message = 'Creating Application [{}]'.format(appname)
-    api_utils.WaitForOperation(self._client, operation, message)
+    api_utils.WaitForApplicationOperation(self._client, operation, message)
     deployment_name = self._GetDeploymentName(appname)
     if match_type_names is None:
       match_type_names = [{'type': '*', 'name': '*'}]
@@ -127,8 +124,10 @@ class RunAppsOperations(object):
         createSelector={'matchTypeNames': match_type_names})
     deployment_ops = api_utils.CreateDeployment(self._client, app_ref,
                                                 deployment)
-    return api_utils.WaitForOperation(self._client, deployment_ops,
-                                      'Configuring Integration')
+
+    dep_response = api_utils.WaitForDeploymentOperation(
+        self._client, deployment_ops, 'Configuring Integration')
+    self.CheckDeploymentState(dep_response)
 
   def _GetDeploymentName(self, appname):
     return '{}-{}'.format(
@@ -203,7 +202,7 @@ class RunAppsOperations(object):
       name: name of the integration, if empty, a defalt one will be generated.
 
     Returns:
-      The updated application.
+      The deployment.
     """
     app_dict = self._GetDefaultAppDict()
     resources_map = app_dict[_CONFIG_KEY][_RESOURCES_KEY]
@@ -249,7 +248,7 @@ class RunAppsOperations(object):
       IntegrationNotFoundError: If the integration is not found.
 
     Returns:
-      The updated application.
+      The deployment.
     """
     app_dict = self._GetDefaultAppDict()
     resources_map = app_dict[_CONFIG_KEY][_RESOURCES_KEY]
@@ -297,6 +296,21 @@ class RunAppsOperations(object):
       if t['name'] == type_name:
         return t
     return None
+
+  def GetIntegrationType(self, resource_type):
+    """Returns the integration type associated to the given resource type.
+
+    Args:
+      resource_type: string, the resource type.
+
+    Returns:
+      The integration tyep.
+    """
+    int_types = types_utils.IntegrationTypes(self._client)
+    for t in int_types:
+      if t['resource_name'] == resource_type:
+        return t['name']
+    return resource_type
 
   def _GetDefaultAppDict(self):
     """Returns the default application as a dict.
@@ -420,3 +434,40 @@ class RunAppsOperations(object):
         },
         collection='runapps.projects.locations.applications')
     return app_ref
+
+  def CheckDeploymentState(self, response):
+    """Throws any unexpected states contained within deployment reponse.
+
+    Args:
+      response: run_apps.v1alpha1.deployment, response to check
+    """
+    # Short hand refference of deployment/job state
+    dep_state = self.messages.DeploymentStatus.StateValueValuesEnum
+    job_state = self.messages.JobDetails.StateValueValuesEnum
+
+    if response.status.state == dep_state.SUCCEEDED:
+      return
+
+    if response.status.state == dep_state.FAILED:
+      if not response.status.errorMessage:
+        raise exceptions.IntegrationsOperationError('Configuration failed.')
+
+      # Look for job that failed. It should always be last job, but this is not
+      # guaranteed behavior.
+      url = ''
+      for job in response.status.jobDetails[::-1]:
+        if job.state == job_state.FAILED:
+          url = job.jobUri
+          break
+
+      error_msg = 'Configuration failed with error: {}.'.format(
+          response.status.errorMessage)
+      if url:
+        error_msg += ' Logs are available at {}'.format(url)
+
+      raise exceptions.IntegrationsOperationError(error_msg)
+
+    else:
+      raise exceptions.IntegrationsOperationError(
+          'Configuration returned in unexpected state "{}".'.format(
+              response.status.state.name))

@@ -1953,15 +1953,13 @@ class AuditConfig(_messages.Message):
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
-    exemptedMembers: This is deprecated and has no effect. Do not use.
     service: Specifies a service that will be enabled for audit logging. For
       example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
       `allServices` is a special value that covers all services.
   """
 
   auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
-  exemptedMembers = _messages.StringField(2, repeated=True)
-  service = _messages.StringField(3)
+  service = _messages.StringField(2)
 
 
 class AuditLogConfig(_messages.Message):
@@ -4006,7 +4004,12 @@ class BackendService(_messages.Message):
       Affinity](https://cloud.google.com/load-balancing/docs/backend-
       service#session_affinity).
     subsetting: A Subsetting attribute.
-    timeoutSec: Not supported when the backend service is referenced by a URL
+    timeoutSec: The backend service timeout has a different meaning depending
+      on the type of load balancer. For more information see, Backend service
+      settings The default is 30 seconds. The full range of timeout values
+      allowed is 1 - 2,147,483,647 seconds. This value can be overridden in
+      the PathMatcher configuration of the UrlMap that references this backend
+      service. Not supported when the backend service is referenced by a URL
       map that is bound to target gRPC proxy that has validateForProxyless
       field set to true. Instead, use maxStreamDuration.
   """
@@ -5729,20 +5732,26 @@ class CircuitBreakers(_messages.Message):
 
   Fields:
     connectTimeout: The timeout for new network connections to hosts.
-    maxConnections: Not supported when the backend service is referenced by a
-      URL map that is bound to target gRPC proxy that has validateForProxyless
-      field set to true.
-    maxPendingRequests: Not supported when the backend service is referenced
-      by a URL map that is bound to target gRPC proxy that has
-      validateForProxyless field set to true.
+    maxConnections: The maximum number of connections to the backend service.
+      If not specified, there is no limit. Not supported when the backend
+      service is referenced by a URL map that is bound to target gRPC proxy
+      that has validateForProxyless field set to true.
+    maxPendingRequests: The maximum number of pending requests allowed to the
+      backend service. If not specified, there is no limit. Not supported when
+      the backend service is referenced by a URL map that is bound to target
+      gRPC proxy that has validateForProxyless field set to true.
     maxRequests: The maximum number of parallel requests that allowed to the
       backend service. If not specified, there is no limit.
-    maxRequestsPerConnection: Not supported when the backend service is
-      referenced by a URL map that is bound to target gRPC proxy that has
-      validateForProxyless field set to true.
-    maxRetries: Not supported when the backend service is referenced by a URL
-      map that is bound to target gRPC proxy that has validateForProxyless
-      field set to true.
+    maxRequestsPerConnection: Maximum requests for a single connection to the
+      backend service. This parameter is respected by both the HTTP/1.1 and
+      HTTP/2 implementations. If not specified, there is no limit. Setting
+      this parameter to 1 will effectively disable keep alive. Not supported
+      when the backend service is referenced by a URL map that is bound to
+      target gRPC proxy that has validateForProxyless field set to true.
+    maxRetries: The maximum number of parallel retries allowed to the backend
+      cluster. If not specified, the default is 1. Not supported when the
+      backend service is referenced by a URL map that is bound to target gRPC
+      proxy that has validateForProxyless field set to true.
   """
 
   connectTimeout = _messages.MessageField('Duration', 1)
@@ -8246,6 +8255,90 @@ class ComputeDisksSetLabelsRequest(_messages.Message):
   resource = _messages.StringField(3, required=True)
   zone = _messages.StringField(4, required=True)
   zoneSetLabelsRequest = _messages.MessageField('ZoneSetLabelsRequest', 5)
+
+
+class ComputeDisksStartAsyncReplicationRequest(_messages.Message):
+  r"""A ComputeDisksStartAsyncReplicationRequest object.
+
+  Fields:
+    disk: The name of the persistent disk.
+    disksStartAsyncReplicationRequest: A DisksStartAsyncReplicationRequest
+      resource to be passed as the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  disk = _messages.StringField(1, required=True)
+  disksStartAsyncReplicationRequest = _messages.MessageField('DisksStartAsyncReplicationRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
+class ComputeDisksStopAsyncReplicationRequest(_messages.Message):
+  r"""A ComputeDisksStopAsyncReplicationRequest object.
+
+  Fields:
+    disk: The name of the persistent disk.
+    disksStopAsyncReplicationRequest: A DisksStopAsyncReplicationRequest
+      resource to be passed as the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  disk = _messages.StringField(1, required=True)
+  disksStopAsyncReplicationRequest = _messages.MessageField('DisksStopAsyncReplicationRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
+class ComputeDisksStopGroupAsyncReplicationRequest(_messages.Message):
+  r"""A ComputeDisksStopGroupAsyncReplicationRequest object.
+
+  Fields:
+    disksStopGroupAsyncReplicationRequest: A
+      DisksStopGroupAsyncReplicationRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request. This must be the zone of the
+      primary or secondary disks in the consistency group.
+  """
+
+  disksStopGroupAsyncReplicationRequest = _messages.MessageField('DisksStopGroupAsyncReplicationRequest', 1)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeDisksTestIamPermissionsRequest(_messages.Message):
@@ -20038,6 +20131,92 @@ class ComputeRegionDisksSetLabelsRequest(_messages.Message):
   resource = _messages.StringField(5, required=True)
 
 
+class ComputeRegionDisksStartAsyncReplicationRequest(_messages.Message):
+  r"""A ComputeRegionDisksStartAsyncReplicationRequest object.
+
+  Fields:
+    disk: The name of the persistent disk.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    regionDisksStartAsyncReplicationRequest: A
+      RegionDisksStartAsyncReplicationRequest resource to be passed as the
+      request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  disk = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionDisksStartAsyncReplicationRequest = _messages.MessageField('RegionDisksStartAsyncReplicationRequest', 4)
+  requestId = _messages.StringField(5)
+
+
+class ComputeRegionDisksStopAsyncReplicationRequest(_messages.Message):
+  r"""A ComputeRegionDisksStopAsyncReplicationRequest object.
+
+  Fields:
+    disk: The name of the persistent disk.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    regionDisksStopAsyncReplicationRequest: A
+      RegionDisksStopAsyncReplicationRequest resource to be passed as the
+      request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  disk = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionDisksStopAsyncReplicationRequest = _messages.MessageField('RegionDisksStopAsyncReplicationRequest', 4)
+  requestId = _messages.StringField(5)
+
+
+class ComputeRegionDisksStopGroupAsyncReplicationRequest(_messages.Message):
+  r"""A ComputeRegionDisksStopGroupAsyncReplicationRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request. This must be the region
+      of the primary or secondary disks in the consistency group.
+    regionDisksStopGroupAsyncReplicationRequest: A
+      RegionDisksStopGroupAsyncReplicationRequest resource to be passed as the
+      request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionDisksStopGroupAsyncReplicationRequest = _messages.MessageField('RegionDisksStopGroupAsyncReplicationRequest', 3)
+  requestId = _messages.StringField(4)
+
+
 class ComputeRegionDisksTestIamPermissionsRequest(_messages.Message):
   r"""A ComputeRegionDisksTestIamPermissionsRequest object.
 
@@ -23144,22 +23323,6 @@ class ComputeRegionSslPoliciesDeleteRequest(_messages.Message):
   region = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   sslPolicy = _messages.StringField(4, required=True)
-
-
-class ComputeRegionSslPoliciesGetIamPolicyRequest(_messages.Message):
-  r"""A ComputeRegionSslPoliciesGetIamPolicyRequest object.
-
-  Fields:
-    optionsRequestedPolicyVersion: Requested IAM Policy version.
-    project: Project ID for this request.
-    region: The name of the region for this request.
-    resource: Name or id of the resource for this request.
-  """
-
-  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  project = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
-  resource = _messages.StringField(4, required=True)
 
 
 class ComputeRegionSslPoliciesGetRequest(_messages.Message):
@@ -29885,12 +30048,17 @@ class Disk(_messages.Message):
       disk.
 
   Messages:
+    AsyncSecondaryDisksValue: [Output Only] A list of disks this disk is
+      asynchronously replicated to.
     LabelsValue: Labels to apply to this disk. These can be later modified by
       the setLabels method.
 
   Fields:
     architecture: The architecture of the disk. Valid values are ARM64 or
       X86_64.
+    asyncPrimaryDisk: Disk asynchronously replicated into this disk.
+    asyncSecondaryDisks: [Output Only] A list of disks this disk is
+      asynchronously replicated to.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -29979,6 +30147,7 @@ class Disk(_messages.Message):
       Only applicable for regional resources.
     resourcePolicies: Resource policies applied to this disk for automatic
       snapshot creations.
+    resourceStatus: [Output Only] Status information for the disk resource.
     satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined fully-qualified URL for this
       resource.
@@ -29990,6 +30159,12 @@ class Disk(_messages.Message):
       persistent disk. If you specify this field along with a source, the
       value of sizeGb must not be less than the size of the source. Acceptable
       values are 1 to 65536, inclusive.
+    sourceConsistencyGroupPolicy: [Output Only] URL of the
+      DiskConsistencyGroupPolicy for a secondary disk that was created using a
+      consistency group.
+    sourceConsistencyGroupPolicyId: [Output Only] ID of the
+      DiskConsistencyGroupPolicy for a secondary disk that was created using a
+      consistency group.
     sourceDisk: The source disk used to create this disk. You can provide this
       as a partial or full URL to the resource. For example, the following are
       valid values: -
@@ -30140,6 +30315,33 @@ class Disk(_messages.Message):
     SSD = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class AsyncSecondaryDisksValue(_messages.Message):
+    r"""[Output Only] A list of disks this disk is asynchronously replicated
+    to.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        AsyncSecondaryDisksValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AsyncSecondaryDisksValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AsyncSecondaryDisksValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A DiskAsyncReplicationList attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('DiskAsyncReplicationList', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Labels to apply to this disk. These can be later modified by the
     setLabels method.
@@ -30165,51 +30367,56 @@ class Disk(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
-  creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 4)
-  eraseWindowsVssSignature = _messages.BooleanField(5)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 6, repeated=True)
-  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  interface = _messages.EnumField('InterfaceValueValuesEnum', 8)
-  kind = _messages.StringField(9, default='compute#disk')
-  labelFingerprint = _messages.BytesField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  lastAttachTimestamp = _messages.StringField(12)
-  lastDetachTimestamp = _messages.StringField(13)
-  licenseCodes = _messages.IntegerField(14, repeated=True)
-  licenses = _messages.StringField(15, repeated=True)
-  locationHint = _messages.StringField(16)
-  locked = _messages.BooleanField(17)
-  multiWriter = _messages.BooleanField(18)
-  name = _messages.StringField(19)
-  options = _messages.StringField(20)
-  physicalBlockSizeBytes = _messages.IntegerField(21)
-  provisionedIops = _messages.IntegerField(22)
-  region = _messages.StringField(23)
-  replicaZones = _messages.StringField(24, repeated=True)
-  resourcePolicies = _messages.StringField(25, repeated=True)
-  satisfiesPzs = _messages.BooleanField(26)
-  selfLink = _messages.StringField(27)
-  selfLinkWithId = _messages.StringField(28)
-  sizeGb = _messages.IntegerField(29)
-  sourceDisk = _messages.StringField(30)
-  sourceDiskId = _messages.StringField(31)
-  sourceImage = _messages.StringField(32)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 33)
-  sourceImageId = _messages.StringField(34)
-  sourceInstantSnapshot = _messages.StringField(35)
-  sourceInstantSnapshotId = _messages.StringField(36)
-  sourceSnapshot = _messages.StringField(37)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 38)
-  sourceSnapshotId = _messages.StringField(39)
-  sourceStorageObject = _messages.StringField(40)
-  status = _messages.EnumField('StatusValueValuesEnum', 41)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 42)
-  type = _messages.StringField(43)
-  userLicenses = _messages.StringField(44, repeated=True)
-  users = _messages.StringField(45, repeated=True)
-  zone = _messages.StringField(46)
+  asyncPrimaryDisk = _messages.MessageField('DiskAsyncReplication', 2)
+  asyncSecondaryDisks = _messages.MessageField('AsyncSecondaryDisksValue', 3)
+  creationTimestamp = _messages.StringField(4)
+  description = _messages.StringField(5)
+  diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 6)
+  eraseWindowsVssSignature = _messages.BooleanField(7)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 8, repeated=True)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  interface = _messages.EnumField('InterfaceValueValuesEnum', 10)
+  kind = _messages.StringField(11, default='compute#disk')
+  labelFingerprint = _messages.BytesField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  lastAttachTimestamp = _messages.StringField(14)
+  lastDetachTimestamp = _messages.StringField(15)
+  licenseCodes = _messages.IntegerField(16, repeated=True)
+  licenses = _messages.StringField(17, repeated=True)
+  locationHint = _messages.StringField(18)
+  locked = _messages.BooleanField(19)
+  multiWriter = _messages.BooleanField(20)
+  name = _messages.StringField(21)
+  options = _messages.StringField(22)
+  physicalBlockSizeBytes = _messages.IntegerField(23)
+  provisionedIops = _messages.IntegerField(24)
+  region = _messages.StringField(25)
+  replicaZones = _messages.StringField(26, repeated=True)
+  resourcePolicies = _messages.StringField(27, repeated=True)
+  resourceStatus = _messages.MessageField('DiskResourceStatus', 28)
+  satisfiesPzs = _messages.BooleanField(29)
+  selfLink = _messages.StringField(30)
+  selfLinkWithId = _messages.StringField(31)
+  sizeGb = _messages.IntegerField(32)
+  sourceConsistencyGroupPolicy = _messages.StringField(33)
+  sourceConsistencyGroupPolicyId = _messages.StringField(34)
+  sourceDisk = _messages.StringField(35)
+  sourceDiskId = _messages.StringField(36)
+  sourceImage = _messages.StringField(37)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 38)
+  sourceImageId = _messages.StringField(39)
+  sourceInstantSnapshot = _messages.StringField(40)
+  sourceInstantSnapshotId = _messages.StringField(41)
+  sourceSnapshot = _messages.StringField(42)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 43)
+  sourceSnapshotId = _messages.StringField(44)
+  sourceStorageObject = _messages.StringField(45)
+  status = _messages.EnumField('StatusValueValuesEnum', 46)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 47)
+  type = _messages.StringField(48)
+  userLicenses = _messages.StringField(49, repeated=True)
+  users = _messages.StringField(50, repeated=True)
+  zone = _messages.StringField(51)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -30389,6 +30596,38 @@ class DiskAggregatedList(_messages.Message):
   selfLink = _messages.StringField(5)
   unreachables = _messages.StringField(6, repeated=True)
   warning = _messages.MessageField('WarningValue', 7)
+
+
+class DiskAsyncReplication(_messages.Message):
+  r"""A DiskAsyncReplication object.
+
+  Fields:
+    disk: The other disk asynchronously replicated to or from the current
+      disk. You can provide this as a partial or full URL to the resource. For
+      example, the following are valid values: -
+      https://www.googleapis.com/compute/v1/projects/project/zones/zone
+      /disks/disk - projects/project/zones/zone/disks/disk -
+      zones/zone/disks/disk
+    diskId: [Output Only] The unique ID of the other disk asynchronously
+      replicated to or from the current disk. This value identifies the exact
+      disk that was used to create this replication. For example, if you
+      started replicating the persistent disk from a disk that was later
+      deleted and recreated under the same name, the disk ID would identify
+      the exact version of the disk that was used.
+  """
+
+  disk = _messages.StringField(1)
+  diskId = _messages.StringField(2)
+
+
+class DiskAsyncReplicationList(_messages.Message):
+  r"""A DiskAsyncReplicationList object.
+
+  Fields:
+    asyncReplicationDisk: A DiskAsyncReplication attribute.
+  """
+
+  asyncReplicationDisk = _messages.MessageField('DiskAsyncReplication', 1)
 
 
 class DiskInstantiationConfig(_messages.Message):
@@ -30650,6 +30889,76 @@ class DiskMoveRequest(_messages.Message):
 
   destinationZone = _messages.StringField(1)
   targetDisk = _messages.StringField(2)
+
+
+class DiskResourceStatus(_messages.Message):
+  r"""A DiskResourceStatus object.
+
+  Messages:
+    AsyncSecondaryDisksValue: Key: disk, value: AsyncReplicationStatus message
+
+  Fields:
+    asyncPrimaryDisk: A DiskResourceStatusAsyncReplicationStatus attribute.
+    asyncSecondaryDisks: Key: disk, value: AsyncReplicationStatus message
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AsyncSecondaryDisksValue(_messages.Message):
+    r"""Key: disk, value: AsyncReplicationStatus message
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        AsyncSecondaryDisksValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AsyncSecondaryDisksValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AsyncSecondaryDisksValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A DiskResourceStatusAsyncReplicationStatus attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('DiskResourceStatusAsyncReplicationStatus', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  asyncPrimaryDisk = _messages.MessageField('DiskResourceStatusAsyncReplicationStatus', 1)
+  asyncSecondaryDisks = _messages.MessageField('AsyncSecondaryDisksValue', 2)
+
+
+class DiskResourceStatusAsyncReplicationStatus(_messages.Message):
+  r"""A DiskResourceStatusAsyncReplicationStatus object.
+
+  Enums:
+    StateValueValuesEnum:
+
+  Fields:
+    state: A StateValueValuesEnum attribute.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""StateValueValuesEnum enum type.
+
+    Values:
+      ACTIVE: Replication is active.
+      STARTING: Replication is starting.
+      STATE_UNSPECIFIED: <no description>
+      STOPPED: Replication is stopped.
+      STOPPING: Replication is stopping.
+    """
+    ACTIVE = 0
+    STARTING = 1
+    STATE_UNSPECIFIED = 2
+    STOPPED = 3
+    STOPPING = 4
+
+  state = _messages.EnumField('StateValueValuesEnum', 1)
 
 
 class DiskType(_messages.Message):
@@ -31341,6 +31650,58 @@ class DisksScopedList(_messages.Message):
 
   disks = _messages.MessageField('Disk', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class DisksStartAsyncReplicationRequest(_messages.Message):
+  r"""A DisksStartAsyncReplicationRequest object.
+
+  Fields:
+    asyncSecondaryDisk: The secondary disk to start asynchronous replication
+      to. You can provide this as a partial or full URL to the resource. For
+      example, the following are valid values: -
+      https://www.googleapis.com/compute/v1/projects/project/zones/zone
+      /disks/disk -
+      https://www.googleapis.com/compute/v1/projects/project/regions/region
+      /disks/disk - projects/project/zones/zone/disks/disk -
+      projects/project/regions/region/disks/disk - zones/zone/disks/disk -
+      regions/region/disks/disk
+  """
+
+  asyncSecondaryDisk = _messages.StringField(1)
+
+
+class DisksStopAsyncReplicationRequest(_messages.Message):
+  r"""A DisksStopAsyncReplicationRequest object.
+
+  Fields:
+    asyncSecondaryDisk: The secondary disk to stop asynchronous replication
+      to. Supplied if and only if the target disk is a primary disk in an
+      asynchronously replicated pair. You can provide this as a partial or
+      full URL to the resource. For example, the following are valid values: -
+      https://www.googleapis.com/compute/v1/projects/project/zones/zone
+      /disks/disk -
+      https://www.googleapis.com/compute/v1/projects/project/regions/region
+      /disks/disk - projects/project/zones/zone/disks/disk -
+      projects/project/regions/region/disks/disk - zones/zone/disks/disk -
+      regions/region/disks/disk
+  """
+
+  asyncSecondaryDisk = _messages.StringField(1)
+
+
+class DisksStopGroupAsyncReplicationRequest(_messages.Message):
+  r"""A DisksStopGroupAsyncReplicationRequest object.
+
+  Fields:
+    resourcePolicy: The URL of the DiskConsistencyGroupPolicy for the group of
+      disks to stop. This may be a full or partial URL, such as: -
+      https://www.googleapis.com/compute/v1/projects/project/regions/region
+      /resourcePolicies/resourcePolicy -
+      projects/project/regions/region/resourcePolicies/resourcePolicy -
+      regions/region/resourcePolicies/resourcePolicy
+  """
+
+  resourcePolicy = _messages.StringField(1)
 
 
 class DisplayDevice(_messages.Message):
@@ -55909,6 +56270,58 @@ class RegionDisksResizeRequest(_messages.Message):
   sizeGb = _messages.IntegerField(1)
 
 
+class RegionDisksStartAsyncReplicationRequest(_messages.Message):
+  r"""A RegionDisksStartAsyncReplicationRequest object.
+
+  Fields:
+    asyncSecondaryDisk: The secondary disk to start asynchronous replication
+      to. You can provide this as a partial or full URL to the resource. For
+      example, the following are valid values: -
+      https://www.googleapis.com/compute/v1/projects/project/zones/zone
+      /disks/disk -
+      https://www.googleapis.com/compute/v1/projects/project/regions/region
+      /disks/disk - projects/project/zones/zone/disks/disk -
+      projects/project/regions/region/disks/disk - zones/zone/disks/disk -
+      regions/region/disks/disk
+  """
+
+  asyncSecondaryDisk = _messages.StringField(1)
+
+
+class RegionDisksStopAsyncReplicationRequest(_messages.Message):
+  r"""A RegionDisksStopAsyncReplicationRequest object.
+
+  Fields:
+    asyncSecondaryDisk: The secondary disk to stop asynchronous replication
+      to. Supplied if and only if the target disk is a primary disk in an
+      asynchronously replicated pair. You can provide this as a partial or
+      full URL to the resource. For example, the following are valid values: -
+      https://www.googleapis.com/compute/v1/projects/project/zones/zone
+      /disks/disk -
+      https://www.googleapis.com/compute/v1/projects/project/regions/region
+      /disks/disk - projects/project/zones/zone/disks/disk -
+      projects/project/regions/region/disks/disk - zones/zone/disks/disk -
+      regions/region/disks/disk
+  """
+
+  asyncSecondaryDisk = _messages.StringField(1)
+
+
+class RegionDisksStopGroupAsyncReplicationRequest(_messages.Message):
+  r"""A RegionDisksStopGroupAsyncReplicationRequest object.
+
+  Fields:
+    resourcePolicy: The URL of the DiskConsistencyGroupPolicy for the group of
+      disks to stop. This may be a full or partial URL, such as: -
+      https://www.googleapis.com/compute/v1/projects/project/regions/region
+      /resourcePolicies/resourcePolicy -
+      projects/project/regions/region/resourcePolicies/resourcePolicy -
+      regions/region/resourcePolicies/resourcePolicy
+  """
+
+  resourcePolicy = _messages.StringField(1)
+
+
 class RegionInstanceGroupList(_messages.Message):
   r"""Contains a list of InstanceGroup resources.
 
@@ -66561,8 +66974,8 @@ class SubnetworkLogConfig(_messages.Message):
       the default behavior is determined by the org policy, if there is no org
       policy specified, then it will default to disabled.
     filterExpr: Can only be specified if VPC flow logs for this subnetwork is
-      enabled. Export filter used to define which VPC flow logs should be
-      logged.
+      enabled. The filter expression is used to define which VPC flow logs
+      should be exported to Cloud Logging.
     flowSampling: Can only be specified if VPC flow logging for this
       subnetwork is enabled. The value of the field must be in [0, 1]. Set the
       sampling rate of VPC flow logs within the subnetwork where 1.0 means all

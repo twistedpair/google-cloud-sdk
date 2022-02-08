@@ -276,7 +276,7 @@
     },
     "Instance": {
       "id": "Instance",
-      "description": "A Google Cloud Redis instance.",
+      "description": "A Memorystore for Redis instance.",
       "type": "object",
       "properties": {
         "name": {

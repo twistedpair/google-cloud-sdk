@@ -438,7 +438,7 @@ class AlphaFilestoreAdapter(object):
 
       if None not in [source_snapshot, source_backup]:
         raise InvalidArgumentError(
-            "At most one of ['source-snapshot', 'source-backup'] may be specified."
+            "At most one of ['source-snapshot', 'source-backup'] can be specified."
         )
       if source_backup is not None and location is None:
         raise InvalidArgumentError(

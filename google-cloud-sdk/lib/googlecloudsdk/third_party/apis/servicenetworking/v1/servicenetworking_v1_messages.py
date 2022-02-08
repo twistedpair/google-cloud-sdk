@@ -123,6 +123,9 @@ class AddSubnetworkRequest(_messages.Message):
   r"""Request to create a subnetwork in a previously peered service network.
 
   Fields:
+    checkServiceNetworkingUsePermission: Optional. The IAM permission check
+      determines whether the consumer project has
+      'servicenetworking.services.use' permission or not.
     consumer: Required. A resource that represents the service consumer, such
       as `projects/123456`. The project number can be different from the value
       in the consumer network parameter. For example, the network might be
@@ -173,19 +176,20 @@ class AddSubnetworkRequest(_messages.Message):
       `compute.networkUser` role on the subnet.
   """
 
-  consumer = _messages.StringField(1)
-  consumerNetwork = _messages.StringField(2)
-  description = _messages.StringField(3)
-  ipPrefixLength = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  outsideAllocationPublicIpRange = _messages.StringField(5)
-  privateIpv6GoogleAccess = _messages.StringField(6)
-  purpose = _messages.StringField(7)
-  region = _messages.StringField(8)
-  requestedAddress = _messages.StringField(9)
-  requestedRanges = _messages.StringField(10, repeated=True)
-  secondaryIpRangeSpecs = _messages.MessageField('SecondaryIpRangeSpec', 11, repeated=True)
-  subnetwork = _messages.StringField(12)
-  subnetworkUsers = _messages.StringField(13, repeated=True)
+  checkServiceNetworkingUsePermission = _messages.BooleanField(1)
+  consumer = _messages.StringField(2)
+  consumerNetwork = _messages.StringField(3)
+  description = _messages.StringField(4)
+  ipPrefixLength = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  outsideAllocationPublicIpRange = _messages.StringField(6)
+  privateIpv6GoogleAccess = _messages.StringField(7)
+  purpose = _messages.StringField(8)
+  region = _messages.StringField(9)
+  requestedAddress = _messages.StringField(10)
+  requestedRanges = _messages.StringField(11, repeated=True)
+  secondaryIpRangeSpecs = _messages.MessageField('SecondaryIpRangeSpec', 12, repeated=True)
+  subnetwork = _messages.StringField(13)
+  subnetworkUsers = _messages.StringField(14, repeated=True)
 
 
 class Api(_messages.Message):

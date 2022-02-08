@@ -40,6 +40,8 @@ class _UserBucketArgs:
                default_event_based_hold=None,
                default_storage_class=None,
                labels_file_path=None,
+               labels_to_append=None,
+               labels_to_remove=None,
                lifecycle_file_path=None,
                location=None,
                log_bucket=None,
@@ -55,6 +57,8 @@ class _UserBucketArgs:
     self.default_event_based_hold = default_event_based_hold
     self.default_storage_class = default_storage_class
     self.labels_file_path = labels_file_path
+    self.labels_to_append = labels_to_append
+    self.labels_to_remove = labels_to_remove
     self.lifecycle_file_path = lifecycle_file_path
     self.location = location
     self.log_bucket = log_bucket
@@ -73,6 +77,8 @@ class _UserBucketArgs:
             self.default_event_based_hold == other.default_event_based_hold and
             self.default_storage_class == other.default_storage_class and
             self.labels_file_path == other.labels_file_path and
+            self.labels_to_append == other.labels_to_append and
+            self.labels_to_remove == other.labels_to_remove and
             self.lifecycle_file_path == other.lifecycle_file_path and
             self.location == other.location and
             self.log_bucket == other.log_bucket and
@@ -209,6 +215,8 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
                                            None),
           default_storage_class=default_storage_class,
           labels_file_path=labels_file_path,
+          labels_to_append=getattr(args, 'update_labels', None),
+          labels_to_remove=getattr(args, 'remove_labels', None),
           lifecycle_file_path=lifecycle_file_path,
           location=getattr(args, 'location', None),
           log_bucket=log_bucket,

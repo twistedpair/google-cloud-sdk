@@ -107,7 +107,9 @@ class AlloydbProjectsLocationsBackupsPatchRequest(_messages.Message):
     name: Output only. The name of the backup resource with the format: *
       projects/{project}/locations/{region}/backups/{backup_id} where the
       cluster and backup ID segments should satisfy the regex expression
-      "[a-z0-9-]+". For more details see https://google.aip.dev/122. The
+      "[a-z]([a-z0-9-]{0,61}[a-z0-9])?", e.g. 1-63 characters of lowercase
+      letters, numbers, and dashes, starting with a letter, and ending with a
+      letter or number. For more details see https://google.aip.dev/122. The
       prefix of the backup resource name is the name of the parent resource: *
       projects/{project}/locations/{region}
     requestId: Optional. An optional request ID to identify requests. Specify
@@ -358,7 +360,9 @@ class AlloydbProjectsLocationsClustersInstancesPatchRequest(_messages.Message):
     name: Output only. The name of the instance resource with the format: * pr
       ojects/{project}/locations/{region}/clusters/{cluster_id}/instances/{ins
       tance_id} where the cluster and instance ID segments should satisfy the
-      regex expression "[a-z0-9-]+". For more details see
+      regex expression "[a-z]([a-z0-9-]{0,61}[a-z0-9])?", e.g. 1-63 characters
+      of lowercase letters, numbers, and dashes, starting with a letter, and
+      ending with a letter or number. For more details see
       https://google.aip.dev/122. The prefix of the instance resource name is
       the name of the parent resource: *
       projects/{project}/locations/{region}/clusters/{cluster_id}
@@ -432,10 +436,12 @@ class AlloydbProjectsLocationsClustersPatchRequest(_messages.Message):
     cluster: A Cluster resource to be passed as the request body.
     name: Output only. The name of the cluster resource with the format: *
       projects/{project}/locations/{region}/clusters/{cluster_id} where the
-      cluster ID segment should satisfy the regex expression "[a-z0-9-]+". For
-      more details see https://google.aip.dev/122. The prefix of the cluster
-      resource name is the name of the parent resource: *
-      projects/{project}/locations/{region}
+      cluster ID segment should satisfy the regex expression
+      "[a-z]([a-z0-9-]{0,61}[a-z0-9])?", e.g. 1-63 characters of lowercase
+      letters, numbers, and dashes, starting with a letter, and ending with a
+      letter or number. For more details see https://google.aip.dev/122. The
+      prefix of the cluster resource name is the name of the parent resource:
+      * projects/{project}/locations/{region}
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -461,6 +467,41 @@ class AlloydbProjectsLocationsClustersPatchRequest(_messages.Message):
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
   validateOnly = _messages.BooleanField(5)
+
+
+class AlloydbProjectsLocationsClustersRestoreRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsClustersRestoreRequest object.
+
+  Fields:
+    backupSource_backupName: Required. The name of the backup resource with
+      the format: * projects/{project}/locations/{region}/backups/{backup_id}
+    cluster: A Cluster resource to be passed as the request body.
+    clusterId: Required. Id of the requesting object If auto-generating Id
+      server-side, remove this field and cluster_id from the method_signature
+      of Create RPC
+    parent: Required. The name of the parent resource. For the required
+      format, see the comment on the Cluster.name field.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, the backend validates the request, but
+      doesn't actually execute it.
+  """
+
+  backupSource_backupName = _messages.StringField(1)
+  cluster = _messages.MessageField('Cluster', 2)
+  clusterId = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
 
 
 class AlloydbProjectsLocationsGetRequest(_messages.Message):
@@ -552,7 +593,8 @@ class AlloydbProjectsLocationsSupportedDatabaseFlagsListRequest(_messages.Messag
     parent: Required. The name of the parent resource. The required format is:
       * projects/{project}/locations/{location} Regardless of the parent
       specified here, as long it is contains a valid project and location, the
-      service will return a static list of supported flags resources.
+      service will return a static list of supported flags resources. Note
+      that we do not not yet support region-specific flags (see b/211502903).
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -579,7 +621,9 @@ class Backup(_messages.Message):
     name: Output only. The name of the backup resource with the format: *
       projects/{project}/locations/{region}/backups/{backup_id} where the
       cluster and backup ID segments should satisfy the regex expression
-      "[a-z0-9-]+". For more details see https://google.aip.dev/122. The
+      "[a-z]([a-z0-9-]{0,61}[a-z0-9])?", e.g. 1-63 characters of lowercase
+      letters, numbers, and dashes, starting with a letter, and ending with a
+      letter or number. For more details see https://google.aip.dev/122. The
       prefix of the backup resource name is the name of the parent resource: *
       projects/{project}/locations/{region}
     state: Output only. The current state of the backup.
@@ -608,7 +652,8 @@ class Backup(_messages.Message):
       TYPE_UNSPECIFIED: <no description>
       ON_DEMAND: ON_DEMAND backups that were triggered by the customer (e.g.,
         not AUTOMATED).
-      AUTOMATED: AUTOMATED backups triggered by the backup scheduler.
+      AUTOMATED: AUTOMATED backups triggered by the managed backups scheduler
+        pursuant to a managed backup policy.
     """
     TYPE_UNSPECIFIED = 0
     ON_DEMAND = 1
@@ -653,7 +698,7 @@ class CancelOperationRequest(_messages.Message):
 
 
 class Cluster(_messages.Message):
-  r"""Message describing Cluster object NEXT_ID: 10
+  r"""Message describing Cluster object NEXT_ID: 14
 
   Enums:
     DatabaseVersionValueValuesEnum: Output only. The database engine major
@@ -671,16 +716,19 @@ class Cluster(_messages.Message):
       an output-only field and it's populated at the Cluster creation time.
       This field cannot be changed after cluster creation.
     initialUser: Input only. Initial user to setup during cluster creation.
-      Required. If used in `ImportCluster` this is ignored. We intend to
+      Required. If used in `RestoreCluster` this is ignored. We intend to
       deprecate this post private preview, once we have separate User
       resources.
     labels: Labels as key value pairs
+    migrationSource: A MigrationSource attribute.
     name: Output only. The name of the cluster resource with the format: *
       projects/{project}/locations/{region}/clusters/{cluster_id} where the
-      cluster ID segment should satisfy the regex expression "[a-z0-9-]+". For
-      more details see https://google.aip.dev/122. The prefix of the cluster
-      resource name is the name of the parent resource: *
-      projects/{project}/locations/{region}
+      cluster ID segment should satisfy the regex expression
+      "[a-z]([a-z0-9-]{0,61}[a-z0-9])?", e.g. 1-63 characters of lowercase
+      letters, numbers, and dashes, starting with a letter, and ending with a
+      letter or number. For more details see https://google.aip.dev/122. The
+      prefix of the cluster resource name is the name of the parent resource:
+      * projects/{project}/locations/{region}
     network: The resource link for the VPC network in which cluster resources
       are created and from which they are accessible via Private IP. The
       network must belong to the same project as the cluster. It is specified
@@ -699,9 +747,11 @@ class Cluster(_messages.Message):
     Values:
       DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
       POSTGRES_13: The database version is Postgres 13.
+      POSTGRES_14: The database version is Postgres 14.
     """
     DATABASE_VERSION_UNSPECIFIED = 0
     POSTGRES_13 = 1
+    POSTGRES_14 = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current serving state of the cluster.
@@ -718,6 +768,9 @@ class Cluster(_messages.Message):
       CREATING: The cluster is being created.
       DELETING: The cluster is being deleted.
       FAILED: The creation of the cluster failed.
+      BOOTSTRAPPING: The cluster is bootstrapping with data from some other
+        source. Direct mutations to the cluster (e.g. adding read pool) are
+        not allowed.
     """
     STATE_UNSPECIFIED = 0
     READY = 1
@@ -726,6 +779,7 @@ class Cluster(_messages.Message):
     CREATING = 4
     DELETING = 5
     FAILED = 6
+    BOOTSTRAPPING = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -755,10 +809,11 @@ class Cluster(_messages.Message):
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
   initialUser = _messages.MessageField('UserPassword', 3)
   labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  network = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  migrationSource = _messages.MessageField('MigrationSource', 5)
+  name = _messages.StringField(6)
+  network = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class Empty(_messages.Message):
@@ -836,7 +891,9 @@ class Instance(_messages.Message):
     name: Output only. The name of the instance resource with the format: * pr
       ojects/{project}/locations/{region}/clusters/{cluster_id}/instances/{ins
       tance_id} where the cluster and instance ID segments should satisfy the
-      regex expression "[a-z0-9-]+". For more details see
+      regex expression "[a-z]([a-z0-9-]{0,61}[a-z0-9])?", e.g. 1-63 characters
+      of lowercase letters, numbers, and dashes, starting with a letter, and
+      ending with a letter or number. For more details see
       https://google.aip.dev/122. The prefix of the instance resource name is
       the name of the parent resource: *
       projects/{project}/locations/{region}/clusters/{cluster_id}
@@ -893,6 +950,10 @@ class Instance(_messages.Message):
         during an operation on the instance. Note: Instances in this state
         would tried to be auto-repaired. And Customers should be able to
         restart, update or delete these instances.
+      BOOTSTRAPPING: Index 7 is used in the producer apis for ROLLED_BACK
+        state. Keeping that index unused in case that state also needs to
+        exposed via consumer apis in future. The instance has been configured
+        to sync data from some other source.
     """
     STATE_UNSPECIFIED = 0
     READY = 1
@@ -901,6 +962,7 @@ class Instance(_messages.Message):
     DELETING = 4
     MAINTENANCE = 5
     FAILED = 6
+    BOOTSTRAPPING = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DatabaseFlagsValue(_messages.Message):
@@ -1154,6 +1216,36 @@ class MachineConfig(_messages.Message):
   """
 
   cpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class MigrationSource(_messages.Message):
+  r"""Subset of the source instance configuration that is available when
+  reading the cluster resource. NEXT_ID: 4
+
+  Enums:
+    SourceTypeValueValuesEnum:
+
+  Fields:
+    hostPort: Output only. The host and port of the on-premises instance in
+      host:port format
+    referenceId: Output only. Place holder for the external source
+      identifier(e.g DMS job name) that created the cluster.
+    sourceType: A SourceTypeValueValuesEnum attribute.
+  """
+
+  class SourceTypeValueValuesEnum(_messages.Enum):
+    r"""SourceTypeValueValuesEnum enum type.
+
+    Values:
+      MIGRATION_SOURCE_TYPE_UNSPECIFIED: <no description>
+      DMS: DMS source means the cluster was created via DMS migration job.
+    """
+    MIGRATION_SOURCE_TYPE_UNSPECIFIED = 0
+    DMS = 1
+
+  hostPort = _messages.StringField(1)
+  referenceId = _messages.StringField(2)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 3)
 
 
 class NetworkConfig(_messages.Message):
@@ -1498,9 +1590,11 @@ class SupportedDatabaseFlag(_messages.Message):
     Values:
       DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
       POSTGRES_13: The database version is Postgres 13.
+      POSTGRES_14: The database version is Postgres 14.
     """
     DATABASE_VERSION_UNSPECIFIED = 0
     POSTGRES_13 = 1
+    POSTGRES_14 = 2
 
   class ValueTypeValueValuesEnum(_messages.Enum):
     r"""ValueTypeValueValuesEnum enum type.

@@ -19,7 +19,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.core import properties
 
 
 def GetProjectSpec():
@@ -63,15 +65,15 @@ def GetAssetResourceSpec():
       assetsId=AssetAttributeConfig())
 
 
-def GetContentResourceSpec():
+def GetContentitemResourceSpec():
   """Gets Content resource spec."""
   return concepts.ResourceSpec(
-      'dataplex.projects.locations.lakes.content',
+      'dataplex.projects.locations.lakes.contentitems',
       resource_name='content',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=LocationAttributeConfig(),
       lakesId=LakeAttributeConfig(),
-      contentId=ContentAttributeConfig())
+      contentitemsId=ContentAttributeConfig())
 
 
 def GetTaskResourceSpec():
@@ -98,7 +100,12 @@ def GetEnvironmentResourceSpec():
 
 def LocationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='location', help_text='The location of the Dataplex resource.')
+      name='location',
+      fallthroughs=[
+          deps.PropertyFallthrough(
+              properties.FromString('dataplex/location'))
+      ],
+      help_text='The location of the Dataplex resource.')
 
 
 def LakeAttributeConfig():
@@ -174,12 +181,12 @@ def AddAssetResourceArg(parser, verb, positional=True):
       required=True).AddToParser(parser)
 
 
-def AddContentResourceArg(parser, verb, positional=True):
+def AddContentitemResourceArg(parser, verb, positional=True):
   """Adds a resource argument for a Dataplex Content."""
   name = 'content' if positional else '--content'
   return concept_parsers.ConceptParser.ForResource(
       name,
-      GetContentResourceSpec(),
+      GetContentitemResourceSpec(),
       'The Content {}'.format(verb),
       required=True).AddToParser(parser)
 

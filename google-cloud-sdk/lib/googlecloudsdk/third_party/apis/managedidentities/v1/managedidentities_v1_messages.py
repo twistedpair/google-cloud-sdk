@@ -25,6 +25,92 @@ class AttachTrustRequest(_messages.Message):
   trust = _messages.MessageField('Trust', 1)
 
 
+class Backup(_messages.Message):
+  r"""Represents a Managed Microsoft Identities backup.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the backup.
+    TypeValueValuesEnum: Output only. Indicates whether it's an on-demand
+      backup or scheduled.
+
+  Messages:
+    LabelsValue: Optional. Resource labels to represent user provided
+      metadata.
+
+  Fields:
+    createTime: Output only. The time the backups was created.
+    labels: Optional. Resource labels to represent user provided metadata.
+    name: Output only. The unique name of the Backup in the form of `projects/
+      {project_id}/locations/global/domains/{domain_name}/backups/{name}`
+    state: Output only. The current state of the backup.
+    statusMessage: Output only. Additional information about the current
+      status of this backup, if available.
+    type: Output only. Indicates whether it's an on-demand backup or
+      scheduled.
+    updateTime: Output only. Last update time.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the backup.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      CREATING: Backup is being created.
+      ACTIVE: Backup has been created and validated.
+      FAILED: Backup has been created but failed validation.
+      DELETING: Backup is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    FAILED = 3
+    DELETING = 4
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Indicates whether it's an on-demand backup or scheduled.
+
+    Values:
+      TYPE_UNSPECIFIED: Backup was manually created.
+      ON_DEMAND: Backup was manually created.
+      SCHEDULED: Backup was automatically created.
+    """
+    TYPE_UNSPECIFIED = 0
+    ON_DEMAND = 1
+    SCHEDULED = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Resource labels to represent user provided metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  statusMessage = _messages.StringField(5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -118,10 +204,10 @@ class Date(_messages.Message):
   time of day and time zone are either specified elsewhere or are
   insignificant. The date is relative to the Gregorian Calendar. This can
   represent one of the following: * A full date, with non-zero year, month,
-  and day values * A month and day value, with a zero year, such as an
-  anniversary * A year on its own, with zero month and day values * A year and
-  month value, with a zero day, such as a credit card expiration date Related
-  types are google.type.TimeOfDay and `google.protobuf.Timestamp`.
+  and day values * A month and day, with a zero year (e.g., an anniversary) *
+  A year on its own, with a zero month and a zero day * A year and month, with
+  a zero day (e.g., a credit card expiration date) Related types: *
+  google.type.TimeOfDay * google.type.DateTime * google.protobuf.Timestamp
 
   Fields:
     day: Day of a month. Must be from 1 to 31 and valid for the year and
@@ -414,6 +500,10 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
     MaintenanceSchedulesValue: The MaintenanceSchedule contains the scheduling
       information of published maintenance schedule with same key as
       software_versions.
+    NotificationParametersValue: Optional. notification_parameters are
+      information that service producers may like to include that is not
+      relevant to Rollout. This parameter will only be passed to Gamma and
+      Cloud Logging for notification/logging purpose.
     ProducerMetadataValue: Output only. Custom string attributes used
       primarily to expose producer-specific information in monitoring
       dashboards. See go/get-instance-metadata.
@@ -450,6 +540,10 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
       |project_number}/locations/{location_id}/instances/{instance_id}` Note:
       Either project_id or project_number can be used, but keep it consistent
       with other APIs (e.g. RescheduleUpdate)
+    notificationParameters: Optional. notification_parameters are information
+      that service producers may like to include that is not relevant to
+      Rollout. This parameter will only be passed to Gamma and Cloud Logging
+      for notification/logging purpose.
     producerMetadata: Output only. Custom string attributes used primarily to
       expose producer-specific information in monitoring dashboards. See
       go/get-instance-metadata.
@@ -579,6 +673,35 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class NotificationParametersValue(_messages.Message):
+    r"""Optional. notification_parameters are information that service
+    producers may like to include that is not relevant to Rollout. This
+    parameter will only be passed to Gamma and Cloud Logging for
+    notification/logging purpose.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        NotificationParametersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        NotificationParametersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a NotificationParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class ProducerMetadataValue(_messages.Message):
     r"""Output only. Custom string attributes used primarily to expose
     producer-specific information in monitoring dashboards. See go/get-
@@ -641,14 +764,15 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
   maintenanceSchedules = _messages.MessageField('MaintenanceSchedulesValue', 6)
   maintenanceSettings = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings', 7)
   name = _messages.StringField(8)
-  producerMetadata = _messages.MessageField('ProducerMetadataValue', 9)
-  provisionedResources = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource', 10, repeated=True)
-  slmInstanceTemplate = _messages.StringField(11)
-  sloMetadata = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata', 12)
-  softwareVersions = _messages.MessageField('SoftwareVersionsValue', 13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  tenantProjectId = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
+  notificationParameters = _messages.MessageField('NotificationParametersValue', 9)
+  producerMetadata = _messages.MessageField('ProducerMetadataValue', 10)
+  provisionedResources = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource', 11, repeated=True)
+  slmInstanceTemplate = _messages.StringField(12)
+  sloMetadata = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata', 13)
+  softwareVersions = _messages.MessageField('SoftwareVersionsValue', 14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  tenantProjectId = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule(_messages.Message):
@@ -953,6 +1077,21 @@ class LDAPSSettings(_messages.Message):
   updateTime = _messages.StringField(6)
 
 
+class ListBackupsResponse(_messages.Message):
+  r"""ListBackupsResponse is the response message for ListBackups method.
+
+  Fields:
+    backups: A list of Cloud AD backups in the domain.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    unreachable: Locations that could not be reached.
+  """
+
+  backups = _messages.MessageField('Backup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListDomainsResponse(_messages.Message):
   r"""Response message for ListDomains
 
@@ -1220,6 +1359,38 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsAttachTrustRequest(_message
   name = _messages.StringField(2, required=True)
 
 
+class ManagedidentitiesProjectsLocationsGlobalDomainsBackupsCreateRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsBackupsCreateRequest
+  object.
+
+  Fields:
+    backup: A Backup resource to be passed as the request body.
+    backupId: Required. Backup Id, unique name to identify the backups with
+      the following restrictions: * Must be lowercase letters, numbers, and
+      hyphens * Must start with a letter. * Must contain between 1-63
+      characters. * Must end with a number or a letter. * Must be unique
+      within the domain.
+    parent: Required. The domain resource name using the form:
+      `projects/{project_id}/locations/global/domains/{domain_name}`
+  """
+
+  backup = _messages.MessageField('Backup', 1)
+  backupId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsBackupsDeleteRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsBackupsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The backup resource name using the form: `projects/{projec
+      t_id}/locations/global/domains/{domain_name}/backups/{backup_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ManagedidentitiesProjectsLocationsGlobalDomainsBackupsGetIamPolicyRequest(_messages.Message):
   r"""A
   ManagedidentitiesProjectsLocationsGlobalDomainsBackupsGetIamPolicyRequest
@@ -1245,6 +1416,62 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsBackupsGetIamPolicyRequest(
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsBackupsGetRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsBackupsGetRequest
+  object.
+
+  Fields:
+    name: Required. The backup resource name using the form: `projects/{projec
+      t_id}/locations/global/domains/{domain_name}/backups/{backup_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsBackupsListRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsBackupsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filter specifying constraints of a list operation.
+    orderBy: Optional. Specifies the ordering of results following syntax at
+      https://cloud.google.com/apis/design/design_patterns#sorting_order.
+    pageSize: Optional. The maximum number of items to return. If not
+      specified, a default value of 1000 will be used by the service.
+      Regardless of the page_size value, the response may include a partial
+      list and a caller should only rely on response's next_page_token to
+      determine if there are more instances left to be queried.
+    pageToken: Optional. The `next_page_token` value returned from a previous
+      List request, if any.
+    parent: Required. The domain resource name using the form:
+      `projects/{project_id}/locations/global/domains/{domain_name}`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsBackupsPatchRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsBackupsPatchRequest
+  object.
+
+  Fields:
+    backup: A Backup resource to be passed as the request body.
+    name: Output only. The unique name of the Backup in the form of `projects/
+      {project_id}/locations/global/domains/{domain_name}/backups/{name}`
+    updateMask: Required. Mask of fields to update. At least one path must be
+      supplied in this field. The elements of the repeated paths field may
+      only include these fields from Backup: * `labels`
+  """
+
+  backup = _messages.MessageField('Backup', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class ManagedidentitiesProjectsLocationsGlobalDomainsBackupsSetIamPolicyRequest(_messages.Message):
@@ -1451,6 +1678,19 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsResetAdminPasswordRequest(_
 
   name = _messages.StringField(1, required=True)
   resetAdminPasswordRequest = _messages.MessageField('ResetAdminPasswordRequest', 2)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsRestoreRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsRestoreRequest object.
+
+  Fields:
+    name: Required. Resource name for the domain to which the backup belongs
+    restoreDomainRequest: A RestoreDomainRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  restoreDomainRequest = _messages.MessageField('RestoreDomainRequest', 2)
 
 
 class ManagedidentitiesProjectsLocationsGlobalDomainsSetIamPolicyRequest(_messages.Message):
@@ -2091,6 +2331,16 @@ class ResetAdminPasswordResponse(_messages.Message):
   """
 
   password = _messages.StringField(1)
+
+
+class RestoreDomainRequest(_messages.Message):
+  r"""RestoreDomainRequest is the request received by RestoreDomain rpc
+
+  Fields:
+    backupId: Required. ID of the backup to be restored
+  """
+
+  backupId = _messages.StringField(1)
 
 
 class Schedule(_messages.Message):

@@ -127,6 +127,10 @@ def RunSqlExportCommand(args, client):
       args.database,
       args.table,
       offload=args.offload)
+  if args.offload:
+    log.status.write(
+        'Serverless exports cost extra. See the pricing page for more information: https://cloud.google.com/sql/pricing.\n'
+    )
   return RunExportCommand(args, client, sql_export_context)
 
 
@@ -152,6 +156,10 @@ def RunCsvExportCommand(args, client):
       escape=args.escape,
       fields_terminated_by=args.fields_terminated_by,
       lines_terminated_by=args.lines_terminated_by)
+  if args.offload:
+    log.status.write(
+        'Serverless exports cost extra. See the pricing page for more information: https://cloud.google.com/sql/pricing.\n'
+    )
   return RunExportCommand(args, client, csv_export_context)
 
 

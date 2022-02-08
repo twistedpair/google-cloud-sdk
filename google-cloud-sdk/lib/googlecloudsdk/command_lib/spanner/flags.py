@@ -256,8 +256,6 @@ def ReplicaFlag(parser, name, text, required=True):
           element_type=arg_parsers.ArgDict(
               spec={
                   'location': str,
-                  # TODO(b/399093071): Change type to
-                  # ReplicaInfo.TypeValueValuesEnum instead of str.
                   'type': str
               },
               required_keys=['location', 'type']),

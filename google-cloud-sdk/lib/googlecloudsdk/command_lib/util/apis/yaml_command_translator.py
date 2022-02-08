@@ -25,6 +25,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import abc
 import json
 import sys
 
@@ -61,8 +62,7 @@ class Translator(command_loading.YamlCommandTranslator):
 
   def Translate(self, path, command_data):
     spec = yaml_command_schema.CommandData(path[-1], command_data)
-    c = CommandBuilder(spec, path)
-    return c.Generate()
+    return CommandBuilder().Generate(spec, path)
 
 
 class DeclarativeIamRolesCompleter(completers.ListCommandCompleter):
@@ -100,389 +100,64 @@ class DeclarativeIamRolesCompleter(completers.ListCommandCompleter):
 class CommandBuilder(object):
   """Generates calliope commands based on the yaml spec."""
 
-  IGNORED_FLAGS = {'project'}
+  def __init__(self):
+    self.command_generators = {}
+    self.RegisterCommandGenerator(DescribeCommandGenerator)
+    self.RegisterCommandGenerator(ListCommandGenerator)
+    self.RegisterCommandGenerator(DeleteCommandGenerator)
+    self.RegisterCommandGenerator(CreateCommandGenerator)
+    self.RegisterCommandGenerator(WaitCommandGenerator)
+    self.RegisterCommandGenerator(UpdateCommandGenerator)
+    self.RegisterCommandGenerator(GenericCommandGenerator)
 
-  def __init__(self, spec, path):
-    self.spec = spec
-    self.path = path
-    self.has_request_method = yaml_command_schema.CommandType.HasRequestMethod(
-        spec.command_type)
-    self.ConfigureCommand()
+    self.RegisterCommandGenerator(GetIamPolicyCommandGenerator)
+    self.RegisterCommandGenerator(SetIamPolicyCommandGenerator)
+    self.RegisterCommandGenerator(AddIamPolicyBindingCommandGenerator)
+    self.RegisterCommandGenerator(RemoveIamPolicyBindingCommandGenerator)
 
-  def ConfigureCommand(self):
-    """Allows command to be reconfigured if needed."""
-    resource_arg = self.spec.arguments.resource
+    self.RegisterCommandGenerator(ImportCommandGenerator)
+    self.RegisterCommandGenerator(ExportCommandGenerator)
+    self.RegisterCommandGenerator(ConfigExportCommandGenerator)
 
-    if self.has_request_method:
-      self.method = registry.GetMethod(self.spec.request.collection,
-                                       self.spec.request.method,
-                                       self.spec.request.api_version)
-      self.resource_collection = self.method.resource_argument_collection
-      self.display_resource_type = self.spec.request.display_resource_type
+  def RegisterCommandGenerator(self, command_generator):
+    if command_generator.command_type in self.command_generators:
+      raise ValueError('Command type [{}] has already been registered.'.format(
+          command_generator.command_type))
+    self.command_generators[command_generator.command_type] = command_generator
 
-    else:
-      self.method = None
-      self.resource_collection = registry.GetAPICollection(
-          self.spec.arguments.resource.GenerateResourceSpec().collection)
-      self.display_resource_type = None
+  def GetCommandGenerator(self, spec, path):
+    """Returns the command generator for a spec and path.
 
-    self.arg_generator = arg_marshalling.DeclarativeArgumentGenerator(
-        self.method, self.spec.arguments.params, resource_arg,
-        self.resource_collection)
-
-    if (not self.display_resource_type and resource_arg and
-        not resource_arg.is_parent_resource):
-      self.display_resource_type = resource_arg.name if resource_arg else None
-
-  def Generate(self):
-    """Generates a calliope command from the yaml spec.
+    Args:
+      spec: yaml_command_schema.CommandData, the spec for the command being
+        generated.
+      path: Path for the command.
 
     Raises:
       ValueError: If we don't know how to generate the given command type (this
         is not actually possible right now due to the enum).
 
     Returns:
-      calliope.base.Command, The command that implements the spec.
+      The command generator.
     """
-    if self.spec.command_type == yaml_command_schema.CommandType.DESCRIBE:
-      command = DescribeCommandGenerator(self.spec, self.path).Generate()
-    elif self.spec.command_type == yaml_command_schema.CommandType.LIST:
-      command = ListCommandGenerator(self.spec, self.path).Generate()
-    elif self.spec.command_type == yaml_command_schema.CommandType.DELETE:
-      command = DeleteCommandGenerator(self.spec, self.path).Generate()
-    elif self.spec.command_type == yaml_command_schema.CommandType.CREATE:
-      command = CreateCommandGenerator(self.spec, self.path).Generate()
-    elif self.spec.command_type == yaml_command_schema.CommandType.WAIT:
-      command = WaitCommandGenerator(self.spec, self.path).Generate()
-    elif (self.spec.command_type ==
-          yaml_command_schema.CommandType.GET_IAM_POLICY):
-      command = GetIamPolicyCommandGenerator(self.spec, self.path).Generate()
-    elif (self.spec.command_type ==
-          yaml_command_schema.CommandType.SET_IAM_POLICY):
-      command = SetIamPolicyCommandGenerator(self.spec, self.path).Generate()
-    elif (self.spec.command_type ==
-          yaml_command_schema.CommandType.ADD_IAM_POLICY_BINDING):
-      command = AddIamPolicyBindingCommandGenerator(
-          self.spec, self.path).Generate()
-    elif (self.spec.command_type ==
-          yaml_command_schema.CommandType.REMOVE_IAM_POLICY_BINDING):
-      command = RemoveIamPolicyBindingCommandGenerator(
-          self.spec, self.path).Generate()
-    elif self.spec.command_type == yaml_command_schema.CommandType.UPDATE:
-      command = UpdateCommandGenerator(self.spec, self.path).Generate()
-    elif self.spec.command_type == yaml_command_schema.CommandType.IMPORT:
-      command = ImportCommandGenerator(self.spec, self.path).Generate()
-    elif self.spec.command_type == yaml_command_schema.CommandType.EXPORT:
-      command = ExportCommandGenerator(self.spec, self.path).Generate()
-    elif self.spec.command_type == yaml_command_schema.CommandType.CONFIG_EXPORT:
-      command = ConfigExportCommandGenerator(self.spec, self.path).Generate()
-    elif self.spec.command_type == yaml_command_schema.CommandType.GENERIC:
-      command = self._GenerateGenericCommand()
-    else:
+    if spec.command_type not in self.command_generators:
       raise ValueError('Command [{}] unknown command type [{}].'.format(
-          ' '.join(self.path), self.spec.command_type))
-    self._ConfigureGlobalAttributes(command)
-    return command
+          ' '.join(path), spec.command_type))
+    return self.command_generators[spec.command_type](spec)
 
-  def _GenerateGenericCommand(self):
-    """Generates a generic command.
+  def Generate(self, spec, path):
+    """Generates a calliope command from the yaml spec.
 
-    A generic command has a resource argument, additional fields, and calls an
-    API method. It supports async if the async configuration is given. Any
-    fields is message_params will be generated as arguments and inserted into
-    the request message.
+    Args:
+      spec: yaml_command_schema.CommandData, the spec for the command being
+        generated.
+      path: Path for the command.
 
     Returns:
       calliope.base.Command, The command that implements the spec.
     """
-
-    # pylint: disable=no-self-argument, The class closure throws off the linter
-    # a bit. We want to use the generator class, not the class being generated.
-    # pylint: disable=protected-access, The linter gets confused about 'self'
-    # and thinks we are accessing something protected.
-    class Command(base.Command):
-      # pylint: disable=missing-docstring
-
-      @staticmethod
-      def Args(parser):
-        self._CommonArgs(parser)
-        if self.spec.async_:
-          base.ASYNC_FLAG.AddToParser(parser)
-
-      def Run(self_, args):
-        ref, response = self._CommonRun(args)
-        if self.spec.async_:
-          request_string = None
-          if ref:
-            request_string = 'Request issued for: [{{{}}}]'.format(
-                yaml_command_schema.NAME_FORMAT_KEY)
-          response = self._HandleAsync(
-              args, ref, response, request_string=request_string)
-        return self._HandleResponse(response, args)
-
-    return Command
-
-  def _CommonArgs(self, parser):
-    """Performs argument actions common to all commands.
-
-    Adds all generated arguments to the parser
-    Sets the command output format if specified
-
-    Args:
-      parser: The argparse parser.
-    """
-    args = self.arg_generator.GenerateArgs()
-    parser = self._Exclude(parser)
-    for arg in args:
-      arg.AddToParser(parser)
-    if self.spec.arguments.additional_arguments_hook:
-      for arg in self.spec.arguments.additional_arguments_hook():
-        arg.AddToParser(parser)
-    if self.spec.output.format:
-      parser.display_info.AddFormat(self.spec.output.format)
-    if self.spec.output.flatten:
-      parser.display_info.AddFlatten(self.spec.output.flatten)
-
-  def _Exclude(self, parser):
-    """Excludes specified arguments from the parser.
-
-    Args:
-      parser: The argparse parser.
-
-    Returns:
-      The argparse parser.
-    """
-    for arg in self.spec.arguments.exclude:
-      base.Argument('--{}'.format(arg), help='').RemoveFromParser(parser)
-    return parser
-
-  def _CommonRun(self, args, existing_message=None):
-    """Performs run actions common to all commands.
-
-    Parses the resource argument into a resource reference
-    Prompts the user to continue (if applicable)
-    Calls the API method with the request generated from the parsed arguments
-
-    Args:
-      args: The argparse parser.
-      existing_message: the apitools message returned from previous request.
-
-    Returns:
-      (resources.Resource, response), A tuple of the parsed resource reference
-      and the API response from the method call.
-    """
-    ref = self.arg_generator.GetRequestResourceRef(args)
-    if self.spec.input.confirmation_prompt:
-      console_io.PromptContinue(
-          message=self._Format(self.spec.input.confirmation_prompt, ref,
-                               self._GetDisplayName(ref, args)),
-          default=self.spec.input.default_continue,
-          throw_if_unattended=True, cancel_on_no=True)
-
-    if self.spec.request.modify_method_hook:
-      self.spec.request.method = self.spec.request.modify_method_hook(ref, args)
-      self.method = registry.GetMethod(
-          self.spec.request.collection, self.spec.request.method,
-          self.spec.request.api_version)
-
-    if self.spec.request.issue_request_hook:
-      # Making the request is overridden, just call into the custom code.
-      return ref, self.spec.request.issue_request_hook(ref, args)
-
-    if self.spec.request.create_request_hook:
-      # We are going to make the request, but there is custom code to create it.
-      request = self.spec.request.create_request_hook(ref, args)
-    else:
-      parse_resource = self.spec.request.parse_resource_into_request
-      request = self.arg_generator.CreateRequest(
-          args,
-          self.spec.request.static_fields,
-          self.spec.request.resource_method_params,
-          self.spec.arguments.labels,
-          self.spec.command_type,
-          use_relative_name=self.spec.request.use_relative_name,
-          parse_resource_into_request=parse_resource,
-          existing_message=existing_message,
-          override_method=self.method)
-      for hook in self.spec.request.modify_request_hooks:
-        request = hook(ref, args, request)
-
-    response = self.method.Call(request,
-                                limit=self.arg_generator.Limit(args),
-                                page_size=self.arg_generator.PageSize(args))
-    return ref, response
-
-  def _HandleAsync(self, args, resource_ref, operation,
-                   request_string, extract_resource_result=True):
-    """Handles polling for operations if the async flag is provided.
-
-    Args:
-      args: argparse.Namespace, The parsed args.
-      resource_ref: resources.Resource, The resource reference for the resource
-        being operated on (not the operation itself)
-      operation: The operation message response.
-      request_string: The format string to print indicating a request has been
-        issued for the resource. If None, nothing is printed.
-      extract_resource_result: bool, True to return the original resource as
-        the result or False to just return the operation response when it is
-        done. You would set this to False for things like Delete where the
-        resource no longer exists when the operation is done.
-
-    Returns:
-      The response (either the operation or the original resource).
-    """
-    operation_ref = resources.REGISTRY.Parse(
-        getattr(operation, self.spec.async_.response_name_field),
-        collection=self.spec.async_.collection,
-        api_version=(
-            self.spec.async_.api_version or self.spec.request.api_version))
-    request_string = self.spec.async_.request_issued_message or request_string
-    if request_string:
-      log.status.Print(self._Format(request_string, resource_ref,
-                                    self._GetDisplayName(resource_ref, args)))
-    if args.async_:
-      log.status.Print(self._Format(
-          'Check operation [{{{}}}] for status.'
-          .format(yaml_command_schema.REL_NAME_FORMAT_KEY), operation_ref))
-      return operation
-
-    poller = AsyncOperationPoller(
-        self.spec, resource_ref if extract_resource_result else None, args)
-    if poller.IsDone(operation):
-      return poller.GetResult(operation)
-
-    return self._WaitForOperationWithPoller(
-        poller, operation_ref, args=args)
-
-  def _WaitForOperationWithPoller(self, poller, operation_ref, args=None):
-    progress_string = self._Format(
-        'Waiting for operation [{{{}}}] to complete'.format(
-            yaml_command_schema.REL_NAME_FORMAT_KEY),
-        operation_ref)
-    display_name = (self._GetDisplayName(poller.resource_ref, args)
-                    if args else None)
-    return waiter.WaitFor(
-        poller, operation_ref,
-        self._Format(progress_string, poller.resource_ref, display_name))
-
-  def _HandleResponse(self, response, args=None):
-    """Process the API response.
-
-    Args:
-      response: The apitools message object containing the API response.
-      args: argparse.Namespace, The parsed args.
-
-    Raises:
-      core.exceptions.Error: If an error was detected and extracted from the
-        response.
-
-    Returns:
-      A possibly modified response.
-    """
-    if self.spec.response.error:
-      error = self._FindPopulatedAttribute(
-          response, self.spec.response.error.field.split('.'))
-      if error:
-        messages = []
-        if self.spec.response.error.code:
-          messages.append('Code: [{}]'.format(
-              _GetAttribute(error, self.spec.response.error.code)))
-        if self.spec.response.error.message:
-          messages.append('Message: [{}]'.format(
-              _GetAttribute(error, self.spec.response.error.message)))
-        if messages:
-          raise exceptions.Error(' '.join(messages))
-        raise exceptions.Error(six.text_type(error))
-    if self.spec.response.result_attribute:
-      response = _GetAttribute(response, self.spec.response.result_attribute)
-    for hook in self.spec.response.modify_response_hooks:
-      response = hook(response, args)
-    return response
-
-  def _FindPopulatedAttribute(self, obj, attributes):
-    """Searches the given object for an attribute that is non-None.
-
-    This digs into the object search for the given attributes. If any attribute
-    along the way is a list, it will search for sub-attributes in each item
-    of that list. The first match is returned.
-
-    Args:
-      obj: The object to search
-      attributes: [str], A sequence of attributes to use to dig into the
-        resource.
-
-    Returns:
-      The first matching instance of the attribute that is non-None, or None
-      if one could nto be found.
-    """
-    if not attributes:
-      return obj
-    attr = attributes[0]
-    try:
-      obj = getattr(obj, attr)
-    except AttributeError:
-      return None
-    if isinstance(obj, list):
-      for x in obj:
-        obj = self._FindPopulatedAttribute(x, attributes[1:])
-        if obj:
-          return obj
-    return self._FindPopulatedAttribute(obj, attributes[1:])
-
-  def _Format(self, format_string, resource_ref, display_name=None):
-    """Formats a string with all the attributes of the given resource ref.
-
-    Args:
-      format_string: str, The format string.
-      resource_ref: resources.Resource, The resource reference to extract
-        attributes from.
-      display_name: the display name for the resource.
-
-    Returns:
-      str, The formatted string.
-    """
-    if resource_ref:
-      d = resource_ref.AsDict()
-      d[yaml_command_schema.NAME_FORMAT_KEY] = (
-          display_name or resource_ref.Name())
-      d[yaml_command_schema.REL_NAME_FORMAT_KEY] = resource_ref.RelativeName()
-    else:
-      d = {yaml_command_schema.NAME_FORMAT_KEY: display_name}
-    d[yaml_command_schema.RESOURCE_TYPE_FORMAT_KEY] = self.display_resource_type
-    return format_string.format(**d)
-
-  def _ConfigureGlobalAttributes(self, command):
-    """Configures top level attributes of the generated command.
-
-    Args:
-      command: The command being generated.
-    """
-    if self.spec.hidden:
-      command = base.Hidden(command)
-    if self.spec.release_tracks:
-      command = base.ReleaseTracks(*self.spec.release_tracks)(command)
-    if self.spec.deprecated_data:
-      command = base.Deprecate(**self.spec.deprecated_data)(command)
-    if not hasattr(command, 'detailed_help'):
-      key_map = {
-          'description': 'DESCRIPTION',
-          'examples': 'EXAMPLES',
-      }
-      command.detailed_help = {
-          key_map.get(k, k): v for k, v in self.spec.help_text.items()
-      }
-    if self.has_request_method:
-      command.detailed_help['API REFERENCE'] = (
-          'This command uses the *{}/{}* API. The full documentation for this '
-          'API can be found at: {}'.format(self.method.collection.api_name,
-                                           self.method.collection.api_version,
-                                           self.method.collection.docs_url))
-
-  def _GetDisplayName(self, resource_ref, args):
-    if (self.spec.arguments.resource
-        and self.spec.arguments.resource.display_name_hook):
-      return self.spec.arguments.resource.display_name_hook(resource_ref, args)
-    return resource_ref.Name() if resource_ref else None
+    generator = self.GetCommandGenerator(spec, path)
+    return generator.Generate()
 
 
 class AsyncOperationPoller(waiter.OperationPoller):
@@ -614,18 +289,16 @@ def _GetAttribute(obj, attr_path):
   return obj
 
 
-class BaseCommandGenerator(object):
+class BaseCommandGenerator(six.with_metaclass(abc.ABCMeta, object)):
   """Base class for command generation."""
 
-  def __init__(self, spec, path):
+  def __init__(self, spec):
     self.spec = spec
-    self.path = path
     self.has_request_method = yaml_command_schema.CommandType.HasRequestMethod(
         spec.command_type)
-    self.ConfigureCommand()
+    self.InitializeGeneratorForCommand()
 
-  def ConfigureCommand(self):
-    """Allows command to be reconfigured if needed."""
+  def InitializeGeneratorForCommand(self):
     resource_arg = self.spec.arguments.resource
 
     if self.has_request_method:
@@ -893,11 +566,97 @@ class BaseCommandGenerator(object):
 
     return get_method.Call(get_arg_generator.CreateRequest(args))
 
+  def _ConfigureCommand(self, command):
+    """Configures top level attributes of the generated command.
+
+    Args:
+      command: The command being generated.
+
+    Returns:
+      calliope.base.Command, The command that implements the spec.
+    """
+    if self.spec.hidden:
+      command = base.Hidden(command)
+    if self.spec.release_tracks:
+      command = base.ReleaseTracks(*self.spec.release_tracks)(command)
+    if self.spec.deprecated_data:
+      command = base.Deprecate(**self.spec.deprecated_data)(command)
+    if not hasattr(command, 'detailed_help'):
+      key_map = {
+          'description': 'DESCRIPTION',
+          'examples': 'EXAMPLES',
+      }
+      command.detailed_help = {
+          key_map.get(k, k): v for k, v in self.spec.help_text.items()
+      }
+    if self.has_request_method:
+      command.detailed_help['API REFERENCE'] = (
+          'This command uses the *{}/{}* API. The full documentation for this '
+          'API can be found at: {}'.format(self.method.collection.api_name,
+                                           self.method.collection.api_version,
+                                           self.method.collection.docs_url))
+    return command
+
+  @abc.abstractmethod
+  def _Generate(self):
+    pass
+
+  def Generate(self):
+    command = self._Generate()
+    self._ConfigureCommand(command)
+    return command
+
+
+class GenericCommandGenerator(BaseCommandGenerator):
+  """Generator for generic commands."""
+
+  command_type = yaml_command_schema.CommandType.GENERIC
+
+  def _Generate(self):
+    """Generates a generic command.
+
+    A generic command has a resource argument, additional fields, and calls an
+    API method. It supports async if the async configuration is given. Any
+    fields is message_params will be generated as arguments and inserted into
+    the request message.
+
+    Returns:
+      calliope.base.Command, The command that implements the spec.
+    """
+
+    # pylint: disable=no-self-argument, The class closure throws off the linter
+    # a bit. We want to use the generator class, not the class being generated.
+    # pylint: disable=protected-access, The linter gets confused about 'self'
+    # and thinks we are accessing something protected.
+    class Command(base.Command):
+      # pylint: disable=missing-docstring
+
+      @staticmethod
+      def Args(parser):
+        self._CommonArgs(parser)
+        if self.spec.async_:
+          base.ASYNC_FLAG.AddToParser(parser)
+
+      def Run(self_, args):
+        ref, response = self._CommonRun(args)
+        if self.spec.async_:
+          request_string = None
+          if ref:
+            request_string = 'Request issued for: [{{{}}}]'.format(
+                yaml_command_schema.NAME_FORMAT_KEY)
+          response = self._HandleAsync(
+              args, ref, response, request_string=request_string)
+        return self._HandleResponse(response, args)
+
+    return Command
+
 
 class DescribeCommandGenerator(BaseCommandGenerator):
   """Generator for describe commands."""
 
-  def Generate(self):
+  command_type = yaml_command_schema.CommandType.DESCRIBE
+
+  def _Generate(self):
     """Generates a Describe command.
 
     A describe command has a single resource argument and an API method to call
@@ -927,6 +686,8 @@ class DescribeCommandGenerator(BaseCommandGenerator):
 class ListCommandGenerator(BaseCommandGenerator):
   """Generator for list commands."""
 
+  command_type = yaml_command_schema.CommandType.LIST
+
   def _RegisterURIFunc(self, args):
     """Generates and registers a function to create a URI from a resource.
 
@@ -944,7 +705,7 @@ class ListCommandGenerator(BaseCommandGenerator):
       return ref.SelfLink()
     args.GetDisplayInfo().AddUriFunc(URIFunc)
 
-  def Generate(self):
+  def _Generate(self):
     """Generates a List command.
 
     A list command operates on a single resource and has flags for the parent
@@ -984,7 +745,9 @@ class ListCommandGenerator(BaseCommandGenerator):
 class DeleteCommandGenerator(BaseCommandGenerator):
   """Generator for delete commands."""
 
-  def Generate(self):
+  command_type = yaml_command_schema.CommandType.DELETE
+
+  def _Generate(self):
     """Generates a Delete command.
 
     A delete command has a single resource argument and an API to call to
@@ -1035,7 +798,9 @@ class DeleteCommandGenerator(BaseCommandGenerator):
 class CreateCommandGenerator(BaseCommandGenerator):
   """Generator for create commands."""
 
-  def Generate(self):
+  command_type = yaml_command_schema.CommandType.CREATE
+
+  def _Generate(self):
     """Generates a Create command.
 
     A create command has a single resource argument and an API to call to
@@ -1102,13 +867,15 @@ class CreateCommandGenerator(BaseCommandGenerator):
 class WaitCommandGenerator(BaseCommandGenerator):
   """Generator for wait commands."""
 
+  command_type = yaml_command_schema.CommandType.WAIT
+
   def _WaitForOperation(self, operation_ref, resource_ref,
                         extract_resource_result, args=None):
     poller = AsyncOperationPoller(
         self.spec, resource_ref if extract_resource_result else None, args)
     return self._WaitForOperationWithPoller(poller, operation_ref, resource_ref)
 
-  def Generate(self):
+  def _Generate(self):
     """Generates a wait command for polling operations.
 
     A wait command takes an operation reference and polls the status until it
@@ -1147,7 +914,9 @@ class WaitCommandGenerator(BaseCommandGenerator):
 class UpdateCommandGenerator(BaseCommandGenerator):
   """Generator for update commands."""
 
-  def Generate(self):
+  command_type = yaml_command_schema.CommandType.UPDATE
+
+  def _Generate(self):
     """Generates an update command.
 
     An update command has a resource argument, additional fields, and calls an
@@ -1214,7 +983,9 @@ class UpdateCommandGenerator(BaseCommandGenerator):
 class GetIamPolicyCommandGenerator(BaseCommandGenerator):
   """Generator for get-iam-policy commands."""
 
-  def Generate(self):
+  command_type = yaml_command_schema.CommandType.GET_IAM_POLICY
+
+  def _Generate(self):
     """Generates a get-iam-policy command.
 
     A get-iam-policy command has a single resource argument and an API method
@@ -1252,6 +1023,8 @@ class GetIamPolicyCommandGenerator(BaseCommandGenerator):
 class SetIamPolicyCommandGenerator(BaseCommandGenerator):
   """Generator for set-iam-policy commands."""
 
+  command_type = yaml_command_schema.CommandType.SET_IAM_POLICY
+
   def _SetPolicyUpdateMask(self, update_mask):
     """Set Field Mask on SetIamPolicy request message.
 
@@ -1282,7 +1055,7 @@ class SetIamPolicyCommandGenerator(BaseCommandGenerator):
     if hasattr(update_request, 'updateMask'):
       self.spec.request.static_fields[mask_field_path] = update_mask
 
-  def Generate(self):
+  def _Generate(self):
     """Generates a set-iam-policy command.
 
     A set-iam-policy command takes a resource argument, a policy to set on that
@@ -1399,6 +1172,8 @@ class BaseIamPolicyBindingCommandGenerator(BaseCommandGenerator):
 class AddIamPolicyBindingCommandGenerator(BaseIamPolicyBindingCommandGenerator):
   """Generator for add-iam-policy binding commands."""
 
+  command_type = yaml_command_schema.CommandType.ADD_IAM_POLICY_BINDING
+
   def _GetModifiedIamPolicyAddIamBinding(self, args, add_condition=False):
     """Get the IAM policy and add the specified binding to it.
 
@@ -1423,7 +1198,7 @@ class AddIamPolicyBindingCommandGenerator(BaseIamPolicyBindingCommandGenerator):
                                      args.role)
     return policy
 
-  def Generate(self):
+  def _Generate(self):
     """Generates an add-iam-policy-binding command.
 
     An add-iam-policy-binding command adds a binding to a IAM policy. A
@@ -1491,6 +1266,8 @@ class RemoveIamPolicyBindingCommandGenerator(
     BaseIamPolicyBindingCommandGenerator):
   """Generator for remove-iam-policy binding commands."""
 
+  command_type = yaml_command_schema.CommandType.REMOVE_IAM_POLICY_BINDING
+
   def _GetModifiedIamPolicyRemoveIamBinding(self, args, add_condition=False):
     """Get the IAM policy and remove the specified binding to it.
 
@@ -1511,7 +1288,7 @@ class RemoveIamPolicyBindingCommandGenerator(
       iam_util.RemoveBindingFromIamPolicy(policy, args.member, args.role)
     return policy
 
-  def Generate(self):
+  def _Generate(self):
     """Generates a remove-iam-policy-binding command.
 
     A remove-iam-policy-binding command removes a binding from a IAM policy. A
@@ -1569,7 +1346,9 @@ class RemoveIamPolicyBindingCommandGenerator(
 class ImportCommandGenerator(BaseCommandGenerator):
   """Generator for import commands."""
 
-  def Generate(self):
+  command_type = yaml_command_schema.CommandType.IMPORT
+
+  def _Generate(self):
     """Generates an import command.
 
     An import command has a single resource argument and an API method to call
@@ -1648,8 +1427,8 @@ class ImportCommandGenerator(BaseCommandGenerator):
                 self.spec.async_ = None
               elif self.spec.import_.create_async:
                 self.spec.async_ = self.spec.import_.create_async
-              # Reset command with updated configuration.
-              self.ConfigureCommand()
+              # Reset command generator with updated configuration.
+              self.InitializeGeneratorForCommand()
 
           # Abort command early if no changes are detected.
           if abort_if_equivalent:
@@ -1677,7 +1456,9 @@ class ImportCommandGenerator(BaseCommandGenerator):
 class ExportCommandGenerator(BaseCommandGenerator):
   """Generator for export commands."""
 
-  def Generate(self):
+  command_type = yaml_command_schema.CommandType.EXPORT
+
+  def _Generate(self):
     """Generates an export command.
 
     An export command has a single resource argument and an API method to call
@@ -1734,7 +1515,9 @@ class ExportCommandGenerator(BaseCommandGenerator):
 class ConfigExportCommandGenerator(BaseCommandGenerator):
   """Generator for config export commands."""
 
-  def Generate(self):
+  command_type = yaml_command_schema.CommandType.CONFIG_EXPORT
+
+  def _Generate(self):
     """Generates a config export command.
 
     A config export command has a resource argument as well as configuration

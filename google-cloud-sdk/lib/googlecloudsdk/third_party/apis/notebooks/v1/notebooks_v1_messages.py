@@ -656,6 +656,8 @@ class Instance(_messages.Message):
       instance, defaults to standard persistent disk (`PD_STANDARD`).
     containerImage: Use a container image to start the notebook instance.
     createTime: Output only. Instance creation time.
+    creator: Output only. Email address of entity that sent original
+      CreateInstance request.
     customGpuDriverPath: Specify a custom Cloud Storage path where the GPU
       driver is stored. If not specified, we'll automatically choose from
       official GPU drivers.
@@ -873,35 +875,36 @@ class Instance(_messages.Message):
   bootDiskType = _messages.EnumField('BootDiskTypeValueValuesEnum', 3)
   containerImage = _messages.MessageField('ContainerImage', 4)
   createTime = _messages.StringField(5)
-  customGpuDriverPath = _messages.StringField(6)
-  dataDiskSizeGb = _messages.IntegerField(7)
-  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 8)
-  diskEncryption = _messages.EnumField('DiskEncryptionValueValuesEnum', 9)
-  disks = _messages.MessageField('Disk', 10, repeated=True)
-  installGpuDriver = _messages.BooleanField(11)
-  instanceOwners = _messages.StringField(12, repeated=True)
-  kmsKey = _messages.StringField(13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  machineType = _messages.StringField(15)
-  metadata = _messages.MessageField('MetadataValue', 16)
-  name = _messages.StringField(17)
-  network = _messages.StringField(18)
-  nicType = _messages.EnumField('NicTypeValueValuesEnum', 19)
-  noProxyAccess = _messages.BooleanField(20)
-  noPublicIp = _messages.BooleanField(21)
-  noRemoveDataDisk = _messages.BooleanField(22)
-  postStartupScript = _messages.StringField(23)
-  proxyUri = _messages.StringField(24)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 25)
-  serviceAccount = _messages.StringField(26)
-  serviceAccountScopes = _messages.StringField(27, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 28)
-  state = _messages.EnumField('StateValueValuesEnum', 29)
-  subnet = _messages.StringField(30)
-  tags = _messages.StringField(31, repeated=True)
-  updateTime = _messages.StringField(32)
-  upgradeHistory = _messages.MessageField('UpgradeHistoryEntry', 33, repeated=True)
-  vmImage = _messages.MessageField('VmImage', 34)
+  creator = _messages.StringField(6)
+  customGpuDriverPath = _messages.StringField(7)
+  dataDiskSizeGb = _messages.IntegerField(8)
+  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 9)
+  diskEncryption = _messages.EnumField('DiskEncryptionValueValuesEnum', 10)
+  disks = _messages.MessageField('Disk', 11, repeated=True)
+  installGpuDriver = _messages.BooleanField(12)
+  instanceOwners = _messages.StringField(13, repeated=True)
+  kmsKey = _messages.StringField(14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  machineType = _messages.StringField(16)
+  metadata = _messages.MessageField('MetadataValue', 17)
+  name = _messages.StringField(18)
+  network = _messages.StringField(19)
+  nicType = _messages.EnumField('NicTypeValueValuesEnum', 20)
+  noProxyAccess = _messages.BooleanField(21)
+  noPublicIp = _messages.BooleanField(22)
+  noRemoveDataDisk = _messages.BooleanField(23)
+  postStartupScript = _messages.StringField(24)
+  proxyUri = _messages.StringField(25)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 26)
+  serviceAccount = _messages.StringField(27)
+  serviceAccountScopes = _messages.StringField(28, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 29)
+  state = _messages.EnumField('StateValueValuesEnum', 30)
+  subnet = _messages.StringField(31)
+  tags = _messages.StringField(32, repeated=True)
+  updateTime = _messages.StringField(33)
+  upgradeHistory = _messages.MessageField('UpgradeHistoryEntry', 34, repeated=True)
+  vmImage = _messages.MessageField('VmImage', 35)
 
 
 class InstanceConfig(_messages.Message):
@@ -2664,6 +2667,8 @@ class RuntimeSoftwareConfig(_messages.Message):
     postStartupScript: Path to a Bash script that automatically runs after a
       notebook instance fully boots up. The path must be a URL or Cloud
       Storage path (`gs://path-to-file/file-name`).
+    upgradeable: Output only. Bool indicating whether an newer image is
+      available in an image family.
   """
 
   customGpuDriverPath = _messages.StringField(1)
@@ -2674,6 +2679,7 @@ class RuntimeSoftwareConfig(_messages.Message):
   kernels = _messages.MessageField('ContainerImage', 6, repeated=True)
   notebookUpgradeSchedule = _messages.StringField(7)
   postStartupScript = _messages.StringField(8)
+  upgradeable = _messages.BooleanField(9)
 
 
 class Schedule(_messages.Message):
@@ -3454,6 +3460,13 @@ class VirtualMachineConfig(_messages.Message):
       Access.
     nicType: Optional. The type of vNIC to be used on this interface. This may
       be gVNIC or VirtioNet.
+    reservedIpRange: Optional. Reserved IP Range name is used for VPC Peering.
+      The subnetwork allocation will use the range *name* if it's assigned.
+      Example: managed-notebooks-range-c PEERING_RANGE_NAME_3=managed-
+      notebooks-range-c gcloud compute addresses create $PEERING_RANGE_NAME_3
+      \ --global \ --prefix-length=24 \ --description="Google Cloud Managed
+      Notebooks Range 24 c" \ --network=$NETWORK \ --addresses=192.168.0.0 \
+      --purpose=VPC_PEERING Field value will be: `managed-notebooks-range-c`
     shieldedInstanceConfig: Optional. Shielded VM Instance configuration
       settings.
     subnet: Optional. The Compute Engine subnetwork to be used for machine
@@ -3578,10 +3591,11 @@ class VirtualMachineConfig(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 9)
   network = _messages.StringField(10)
   nicType = _messages.EnumField('NicTypeValueValuesEnum', 11)
-  shieldedInstanceConfig = _messages.MessageField('RuntimeShieldedInstanceConfig', 12)
-  subnet = _messages.StringField(13)
-  tags = _messages.StringField(14, repeated=True)
-  zone = _messages.StringField(15)
+  reservedIpRange = _messages.StringField(12)
+  shieldedInstanceConfig = _messages.MessageField('RuntimeShieldedInstanceConfig', 13)
+  subnet = _messages.StringField(14)
+  tags = _messages.StringField(15, repeated=True)
+  zone = _messages.StringField(16)
 
 
 class VmImage(_messages.Message):

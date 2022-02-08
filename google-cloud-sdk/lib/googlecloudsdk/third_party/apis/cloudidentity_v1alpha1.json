@@ -127,7 +127,7 @@
           "type": "string"
         },
         "groupKey": {
-          "description": "Required. Immutable. The `EntityKey` of the `Group`.",
+          "description": "Required. The `EntityKey` of the `Group`.",
           "$ref": "EntityKey"
         },
         "parent": {

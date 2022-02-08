@@ -4,7 +4,7 @@
   "id": "compute:beta",
   "name": "compute",
   "version": "beta",
-  "revision": "20220124",
+  "revision": "20220131",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -1447,13 +1447,6 @@
         "service": {
           "description": "Specifies a service that will be enabled for audit logging. For example, `storage.googleapis.com`, `cloudsql.googleapis.com`. `allServices` is a special value that covers all services.",
           "type": "string"
-        },
-        "exemptedMembers": {
-          "description": "This is deprecated and has no effect. Do not use.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         },
         "auditLogConfigs": {
           "description": "The configuration for logging of each type of permission.",
@@ -11013,7 +11006,7 @@
           }
         },
         "timeoutSec": {
-          "description": "Not supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true. Instead, use maxStreamDuration.",
+          "description": "The backend service timeout has a different meaning depending on the type of load balancer. For more information see, Backend service settings The default is 30 seconds. The full range of timeout values allowed is 1 - 2,147,483,647 seconds. This value can be overridden in the PathMatcher configuration of the UrlMap that references this backend service. Not supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true. Instead, use maxStreamDuration.",
           "type": "integer",
           "format": "int32"
         },
@@ -11619,17 +11612,17 @@
           "$ref": "Duration"
         },
         "maxRequestsPerConnection": {
-          "description": "Not supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
+          "description": "Maximum requests for a single connection to the backend service. This parameter is respected by both the HTTP\/1.1 and HTTP\/2 implementations. If not specified, there is no limit. Setting this parameter to 1 will effectively disable keep alive. Not supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
           "type": "integer",
           "format": "int32"
         },
         "maxConnections": {
-          "description": "Not supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
+          "description": "The maximum number of connections to the backend service. If not specified, there is no limit. Not supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
           "type": "integer",
           "format": "int32"
         },
         "maxPendingRequests": {
-          "description": "Not supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
+          "description": "The maximum number of pending requests allowed to the backend service. If not specified, there is no limit. Not supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
           "type": "integer",
           "format": "int32"
         },
@@ -11639,7 +11632,7 @@
           "format": "int32"
         },
         "maxRetries": {
-          "description": "Not supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
+          "description": "The maximum number of parallel retries allowed to the backend cluster. If not specified, the default is 1. Not supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
           "type": "integer",
           "format": "int32"
         }
@@ -19863,6 +19856,10 @@
         },
         "selfLink": {
           "description": "[Output Only] Server-defined URL for the resource.",
+          "type": "string"
+        },
+        "selfLinkWithId": {
+          "description": "[Output Only] Server-defined URL for this resource with the resource id.",
           "type": "string"
         },
         "autoCreateSubnetworks": {
@@ -28601,7 +28598,7 @@
           }
         },
         "filterExpr": {
-          "description": "Can only be specified if VPC flow logs for this subnetwork is enabled. Export filter used to define which VPC flow logs should be logged.",
+          "description": "Can only be specified if VPC flow logs for this subnetwork is enabled. The filter expression is used to define which VPC flow logs should be exported to Cloud Logging.",
           "type": "string"
         }
       }

@@ -1021,7 +1021,10 @@ class _SectionApiEndpointOverrides(_Section):
     self.genomics = self._Add('genomics', command='gcloud genomics')
     self.gkebackup = self._Add('gkebackup', hidden=True)
     self.gkehub = self._Add('gkehub', hidden=True)
-    self.gkemulticloud = self._Add('gkemulticloud', hidden=True)
+    self.gkemulticloud = self._Add(
+        'gkemulticloud',
+        help_text=('Overrides API endpoint for `gcloud container aws` and '
+                   '`gcloud container azure` command groups. '))
     self.healthcare = self._Add('healthcare', command='gcloud healthcare')
     self.iam = self._Add('iam', command='gcloud iam')
     self.iap = self._Add('iap', command='gcloud iap')
@@ -1959,7 +1962,7 @@ class _SectionDataplex(_Section):
   """Contains the properties for the 'dataplex' section."""
 
   def __init__(self):
-    super(_SectionDataplex, self).__init__('dataplex', hidden=True)
+    super(_SectionDataplex, self).__init__('dataplex')
     self.location = self._Add(
         'location',
         help_text=(
@@ -2937,6 +2940,14 @@ class _SectionTest(_Section):
     self.results_base_url = self._Add('results_base_url', hidden=True)
     self.matrix_status_interval = self._Add(
         'matrix_status_interval', hidden=True)
+
+    self.feature_flag = self._Add(
+        'feature_flag',
+        hidden=True,
+        internal=True,
+        is_feature_flag=True,
+        help_text=('Run `gcloud meta test --feature-flag` to test the value of '
+                   'this feature flag.'))
 
 
 class _SectionTranscoder(_Section):

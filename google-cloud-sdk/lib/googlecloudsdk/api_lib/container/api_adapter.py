@@ -851,6 +851,7 @@ class UpdateClusterOptions(object):
       enable_managed_prometheus=None,
       disable_managed_prometheus=None,
       maintenance_interval=None,
+      dataplane_v2=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -946,6 +947,7 @@ class UpdateClusterOptions(object):
     self.enable_managed_prometheus = enable_managed_prometheus
     self.disable_managed_prometheus = disable_managed_prometheus
     self.maintenance_interval = maintenance_interval
+    self.dataplane_v2 = dataplane_v2
 
 
 class SetMasterAuthOptions(object):
@@ -4011,6 +4013,13 @@ class V1Beta1Adapter(V1Adapter):
           desiredServiceExternalIpsConfig=self.messages
           .ServiceExternalIPsConfig(enabled=options.enable_service_externalips))
 
+    if options.dataplane_v2:
+      update = self.messages.ClusterUpdate(
+          desiredDatapathProvider=(
+              self.messages.ClusterUpdate
+              .DesiredDatapathProviderValueValuesEnum
+              .ADVANCED_DATAPATH))
+
     if not update:
       # if reached here, it's possible:
       # - someone added update flags but not handled
@@ -4515,6 +4524,13 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       update = self.messages.ClusterUpdate(
           desiredServiceExternalIpsConfig=self.messages
           .ServiceExternalIPsConfig(enabled=options.enable_service_externalips))
+
+    if options.dataplane_v2:
+      update = self.messages.ClusterUpdate(
+          desiredDatapathProvider=(
+              self.messages.ClusterUpdate
+              .DesiredDatapathProviderValueValuesEnum
+              .ADVANCED_DATAPATH))
 
     if not update:
       # if reached here, it's possible:

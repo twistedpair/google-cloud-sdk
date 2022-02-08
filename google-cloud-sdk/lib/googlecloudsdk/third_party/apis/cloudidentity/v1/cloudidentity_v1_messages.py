@@ -1813,7 +1813,7 @@ class Group(_messages.Message):
     displayName: The display name of the `Group`.
     dynamicGroupMetadata: Optional. Dynamic group metadata like queries and
       status.
-    groupKey: Required. Immutable. The `EntityKey` of the `Group`.
+    groupKey: Required. The `EntityKey` of the `Group`.
     labels: Required. One or more label entries that apply to the Group.
       Currently supported labels contain a key with an empty value. Google
       Groups are the default type of group and have a label with a key of

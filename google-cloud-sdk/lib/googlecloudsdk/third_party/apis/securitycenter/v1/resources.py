@@ -31,6 +31,16 @@ class Collections(enum.Enum):
       ['foldersId'],
       True
   )
+  FOLDERS_BIGQUERYEXPORTS = (
+      'folders.bigQueryExports',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/bigQueryExports/{bigQueryExportsId}',
+      },
+      ['name'],
+      True
+  )
   FOLDERS_MUTECONFIGS = (
       'folders.muteConfigs',
       '{+name}',
@@ -57,9 +67,13 @@ class Collections(enum.Enum):
   )
   ORGANIZATIONS_BIGQUERYEXPORTS = (
       'organizations.bigQueryExports',
-      'organizations/{organizationsId}/bigQueryExports/{bigQueryExportId}',
-      {},
-      ['organizationsId', 'bigQueryExportId'],
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/bigQueryExports/'
+              '{bigQueryExportId}',
+      },
+      ['name'],
       True
   )
   ORGANIZATIONS_FINDINGS = (
@@ -123,6 +137,16 @@ class Collections(enum.Enum):
       'projects/{projectsId}',
       {},
       ['projectsId'],
+      True
+  )
+  PROJECTS_BIGQUERYEXPORTS = (
+      'projects.bigQueryExports',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/bigQueryExports/{bigQueryExportsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_MUTECONFIGS = (

@@ -45,7 +45,7 @@ Makes a command that works like so:
     $ cli-tool foos update --help
     [...]
     These flags modify the member baz bars of this foo. The baz bars allow you
-    to do a thing. At most one of these may be specified:
+    to do a thing. At most one of these can be specified:
 
       --add-baz-bars=[BAZ_BAR,...]
          Append the given values to the current baz bars.
@@ -205,7 +205,7 @@ def _ModifyCurrentValue(remove, add, clear, set_, current_value_thunk):
     List of str: the new value for the field, or None if no change is required.
   """
   if sum(map(bool, (remove, add, clear, set_))) > 1:
-    raise ValueError('At most one arg may be set.')
+    raise ValueError('At most one arg can be set.')
 
   if remove is not None:
     current_value = current_value_thunk()

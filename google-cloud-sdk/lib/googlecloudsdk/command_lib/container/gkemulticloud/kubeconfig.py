@@ -34,7 +34,6 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import semver
 
-
 COMMAND_DESCRIPTION = """
 Fetch credentials for a running Anthos cluster on {kind}.
 
@@ -251,7 +250,7 @@ def _GetConnectGatewayEndpoint():
   """
   endpoint = properties.VALUES.api_endpoint_overrides.gkemulticloud.Get()
   # Multicloud overrides prod endpoint at run time with the regionalized version
-  # so we can't simply check that endpoint is not overriden.
+  # so we can't simply check that endpoint is not overridden.
   if endpoint is None or endpoint.endswith(
       'gkemulticloud.googleapis.com/') or endpoint.endswith(
           'preprod-gkemulticloud.sandbox.googleapis.com/'):
@@ -296,13 +295,21 @@ def _ExecAuthPlugin(cmd_path, cmd_args):
       raise kubeconfig_util.Error(kubeconfig_util.SDK_BIN_PATH_NOT_FOUND)
     cmd_path = os.path.join(sdk_bin_path, bin_name)
 
-  return {
-      'command':
-          cmd_path,
-      'apiVersion':
-          'client.authentication.k8s.io/v1',
-      'provideClusterInfo':
-          True,
+  cfg = {
+      'command': cmd_path,
+      'apiVersion': 'client.authentication.k8s.io/v1',
+      'provideClusterInfo': True,
       'args': cmd_args.split(' '),
       'interactiveMode': 'Never'
   }
+
+  endpoint = properties.VALUES.api_endpoint_overrides.gkemulticloud.Get()
+  if endpoint:
+    cfg['env'] = [{
+        'name':
+            properties.VALUES.api_endpoint_overrides.gkemulticloud
+            .EnvironmentName(),
+        'value':
+            endpoint
+    }]
+  return cfg

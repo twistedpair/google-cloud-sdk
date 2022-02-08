@@ -72,12 +72,15 @@ class JobPrinter(cp.CustomPrinterBase):
   def TransformStatus(record):
     if record.status is None:
       return ''
-    return cp.Lines([
-        'Executed {} times'.format(record.status.executionCount),
-        'Last executed {} with execution {}'.format(
-            record.status.latestCreatedExecution.creationTimestamp,
-            record.status.latestCreatedExecution.name),
-    ])
+    lines = [
+        'Executed {}'.format(
+            _PluralizedWord('time', record.status.executionCount))
+    ]
+    if record.status.latestCreatedExecution is not None:
+      lines.append('Last executed {} with execution {}'.format(
+          record.status.latestCreatedExecution.creationTimestamp,
+          record.status.latestCreatedExecution.name))
+    return cp.Lines(lines)
 
   def Transform(self, record):
     """Transform a job into the output structure of marker classes."""

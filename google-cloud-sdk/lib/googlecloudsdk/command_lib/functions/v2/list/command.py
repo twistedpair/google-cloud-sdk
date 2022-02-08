@@ -102,10 +102,17 @@ def Run(args, release_track):
 
   list_v2_generator = _YieldFromLocations(args.regions, project, limit,
                                           messages, client)
-  client = api_v1_util.GetApiClientInstance()
-  messages = api_v1_util.GetApiMessagesModule()
-  list_v1_generator = command.YieldFromLocations(args.regions, project, limit,
-                                                 messages, client)
+
+  # Currently GCF v2 exists in staging so users of GCF v2 have in their config
+  # the api_endpoint_overrides of cloudfunctions.
+  # To list GCF v1 resources use _OverrideEndpointOverrides to forcibly
+  # overwrites's the user config's override with the original v1 endpoint.
+  with _OverrideEndpointOverrides('cloudfunctions',
+                                  'https://cloudfunctions.googleapis.com/'):
+    client = api_v1_util.GetApiClientInstance()
+    messages = api_v1_util.GetApiMessagesModule()
+    list_v1_generator = command.YieldFromLocations(args.regions, project, limit,
+                                                   messages, client)
 
   combined_generator = itertools.chain(list_v2_generator, list_v1_generator)
   return combined_generator

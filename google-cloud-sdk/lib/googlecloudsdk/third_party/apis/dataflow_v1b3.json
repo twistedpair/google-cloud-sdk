@@ -6653,8 +6653,6 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/compute",
-                    "https://www.googleapis.com/auth/compute.readonly",
                     "https://www.googleapis.com/auth/userinfo.email"
                   ],
                   "description": "Request that creates a new `Deployment`. The result is an `Operation` which can be used to track the creation process. This process usually takes a few seconds, but can sometimes take much longer. The tracking `Operation` is automatically deleted after a few hours, so there is no need to call `DeleteOperation`."
@@ -6705,8 +6703,6 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/compute",
-                    "https://www.googleapis.com/auth/compute.readonly",
                     "https://www.googleapis.com/auth/userinfo.email"
                   ],
                   "description": "Request that updates or optionally creates a new `Deployment`. The result is an `Operation` which can be used to track the update\/creation process. This process usually takes a few seconds, but can sometimes take much longer. The tracking `Operation` is automatically deleted after a few hours, so there is no need to call `DeleteOperation`."
@@ -6748,8 +6744,6 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/compute",
-                    "https://www.googleapis.com/auth/compute.readonly",
                     "https://www.googleapis.com/auth/userinfo.email"
                   ],
                   "description": "Request that deletes `Deployment`. The result is an `Operation` which can be used to track the creation process. This process usually takes a few seconds, but can sometimes take much longer. The tracking `Operation` is automatically deleted after a few hours, so there is no need to call `DeleteOperation`."
@@ -6790,8 +6784,6 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/compute",
-                    "https://www.googleapis.com/auth/compute.readonly",
                     "https://www.googleapis.com/auth/userinfo.email"
                   ],
                   "description": "Request to get Deployment."
@@ -6829,8 +6821,6 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/compute",
-                    "https://www.googleapis.com/auth/compute.readonly",
                     "https://www.googleapis.com/auth/userinfo.email"
                   ],
                   "description": "Request that lists `Deployments`."
@@ -6868,8 +6858,6 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/compute",
-                    "https://www.googleapis.com/auth/compute.readonly",
                     "https://www.googleapis.com/auth/userinfo.email"
                   ],
                   "description": "Request that lists revisions of a `Deployment`."
@@ -6899,8 +6887,6 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/compute",
-                    "https://www.googleapis.com/auth/compute.readonly",
                     "https://www.googleapis.com/auth/userinfo.email"
                   ],
                   "description": "Request that rollback `Deployment` to any of the previous revisions."

@@ -339,9 +339,9 @@
         }
       }
     },
-    "AddItemsRequest": {
-      "id": "AddItemsRequest",
-      "description": "Request used by the AddItems method.",
+    "AddAddressGroupItemsRequest": {
+      "id": "AddAddressGroupItemsRequest",
+      "description": "Request used by the AddAddressGroupItems method.",
       "type": "object",
       "properties": {
         "items": {
@@ -357,9 +357,9 @@
         }
       }
     },
-    "RemoveItemsRequest": {
-      "id": "RemoveItemsRequest",
-      "description": "Request used by the RemoveItems method.",
+    "RemoveAddressGroupItemsRequest": {
+      "id": "RemoveAddressGroupItemsRequest",
+      "description": "Request used by the RemoveAddressGroupItems method.",
       "type": "object",
       "properties": {
         "items": {
@@ -375,9 +375,9 @@
         }
       }
     },
-    "CloneItemsRequest": {
-      "id": "CloneItemsRequest",
-      "description": "Request used by the CloneItems method.",
+    "CloneAddressGroupItemsRequest": {
+      "id": "CloneAddressGroupItemsRequest",
+      "description": "Request used by the CloneAddressGroupItems method.",
       "type": "object",
       "properties": {
         "sourceAddressGroup": {
@@ -1375,7 +1375,7 @@
                     "addressGroup"
                   ],
                   "request": {
-                    "$ref": "AddItemsRequest"
+                    "$ref": "AddAddressGroupItemsRequest"
                   },
                   "response": {
                     "$ref": "Operation"
@@ -1403,7 +1403,7 @@
                     "addressGroup"
                   ],
                   "request": {
-                    "$ref": "RemoveItemsRequest"
+                    "$ref": "RemoveAddressGroupItemsRequest"
                   },
                   "response": {
                     "$ref": "Operation"
@@ -1431,7 +1431,7 @@
                     "addressGroup"
                   ],
                   "request": {
-                    "$ref": "CloneItemsRequest"
+                    "$ref": "CloneAddressGroupItemsRequest"
                   },
                   "response": {
                     "$ref": "Operation"
@@ -2617,7 +2617,7 @@
                     "addressGroup"
                   ],
                   "request": {
-                    "$ref": "AddItemsRequest"
+                    "$ref": "AddAddressGroupItemsRequest"
                   },
                   "response": {
                     "$ref": "Operation"
@@ -2645,7 +2645,7 @@
                     "addressGroup"
                   ],
                   "request": {
-                    "$ref": "RemoveItemsRequest"
+                    "$ref": "RemoveAddressGroupItemsRequest"
                   },
                   "response": {
                     "$ref": "Operation"
@@ -2673,7 +2673,7 @@
                     "addressGroup"
                   ],
                   "request": {
-                    "$ref": "CloneItemsRequest"
+                    "$ref": "CloneAddressGroupItemsRequest"
                   },
                   "response": {
                     "$ref": "Operation"

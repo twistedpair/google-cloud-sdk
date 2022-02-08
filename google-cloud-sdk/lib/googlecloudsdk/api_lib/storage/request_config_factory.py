@@ -39,6 +39,8 @@ class _BucketConfig(object):
   Attributes:
     cors_file_path (None|str): Path to file with CORS settings.
     labels_file_path (None|str): Path to file with labels settings.
+    labels_to_append (None|Dict): Labels to add to a bucket.
+    labels_to_remove (None|List[str]): Labels to remove from a bucket.
     lifecycle_file_path (None|str): Path to file with lifecycle settings.
     location (str|None): Location of bucket.
     versioning (None|bool): Whether to turn on object versioning in a bucket.
@@ -51,6 +53,8 @@ class _BucketConfig(object):
   def __init__(self,
                cors_file_path=None,
                labels_file_path=None,
+               labels_to_append=None,
+               labels_to_remove=None,
                lifecycle_file_path=None,
                location=None,
                versioning=None,
@@ -59,6 +63,8 @@ class _BucketConfig(object):
     self.location = location
     self.cors_file_path = cors_file_path
     self.labels_file_path = labels_file_path
+    self.labels_to_append = labels_to_append
+    self.labels_to_remove = labels_to_remove
     self.lifecycle_file_path = lifecycle_file_path
     self.versioning = versioning
     self.web_error_page = web_error_page
@@ -70,6 +76,8 @@ class _BucketConfig(object):
     return (super(_BucketConfig, self).__eq__(other) and
             self.cors_file_path == other.cors_file_path and
             self.labels_file_path == other.labels_file_path and
+            self.labels_to_append == other.labels_to_append and
+            self.labels_to_remove == other.labels_to_remove and
             self.location == other.location and
             self.lifecycle_file_path == other.lifecycle_file_path and
             self.versioning == other.versioning and
@@ -106,6 +114,8 @@ class _GcsBucketConfig(_BucketConfig):
                default_event_based_hold=None,
                default_storage_class=None,
                labels_file_path=None,
+               labels_to_append=None,
+               labels_to_remove=None,
                lifecycle_file_path=None,
                location=None,
                log_bucket=None,
@@ -116,9 +126,9 @@ class _GcsBucketConfig(_BucketConfig):
                web_error_page=None,
                web_main_page_suffix=None):
     super(_GcsBucketConfig,
-          self).__init__(cors_file_path, labels_file_path, lifecycle_file_path,
-                         location, versioning, web_error_page,
-                         web_main_page_suffix)
+          self).__init__(cors_file_path, labels_file_path, labels_to_append,
+                         labels_to_remove, lifecycle_file_path, location,
+                         versioning, web_error_page, web_main_page_suffix)
     self.default_encryption_key = default_encryption_key
     self.default_event_based_hold = default_event_based_hold
     self.default_storage_class = default_storage_class
@@ -380,6 +390,8 @@ def _get_request_config_resource_args(url,
       if user_resource_args:
         new_resource_args.cors_file_path = user_resource_args.cors_file_path
         new_resource_args.labels_file_path = user_resource_args.labels_file_path
+        new_resource_args.labels_to_append = user_resource_args.labels_to_append
+        new_resource_args.labels_to_remove = user_resource_args.labels_to_remove
         new_resource_args.lifecycle_file_path = (
             user_resource_args.lifecycle_file_path)
         new_resource_args.versioning = user_resource_args.versioning

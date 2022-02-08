@@ -44,50 +44,88 @@ def _raise_no_scheme_error(url):
 
 def _create_or_modify_transfer_options(transfer_spec, args, messages):
   """Creates or modifies TransferOptions object based on args."""
-  if not (args.overwrite_when or args.delete_from):
+  if not (getattr(args, 'overwrite_when', None) or getattr(
+      args, 'delete_from', None) or getattr(args, 'preserve_metadata', None) or
+          getattr(args, 'custom_storage_class', None)):
     return
   if not transfer_spec.transferOptions:
     transfer_spec.transferOptions = messages.TransferOptions()
 
-  if args.overwrite_when and jobs_flag_util.OverwriteOption(
+  if getattr(args, 'overwrite_when', None) and jobs_flag_util.OverwriteOption(
       args.overwrite_when) is jobs_flag_util.OverwriteOption.ALWAYS:
     transfer_spec.transferOptions.overwriteObjectsAlreadyExistingInSink = True
 
-  if args.delete_from:
+  if getattr(args, 'delete_from', None):
     delete_option = jobs_flag_util.DeleteOption(args.delete_from)
     if delete_option is jobs_flag_util.DeleteOption.SOURCE_AFTER_TRANSFER:
       transfer_spec.transferOptions.deleteObjectsFromSourceAfterTransfer = True
     elif delete_option is jobs_flag_util.DeleteOption.DESTINATION_IF_UNIQUE:
       transfer_spec.transferOptions.deleteObjectsUniqueInSink = True
 
+  metadata_options = messages.MetadataOptions()
+  if getattr(args, 'preserve_metadata', None):
+    for field_value in args.preserve_metadata:
+      field_key = jobs_flag_util.PreserveMetadataField(field_value)
+      if field_key == jobs_flag_util.PreserveMetadataField.ACL:
+        metadata_options.acl = (
+            messages.MetadataOptions.AclValueValuesEnum.ACL_PRESERVE)
+      elif field_key == jobs_flag_util.PreserveMetadataField.GID:
+        metadata_options.gid = (
+            messages.MetadataOptions.GidValueValuesEnum.GID_NUMBER)
+      elif field_key == jobs_flag_util.PreserveMetadataField.KMS_KEY:
+        metadata_options.kmsKey = (
+            messages.MetadataOptions.KmsKeyValueValuesEnum.KMS_KEY_PRESERVE)
+      elif field_key == jobs_flag_util.PreserveMetadataField.MODE:
+        metadata_options.mode = (
+            messages.MetadataOptions.ModeValueValuesEnum.MODE_PRESERVE)
+      elif field_key == jobs_flag_util.PreserveMetadataField.STORAGE_CLASS:
+        metadata_options.storageClass = (
+            messages.MetadataOptions.StorageClassValueValuesEnum
+            .STORAGE_CLASS_PRESERVE)
+      elif field_key == jobs_flag_util.PreserveMetadataField.SYMLINK:
+        metadata_options.symlink = (
+            messages.MetadataOptions.SymlinkValueValuesEnum.SYMLINK_PRESERVE)
+      elif field_key == jobs_flag_util.PreserveMetadataField.TEMPORARY_HOLD:
+        metadata_options.temporaryHold = (
+            messages.MetadataOptions.TemporaryHoldValueValuesEnum
+            .TEMPORARY_HOLD_PRESERVE)
+  if getattr(args, 'custom_storage_class', None):
+    metadata_options.storageClass = getattr(
+        messages.MetadataOptions.StorageClassValueValuesEnum,
+        'STORAGE_CLASS_' + args.custom_storage_class.upper())
+
+  if metadata_options != messages.MetadataOptions():
+    transfer_spec.transferOptions.metadataOptions = metadata_options
+
 
 def _create_or_modify_object_conditions(transfer_spec, args, messages):
   """Creates or modifies ObjectConditions based on args."""
-  if not (args.include_prefixes or args.exclude_prefixes or
-          args.include_modified_before_absolute or
-          args.include_modified_after_absolute or
-          args.include_modified_before_relative or
-          args.include_modified_after_relative):
+  if not (getattr(args, 'include_prefixes', None) or
+          getattr(args, 'exclude_prefixes', None) or
+          getattr(args, 'include_modified_before_absolute', None) or
+          getattr(args, 'include_modified_after_absolute', None) or
+          getattr(args, 'include_modified_before_relative', None) or
+          getattr(args, 'include_modified_after_relative', None)):
     return
   if not transfer_spec.objectConditions:
     transfer_spec.objectConditions = messages.ObjectConditions()
 
-  if args.include_prefixes:
+  if getattr(args, 'include_prefixes', None):
     transfer_spec.objectConditions.includePrefixes = args.include_prefixes
-  if args.exclude_prefixes:
+  if getattr(args, 'exclude_prefixes', None):
     transfer_spec.objectConditions.excludePrefixes = args.exclude_prefixes
-  if args.include_modified_before_absolute:
+  if getattr(args, 'include_modified_before_absolute', None):
     modified_before_datetime_string = (
         args.include_modified_before_absolute.astimezone(times.UTC).isoformat())
     transfer_spec.objectConditions.lastModifiedBefore = modified_before_datetime_string
-  if args.include_modified_after_absolute:
+  if getattr(args, 'include_modified_after_absolute', None):
     modified_after_datetime_string = (
         args.include_modified_after_absolute.astimezone(times.UTC).isoformat())
     transfer_spec.objectConditions.lastModifiedSince = modified_after_datetime_string
-  if args.include_modified_before_relative:
+  if getattr(args, 'include_modified_before_relative', None):
     transfer_spec.objectConditions.minTimeElapsedSinceLastModification = '{}s'.format(
         args.include_modified_before_relative)
-  if args.include_modified_after_relative:
+  if getattr(args, 'include_modified_after_relative', None):
     transfer_spec.objectConditions.maxTimeElapsedSinceLastModification = '{}s'.format(
         args.include_modified_after_relative)
 
@@ -95,7 +133,7 @@ def _create_or_modify_object_conditions(transfer_spec, args, messages):
 def _create_or_modify_creds(transfer_spec, args, messages):
   """Creates or modifies TransferSpec source creds based on args."""
   if transfer_spec.awsS3DataSource:
-    if args.source_creds_file:
+    if getattr(args, 'source_creds_file', None):
       creds_dict = creds_util.get_values_for_keys_from_file(
           args.source_creds_file,
           ['aws_access_key_id', 'aws_secret_access_key', 'role_arn'])
@@ -115,7 +153,7 @@ def _create_or_modify_creds(transfer_spec, args, messages):
     transfer_spec.awsS3DataSource.roleArn = role_arn
 
   elif transfer_spec.azureBlobStorageDataSource:
-    if args.source_creds_file:
+    if getattr(args, 'source_creds_file', None):
       sas_token = creds_util.get_values_for_keys_from_file(
           args.source_creds_file, ['sasToken'])['sasToken']
     else:
@@ -131,7 +169,7 @@ def _create_or_modify_transfer_spec(job, args, messages):
   if not job.transferSpec:
     job.transferSpec = messages.TransferSpec()
 
-  if args.source:
+  if getattr(args, 'source', None):
     # Clear any existing source to make space for new one.
     job.transferSpec.httpDataSource = None
     job.transferSpec.posixDataSource = None
@@ -171,7 +209,7 @@ def _create_or_modify_transfer_spec(job, args, messages):
                 storageAccount=source_url.account,
             ))
 
-  if args.destination:
+  if getattr(args, 'destination', None):
     # Clear any existing destination to make space for new one.
     job.transferSpec.posixDataSink = None
     job.transferSpec.gcsDataSink = None
@@ -188,19 +226,19 @@ def _create_or_modify_transfer_spec(job, args, messages):
       job.transferSpec.posixDataSink = messages.PosixFilesystem(
           rootDirectory=destination_url.object_name)
 
-  if args.destination_agent_pool:
+  if getattr(args, 'destination_agent_pool', None):
     job.transferSpec.sinkAgentPoolName = name_util.add_agent_pool_prefix(
         args.destination_agent_pool)
-  if args.source_agent_pool:
+  if getattr(args, 'source_agent_pool', None):
     job.transferSpec.sourceAgentPoolName = name_util.add_agent_pool_prefix(
         args.source_agent_pool)
-  if args.intermediate_storage_path:
+  if getattr(args, 'intermediate_storage_path', None):
     intermediate_storage_url = storage_url.storage_url_from_string(
         args.intermediate_storage_path)
     job.transferSpec.gcsIntermediateDataLocation = messages.GcsData(
         bucketName=intermediate_storage_url.bucket_name,
         path=intermediate_storage_url.object_name)
-  if args.manifest_file:
+  if getattr(args, 'manifest_file', None):
     job.transferSpec.transferManifest = messages.TransferManifest(
         location=args.manifest_file)
 
@@ -211,20 +249,22 @@ def _create_or_modify_transfer_spec(job, args, messages):
 
 def _create_or_modify_schedule(job, args, messages, is_update):
   """Creates or modifies transfer Schedule object based on args."""
+  schedule_starts = getattr(args, 'schedule_starts', None)
+  schedule_repeats_every = getattr(args, 'schedule_repeats_every', None)
+  schedule_repeats_until = getattr(args, 'schedule_repeats_until', None)
   if not is_update and args.do_not_run:
-    if (args.schedule_starts or args.schedule_repeats_every or
-        args.schedule_repeats_until):
+    if (schedule_starts or schedule_repeats_every or schedule_repeats_until):
       raise ValueError('Cannot set schedule and do-not-run flag.')
     return
-  if is_update and not (args.schedule_starts or args.schedule_repeats_every or
-                        args.schedule_repeats_until):
+  if is_update and not (schedule_starts or schedule_repeats_every or
+                        schedule_repeats_until):
     # Nothing needs modification.
     return
   if not job.schedule:
     job.schedule = messages.Schedule()
 
-  if args.schedule_starts:
-    start = args.schedule_starts.astimezone(times.UTC)
+  if schedule_starts:
+    start = schedule_starts.astimezone(times.UTC)
 
     job.schedule.scheduleStartDate = messages.Date(
         day=start.day,
@@ -242,18 +282,18 @@ def _create_or_modify_schedule(job, args, messages, is_update):
     job.schedule.scheduleStartDate = messages.Date(
         day=today_date.day, month=today_date.month, year=today_date.year)
 
-  if args.schedule_repeats_every:
-    job.schedule.repeatInterval = '{}s'.format(args.schedule_repeats_every)
+  if schedule_repeats_every:
+    job.schedule.repeatInterval = '{}s'.format(schedule_repeats_every)
     # Default behavior of running job every 24 hours if field not set will be
-    # blocked by args.schedule_repeats_until handling.
+    # blocked by schedule_repeats_until handling.
 
-  if args.schedule_repeats_until:
+  if schedule_repeats_until:
     if not job.schedule.repeatInterval:
       raise ValueError(
           'Scheduling a job end time requires setting a frequency with'
           ' --schedule-repeats-every. If no job end time is set, the job will'
           ' run one time.')
-    end = args.schedule_repeats_until.astimezone(times.UTC)
+    end = schedule_repeats_until.astimezone(times.UTC)
     job.schedule.scheduleEndDate = messages.Date(
         day=end.day,
         month=end.month,
@@ -272,26 +312,30 @@ def _create_or_modify_schedule(job, args, messages, is_update):
 
 def _create_or_modify_notification_config(job, args, messages, is_update=False):
   """Creates or modifies transfer NotificationConfig object based on args."""
-  if not (args.notification_pubsub_topic or args.notification_event_types or
-          args.notification_payload_format):
+  notification_pubsub_topic = getattr(args, 'notification_pubsub_topic', None)
+  notification_event_types = getattr(args, 'notification_event_types', None)
+  notification_payload_format = getattr(args, 'notification_payload_format',
+                                        None)
+  if not (notification_pubsub_topic or notification_event_types or
+          notification_payload_format):
     # Nothing to modify with.
     return
 
-  if args.notification_pubsub_topic:
+  if notification_pubsub_topic:
     if not job.notificationConfig:
       # Create config with required PubSub topic.
       job.notificationConfig = messages.NotificationConfig(
-          pubsubTopic=args.notification_pubsub_topic)
+          pubsubTopic=notification_pubsub_topic)
     else:
-      job.notificationConfig.pubsubTopic = args.notification_pubsub_topic
+      job.notificationConfig.pubsubTopic = notification_pubsub_topic
 
-  if (args.notification_event_types or
-      args.notification_payload_format) and not job.notificationConfig:
+  if (notification_event_types or
+      notification_payload_format) and not job.notificationConfig:
     raise ValueError('Cannot set notification config without'
                      ' --notification-pubsub-topic.')
 
-  if args.notification_payload_format:
-    payload_format_key = args.notification_payload_format.upper()
+  if notification_payload_format:
+    payload_format_key = notification_payload_format.upper()
     job.notificationConfig.payloadFormat = getattr(
         messages.NotificationConfig.PayloadFormatValueValuesEnum,
         payload_format_key)
@@ -300,9 +344,9 @@ def _create_or_modify_notification_config(job, args, messages, is_update=False):
     job.notificationConfig.payloadFormat = (
         messages.NotificationConfig.PayloadFormatValueValuesEnum.JSON)
 
-  if args.notification_event_types:
+  if notification_event_types:
     event_types = []
-    for event_type_arg in args.notification_event_types:
+    for event_type_arg in notification_event_types:
       event_type_key = 'TRANSFER_OPERATION_' + event_type_arg.upper()
       event_type = getattr(
           messages.NotificationConfig.EventTypesValueListEntryValuesEnum,
@@ -323,7 +367,10 @@ def _create_or_modify_notification_config(job, args, messages, is_update=False):
 
 def _create_or_modify_logging_config(job, args, messages):
   """Creates or modifies transfer LoggingConfig object based on args."""
-  if not (args.log_actions or args.log_action_states):
+  log_actions = getattr(args, 'log_actions', None)
+  log_action_states = getattr(args, 'log_action_states', None)
+
+  if not (log_actions or log_action_states):
     # Nothing to modify with.
     return
 
@@ -331,33 +378,33 @@ def _create_or_modify_logging_config(job, args, messages):
   existing_log_action_states = (
       job.loggingConfig and job.loggingConfig.logActionStates)
 
-  if (not (args.log_actions and args.log_action_states) and
-      ((args.log_actions and not existing_log_action_states) or
-       (args.log_action_states and not existing_log_actions))):
+  if (not (log_actions and log_action_states) and
+      ((log_actions and not existing_log_action_states) or
+       (log_action_states and not existing_log_actions))):
     raise ValueError('Both --log-actions and --log-action-states are required'
                      ' for a complete log config.')
 
   if not job.loggingConfig:
     job.loggingConfig = messages.LoggingConfig()
 
-  if args.log_actions:
+  if log_actions:
     actions = []
-    for action in args.log_actions:
+    for action in log_actions:
       actions.append(
           getattr(job.loggingConfig.LogActionsValueListEntryValuesEnum,
                   action.upper()))
     job.loggingConfig.logActions = actions
 
-  if args.log_action_states:
+  if log_action_states:
     action_states = []
-    for action_state in args.log_action_states:
+    for action_state in log_action_states:
       action_states.append(
           getattr(job.loggingConfig.LogActionStatesValueListEntryValuesEnum,
                   action_state.upper()))
     job.loggingConfig.logActionStates = action_states
 
 
-def generate_patch_transfer_job_message(messages, job):
+def _generate_patch_transfer_job_message(messages, job):
   """Generates Apitools patch message for transfer jobs."""
   project_id = job.projectId
   job.projectId = None
@@ -386,15 +433,15 @@ def generate_transfer_job_message(args, messages, existing_job=None):
   if not job.projectId:
     job.projectId = properties.VALUES.core.project.Get()
 
-  if args.name:
+  if getattr(args, 'name', None):
     job.name = name_util.add_job_prefix(args.name)
 
-  if args.description:
+  if getattr(args, 'description', None):
     job.description = args.description
 
   if existing_job:
     # Is job update instead of create.
-    if args.status:
+    if getattr(args, 'status', None):
       status_key = args.status.upper()
       job.status = getattr(messages.TransferJob.StatusValueValuesEnum,
                            status_key)
@@ -408,5 +455,5 @@ def generate_transfer_job_message(args, messages, existing_job=None):
   _create_or_modify_logging_config(job, args, messages)
 
   if existing_job:
-    return generate_patch_transfer_job_message(messages, job)
+    return _generate_patch_transfer_job_message(messages, job)
   return job

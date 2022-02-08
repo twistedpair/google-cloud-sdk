@@ -428,9 +428,14 @@ class AppLocationResolver(object):
       messages = _GetSchedulerMessages()
       request = messages.CloudschedulerProjectsLocationsListRequest(
           name='projects/{}'.format(project))
-      locations = list(list_pager.YieldFromList(
-          client.projects_locations, request, batch_size=2, field='locations',
-          batch_size_attribute='pageSize'))
+      locations = list(
+          list_pager.YieldFromList(
+              client.projects_locations,
+              request,
+              batch_size=2,
+              limit=2,
+              field='locations',
+              batch_size_attribute='pageSize'))
       if len(locations) >= 1:
         location = locations[0].labels.additionalProperties[0].value
         if len(locations) > 1 and not _DoesCommandRequireAppEngineApp():

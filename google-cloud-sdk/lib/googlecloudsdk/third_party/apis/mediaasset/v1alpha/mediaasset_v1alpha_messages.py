@@ -314,7 +314,8 @@ class Asset(_messages.Message):
       links.
     LinksValue: Links to other assets.
     MetadataValue: List of metadata for this asset.
-    MetadataInfoValue: Information about the metadata fields.
+    MetadataInfoValue: Output only. System-generated information about the
+      metadata fields. Includes update time and owner.
 
   Fields:
     assetId: Output only. The assetID of an asset.
@@ -326,7 +327,8 @@ class Asset(_messages.Message):
     linkSets: Named collections of Link Sets, each having qualified links.
     links: Links to other assets.
     metadata: List of metadata for this asset.
-    metadataInfo: Information about the metadata fields.
+    metadataInfo: Output only. System-generated information about the metadata
+      fields. Includes update time and owner.
     name: The resource name of the asset, in the following form: `projects/{pr
       oject}/locations/{location}/assetTypes/{type}/assets/{asset}`. Here
       {asset} is a resource id. Detailed rules for a resource id are: 1. 1
@@ -451,7 +453,8 @@ class Asset(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataInfoValue(_messages.Message):
-    r"""Information about the metadata fields.
+    r"""Output only. System-generated information about the metadata fields.
+    Includes update time and owner.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataInfoValue
@@ -794,7 +797,8 @@ class AssetTypeConfig(_messages.Message):
       CatalogIndexedFieldConfig is empty, the key must be "".
 
   Fields:
-    assetType: The asset type name that this catalog item configured.
+    assetType: The asset type name that this catalog item configured. Format:
+      projects/{project}/locations/{location}/assetTypes/{assetType}
     indexedFieldConfigs: A map between user-defined key and
       IndexedFieldConfig, where the key is indexed with the value configured
       by IndexedFieldConfig and customers can use the key as search operator
@@ -997,7 +1001,7 @@ class ComplexFieldType(_messages.Message):
     allowedValues: If present, metadata values of ComplexFieldType must be
       within the constraints of allowedValues.
     required: If true, a value of this complex type must contain this field.
-    type: Required. Type for this field. The type could be one of: - Primitive
+    type: Required. Type for this field. The type can be one of: - Primitive
       types ("string", "number", "bool") - Custom complex type. Format:
       "p/p/l/l/complexTypes/*" - Collections of the above - list(), dict()
   """
@@ -1017,7 +1021,8 @@ class ComplexType(_messages.Message):
       key-value pair.
 
   Fields:
-    allowUndefinedFields: Allow fields that aren't in complex type schema.
+    allowUndefinedFields: Allow fields that aren't in complex type schema as
+      defined in complex type fields.
     createTime: Output only. The creation time.
     fields: Mapping of a field name to its type.
     labels: The labels associated with this resource. Each label is a key-
@@ -1243,15 +1248,13 @@ class GoogleIamV1AuditConfig(_messages.Message):
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
-    exemptedMembers: A string attribute.
     service: Specifies a service that will be enabled for audit logging. For
       example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
       `allServices` is a special value that covers all services.
   """
 
   auditLogConfigs = _messages.MessageField('GoogleIamV1AuditLogConfig', 1, repeated=True)
-  exemptedMembers = _messages.StringField(2, repeated=True)
-  service = _messages.StringField(3)
+  service = _messages.StringField(2)
 
 
 class GoogleIamV1AuditLogConfig(_messages.Message):

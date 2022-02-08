@@ -51,10 +51,10 @@ def AddSshEC2KeyPair(parser):
       help='Name of the EC2 key pair to log in into control plane nodes.')
 
 
-def AddRoleArn(parser):
+def AddRoleArn(parser, required=True):
   parser.add_argument(
       '--role-arn',
-      required=True,
+      required=required,
       help=('Amazon Resource Name (ARN) of the IAM role to assume when '
             'managing AWS resources.'))
 

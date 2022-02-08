@@ -13,6 +13,22 @@ from apitools.base.py import extra_types
 package = 'gkehub'
 
 
+class AnthosObservabilityMembershipSpec(_messages.Message):
+  r"""**Anthosobservability**: Per-Membership Feature spec.
+
+  Fields:
+    doNotOptimizeMetrics: use full of metrics rather than optimized metrics.
+      See https://cloud.google.com/anthos/clusters/docs/on-
+      prem/1.8/concepts/logging-and-
+      monitoring#optimized_metrics_default_metrics
+    enableStackdriverOnApplications: enable collecting and reporting metrics
+      and logs from user apps See go/onyx-application-metrics-logs-user-guide
+  """
+
+  doNotOptimizeMetrics = _messages.BooleanField(1)
+  enableStackdriverOnApplications = _messages.BooleanField(2)
+
+
 class AppDevExperienceFeatureSpec(_messages.Message):
   r"""Spec for App Dev Experience Feature."""
 
@@ -1521,9 +1537,12 @@ class IdentityServiceOidcConfig(_messages.Message):
   Fields:
     certificateAuthorityData: PEM-encoded CA for OIDC provider.
     clientId: ID for OIDC client application.
+    clientSecret: Unencrypted OIDC client secret will be passed to the GKE Hub
+      CLH.
     deployCloudConsoleProxy: Flag to denote if reverse proxy is used to
       connect to auth provider. This flag should be set to true when provider
       is not reachable by Google Cloud Console.
+    encryptedClientSecret: Output only. Encrypted OIDC Client secret
     extraParams: Comma-separated list of key-value pairs.
     groupPrefix: Prefix to prepend to group name.
     groupsClaim: Claim in OIDC ID token that holds group information.
@@ -1538,15 +1557,17 @@ class IdentityServiceOidcConfig(_messages.Message):
 
   certificateAuthorityData = _messages.StringField(1)
   clientId = _messages.StringField(2)
-  deployCloudConsoleProxy = _messages.BooleanField(3)
-  extraParams = _messages.StringField(4)
-  groupPrefix = _messages.StringField(5)
-  groupsClaim = _messages.StringField(6)
-  issuerUri = _messages.StringField(7)
-  kubectlRedirectUri = _messages.StringField(8)
-  scopes = _messages.StringField(9)
-  userClaim = _messages.StringField(10)
-  userPrefix = _messages.StringField(11)
+  clientSecret = _messages.StringField(3)
+  deployCloudConsoleProxy = _messages.BooleanField(4)
+  encryptedClientSecret = _messages.BytesField(5)
+  extraParams = _messages.StringField(6)
+  groupPrefix = _messages.StringField(7)
+  groupsClaim = _messages.StringField(8)
+  issuerUri = _messages.StringField(9)
+  kubectlRedirectUri = _messages.StringField(10)
+  scopes = _messages.StringField(11)
+  userClaim = _messages.StringField(12)
+  userPrefix = _messages.StringField(13)
 
 
 class ListFeaturesResponse(_messages.Message):
@@ -1674,14 +1695,18 @@ class MembershipFeatureSpec(_messages.Message):
   Membership.
 
   Fields:
+    anthosobservability: Anthos Observability-specific spec
     cloudbuild: Cloud Build-specific spec
     configmanagement: Config Management-specific spec.
     identityservice: Identity Service-specific spec.
+    policycontroller: Policy Controller spec.
   """
 
-  cloudbuild = _messages.MessageField('MembershipSpec', 1)
-  configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 2)
-  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 3)
+  anthosobservability = _messages.MessageField('AnthosObservabilityMembershipSpec', 1)
+  cloudbuild = _messages.MessageField('MembershipSpec', 2)
+  configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 3)
+  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 4)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 5)
 
 
 class MembershipFeatureState(_messages.Message):

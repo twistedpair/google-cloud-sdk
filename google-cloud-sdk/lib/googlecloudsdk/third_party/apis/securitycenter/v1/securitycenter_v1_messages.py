@@ -575,7 +575,8 @@ class Finding(_messages.Message):
   Enums:
     FindingClassValueValuesEnum: The class of the finding.
     MuteValueValuesEnum: Indicates the mute state of a finding (either
-      unspecified, muted, unmuted or undefined).
+      unspecified, muted, unmuted or undefined). Unlike other attributes of a
+      finding, a finding provider shouldn't set the value of mute.
     SeverityValueValuesEnum: The severity of the finding. This field is
       managed by the source that writes the finding.
     StateValueValuesEnum: The state of the finding.
@@ -626,12 +627,16 @@ class Finding(_messages.Message):
     mitreAttack: MITRE ATT&CK tactics and techniques related to this finding.
       See: https://attack.mitre.org
     mute: Indicates the mute state of a finding (either unspecified, muted,
-      unmuted or undefined).
+      unmuted or undefined). Unlike other attributes of a finding, a finding
+      provider shouldn't set the value of mute.
     muteAnnotation: Records additional information about the mute operation
-      e.g. mute config that muted the finding etc.
+      e.g. mute config that muted the finding etc. Unlike other attributes of
+      a finding, a finding provider shouldn't set the value of
+      mute_annotation.
     muteInitiator: First known as mute_annotation. Records additional
       information about the mute operation e.g. mute config that muted the
-      finding, user who muted the finding, etc.
+      finding, user who muted the finding, etc. Unlike other attributes of a
+      finding, a finding provider shouldn't set the value of mute.
     muteUpdateTime: Output only. The most recent time this finding was muted
       or unmuted.
     name: The relative resource name of this finding. See:
@@ -687,7 +692,8 @@ class Finding(_messages.Message):
 
   class MuteValueValuesEnum(_messages.Enum):
     r"""Indicates the mute state of a finding (either unspecified, muted,
-    unmuted or undefined).
+    unmuted or undefined). Unlike other attributes of a finding, a finding
+    provider shouldn't set the value of mute.
 
     Values:
       MUTE_UNSPECIFIED: Unspecified.
@@ -2660,6 +2666,19 @@ class SecuritycenterFoldersBigQueryExportsDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class SecuritycenterFoldersBigQueryExportsGetRequest(_messages.Message):
+  r"""A SecuritycenterFoldersBigQueryExportsGetRequest object.
+
+  Fields:
+    name: Required. Name of the big query export to retrieve. Its format is
+      organizations/{organization}/bigQueryExports/{export_id},
+      folders/{folder}/bigQueryExports/{export_id}, or
+      projects/{project}/bigQueryExports/{export_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class SecuritycenterFoldersBigQueryExportsListRequest(_messages.Message):
   r"""A SecuritycenterFoldersBigQueryExportsListRequest object.
 
@@ -3222,6 +3241,19 @@ class SecuritycenterOrganizationsBigQueryExportsDeleteRequest(_messages.Message)
 
   Fields:
     name: Required. Name of the big query export to delete. Its format is
+      organizations/{organization}/bigQueryExports/{export_id},
+      folders/{folder}/bigQueryExports/{export_id}, or
+      projects/{project}/bigQueryExports/{export_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterOrganizationsBigQueryExportsGetRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsBigQueryExportsGetRequest object.
+
+  Fields:
+    name: Required. Name of the big query export to retrieve. Its format is
       organizations/{organization}/bigQueryExports/{export_id},
       folders/{folder}/bigQueryExports/{export_id}, or
       projects/{project}/bigQueryExports/{export_id}
@@ -4035,6 +4067,19 @@ class SecuritycenterProjectsBigQueryExportsDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. Name of the big query export to delete. Its format is
+      organizations/{organization}/bigQueryExports/{export_id},
+      folders/{folder}/bigQueryExports/{export_id}, or
+      projects/{project}/bigQueryExports/{export_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterProjectsBigQueryExportsGetRequest(_messages.Message):
+  r"""A SecuritycenterProjectsBigQueryExportsGetRequest object.
+
+  Fields:
+    name: Required. Name of the big query export to retrieve. Its format is
       organizations/{organization}/bigQueryExports/{export_id},
       folders/{folder}/bigQueryExports/{export_id}, or
       projects/{project}/bigQueryExports/{export_id}
