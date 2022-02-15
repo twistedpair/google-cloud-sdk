@@ -29,16 +29,11 @@ def GetAttachmentPointFlag():
 
 
 def GetKindFlag():
-  return base.Argument(
-      '--kind',
-      required=True,
-      help='Kind of the policy.')
+  return base.Argument('--kind', required=True, help='Kind of the policy.')
 
 
 def GetPolicyIDFlag():
-  return base.Argument(
-      'policy_id',
-      help='Id of the policy.')
+  return base.Argument('policy_id', help='Id of the policy.')
 
 
 def GetEtagFlag():
@@ -53,3 +48,12 @@ def GetPolicyFileFlag():
 def GetPageTokenFlag():
   return base.Argument(
       '--page_token', help='Page token received from a previous call.')
+
+
+def AddIncludeDenyFlag(parser):
+  base.Argument(
+      '--include-deny',
+      help='Include deny policies on the project and its ancestors in the result',
+      action='store_true',
+      default=False,
+  ).AddToParser(parser)

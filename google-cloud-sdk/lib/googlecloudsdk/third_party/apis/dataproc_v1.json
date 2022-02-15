@@ -1761,10 +1761,6 @@
           "description": "Optional. The config settings for cluster software.",
           "$ref": "SoftwareConfig"
         },
-        "securityConfig": {
-          "description": "Optional. Cluster security settings.",
-          "$ref": "SecurityConfig"
-        },
         "kubernetesClusterConfig": {
           "description": "Required. The configuration for running the Dataproc cluster on Kubernetes.",
           "$ref": "KubernetesClusterConfig"
@@ -4320,6 +4316,11 @@
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/sessions\/[^\/]+$",
                       "location": "path",
                       "required": true,
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. A unique ID used to identify the request. If the service receives two DeleteSessionRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#google.cloud.dataproc.v1.DeleteSessionRequest)s with the same ID, the second request is ignored.Recommendation: Set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The value must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+                      "location": "query",
                       "type": "string"
                     }
                   },

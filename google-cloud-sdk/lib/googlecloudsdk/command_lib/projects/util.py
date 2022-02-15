@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Common utility functions for all projects commands."""
 
 from __future__ import absolute_import
@@ -23,14 +22,13 @@ import datetime
 import re
 
 from apitools.base.py.exceptions import HttpForbiddenError
-
 from googlecloudsdk.api_lib.cloudresourcemanager import organizations
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_util
+from googlecloudsdk.api_lib.iam import policies
 from googlecloudsdk.api_lib.resource_manager import folders
 from googlecloudsdk.command_lib.projects import exceptions
 from googlecloudsdk.core import resources
-
 import six
 
 PROJECTS_COLLECTION = 'cloudresourcemanager.projects'
@@ -43,7 +41,6 @@ LIST_FORMAT = """
       projectNumber
     )
 """
-
 
 _VALID_PROJECT_REGEX = re.compile(
     r'^'
@@ -59,8 +56,7 @@ _VALID_PROJECT_REGEX = re.compile(
     # We also allow a leading digit as some legacy project ids can have
     # a leading digit.
     r'(?:(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))'
-    r'$'
-)
+    r'$')
 
 
 def ValidateProjectIdentifier(project):
@@ -88,8 +84,9 @@ def ParseProject(project_id, api_version=PROJECTS_API_VERSION):
 
 
 def ProjectsUriFunc(resource, api_version=PROJECTS_API_VERSION):
-  project_id = (resource.get('projectId', None) if isinstance(resource, dict)
-                else resource.projectId)
+  project_id = (
+      resource.get('projectId', None)
+      if isinstance(resource, dict) else resource.projectId)
   ref = ParseProject(project_id, api_version)
   return ref.SelfLink()
 
@@ -156,11 +153,15 @@ def SetIamPolicyFromFileHook(ref, args, request):
   return request
 
 
-def GetIamPolicyWithAncestors(project_id):
+def GetIamPolicyWithAncestors(project_id, include_deny, release_track):
   """Get IAM policy for given project and its ancestors.
 
   Args:
     project_id: project id
+    include_deny: boolean that represents if we should show the deny policies in
+      addition to the grants
+    release_track: which release track, include deny is only supported for ALPHA
+      or BETA
 
   Returns:
     IAM policy for given project and its ancestors
@@ -180,18 +181,46 @@ def GetIamPolicyWithAncestors(project_id):
             'id': project_id,
             'policy': projects_api.GetIamPolicy(project_ref)
         })
+        if include_deny:
+          deny_policies = policies.ListDenyPolicies(project_id, 'project',
+                                                    release_track)
+          for deny_policy in deny_policies:
+            iam_policies.append({
+                'type': 'project',
+                'id': project_id,
+                'policy': deny_policy
+            })
       if resource_type == 'folder':
         iam_policies.append({
             'type': resource_type,
             'id': resource_id,
             'policy': folders.GetIamPolicy(resource_id)
         })
+        if include_deny:
+          deny_policies = policies.ListDenyPolicies(resource_id, 'folder',
+                                                    release_track)
+          for deny_policy in deny_policies:
+            iam_policies.append({
+                'type': 'folder',
+                'id': resource_id,
+                'policy': deny_policy
+            })
       if resource_type == 'organization':
         iam_policies.append({
             'type': resource_type,
             'id': resource_id,
             'policy': organizations.Client().GetIamPolicy(resource_id),
         })
+        if include_deny:
+          deny_policies = policies.ListDenyPolicies(resource_id, 'organization',
+                                                    release_track)
+          for deny_policy in deny_policies:
+            iam_policies.append({
+                'type': 'organization',
+                'id': resource_id,
+                'policy': deny_policy
+            })
+
     return iam_policies
   except HttpForbiddenError:
     raise exceptions.AncestorsIamPolicyAccessDeniedError(

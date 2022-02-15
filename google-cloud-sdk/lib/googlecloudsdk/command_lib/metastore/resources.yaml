@@ -71,3 +71,30 @@ operation:
     parameter_name: operationsId
     attribute_name: operation
     help: The ID of the Dataproc Metastore operation.
+
+database:
+  name: database
+  collection: metastore.projects.locations.services.databases
+  request_id_field: databaseId
+  attributes:
+  - *project
+  - *location
+  - *service
+  - &database
+    parameter_name: databasesId
+    attribute_name: database
+    help: The identifier of the database under Dataproc Metastore services.
+
+table:
+  name: table
+  collection: metastore.projects.locations.services.databases.tables
+  request_id_field: tableId
+  attributes:
+  - *project
+  - *location
+  - *service
+  - *database
+  - &table
+    parameter_name: tablesId
+    attribute_name: table
+    help: The identifier of the table under Database.

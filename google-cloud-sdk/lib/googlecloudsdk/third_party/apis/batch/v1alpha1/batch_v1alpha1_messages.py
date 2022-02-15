@@ -1742,6 +1742,9 @@ class TaskGroup(_messages.Message):
       west1/jobs/job01/taskGroups/default-group".
     parallelism: Max number of tasks that can run in parallel. Default to
       min(task_count, 1000).
+    requireHostsFile: When true, Batch will populate a file with a list of all
+      VMs assigned to the TaskGroup and set the BATCH_HOSTS_FILE environment
+      variable to the path of that file. Defaults to false.
     schedulingPolicy: Scheduling policy for Tasks in the TaskGroup.
     taskCount: Number of Tasks in the TaskGroup. default is 1
     taskCountPerNode: Max number of tasks that can be run on a node at the
@@ -1800,11 +1803,12 @@ class TaskGroup(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 2)
   name = _messages.StringField(3)
   parallelism = _messages.IntegerField(4)
-  schedulingPolicy = _messages.EnumField('SchedulingPolicyValueValuesEnum', 5)
-  taskCount = _messages.IntegerField(6)
-  taskCountPerNode = _messages.IntegerField(7)
-  taskEnvironments = _messages.MessageField('Environment', 8, repeated=True)
-  taskSpec = _messages.MessageField('TaskSpec', 9)
+  requireHostsFile = _messages.BooleanField(5)
+  schedulingPolicy = _messages.EnumField('SchedulingPolicyValueValuesEnum', 6)
+  taskCount = _messages.IntegerField(7)
+  taskCountPerNode = _messages.IntegerField(8)
+  taskEnvironments = _messages.MessageField('Environment', 9, repeated=True)
+  taskSpec = _messages.MessageField('TaskSpec', 10)
 
 
 class TaskGroupStatus(_messages.Message):

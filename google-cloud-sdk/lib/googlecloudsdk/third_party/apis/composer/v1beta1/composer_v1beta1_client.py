@@ -190,6 +190,33 @@ class ComposerV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def LoadEnvironmentState(self, request, global_params=None):
+      r"""Loads Cloud Composer environment state. As a result of this operation, a snapshot of environment's specified in LoadEnvironmentStateRequest is loaded into the environment.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsLoadEnvironmentStateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('LoadEnvironmentState')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    LoadEnvironmentState.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:loadEnvironmentState',
+        http_method='POST',
+        method_id='composer.projects.locations.environments.loadEnvironmentState',
+        ordered_params=['environment'],
+        path_params=['environment'],
+        query_params=[],
+        relative_path='v1beta1/{+environment}:loadEnvironmentState',
+        request_field='loadEnvironmentStateRequest',
+        request_type_name='ComposerProjectsLocationsEnvironmentsLoadEnvironmentStateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Update an environment.
 
@@ -244,6 +271,33 @@ class ComposerV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def StoreEnvironmentState(self, request, global_params=None):
+      r"""Stores Cloud Composer environment state. As a result of this operation, snapshot of environment's state is stored in a location specified in the StoreEnvironmentStateRequest.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsStoreEnvironmentStateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StoreEnvironmentState')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StoreEnvironmentState.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:storeEnvironmentState',
+        http_method='POST',
+        method_id='composer.projects.locations.environments.storeEnvironmentState',
+        ordered_params=['environment'],
+        path_params=['environment'],
+        query_params=[],
+        relative_path='v1beta1/{+environment}:storeEnvironmentState',
+        request_field='storeEnvironmentStateRequest',
+        request_type_name='ComposerProjectsLocationsEnvironmentsStoreEnvironmentStateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsImageVersionsService(base_api.BaseApiService):
     """Service class for the projects_locations_imageVersions resource."""
 
@@ -290,6 +344,33 @@ class ComposerV1beta1(base_api.BaseApiClient):
       super(ComposerV1beta1.ProjectsLocationsOperationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+
+      Args:
+        request: (ComposerProjectsLocationsOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='composer.projects.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='ComposerProjectsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
 
     def Delete(self, request, global_params=None):
       r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.

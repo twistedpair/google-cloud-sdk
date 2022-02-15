@@ -135,8 +135,8 @@ def AddDatabaseEncryptionKmsKeyArn(parser):
   _AddKmsKeyArn(parser, 'database-encryption', 'cluster secrets', required=True)
 
 
-def AddConfigEncryptionKmsKeyArn(parser):
-  _AddKmsKeyArn(parser, 'config-encryption', 'user data', required=True)
+def AddConfigEncryptionKmsKeyArn(parser, required=True):
+  _AddKmsKeyArn(parser, 'config-encryption', 'user data', required=required)
 
 
 def AddProxyConfig(parser):

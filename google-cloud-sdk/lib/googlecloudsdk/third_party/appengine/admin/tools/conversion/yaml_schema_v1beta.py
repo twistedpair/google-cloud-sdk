@@ -161,7 +161,8 @@ SCHEMA = s.Message(
         subnetwork_name=s.Value(converter=c.ToJsonString),
         forwarded_ports=s.RepeatedField(element=s.Value(converter=
                                                         c.ToJsonString)),
-        session_affinity=s.Value()
+        session_affinity=s.Value(),
+        instance_ip_mode=s.Value('instance_ip_mode', converter=c.ToJsonString)
     ),
     nobuild_files=s.Value('nobuild_files_regex', converter=c.ToJsonString),
     resources=s.Message(

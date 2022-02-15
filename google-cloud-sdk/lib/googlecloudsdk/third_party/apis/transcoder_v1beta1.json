@@ -1250,6 +1250,18 @@
           "type": "string"
         }
       }
+    },
+    "PublicKeys": {
+      "id": "PublicKeys",
+      "description": "Wraps a keyset binary proto representation.",
+      "type": "object",
+      "properties": {
+        "keyset": {
+          "description": "The keyset in binary.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
     }
   },
   "resources": {
@@ -1499,6 +1511,27 @@
               }
             }
           }
+        }
+      }
+    },
+    "v1beta1": {
+      "methods": {
+        "getPublicKeys": {
+          "id": "transcoder.getPublicKeys",
+          "path": "v1beta1/publicKeys",
+          "flatPath": "v1beta1/publicKeys",
+          "httpMethod": "GET",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "PublicKeys"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": ""
         }
       }
     }

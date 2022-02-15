@@ -75,10 +75,10 @@ def ListPendingRollouts(target_ref, pipeline_ref):
   return rollout.RolloutClient().List(
       release_name=parent,
       filter_str=filter_str,
-      order_by=PENDING_ROLLOUT_ORDERBY).rollouts
+      order_by=PENDING_ROLLOUT_ORDERBY)
 
 
-def GetSucceededRollout(target_ref, pipeline_ref, limit=0):
+def GetSucceededRollout(target_ref, pipeline_ref, limit=None):
   """Gets a successfully deployed rollouts for the releases associated with the specified target and index.
 
   Args:
@@ -96,7 +96,7 @@ def GetSucceededRollout(target_ref, pipeline_ref, limit=0):
       release_name=parent,
       filter_str=filter_str,
       order_by=SUCCEED_ROLLOUT_ORDERBY,
-      page_size=limit).rollouts
+      limit=limit)
 
 
 def CreateRollout(release_ref,
@@ -126,10 +126,10 @@ def CreateRollout(release_ref,
   if not final_rollout_id:
     filter_str = ROLLOUT_IN_TARGET_FILTER_TEMPLATE.format(to_target)
     try:
-      list_resp = rollout.RolloutClient().List(release_ref.RelativeName(),
-                                               filter_str)
+      rollouts = rollout.RolloutClient().List(release_ref.RelativeName(),
+                                              filter_str)
       final_rollout_id = ComputeRolloutID(release_ref.Name(), to_target,
-                                          list_resp.rollouts)
+                                          rollouts)
     except apitools_exceptions.HttpError:
       raise cd_exceptions.ListRolloutsError(release_ref.RelativeName())
 

@@ -266,6 +266,13 @@ class Collections(enum.Enum):
       ['project', 'zone', 'networkEndpointGroup'],
       True
   )
+  NETWORKFIREWALLPOLICIES = (
+      'networkFirewallPolicies',
+      'projects/{project}/global/firewallPolicies/{firewallPolicy}',
+      {},
+      ['project', 'firewallPolicy'],
+      True
+  )
   NETWORKS = (
       'networks',
       'projects/{project}/global/networks/{network}',
@@ -402,6 +409,13 @@ class Collections(enum.Enum):
       '{networkEndpointGroup}',
       {},
       ['project', 'region', 'networkEndpointGroup'],
+      True
+  )
+  REGIONNETWORKFIREWALLPOLICIES = (
+      'regionNetworkFirewallPolicies',
+      'projects/{project}/regions/{region}/firewallPolicies/{firewallPolicy}',
+      {},
+      ['project', 'region', 'firewallPolicy'],
       True
   )
   REGIONNOTIFICATIONENDPOINTS = (

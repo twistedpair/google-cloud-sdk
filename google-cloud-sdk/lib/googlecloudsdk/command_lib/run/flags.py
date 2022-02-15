@@ -899,6 +899,24 @@ def AddCmekKeyRevocationActionTypeFlag(parser, with_clear=True):
       help=('Action type after CMEK key revocation.'))
 
 
+def AddEncryptionKeyShutdownHoursFlag(parser, with_clear=True):
+  """Add Cmek key shutdown hours flag."""
+  policy_group = parser
+  if with_clear:
+    policy_group = parser.add_mutually_exclusive_group(hidden=True)
+    policy_group.add_argument(
+        '--clear-encryption-key-shutdown-hours',
+        hidden=True,
+        default=False,
+        action='store_true',
+        help='Remove any previously set CMEK key shutdown hours setting.')
+  policy_group.add_argument(
+      '--encryption-key-shutdown-hours',
+      hidden=True,
+      help='The number of hours to wait before an automatic shutdown server after CMEK key '
+      'revocation is detected.')
+
+
 def _PortValue(value):
   """Returns True if port value is an int within range or 'default'."""
   try:
@@ -1406,6 +1424,11 @@ def _GetConfigurationChanges(args):
         config_changes.SetTemplateAnnotationChange(
             container_resource.POST_CMEK_KEY_REVOCATION_ACTION_TYPE_ANNOTATION,
             args.post_key_revocation_action_type))
+  if FlagIsExplicitlySet(args, 'encryption_key_shutdown_hours'):
+    changes.append(
+        config_changes.SetTemplateAnnotationChange(
+            container_resource.ENCRYPTION_KEY_SHUTDOWN_HOURS_ANNOTATION,
+            args.encryption_key_shutdown_hours))
   if FlagIsExplicitlySet(args, 'clear_key'):
     changes.append(
         config_changes.DeleteTemplateAnnotationChange(
@@ -1413,10 +1436,20 @@ def _GetConfigurationChanges(args):
     changes.append(
         config_changes.DeleteTemplateAnnotationChange(
             container_resource.POST_CMEK_KEY_REVOCATION_ACTION_TYPE_ANNOTATION))
+    changes.append(
+        config_changes.DeleteTemplateAnnotationChange(
+            container_resource.ENCRYPTION_KEY_SHUTDOWN_HOURS_ANNOTATION))
   if FlagIsExplicitlySet(args, 'clear_post_key_revocation_action_type'):
     changes.append(
         config_changes.DeleteTemplateAnnotationChange(
             container_resource.POST_CMEK_KEY_REVOCATION_ACTION_TYPE_ANNOTATION))
+    changes.append(
+        config_changes.DeleteTemplateAnnotationChange(
+            container_resource.ENCRYPTION_KEY_SHUTDOWN_HOURS_ANNOTATION))
+  if FlagIsExplicitlySet(args, 'clear_encryption_key_shutdown_hours'):
+    changes.append(
+        config_changes.DeleteTemplateAnnotationChange(
+            container_resource.ENCRYPTION_KEY_SHUTDOWN_HOURS_ANNOTATION))
   if FlagIsExplicitlySet(args, 'custom_audiences'):
     changes.append(
         config_changes.SetAnnotationChange(
@@ -1852,6 +1885,14 @@ def VerifyGKEFlags(args, release_track, product):
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_MANAGED]))
 
+  if FlagIsExplicitlySet(args, 'encryption_key_shutdown_hours'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--encryption-key-shutdown-hours',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
   if FlagIsExplicitlySet(args, 'clear_key'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
@@ -1864,6 +1905,14 @@ def VerifyGKEFlags(args, release_track, product):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--clear-post-key-revocation-action-type',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
+  if FlagIsExplicitlySet(args, 'clear_encryption_key_shutdown_hours'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--clear-encryption-key-shutdown-hours',
             platform=platforms.PLATFORM_MANAGED,
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_MANAGED]))
@@ -2009,6 +2058,14 @@ def VerifyKubernetesFlags(args, release_track, product):
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_MANAGED]))
 
+  if FlagIsExplicitlySet(args, 'encryption_key_shutdown_hours'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--encryption-key-shutdown-hours',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
   if FlagIsExplicitlySet(args, 'clear_key'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
@@ -2021,6 +2078,14 @@ def VerifyKubernetesFlags(args, release_track, product):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--clear-post-key-revocation-action-type',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
+  if FlagIsExplicitlySet(args, 'clear_encryption_key_shutdown_hours'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--clear-encryption-key-shutdown-hours',
             platform=platforms.PLATFORM_MANAGED,
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_MANAGED]))

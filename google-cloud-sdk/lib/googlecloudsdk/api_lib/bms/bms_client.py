@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2021 Google LLC. All Rights Reserved.
+# Copyright 2022 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -66,13 +66,14 @@ class BmsClient(object):
   def __init__(self, api_version=_DEFAULT_API_VERSION):
     self._client = apis.GetClientInstance('baremetalsolution', api_version)
     self._messages = apis.GetMessagesModule('baremetalsolution', api_version)
-    self.service = self._client.projects_locations_instances
+    self.instances_service = self._client.projects_locations_instances
     self.volumes_service = self._client.projects_locations_volumes
     self.snapshot_schedule_policies_service = self._client.projects_locations_snapshotSchedulePolicies
     self.snapshots_service = self._client.projects_locations_volumes_snapshots
     self.networks_service = self._client.projects_locations_networks
     self.locations_service = self._client.projects_locations
     self.luns_service = self._client.projects_locations_volumes_luns
+    self.nfs_shares_service = self._client.projects_locations_nfsShares
 
   @property
   def client(self):
@@ -82,10 +83,10 @@ class BmsClient(object):
   def messages(self):
     return self._messages
 
-  def Get(self, resource):
+  def GetInstance(self, resource):
     request = self.messages.BaremetalsolutionProjectsLocationsInstancesGetRequest(
         name=resource.RelativeName())
-    return self.service.Get(request)
+    return self.instances_service.Get(request)
 
   def AggregateYieldFromList(self,
                              service,
@@ -177,15 +178,12 @@ class BmsClient(object):
         batch_size=page_size,
         field='locations')
 
-  def List(self,
-           location_resource,
-           limit=None,
-           page_size=None):
+  def ListInstances(self, location_resource, limit=None, page_size=None):
     location = location_resource.RelativeName()
     request = self.messages.BaremetalsolutionProjectsLocationsInstancesListRequest(
         parent=location)
     return list_pager.YieldFromList(
-        self.service,
+        self.instances_service,
         request,
         limit=limit,
         batch_size_attribute='pageSize',
@@ -194,11 +192,27 @@ class BmsClient(object):
 
   def AggregateListInstances(self, project_resource, limit=None):
     return self.AggregateYieldFromList(
-        self.service,
+        self.instances_service,
         project_resource,
         self.messages.BaremetalsolutionProjectsLocationsInstancesListRequest,
         'instances',
         limit=limit)
+
+  def UpdateInstance(self, instance_resource, labels):
+    """Update an existing instance resource."""
+    updated_fields = []
+    if labels is not None:
+      updated_fields.append('labels')
+
+    instance_msg = self.messages.Instance(
+        name=instance_resource.RelativeName(), labels=labels)
+
+    request = self.messages.BaremetalsolutionProjectsLocationsInstancesPatchRequest(
+        name=instance_resource.RelativeName(),
+        instance=instance_msg,
+        updateMask=','.join(updated_fields))
+
+    return self.instances_service.Patch(request)
 
   def ListSnapshotSchedulePolicies(self,
                                    project_resource,
@@ -224,6 +238,7 @@ class BmsClient(object):
 
   def CreateSnapshotSchedulePolicy(self,
                                    policy_resource,
+                                   labels,
                                    description,
                                    schedules):
     """Sends request to create a new Snapshot Schedule Policy."""
@@ -231,7 +246,9 @@ class BmsClient(object):
     parent = policy_resource.Parent().RelativeName()
     schedule_msgs = self._ParseSnapshotSchedules(schedules)
     policy_msg = self.messages.SnapshotSchedulePolicy(
-        description=description, schedules=schedule_msgs)
+        description=description,
+        schedules=schedule_msgs,
+        labels=labels)
     request = self.messages.BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesCreateRequest(
         parent=parent,
         snapshotSchedulePolicyId=policy_id,
@@ -241,19 +258,23 @@ class BmsClient(object):
   def UpdateSnapshotSchedulePolicy(self,
                                    policy_resource,
                                    description,
+                                   labels,
                                    schedules):
     """Sends request to update an existing SnapshotSchedulePolicy."""
     updated_fields = []
     if description:
       updated_fields.append('description')
-
+    if labels is not None:
+      updated_fields.append('labels')
     schedule_msgs = self._ParseSnapshotSchedules(schedules)
     if schedule_msgs:
       updated_fields.append('schedules')
 
     update_mask = ','.join(updated_fields)
     policy_msg = self.messages.SnapshotSchedulePolicy(
-        description=description, schedules=schedule_msgs)
+        description=description,
+        schedules=schedule_msgs,
+        labels=labels)
     request = self.messages.BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesPatchRequest(
         name=policy_resource.RelativeName(),
         snapshotSchedulePolicy=policy_msg,
@@ -293,6 +314,7 @@ class BmsClient(object):
 
   def UpdateVolume(self,
                    volume_resource,
+                   labels,
                    snapshot_schedule_policy_resource,
                    remove_snapshot_schedule_policy,
                    snapshot_auto_delete):
@@ -304,14 +326,16 @@ class BmsClient(object):
       policy_name = snapshot_schedule_policy_resource.RelativeName()
     elif remove_snapshot_schedule_policy:
       updated_fields.append('snapshotSchedulePolicy')
-
+    if labels is not None:
+      updated_fields.append('labels')
     if snapshot_auto_delete:
       updated_fields.append('snapshotAutoDeleteBehavior')
 
     volume_msg = self.messages.Volume(
         name=volume_resource.RelativeName(),
         snapshotAutoDeleteBehavior=snapshot_auto_delete,
-        snapshotSchedulePolicy=policy_name)
+        snapshotSchedulePolicy=policy_name,
+        labels=labels)
 
     request = self.messages.BaremetalsolutionProjectsLocationsVolumesPatchRequest(
         name=volume_resource.RelativeName(),
@@ -362,6 +386,22 @@ class BmsClient(object):
     request = self.messages.BaremetalsolutionProjectsLocationsNetworksGetRequest(
         name=resource.RelativeName())
     return self.networks_service.Get(request)
+
+  def UpdateNetwork(self, network_resource, labels):
+    """Update an existing network resource."""
+    updated_fields = []
+    if labels is not None:
+      updated_fields.append('labels')
+
+    network_msg = self.messages.Network(
+        name=network_resource.RelativeName(), labels=labels)
+
+    request = self.messages.BaremetalsolutionProjectsLocationsNetworksPatchRequest(
+        name=network_resource.RelativeName(),
+        network=network_msg,
+        updateMask=','.join(updated_fields))
+
+    return self.networks_service.Patch(request)
 
   def IsClientNetwork(self, network):
     return network.type == self.messages.Network.TypeValueValuesEnum.CLIENT
@@ -433,3 +473,33 @@ class BmsClient(object):
         .BaremetalsolutionProjectsLocationsVolumesSnapshotsRestoreVolumeSnapshotRequest(  # pylint: disable=line-too-long
             volumeSnapshot=snapshot_resource_name))
     return self.snapshots_service.RestoreVolumeSnapshot(request)
+
+  def GetNfsShare(self, resource):
+    request = self.messages.BaremetalsolutionProjectsLocationsNfsSharesGetRequest(
+        name=resource.RelativeName())
+    return self.nfs_shares_service.Get(request)
+
+  def AggregateListNfsShares(self, project_resource, limit=None):
+    return self.AggregateYieldFromList(
+        self.nfs_shares_service,
+        project_resource,
+        self.messages.BaremetalsolutionProjectsLocationsNfsSharesListRequest,
+        'nfsShares',
+        limit=limit)
+
+  def ListNfsShares(self,
+                    location_resource,
+                    limit=None,
+                    page_size=None):
+    location = location_resource.RelativeName()
+    request = (
+        self.messages
+        .BaremetalsolutionProjectsLocationsNfsSharesListRequest(
+            parent=location))
+    return list_pager.YieldFromList(
+        self.nfs_shares_service,
+        request,
+        limit=limit,
+        batch_size_attribute='pageSize',
+        batch_size=page_size,
+        field='nfsShares')

@@ -17,6 +17,9 @@ class Action(_messages.Message):
   r"""An action resource. Action is a read-only resource and is nested under
   an asset. It contains the status of the actions associated with an Asset.
 
+  Enums:
+    StateValueValuesEnum: Current state of the action.
+
   Messages:
     LabelsValue: The labels associated with this resource. Each label is a
       key-value pair.
@@ -34,8 +37,29 @@ class Action(_messages.Message):
     notification: Status of notification action.
     rule: Required. The resource name of the rule, in the following form:
       `projects/{project}/locations/{location}/assetTypes/{type}/rule/{rule}`.
+    state: Current state of the action.
     updateTime: Output only. The last-modified time.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Current state of the action.
+
+    Values:
+      STATE_UNSPECIFIED: Transformation state is unspecified.
+      QUEUED: Transformation is queued.
+      RUNNING: Transformation is in running state.
+      SUCCEEDED: Transformation has been completed successfully.
+      FAILED: Transformation has been completed unsuccessfully.
+      CANCELLED: Transformation has been cancelled.
+      CANCELLING: Transformation is in cancelling state.
+    """
+    STATE_UNSPECIFIED = 0
+    QUEUED = 1
+    RUNNING = 2
+    SUCCEEDED = 3
+    FAILED = 4
+    CANCELLED = 5
+    CANCELLING = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -69,7 +93,8 @@ class Action(_messages.Message):
   name = _messages.StringField(5)
   notification = _messages.MessageField('NotificationStatus', 6)
   rule = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class Annotation(_messages.Message):

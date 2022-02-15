@@ -64,20 +64,23 @@ def GetApplication(client, app_ref):
     return None
 
 
-def GetApplicationStatus(client, app_ref):
+def GetApplicationStatus(client, app_ref, resource_name=None):
   """Calls ApplicationGetStatus API of Runapps of the specified reference.
 
   Args:
     client: GAPIC API client, the api client to use.
     app_ref: googlecloudsdk.core.resources.Resource, the resource reference of
       the application.
+    resource_name: name of the resource to get status for. If not given, all
+      resources in the application will be queried.
 
   Returns:
     The ApplicationStatus object. Or None if not found.
   """
+  read_mask = 'resources.{}'.format(resource_name) if resource_name else None
   module = client.MESSAGES_MODULE
   request = module.RunappsProjectsLocationsApplicationsGetStatusRequest(
-      name=app_ref.RelativeName())
+      name=app_ref.RelativeName(), readMask=read_mask)
   try:
     return client.projects_locations_applications.GetStatus(request)
   except api_exceptions.HttpNotFoundError:

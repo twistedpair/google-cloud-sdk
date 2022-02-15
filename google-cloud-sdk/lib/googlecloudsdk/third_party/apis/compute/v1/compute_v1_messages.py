@@ -13941,6 +13941,387 @@ class ComputeNetworkEndpointGroupsTestIamPermissionsRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeNetworkFirewallPoliciesAddAssociationRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesAddAssociationRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    firewallPolicyAssociation: A FirewallPolicyAssociation resource to be
+      passed as the request body.
+    project: Project ID for this request.
+    replaceExistingAssociation: Indicates whether or not to replace it if an
+      association of the attachment already exists. This is false by default,
+      in which case an error will be returned if an association already
+      exists.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  firewallPolicyAssociation = _messages.MessageField('FirewallPolicyAssociation', 2)
+  project = _messages.StringField(3, required=True)
+  replaceExistingAssociation = _messages.BooleanField(4)
+  requestId = _messages.StringField(5)
+
+
+class ComputeNetworkFirewallPoliciesAddRuleRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesAddRuleRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    firewallPolicyRule: A FirewallPolicyRule resource to be passed as the
+      request body.
+    maxPriority: When rule.priority is not specified, auto choose a unused
+      priority between minPriority and maxPriority>. This field is exclusive
+      with rule.priority.
+    minPriority: When rule.priority is not specified, auto choose a unused
+      priority between minPriority and maxPriority>. This field is exclusive
+      with rule.priority.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  firewallPolicyRule = _messages.MessageField('FirewallPolicyRule', 2)
+  maxPriority = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minPriority = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  project = _messages.StringField(5, required=True)
+  requestId = _messages.StringField(6)
+
+
+class ComputeNetworkFirewallPoliciesCloneRulesRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesCloneRulesRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    sourceFirewallPolicy: The firewall policy from which to copy rules.
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  sourceFirewallPolicy = _messages.StringField(4)
+
+
+class ComputeNetworkFirewallPoliciesDeleteRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesDeleteRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to delete.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class ComputeNetworkFirewallPoliciesGetAssociationRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesGetAssociationRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to which the queried
+      association belongs.
+    name: The name of the association to get from the firewall policy.
+    project: Project ID for this request.
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  name = _messages.StringField(2)
+  project = _messages.StringField(3, required=True)
+
+
+class ComputeNetworkFirewallPoliciesGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesGetIamPolicyRequest object.
+
+  Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
+class ComputeNetworkFirewallPoliciesGetRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesGetRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to get.
+    project: Project ID for this request.
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeNetworkFirewallPoliciesGetRuleRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesGetRuleRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to which the queried rule
+      belongs.
+    priority: The priority of the rule to get from the firewall policy.
+    project: Project ID for this request.
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  priority = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  project = _messages.StringField(3, required=True)
+
+
+class ComputeNetworkFirewallPoliciesInsertRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesInsertRequest object.
+
+  Fields:
+    firewallPolicy: A FirewallPolicy resource to be passed as the request
+      body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.MessageField('FirewallPolicy', 1)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class ComputeNetworkFirewallPoliciesListRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
+      instances, you can exclude instances named `example-instance` by
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
+      fields. For example, you could specify `scheduling.automaticRestart =
+      false` to include instances only if they are not scheduled for automatic
+      restarts. You can use filtering on nested fields to filter based on
+      resource labels. To filter on multiple expressions, provide each
+      separate expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ```
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
+
+
+class ComputeNetworkFirewallPoliciesPatchRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesPatchRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    firewallPolicyResource: A FirewallPolicy resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  firewallPolicyResource = _messages.MessageField('FirewallPolicy', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeNetworkFirewallPoliciesPatchRuleRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesPatchRuleRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    firewallPolicyRule: A FirewallPolicyRule resource to be passed as the
+      request body.
+    priority: The priority of the rule to patch.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  firewallPolicyRule = _messages.MessageField('FirewallPolicyRule', 2)
+  priority = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  project = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+
+
+class ComputeNetworkFirewallPoliciesRemoveAssociationRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesRemoveAssociationRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    name: Name for the attachment that will be removed.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  name = _messages.StringField(2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeNetworkFirewallPoliciesRemoveRuleRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesRemoveRuleRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    priority: The priority of the rule to remove from the firewall policy.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  priority = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeNetworkFirewallPoliciesSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesSetIamPolicyRequest object.
+
+  Fields:
+    globalSetPolicyRequest: A GlobalSetPolicyRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  globalSetPolicyRequest = _messages.MessageField('GlobalSetPolicyRequest', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
+class ComputeNetworkFirewallPoliciesTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeNetworkFirewallPoliciesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+
+
 class ComputeNetworksAddPeeringRequest(_messages.Message):
   r"""A ComputeNetworksAddPeeringRequest object.
 
@@ -18186,6 +18567,433 @@ class ComputeRegionNetworkEndpointGroupsListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+
+
+class ComputeRegionNetworkFirewallPoliciesAddAssociationRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesAddAssociationRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    firewallPolicyAssociation: A FirewallPolicyAssociation resource to be
+      passed as the request body.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    replaceExistingAssociation: Indicates whether or not to replace it if an
+      association already exists. This is false by default, in which case an
+      error will be returned if an association already exists.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  firewallPolicyAssociation = _messages.MessageField('FirewallPolicyAssociation', 2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+  replaceExistingAssociation = _messages.BooleanField(5)
+  requestId = _messages.StringField(6)
+
+
+class ComputeRegionNetworkFirewallPoliciesAddRuleRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesAddRuleRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    firewallPolicyRule: A FirewallPolicyRule resource to be passed as the
+      request body.
+    maxPriority: When rule.priority is not specified, auto choose a unused
+      priority between minPriority and maxPriority>. This field is exclusive
+      with rule.priority.
+    minPriority: When rule.priority is not specified, auto choose a unused
+      priority between minPriority and maxPriority>. This field is exclusive
+      with rule.priority.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  firewallPolicyRule = _messages.MessageField('FirewallPolicyRule', 2)
+  maxPriority = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minPriority = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+  requestId = _messages.StringField(7)
+
+
+class ComputeRegionNetworkFirewallPoliciesCloneRulesRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesCloneRulesRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    sourceFirewallPolicy: The firewall policy from which to copy rules.
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  sourceFirewallPolicy = _messages.StringField(5)
+
+
+class ComputeRegionNetworkFirewallPoliciesDeleteRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesDeleteRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to delete.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeRegionNetworkFirewallPoliciesGetAssociationRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesGetAssociationRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to which the queried
+      association belongs.
+    name: The name of the association to get from the firewall policy.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  name = _messages.StringField(2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+
+
+class ComputeRegionNetworkFirewallPoliciesGetEffectiveFirewallsRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesGetEffectiveFirewallsRequest
+  object.
+
+  Fields:
+    network: Network reference
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  network = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionNetworkFirewallPoliciesGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesGetIamPolicyRequest object.
+
+  Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  resource = _messages.StringField(4, required=True)
+
+
+class ComputeRegionNetworkFirewallPoliciesGetRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesGetRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to get.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionNetworkFirewallPoliciesGetRuleRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesGetRuleRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to which the queried rule
+      belongs.
+    priority: The priority of the rule to get from the firewall policy.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  priority = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+
+
+class ComputeRegionNetworkFirewallPoliciesInsertRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesInsertRequest object.
+
+  Fields:
+    firewallPolicy: A FirewallPolicy resource to be passed as the request
+      body.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.MessageField('FirewallPolicy', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeRegionNetworkFirewallPoliciesListRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
+      instances, you can exclude instances named `example-instance` by
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
+      fields. For example, you could specify `scheduling.automaticRestart =
+      false` to include instances only if they are not scheduled for automatic
+      restarts. You can use filtering on nested fields to filter based on
+      resource labels. To filter on multiple expressions, provide each
+      separate expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ```
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+
+
+class ComputeRegionNetworkFirewallPoliciesPatchRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesPatchRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    firewallPolicyResource: A FirewallPolicy resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  firewallPolicyResource = _messages.MessageField('FirewallPolicy', 2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+
+
+class ComputeRegionNetworkFirewallPoliciesPatchRuleRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesPatchRuleRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    firewallPolicyRule: A FirewallPolicyRule resource to be passed as the
+      request body.
+    priority: The priority of the rule to patch.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  firewallPolicyRule = _messages.MessageField('FirewallPolicyRule', 2)
+  priority = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  project = _messages.StringField(4, required=True)
+  region = _messages.StringField(5, required=True)
+  requestId = _messages.StringField(6)
+
+
+class ComputeRegionNetworkFirewallPoliciesRemoveAssociationRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesRemoveAssociationRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    name: Name for the association that will be removed.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  name = _messages.StringField(2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+
+
+class ComputeRegionNetworkFirewallPoliciesRemoveRuleRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesRemoveRuleRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    priority: The priority of the rule to remove from the firewall policy.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  priority = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+
+
+class ComputeRegionNetworkFirewallPoliciesSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesSetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    regionSetPolicyRequest: A RegionSetPolicyRequest resource to be passed as
+      the request body.
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetPolicyRequest = _messages.MessageField('RegionSetPolicyRequest', 3)
+  resource = _messages.StringField(4, required=True)
+
+
+class ComputeRegionNetworkFirewallPoliciesTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
 class ComputeRegionNotificationEndpointsDeleteRequest(_messages.Message):
@@ -26855,6 +27663,10 @@ class FirewallPolicy(_messages.Message):
     name: [Output Only] Name of the resource. It is a numeric ID allocated by
       GCP which uniquely identifies the Firewall Policy.
     parent: [Output Only] The parent of the firewall policy.
+    region: [Output Only] URL of the region where the regional firewall policy
+      resides. This field is not applicable to global firewall policies. You
+      must specify this field as part of the HTTP request URL. It is not
+      settable as a field in the request body.
     ruleTupleCount: [Output Only] Total count of all firewall policy rule
       tuples. A firewall policy can not exceed a set number of tuples.
     rules: A list of rules that belong to this policy. There must always be a
@@ -26884,11 +27696,12 @@ class FirewallPolicy(_messages.Message):
   kind = _messages.StringField(7, default='compute#firewallPolicy')
   name = _messages.StringField(8)
   parent = _messages.StringField(9)
-  ruleTupleCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  rules = _messages.MessageField('FirewallPolicyRule', 11, repeated=True)
-  selfLink = _messages.StringField(12)
-  selfLinkWithId = _messages.StringField(13)
-  shortName = _messages.StringField(14)
+  region = _messages.StringField(10)
+  ruleTupleCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  rules = _messages.MessageField('FirewallPolicyRule', 12, repeated=True)
+  selfLink = _messages.StringField(13)
+  selfLinkWithId = _messages.StringField(14)
+  shortName = _messages.StringField(15)
 
 
 class FirewallPolicyAssociation(_messages.Message):
@@ -27095,6 +27908,15 @@ class FirewallPolicyRule(_messages.Message):
       applies. This field allows you to control which network's VMs get this
       rule. If this field is left blank, all VMs within the organization will
       receive the rule.
+    targetSecureTags: A list of secure tags that controls which instances the
+      firewall rule applies to. If targetSecureTag are specified, then the
+      firewall rule applies only to instances in the VPC network that have one
+      of those EFFECTIVE secure tags, if all the target_secure_tag are in
+      INEFFECTIVE state, then this rule will be ignored. targetSecureTag may
+      not be set at the same time as targetServiceAccounts. If neither
+      targetServiceAccounts nor targetSecureTag are specified, the firewall
+      rule applies to all instances on the specified network. Maximum number
+      of target label tags allowed is 256.
     targetServiceAccounts: A list of service accounts indicating the sets of
       instances that are applied with this rule.
   """
@@ -27119,7 +27941,8 @@ class FirewallPolicyRule(_messages.Message):
   priority = _messages.IntegerField(8, variant=_messages.Variant.INT32)
   ruleTupleCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
   targetResources = _messages.StringField(10, repeated=True)
-  targetServiceAccounts = _messages.StringField(11, repeated=True)
+  targetSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 11, repeated=True)
+  targetServiceAccounts = _messages.StringField(12, repeated=True)
 
 
 class FirewallPolicyRuleMatcher(_messages.Message):
@@ -27132,11 +27955,16 @@ class FirewallPolicyRuleMatcher(_messages.Message):
     layer4Configs: Pairs of IP protocols and ports that the rule should match.
     srcIpRanges: CIDR IP address range. Maximum number of source CIDR IP
       ranges allowed is 5000.
+    srcSecureTags: List of secure tag values, which should be matched at the
+      source of the traffic. For INGRESS rule, if all the srcSecureTag are
+      INEFFECTIVE, and there is no srcIpRange, this rule will be ignored.
+      Maximum number of source tag values allowed is 256.
   """
 
   destIpRanges = _messages.StringField(1, repeated=True)
   layer4Configs = _messages.MessageField('FirewallPolicyRuleMatcherLayer4Config', 2, repeated=True)
   srcIpRanges = _messages.StringField(3, repeated=True)
+  srcSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 4, repeated=True)
 
 
 class FirewallPolicyRuleMatcherLayer4Config(_messages.Message):
@@ -27156,6 +27984,37 @@ class FirewallPolicyRuleMatcherLayer4Config(_messages.Message):
 
   ipProtocol = _messages.StringField(1)
   ports = _messages.StringField(2, repeated=True)
+
+
+class FirewallPolicyRuleSecureTag(_messages.Message):
+  r"""A FirewallPolicyRuleSecureTag object.
+
+  Enums:
+    StateValueValuesEnum: [Output Only] State of the secure tag, either
+      `EFFECTIVE` or `INEFFECTIVE`. A secure tag is `INEFFECTIVE` when it is
+      deleted or its network is deleted.
+
+  Fields:
+    name: Name of the secure tag, created with TagManager's TagValue API.
+    state: [Output Only] State of the secure tag, either `EFFECTIVE` or
+      `INEFFECTIVE`. A secure tag is `INEFFECTIVE` when it is deleted or its
+      network is deleted.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""[Output Only] State of the secure tag, either `EFFECTIVE` or
+    `INEFFECTIVE`. A secure tag is `INEFFECTIVE` when it is deleted or its
+    network is deleted.
+
+    Values:
+      EFFECTIVE: <no description>
+      INEFFECTIVE: <no description>
+    """
+    EFFECTIVE = 0
+    INEFFECTIVE = 1
+
+  name = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
 class FixedOrPercent(_messages.Message):
@@ -28279,23 +29138,25 @@ class GuestOsFeature(_messages.Message):
       values, use commas to separate values. Set to one or more of the
       following values: - VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET -
       UEFI_COMPATIBLE - SECURE_BOOT - GVNIC - SEV_CAPABLE -
-      SUSPEND_RESUME_COMPATIBLE For more information, see Enabling guest
-      operating system features.
+      SUSPEND_RESUME_COMPATIBLE - SEV_SNP_CAPABLE For more information, see
+      Enabling guest operating system features.
 
   Fields:
     type: The ID of a supported feature. To add multiple values, use commas to
       separate values. Set to one or more of the following values: -
       VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET - UEFI_COMPATIBLE -
-      SECURE_BOOT - GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE For more
-      information, see Enabling guest operating system features.
+      SECURE_BOOT - GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE -
+      SEV_SNP_CAPABLE For more information, see Enabling guest operating
+      system features.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The ID of a supported feature. To add multiple values, use commas to
     separate values. Set to one or more of the following values: -
     VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET - UEFI_COMPATIBLE -
-    SECURE_BOOT - GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE For more
-    information, see Enabling guest operating system features.
+    SECURE_BOOT - GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE -
+    SEV_SNP_CAPABLE For more information, see Enabling guest operating system
+    features.
 
     Values:
       FEATURE_TYPE_UNSPECIFIED: <no description>
@@ -31391,8 +32252,9 @@ class InstanceGroup(_messages.Message):
     namedPorts:  Assigns a name to a port number. For example: {name: "http",
       port: 80} This allows the system to reference ports by the assigned name
       instead of a port number. Named ports can also contain multiple ports.
-      For example: [{name: "http", port: 80},{name: "http", port: 8080}] Named
-      ports apply to all instances in this instance group.
+      For example: [{name: "app1", port: 8080}, {name: "app1", port: 8081},
+      {name: "app2", port: 8082}] Named ports apply to all instances in this
+      instance group.
     network: [Output Only] The URL of the network to which all instances in
       the instance group belong. If your instance has multiple network
       interfaces, then the network and subnetwork fields only refer to the
@@ -34357,7 +35219,8 @@ class InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy(_messages.Me
   r"""A InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy object.
 
   Enums:
-    TypeValueValuesEnum: [Output Only] The type of the firewall policy.
+    TypeValueValuesEnum: [Output Only] The type of the firewall policy. Can be
+      one of HIERARCHY, NETWORK, NETWORK_REGIONAL.
 
   Fields:
     displayName: [Output Only] Deprecated, please use short name instead. The
@@ -34365,18 +35228,24 @@ class InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy(_messages.Me
     name: [Output Only] The name of the firewall policy.
     rules: The rules that apply to the network.
     shortName: [Output Only] The short name of the firewall policy.
-    type: [Output Only] The type of the firewall policy.
+    type: [Output Only] The type of the firewall policy. Can be one of
+      HIERARCHY, NETWORK, NETWORK_REGIONAL.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""[Output Only] The type of the firewall policy.
+    r"""[Output Only] The type of the firewall policy. Can be one of
+    HIERARCHY, NETWORK, NETWORK_REGIONAL.
 
     Values:
       HIERARCHY: <no description>
+      NETWORK: <no description>
+      NETWORK_REGIONAL: <no description>
       UNSPECIFIED: <no description>
     """
     HIERARCHY = 0
-    UNSPECIFIED = 1
+    NETWORK = 1
+    NETWORK_REGIONAL = 2
+    UNSPECIFIED = 3
 
   displayName = _messages.StringField(1)
   name = _messages.StringField(2)
@@ -34975,8 +35844,7 @@ class InterconnectAttachment(_messages.Message):
       the subnet) to be used for the customer router address. The id must be
       in the range of 1 to 6. If a subnet mask is supplied, it must be /125,
       and the subnet should either be 0 or match the selected subnet.
-    dataplaneVersion: [Output only for types PARTNER and DEDICATED. Not
-      present for PARTNER_PROVIDER.] Dataplane version for this
+    dataplaneVersion: [Output Only] Dataplane version for this
       InterconnectAttachment. This field is only present for Dataplane version
       2 and higher. Absence of this field in the API output indicates that the
       Dataplane is version 1.
@@ -38257,6 +39125,12 @@ class Network(_messages.Message):
   other and to the internet. For more information, read Virtual Private Cloud
   (VPC) Network.
 
+  Enums:
+    NetworkFirewallPolicyEnforcementOrderValueValuesEnum: The network firewall
+      policy enforcement order. Can be either AFTER_CLASSIC_FIREWALL or
+      BEFORE_CLASSIC_FIREWALL. Defaults to AFTER_CLASSIC_FIREWALL if the field
+      is not specified.
+
   Fields:
     IPv4Range: Deprecated in favor of subnet mode networks. The range of
       internal addresses that are legal on this network. This range is a CIDR
@@ -38273,10 +39147,20 @@ class Network(_messages.Message):
       format.
     description: An optional description of this resource. Provide this field
       when you create the resource.
+    enableUlaInternalIpv6: Enable ULA internal ipv6 on this network. Enabling
+      this feature will assign a /48 from google defined ULA prefix fd20::/20.
+      .
     gatewayIPv4: [Output Only] The gateway address for default routing out of
       the network, selected by GCP.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
+    internalIpv6Range: When enabling ula internal ipv6, caller optionally can
+      specify the /48 range they want from the google defined ULA prefix
+      fd20::/20. The input must be a valid /48 ULA IPv6 address and must be
+      within the fd20::/20. Operation will fail if the speficied /48 is
+      already in used by another resource. If the field is not speficied, then
+      a /48 range will be randomly allocated from fd20::/20 and returned via
+      this field. .
     kind: [Output Only] Type of the resource. Always compute#network for
       networks.
     mtu: Maximum Transmission Unit in bytes. The minimum value for this field
@@ -38289,6 +39173,10 @@ class Network(_messages.Message):
       must be a lowercase letter, and all following characters (except for the
       last character) must be a dash, lowercase letter, or digit. The last
       character must be a lowercase letter or digit.
+    networkFirewallPolicyEnforcementOrder: The network firewall policy
+      enforcement order. Can be either AFTER_CLASSIC_FIREWALL or
+      BEFORE_CLASSIC_FIREWALL. Defaults to AFTER_CLASSIC_FIREWALL if the field
+      is not specified.
     peerings: [Output Only] A list of network peerings for the resource.
     routingConfig: The network-level routing configuration for this network.
       Used by Cloud Router to determine what type of network-wide routing
@@ -38300,20 +39188,35 @@ class Network(_messages.Message):
       subnetworks in this VPC network.
   """
 
+  class NetworkFirewallPolicyEnforcementOrderValueValuesEnum(_messages.Enum):
+    r"""The network firewall policy enforcement order. Can be either
+    AFTER_CLASSIC_FIREWALL or BEFORE_CLASSIC_FIREWALL. Defaults to
+    AFTER_CLASSIC_FIREWALL if the field is not specified.
+
+    Values:
+      AFTER_CLASSIC_FIREWALL: <no description>
+      BEFORE_CLASSIC_FIREWALL: <no description>
+    """
+    AFTER_CLASSIC_FIREWALL = 0
+    BEFORE_CLASSIC_FIREWALL = 1
+
   IPv4Range = _messages.StringField(1)
   autoCreateSubnetworks = _messages.BooleanField(2)
   creationTimestamp = _messages.StringField(3)
   description = _messages.StringField(4)
-  gatewayIPv4 = _messages.StringField(5)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default='compute#network')
-  mtu = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  name = _messages.StringField(9)
-  peerings = _messages.MessageField('NetworkPeering', 10, repeated=True)
-  routingConfig = _messages.MessageField('NetworkRoutingConfig', 11)
-  selfLink = _messages.StringField(12)
-  selfLinkWithId = _messages.StringField(13)
-  subnetworks = _messages.StringField(14, repeated=True)
+  enableUlaInternalIpv6 = _messages.BooleanField(5)
+  gatewayIPv4 = _messages.StringField(6)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  internalIpv6Range = _messages.StringField(8)
+  kind = _messages.StringField(9, default='compute#network')
+  mtu = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  name = _messages.StringField(11)
+  networkFirewallPolicyEnforcementOrder = _messages.EnumField('NetworkFirewallPolicyEnforcementOrderValueValuesEnum', 12)
+  peerings = _messages.MessageField('NetworkPeering', 13, repeated=True)
+  routingConfig = _messages.MessageField('NetworkRoutingConfig', 14)
+  selfLink = _messages.StringField(15)
+  selfLinkWithId = _messages.StringField(16)
+  subnetworks = _messages.StringField(17, repeated=True)
 
 
 class NetworkEndpoint(_messages.Message):
@@ -38382,7 +39285,7 @@ class NetworkEndpointGroup(_messages.Message):
 
   Enums:
     NetworkEndpointTypeValueValuesEnum: Type of network endpoints in this
-      network endpoint group. Can be one of GCE_VM_IP_PORT,
+      network endpoint group. Can be one of GCE_VM_IP, GCE_VM_IP_PORT,
       NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT, INTERNET_IP_PORT,
       SERVERLESS, PRIVATE_SERVICE_CONNECT.
 
@@ -38419,7 +39322,7 @@ class NetworkEndpointGroup(_messages.Message):
     network: The URL of the network to which all network endpoints in the NEG
       belong. Uses "default" project network if unspecified.
     networkEndpointType: Type of network endpoints in this network endpoint
-      group. Can be one of GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT,
+      group. Can be one of GCE_VM_IP, GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT,
       INTERNET_FQDN_PORT, INTERNET_IP_PORT, SERVERLESS,
       PRIVATE_SERVICE_CONNECT.
     pscTargetService: The target service url used to set up private service
@@ -38438,7 +39341,7 @@ class NetworkEndpointGroup(_messages.Message):
 
   class NetworkEndpointTypeValueValuesEnum(_messages.Enum):
     r"""Type of network endpoints in this network endpoint group. Can be one
-    of GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT,
+    of GCE_VM_IP, GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT,
     INTERNET_IP_PORT, SERVERLESS, PRIVATE_SERVICE_CONNECT.
 
     Values:
@@ -38754,12 +39657,12 @@ class NetworkEndpointGroupCloudRun(_messages.Message):
       additional fine-grained traffic routing information. The tag must be
       1-63 characters long, and comply with RFC1035. Example value:
       "revision-0010".
-    urlMask: A template to parse service and tag fields from a request URL.
-      URL mask allows for routing to multiple Run services without having to
-      create multiple network endpoint groups and backend services. For
+    urlMask: A template to parse <service> and <tag> fields from a request
+      URL. URL mask allows for routing to multiple Run services without having
+      to create multiple network endpoint groups and backend services. For
       example, request URLs "foo1.domain.com/bar1" and "foo1.domain.com/bar2"
       can be backed by the same Serverless Network Endpoint Group (NEG) with
-      URL mask ".domain.com/". The URL mask will parse them to {
+      URL mask "<tag>.domain.com/<service>". The URL mask will parse them to {
       service="bar1", tag="foo1" } and { service="bar2", tag="foo2" }
       respectively.
   """
@@ -39303,6 +40206,8 @@ class NetworkInterface(_messages.Message):
       order to update the NetworkInterface. The request will fail with error
       400 Bad Request if the fingerprint is not provided, or 412 Precondition
       Failed if the fingerprint is out of date.
+    internalIpv6PrefixLength: The prefix length of the primary internal IPv6
+      range.
     ipv6AccessConfigs: An array of IPv6 access configurations for this
       interface. Currently, only one IPv6 access config, DIRECT_IPV6, is
       supported. If there is no ipv6AccessConfig specified, then this instance
@@ -39355,8 +40260,10 @@ class NetworkInterface(_messages.Message):
 
     Values:
       EXTERNAL: This network interface can have external IPv6.
+      INTERNAL: This network interface can have internal IPv6.
     """
     EXTERNAL = 0
+    INTERNAL = 1
 
   class NicTypeValueValuesEnum(_messages.Enum):
     r"""The type of vNIC to be used on this interface. This may be gVNIC or
@@ -39387,17 +40294,18 @@ class NetworkInterface(_messages.Message):
   accessConfigs = _messages.MessageField('AccessConfig', 1, repeated=True)
   aliasIpRanges = _messages.MessageField('AliasIpRange', 2, repeated=True)
   fingerprint = _messages.BytesField(3)
-  ipv6AccessConfigs = _messages.MessageField('AccessConfig', 4, repeated=True)
-  ipv6AccessType = _messages.EnumField('Ipv6AccessTypeValueValuesEnum', 5)
-  ipv6Address = _messages.StringField(6)
-  kind = _messages.StringField(7, default='compute#networkInterface')
-  name = _messages.StringField(8)
-  network = _messages.StringField(9)
-  networkIP = _messages.StringField(10)
-  nicType = _messages.EnumField('NicTypeValueValuesEnum', 11)
-  queueCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  stackType = _messages.EnumField('StackTypeValueValuesEnum', 13)
-  subnetwork = _messages.StringField(14)
+  internalIpv6PrefixLength = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  ipv6AccessConfigs = _messages.MessageField('AccessConfig', 5, repeated=True)
+  ipv6AccessType = _messages.EnumField('Ipv6AccessTypeValueValuesEnum', 6)
+  ipv6Address = _messages.StringField(7)
+  kind = _messages.StringField(8, default='compute#networkInterface')
+  name = _messages.StringField(9)
+  network = _messages.StringField(10)
+  networkIP = _messages.StringField(11)
+  nicType = _messages.EnumField('NicTypeValueValuesEnum', 12)
+  queueCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 14)
+  subnetwork = _messages.StringField(15)
 
 
 class NetworkList(_messages.Message):
@@ -46665,6 +47573,55 @@ class RegionList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
+class RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponse(_messages.Message):
+  r"""A RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponse object.
+
+  Fields:
+    firewallPolicys: Effective firewalls from firewall policy.
+    firewalls: Effective firewalls on the network.
+  """
+
+  firewallPolicys = _messages.MessageField('RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewallPolicy', 1, repeated=True)
+  firewalls = _messages.MessageField('Firewall', 2, repeated=True)
+
+
+class RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewallPolicy(_messages.Message):
+  r"""A RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFir
+  ewallPolicy object.
+
+  Enums:
+    TypeValueValuesEnum: [Output Only] The type of the firewall policy. Can be
+      one of HIERARCHY, NETWORK, NETWORK_REGIONAL.
+
+  Fields:
+    displayName: [Output Only] The display name of the firewall policy.
+    name: [Output Only] The name of the firewall policy.
+    rules: The rules that apply to the network.
+    type: [Output Only] The type of the firewall policy. Can be one of
+      HIERARCHY, NETWORK, NETWORK_REGIONAL.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The type of the firewall policy. Can be one of
+    HIERARCHY, NETWORK, NETWORK_REGIONAL.
+
+    Values:
+      HIERARCHY: <no description>
+      NETWORK: <no description>
+      NETWORK_REGIONAL: <no description>
+      UNSPECIFIED: <no description>
+    """
+    HIERARCHY = 0
+    NETWORK = 1
+    NETWORK_REGIONAL = 2
+    UNSPECIFIED = 3
+
+  displayName = _messages.StringField(1)
+  name = _messages.StringField(2)
+  rules = _messages.MessageField('FirewallPolicyRule', 3, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+
+
 class RegionSetLabelsRequest(_messages.Message):
   r"""A RegionSetLabelsRequest object.
 
@@ -47805,8 +48762,8 @@ class ResourcePolicyDailyCycle(_messages.Message):
   r"""Time window specified for daily operations.
 
   Fields:
-    daysInCycle: Defines a schedule with units measured in months. The value
-      determines how many months pass between the start of each cycle.
+    daysInCycle: Defines a schedule with units measured in days. The value
+      determines how many days pass between the start of each cycle.
     duration: [Output only] A predetermined duration for the window,
       automatically chosen to be the smallest possible in the given scenario.
     startTime: Start time of the window. This must be in UTC format that
@@ -49746,7 +50703,8 @@ class RouterStatusBgpPeerStatus(_messages.Message):
       as third-party router appliances such as Next Gen Firewalls, Virtual
       Routers, or Router Appliances. The VM instance is the peer side of the
       BGP session.
-    state: BGP state as specified in RFC1771.
+    state: The state of the BGP session. For a list of possible values for
+      this field, see BGP session states.
     status: Status of the BGP peer: {UP, DOWN}
     uptime: Time this session has been up. Format: 14 years, 51 weeks, 6 days,
       23 hours, 59 minutes, 59 seconds
@@ -50491,10 +51449,10 @@ class SecurityPolicy(_messages.Message):
 
   Enums:
     TypeValueValuesEnum: The type indicates the intended use of the security
-      policy. CLOUD_ARMOR - Cloud Armor backend security policies can be
+      policy. - CLOUD_ARMOR: Cloud Armor backend security policies can be
       configured to filter incoming HTTP requests targeting backend services.
-      They filter requests before they hit the origin servers.
-      CLOUD_ARMOR_EDGE - Cloud Armor edge security policies can be configured
+      They filter requests before they hit the origin servers. -
+      CLOUD_ARMOR_EDGE: Cloud Armor edge security policies can be configured
       to filter incoming HTTP requests targeting backend services (including
       Cloud CDN-enabled) as well as backend buckets (Cloud Storage). They
       filter requests before the request is served from Google's cache.
@@ -50532,10 +51490,10 @@ class SecurityPolicy(_messages.Message):
       are provided when creating a security policy, a default rule with action
       "allow" will be added.
     selfLink: [Output Only] Server-defined URL for the resource.
-    type: The type indicates the intended use of the security policy.
-      CLOUD_ARMOR - Cloud Armor backend security policies can be configured to
+    type: The type indicates the intended use of the security policy. -
+      CLOUD_ARMOR: Cloud Armor backend security policies can be configured to
       filter incoming HTTP requests targeting backend services. They filter
-      requests before they hit the origin servers. CLOUD_ARMOR_EDGE - Cloud
+      requests before they hit the origin servers. - CLOUD_ARMOR_EDGE: Cloud
       Armor edge security policies can be configured to filter incoming HTTP
       requests targeting backend services (including Cloud CDN-enabled) as
       well as backend buckets (Cloud Storage). They filter requests before the
@@ -50543,10 +51501,10 @@ class SecurityPolicy(_messages.Message):
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""The type indicates the intended use of the security policy.
-    CLOUD_ARMOR - Cloud Armor backend security policies can be configured to
+    r"""The type indicates the intended use of the security policy. -
+    CLOUD_ARMOR: Cloud Armor backend security policies can be configured to
     filter incoming HTTP requests targeting backend services. They filter
-    requests before they hit the origin servers. CLOUD_ARMOR_EDGE - Cloud
+    requests before they hit the origin servers. - CLOUD_ARMOR_EDGE: Cloud
     Armor edge security policies can be configured to filter incoming HTTP
     requests targeting backend services (including Cloud CDN-enabled) as well
     as backend buckets (Cloud Storage). They filter requests before the
@@ -50959,11 +51917,12 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       is present in the request, the key type defaults to ALL. - XFF_IP: The
       first IP address (i.e. the originating client IP address) specified in
       the list of IPs under X-Forwarded-For HTTP header. If no such header is
-      present or the value is not a valid IP, the key type defaults to ALL. -
-      HTTP_COOKIE: The value of the HTTP cookie whose name is configured under
-      "enforce_on_key_name". The key value is truncated to the first 128 bytes
-      of the cookie value. If no such cookie is present in the request, the
-      key type defaults to ALL.
+      present or the value is not a valid IP, the key defaults to the source
+      IP address of the request i.e. key type IP. - HTTP_COOKIE: The value of
+      the HTTP cookie whose name is configured under "enforce_on_key_name".
+      The key value is truncated to the first 128 bytes of the cookie value.
+      If no such cookie is present in the request, the key type defaults to
+      ALL.
 
   Fields:
     banDurationSec: Can only be specified if the action for the rule is
@@ -50987,20 +51946,21 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       key type defaults to ALL. - XFF_IP: The first IP address (i.e. the
       originating client IP address) specified in the list of IPs under
       X-Forwarded-For HTTP header. If no such header is present or the value
-      is not a valid IP, the key type defaults to ALL. - HTTP_COOKIE: The
-      value of the HTTP cookie whose name is configured under
-      "enforce_on_key_name". The key value is truncated to the first 128 bytes
-      of the cookie value. If no such cookie is present in the request, the
-      key type defaults to ALL.
+      is not a valid IP, the key defaults to the source IP address of the
+      request i.e. key type IP. - HTTP_COOKIE: The value of the HTTP cookie
+      whose name is configured under "enforce_on_key_name". The key value is
+      truncated to the first 128 bytes of the cookie value. If no such cookie
+      is present in the request, the key type defaults to ALL.
     enforceOnKeyName: Rate limit key name applicable only for the following
       key types: HTTP_HEADER -- Name of the HTTP header whose value is taken
       as the key value. HTTP_COOKIE -- Name of the HTTP cookie whose value is
       taken as the key value.
     exceedAction: Action to take for requests that are above the configured
       rate limit threshold, to either deny with a specified HTTP response
-      code, or redirect to a different endpoint. Valid options are "deny()"
-      where valid values for status are 403, 404, 429, and 502, and "redirect"
-      where the redirect parameters come from exceed_redirect_options below.
+      code, or redirect to a different endpoint. Valid options are
+      "deny(status)", where valid values for status are 403, 404, 429, and
+      502, and "redirect" where the redirect parameters come from
+      exceedRedirectOptions below.
     exceedRedirectOptions: Parameters defining the redirect action that is
       used as the exceed action. Cannot be specified if the exceed action is
       not redirect.
@@ -51019,10 +51979,11 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
     type defaults to ALL. - XFF_IP: The first IP address (i.e. the originating
     client IP address) specified in the list of IPs under X-Forwarded-For HTTP
     header. If no such header is present or the value is not a valid IP, the
-    key type defaults to ALL. - HTTP_COOKIE: The value of the HTTP cookie
-    whose name is configured under "enforce_on_key_name". The key value is
-    truncated to the first 128 bytes of the cookie value. If no such cookie is
-    present in the request, the key type defaults to ALL.
+    key defaults to the source IP address of the request i.e. key type IP. -
+    HTTP_COOKIE: The value of the HTTP cookie whose name is configured under
+    "enforce_on_key_name". The key value is truncated to the first 128 bytes
+    of the cookie value. If no such cookie is present in the request, the key
+    type defaults to ALL.
 
     Values:
       ALL: <no description>
@@ -53686,6 +54647,9 @@ class Subnetwork(_messages.Message):
       reach destination addresses outside this subnetwork.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
+    internalIpv6Prefix: [Output Only] The range of internal IPv6 addresses
+      that are owned by this subnetwork. Note this is for general VM to VM
+      communication, not to be confused with the ipv6_cidr_range field.
     ipCidrRange: The range of internal addresses that are owned by this
       subnetwork. Provide this property when you create the subnetwork. For
       example, 10.0.0.0/8 or 100.64.0.0/10. Ranges must be unique and non-
@@ -53762,8 +54726,11 @@ class Subnetwork(_messages.Message):
     Values:
       EXTERNAL: VMs on this subnet will be assigned IPv6 addresses that are
         accesible via the Internet, as well as the VPC network.
+      INTERNAL: VMs on this subnet will be assigned IPv6 addresses that are
+        only accessible over the VPC network.
     """
     EXTERNAL = 0
+    INTERNAL = 1
 
   class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
     r"""The private IPv6 google access type for the VMs in this subnet. This
@@ -53856,22 +54823,23 @@ class Subnetwork(_messages.Message):
   fingerprint = _messages.BytesField(5)
   gatewayAddress = _messages.StringField(6)
   id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  ipCidrRange = _messages.StringField(8)
-  ipv6AccessType = _messages.EnumField('Ipv6AccessTypeValueValuesEnum', 9)
-  ipv6CidrRange = _messages.StringField(10)
-  kind = _messages.StringField(11, default='compute#subnetwork')
-  logConfig = _messages.MessageField('SubnetworkLogConfig', 12)
-  name = _messages.StringField(13)
-  network = _messages.StringField(14)
-  privateIpGoogleAccess = _messages.BooleanField(15)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 16)
-  purpose = _messages.EnumField('PurposeValueValuesEnum', 17)
-  region = _messages.StringField(18)
-  role = _messages.EnumField('RoleValueValuesEnum', 19)
-  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 20, repeated=True)
-  selfLink = _messages.StringField(21)
-  stackType = _messages.EnumField('StackTypeValueValuesEnum', 22)
-  state = _messages.EnumField('StateValueValuesEnum', 23)
+  internalIpv6Prefix = _messages.StringField(8)
+  ipCidrRange = _messages.StringField(9)
+  ipv6AccessType = _messages.EnumField('Ipv6AccessTypeValueValuesEnum', 10)
+  ipv6CidrRange = _messages.StringField(11)
+  kind = _messages.StringField(12, default='compute#subnetwork')
+  logConfig = _messages.MessageField('SubnetworkLogConfig', 13)
+  name = _messages.StringField(14)
+  network = _messages.StringField(15)
+  privateIpGoogleAccess = _messages.BooleanField(16)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 17)
+  purpose = _messages.EnumField('PurposeValueValuesEnum', 18)
+  region = _messages.StringField(19)
+  role = _messages.EnumField('RoleValueValuesEnum', 20)
+  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 21, repeated=True)
+  selfLink = _messages.StringField(22)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
 
 
 class SubnetworkAggregatedList(_messages.Message):

@@ -165,7 +165,8 @@ def CheckIfInProgressRollout(release_ref, release_obj, to_target_id):
   Raises:
     googlecloudsdk.command_lib.deploy.exceptions.RolloutInProgressError
   """
-  resp = rollout.RolloutClient().List(release_ref.RelativeName(),
-                                      IN_PROGRESS_FILTER_TEMPLATE)
-  if resp.rollouts:
+  rollouts = list(rollout.RolloutClient().List(
+      release_ref.RelativeName(), IN_PROGRESS_FILTER_TEMPLATE, limit=1))
+
+  if rollouts:
     raise exceptions.RolloutInProgressError(release_obj.name, to_target_id)

@@ -325,7 +325,7 @@
           "$ref": "CloudRun"
         },
         "cloudFunction": {
-          "description": "The Cloud Function resource name. Only Cloud Functions V2 is supported. Format: projects\/{project}\/locations\/{location}\/functions\/{function}",
+          "description": "The Cloud Function resource name. Only Cloud Functions V2 is supported. Format: `projects\/{project}\/locations\/{location}\/functions\/{function}`",
           "type": "string"
         },
         "gke": {
@@ -333,7 +333,7 @@
           "$ref": "GKE"
         },
         "workflow": {
-          "description": "The resource name of the Workflow whose Executions are triggered by the events. The Workflow resource should be deployed in the same project as the trigger. Format: projects\/{project}\/locations\/{location}\/workflows\/{workflow}",
+          "description": "The resource name of the Workflow whose Executions are triggered by the events. The Workflow resource should be deployed in the same project as the trigger. Format: `projects\/{project}\/locations\/{location}\/workflows\/{workflow}`",
           "type": "string"
         }
       }

@@ -641,6 +641,7 @@ class InstallationState(object):
                                    '|pubsublite'
                                    '|pubsub/lite_subscriptions.py'
                                    '|logging_v2'
+                                   '|platform/bundledpythonunix'
                                    '|pubsub_v1/services)')
     else:
       # Do not compile anything on python 3.4.x

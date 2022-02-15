@@ -88,7 +88,7 @@ def FetchFeatureFlagsConfig():
 
 
 @Cache
-def GetFeatureFlagsConfig(account_id):
+def GetFeatureFlagsConfig(account_id, project_id):
   """Gets the feature flags config.
 
   If the feature flags config file does not exist or is stale, download and save
@@ -97,6 +97,7 @@ def GetFeatureFlagsConfig(account_id):
 
   Args:
     account_id: str, account ID.
+    project_id: str, project ID
 
 
   Returns:
@@ -123,15 +124,17 @@ def GetFeatureFlagsConfig(account_id):
                         feature_flags_config_path, e)
 
   if yaml_data:
-    return FeatureFlagsConfig(yaml_data, account_id)
+    return FeatureFlagsConfig(yaml_data, account_id, project_id)
   return None
 
 
 class FeatureFlagsConfig:
   """Stores all Property Objects for a given FeatureFlagsConfig."""
 
-  def __init__(self, feature_flags_config_yaml, account_id=None):
+  def __init__(self, feature_flags_config_yaml, account_id=None,
+               project_id=None):
     self.user_key = account_id or config.GetCID()
+    self.project_id = project_id
     self.properties = _ParseFeatureFlagsConfig(feature_flags_config_yaml)
 
   def Get(self, prop):
@@ -141,9 +144,12 @@ class FeatureFlagsConfig:
       return None
 
     total_weight = sum(self.properties[prop_str].weights)
-    prop_client_id = prop_str + config.GetCID()
+    if self.project_id:
+      hash_str = prop_str + self.project_id
+    else:
+      hash_str = prop_str + self.user_key
     project_hash = int(
-        hashlib.sha256(prop_client_id.encode('utf-8')).hexdigest(),
+        hashlib.sha256(hash_str.encode('utf-8')).hexdigest(),
         16) % total_weight
     list_of_weights = self.properties[prop_str].weights
     sum_of_weights = 0

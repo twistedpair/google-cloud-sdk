@@ -44,6 +44,19 @@ def _RegionAttributeConfig():
       fallthroughs=fallthroughs)
 
 
+def _LocationAttributeConfig():
+  fallthroughs = [deps.PropertyFallthrough(properties.VALUES.dataproc.location)]
+  return concepts.ResourceParameterAttributeConfig(
+      name='location',
+      help_text=(
+          'Dataproc location for the {resource}. Each Dataproc '
+          'location constitutes an independent resource namespace constrained '
+          'to deploying instances into Compute Engine zones inside the '
+          'location. Overrides the default `dataproc/location` property '
+          'value for this command invocation.'),
+      fallthroughs=fallthroughs)
+
+
 def AddRegionFlag(parser):
   region_prop = properties.VALUES.dataproc.region
   parser.add_argument(
@@ -51,6 +64,15 @@ def AddRegionFlag(parser):
       help=region_prop.help_text,
       # Don't set default, because it would override users' property setting.
       action=actions.StoreProperty(region_prop))
+
+
+def AddLocationFlag(parser):
+  location_prop = properties.VALUES.dataproc.location
+  parser.add_argument(
+      '--location',
+      help=location_prop.help_text,
+      # Don't set default, because it would override user's property setting.
+      action=actions.StoreProperty(location_prop))
 
 
 def AddProjectsLocationsResourceArg(parser, api_version):
@@ -342,7 +364,7 @@ def AddSessionResourceArg(parser, verb, api_version):
         resource_name='session',
         disable_auto_completers=True,
         projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-        locationsId=_RegionAttributeConfig(),
+        locationsId=_LocationAttributeConfig(),
         sessionsId=SessionConfig(),
     )
 

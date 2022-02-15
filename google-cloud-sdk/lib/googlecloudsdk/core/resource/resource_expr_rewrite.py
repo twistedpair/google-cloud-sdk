@@ -337,6 +337,9 @@ class BackendBase(object):
   def ExprNotRE(self, key, operand, transform=None, args=None):
     return self.Term(key, '!~', operand, transform, args)
 
+  def IsRewriter(self):
+    return True
+
 
 class Backend(BackendBase):
   """Rewrites for OnePlatform server side filter expressions.

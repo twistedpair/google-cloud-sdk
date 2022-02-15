@@ -461,15 +461,7 @@ If you want to enable all scopes use the 'cloud-platform' scope.
   _AddAcceleratorArgs(parser)
 
   if not beta:
-    parser.add_argument(
-        '--metric-sources',
-        metavar='METRIC_SOURCES',
-        type=arg_parsers.ArgList(
-            arg_utils.ChoiceToEnumName,
-            choices=_GetValidMetricSourceChoices(dataproc)),
-        hidden=True,
-        help='Specifies a list of Metric Sources to collect custom '
-        'metrics from the cluster.')
+    _AddMetricConfigArgs(parser, dataproc)
 
   AddReservationAffinityGroup(
       gce_platform_group,
@@ -507,6 +499,39 @@ def _GetValidMetricSourceChoices(dataproc):
       for n in metric_sources_enum.names()
       if n != 'METRIC_SOURCE_UNSPECIFIED'
   ]
+
+
+def _AddMetricConfigArgs(parser, dataproc):
+  """Adds DataprocMetricConfig related args to the parser."""
+  metric_config_group = parser.add_group(hidden=True)
+  metric_config_group.add_argument(
+      '--metric-sources',
+      metavar='METRIC_SOURCES',
+      type=arg_parsers.ArgList(
+          arg_utils.ChoiceToEnumName,
+          choices=_GetValidMetricSourceChoices(dataproc)),
+      hidden=True,
+      required=True,
+      help='Specifies a list of Metric Sources to collect custom '
+      'metrics from the cluster.')
+  metric_overrides_group = metric_config_group.add_mutually_exclusive_group(
+      hidden=True)
+  metric_overrides_group.add_argument(
+      '--metric-overrides',
+      type=arg_parsers.ArgList(),
+      action=arg_parsers.UpdateAction,
+      metavar='METRIC_SOURCE:INSTANCE:GROUP:METRIC',
+      hidden=True,
+      help='List of Metrics that override the default metrics enabled for the metric source'
+  )
+  metric_overrides_group.add_argument(
+      '--metric-overrides-file',
+      hidden=True,
+      help="""\
+      Path to a file containing list of Metrics that override the default metrics enabled for the metric source.
+      The path can be a Cloud Storage URL (Example: 'gs://path/to/file') or a local file system path.
+      """
+  )
 
 
 def _AddAcceleratorArgs(parser):
@@ -992,16 +1017,80 @@ def GetClusterConfig(args,
       cluster_config.secondaryWorkerConfig = None
 
   if not beta and args.metric_sources:
-    cluster_config.dataprocMetricConfig = (
-        dataproc.messages.DataprocMetricConfig(metrics=[]))
-
-    for metric_source in args.metric_sources:
-      cluster_config.dataprocMetricConfig.metrics.append(
-          dataproc.messages.Metric(
-              metricSource=arg_utils.ChoiceToEnum(
-                  metric_source,
-                  dataproc.messages.Metric.MetricSourceValueValuesEnum)))
+    _SetDataprocMetricConfig(args, cluster_config, dataproc)
   return cluster_config
+
+
+def _GetMetricOverrides(args):
+  """Method to get metric overrides from either metric_overrides list or the file passed."""
+  if args.metric_overrides:
+    return args.metric_overrides
+  if args.metric_overrides_file:
+    if args.metric_overrides_file.startswith('gs://'):
+      data = storage_helpers.ReadObject(args.metric_overrides_file)
+    else:
+      data = console_io.ReadFromFileOrStdin(
+          args.metric_overrides_file, binary=False)
+    return data.split('\n')
+  return None
+
+
+def _SetDataprocMetricConfig(args, cluster_config, dataproc):
+  """Method to set Metric source and the corresponding optional overrides to DataprocMetricConfig.
+
+  Metric overrides can be read from either metric-overrides or
+  metric-overrides-file argument.
+  We do basic validation on metric-overrides :
+  * Ensure that all entries of metric-overrides are prefixed with camel case of
+  the metric source.
+    Example :
+    "sparkHistoryServer:JVM:Memory:NonHeapMemoryUsage.used" is valid metric
+    override for the metric-source spark-history-server
+    but "spark-history-server:JVM:Memory:NonHeapMemoryUsage.used" is not.
+  * Metric overrides are passed only for the metric sources enabled via
+  args.metric_sources.
+
+  Args:
+    args: arguments passed to create cluster command.
+    cluster_config: cluster configuration to be updated with
+      DataprocMetricConfig.
+    dataproc: Dataproc API definition.
+  """
+  def _GetCamelCaseMetricSource(ms):
+    title_case = ms.lower().title().replace('_', '').replace('-', '')
+    return title_case[0].lower() + title_case[1:]
+
+  metric_source_to_overrides_dict = dict()
+  metric_overrides = [m.strip() for m in _GetMetricOverrides(args) if m.strip()]
+  if metric_overrides:
+    valid_metric_prefixes = [
+        _GetCamelCaseMetricSource(ms) for ms in args.metric_sources
+    ]
+    invalid_metric_overrides = []
+    for metric in metric_overrides:
+      prefix = metric.split(':')[0]
+      if prefix not in valid_metric_prefixes:
+        invalid_metric_overrides.append(metric)
+      metric_source_to_overrides_dict.setdefault(prefix, []).append(metric)
+  if invalid_metric_overrides:
+    raise exceptions.ArgumentError(
+        'Found invalid metric overrides: ' +
+        ','.join(invalid_metric_overrides) +
+        '. Please ensure the metric overrides only have the following prefixes that correspond to the metric-sources that are enabled: '
+        + ','.join(valid_metric_prefixes))
+
+  cluster_config.dataprocMetricConfig = (
+      dataproc.messages.DataprocMetricConfig(metrics=[]))
+  for metric_source in args.metric_sources:
+    metric_source_in_camel_case = _GetCamelCaseMetricSource(metric_source)
+    metric_overrides = metric_source_to_overrides_dict.get(
+        metric_source_in_camel_case, [])
+    cluster_config.dataprocMetricConfig.metrics.append(
+        dataproc.messages.Metric(
+            metricSource=arg_utils.ChoiceToEnum(
+                metric_source,
+                dataproc.messages.Metric.MetricSourceValueValuesEnum),
+            metricOverrides=metric_overrides))
 
 
 def _FirstNonNone(first, second):

@@ -181,11 +181,11 @@ class RunAppsOperations(object):
     """
     try:
       application_status = api_utils.GetApplicationStatus(
-          self._client, self.GetAppRef(_DEFAULT_APP_NAME))
+          self._client, self.GetAppRef(_DEFAULT_APP_NAME), name)
       app_status_dict = encoding.MessageToDict(application_status)
-      for status in app_status_dict['resource']:
-        if status['resourceName'] == name:
-          return status
+      integration_status = app_status_dict.get('resources', {}).get(name)
+      if integration_status:
+        return integration_status
       return None
     except KeyError:
       return None
@@ -304,13 +304,96 @@ class RunAppsOperations(object):
       resource_type: string, the resource type.
 
     Returns:
-      The integration tyep.
+      The integration type.
     """
     int_types = types_utils.IntegrationTypes(self._client)
     for t in int_types:
       if t['resource_name'] == resource_type:
         return t['name']
     return resource_type
+
+  def ListIntegrations(self, integration_type_filter, service_name_filter):
+    """Returns the list of integrations.
+
+    Args:
+      integration_type_filter: str, if populated integration type to filter by.
+      service_name_filter: str, if populated service name to filter by.
+
+    Returns:
+      Dict of str[str] with keys name, type, and services.
+
+    """
+
+    app = api_utils.GetApplication(self._client,
+                                   self.GetAppRef(_DEFAULT_APP_NAME))
+    if not app:
+      raise exceptions.IntegrationNotFoundError('No Integrations Found.')
+
+    app_dict = encoding.MessageToDict(app)
+    app_resources = app_dict.get('config', {}).get('resources')
+    if not app_resources:
+      raise exceptions.IntegrationNotFoundError('No Integrations Found.')
+
+    # Filter by type and/or service.
+    output = []
+    for name, resource in app_resources.items():
+      integration_type = self.GetIntegrationTypeFromConfig(resource)
+      services = self._GetRefServicesRouter(resource)
+
+      # Convert from internal resource naming to external integration naming.
+      integration_type = self.GetIntegrationType(integration_type)
+
+      # Remove invalid integrations.
+      if integration_type is None:
+        continue
+
+      # Always remove services.
+      if integration_type == 'service':
+        continue
+
+      # TODO(b/217744072): Support Cloud SDK topic filtering.
+      # Optionally filter by type.
+      if (integration_type_filter and
+          integration_type != integration_type_filter):
+        continue
+
+      # Optionally filter by service.
+      if service_name_filter and service_name_filter not in services:
+        continue
+
+      # Assemble for Cloud SDK table formater.
+      resource = {
+          'name': name,
+          'type': integration_type,
+          'services': ','.join(services)
+      }
+      output.append(resource)
+
+    return output
+
+  def _GetRefServicesRouter(self, resource):
+    """Get referenced services from Router/GCLB.
+
+    Args:
+      resource: ResourceConfig, from which to determine type.
+
+    Returns:
+      list(str), of referenced services or None if no refs found.
+    """
+    # Right now ingress bindings are only created from ingress to service. As
+    # such have to look each paths of router.
+    output = []
+    if resource.get('router') is not None:
+      if resource.get('router', {}).get('default-route', {}).get('ref'):
+        output.append(resource['router']['default-route']['ref'].replace(
+            'service/', ''))
+
+      if resource.get('router', {}).get('routes'):
+        for route in resource['router']['routes']:
+          if route.get('ref'):
+            output.append(route['ref'].replace('service/', ''))
+
+    return output
 
   def _GetDefaultAppDict(self):
     """Returns the default application as a dict.
@@ -471,3 +554,19 @@ class RunAppsOperations(object):
       raise exceptions.IntegrationsOperationError(
           'Configuration returned in unexpected state "{}".'.format(
               response.status.state.name))
+
+  def IsValidIntegrationType(self, type_str):
+    """Check if integration type is supported.
+
+    Args:
+      type_str: str, of type to verify
+
+    Returns:
+      bool, True if valid
+    """
+
+    for integration in types_utils.IntegrationTypes(self._client):
+      if integration['name'] == type_str:
+        return True
+
+    return False

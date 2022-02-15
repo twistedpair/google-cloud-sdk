@@ -408,6 +408,10 @@
         "securityProjection": {
           "description": "Use with CategoryType.SECURITY",
           "$ref": "GoogleCloudRecommenderV1beta1SecurityProjection"
+        },
+        "sustainabilityProjection": {
+          "description": "Use with CategoryType.SUSTAINABILITY",
+          "$ref": "GoogleCloudRecommenderV1beta1SustainabilityProjection"
         }
       }
     },
@@ -460,6 +464,23 @@
             "type": "any",
             "description": "Properties of the object."
           }
+        }
+      }
+    },
+    "GoogleCloudRecommenderV1beta1SustainabilityProjection": {
+      "id": "GoogleCloudRecommenderV1beta1SustainabilityProjection",
+      "description": "Contains metadata about how much sustainability a recommendation can save or incur.",
+      "type": "object",
+      "properties": {
+        "kgCO2e": {
+          "description": "Carbon Footprint generated in kg of CO2 equivalent. Chose kg_c_o2e so that the name renders correctly in camelCase (kgCO2e).",
+          "type": "number",
+          "format": "double"
+        },
+        "duration": {
+          "description": "Duration for which this sustanability applies.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },

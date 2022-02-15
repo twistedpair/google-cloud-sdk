@@ -117,7 +117,14 @@ class IapLightWeightWebsocket(object):
      This websocket implements rfc6455
   """
 
-  def __init__(self, url, on_data, on_close, on_error, sock=None):
+  def __init__(self,
+               url,
+               header,
+               on_data,
+               on_close,
+               on_error,
+               subprotocols,
+               sock=None):
     self.url = url
     self.on_data = on_data
     self.on_close = on_close
@@ -130,6 +137,8 @@ class IapLightWeightWebsocket(object):
     # Used to fix the mask key used. This is important for unit tests so we
     # don't use a random mask everytime.
     self.get_mask_key = None
+    self.subprotocols = subprotocols
+    self.header = header
 
   def recv(self):
     """Receives data from the server."""
@@ -204,6 +213,8 @@ class IapLightWeightWebsocket(object):
   def run_forever(self, sslopt, **options):
     """Main method that will stay running while the connection is open."""
     try:
+      options.update({"header": self.header})
+      options.update({"subprotocols": self.subprotocols})
       self._connect(sslopt, **options)
       while self.connected:
         frame = self.recv()

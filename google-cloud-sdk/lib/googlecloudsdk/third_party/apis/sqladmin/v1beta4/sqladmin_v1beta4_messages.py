@@ -2139,6 +2139,8 @@ class Settings(_messages.Message):
     ReplicationTypeValueValuesEnum: The type of replication this instance
       uses. This can be either `ASYNCHRONOUS` or `SYNCHRONOUS`. (Deprecated)
       This property was only applicable to First Generation instances.
+    WorkloadTierValueValuesEnum: The workload tier for this instance. Can be
+      STANDARD or PREMIUM.
 
   Messages:
     UserLabelsValue: User-provided labels, represented as a dictionary where
@@ -2213,6 +2215,8 @@ class Settings(_messages.Message):
       custom-1-3840`. WARNING: Changing this restarts the instance.
     userLabels: User-provided labels, represented as a dictionary where each
       label is a single key value pair.
+    workloadTier: The workload tier for this instance. Can be STANDARD or
+      PREMIUM.
   """
 
   class ActivationPolicyValueValuesEnum(_messages.Enum):
@@ -2299,6 +2303,18 @@ class Settings(_messages.Message):
     SYNCHRONOUS = 1
     ASYNCHRONOUS = 2
 
+  class WorkloadTierValueValuesEnum(_messages.Enum):
+    r"""The workload tier for this instance. Can be STANDARD or PREMIUM.
+
+    Values:
+      WORKLOAD_TIER_UNSPECIFIED: The instance did not specify a workload tier.
+      STANDARD: The instance is using a standard workload tier.
+      PREMIUM: The instance is using a premium workload tier.
+    """
+    WORKLOAD_TIER_UNSPECIFIED = 0
+    STANDARD = 1
+    PREMIUM = 2
+
   @encoding.MapUnrecognizedFields('additionalProperties')
   class UserLabelsValue(_messages.Message):
     r"""User-provided labels, represented as a dictionary where each label is
@@ -2352,6 +2368,7 @@ class Settings(_messages.Message):
   storageAutoResizeLimit = _messages.IntegerField(26)
   tier = _messages.StringField(27)
   userLabels = _messages.MessageField('UserLabelsValue', 28)
+  workloadTier = _messages.EnumField('WorkloadTierValueValuesEnum', 29)
 
 
 class SqlActiveDirectoryConfig(_messages.Message):

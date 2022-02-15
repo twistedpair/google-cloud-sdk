@@ -216,11 +216,17 @@ class OrgPolicyApiGA(OrgPolicyApi):
 
   def UpdatePolicy(self, policy):
     if policy.name.startswith('organizations/'):
-      return self.client.organizations_policies.Patch(policy)
+      request = self.messages.OrgpolicyOrganizationsPoliciesPatchRequest(
+          name=policy.name, googleCloudOrgpolicyV2Policy=policy)
+      return self.client.organizations_policies.Patch(request)
     elif policy.name.startswith('folders/'):
-      return self.client.folders_policies.Patch(policy)
+      request = self.messages.OrgpolicyFoldersPoliciesPatchRequest(
+          name=policy.name, googleCloudOrgpolicyV2Policy=policy)
+      return self.client.folders_policies.Patch(request)
     else:
-      return self.client.projects_policies.Patch(policy)
+      request = self.messages.OrgpolicyProjectsPoliciesPatchRequest(
+          name=policy.name, googleCloudOrgpolicyV2Policy=policy)
+      return self.client.projects_policies.Patch(request)
 
   def CreateCustomConstraint(self, custom_constraint):
     parent = utils.GetResourceFromPolicyName(custom_constraint.name)

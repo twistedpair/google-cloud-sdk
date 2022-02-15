@@ -268,9 +268,14 @@ class IapTunnelWebSocket(object):
       log.info('Connecting with URL [%r]', url)
 
     self._connect_msg_received = False
+    should_use_new_websocket = (
+        properties.VALUES.compute.iap_tunnel_use_new_websocket.GetBool())
+    if should_use_new_websocket:
+      log.debug('Using new websocket library')
+
     self._websocket_helper = helper.IapTunnelWebSocketHelper(
         url, headers, self._ignore_certs, self._tunnel_target.proxy_info,
-        self._OnData, self._OnClose)
+        self._OnData, self._OnClose, should_use_new_websocket)
     self._websocket_helper.StartReceivingThread()
 
   def _SendAck(self):

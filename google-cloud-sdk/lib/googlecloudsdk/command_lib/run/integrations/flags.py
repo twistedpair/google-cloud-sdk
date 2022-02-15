@@ -98,7 +98,7 @@ def ValidateParameters(integration_type, parameters, is_create=True):
   """Validates given params conform to what's expected from the integration."""
   if integration_type == 'custom-domain':
     if is_create:
-      requires = ['domain', 'dns-zone']
+      requires = ['domain']
       for key in requires:
         if key not in parameters:
           raise exceptions.ArgumentError(
@@ -107,6 +107,20 @@ def ValidateParameters(integration_type, parameters, is_create=True):
   else:
     raise exceptions.ArgumentError(
         'Integration of type {} is not supported'.format(integration_type))
+
+
+def ListIntegrationsOfService(parser):
+  """Filter by Service Name."""
+  parser.add_argument(
+      '--service',
+      type=str,
+      help='Filter Integrations by Name of Cloud Run service.')
+
+
+def ListIntegrationsOfType(parser):
+  """Filter by Integration Type."""
+  parser.add_argument(
+      '--type', type=str, help='Filter Integrations by Type of Integration.')
 
 
 def GetParameters(args):

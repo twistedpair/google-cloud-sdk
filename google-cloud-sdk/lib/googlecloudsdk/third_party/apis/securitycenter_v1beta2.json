@@ -648,7 +648,7 @@
           "type": "string"
         },
         "mute": {
-          "description": "Indicates the mute state of a finding (either unspecified, muted, unmuted or undefined).",
+          "description": "Indicates the mute state of a finding (either unspecified, muted, unmuted or undefined). Unlike other attributes of a finding, a finding provider shouldn't set the value of mute.",
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",
@@ -714,7 +714,7 @@
           "$ref": "Access"
         },
         "muteInitiator": {
-          "description": "First known as mute_annotation. Records additional information about the mute operation e.g. mute config that muted the finding, user who muted the finding, etc.",
+          "description": "First known as mute_annotation. Records additional information about the mute operation e.g. mute config that muted the finding, user who muted the finding, etc. Unlike other attributes of a finding, a finding provider shouldn't set the value of mute.",
           "type": "string"
         }
       }

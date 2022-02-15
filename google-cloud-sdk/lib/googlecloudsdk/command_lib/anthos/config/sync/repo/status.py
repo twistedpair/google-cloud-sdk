@@ -19,14 +19,12 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
-import contextlib
 import datetime
 import fnmatch
 import json
-import signal
 
-from googlecloudsdk.command_lib.anthos.config.sync.repo import utils
-from googlecloudsdk.core import exceptions
+from googlecloudsdk.command_lib.anthos.config.sync.common import exceptions
+from googlecloudsdk.command_lib.anthos.config.sync.common import utils
 from googlecloudsdk.core import log
 
 
@@ -87,19 +85,19 @@ def ListRepos(project_id, status, namespace, membership, selector, targets):
 
   """
   if targets and targets not in ['all', 'fleet-clusters', 'config-controller']:
-    raise exceptions.Error(
+    raise exceptions.ConfigSyncError(
         '--targets must be one of "all", "fleet-clusters" and "config-controller"'
     )
   if targets != 'fleet-clusters' and membership:
-    raise exceptions.Error(
+    raise exceptions.ConfigSyncError(
         '--membership should only be specified when --targets=fleet-clusters')
   if status not in ['all', 'synced', 'error', 'pending', 'stalled']:
-    raise exceptions.Error(
+    raise exceptions.ConfigSyncError(
         '--status must be one of "all", "synced", "pending", "error", "stalled"'
     )
   selector_map, err = _ParseSelector(selector)
   if err:
-    raise exceptions.Error(err)
+    raise exceptions.ConfigSyncError(err)
 
   repo_cross_clusters = RawRepos()
 
@@ -108,7 +106,7 @@ def ListRepos(project_id, status, namespace, membership, selector, targets):
     clusters = []
     try:
       clusters = utils.ListConfigControllerClusters(project_id)
-    except exceptions.Error as err:
+    except exceptions.ConfigSyncError as err:
       log.error(err)
     if clusters:
       for cluster in clusters:
@@ -116,24 +114,24 @@ def ListRepos(project_id, status, namespace, membership, selector, targets):
           utils.KubeconfigForCluster(project_id, cluster[1], cluster[0])
           _AppendReposFromCluster(cluster[0], repo_cross_clusters,
                                   'Config Controller', namespace, selector_map)
-        except exceptions.Error as err:
+        except exceptions.ConfigSyncError as err:
           log.error(err)
 
   if targets == 'all' or targets == 'fleet-clusters':
     # list the repos from membership clusters
     try:
       memberships = utils.ListMemberships(project_id)
-    except exceptions.Error as err:
+    except exceptions.ConfigSyncError as err:
       raise err
 
     for member in memberships:
-      if not _MembershipMatched(member, membership):
+      if not utils.MembershipMatched(member, membership):
         continue
       try:
         utils.KubeconfigForMembership(project_id, member)
         _AppendReposFromCluster(member, repo_cross_clusters, 'Membership',
                                 namespace, selector_map)
-      except exceptions.Error as err:
+      except exceptions.ConfigSyncError as err:
         log.error(err)
 
   # aggregate all the repos
@@ -178,7 +176,7 @@ def _GetRepoStatus(rs, git):
   for _, pair in rs.items():
     status = 'SYNCED'
     obj = pair.repo
-    namespace, name = _GetObjectKey(obj)
+    namespace, name = utils.GetObjectKey(obj)
     repo_status.namespace = namespace
     repo_status.name = name
     single_repo_status = _GetStatusForRepo(obj)
@@ -196,29 +194,6 @@ def _GetRepoStatus(rs, git):
     repo_status.total += 1
     repo_status.cluster_type = pair.cluster_type
   return repo_status
-
-
-def _MembershipMatched(membership, target_membership):
-  """Check if the current membership matches the specified memberships.
-
-  Args:
-    membership: string The current membership.
-    target_membership: string The specified memberships.
-
-  Returns:
-    Returns True if matching; False otherwise.
-  """
-  if not target_membership:
-    return True
-
-  if target_membership and '*' in target_membership:
-    return fnmatch.fnmatch(membership, target_membership)
-  else:
-    members = target_membership.split(',')
-    for m in members:
-      if m == membership:
-        return True
-    return False
 
 
 def _LabelMatched(obj, selector_map):
@@ -292,13 +267,6 @@ def _GetPathValue(obj, paths, default_value=None):
   return obj
 
 
-def _GetObjectKey(obj):
-  """Return the Object Key containing namespace and name."""
-  namespace = obj['metadata']['namespace']
-  name = obj['metadata']['name']
-  return namespace, name
-
-
 def _GetGitKey(obj):
   """Hash the Git specification for the given RepoSync|RootSync object."""
   repo = obj['spec']['git']['repo']
@@ -351,7 +319,7 @@ def _AppendReposFromCluster(membership, repos_cross_clusters, cluster_type,
   Raises:
     Error: errors that happen when listing the CRs from the cluster.
   """
-  _GetConfigManagement(membership, cluster_type)
+  utils.GetConfigManagement(membership, cluster_type)
 
   params = []
   if not namespaces or '*' in namespaces:
@@ -378,7 +346,7 @@ def _AppendReposFromCluster(membership, repos_cross_clusters, cluster_type,
         else:
           all_repos += obj['items']
   if errors:
-    raise exceptions.Error(
+    raise exceptions.ConfigSyncError(
         'Error getting RootSync and RepoSync custom resources: {}'.format(
             errors))
 
@@ -413,7 +381,7 @@ def _AppendReposAndResourceGroups(membership, repos_cross_clusters,
   Raises:
     Error: errors that happen when listing the CRs from the cluster.
   """
-  _GetConfigManagement(membership, cluster_type)
+  utils.GetConfigManagement(membership, cluster_type)
   params = []
   if not namespace:
     params = ['--all-namespaces']
@@ -422,7 +390,7 @@ def _AppendReposAndResourceGroups(membership, repos_cross_clusters,
   repos, err = utils.RunKubectl(
       ['get', 'rootsync,reposync,resourcegroup', '-o', 'json'] + params)
   if err:
-    raise exceptions.Error(
+    raise exceptions.ConfigSyncError(
         'Error getting RootSync,RepoSync,Resourcegroup custom resources: {}'
         .format(err))
 
@@ -435,7 +403,7 @@ def _AppendReposAndResourceGroups(membership, repos_cross_clusters,
   repos = {}
   resourcegroups = {}
   for item in obj['items']:
-    ns, nm = _GetObjectKey(item)
+    ns, nm = utils.GetObjectKey(item)
     if name and nm != name:
       continue
     key = ns + '/' + nm
@@ -458,60 +426,6 @@ def _AppendReposAndResourceGroups(membership, repos_cross_clusters,
   if count > 0:
     log.status.Print('getting {} RepoSync and RootSync from {}'.format(
         count, membership))
-
-
-def _GetConfigManagement(membership, cluster_type):
-  """Get ConfigManagement to check if multi-repo is enabled.
-
-  Args:
-    membership: The membership name or cluster name of the current cluster.
-    cluster_type: The type of the current cluster. It is either a Fleet-cluster
-      or a Config-controller cluster.
-
-  Returns:
-    None
-
-  Raises:
-    Error: errors that happen when getting the object from the cluster.
-  """
-  config_management = None
-  err = None
-  timed_out = True
-  with Timeout(5):
-    config_management, err = utils.RunKubectl([
-        'get', 'configmanagements.configmanagement.gke.io/config-management',
-        '-o', 'json'
-    ])
-    timed_out = False
-  if timed_out and cluster_type != 'Config Controller':
-    raise exceptions.Error(
-        'Timed out getting ConfigManagement object. ' +
-        'Make sure you have setup Connect Gateway for ' + membership +
-        ' following the instruction from https://cloud.google.com/anthos/multicluster-management/gateway/setup'
-    )
-  if timed_out:
-    raise exceptions.Error('Timed out getting ConfigManagement object from ' +
-                           membership)
-
-  if err:
-    raise exceptions.Error(
-        'Error getting ConfigManagement object from {}: {}\n'.format(
-            membership, err))
-  config_management_obj = json.loads(config_management)
-  if 'enableMultiRepo' not in config_management_obj[
-      'spec'] or not config_management_obj['spec']['enableMultiRepo']:
-    raise exceptions.Error(
-        'Legacy mode is used in {}. Please enable the multi-repo feature to use this command.'
-        .format(membership))
-  if 'status' not in config_management_obj:
-    log.status.Print(
-        'The ConfigManagement object is not reconciled in {}. Please check if the Config Management is running on it.'
-        .format(membership))
-  errors = config_management_obj.get('status', {}).get('errors')
-  if errors:
-    log.status.Print(
-        'The ConfigManagement object contains errors in{}:\n{}'.format(
-            membership, errors))
 
 
 class DetailedStatus:
@@ -608,16 +522,16 @@ def DescribeRepo(project, name, namespace, source, repo_cluster,
 
   """
   if name and source or namespace and source:
-    raise exceptions.Error(
+    raise exceptions.ConfigSyncError(
         '--sync-name and --sync-namespace cannot be specified together with '
         '--source.')
   if name and not namespace or namespace and not name:
-    raise exceptions.Error(
+    raise exceptions.ConfigSyncError(
         '--sync-name and --sync-namespace must be specified together.')
   if managed_resources not in [
       'all', 'current', 'inprogress', 'notfound', 'failed', 'unknown'
   ]:
-    raise exceptions.Error(
+    raise exceptions.ConfigSyncError(
         '--managed-resources must be one of all, current, inprogress, notfound, failed or unknown'
     )
 
@@ -626,7 +540,7 @@ def DescribeRepo(project, name, namespace, source, repo_cluster,
   clusters = []
   try:
     clusters = utils.ListConfigControllerClusters(project)
-  except exceptions.Error as err:
+  except exceptions.ConfigSyncError as err:
     log.error(err)
   if clusters:
     for cluster in clusters:
@@ -637,13 +551,13 @@ def DescribeRepo(project, name, namespace, source, repo_cluster,
         _AppendReposAndResourceGroups(cluster[0], repo_cross_clusters,
                                       'Config Controller', name, namespace,
                                       source)
-      except exceptions.Error as err:
+      except exceptions.ConfigSyncError as err:
         log.error(err)
 
   # Get repos from memberships
   try:
     memberships = utils.ListMemberships(project)
-  except exceptions.Error as err:
+  except exceptions.ConfigSyncError as err:
     raise err
   for membership in memberships:
     if repo_cluster and repo_cluster != membership:
@@ -652,7 +566,7 @@ def DescribeRepo(project, name, namespace, source, repo_cluster,
       utils.KubeconfigForMembership(project, membership)
       _AppendReposAndResourceGroups(membership, repo_cross_clusters,
                                     'Membership', name, namespace, source)
-    except exceptions.Error as err:
+    except exceptions.ConfigSyncError as err:
       log.error(err)
   # Describe the repo
   repo = _Describe(managed_resources, repo_cross_clusters)
@@ -808,30 +722,3 @@ def _GetErrorMessages(errors):
 def _TimeFromString(timestamp):
   """return the datetime from a timestamp string."""
   return datetime.datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%SZ')
-
-
-@contextlib.contextmanager
-def Timeout(time):
-  """set timeout for a python function."""
-  # Register a function to raise a TimeoutError on the signal.
-  signal.signal(signal.SIGALRM, RaiseTimeout)
-  # Schedule the signal to be sent after ``time``
-  signal.alarm(time)
-
-  try:
-    yield
-  except KubectlTimeOutError:
-    pass
-  finally:
-    # Unregister the signal so it won't be triggered
-    # if the timeout is not reached.
-    signal.signal(signal.SIGALRM, signal.SIG_IGN)
-
-
-def RaiseTimeout(signum, frame):
-  """Raise a timeout error."""
-  raise KubectlTimeOutError
-
-
-class KubectlTimeOutError(Exception):
-  pass

@@ -30,16 +30,36 @@ from googlecloudsdk.command_lib.transfer import jobs_flag_util
 from googlecloudsdk.command_lib.transfer import name_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import times
 
 
 UPDATE_FIELD_MASK = ('description,logging_config,notification_config,schedule,'
                      'status,transfer_spec')
+VALID_TRANSFER_SCHEMES = [
+    storage_url.ProviderPrefix.POSIX,
+    storage_url.ProviderPrefix.GCS,
+    storage_url.ProviderPrefix.S3,
+    storage_url.ProviderPrefix.HTTP,
+    storage_url.ProviderPrefix.HTTPS,
+]
 
 
-def _raise_no_scheme_error(url):
-  raise errors.InvalidUrlError('Did you mean "posix://{}"'.format(
-      url.object_name))
+def _prompt_and_add_valid_scheme(url):
+  """Has user select a valid scheme from a list and returns new URL."""
+  if not console_io.CanPrompt():
+    raise errors.InvalidUrlError('Did you mean "posix://{}"'.format(
+        url.object_name))
+  scheme_index = console_io.PromptChoice(
+      [scheme.value + '://' for scheme in VALID_TRANSFER_SCHEMES],
+      cancel_option=True,
+      message=('Storage Transfer does not support direct file URLs: {}\n'
+               'Did you mean to use "posix://"?\n'
+               'Run this command with "--help" for more info,\n'
+               'or select a valid scheme below.').format(url))
+
+  new_scheme = VALID_TRANSFER_SCHEMES[scheme_index]
+  return storage_url.switch_scheme(url, new_scheme)
 
 
 def _create_or_modify_transfer_options(transfer_spec, args, messages):
@@ -187,8 +207,9 @@ def _create_or_modify_transfer_spec(job, args, messages):
         raise
     else:
       if source_url.scheme is storage_url.ProviderPrefix.FILE:
-        _raise_no_scheme_error(source_url)
-      elif source_url.scheme is storage_url.ProviderPrefix.POSIX:
+        source_url = _prompt_and_add_valid_scheme(source_url)
+
+      if source_url.scheme is storage_url.ProviderPrefix.POSIX:
         job.transferSpec.posixDataSource = messages.PosixFilesystem(
             rootDirectory=source_url.object_name)
       elif source_url.scheme is storage_url.ProviderPrefix.GCS:
@@ -216,8 +237,9 @@ def _create_or_modify_transfer_spec(job, args, messages):
 
     destination_url = storage_url.storage_url_from_string(args.destination)
     if destination_url.scheme is storage_url.ProviderPrefix.FILE:
-      _raise_no_scheme_error(destination_url)
-    elif destination_url.scheme is storage_url.ProviderPrefix.GCS:
+      destination_url = _prompt_and_add_valid_scheme(destination_url)
+
+    if destination_url.scheme is storage_url.ProviderPrefix.GCS:
       job.transferSpec.gcsDataSink = messages.GcsData(
           bucketName=destination_url.bucket_name,
           path=destination_url.object_name,

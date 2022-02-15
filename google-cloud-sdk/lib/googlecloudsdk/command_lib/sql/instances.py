@@ -667,8 +667,7 @@ class _BaseInstances(object):
     instance_resource.databaseVersion = _ParseDatabaseVersion(
         sql_messages, args.database_version)
 
-    if _IsAlpha(release_track):
-      instance_resource.maintenanceVersion = args.maintenance_version
+    instance_resource.maintenanceVersion = args.maintenance_version
 
     instance_resource.settings = cls._ConstructPatchSettingsFromArgs(
         sql_messages, args, original, release_track)

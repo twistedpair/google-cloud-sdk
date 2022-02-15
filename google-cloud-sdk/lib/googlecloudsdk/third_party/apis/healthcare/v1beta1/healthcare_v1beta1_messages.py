@@ -6922,6 +6922,7 @@ class SearchResourcesRequest(_messages.Message):
   r"""Request to search the resources in the specified FHIR store.
 
   Fields:
+    requestBody: Raw body of the request for POST searches.
     resourceType: The FHIR resource type to search, such as Patient or
       Observation. For a complete list, see the FHIR Resource Index ([DSTU2](h
       ttps://hl7.org/implement/standards/fhir/DSTU2/resourcelist.html),
@@ -6929,7 +6930,8 @@ class SearchResourcesRequest(_messages.Message):
       [R4](https://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
   """
 
-  resourceType = _messages.StringField(1)
+  requestBody = _messages.MessageField('HttpBody', 1)
+  resourceType = _messages.StringField(2)
 
 
 class Segment(_messages.Message):

@@ -1141,9 +1141,18 @@ class DataprocProjectsLocationsSessionsDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the session resource to delete.
+    requestId: Optional. A unique ID used to identify the request. If the
+      service receives two DeleteSessionRequest (https://cloud.google.com/data
+      proc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.dataproc.v
+      1.DeleteSessionRequest)s with the same ID, the second request is
+      ignored.Recommendation: Set this value to a UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The value
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
   """
 
   name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
 
 
 class DataprocProjectsLocationsSessionsGetRequest(_messages.Message):
@@ -5910,7 +5919,6 @@ class VirtualClusterConfig(_messages.Message):
   Fields:
     kubernetesClusterConfig: Required. The configuration for running the
       Dataproc cluster on Kubernetes.
-    securityConfig: Optional. Cluster security settings.
     softwareConfig: Optional. The config settings for cluster software.
     stagingBucket: Optional. A Storage bucket used to stage job dependencies,
       config files, and job driver console output. If you do not specify a
@@ -5936,10 +5944,9 @@ class VirtualClusterConfig(_messages.Message):
   """
 
   kubernetesClusterConfig = _messages.MessageField('KubernetesClusterConfig', 1)
-  securityConfig = _messages.MessageField('SecurityConfig', 2)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 3)
-  stagingBucket = _messages.StringField(4)
-  tempBucket = _messages.StringField(5)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 2)
+  stagingBucket = _messages.StringField(3)
+  tempBucket = _messages.StringField(4)
 
 
 class WorkflowGraph(_messages.Message):

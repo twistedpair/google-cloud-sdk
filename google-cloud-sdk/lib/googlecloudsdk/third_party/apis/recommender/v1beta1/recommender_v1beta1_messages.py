@@ -40,6 +40,7 @@ class GoogleCloudRecommenderV1beta1Impact(_messages.Message):
     category: Category that is being targeted.
     costProjection: Use with CategoryType.COST
     securityProjection: Use with CategoryType.SECURITY
+    sustainabilityProjection: Use with CategoryType.SUSTAINABILITY
   """
 
   class CategoryValueValuesEnum(_messages.Enum):
@@ -65,6 +66,7 @@ class GoogleCloudRecommenderV1beta1Impact(_messages.Message):
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
   costProjection = _messages.MessageField('GoogleCloudRecommenderV1beta1CostProjection', 2)
   securityProjection = _messages.MessageField('GoogleCloudRecommenderV1beta1SecurityProjection', 3)
+  sustainabilityProjection = _messages.MessageField('GoogleCloudRecommenderV1beta1SustainabilityProjection', 4)
 
 
 class GoogleCloudRecommenderV1beta1Insight(_messages.Message):
@@ -1086,6 +1088,20 @@ class GoogleCloudRecommenderV1beta1SecurityProjection(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   details = _messages.MessageField('DetailsValue', 1)
+
+
+class GoogleCloudRecommenderV1beta1SustainabilityProjection(_messages.Message):
+  r"""Contains metadata about how much sustainability a recommendation can
+  save or incur.
+
+  Fields:
+    duration: Duration for which this sustanability applies.
+    kgCO2e: Carbon Footprint generated in kg of CO2 equivalent. Chose kg_c_o2e
+      so that the name renders correctly in camelCase (kgCO2e).
+  """
+
+  duration = _messages.StringField(1)
+  kgCO2e = _messages.FloatField(2)
 
 
 class GoogleCloudRecommenderV1beta1ValueMatcher(_messages.Message):

@@ -32,6 +32,10 @@ class AllowedIpRange(_messages.Message):
   value = _messages.StringField(2)
 
 
+class CancelOperationRequest(_messages.Message):
+  r"""The request message for Operations.CancelOperation."""
+
+
 class CheckUpgradeRequest(_messages.Message):
   r"""Request to check whether image upgrade will succeed.
 
@@ -208,6 +212,22 @@ class ComposerProjectsLocationsEnvironmentsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class ComposerProjectsLocationsEnvironmentsLoadEnvironmentStateRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsLoadEnvironmentStateRequest
+  object.
+
+  Fields:
+    environment: The resource name of the target environment in the form:
+      "projects/{projectId}/locations/{locationId}/environments/{environmentId
+      }"
+    loadEnvironmentStateRequest: A LoadEnvironmentStateRequest resource to be
+      passed as the request body.
+  """
+
+  environment = _messages.StringField(1, required=True)
+  loadEnvironmentStateRequest = _messages.MessageField('LoadEnvironmentStateRequest', 2)
+
+
 class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
   r"""A ComposerProjectsLocationsEnvironmentsPatchRequest object.
 
@@ -333,6 +353,22 @@ class ComposerProjectsLocationsEnvironmentsRestartWebServerRequest(_messages.Mes
   restartWebServerRequest = _messages.MessageField('RestartWebServerRequest', 2)
 
 
+class ComposerProjectsLocationsEnvironmentsStoreEnvironmentStateRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsStoreEnvironmentStateRequest
+  object.
+
+  Fields:
+    environment: The resource name of the source environment in the form:
+      "projects/{projectId}/locations/{locationId}/environments/{environmentId
+      }"
+    storeEnvironmentStateRequest: A StoreEnvironmentStateRequest resource to
+      be passed as the request body.
+  """
+
+  environment = _messages.StringField(1, required=True)
+  storeEnvironmentStateRequest = _messages.MessageField('StoreEnvironmentStateRequest', 2)
+
+
 class ComposerProjectsLocationsImageVersionsListRequest(_messages.Message):
   r"""A ComposerProjectsLocationsImageVersionsListRequest object.
 
@@ -350,6 +386,19 @@ class ComposerProjectsLocationsImageVersionsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class ComposerProjectsLocationsOperationsCancelRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsOperationsCancelRequest object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class ComposerProjectsLocationsOperationsDeleteRequest(_messages.Message):
@@ -403,7 +452,14 @@ class DatabaseConfig(_messages.Message):
 
 
 class Date(_messages.Message):
-  r"""A Date object.
+  r"""Represents a whole or partial calendar date, such as a birthday. The
+  time of day and time zone are either specified elsewhere or are
+  insignificant. The date is relative to the Gregorian Calendar. This can
+  represent one of the following: * A full date, with non-zero year, month,
+  and day values * A month and day, with a zero year (e.g., an anniversary) *
+  A year on its own, with a zero month and a zero day * A year and month, with
+  a zero day (e.g., a credit card expiration date) Related types: *
+  google.type.TimeOfDay * google.type.DateTime * google.protobuf.Timestamp
 
   Fields:
     day: Day of a month. Must be from 1 to 31 and valid for the year and
@@ -585,6 +641,9 @@ class EnvironmentConfig(_messages.Message):
       Composer environments in versions composer-1.*.*-airflow-*.*.*.
     privateEnvironmentConfig: The configuration used for the Private IP Cloud
       Composer environment.
+    recoveryConfig: Optional. The Recovery settings configuration of an
+      environment. This field is supported for Cloud Composer environments in
+      versions composer-2.*.*-airflow-*.*.* and newer.
     softwareConfig: The configuration settings for software inside the
       environment.
     webServerConfig: Optional. The configuration settings for the Airflow web
@@ -628,10 +687,11 @@ class EnvironmentConfig(_messages.Message):
   nodeConfig = _messages.MessageField('NodeConfig', 9)
   nodeCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
   privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 11)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 12)
-  webServerConfig = _messages.MessageField('WebServerConfig', 13)
-  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 14)
-  workloadsConfig = _messages.MessageField('WorkloadsConfig', 15)
+  recoveryConfig = _messages.MessageField('RecoveryConfig', 12)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 13)
+  webServerConfig = _messages.MessageField('WebServerConfig', 14)
+  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 15)
+  workloadsConfig = _messages.MessageField('WorkloadsConfig', 16)
 
 
 class IPAllocationPolicy(_messages.Message):
@@ -748,6 +808,20 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class LoadEnvironmentStateRequest(_messages.Message):
+  r"""Load environment state request.
+
+  Fields:
+    skipPypiPackagesInstallation: Whether or not to skip installing Pypi
+      packages when loading the environment's state.
+    snapshotPath: A Cloud Storage path to a snapshot to load, e.g.: "gs://my-
+      bucket/snapshots/project_location_environment_timestamp".
+  """
+
+  skipPypiPackagesInstallation = _messages.BooleanField(1)
+  snapshotPath = _messages.StringField(2)
 
 
 class LoadEnvironmentStateResponse(_messages.Message):
@@ -1145,8 +1219,42 @@ class PrivateEnvironmentConfig(_messages.Message):
   webServerIpv4ReservedRange = _messages.StringField(9)
 
 
+class RecoveryConfig(_messages.Message):
+  r"""The Recovery settings of an environment.
+
+  Fields:
+    scheduledSnapshotsConfig: Optional. The configuration for scheduled
+      snapshot creation mechanism.
+    snapshotsLocation: Optional. The default Cloud Storage location for
+      storing snapshots. Automatically created snapshots are stored in this
+      location. If not set, the snapshots are stored in /snapshots folder in
+      the environment's Cloud Storage bucket.
+  """
+
+  scheduledSnapshotsConfig = _messages.MessageField('ScheduledSnapshotsConfig', 1)
+  snapshotsLocation = _messages.StringField(2)
+
+
 class RestartWebServerRequest(_messages.Message):
   r"""Restart Airflow web server."""
+
+
+class ScheduledSnapshotsConfig(_messages.Message):
+  r"""The configuration for scheduled snapshot creation mechanism.
+
+  Fields:
+    enabled: Optional. Whether scheduled snapshots creation is enabled.
+    snapshotsCreationSchedule: Optional. The cron expression representing the
+      time when snapshots creation mechanism runs. This field is subject to
+      additional validation around frequency of execution.
+    snapshotsRetentionDays: Optional. The number of days describing the
+      minimum period for how long to store snapshots. If the scheduled
+      snapshot creation is enabled this value must be a non-negative integer.
+  """
+
+  enabled = _messages.BooleanField(1)
+  snapshotsCreationSchedule = _messages.StringField(2)
+  snapshotsRetentionDays = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class SchedulerResource(_messages.Message):
@@ -1480,6 +1588,17 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class StoreEnvironmentStateRequest(_messages.Message):
+  r"""Store environment state request.
+
+  Fields:
+    snapshotLocation: Location in a Cloud Storage where the snapshot of the
+      state is going to be stored, e.g.: "gs://my-bucket/snapshots".
+  """
+
+  snapshotLocation = _messages.StringField(1)
 
 
 class StoreEnvironmentStateResponse(_messages.Message):

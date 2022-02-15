@@ -898,6 +898,8 @@ class LogEntry(_messages.Message):
       entry.For Trace spans, this is the same format that the Trace API v2
       uses: a 16-character hexadecimal encoding of an 8-byte array, such as
       000000000000004a.
+    split: Optional. Information indicating this LogEntry is part of a
+      sequence of multiple log entries split from a single LogEntry.
     textPayload: The log entry payload, represented as a Unicode string
       (UTF-8).
     timestamp: Optional. The time the event described by the log entry
@@ -1050,10 +1052,11 @@ class LogEntry(_messages.Message):
   severity = _messages.EnumField('SeverityValueValuesEnum', 11)
   sourceLocation = _messages.MessageField('LogEntrySourceLocation', 12)
   spanId = _messages.StringField(13)
-  textPayload = _messages.StringField(14)
-  timestamp = _messages.StringField(15)
-  trace = _messages.StringField(16)
-  traceSampled = _messages.BooleanField(17)
+  split = _messages.MessageField('LogSplit', 14)
+  textPayload = _messages.StringField(15)
+  timestamp = _messages.StringField(16)
+  trace = _messages.StringField(17)
+  traceSampled = _messages.BooleanField(18)
 
 
 class LogEntryOperation(_messages.Message):
@@ -1455,6 +1458,27 @@ class LogSink(_messages.Message):
   outputVersionFormat = _messages.EnumField('OutputVersionFormatValueValuesEnum', 10)
   updateTime = _messages.StringField(11)
   writerIdentity = _messages.StringField(12)
+
+
+class LogSplit(_messages.Message):
+  r"""Additional information used to correlate multiple log entries. Used when
+  a single LogEntry would exceed the Google Cloud Logging size limit and is
+  split across multiple log entries.
+
+  Fields:
+    index: The index of this LogEntry in the sequence of split log entries.
+      Log entries are given |index| values 0, 1, ..., n-1 for a sequence of n
+      log entries.
+    totalSplits: The total number of log entries that the original LogEntry
+      was split into.
+    uid: A globally unique identifier for all log entries in a sequence of
+      split log entries. All log entries with the same |LogSplit.uid| are
+      assumed to be part of the same sequence of split log entries.
+  """
+
+  index = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  totalSplits = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  uid = _messages.StringField(3)
 
 
 class LogView(_messages.Message):

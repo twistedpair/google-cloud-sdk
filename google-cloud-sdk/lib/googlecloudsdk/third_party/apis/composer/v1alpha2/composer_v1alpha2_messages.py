@@ -327,6 +327,22 @@ class ComposerProjectsLocationsEnvironmentsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class ComposerProjectsLocationsEnvironmentsListImportErrorsRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsListImportErrorsRequest object.
+
+  Fields:
+    environment: Required. List import errors in the given Composer
+      environment. Environment name must be in the form: "projects/{projectId}
+      /locations/{locationId}/environments/{environmentId}".
+    pageSize: The maximum number of DAGs to return.
+    pageToken: The next_page_token returned from a previous List request.
+  """
+
+  environment = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
 class ComposerProjectsLocationsEnvironmentsListRequest(_messages.Message):
   r"""A ComposerProjectsLocationsEnvironmentsListRequest object.
 
@@ -687,7 +703,14 @@ class DatabaseConfig(_messages.Message):
 
 
 class Date(_messages.Message):
-  r"""A Date object.
+  r"""Represents a whole or partial calendar date, such as a birthday. The
+  time of day and time zone are either specified elsewhere or are
+  insignificant. The date is relative to the Gregorian Calendar. This can
+  represent one of the following: * A full date, with non-zero year, month,
+  and day values * A month and day, with a zero year (e.g., an anniversary) *
+  A year on its own, with a zero month and a zero day * A year and month, with
+  a zero day (e.g., a credit card expiration date) Related types: *
+  google.type.TimeOfDay * google.type.DateTime * google.protobuf.Timestamp
 
   Fields:
     day: Day of a month. Must be from 1 to 31 and valid for the year and
@@ -993,6 +1016,21 @@ class ImageVersion(_messages.Message):
   upgradeDisabled = _messages.BooleanField(6)
 
 
+class ImportError(_messages.Message):
+  r"""DAG import error details.
+
+  Fields:
+    creationTime: Time when the error was created.
+    filename: Location of the file with the error relative to the Cloud
+      Storage bucket root folder.
+    stackTrace: Full stack trace.
+  """
+
+  creationTime = _messages.StringField(1)
+  filename = _messages.StringField(2)
+  stackTrace = _messages.StringField(3)
+
+
 class ListDagRunsResponse(_messages.Message):
   r"""Response to `ListDagRunsRequest`.
 
@@ -1056,6 +1094,19 @@ class ListImageVersionsResponse(_messages.Message):
   """
 
   imageVersions = _messages.MessageField('ImageVersion', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListImportErrorsResponse(_messages.Message):
+  r"""Response to `ListImportErrorsRequest`.
+
+  Fields:
+    importErrors: List of DAGs with statistics.
+    nextPageToken: The page token used to query for the next page if one
+      exists.
+  """
+
+  importErrors = _messages.MessageField('ImportError', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 

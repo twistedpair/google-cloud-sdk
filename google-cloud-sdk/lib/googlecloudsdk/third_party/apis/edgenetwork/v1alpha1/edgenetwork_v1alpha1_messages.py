@@ -33,7 +33,7 @@ class BgpPeer(_messages.Message):
   Fields:
     interface: A string attribute.
     interfaceIpv4Cidr: IP range of the interface within Google.
-    name: Name of this BGP peer. Unique within the Routers resource.
+    name: Name of this BGP peer. Unique within the Zones resource.
     peerAsn: Peer BGP Autonomous System Number (ASN). Each BGP interface may
       use a different value.
     peerIpv4Cidr: IP range of the BGP interface outside Google.
@@ -273,39 +273,6 @@ class EdgenetworkProjectsLocationsZonesInterconnectAttachmentsListRequest(_messa
   parent = _messages.StringField(5, required=True)
 
 
-class EdgenetworkProjectsLocationsZonesInterconnectAttachmentsPatchRequest(_messages.Message):
-  r"""A EdgenetworkProjectsLocationsZonesInterconnectAttachmentsPatchRequest
-  object.
-
-  Fields:
-    interconnectAttachment: A InterconnectAttachment resource to be passed as
-      the request body.
-    name: Required. The canonical resource name of the interconnect
-      attachment.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the InterconnectAttachment resource by the update. The
-      fields specified in the update_mask are relative to the resource, not
-      the full request. A field will be overwritten if it is in the mask. If
-      the user does not provide a mask then all fields will be overwritten.
-  """
-
-  interconnectAttachment = _messages.MessageField('InterconnectAttachment', 1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
-
-
 class EdgenetworkProjectsLocationsZonesInterconnectsCreateRequest(_messages.Message):
   r"""A EdgenetworkProjectsLocationsZonesInterconnectsCreateRequest object.
 
@@ -383,36 +350,6 @@ class EdgenetworkProjectsLocationsZonesInterconnectsListRequest(_messages.Messag
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
-
-
-class EdgenetworkProjectsLocationsZonesInterconnectsPatchRequest(_messages.Message):
-  r"""A EdgenetworkProjectsLocationsZonesInterconnectsPatchRequest object.
-
-  Fields:
-    interconnect: A Interconnect resource to be passed as the request body.
-    name: Required. The canonical resource name of the interconnect.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the Interconnect resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
-  """
-
-  interconnect = _messages.MessageField('Interconnect', 1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
 
 
 class EdgenetworkProjectsLocationsZonesListRequest(_messages.Message):
@@ -772,7 +709,7 @@ class Empty(_messages.Message):
 
 
 class Interconnect(_messages.Message):
-  r"""Message describing Interconnect object
+  r"""Message describing Interconnect object LINT.IfChange(Interconnect)
 
   Enums:
     InterconnectTypeValueValuesEnum: Optional. Type of interconnect, which
@@ -845,6 +782,11 @@ class Interconnect(_messages.Message):
 
 class InterconnectAttachment(_messages.Message):
   r"""Message describing InterconnectAttachment object
+  LINT.IfChange(InterconnectAttachment)
+
+  Enums:
+    StateValueValuesEnum: Output only. Current stage of the resource to the
+      device by config push.
 
   Messages:
     LabelsValue: Labels associated with this resource.
@@ -865,10 +807,30 @@ class InterconnectAttachment(_messages.Message):
       attachment.
     router: The canonical Router name in the form of
       projects/{project}/locations/{location}/zones/{zone}/routers/{router}.
+    state: Output only. Current stage of the resource to the device by config
+      push.
     updateTime: Output only. The time when the interconnect attachment was
       last updated.
     vlanId: Required. VLAN id provided by user. Must be site-wise unique.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current stage of the resource to the device by config
+    push.
+
+    Values:
+      STATE_UNKNOWN: Unspecified state.
+      STATE_PENDING: The resource has not been recognized by config push.
+      STATE_PROVISIONING: The resource has reached config push.
+      STATE_RUNNING: The resource has been pushed to device successfully by
+        config push.
+      STATE_SUSPENDED: The resource failed to push to device by config push.
+    """
+    STATE_UNKNOWN = 0
+    STATE_PENDING = 1
+    STATE_PROVISIONING = 2
+    STATE_RUNNING = 3
+    STATE_SUSPENDED = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -901,8 +863,9 @@ class InterconnectAttachment(_messages.Message):
   mtu = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   name = _messages.StringField(6)
   router = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
-  vlanId = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
+  vlanId = _messages.IntegerField(10, variant=_messages.Variant.INT32)
 
 
 class Interface(_messages.Message):
@@ -912,7 +875,7 @@ class Interface(_messages.Message):
     ipv4Cidr: IP address and range of the interface.
     linkedInterconnectAttachment: The canonical name of the linked
       Interconnect attachment.
-    name: Name of this interface entry. Unique within the Routers resource.
+    name: Name of this interface entry. Unique within the Zones resource.
     subnetwork: The canonical name of the subnetwork resource that this
       interface belongs to.
   """
@@ -1304,7 +1267,11 @@ class OperationMetadata(_messages.Message):
 
 
 class Router(_messages.Message):
-  r"""Message describing Router object
+  r"""Message describing Router object LINT.IfChange(Router)
+
+  Enums:
+    StateValueValuesEnum: Output only. Current stage of the resource to the
+      device by config push.
 
   Messages:
     LabelsValue: Labels associated with this resource.
@@ -1321,8 +1288,28 @@ class Router(_messages.Message):
     network: The canonical name of the network to which this router belongs.
       The name is in the form of
       projects/{project}/locations/{location}/zones/{zone}/networks/{network}.
+    state: Output only. Current stage of the resource to the device by config
+      push.
     updateTime: Output only. The time when the router was last updated.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current stage of the resource to the device by config
+    push.
+
+    Values:
+      STATE_UNKNOWN: Unspecified state.
+      STATE_PENDING: The resource has not been recognized by config push.
+      STATE_PROVISIONING: The resource has reached config push.
+      STATE_RUNNING: The resource has been pushed to device successfully by
+        config push.
+      STATE_SUSPENDED: The resource failed to push to device by config push.
+    """
+    STATE_UNKNOWN = 0
+    STATE_PENDING = 1
+    STATE_PROVISIONING = 2
+    STATE_RUNNING = 3
+    STATE_SUSPENDED = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1356,7 +1343,8 @@ class Router(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
   network = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
 
 
 class StandardQueryParameters(_messages.Message):

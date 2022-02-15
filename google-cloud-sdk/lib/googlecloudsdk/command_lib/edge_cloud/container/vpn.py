@@ -83,5 +83,3 @@ def CreateDescribeVPNTableViewResponseHook(response, args):
   vpc_network['region'] = items[3]
   vpc_network['ID'] = items[5]
   return DescribeVPNTableView(name, create_time, cluster, vpc_network)
-
-

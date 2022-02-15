@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Generators for Credential Config Files."""
 
 from __future__ import absolute_import
@@ -23,6 +22,7 @@ import abc
 import enum
 import json
 
+from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
 import six
@@ -41,17 +41,11 @@ def create_credential_config(args, config_type):
   try:
     generator = get_generator(args, config_type)
     output = {
-        'type':
-            'external_account',
-        'audience':
-            '//iam.googleapis.com/' + args.audience,
-        'subject_token_type':
-            generator.get_token_type(args.subject_token_type),
-        'token_url':
-            'https://sts.googleapis.com/v1/token',
-        'credential_source':
-            generator.get_source(args.credential_source_type,
-                                 args.credential_source_field_name),
+        'type': 'external_account',
+        'audience': '//iam.googleapis.com/' + args.audience,
+        'subject_token_type': generator.get_token_type(args.subject_token_type),
+        'token_url': 'https://sts.googleapis.com/v1/token',
+        'credential_source': generator.get_source(args),
     }
 
     if config_type is ConfigType.WORKFORCE_POOLS:
@@ -104,7 +98,7 @@ class CredConfigGenerator(six.with_metaclass(abc.ABCMeta, object)):
     Args:
       credential_source_type: The format of the token, either 'json' or 'text'.
       credential_source_field_name: The field name of a JSON object containing
-      the text version of the token.
+        the text version of the token.
 
     Raises:
       GeneratorError: if an invalid token format is specified, or no field name
@@ -134,7 +128,7 @@ class CredConfigGenerator(six.with_metaclass(abc.ABCMeta, object)):
           '--credential-source-type is not supported with --azure or --aws')
 
   @abc.abstractmethod
-  def get_source(self, credential_source_type, credential_source_field_name):
+  def get_source(self, args):
     """Gets the credential source info used for this credential config."""
     pass
 
@@ -146,10 +140,10 @@ class FileCredConfigGenerator(CredConfigGenerator):
     super(FileCredConfigGenerator, self).__init__(config_type)
     self.credential_source_file = credential_source_file
 
-  def get_source(self, credential_source_type, credential_source_field_name):
+  def get_source(self, args):
     credential_source = {'file': self.credential_source_file}
-    token_format = self._get_format(
-        credential_source_type, credential_source_field_name)
+    token_format = self._get_format(args.credential_source_type,
+                                    args.credential_source_field_name)
     if token_format:
       credential_source['format'] = token_format
     return credential_source
@@ -164,12 +158,12 @@ class UrlCredConfigGenerator(CredConfigGenerator):
     self.credential_source_url = credential_source_url
     self.credential_source_headers = credential_source_headers
 
-  def get_source(self, credential_source_type, credential_source_field_name):
+  def get_source(self, args):
     credential_source = {'url': self.credential_source_url}
     if self.credential_source_headers:
       credential_source['headers'] = self.credential_source_headers
-    token_format = self._get_format(
-        credential_source_type, credential_source_field_name)
+    token_format = self._get_format(args.credential_source_type,
+                                    args.credential_source_field_name)
     if token_format:
       credential_source['format'] = token_format
     return credential_source
@@ -185,9 +179,9 @@ class AwsCredConfigGenerator(CredConfigGenerator):
   def get_token_type(self, subject_token_type):
     return 'urn:ietf:params:aws:token-type:aws4_request'
 
-  def get_source(self, credential_source_type, credential_source_field_name):
-    self._format_already_defined(credential_source_type)
-    return {
+  def get_source(self, args):
+    self._format_already_defined(args.credential_source_type)
+    credential_source = {
         'environment_id':
             'aws1',
         'region_url':
@@ -197,6 +191,13 @@ class AwsCredConfigGenerator(CredConfigGenerator):
         'regional_cred_verification_url':
             'https://sts.{region}.amazonaws.com?Action=GetCallerIdentity&Version=2011-06-15'
     }
+
+    if args.calliope_command.ReleaseTrack(
+    ) == calliope_base.ReleaseTrack.ALPHA and args.include_aws_session_token_url:
+      credential_source[
+          'aws_session_token_url'] = 'http://169.254.169.254/latest/api/token'
+
+    return credential_source
 
 
 class AzureCredConfigGenerator(CredConfigGenerator):
@@ -211,8 +212,8 @@ class AzureCredConfigGenerator(CredConfigGenerator):
   def get_token_type(self, subject_token_type):
     return 'urn:ietf:params:oauth:token-type:jwt'
 
-  def get_source(self, credential_source_type, credential_source_field_name):
-    self._format_already_defined(credential_source_type)
+  def get_source(self, args):
+    self._format_already_defined(args.credential_source_type)
     return {
         'url':
             'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource='

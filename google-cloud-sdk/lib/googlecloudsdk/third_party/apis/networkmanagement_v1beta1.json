@@ -534,6 +534,7 @@
             "Initial state: packet originating from a Google Kubernetes Engine cluster master. A GKEMasterInfo is populated with starting instance information.",
             "Initial state: packet originating from a Cloud SQL instance. A CloudSQLInstanceInfo is populated with starting instance information.",
             "Initial state: packet originating from a Cloud function. A CloudFunctionInfo is populated with starting function information.",
+            "Initial state: packet originating from an App Engine service version. An AppEngineVersionInfo is populated with starting version information.",
             "Config checking state: verify ingress firewall rule.",
             "Config checking state: verify egress firewall rule.",
             "Config checking state: verify route.",
@@ -561,6 +562,7 @@
             "START_FROM_GKE_MASTER",
             "START_FROM_CLOUD_SQL_INSTANCE",
             "START_FROM_CLOUD_FUNCTION",
+            "START_FROM_APP_ENGINE_VERSION",
             "APPLY_INGRESS_FIREWALL_RULE",
             "APPLY_EGRESS_FIREWALL_RULE",
             "APPLY_ROUTE",
@@ -656,6 +658,10 @@
         "cloudFunction": {
           "description": "Display information of a Cloud function.",
           "$ref": "CloudFunctionInfo"
+        },
+        "appEngineVersionInfo": {
+          "description": "Display information of an App Engine service version.",
+          "$ref": "AppEngineVersionInfo"
         }
       }
     },
@@ -983,7 +989,7 @@
     },
     "VpcConnectorInfo": {
       "id": "VpcConnectorInfo",
-      "description": "Next id: 4",
+      "description": "For display only. Metadata associated with a VPC connector.",
       "type": "object",
       "properties": {
         "displayName": {
@@ -1358,7 +1364,7 @@
     },
     "CloudFunctionInfo": {
       "id": "CloudFunctionInfo",
-      "description": "Next id: 5",
+      "description": "For display only. Metadata associated with a Cloud function.",
       "type": "object",
       "properties": {
         "displayName": {
@@ -1377,6 +1383,29 @@
           "description": "Latest successfully deployed version id of the Cloud function.",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "AppEngineVersionInfo": {
+      "id": "AppEngineVersionInfo",
+      "description": "For display only. Metadata associated with an App Engine version.",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "description": "Name of an App Engine version.",
+          "type": "string"
+        },
+        "uri": {
+          "description": "URI of an App Engine version.",
+          "type": "string"
+        },
+        "runtime": {
+          "description": "Runtime of the App Engine version.",
+          "type": "string"
+        },
+        "environment": {
+          "description": "App Engine execution environment for a version.",
+          "type": "string"
         }
       }
     },

@@ -230,8 +230,11 @@ def ListPendingApprovals(target_ref, pipeline_ref, output):
   try:
     pending_approvals = rollout_util.ListPendingRollouts(
         target_ref, pipeline_ref)
-    if pending_approvals:
-      output['Pending Approvals'] = [ro.name for ro in pending_approvals]
+    pending_approvals_names = []
+    for ro in pending_approvals:
+      pending_approvals_names.append(ro.name)
+    if pending_approvals_names:
+      output['Pending Approvals'] = pending_approvals_names
   except apitools_exceptions.HttpError as error:
     log.debug('Failed to list pending approvals: ' + error.content)
 

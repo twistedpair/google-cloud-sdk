@@ -172,7 +172,7 @@ class ConnectionProfilesClient(object):
 
     if private_connectivity_ref:
       connection_profile_obj.privateConnectivity = self._messages.PrivateConnectivity(
-          privateConnectionName=private_connectivity_ref.RelativeName())
+          privateConnection=private_connectivity_ref.RelativeName())
     elif args.forward_ssh_hostname:
       connection_profile_obj.forwardSshConnectivity = self._GetForwardSshTunnelConnectivity(
           args)

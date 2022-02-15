@@ -64,6 +64,7 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_developers_balance = self.OrganizationsDevelopersBalanceService(self)
     self.organizations_developers_subscriptions = self.OrganizationsDevelopersSubscriptionsService(self)
     self.organizations_developers = self.OrganizationsDevelopersService(self)
+    self.organizations_endpointAttachments = self.OrganizationsEndpointAttachmentsService(self)
     self.organizations_envgroups_attachments = self.OrganizationsEnvgroupsAttachmentsService(self)
     self.organizations_envgroups = self.OrganizationsEnvgroupsService(self)
     self.organizations_environments_analytics_admin = self.OrganizationsEnvironmentsAnalyticsAdminService(self)
@@ -108,6 +109,8 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_operations = self.OrganizationsOperationsService(self)
     self.organizations_optimizedHostStats = self.OrganizationsOptimizedHostStatsService(self)
     self.organizations_reports = self.OrganizationsReportsService(self)
+    self.organizations_senseProfiles_environments = self.OrganizationsSenseProfilesEnvironmentsService(self)
+    self.organizations_senseProfiles = self.OrganizationsSenseProfilesService(self)
     self.organizations_sharedflows_deployments = self.OrganizationsSharedflowsDeploymentsService(self)
     self.organizations_sharedflows_revisions_deployments = self.OrganizationsSharedflowsRevisionsDeploymentsService(self)
     self.organizations_sharedflows_revisions = self.OrganizationsSharedflowsRevisionsService(self)
@@ -2578,6 +2581,124 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='googleCloudApigeeV1DeveloperMonetizationConfig',
         request_type_name='ApigeeOrganizationsDevelopersUpdateMonetizationConfigRequest',
         response_type_name='GoogleCloudApigeeV1DeveloperMonetizationConfig',
+        supports_download=False,
+    )
+
+  class OrganizationsEndpointAttachmentsService(base_api.BaseApiService):
+    """Service class for the organizations_endpointAttachments resource."""
+
+    _NAME = 'organizations_endpointAttachments'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsEndpointAttachmentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an EndpointAttachment. **Note:** Not supported for Apigee hybrid.
+
+      Args:
+        request: (ApigeeOrganizationsEndpointAttachmentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/endpointAttachments',
+        http_method='POST',
+        method_id='apigee.organizations.endpointAttachments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['endpointAttachmentId'],
+        relative_path='v1/{+parent}/endpointAttachments',
+        request_field='googleCloudApigeeV1EndpointAttachment',
+        request_type_name='ApigeeOrganizationsEndpointAttachmentsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an endpoint attachment.
+
+      Args:
+        request: (ApigeeOrganizationsEndpointAttachmentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/endpointAttachments/{endpointAttachmentsId}',
+        http_method='DELETE',
+        method_id='apigee.organizations.endpointAttachments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEndpointAttachmentsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the specified EndpointAttachment.
+
+      Args:
+        request: (ApigeeOrganizationsEndpointAttachmentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1EndpointAttachment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/endpointAttachments/{endpointAttachmentsId}',
+        http_method='GET',
+        method_id='apigee.organizations.endpointAttachments.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEndpointAttachmentsGetRequest',
+        response_type_name='GoogleCloudApigeeV1EndpointAttachment',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the EndpointAttachments in the specified Organization.
+
+      Args:
+        request: (ApigeeOrganizationsEndpointAttachmentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListEndpointAttachmentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/endpointAttachments',
+        http_method='GET',
+        method_id='apigee.organizations.endpointAttachments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/endpointAttachments',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEndpointAttachmentsListRequest',
+        response_type_name='GoogleCloudApigeeV1ListEndpointAttachmentsResponse',
         supports_download=False,
     )
 
@@ -6717,6 +6838,188 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='<request>',
         request_type_name='GoogleCloudApigeeV1CustomReport',
         response_type_name='GoogleCloudApigeeV1CustomReport',
+        supports_download=False,
+    )
+
+  class OrganizationsSenseProfilesEnvironmentsService(base_api.BaseApiService):
+    """Service class for the organizations_senseProfiles_environments resource."""
+
+    _NAME = 'organizations_senseProfiles_environments'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsSenseProfilesEnvironmentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def ComputeEnvironmentScores(self, request, global_params=None):
+      r"""ComputeEnvironmentScores calculates scores for requested time range for the specified Sense profile and environment.
+
+      Args:
+        request: (ApigeeOrganizationsSenseProfilesEnvironmentsComputeEnvironmentScoresRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ComputeEnvironmentScoresResponse) The response message.
+      """
+      config = self.GetMethodConfig('ComputeEnvironmentScores')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ComputeEnvironmentScores.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/senseProfiles/{senseProfilesId}/environments/{environmentsId}:computeEnvironmentScores',
+        http_method='POST',
+        method_id='apigee.organizations.senseProfiles.environments.computeEnvironmentScores',
+        ordered_params=['profileEnvironment'],
+        path_params=['profileEnvironment'],
+        query_params=[],
+        relative_path='v1/{+profileEnvironment}:computeEnvironmentScores',
+        request_field='googleCloudApigeeV1ComputeEnvironmentScoresRequest',
+        request_type_name='ApigeeOrganizationsSenseProfilesEnvironmentsComputeEnvironmentScoresRequest',
+        response_type_name='GoogleCloudApigeeV1ComputeEnvironmentScoresResponse',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""CreateSenseProfileEnvironmentAssociation creates profile environment association i.e. attaches environment to Sense profile.
+
+      Args:
+        request: (ApigeeOrganizationsSenseProfilesEnvironmentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SenseProfileEnvironmentAssociation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/senseProfiles/{senseProfilesId}/environments',
+        http_method='POST',
+        method_id='apigee.organizations.senseProfiles.environments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/environments',
+        request_field='googleCloudApigeeV1SenseProfileEnvironmentAssociation',
+        request_type_name='ApigeeOrganizationsSenseProfilesEnvironmentsCreateRequest',
+        response_type_name='GoogleCloudApigeeV1SenseProfileEnvironmentAssociation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""DeleteSenseProfileEnvironmentAssociation removes profile environment association i.e. detaches environment from Sense profile.
+
+      Args:
+        request: (ApigeeOrganizationsSenseProfilesEnvironmentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/senseProfiles/{senseProfilesId}/environments/{environmentsId}',
+        http_method='DELETE',
+        method_id='apigee.organizations.senseProfiles.environments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsSenseProfilesEnvironmentsDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+  class OrganizationsSenseProfilesService(base_api.BaseApiService):
+    """Service class for the organizations_senseProfiles resource."""
+
+    _NAME = 'organizations_senseProfiles'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsSenseProfilesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""GetSenseProfile gets the specified Sense profile. Returns NOT_FOUND if Sense profile is not present for the specified organization.
+
+      Args:
+        request: (ApigeeOrganizationsSenseProfilesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SenseProfile) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/senseProfiles/{senseProfilesId}',
+        http_method='GET',
+        method_id='apigee.organizations.senseProfiles.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsSenseProfilesGetRequest',
+        response_type_name='GoogleCloudApigeeV1SenseProfile',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""ListSenseProfiles lists all the Sense profiles associated with the org including attached and unattached profiles.
+
+      Args:
+        request: (ApigeeOrganizationsSenseProfilesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListSenseProfilesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/senseProfiles',
+        http_method='GET',
+        method_id='apigee.organizations.senseProfiles.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/senseProfiles',
+        request_field='',
+        request_type_name='ApigeeOrganizationsSenseProfilesListRequest',
+        response_type_name='GoogleCloudApigeeV1ListSenseProfilesResponse',
+        supports_download=False,
+    )
+
+    def ListRevisions(self, request, global_params=None):
+      r"""ListSenseProfileRevisions lists all the revisions of the Sense profile.
+
+      Args:
+        request: (ApigeeOrganizationsSenseProfilesListRevisionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListSenseProfileRevisionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListRevisions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListRevisions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/senseProfiles/{senseProfilesId}:listRevisions',
+        http_method='GET',
+        method_id='apigee.organizations.senseProfiles.listRevisions',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+name}:listRevisions',
+        request_field='',
+        request_type_name='ApigeeOrganizationsSenseProfilesListRevisionsRequest',
+        response_type_name='GoogleCloudApigeeV1ListSenseProfileRevisionsResponse',
         supports_download=False,
     )
 

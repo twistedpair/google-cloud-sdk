@@ -1,5 +1,5 @@
-provider "google" {{
+provider "google" {
   project = "${project}"
-}}
+}
 
 ${modules}

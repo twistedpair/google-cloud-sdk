@@ -2716,6 +2716,10 @@
         "resourceType": {
           "description": "The FHIR resource type to search, such as Patient or Observation. For a complete list, see the FHIR Resource Index ([DSTU2](https:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/resourcelist.html), [STU3](https:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/resourcelist.html), [R4](https:\/\/hl7.org\/implement\/standards\/fhir\/R4\/resourcelist.html)).",
           "type": "string"
+        },
+        "requestBody": {
+          "description": "Raw body of the request for POST searches.",
+          "$ref": "HttpBody"
         }
       }
     },
@@ -5992,6 +5996,27 @@
                               "location": "path",
                               "required": true,
                               "type": "string"
+                            },
+                            "requestBody.contentType": {
+                              "description": "The HTTP Content-Type header value specifying the content type of the body.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "requestBody.data": {
+                              "description": "The HTTP request\/response body as raw binary.",
+                              "location": "query",
+                              "type": "string",
+                              "format": "byte"
+                            },
+                            "requestBody.extensions": {
+                              "description": "Application specific response metadata. Must be set in the first response for streaming APIs.",
+                              "location": "query",
+                              "repeated": true,
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "any",
+                                "description": "Properties of the object. Contains field @type with type URL."
+                              }
                             }
                           },
                           "parameterOrder": [
@@ -6023,6 +6048,27 @@
                               "description": "The FHIR resource type to search, such as Patient or Observation. For a complete list, see the FHIR Resource Index ([DSTU2](https:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/resourcelist.html), [STU3](https:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/resourcelist.html), [R4](https:\/\/hl7.org\/implement\/standards\/fhir\/R4\/resourcelist.html)).",
                               "location": "query",
                               "type": "string"
+                            },
+                            "requestBody.contentType": {
+                              "description": "The HTTP Content-Type header value specifying the content type of the body.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "requestBody.data": {
+                              "description": "The HTTP request\/response body as raw binary.",
+                              "location": "query",
+                              "type": "string",
+                              "format": "byte"
+                            },
+                            "requestBody.extensions": {
+                              "description": "Application specific response metadata. Must be set in the first response for streaming APIs.",
+                              "location": "query",
+                              "repeated": true,
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "any",
+                                "description": "Properties of the object. Contains field @type with type URL."
+                              }
                             }
                           },
                           "parameterOrder": [

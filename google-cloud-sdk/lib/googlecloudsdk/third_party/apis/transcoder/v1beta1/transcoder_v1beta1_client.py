@@ -43,6 +43,7 @@ class TranscoderV1beta1(base_api.BaseApiClient):
     self.projects_locations_jobs = self.ProjectsLocationsJobsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+    self.v1beta1 = self.V1beta1Service(self)
 
   class ProjectsLocationsJobTemplatesService(base_api.BaseApiService):
     """Service class for the projects_locations_jobTemplates resource."""
@@ -299,3 +300,39 @@ class TranscoderV1beta1(base_api.BaseApiClient):
       super(TranscoderV1beta1.ProjectsService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class V1beta1Service(base_api.BaseApiService):
+    """Service class for the v1beta1 resource."""
+
+    _NAME = 'v1beta1'
+
+    def __init__(self, client):
+      super(TranscoderV1beta1.V1beta1Service, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetPublicKeys(self, request, global_params=None):
+      r"""GetPublicKeys method for the v1beta1 service.
+
+      Args:
+        request: (TranscoderGetPublicKeysRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PublicKeys) The response message.
+      """
+      config = self.GetMethodConfig('GetPublicKeys')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetPublicKeys.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='transcoder.getPublicKeys',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v1beta1/publicKeys',
+        request_field='',
+        request_type_name='TranscoderGetPublicKeysRequest',
+        response_type_name='PublicKeys',
+        supports_download=False,
+    )

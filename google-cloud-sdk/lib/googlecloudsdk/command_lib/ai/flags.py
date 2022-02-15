@@ -37,9 +37,6 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
-# TODO(b/185318075): Consider leaving only re-usable flags here and moving flags
-# that are specific to a subgroup/command to their corresponding modules.
-
 _POLLING_INTERVAL_FLAG = base.Argument(
     '--polling-interval',
     type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),

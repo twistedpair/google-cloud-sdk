@@ -1632,6 +1632,20 @@
         "maintenanceVersion": {
           "description": "The current software version on the instance.",
           "type": "string"
+        },
+        "workloadTier": {
+          "description": "The workload tier for this instance. Can be STANDARD or PREMIUM.",
+          "type": "string",
+          "enumDescriptions": [
+            "The instance did not specify a workload tier.",
+            "The instance is using a standard workload tier.",
+            "The instance is using a premium workload tier."
+          ],
+          "enum": [
+            "WORKLOAD_TIER_UNSPECIFIED",
+            "STANDARD",
+            "PREMIUM"
+          ]
         }
       }
     },

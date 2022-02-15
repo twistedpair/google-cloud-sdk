@@ -840,7 +840,8 @@
             "PostgreSQL 10.",
             "MySQL 8.0.",
             "PostgreSQL 12.",
-            "PostgreSQL 13."
+            "PostgreSQL 13.",
+            "PostgreSQL 14."
           ],
           "enum": [
             "SQL_DATABASE_VERSION_UNSPECIFIED",
@@ -851,7 +852,8 @@
             "POSTGRES_10",
             "MYSQL_8_0",
             "POSTGRES_12",
-            "POSTGRES_13"
+            "POSTGRES_13",
+            "POSTGRES_14"
           ]
         },
         "userLabels": {

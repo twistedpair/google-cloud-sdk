@@ -723,6 +723,16 @@ class Progress(_messages.Message):
   uploaded = _messages.FloatField(4)
 
 
+class PublicKeys(_messages.Message):
+  r"""Wraps a keyset binary proto representation.
+
+  Fields:
+    keyset: The keyset in binary.
+  """
+
+  keyset = _messages.BytesField(1)
+
+
 class PubsubDestination(_messages.Message):
   r"""A Pub/Sub destination.
 
@@ -919,6 +929,10 @@ class TextStream(_messages.Message):
   codec = _messages.StringField(1)
   languageCode = _messages.StringField(2)
   mapping = _messages.MessageField('TextAtom', 3, repeated=True)
+
+
+class TranscoderGetPublicKeysRequest(_messages.Message):
+  r"""A TranscoderGetPublicKeysRequest object."""
 
 
 class TranscoderProjectsLocationsJobTemplatesCreateRequest(_messages.Message):

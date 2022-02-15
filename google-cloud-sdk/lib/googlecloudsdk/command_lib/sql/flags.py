@@ -644,7 +644,7 @@ def AddMaintenanceVersion(parser):
   parser.add_argument(
       '--maintenance-version',
       required=False,
-      help=('The current maintenance version of the instance.'))
+      help=('The desired maintenance version of the instance.'))
 
 
 def AddSqlServerAuditBucketPath(parser):

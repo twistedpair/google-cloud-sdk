@@ -54,8 +54,8 @@ If you are running kubectl as part of an application, it is recommended to use
 [application default credentials](https://cloud.google.com/docs/authentication/production).
 To configure a kubeconfig file to use application default credentials, set
 the ``container/use_application_default_credentials''
-[Cloud SDK property](https://cloud.google.com/sdk/docs/properties) to ``true''
-before running the command.
+[Google Cloud CLI property](https://cloud.google.com/sdk/docs/properties) to
+``true'' before running the command.
 
 See [](https://cloud.google.com/kubernetes-engine/docs/kubectl) for
 kubectl documentation.

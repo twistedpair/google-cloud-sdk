@@ -76,7 +76,7 @@ class PubsubEmulator(util.Emulator):
   """Represents the ability to start and route pubsub emulator."""
 
   def Start(self, port):
-    args = util.AttrDict({'host_port': {'host': 'localhost', 'port': port}})
+    args = util.AttrDict({'host_port': {'host': '::1', 'port': port}})
     return Start(args, self._GetLogNo())
 
   @property

@@ -67,12 +67,22 @@ def MakeInternalIPEntry(messages, stateful_ip_dict):
               value=_MakeNetworkIPForStatefulIP(messages, stateful_ip_dict)))
 
 
+def MakeInternalIPNullEntryForDisablingInPatch(client, interface_name):
+  return (client.messages.StatefulPolicyPreservedState.InternalIPsValue
+          .AdditionalProperty(key=interface_name, value=None))
+
+
 def MakeExternalIPEntry(messages, stateful_ip_dict):
   return (messages.StatefulPolicyPreservedState.ExternalIPsValue
           .AdditionalProperty(
               key=stateful_ip_dict.get(
                   'interface-name', flags.STATEFUL_IP_DEFAULT_INTERFACE_NAME),
               value=_MakeNetworkIPForStatefulIP(messages, stateful_ip_dict)))
+
+
+def MakeExternalIPNullEntryForDisablingInPatch(client, interface_name):
+  return (client.messages.StatefulPolicyPreservedState.ExternalIPsValue
+          .AdditionalProperty(key=interface_name, value=None))
 
 
 def _MakeNetworkIPForStatefulIP(messages, stateful_ip_dict):
@@ -139,8 +149,3 @@ def PatchStatefulPolicyDisk(preserved_state, patch):
   if patch.value.autoDelete:
     preserved_state.value.autoDelete = patch.value.autoDelete
 
-
-def PatchStatefulPolicyIP(preserved_state, patch):
-  """Patch the preserved state proto."""
-  if patch.value.autoDelete:
-    preserved_state.value.autoDelete = patch.value.autoDelete

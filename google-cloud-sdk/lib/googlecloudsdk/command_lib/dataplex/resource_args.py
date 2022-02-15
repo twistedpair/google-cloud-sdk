@@ -77,7 +77,7 @@ def GetContentitemResourceSpec():
 
 
 def GetTaskResourceSpec():
-  """Gets Tasks resource spec."""
+  """Gets Task resource spec."""
   return concepts.ResourceSpec(
       'dataplex.projects.locations.lakes.tasks',
       resource_name='tasks',
@@ -102,8 +102,7 @@ def LocationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='location',
       fallthroughs=[
-          deps.PropertyFallthrough(
-              properties.FromString('dataplex/location'))
+          deps.PropertyFallthrough(properties.FromString('dataplex/location'))
       ],
       help_text='The location of the Dataplex resource.')
 
@@ -145,7 +144,7 @@ def AddProjectArg(parser, verb, positional=True):
 
 def TaskAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='task', help_text='The name of {resource} to use.')
+      name='task', help_text='The identifier of the Dataplex task resource.')
 
 
 def AddLakeResourceArg(parser, verb, positional=True):
@@ -197,7 +196,8 @@ def AddTaskResourceArg(parser, verb, positional=True):
   return concept_parsers.ConceptParser.ForResource(
       name,
       GetTaskResourceSpec(),
-      'The Task {}'.format(verb),
+      'Arguments and flags that define the Dataplex task you want {}'.format(
+          verb),
       required=True).AddToParser(parser)
 
 

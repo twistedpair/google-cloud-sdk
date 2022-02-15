@@ -1574,6 +1574,11 @@
           "description": "Required. Name of the Gateway resource. It matches pattern `projects\/*\/locations\/global\/gateways\/`.",
           "type": "string"
         },
+        "selfLink": {
+          "description": "Output only. Server-defined URL of this resource",
+          "readOnly": true,
+          "type": "string"
+        },
         "createTime": {
           "description": "Output only. The timestamp when the resource was created.",
           "readOnly": true,
@@ -1652,6 +1657,14 @@
         "securityPolicy": {
           "description": "A fully-qualified SecurityPolicy URL reference. Defines how a server should apply security policy to inbound (VM to Proxy) initiated connections.",
           "type": "string"
+        },
+        "network": {
+          "description": "The relative resource name identifying the VPC network that is using this configuration. For example: `projects\/*\/global\/networks\/network-1`",
+          "type": "string"
+        },
+        "subnetwork": {
+          "description": "The relative resource name identifying the subnetwork in which this SWG is allocated. For example: `projects\/*\/regions\/us-central1\/subnetworks\/network-1`",
+          "type": "string"
         }
       }
     },
@@ -1675,11 +1688,16 @@
     },
     "GrpcRoute": {
       "id": "GrpcRoute",
-      "description": "GrpcRoute is the resource defining how gRPC traffic routed by a Router resource is routed.",
+      "description": "GrpcRoute is the resource defining how gRPC traffic routed by a Mesh or Gateway resource is routed.",
       "type": "object",
       "properties": {
         "name": {
           "description": "Required. Name of the GrpcRoute resource. It matches pattern `projects\/*\/locations\/global\/grpcRoutes\/`",
+          "type": "string"
+        },
+        "selfLink": {
+          "description": "Output only. Server-defined URL of this resource",
+          "readOnly": true,
           "type": "string"
         },
         "createTime": {
@@ -1706,14 +1724,7 @@
           "type": "string"
         },
         "hostnames": {
-          "description": "Required. Service hostnames with an optional port for which this route describes traffic. Format: [:] Hostname is the fully qualified domain name of a network host. This matches the RFC 1123 definition of a hostname with 2 notable exceptions: - IPs are not allowed. - A hostname may be prefixed with a wildcard label (*.). The wildcard label must appear by itself as the first label. Hostname can be \"precise\" which is a domain name without the terminating dot of a network host (e.g. \"foo.example.com\") or \"wildcard\", which is a domain name prefixed with a single wildcard label (e.g. *.example.com). Note that as per RFC1035 and RFC1123, a label must consist of lower case alphanumeric characters or '-', and must start and end with an alphanumeric character. No other punctuation is allowed. The routes associated with a Router must have unique hostnames. If you attempt to attach multiple routes with conflicting hostnames, the configuration will be rejected. For example, while it is acceptable for routes for the hostnames \"*.foo.bar.com\" and \"*.bar.com\" to be associated with the same route, it is not possible to associate two routes both with \"*.bar.com\" or both with \"bar.com\". In the case that multiple routes match the hostname, the most specific match will be selected. For example, \"foo.bar.baz.com\" will take precedence over \"*.bar.baz.com\" and \"*.bar.baz.com\" will take precedence over \"*.baz.com\". If a port is specified, then gRPC clients must use the channel URI with the port to match this rule (i.e. \"xds:\/\/\/service:123\"), otherwise they must supply the URI without a port (i.e. \"xds:\/\/\/service\").",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "routers": {
-          "description": "Optional. Routers define a list of routers this GrpcRoute should be served by. Each router reference should match the pattern: `projects\/*\/locations\/global\/routers\/`",
+          "description": "Required. Service hostnames with an optional port for which this route describes traffic. Format: [:] Hostname is the fully qualified domain name of a network host. This matches the RFC 1123 definition of a hostname with 2 notable exceptions: - IPs are not allowed. - A hostname may be prefixed with a wildcard label (*.). The wildcard label must appear by itself as the first label. Hostname can be \"precise\" which is a domain name without the terminating dot of a network host (e.g. \"foo.example.com\") or \"wildcard\", which is a domain name prefixed with a single wildcard label (e.g. *.example.com). Note that as per RFC1035 and RFC1123, a label must consist of lower case alphanumeric characters or '-', and must start and end with an alphanumeric character. No other punctuation is allowed. The routes associated with a Router must have unique hostnames. If you attempt to attach multiple routes with conflicting hostnames, the configuration will be rejected. For example, while it is acceptable for routes for the hostnames \"*.foo.bar.com\" and \"*.bar.com\" to be associated with the same route, it is not possible to associate two routes both with \"*.bar.com\" or both with \"bar.com\". If a port is specified, then gRPC clients must use the channel URI with the port to match this rule (i.e. \"xds:\/\/\/service:123\"), otherwise they must supply the URI without a port (i.e. \"xds:\/\/\/service\").",
           "type": "array",
           "items": {
             "type": "string"
@@ -2050,11 +2061,16 @@
     },
     "HttpRoute": {
       "id": "HttpRoute",
-      "description": "HttpRoute is the resource defining how HTTP traffic should be routed by a Router resource.",
+      "description": "HttpRoute is the resource defining how HTTP traffic should be routed by a Mesh or Gateway resource.",
       "type": "object",
       "properties": {
         "name": {
           "description": "Required. Name of the HttpRoute resource. It matches pattern `projects\/*\/locations\/global\/httpRoutes\/http_route_name>`.",
+          "type": "string"
+        },
+        "selfLink": {
+          "description": "Output only. Server-defined URL of this resource",
+          "readOnly": true,
           "type": "string"
         },
         "description": {
@@ -2075,13 +2091,6 @@
         },
         "hostnames": {
           "description": "Required. Hostnames define a set of hosts that should match against the HTTP host header to select a HttpRoute to process the request. Hostname is the fully qualified domain name of a network host, as defined by RFC 1123 with the exception that ip addresses are not allowed. Wildcard hosts are supported as \"*\" (no prefix or suffix allowed).",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "routers": {
-          "description": "Optional. Routers define a list of routers this HttpRoute should be served by. Each router reference should match the pattern: `projects\/*\/locations\/global\/routers\/` The attached Router should be of a type PROXY",
           "type": "array",
           "items": {
             "type": "string"
@@ -2571,11 +2580,16 @@
     },
     "TcpRoute": {
       "id": "TcpRoute",
-      "description": "TcpRoute is the resource defining how TCP traffic should be routed by a Router resource.",
+      "description": "TcpRoute is the resource defining how TCP traffic should be routed by a Mesh\/Gateway resource.",
       "type": "object",
       "properties": {
         "name": {
           "description": "Required. Name of the TcpRoute resource. It matches pattern `projects\/*\/locations\/global\/tcpRoutes\/tcp_route_name>`.",
+          "type": "string"
+        },
+        "selfLink": {
+          "description": "Output only. Server-defined URL of this resource",
+          "readOnly": true,
           "type": "string"
         },
         "createTime": {
@@ -2599,13 +2613,6 @@
           "type": "array",
           "items": {
             "$ref": "TcpRouteRouteRule"
-          }
-        },
-        "routers": {
-          "description": "Optional. Routers define a list of routers this TcpRoute should be served by. Each router reference should match the pattern: `projects\/*\/locations\/global\/routers\/` The attached Router should be of a type PROXY",
-          "type": "array",
-          "items": {
-            "type": "string"
           }
         },
         "meshes": {
@@ -2723,6 +2730,11 @@
       "properties": {
         "name": {
           "description": "Required. Name of the TlsRoute resource. It matches pattern `projects\/*\/locations\/global\/tlsRoutes\/tls_route_name>`.",
+          "type": "string"
+        },
+        "selfLink": {
+          "description": "Output only. Server-defined URL of this resource",
+          "readOnly": true,
           "type": "string"
         },
         "createTime": {
@@ -2922,6 +2934,11 @@
       "properties": {
         "name": {
           "description": "Required. Name of the Mesh resource. It matches pattern `projects\/*\/locations\/global\/meshes\/`.",
+          "type": "string"
+        },
+        "selfLink": {
+          "description": "Output only. Server-defined URL of this resource",
+          "readOnly": true,
           "type": "string"
         },
         "createTime": {

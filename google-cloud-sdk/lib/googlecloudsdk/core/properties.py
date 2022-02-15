@@ -1013,6 +1013,8 @@ class _SectionApiEndpointOverrides(_Section):
     self.domains = self._Add('domains', command='gcloud domains')
     self.edgecontainer = self._Add(
         'edgecontainer', command='gcloud edge-container')
+    self.edgenetwork = self._Add(
+        'edgenetwork', command='gcloud edge-cloud networking', hidden=True)
     self.eventarc = self._Add('eventarc', command='gcloud eventarc')
     self.events = self._Add('events', command='gcloud events')
     self.file = self._Add('file', command='gcloud filestore')
@@ -1146,6 +1148,8 @@ class _SectionApp(_Section):
         default=True)
     self.trigger_build_server_side = self._AddBool(
         'trigger_build_server_side', hidden=True, default=None)
+    self.use_flex_with_buildpacks = self._AddBool(
+        'use_flex_with_buildpacks', hidden=True, default=None)
     self.cloud_build_timeout = self._Add(
         'cloud_build_timeout',
         validator=_BuildTimeoutValidator,
@@ -1538,6 +1542,11 @@ class _SectionCompute(_Section):
         'and global image resources are used for all other projects. '
         'To override the default behavior, set this property to `zonal` '
         'or `global`. ')
+    self.iap_tunnel_use_new_websocket = self._AddBool(
+        'iap_tunnel_use_new_websocket',
+        default=False,
+        help_text='Bool that indicates if we should use new websocket.',
+        hidden=True)
 
 
 class _SectionContainer(_Section):
@@ -1990,7 +1999,7 @@ class _SectionDataplex(_Section):
 
 
 class _SectionDataproc(_Section):
-  """Contains the properties for the 'ml_engine' section."""
+  """Contains the properties for the 'dataproc' section."""
 
   def __init__(self):
     super(_SectionDataproc, self).__init__('dataproc')
@@ -2000,6 +2009,12 @@ class _SectionDataproc(_Section):
             'Dataproc region to use. Each Dataproc region constitutes an '
             'independent resource namespace constrained to deploying instances '
             'into Compute Engine zones inside the region.'))
+    self.location = self._Add(
+        'location',
+        help_text=(
+            'Dataproc location to use. Each Dataproc location constitutes an '
+            'independent resource namespace constrained to deploying instances '
+            'into Compute Engine zones inside the location.'))
 
 
 class _SectionDeclarative(_Section):
@@ -3516,7 +3531,9 @@ def GetValueFromFeatureFlag(prop):
     str, the value of the property, or None if it is not set.
   """
   ff_config = feature_flags_config.GetFeatureFlagsConfig(
-      VALUES.core.account.Get())
+      VALUES.core.account.Get(),
+      VALUES.core.project.Get()
+  )
   if ff_config:
     return ff_config.Get(prop)
   return None

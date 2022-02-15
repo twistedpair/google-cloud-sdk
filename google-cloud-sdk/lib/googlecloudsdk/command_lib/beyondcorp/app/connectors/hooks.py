@@ -40,17 +40,22 @@ def CheckFieldsSpecified(unused_ref, args, patch_request):
 
 
 def UpdateLabels(unused_ref, args, patch_request):
-  """Updates labels of connector."""
+  """Updates labels of appConnector."""
   labels_diff = labels_util.Diff.FromUpdateArgs(args)
   if labels_diff.MayHaveUpdates():
     patch_request = command_util.AddFieldToUpdateMask('labels', patch_request)
     messages = api_util.GetMessagesModule(args.calliope_command.ReleaseTrack())
-    if patch_request.connector is None:
-      patch_request.connector = messages.Connector()
-    new_labels = labels_diff.Apply(messages.Connector.LabelsValue,
-                                   patch_request.connector.labels).GetOrNone()
+    app_connector_msg = patch_request.googleCloudBeyondcorpAppconnectorsV1alphaAppConnector
+    if app_connector_msg is None:
+      app_connector_msg = messages.GoogleCloudBeyondcorpAppconnectorsV1alphaAppConnector(
+      )
+    new_labels = labels_diff.Apply(
+        messages.GoogleCloudBeyondcorpAppconnectorsV1alphaAppConnector
+        .LabelsValue,
+        app_connector_msg
+        .labels).GetOrNone()
     if new_labels:
-      patch_request.connector.labels = new_labels
+      app_connector_msg.labels = new_labels
   return patch_request
 
 

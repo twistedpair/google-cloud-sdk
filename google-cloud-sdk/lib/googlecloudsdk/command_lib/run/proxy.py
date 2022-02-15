@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.util.anthos import binary_operations
+from googlecloudsdk.core import log
 
 MISSING_BINARY = ('Could not locate Cloud Run executable cloud-run-proxy'
                   ' on the system PATH. '
@@ -36,6 +37,7 @@ class ProxyWrapper(binary_operations.StreamingBinaryBackedOperation):
         binary='cloud-run-proxy',
         custom_errors={'MISSING_EXEC': MISSING_BINARY},
         install_if_missing=True,
+        std_err_func=StreamErrHandler,
         **kwargs)
 
   # Function required by StreamingBinaryBackedOperation to map command line args
@@ -49,3 +51,19 @@ class ProxyWrapper(binary_operations.StreamingBinaryBackedOperation):
       exec_args.extend(['-bind', bind])
 
     return exec_args
+
+
+def StreamErrHandler(result_holder, capture_output=False):
+  """Customized processing for streaming stderr from subprocess."""
+
+  del result_holder, capture_output  # Unused
+
+  def HandleStdErr(line):
+    if line:
+      log.status.Print(line)
+      # Check if it is bind used error
+      if 'server error:' in line and 'bind: address already in use' in line:
+        log.status.Print(
+            'You can set the --port flag to specify a different local port')
+
+  return HandleStdErr

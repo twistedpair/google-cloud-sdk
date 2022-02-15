@@ -42,6 +42,8 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
     self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
     self.projects_locations_networks = self.ProjectsLocationsNetworksService(self)
     self.projects_locations_nfsShares = self.ProjectsLocationsNfsSharesService(self)
+    self.projects_locations_provisioningConfigs = self.ProjectsLocationsProvisioningConfigsService(self)
+    self.projects_locations_provisioningQuotas = self.ProjectsLocationsProvisioningQuotasService(self)
     self.projects_locations_snapshotSchedulePolicies = self.ProjectsLocationsSnapshotSchedulePoliciesService(self)
     self.projects_locations_volumes_luns = self.ProjectsLocationsVolumesLunsService(self)
     self.projects_locations_volumes_snapshots = self.ProjectsLocationsVolumesSnapshotsService(self)
@@ -346,6 +348,80 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='BaremetalsolutionProjectsLocationsNfsSharesListRequest',
         response_type_name='ListNfsSharesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsProvisioningConfigsService(base_api.BaseApiService):
+    """Service class for the projects_locations_provisioningConfigs resource."""
+
+    _NAME = 'projects_locations_provisioningConfigs'
+
+    def __init__(self, client):
+      super(BaremetalsolutionV2.ProjectsLocationsProvisioningConfigsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Submit(self, request, global_params=None):
+      r"""Submit a provisiong configuration for a given project.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsProvisioningConfigsSubmitRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SubmitProvisioningConfigResponse) The response message.
+      """
+      config = self.GetMethodConfig('Submit')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Submit.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/provisioningConfigs:submit',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.provisioningConfigs.submit',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/provisioningConfigs:submit',
+        request_field='submitProvisioningConfigRequest',
+        request_type_name='BaremetalsolutionProjectsLocationsProvisioningConfigsSubmitRequest',
+        response_type_name='SubmitProvisioningConfigResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsProvisioningQuotasService(base_api.BaseApiService):
+    """Service class for the projects_locations_provisioningQuotas resource."""
+
+    _NAME = 'projects_locations_provisioningQuotas'
+
+    def __init__(self, client):
+      super(BaremetalsolutionV2.ProjectsLocationsProvisioningQuotasService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""List the budget details to provision resources on a given project.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsProvisioningQuotasListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListProvisioningQuotasResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/provisioningQuotas',
+        http_method='GET',
+        method_id='baremetalsolution.projects.locations.provisioningQuotas.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/provisioningQuotas',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsProvisioningQuotasListRequest',
+        response_type_name='ListProvisioningQuotasResponse',
         supports_download=False,
     )
 

@@ -80,7 +80,7 @@ task:
     parameter_name: tasksId
     attribute_name: task
     help: |
-      The task_id for the Task Resource of the Dataplex service.
+      The identifier of the Dataplex task resource.
 
 job:
   name: job

@@ -243,6 +243,10 @@ class Client(object):
     if args.instance_type:
       cp.instanceType = args.instance_type
       update_mask.append('control_plane.instance_type')
+    if args.config_encryption_kms_key_arn:
+      cp.configEncryption = self._CreateAwsConfigEncryption(
+          args.config_encryption_kms_key_arn)
+      update_mask.append('control_plane.config_encryption.kms_key_arn')
 
     services_auth = self._AddAwsServicesAuthentication(cp)
     if args.role_arn:

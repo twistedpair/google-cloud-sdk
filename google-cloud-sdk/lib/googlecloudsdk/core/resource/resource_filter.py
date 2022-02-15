@@ -380,7 +380,10 @@ class _Parser(object):
       The new backend expression tree.
     """
     tree = self._ParseAndTerm()
-    if tree:
+    # In case the backend is a rewriter, the tree from AndTerm can be None if
+    # only frontend-only fields are present in this part of the term. We still
+    # need to parse the rest of the expression if it exists.
+    if tree or self._backend.IsRewriter():
       tree = self._ParseAndTail(tree)
     elif must:
       raise resource_exceptions.ExpressionSyntaxError(
@@ -452,8 +455,7 @@ class _Parser(object):
     tree = self._ParseAdjTerm()
     if tree:
       tree = self._ParseAdjTail(tree)
-    # isinstance(self._backend, resource_expr_rewrite.Backend) => import loop
-    elif must and not hasattr(self._backend, 'Rewrite'):
+    elif must and not self._backend.IsRewriter():
       raise resource_exceptions.ExpressionSyntaxError(
           'Term expected [{0}].'.format(self._lex.Annotate()))
     return tree

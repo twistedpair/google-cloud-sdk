@@ -952,6 +952,102 @@ class CloudbuildProjectsLocationsTaskRunsPatchRequest(_messages.Message):
   validateOnly = _messages.BooleanField(5)
 
 
+class CloudbuildProjectsLocationsWorkflowsCreateRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsWorkflowsCreateRequest object.
+
+  Fields:
+    parent: Required. Format: `projects/{project}/locations/{location}`
+    validateOnly: When true, the query is validated only, but not executed.
+    workflow: A Workflow resource to be passed as the request body.
+    workflowId: Required. The ID to use for the Workflow, which will become
+      the final component of the Workflow's resource name.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  validateOnly = _messages.BooleanField(2)
+  workflow = _messages.MessageField('Workflow', 3)
+  workflowId = _messages.StringField(4)
+
+
+class CloudbuildProjectsLocationsWorkflowsDeleteRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsWorkflowsDeleteRequest object.
+
+  Fields:
+    etag: The etag of the workflow. If this is provided, it must match the
+      server's etag.
+    name: Required. Format:
+      `projects/{project}/locations/{location}/workflow/{workflow}`
+    validateOnly: When true, the query is validated only, but not executed.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  validateOnly = _messages.BooleanField(3)
+
+
+class CloudbuildProjectsLocationsWorkflowsGetRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsWorkflowsGetRequest object.
+
+  Fields:
+    name: Required. Format:
+      `projects/{project}/locations/{location}/workflow/{workflow}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudbuildProjectsLocationsWorkflowsListRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsWorkflowsListRequest object.
+
+  Fields:
+    filter: Filter for the results.
+    orderBy: The order to sort results by.
+    pageSize: Number of results to return in the list.
+    pageToken: Page start.
+    parent: Required. Format: `projects/{project}/locations/{location}`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class CloudbuildProjectsLocationsWorkflowsPatchRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsWorkflowsPatchRequest object.
+
+  Fields:
+    allowMissing: If set to true, and the workflow is not found, a new
+      workflow will be created. In this situation, `update_mask` is ignored.
+    name: Output only. Format:
+      `projects/{project}/locations/{location}/workflows/{workflow}`
+    updateMask: The list of fields to be updated.
+    validateOnly: When true, the query is validated only, but not executed.
+    workflow: A Workflow resource to be passed as the request body.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+  workflow = _messages.MessageField('Workflow', 5)
+
+
+class CloudbuildProjectsLocationsWorkflowsRunRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsWorkflowsRunRequest object.
+
+  Fields:
+    name: Required. Format:
+      `projects/{project}/locations/{location}/workflow/{workflow}`
+    runWorkflowRequest: A RunWorkflowRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  runWorkflowRequest = _messages.MessageField('RunWorkflowRequest', 2)
+
+
 class Condition(_messages.Message):
   r"""Conditions defines a readiness condition for a Knative resource.
 
@@ -1264,6 +1360,16 @@ class EnvVar(_messages.Message):
   value = _messages.StringField(2)
 
 
+class ExecutionEnvironment(_messages.Message):
+  r"""Contains the workerpool.
+
+  Fields:
+    workerPool: Required. The workerpool used to run the PipelineRun.
+  """
+
+  workerPool = _messages.StringField(1)
+
+
 class FailureInfo(_messages.Message):
   r"""A fatal problem encountered during the execution of the build.
 
@@ -1331,23 +1437,6 @@ class GCEPersistentDiskVolumeSource(_messages.Message):
   readOnly = _messages.BooleanField(4)
 
 
-class GoogleDevtoolsCloudbuildV1BuildOptionsPoolOptionWorkerConfig(_messages.Message):
-  r"""Configuration per workload for both Private Pools and Hybrid Pools.
-
-  Fields:
-    diskSizeGb: The disk size (in GB) which is requested for the build
-      container. If unset, a value of 10 GB will be used.
-    memoryGb: The memory (in GB) which is requested for the build container.
-      If unset, a value of 4 GB will be used.
-    vcpuCount: The number of vCPUs which are requested for the build
-      container. If unset, a value of 1 will be used.
-  """
-
-  diskSizeGb = _messages.IntegerField(1)
-  memoryGb = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  vcpuCount = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
-
-
 class GoogleDevtoolsCloudbuildV2OperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
@@ -1373,6 +1462,20 @@ class GoogleDevtoolsCloudbuildV2OperationMetadata(_messages.Message):
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class GoogleDevtoolsCloudbuildV2SecretManagerSecret(_messages.Message):
+  r"""Pairs a secret environment variable with a SecretVersion in Secret
+  Manager.
+
+  Fields:
+    env: Environment variable name to associate with the secret.
+    secretVersion: Resource name of the SecretVersion. In format:
+      projects/*/secrets/*/versions/*
+  """
+
+  env = _messages.StringField(1)
+  secretVersion = _messages.StringField(2)
 
 
 class HTTPDelivery(_messages.Message):
@@ -1528,6 +1631,19 @@ class ListTaskRunsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   taskRuns = _messages.MessageField('TaskRun', 2, repeated=True)
+
+
+class ListWorkflowsResponse(_messages.Message):
+  r"""Message for response to listing Workflows.
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    workflows: The list of Workflows.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  workflows = _messages.MessageField('Workflow', 2, repeated=True)
 
 
 class Notification(_messages.Message):
@@ -2120,11 +2236,9 @@ class PoolOption(_messages.Message):
       `cloudbuild.workerpools.use` on the project hosting the WorkerPool.
       Format
       projects/{project}/locations/{location}/workerPools/{workerPoolId}
-    workerConfig: Configuration per workload.
   """
 
   name = _messages.StringField(1)
-  workerConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV1BuildOptionsPoolOptionWorkerConfig', 2)
 
 
 class ProcessAppManifestCallbackOperationMetadata(_messages.Message):
@@ -2386,6 +2500,47 @@ class Results(_messages.Message):
   buildStepOutputs = _messages.BytesField(4, repeated=True)
   images = _messages.MessageField('BuiltImage', 5, repeated=True)
   numArtifacts = _messages.IntegerField(6)
+
+
+class RunWorkflowCustomOperationMetadata(_messages.Message):
+  r"""Represents the custom metadata of the RunWorkflow long-running
+  operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    pipelineRunId: Output only. ID of the pipeline run created by RunWorkflow.
+    requestedCancellation: Output only. Identifies whether the user has
+      requested cancellation of the operation. Operations that have
+      successfully been cancelled have Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  pipelineRunId = _messages.StringField(4)
+  requestedCancellation = _messages.BooleanField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
+
+
+class RunWorkflowRequest(_messages.Message):
+  r"""Message for running a Workflow.
+
+  Fields:
+    etag: Needed for declarative-friendly resources.
+    params: Run-time params.
+    validateOnly: When true, the query is validated only, but not executed.
+  """
+
+  etag = _messages.StringField(1)
+  params = _messages.MessageField('Param', 2, repeated=True)
+  validateOnly = _messages.BooleanField(3)
 
 
 class SMTPDelivery(_messages.Message):
@@ -3264,6 +3419,135 @@ class WhenExpression(_messages.Message):
   expressionOperator = _messages.EnumField('ExpressionOperatorValueValuesEnum', 1)
   input = _messages.StringField(2)
   values = _messages.StringField(3, repeated=True)
+
+
+class Workflow(_messages.Message):
+  r"""Message describing Workflow object.
+
+  Messages:
+    AnnotationsValue: User annotations. See
+      https://google.aip.dev/128#annotations
+    LabelsValue: Map of key-value pairs of user-defined labels.
+
+  Fields:
+    annotations: User annotations. See https://google.aip.dev/128#annotations
+    bundle: A Tekton Bundle is an OCI Image that Tekton understands. OCI is
+      the spec for container images that docker and others (such as Tekton
+      Bundles) follow.
+    createTime: Output only. Server assigned timestamp for when the workflow
+      was created.
+    deleteTime: Output only. Server assigned timestamp for when the workflow
+      was deleted.
+    etag: Needed for declarative-friendly resources.
+    labels: Map of key-value pairs of user-defined labels.
+    name: Output only. Format:
+      `projects/{project}/locations/{location}/workflows/{workflow}`
+    options: Workflow runs can be modified through several Workflow options.
+    params: List of parameters.
+    pipelineSpec: Fields from both the Workflow and the PipelineSpec will be
+      used to form the full PipelineRun.
+    secrets: Pairs a secret environment variable with a SecretVersion in
+      Secret Manager.
+    serviceAccount: If omitted, the default Cloud Build Service Account is
+      used instead. Format: `projects/{project}/locations/{location}/serviceAc
+      counts/{serviceAccount}`
+    timeout: Time after which the Workflow times out.
+    uid: Output only. A unique identifier for the `Workflow`.
+    updateTime: Output only. Server assigned timestamp for when the workflow
+      was last updated.
+    workspaces: Workspaces is a list of WorkspaceBindings from volumes to
+      workspaces.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""User annotations. See https://google.aip.dev/128#annotations
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Map of key-value pairs of user-defined labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  bundle = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  deleteTime = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  options = _messages.MessageField('WorkflowOptions', 8)
+  params = _messages.MessageField('ParamSpec', 9, repeated=True)
+  pipelineSpec = _messages.MessageField('PipelineSpec', 10)
+  secrets = _messages.MessageField('GoogleDevtoolsCloudbuildV2SecretManagerSecret', 11, repeated=True)
+  serviceAccount = _messages.StringField(12)
+  timeout = _messages.StringField(13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
+  workspaces = _messages.MessageField('WorkspaceBinding', 16, repeated=True)
+
+
+class WorkflowOptions(_messages.Message):
+  r"""Workflow runs can be modified through several Workflow options.
+
+  Fields:
+    executionEnvironment: Contains the workerpool.
+    statusUpdateOptions: How/where status on the workflow is posted.
+  """
+
+  executionEnvironment = _messages.MessageField('ExecutionEnvironment', 1)
+  statusUpdateOptions = _messages.MessageField('WorkflowStatusUpdateOptions', 2)
+
+
+class WorkflowStatusUpdateOptions(_messages.Message):
+  r"""Configure how/where status is posted.
+
+  Fields:
+    pubsubTopic: Controls which Pub/Sub topic is used to send status updates
+      as a build progresses and terminates. Default: projects//pub-
+      sub/topics/cloud-build
+  """
+
+  pubsubTopic = _messages.StringField(1)
 
 
 class WorkspaceBinding(_messages.Message):

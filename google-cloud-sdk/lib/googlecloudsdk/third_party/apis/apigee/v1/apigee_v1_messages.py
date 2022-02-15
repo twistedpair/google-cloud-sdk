@@ -1242,6 +1242,67 @@ class ApigeeOrganizationsDevelopersUpdateRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class ApigeeOrganizationsEndpointAttachmentsCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEndpointAttachmentsCreateRequest object.
+
+  Fields:
+    endpointAttachmentId: The ID to use for the endpoint attachment. ID must
+      be a 1-20 characters string with lowercase letters and numbers and must
+      start with a letter.
+    googleCloudApigeeV1EndpointAttachment: A
+      GoogleCloudApigeeV1EndpointAttachment resource to be passed as the
+      request body.
+    parent: Required. The Organization this EndpointAttachment will be created
+      in.
+  """
+
+  endpointAttachmentId = _messages.StringField(1)
+  googleCloudApigeeV1EndpointAttachment = _messages.MessageField('GoogleCloudApigeeV1EndpointAttachment', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ApigeeOrganizationsEndpointAttachmentsDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEndpointAttachmentsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the Endpoint Attachment in the following format:
+      `organizations/{organization}/endpointAttachments/{endpoint_attachment}`
+      .
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsEndpointAttachmentsGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEndpointAttachmentsGetRequest object.
+
+  Fields:
+    name: Required. Name of the Endpoint Attachment in the following format:
+      `organizations/{organization}/endpointAttachments/{endpoint_attachment}`
+      .
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsEndpointAttachmentsListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEndpointAttachmentsListRequest object.
+
+  Fields:
+    pageSize: Optional. Maximum number of Endpoint Attachments to return. If
+      unspecified, at most 25 attachments will be returned.
+    pageToken: Optional. Page token, returned from a previous
+      ListEndpointAttachments call, that you can use to retrieve the next
+      page.
+    parent: Required. Name of the Organization for which to list Endpoint
+      Attachments in the format: `organizations/{organization}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class ApigeeOrganizationsEnvgroupsAttachmentsCreateRequest(_messages.Message):
   r"""A ApigeeOrganizationsEnvgroupsAttachmentsCreateRequest object.
 
@@ -3536,6 +3597,101 @@ class ApigeeOrganizationsReportsListRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class ApigeeOrganizationsSenseProfilesEnvironmentsComputeEnvironmentScoresRequest(_messages.Message):
+  r"""A
+  ApigeeOrganizationsSenseProfilesEnvironmentsComputeEnvironmentScoresRequest
+  object.
+
+  Fields:
+    googleCloudApigeeV1ComputeEnvironmentScoresRequest: A
+      GoogleCloudApigeeV1ComputeEnvironmentScoresRequest resource to be passed
+      as the request body.
+    profileEnvironment: Required. Name of organization and environment and
+      profile id for which score needs to be computed. Format:
+      organizations/{org}/senseProfiles/{profile}/environments/{env}
+  """
+
+  googleCloudApigeeV1ComputeEnvironmentScoresRequest = _messages.MessageField('GoogleCloudApigeeV1ComputeEnvironmentScoresRequest', 1)
+  profileEnvironment = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsSenseProfilesEnvironmentsCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSenseProfilesEnvironmentsCreateRequest object.
+
+  Fields:
+    googleCloudApigeeV1SenseProfileEnvironmentAssociation: A
+      GoogleCloudApigeeV1SenseProfileEnvironmentAssociation resource to be
+      passed as the request body.
+    parent: Required. Name of organization and Sense profile ID. Format:
+      organizations/{org}/senseProfiles/{profile}
+  """
+
+  googleCloudApigeeV1SenseProfileEnvironmentAssociation = _messages.MessageField('GoogleCloudApigeeV1SenseProfileEnvironmentAssociation', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsSenseProfilesEnvironmentsDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSenseProfilesEnvironmentsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the environment attachment to delete. Format:
+      organizations/{org}/senseProfiles/{profile}/environments/{env}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsSenseProfilesGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSenseProfilesGetRequest object.
+
+  Fields:
+    name: Required. Sense Profile in the following format:
+      `organizations/{org}/senseProfiles/{profile}'. Profile may optionally
+      contain revision ID. If revision ID is not provided, the response will
+      contain latest revision by default. Example:
+      organizations/testOrg/senseProfiles/testProfile@5
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsSenseProfilesListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSenseProfilesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of profiles to return. The service may return
+      fewer than this value. If unspecified, at most 50 profiles will be
+      returned.
+    pageToken: A page token, received from a previous `ListSenseProfiles`
+      call. Provide this to retrieve the subsequent page.
+    parent: Required. For a specific organization, list of all the Sense
+      profiles. Format: `organizations/{org}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ApigeeOrganizationsSenseProfilesListRevisionsRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSenseProfilesListRevisionsRequest object.
+
+  Fields:
+    name: Required. For a specific profile, list all the revisions. Format:
+      `organizations/{org}/senseProfiles/{profile}`
+    pageSize: The maximum number of profile revisions to return. The service
+      may return fewer than this value. If unspecified, at most 50 revisions
+      will be returned.
+    pageToken: A page token, received from a previous
+      `ListSenseProfileRevisions` call. Provide this to retrieve the
+      subsequent page.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
 class ApigeeOrganizationsSetAddonsRequest(_messages.Message):
   r"""A ApigeeOrganizationsSetAddonsRequest object.
 
@@ -4717,6 +4873,60 @@ class GoogleCloudApigeeV1CommonNameConfig(_messages.Message):
   name = _messages.StringField(2)
 
 
+class GoogleCloudApigeeV1ComputeEnvironmentScoresRequest(_messages.Message):
+  r"""Request for ComputeEnvironmentScores.
+
+  Fields:
+    filters: Optional. Filters are used to filter scored components. Return
+      all the components if no filter is mentioned. Example: [{ "scorePath":
+      "/org@myorg/envgroup@myenvgroup/env@myenv/proxies/proxy@myproxy/source"
+      }, { "scorePath":
+      "/org@myorg/envgroup@myenvgroup/env@myenv/proxies/proxy@myproxy/target",
+      }] This will return components with path:
+      "/org@myorg/envgroup@myenvgroup/env@myenv/proxies/proxy@myproxy/source"
+      OR
+      "/org@myorg/envgroup@myenvgroup/env@myenv/proxies/proxy@myproxy/target"
+    pageSize: Optional. The maximum number of subcomponents to be returned in
+      a single page. The service may return fewer than this value. If
+      unspecified, at most 100 subcomponents will be returned in a single
+      page.
+    pageToken: Optional. A token that can be sent as `page_token` to retrieve
+      the next page. If this field is omitted, there are no subsequent pages.
+    timeRange: Required. Time range for score calculation. At most 14 days of
+      scores will be returned.
+  """
+
+  filters = _messages.MessageField('GoogleCloudApigeeV1ComputeEnvironmentScoresRequestFilter', 1, repeated=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  timeRange = _messages.MessageField('GoogleTypeInterval', 4)
+
+
+class GoogleCloudApigeeV1ComputeEnvironmentScoresRequestFilter(_messages.Message):
+  r"""Filter scores by component path. Used custom filter instead of AIP-160
+  as the use cases are highly constrained and predictable.
+
+  Fields:
+    scorePath: Optional. Return scores for this component. Example:
+      "/org@myorg/envgroup@myenvgroup/env@myenv/proxies/proxy@myproxy/source"
+  """
+
+  scorePath = _messages.StringField(1)
+
+
+class GoogleCloudApigeeV1ComputeEnvironmentScoresResponse(_messages.Message):
+  r"""Response for ComputeEnvironmentScores.
+
+  Fields:
+    nextPageToken: A page token, received from a previous `ComputeScore` call.
+      Provide this to retrieve the subsequent page.
+    scores: List of scores. One score per day.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  scores = _messages.MessageField('GoogleCloudApigeeV1Score', 2, repeated=True)
+
+
 class GoogleCloudApigeeV1ConfigVersion(_messages.Message):
   r"""Version of the API proxy configuration schema. Currently, only 4.0 is
   supported.
@@ -5562,6 +5772,25 @@ class GoogleCloudApigeeV1DimensionMetric(_messages.Message):
 
   metrics = _messages.MessageField('GoogleCloudApigeeV1Metric', 1, repeated=True)
   name = _messages.StringField(2)
+
+
+class GoogleCloudApigeeV1EndpointAttachment(_messages.Message):
+  r"""Apigee Endpoint Attachment.
+
+  Fields:
+    host: Output only. Host that can be used in either HTTP Target Endpoint
+      directly, or as the host in Target Server.
+    location: Required. Location of the endpoint attachment.
+    name: Name of the Endpoint Attachment in the following format:
+      `organizations/{organization}/endpointAttachments/{endpoint_attachment}`
+      .
+    serviceAttachment: Format: projects/*/regions/*/serviceAttachments/*
+  """
+
+  host = _messages.StringField(1)
+  location = _messages.StringField(2)
+  name = _messages.StringField(3)
+  serviceAttachment = _messages.StringField(4)
 
 
 class GoogleCloudApigeeV1EntityMetadata(_messages.Message):
@@ -6596,6 +6825,20 @@ class GoogleCloudApigeeV1ListDeveloperSubscriptionsResponse(_messages.Message):
   nextStartKey = _messages.StringField(2)
 
 
+class GoogleCloudApigeeV1ListEndpointAttachmentsResponse(_messages.Message):
+  r"""Response for ListEndpointAttachments method.
+
+  Fields:
+    endpointAttachments: Endpoint Attachments in the specified organization.
+    nextPageToken: Page token that you can include in a
+      ListEndpointAttachments request to retrieve the next page. If omitted,
+      no subsequent pages exist.
+  """
+
+  endpointAttachments = _messages.MessageField('GoogleCloudApigeeV1EndpointAttachment', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class GoogleCloudApigeeV1ListEnvironmentGroupAttachmentsResponse(_messages.Message):
   r"""Response for ListEnvironmentGroupAttachments.
 
@@ -6758,6 +7001,35 @@ class GoogleCloudApigeeV1ListSecurityReportsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   securityReports = _messages.MessageField('GoogleCloudApigeeV1SecurityReport', 2, repeated=True)
+
+
+class GoogleCloudApigeeV1ListSenseProfileRevisionsResponse(_messages.Message):
+  r"""Response for ListSenseProfileRevisions.
+
+  Fields:
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    profiles: List of Sense profile revisions. The revisions may be attached
+      or unattached to any environment.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  profiles = _messages.MessageField('GoogleCloudApigeeV1SenseProfile', 2, repeated=True)
+
+
+class GoogleCloudApigeeV1ListSenseProfilesResponse(_messages.Message):
+  r"""Response for ListSenseProfiles.
+
+  Fields:
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    senseProfiles: List of Sense profiles in the organization. The profiles
+      may be attached or unattached to any environment. This will return
+      latest revision of each profile.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  senseProfiles = _messages.MessageField('GoogleCloudApigeeV1SenseProfile', 2, repeated=True)
 
 
 class GoogleCloudApigeeV1ListSharedFlowsResponse(_messages.Message):
@@ -8208,6 +8480,81 @@ class GoogleCloudApigeeV1SchemaSchemaProperty(_messages.Message):
   type = _messages.StringField(3)
 
 
+class GoogleCloudApigeeV1Score(_messages.Message):
+  r"""Represents Security Score.
+
+  Fields:
+    component: Component containing score, recommendations and actions.
+    subcomponents: List of all the drilldown score components.
+    timeRange: Start and end time for the score.
+  """
+
+  component = _messages.MessageField('GoogleCloudApigeeV1ScoreComponent', 1)
+  subcomponents = _messages.MessageField('GoogleCloudApigeeV1ScoreComponent', 2, repeated=True)
+  timeRange = _messages.MessageField('GoogleTypeInterval', 3)
+
+
+class GoogleCloudApigeeV1ScoreComponent(_messages.Message):
+  r"""Component is an individual security element that is scored.
+
+  Fields:
+    calculateTime: Time when score was calculated.
+    drilldownPaths: List of paths for next components.
+    latestDataCaptureTime: Time when data was last captured to compute the
+      score.
+    recommendations: List of recommendations to improve API security.
+    score: Score for the component.
+    scorePath: Path of the component. Example:
+      /org@myorg/envgroup@myenvgroup/proxies/proxy@myproxy
+  """
+
+  calculateTime = _messages.StringField(1)
+  drilldownPaths = _messages.StringField(2, repeated=True)
+  latestDataCaptureTime = _messages.StringField(3)
+  recommendations = _messages.MessageField('GoogleCloudApigeeV1ScoreComponentRecommendation', 4, repeated=True)
+  score = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  scorePath = _messages.StringField(6)
+
+
+class GoogleCloudApigeeV1ScoreComponentRecommendation(_messages.Message):
+  r"""Recommendation based on security concerns and score.
+
+  Fields:
+    actions: Actions for the recommendation to improve the security score.
+    description: Description of the recommendation.
+    impact: Potential impact of this recommendation on the overall score. This
+      denotes how important this recommendation is to improve the score.
+    title: Title represents recommendation title.
+  """
+
+  actions = _messages.MessageField('GoogleCloudApigeeV1ScoreComponentRecommendationAction', 1, repeated=True)
+  description = _messages.StringField(2)
+  impact = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  title = _messages.StringField(4)
+
+
+class GoogleCloudApigeeV1ScoreComponentRecommendationAction(_messages.Message):
+  r"""Action to improve security score.
+
+  Fields:
+    actionContext: Action context for the action.
+    description: Description of the action.
+  """
+
+  actionContext = _messages.MessageField('GoogleCloudApigeeV1ScoreComponentRecommendationActionActionContext', 1)
+  description = _messages.StringField(2)
+
+
+class GoogleCloudApigeeV1ScoreComponentRecommendationActionActionContext(_messages.Message):
+  r"""Action context are all the relevant details for the action.
+
+  Fields:
+    documentationLink: Documentation link for the action.
+  """
+
+  documentationLink = _messages.StringField(1)
+
+
 class GoogleCloudApigeeV1SecurityReport(_messages.Message):
   r"""SecurityReport saves all the information about the created security
   report.
@@ -8380,6 +8727,77 @@ class GoogleCloudApigeeV1SecurityReportResultView(_messages.Message):
   metadata = _messages.MessageField('GoogleCloudApigeeV1SecurityReportMetadata', 3)
   rows = _messages.MessageField('extra_types.JsonValue', 4, repeated=True)
   state = _messages.StringField(5)
+
+
+class GoogleCloudApigeeV1SenseProfile(_messages.Message):
+  r"""Represents a SenseProfile resource.
+
+  Fields:
+    configs: List of profile configs in this revision.
+    displayName: Display name of the Sense profile.
+    environments: List of environments attached to Sense profile.
+    maxScore: Maximum security score generated by this profile.
+    name: Immutable. Name of the Sense profile.
+    publishTime: Output only. The time when revision was published. Once
+      published, the Sense revision cannot be updated further and can be
+      attached to environments.
+    revisionCreateTime: Output only. The time when revision was created.
+    revisionId: Output only. Revision ID of the Sense profile.
+    updateTime: Output only. The time when revision was updated.
+  """
+
+  configs = _messages.MessageField('GoogleCloudApigeeV1SenseProfileConfig', 1, repeated=True)
+  displayName = _messages.StringField(2)
+  environments = _messages.MessageField('GoogleCloudApigeeV1SenseProfileEnvironment', 3, repeated=True)
+  maxScore = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  name = _messages.StringField(5)
+  publishTime = _messages.StringField(6)
+  revisionCreateTime = _messages.StringField(7)
+  revisionId = _messages.IntegerField(8)
+  updateTime = _messages.StringField(9)
+
+
+class GoogleCloudApigeeV1SenseProfileConfig(_messages.Message):
+  r"""Security configurations to manage scoring.
+
+  Fields:
+    description: Description of the config.
+    scorePath: Path of the component config used for scoring.
+    title: Title of the config.
+  """
+
+  description = _messages.StringField(1)
+  scorePath = _messages.StringField(2)
+  title = _messages.StringField(3)
+
+
+class GoogleCloudApigeeV1SenseProfileEnvironment(_messages.Message):
+  r"""Environment information of attached environments. Scoring an environment
+  is enabled only if it is attached to a Sense profile.
+
+  Fields:
+    attachTime: Output only. Time at which environment was attached to the
+      Sense profile.
+    environment: Output only. Name of the environment.
+  """
+
+  attachTime = _messages.StringField(1)
+  environment = _messages.StringField(2)
+
+
+class GoogleCloudApigeeV1SenseProfileEnvironmentAssociation(_messages.Message):
+  r"""Represents a SenseProfileEnvironmentAssociation resource.
+
+  Fields:
+    attachTime: Output only. The time when environment was attached to the
+      Sense profile.
+    name: Immutable. Name of the attached environment.
+    senseProfileRevisionId: Revision ID of the Sense profile.
+  """
+
+  attachTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  senseProfileRevisionId = _messages.IntegerField(3)
 
 
 class GoogleCloudApigeeV1ServiceIssuersMapping(_messages.Message):
@@ -9505,6 +9923,24 @@ class GoogleTypeExpr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class GoogleTypeInterval(_messages.Message):
+  r"""Represents a time interval, encoded as a Timestamp start (inclusive) and
+  a Timestamp end (exclusive). The start must be less than or equal to the
+  end. When the start equals the end, the interval is empty (matches no time).
+  When both start and end are unspecified, the interval matches any time.
+
+  Fields:
+    endTime: Optional. Exclusive end of the interval. If specified, a
+      Timestamp matching this interval will have to be before the end.
+    startTime: Optional. Inclusive start of the interval. If specified, a
+      Timestamp matching this interval will have to be the same or after the
+      start.
+  """
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
 
 
 class GoogleTypeMoney(_messages.Message):

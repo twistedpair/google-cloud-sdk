@@ -867,6 +867,16 @@
         "deployCloudConsoleProxy": {
           "description": "Flag to denote if reverse proxy is used to connect to auth provider. This flag should be set to true when provider is not reachable by Google Cloud Console.",
           "type": "boolean"
+        },
+        "clientSecret": {
+          "description": "Unencrypted OIDC client secret will be passed to the GKE Hub CLH.",
+          "type": "string"
+        },
+        "encryptedClientSecret": {
+          "description": "Output only. Encrypted OIDC Client secret",
+          "readOnly": true,
+          "type": "string",
+          "format": "byte"
         }
       }
     },

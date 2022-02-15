@@ -452,7 +452,7 @@ class DataprocV1(base_api.BaseApiClient):
         method_id='dataproc.projects.locations.sessions.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['requestId'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='DataprocProjectsLocationsSessionsDeleteRequest',

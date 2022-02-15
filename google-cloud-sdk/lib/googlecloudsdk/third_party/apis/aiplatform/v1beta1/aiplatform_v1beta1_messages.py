@@ -1503,6 +1503,32 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesPatchRequest(_m
   updateMask = _messages.StringField(3)
 
 
+class AiplatformProjectsLocationsFeaturestoresEntityTypesGetIamPolicyRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeaturestoresEntityTypesGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsFeaturestoresEntityTypesGetRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsFeaturestoresEntityTypesGetRequest object.
 
@@ -1696,6 +1722,22 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesReadFeatureValuesReques
   googleCloudAiplatformV1beta1ReadFeatureValuesRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1ReadFeatureValuesRequest', 2)
 
 
+class AiplatformProjectsLocationsFeaturestoresEntityTypesSetIamPolicyRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeaturestoresEntityTypesSetIamPolicyRequest
+  object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsFeaturestoresEntityTypesStreamingReadFeatureValuesRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsFeaturestoresEntityTypesStreamingReadFeatur
   eValuesRequest object.
@@ -1713,6 +1755,40 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesStreamingReadFeatureVal
 
   entityType = _messages.StringField(1, required=True)
   googleCloudAiplatformV1beta1StreamingReadFeatureValuesRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1StreamingReadFeatureValuesRequest', 2)
+
+
+class AiplatformProjectsLocationsFeaturestoresEntityTypesTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsFeaturestoresEntityTypesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    permissions: The set of permissions to check for the `resource`.
+      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+  resource = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsFeaturestoresGetIamPolicyRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeaturestoresGetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1GetIamPolicyRequest: A GoogleIamV1GetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  googleIamV1GetIamPolicyRequest = _messages.MessageField('GoogleIamV1GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class AiplatformProjectsLocationsFeaturestoresGetRequest(_messages.Message):
@@ -1908,28 +1984,35 @@ class AiplatformProjectsLocationsFeaturestoresSearchFeaturesRequest(_messages.Me
   query = _messages.StringField(4)
 
 
-class AiplatformProjectsLocationsGetIamPolicyRequest(_messages.Message):
-  r"""A AiplatformProjectsLocationsGetIamPolicyRequest object.
+class AiplatformProjectsLocationsFeaturestoresSetIamPolicyRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeaturestoresSetIamPolicyRequest object.
 
   Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
       See the operation documentation for the appropriate value for this
       field.
   """
 
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsFeaturestoresTestIamPermissionsRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeaturestoresTestIamPermissionsRequest
+  object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
   resource = _messages.StringField(2, required=True)
 
 
@@ -2558,7 +2641,7 @@ class AiplatformProjectsLocationsMetadataStoresArtifactsPatchRequest(_messages.M
       GoogleCloudAiplatformV1beta1Artifact resource to be passed as the
       request body.
     name: Output only. The resource name of the Artifact.
-    updateMask: Required. A FieldMask indicating which fields should be
+    updateMask: Optional. A FieldMask indicating which fields should be
       updated. Functionality of this field is not yet supported.
   """
 
@@ -2758,7 +2841,7 @@ class AiplatformProjectsLocationsMetadataStoresContextsPatchRequest(_messages.Me
     googleCloudAiplatformV1beta1Context: A GoogleCloudAiplatformV1beta1Context
       resource to be passed as the request body.
     name: Output only. The resource name of the Context.
-    updateMask: Required. A FieldMask indicating which fields should be
+    updateMask: Optional. A FieldMask indicating which fields should be
       updated. Functionality of this field is not yet supported.
   """
 
@@ -2962,7 +3045,7 @@ class AiplatformProjectsLocationsMetadataStoresExecutionsPatchRequest(_messages.
       GoogleCloudAiplatformV1beta1Execution resource to be passed as the
       request body.
     name: Output only. The resource name of the Execution.
-    updateMask: Required. A FieldMask indicating which fields should be
+    updateMask: Optional. A FieldMask indicating which fields should be
       updated. Functionality of this field is not yet supported.
   """
 
@@ -3997,21 +4080,6 @@ class AiplatformProjectsLocationsPipelineJobsOperationsWaitRequest(_messages.Mes
 
   name = _messages.StringField(1, required=True)
   timeout = _messages.StringField(2)
-
-
-class AiplatformProjectsLocationsSetIamPolicyRequest(_messages.Message):
-  r"""A AiplatformProjectsLocationsSetIamPolicyRequest object.
-
-  Fields:
-    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
-      to be passed as the request body.
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
 
 
 class AiplatformProjectsLocationsSpecialistPoolsCreateRequest(_messages.Message):
@@ -5287,22 +5355,6 @@ class AiplatformProjectsLocationsTensorboardsPatchRequest(_messages.Message):
   googleCloudAiplatformV1beta1Tensorboard = _messages.MessageField('GoogleCloudAiplatformV1beta1Tensorboard', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
-
-
-class AiplatformProjectsLocationsTestIamPermissionsRequest(_messages.Message):
-  r"""A AiplatformProjectsLocationsTestIamPermissionsRequest object.
-
-  Fields:
-    googleIamV1TestIamPermissionsRequest: A
-      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
-      request body.
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
-  """
-
-  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
-  resource = _messages.StringField(2, required=True)
 
 
 class AiplatformProjectsLocationsTrainingPipelinesCancelRequest(_messages.Message):
@@ -30817,6 +30869,10 @@ class GoogleCloudAiplatformV1beta1TrainingPipeline(_messages.Message):
       numeric characters, underscores and dashes. International characters are
       allowed. See https://goo.gl/xmQnxf for more information and examples of
       labels.
+    modelId: Optional. The ID to use for the uploaded Model, which will become
+      the final component of the model resource name. This value may be up to
+      63 characters, and valid characters are `[a-z0-9_-]`. The first
+      character cannot be a number or hyphen.
     modelToUpload: Describes the Model that may be uploaded (via
       ModelService.UploadModel) by this TrainingPipeline. The
       TrainingPipeline's training_task_definition should make clear whether
@@ -30920,15 +30976,16 @@ class GoogleCloudAiplatformV1beta1TrainingPipeline(_messages.Message):
   error = _messages.MessageField('GoogleRpcStatus', 5)
   inputDataConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1InputDataConfig', 6)
   labels = _messages.MessageField('LabelsValue', 7)
-  modelToUpload = _messages.MessageField('GoogleCloudAiplatformV1beta1Model', 8)
-  name = _messages.StringField(9)
-  parentModel = _messages.StringField(10)
-  startTime = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  trainingTaskDefinition = _messages.StringField(13)
-  trainingTaskInputs = _messages.MessageField('extra_types.JsonValue', 14)
-  trainingTaskMetadata = _messages.MessageField('extra_types.JsonValue', 15)
-  updateTime = _messages.StringField(16)
+  modelId = _messages.StringField(8)
+  modelToUpload = _messages.MessageField('GoogleCloudAiplatformV1beta1Model', 9)
+  name = _messages.StringField(10)
+  parentModel = _messages.StringField(11)
+  startTime = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  trainingTaskDefinition = _messages.StringField(14)
+  trainingTaskInputs = _messages.MessageField('extra_types.JsonValue', 15)
+  trainingTaskMetadata = _messages.MessageField('extra_types.JsonValue', 16)
+  updateTime = _messages.StringField(17)
 
 
 class GoogleCloudAiplatformV1beta1Trial(_messages.Message):
@@ -31554,6 +31611,38 @@ class GoogleIamV1Binding(_messages.Message):
   condition = _messages.MessageField('GoogleTypeExpr', 1)
   members = _messages.StringField(2, repeated=True)
   role = _messages.StringField(3)
+
+
+class GoogleIamV1GetIamPolicyRequest(_messages.Message):
+  r"""Request message for `GetIamPolicy` method.
+
+  Fields:
+    options: OPTIONAL: A `GetPolicyOptions` object for specifying options to
+      `GetIamPolicy`.
+  """
+
+  options = _messages.MessageField('GoogleIamV1GetPolicyOptions', 1)
+
+
+class GoogleIamV1GetPolicyOptions(_messages.Message):
+  r"""Encapsulates settings provided to GetIamPolicy.
+
+  Fields:
+    requestedPolicyVersion: Optional. The maximum policy version that will be
+      used to format the policy. Valid values are 0, 1, and 3. Requests
+      specifying an invalid value will be rejected. Requests for policies with
+      any conditional role bindings must specify version 3. Policies with no
+      conditional role bindings may specify any valid value or leave the field
+      unset. The policy in the response might use the policy version that you
+      specified, or it might use a lower policy version. For example, if you
+      specify version 3, but the policy has no conditional role bindings, the
+      response uses version 1. To learn which resources support conditions in
+      their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+  """
+
+  requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class GoogleIamV1Policy(_messages.Message):

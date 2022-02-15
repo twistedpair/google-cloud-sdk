@@ -6,7 +6,7 @@
   "canonicalName": "Apps on Cloud Run",
   "version": "v1alpha1",
   "revision": "0",
-  "title": "runapps API (prod)",
+  "title": "Run Apps API",
   "description": "",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -521,10 +521,10 @@
           "type": "string",
           "format": "google-datetime"
         },
-        "resource": {
-          "description": "Repeated field with status per resource.",
-          "type": "array",
-          "items": {
+        "resources": {
+          "description": "The map of resource status where the key is the name of resources and the value is the resource status.",
+          "type": "object",
+          "additionalProperties": {
             "$ref": "ResourceStatus"
           }
         }
@@ -622,12 +622,18 @@
           "enumDescriptions": [
             "",
             "The resource has been deployed.",
-            "The resource is missing."
+            "The resource is missing.",
+            "The resource has been deployed and is provisioning.",
+            "The resource has been deployed and is working as intended. This is intended for resources that have a health indicator.",
+            "The resource has failed and the full error message will be populated in the resource."
           ],
           "enum": [
             "GCP_RESOURCE_STATE_UNKNOWN",
             "GCP_RESOURCE_STATE_DEPLOYED",
-            "GCP_RESOURCE_STATE_MISSING"
+            "GCP_RESOURCE_STATE_MISSING",
+            "GCP_RESOURCE_STATE_PROVISIONING",
+            "GCP_RESOURCE_STATE_READY",
+            "GCP_RESOURCE_STATE_FAILED"
           ]
         },
         "errorMessage": {
@@ -1456,6 +1462,12 @@
                       "location": "path",
                       "required": true,
                       "type": "string"
+                    },
+                    "readMask": {
+                      "description": "Field mask used for limiting the resources to query status on.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
                     }
                   },
                   "parameterOrder": [

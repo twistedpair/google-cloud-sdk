@@ -70,6 +70,15 @@ class TektonVersionError(exceptions.Error):
     super(TektonVersionError, self).__init__(msg)
 
 
+class CloudBuildAPIVersionError(exceptions.Error):
+  """The Cloud Build API version user supplied is not supported."""
+
+  def __init__(self):
+    msg = ('Cloud Build API version is not supported. Only v2 is '
+           'supported at the moment.')
+    super(CloudBuildAPIVersionError, self).__init__(msg)
+
+
 class InvalidYamlError(exceptions.Error):
   """The Tekton Yaml user supplied is invalid."""
 

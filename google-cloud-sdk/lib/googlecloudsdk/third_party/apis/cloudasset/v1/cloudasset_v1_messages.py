@@ -1177,7 +1177,14 @@ class CreateFeedRequest(_messages.Message):
 
 
 class Date(_messages.Message):
-  r"""A Date object.
+  r"""Represents a whole or partial calendar date, such as a birthday. The
+  time of day and time zone are either specified elsewhere or are
+  insignificant. The date is relative to the Gregorian Calendar. This can
+  represent one of the following: * A full date, with non-zero year, month,
+  and day values * A month and day, with a zero year (e.g., an anniversary) *
+  A year on its own, with a zero month and a zero day * A year and month, with
+  a zero day (e.g., a credit card expiration date) Related types: *
+  google.type.TimeOfDay * google.type.DateTime * google.protobuf.Timestamp
 
   Fields:
     day: Day of a month. Must be from 1 to 31 and valid for the year and
@@ -3575,9 +3582,9 @@ class QueryAssetsRequest(_messages.Message):
     jobReference: Optional. Reference to the query job, which is from the
       `QueryAssetsResponse` of previous `QueryAssets` call.
     pageSize: Optional. The maximum number of rows to return in the results.
-      Responses are limited to 10 MB. By default, there is no maximum row
-      count, and only the byte limit applies. When the byte limit is reach,
-      the rest of query results will be paginated.
+      Responses are limited to 10 MB and 1000 rows. By default, the maximum
+      row count is 1000. When the byte or row count limit is reached, the rest
+      of the query results will be paginated.
     pageToken: Optional. A page token received from previous `QueryAssets`.
     statement: Optional. A SQL statement that's compatible with [BigQuery
       Standard SQL](http://cloud/bigquery/docs/reference/standard-

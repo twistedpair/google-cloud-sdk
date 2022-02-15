@@ -2360,10 +2360,6 @@
           "description": "Hybrid pool configuration",
           "$ref": "HybridPoolConfig"
         },
-        "privatePoolConfig": {
-          "description": "Private Pool configuration.",
-          "$ref": "PrivatePoolConfig"
-        },
         "etag": {
           "description": "Output only. Checksum computed by the server. May be sent on update and delete requests to ensure that the client has an up-to-date value before proceeding.",
           "readOnly": true,
@@ -2475,113 +2471,6 @@
           "description": "The number of vCPUs which are requested for the build container. Defaults to 1.",
           "type": "number",
           "format": "float"
-        }
-      }
-    },
-    "PrivatePoolConfig": {
-      "id": "PrivatePoolConfig",
-      "description": "Configuration for a PrivatePool.",
-      "type": "object",
-      "properties": {
-        "workerConfig": {
-          "description": "Configuration options for individual workers.",
-          "$ref": "GoogleDevtoolsCloudbuildV1PrivatePoolConfigWorkerConfig"
-        },
-        "privilegedMode": {
-          "description": "Immutable. Specifies the privileged mode for the worker pool. Once created, this setting cannot be changed on the worker pool, as we are unable to guarantee that the cluster has not been altered by misuse of privileged Docker daemon.",
-          "type": "string",
-          "enumDescriptions": [
-            "Unspecified - this is treated as NON_PRIVILEGED_ONLY.",
-            "Users can only run builds using a non-privileged Docker daemon. This is suitable for most cases.",
-            "Users are allowed to run builds using a privileged Docker daemon. This setting should be used with caution, as using a privileged Docker daemon introduces a security risk. A user would want this if they need to run \"docker-in-docker\", i.e. their builds use docker or docker-compose."
-          ],
-          "enum": [
-            "PRIVILEGED_MODE_UNSPECIFIED",
-            "NON_PRIVILEGED_ONLY",
-            "PRIVILEGED_PERMITTED"
-          ]
-        },
-        "networkConfig": {
-          "description": "Network configuration for the pool.",
-          "$ref": "GoogleDevtoolsCloudbuildV1NetworkConfig"
-        },
-        "scalingConfig": {
-          "description": "Configuration options for worker pool.",
-          "$ref": "GoogleDevtoolsCloudbuildV1ScalingConfig"
-        }
-      }
-    },
-    "GoogleDevtoolsCloudbuildV1PrivatePoolConfigWorkerConfig": {
-      "id": "GoogleDevtoolsCloudbuildV1PrivatePoolConfigWorkerConfig",
-      "description": "Defines the configuration to be used for creating workers in the pool.",
-      "type": "object",
-      "properties": {
-        "defaultVcpuCount": {
-          "description": "The default amount of vCPU per workload. User workloads that request vCPU below this range will fail. Minimum value is 1; cannot be more than max_vcpu_count.",
-          "type": "number",
-          "format": "float"
-        },
-        "defaultMemoryGb": {
-          "description": "The default amount of memory (in GB) per workload. User workloads that request memory below this range will fail. Minimum value is 4; cannot be more than max_memory_gb.",
-          "type": "number",
-          "format": "float"
-        },
-        "maxVcpuCount": {
-          "description": "The maximum amount of vCPU per workload. User workloads that request vCPU above this range will fail. Cannot be less than default_vcpu_count; limit is 32.",
-          "type": "number",
-          "format": "float"
-        },
-        "maxMemoryGb": {
-          "description": "The maximum amount of memory (in GB) per workload. User workloads that request memory above this range will fail. Cannot be less than default_memory_gb; limit is 128.",
-          "type": "number",
-          "format": "float"
-        }
-      }
-    },
-    "GoogleDevtoolsCloudbuildV1NetworkConfig": {
-      "id": "GoogleDevtoolsCloudbuildV1NetworkConfig",
-      "description": "Network configuration for a PrivatePool.",
-      "type": "object",
-      "properties": {
-        "peeredNetwork": {
-          "description": "Required. Immutable. The network definition that the workers are peered to. If this section is left empty, the workers will be peered to `WorkerPool.project_id` on the service producer network. Must be in the format `projects\/{project}\/global\/networks\/{network}`, where `{project}` is a project number, such as `12345`, and `{network}` is the name of a VPC network in the project. See [Understanding network configuration options](https:\/\/cloud.google.com\/build\/docs\/private-pools\/set-up-private-pool-environment)",
-          "type": "string"
-        },
-        "egressOption": {
-          "description": "Immutable. Define whether workloads on the PrivatePool can talk to public IPs. If unset, the value NO_PUBLIC_EGRESS will be used.",
-          "type": "string",
-          "enumDescriptions": [
-            "Unspecified policy - this is treated as NO_PUBLIC_EGRESS.",
-            "Public egress is disallowed.",
-            "Public egress is allowed."
-          ],
-          "enum": [
-            "EGRESS_OPTION_UNSPECIFIED",
-            "NO_PUBLIC_EGRESS",
-            "PUBLIC_EGRESS"
-          ]
-        }
-      }
-    },
-    "GoogleDevtoolsCloudbuildV1ScalingConfig": {
-      "id": "GoogleDevtoolsCloudbuildV1ScalingConfig",
-      "description": "Defines the scaling configuration for the pool.",
-      "type": "object",
-      "properties": {
-        "readyWorkers": {
-          "description": "The number of preemptible workers (pods) that will run with the minimum vCPU and memory to keep resources ready for customer workloads in the cluster. If unset, a value of 0 will be used.",
-          "type": "string",
-          "format": "int64"
-        },
-        "maxVcpuCount": {
-          "description": "The maximum amount of vCPU allowed for the entire cluster. If unset, a value of ### will be used",
-          "type": "string",
-          "format": "int64"
-        },
-        "maxMemoryGb": {
-          "description": "The maximum amount of memory (in GB) allowed for the entire cluster. If unset, a value of ### will be used",
-          "type": "string",
-          "format": "int64"
         }
       }
     },

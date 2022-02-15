@@ -505,8 +505,6 @@ def GetScheduling(args,
                   support_node_affinity=False,
                   support_min_node_cpu=True,
                   support_node_project=False,
-                  support_provisioning_model=False,
-                  support_termination_action=False,
                   support_host_error_timeout_seconds=False):
   """Generate a Scheduling Message or None based on specified args."""
   node_affinities = None
@@ -532,13 +530,12 @@ def GetScheduling(args,
       'maintenance_interval'):
     maintenance_interval = args.maintenance_interval
   provisioning_model = None
-  if (support_provisioning_model and hasattr(args, 'provisioning_model') and
+  if (hasattr(args, 'provisioning_model') and
       args.IsSpecified('provisioning_model')):
     provisioning_model = args.provisioning_model
 
   instance_termination_action = None
-  if (support_termination_action and
-      hasattr(args, 'instance_termination_action') and
+  if (hasattr(args, 'instance_termination_action') and
       args.IsSpecified('instance_termination_action')):
     instance_termination_action = args.instance_termination_action
 

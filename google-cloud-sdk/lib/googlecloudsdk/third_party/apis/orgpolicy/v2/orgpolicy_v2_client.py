@@ -236,7 +236,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
       r"""Updates a Policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint or the policy do not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the policy Note: the supplied policy will perform a full overwrite of all fields.
 
       Args:
-        request: (GoogleCloudOrgpolicyV2Policy) input message
+        request: (OrgpolicyFoldersPoliciesPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (GoogleCloudOrgpolicyV2Policy) The response message.
@@ -251,10 +251,10 @@ class OrgpolicyV2(base_api.BaseApiClient):
         method_id='orgpolicy.folders.policies.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['updateMask'],
         relative_path='v2/{+name}',
-        request_field='<request>',
-        request_type_name='GoogleCloudOrgpolicyV2Policy',
+        request_field='googleCloudOrgpolicyV2Policy',
+        request_type_name='OrgpolicyFoldersPoliciesPatchRequest',
         response_type_name='GoogleCloudOrgpolicyV2Policy',
         supports_download=False,
     )
@@ -573,7 +573,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
       r"""Updates a Policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint or the policy do not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the policy Note: the supplied policy will perform a full overwrite of all fields.
 
       Args:
-        request: (GoogleCloudOrgpolicyV2Policy) input message
+        request: (OrgpolicyOrganizationsPoliciesPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (GoogleCloudOrgpolicyV2Policy) The response message.
@@ -588,10 +588,10 @@ class OrgpolicyV2(base_api.BaseApiClient):
         method_id='orgpolicy.organizations.policies.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['updateMask'],
         relative_path='v2/{+name}',
-        request_field='<request>',
-        request_type_name='GoogleCloudOrgpolicyV2Policy',
+        request_field='googleCloudOrgpolicyV2Policy',
+        request_type_name='OrgpolicyOrganizationsPoliciesPatchRequest',
         response_type_name='GoogleCloudOrgpolicyV2Policy',
         supports_download=False,
     )
@@ -792,7 +792,7 @@ class OrgpolicyV2(base_api.BaseApiClient):
       r"""Updates a Policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint or the policy do not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the policy Note: the supplied policy will perform a full overwrite of all fields.
 
       Args:
-        request: (GoogleCloudOrgpolicyV2Policy) input message
+        request: (OrgpolicyProjectsPoliciesPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (GoogleCloudOrgpolicyV2Policy) The response message.
@@ -807,10 +807,10 @@ class OrgpolicyV2(base_api.BaseApiClient):
         method_id='orgpolicy.projects.policies.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['updateMask'],
         relative_path='v2/{+name}',
-        request_field='<request>',
-        request_type_name='GoogleCloudOrgpolicyV2Policy',
+        request_field='googleCloudOrgpolicyV2Policy',
+        request_type_name='OrgpolicyProjectsPoliciesPatchRequest',
         response_type_name='GoogleCloudOrgpolicyV2Policy',
         supports_download=False,
     )

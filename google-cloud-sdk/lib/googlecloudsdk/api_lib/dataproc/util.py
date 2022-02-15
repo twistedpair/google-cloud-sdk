@@ -458,6 +458,13 @@ def ResolveRegion():
   return properties.VALUES.dataproc.region.GetOrFail()
 
 
+# This replicates the fallthrough logic of flags._LocationAttributeConfig.
+# It is necessary in cases like the --location flag where we are not parsing
+# ResourceSpecs
+def ResolveLocation():
+  return properties.VALUES.dataproc.location.GetOrFail()
+
+
 # You probably want to use flags.AddClusterResourceArgument instead.
 # If calling this method, you *must* have called flags.AddRegionFlag first to
 # ensure a --region flag is stored into properties, which ResolveRegion
@@ -517,6 +524,20 @@ def ParseProjectsLocations(dataproc):
       None,
       params={
           'locationsId': ResolveRegion,
+          'projectsId': properties.VALUES.core.project.GetOrFail
+      },
+      collection='dataproc.projects.locations')
+  return ref
+
+
+# Get dataproc.projects.locations resource
+# This can be merged with ParseProjectsLocations() once we have migrated batches
+# from `region` to `location`.
+def ParseProjectsLocationsForSession(dataproc):
+  ref = dataproc.resources.Parse(
+      None,
+      params={
+          'locationsId': ResolveLocation(),
           'projectsId': properties.VALUES.core.project.GetOrFail
       },
       collection='dataproc.projects.locations')

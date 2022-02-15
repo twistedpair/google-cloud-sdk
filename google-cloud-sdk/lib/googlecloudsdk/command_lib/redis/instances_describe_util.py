@@ -56,6 +56,8 @@ def FormatResponse(response, _):
     modified_response['replicaCount'] = response.replicaCount
   if response.reservedIpRange:
     modified_response['reservedIpRange'] = response.reservedIpRange
+  if response.secondaryIpRange:
+    modified_response['secondaryIpRange'] = response.secondaryIpRange
   if response.state:
     modified_response['state'] = response.state
   if response.tier:

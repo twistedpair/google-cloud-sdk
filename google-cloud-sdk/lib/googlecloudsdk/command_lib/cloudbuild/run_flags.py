@@ -29,3 +29,22 @@ def AddCreateFlags(parser):
       '--region',
       required=True,
       help='Cloud region where the PipelineRun/TaskRun is.')
+
+
+def AddRunFlags(parser):
+  """Add flags related to a run to parser."""
+  parser.add_argument('RUN_ID', help='The ID of the PipelineRun/TaskRun/Build.')
+  parser.add_argument(
+      '--type',
+      required=True,
+      choices=[
+          'pipelinerun',
+          'taskrun',
+          'build',
+      ],
+      default='none',
+      help='Type of Run.')
+  parser.add_argument(
+      '--region',
+      required=True,
+      help='Cloud region where the PipelineRun/TaskRun/Build is.')

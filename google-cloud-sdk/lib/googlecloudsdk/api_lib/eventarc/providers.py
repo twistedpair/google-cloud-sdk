@@ -39,11 +39,12 @@ class ProvidersClient(object):
     self._messages = client.MESSAGES_MODULE
     self._service = client.projects_locations_providers
 
-  def List(self, location_ref, limit, page_size):
+  def List(self, location, limit, page_size):
     """Lists event providers in a given location.
 
     Args:
-      location_ref: Resource, the location to list event providers in.
+      location: str, the relative name of the location to list event providers
+        in.
       limit: int or None, the total number of results to return.
       page_size: int, the number of entries in each batch (affects requests
         made, but not the yielded results).
@@ -52,7 +53,7 @@ class ProvidersClient(object):
       A generator of event providers in the location.
     """
     list_req = self._messages.EventarcProjectsLocationsProvidersListRequest(
-        parent=location_ref.RelativeName(), pageSize=page_size)
+        parent=location, pageSize=page_size)
     return list_pager.YieldFromList(
         self._service,
         list_req,

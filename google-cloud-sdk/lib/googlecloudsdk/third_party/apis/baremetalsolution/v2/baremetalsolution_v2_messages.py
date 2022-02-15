@@ -18,16 +18,42 @@ package = 'baremetalsolution'
 class AllowedClient(_messages.Message):
   r"""Represents an 'access point' for the share.
 
+  Enums:
+    MountPermissionsValueValuesEnum: Mount permissions.
+
   Fields:
+    allowDev: Allow dev flag. Which controls whether to allow creation of
+      devices.
+    allowSuid: Allow the setuid flag.
     allowedClientsCidr: The subnet of IP addresses permitted to access the
       share.
+    mountPermissions: Mount permissions.
     network: The network the access point sits on.
+    noRootSquash: Disable root squashing, which is a feature of NFS. Root
+      squash is a special mapping of the remote superuser (root) identity when
+      using identity authentication.
     shareIp: The IP address of the share on this network.
   """
 
-  allowedClientsCidr = _messages.StringField(1)
-  network = _messages.StringField(2)
-  shareIp = _messages.StringField(3)
+  class MountPermissionsValueValuesEnum(_messages.Enum):
+    r"""Mount permissions.
+
+    Values:
+      MOUNT_PERMISSIONS_UNSPECIFIED: Permissions were not specified.
+      READ: NFS share can be mount with read-only permissions.
+      READ_WRITE: NFS share can be mount with read-write permissions.
+    """
+    MOUNT_PERMISSIONS_UNSPECIFIED = 0
+    READ = 1
+    READ_WRITE = 2
+
+  allowDev = _messages.BooleanField(1)
+  allowSuid = _messages.BooleanField(2)
+  allowedClientsCidr = _messages.StringField(3)
+  mountPermissions = _messages.EnumField('MountPermissionsValueValuesEnum', 4)
+  network = _messages.StringField(5)
+  noRootSquash = _messages.BooleanField(6)
+  shareIp = _messages.StringField(7)
 
 
 class BaremetalsolutionProjectsLocationsGetRequest(_messages.Message):
@@ -194,6 +220,39 @@ class BaremetalsolutionProjectsLocationsNfsSharesListRequest(_messages.Message):
       requested. If unspecified, server will pick an appropriate default.
     pageToken: A token identifying a page of results from the server.
     parent: Required. Parent value for ListNfsSharesRequest.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class BaremetalsolutionProjectsLocationsProvisioningConfigsSubmitRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsProvisioningConfigsSubmitRequest
+  object.
+
+  Fields:
+    parent: Required. The parent project and location containing the
+      ProvisioningConfig.
+    submitProvisioningConfigRequest: A SubmitProvisioningConfigRequest
+      resource to be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  submitProvisioningConfigRequest = _messages.MessageField('SubmitProvisioningConfigRequest', 2)
+
+
+class BaremetalsolutionProjectsLocationsProvisioningQuotasListRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsProvisioningQuotasListRequest
+  object.
+
+  Fields:
+    pageSize: Requested page size. The server might return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+      Notice that page_size field is not supported and won't be respected in
+      the API request for now, will be updated when pagination is supported.
+    pageToken: A token identifying a page of results from the server.
+    parent: Required. Parent value for ListProvisioningQuotasRequest.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -504,6 +563,66 @@ class Instance(_messages.Message):
   updateTime = _messages.StringField(11)
 
 
+class InstanceConfig(_messages.Message):
+  r"""Configuration parameters for a new instance.
+
+  Fields:
+    clientNetwork: Client network address.
+    hyperthreading: Whether the instance should be provisioned with
+      Hyperthreading enabled.
+    id: A transient unique identifier to idenfity an instance within an
+      ProvisioningConfig request.
+    instanceType: Instance type. [Available
+      types](https://cloud.google.com/bare-metal/docs/bms-
+      planning#server_configurations)
+    name: Output only. The name of the instance config.
+    osImage: OS image to initialize the instance. [Available
+      images](https://cloud.google.com/bare-metal/docs/bms-
+      planning#server_configurations)
+    privateNetwork: Private network address, if any.
+    userNote: User note field, it can be used by customers to add additional
+      information for the BMS Ops team .
+  """
+
+  clientNetwork = _messages.MessageField('NetworkAddress', 1)
+  hyperthreading = _messages.BooleanField(2)
+  id = _messages.StringField(3)
+  instanceType = _messages.StringField(4)
+  name = _messages.StringField(5)
+  osImage = _messages.StringField(6)
+  privateNetwork = _messages.MessageField('NetworkAddress', 7)
+  userNote = _messages.StringField(8)
+
+
+class InstanceQuota(_messages.Message):
+  r"""A resource budget.
+
+  Fields:
+    availableMachineCount: Number of machines than can be created for the
+      given location and instance_type.
+    instanceType: Instance type.
+    location: Location where the quota applies.
+    name: Output only. The name of the instance quota.
+  """
+
+  availableMachineCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  instanceType = _messages.StringField(2)
+  location = _messages.StringField(3)
+  name = _messages.StringField(4)
+
+
+class IntakeVlanAttachment(_messages.Message):
+  r"""A GCP vlan attachment.
+
+  Fields:
+    id: Identifier of the VLAN attachment.
+    pairingKey: Attachment pairing key.
+  """
+
+  id = _messages.StringField(1)
+  pairingKey = _messages.StringField(2)
+
+
 class ListInstancesResponse(_messages.Message):
   r"""Response message for the list of servers.
 
@@ -571,6 +690,19 @@ class ListNfsSharesResponse(_messages.Message):
   nextPageToken = _messages.StringField(1)
   nfsShares = _messages.MessageField('NfsShare', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListProvisioningQuotasResponse(_messages.Message):
+  r"""Response message for the list of provisioning quotas.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    provisioningQuotas: The provisioning quotas registered in this project.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  provisioningQuotas = _messages.MessageField('ProvisioningQuota', 2, repeated=True)
 
 
 class ListSnapshotSchedulePoliciesResponse(_messages.Message):
@@ -770,6 +902,18 @@ class Lun(_messages.Message):
   wwid = _messages.StringField(10)
 
 
+class LunRange(_messages.Message):
+  r"""A LUN(Logical Unit Number) range.
+
+  Fields:
+    quantity: Number of LUNs to create.
+    sizeGb: The requested size of each LUN, in GB.
+  """
+
+  quantity = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  sizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class Network(_messages.Message):
   r"""A Network.
 
@@ -857,6 +1001,136 @@ class Network(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 9)
   vlanId = _messages.StringField(10)
   vrf = _messages.MessageField('VRF', 11)
+
+
+class NetworkAddress(_messages.Message):
+  r"""A network.
+
+  Fields:
+    address: IPv4 address to be assigned to the server.
+    networkId: Id of the network to use, within the same ProvisioningConfig
+      request.
+  """
+
+  address = _messages.StringField(1)
+  networkId = _messages.StringField(2)
+
+
+class NetworkConfig(_messages.Message):
+  r"""Configuration parameters for a new network.
+
+  Enums:
+    BandwidthValueValuesEnum: Interconnect bandwidth. Set only when type is
+      CLIENT.
+    ServiceCidrValueValuesEnum: Service CIDR, if any.
+    TypeValueValuesEnum: The type of this network, either Client or Private.
+
+  Fields:
+    bandwidth: Interconnect bandwidth. Set only when type is CLIENT.
+    cidr: CIDR range of the network.
+    id: A transient unique identifier to identify a volume within an
+      ProvisioningConfig request.
+    name: Output only. The name of the network config.
+    serviceCidr: Service CIDR, if any.
+    type: The type of this network, either Client or Private.
+    userNote: User note field, it can be used by customers to add additional
+      information for the BMS Ops team (b/194021617).
+    vlanAttachments: List of VLAN attachments. As of now there are always 2
+      attachments, but it is going to change in the future (multi vlan).
+  """
+
+  class BandwidthValueValuesEnum(_messages.Enum):
+    r"""Interconnect bandwidth. Set only when type is CLIENT.
+
+    Values:
+      BANDWIDTH_UNSPECIFIED: Unspecified value.
+      BW_1_GBPS: 1 Gbps.
+      BW_2_GBPS: 2 Gbps.
+      BW_5_GBPS: 5 Gbps.
+      BW_10_GBPS: 10 Gbps.
+    """
+    BANDWIDTH_UNSPECIFIED = 0
+    BW_1_GBPS = 1
+    BW_2_GBPS = 2
+    BW_5_GBPS = 3
+    BW_10_GBPS = 4
+
+  class ServiceCidrValueValuesEnum(_messages.Enum):
+    r"""Service CIDR, if any.
+
+    Values:
+      SERVICE_CIDR_UNSPECIFIED: Unspecified value.
+      DISABLED: Services are disabled for the given network.
+      HIGH_26: Use the highest /26 block of the network to host services.
+      HIGH_27: Use the highest /27 block of the network to host services.
+      HIGH_28: Use the highest /28 block of the network to host services.
+    """
+    SERVICE_CIDR_UNSPECIFIED = 0
+    DISABLED = 1
+    HIGH_26 = 2
+    HIGH_27 = 3
+    HIGH_28 = 4
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of this network, either Client or Private.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified value.
+      CLIENT: Client network, that is a network peered to a GCP VPC.
+      PRIVATE: Private network, that is a network local to the BMS POD.
+    """
+    TYPE_UNSPECIFIED = 0
+    CLIENT = 1
+    PRIVATE = 2
+
+  bandwidth = _messages.EnumField('BandwidthValueValuesEnum', 1)
+  cidr = _messages.StringField(2)
+  id = _messages.StringField(3)
+  name = _messages.StringField(4)
+  serviceCidr = _messages.EnumField('ServiceCidrValueValuesEnum', 5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  userNote = _messages.StringField(7)
+  vlanAttachments = _messages.MessageField('IntakeVlanAttachment', 8, repeated=True)
+
+
+class NfsExport(_messages.Message):
+  r"""A NFS export entry.
+
+  Enums:
+    PermissionsValueValuesEnum: Export permissions.
+
+  Fields:
+    allowDev: Allow dev flag in NfsShare AllowedClientsRequest.
+    allowSuid: Allow the setuid flag.
+    cidr: A CIDR range.
+    machineId: Either a single machine, identified by an ID, or a comma-
+      separated list of machine IDs.
+    networkId: Network to use to publish the export.
+    noRootSquash: Disable root squashing, which is a feature of NFS. Root
+      squash is a special mapping of the remote superuser (root) identity when
+      using identity authentication.
+    permissions: Export permissions.
+  """
+
+  class PermissionsValueValuesEnum(_messages.Enum):
+    r"""Export permissions.
+
+    Values:
+      PERMISSIONS_UNSPECIFIED: Unspecified value.
+      READ_ONLY: Read-only permission.
+      READ_WRITE: Read-write permission.
+    """
+    PERMISSIONS_UNSPECIFIED = 0
+    READ_ONLY = 1
+    READ_WRITE = 2
+
+  allowDev = _messages.BooleanField(1)
+  allowSuid = _messages.BooleanField(2)
+  cidr = _messages.StringField(3)
+  machineId = _messages.StringField(4)
+  networkId = _messages.StringField(5)
+  noRootSquash = _messages.BooleanField(6)
+  permissions = _messages.EnumField('PermissionsValueValuesEnum', 7)
 
 
 class NfsShare(_messages.Message):
@@ -997,6 +1271,61 @@ class Operation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
+
+
+class ProvisioningConfig(_messages.Message):
+  r"""A provisioning configuration.
+
+  Fields:
+    instances: Instances to be created.
+    name: Output only. The name of the provisioning config.
+    networks: Networks to be created.
+    ticketId: A generated buganizer id to track provisioning request.
+    volumes: Volumes to be created.
+  """
+
+  instances = _messages.MessageField('InstanceConfig', 1, repeated=True)
+  name = _messages.StringField(2)
+  networks = _messages.MessageField('NetworkConfig', 3, repeated=True)
+  ticketId = _messages.StringField(4)
+  volumes = _messages.MessageField('VolumeConfig', 5, repeated=True)
+
+
+class ProvisioningQuota(_messages.Message):
+  r"""A provisioning quota for a given project.
+
+  Enums:
+    AssetTypeValueValuesEnum: The asset type of this provisioning quota.
+
+  Fields:
+    assetType: The asset type of this provisioning quota.
+    availableCount: The available count of the provisioning quota.
+    gcpService: The gcp service of the provisioning quota.
+    instanceQuota: Instance quota.
+    location: The specific location of the provisioining quota.
+    name: Output only. The name of the provisioning quota.
+  """
+
+  class AssetTypeValueValuesEnum(_messages.Enum):
+    r"""The asset type of this provisioning quota.
+
+    Values:
+      ASSET_TYPE_UNSPECIFIED: The unspecified type.
+      ASSET_TYPE_SERVER: The server asset type.
+      ASSET_TYPE_STORAGE: The storage asset type.
+      ASSET_TYPE_NETWORK: The network asset type.
+    """
+    ASSET_TYPE_UNSPECIFIED = 0
+    ASSET_TYPE_SERVER = 1
+    ASSET_TYPE_STORAGE = 2
+    ASSET_TYPE_NETWORK = 3
+
+  assetType = _messages.EnumField('AssetTypeValueValuesEnum', 1)
+  availableCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  gcpService = _messages.StringField(3)
+  instanceQuota = _messages.MessageField('InstanceQuota', 4)
+  location = _messages.StringField(5)
+  name = _messages.StringField(6)
 
 
 class QosPolicy(_messages.Message):
@@ -1233,6 +1562,29 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class SubmitProvisioningConfigRequest(_messages.Message):
+  r"""Request for SubmitProvisioningConfig.
+
+  Fields:
+    email: Optional. Email provided to send a confirmation with provisioning
+      config to.
+    provisioningConfig: Required. The ProvisioningConfig to create.
+  """
+
+  email = _messages.StringField(1)
+  provisioningConfig = _messages.MessageField('ProvisioningConfig', 2)
+
+
+class SubmitProvisioningConfigResponse(_messages.Message):
+  r"""Response for SubmitProvisioningConfig.
+
+  Fields:
+    provisioningConfig: The submitted provisioning config.
+  """
+
+  provisioningConfig = _messages.MessageField('ProvisioningConfig', 1)
+
+
 class VRF(_messages.Message):
   r"""A network VRF.
 
@@ -1394,6 +1746,66 @@ class Volume(_messages.Message):
   snapshotSchedulePolicy = _messages.StringField(10)
   state = _messages.EnumField('StateValueValuesEnum', 11)
   storageType = _messages.EnumField('StorageTypeValueValuesEnum', 12)
+
+
+class VolumeConfig(_messages.Message):
+  r"""Configuration parameters for a new volume.
+
+  Enums:
+    ProtocolValueValuesEnum: Volume protocol.
+    TypeValueValuesEnum: The type of this Volume.
+
+  Fields:
+    id: A transient unique identifier to identify a volume within an
+      ProvisioningConfig request.
+    lunRanges: LUN ranges to be configured. Set only when protocol is
+      PROTOCOL_FC.
+    machineIds: Machine ids connected to this volume. Set only when protocol
+      is PROTOCOL_FC.
+    name: Output only. The name of the volume config.
+    nfsExports: NFS exports. Set only when protocol is PROTOCOL_NFS.
+    protocol: Volume protocol.
+    sizeGb: The requested size of this volume, in GB.
+    snapshotsEnabled: Whether snapshots should be enabled.
+    type: The type of this Volume.
+    userNote: User note field, it can be used by customers to add additional
+      information for the BMS Ops team (b/194021617).
+  """
+
+  class ProtocolValueValuesEnum(_messages.Enum):
+    r"""Volume protocol.
+
+    Values:
+      PROTOCOL_UNSPECIFIED: Unspecified value.
+      PROTOCOL_FC: Fibre channel.
+      PROTOCOL_NFS: Network file system.
+    """
+    PROTOCOL_UNSPECIFIED = 0
+    PROTOCOL_FC = 1
+    PROTOCOL_NFS = 2
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of this Volume.
+
+    Values:
+      TYPE_UNSPECIFIED: The unspecified type.
+      FLASH: This Volume is on flash.
+      DISK: This Volume is on disk.
+    """
+    TYPE_UNSPECIFIED = 0
+    FLASH = 1
+    DISK = 2
+
+  id = _messages.StringField(1)
+  lunRanges = _messages.MessageField('LunRange', 2, repeated=True)
+  machineIds = _messages.StringField(3, repeated=True)
+  name = _messages.StringField(4)
+  nfsExports = _messages.MessageField('NfsExport', 5, repeated=True)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 6)
+  sizeGb = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  snapshotsEnabled = _messages.BooleanField(8)
+  type = _messages.EnumField('TypeValueValuesEnum', 9)
+  userNote = _messages.StringField(10)
 
 
 class VolumeSnapshot(_messages.Message):

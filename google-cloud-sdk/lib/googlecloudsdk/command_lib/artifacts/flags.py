@@ -29,6 +29,7 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 _PACKAGE_TYPE_CHOICES = {
     'MAVEN': 'Maven package.',
+    'GO': 'Go standard library and third party packages.'
 }
 
 _EXPERIMENTAL_PACKAGE_TYPE_CHOICES = {

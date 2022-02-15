@@ -88,7 +88,7 @@ def ParseExportFiles(export_path):
       except IndexError:
         error_files.append(in_file)
       except files.Error as e:
-        raise TerraformGenerationError(
+        raise TerraformGenerationError(  # pylint: disable=raise-missing-from
             'Could not parse Terrorm data from {path}:: {err}'.format(
                 path=export_path, err=e))
 
@@ -111,7 +111,8 @@ def GenerateDefaultScriptFileName():
 
 
 def ConstructModuleParameters(import_path, dest_dir):
-  module_source = '.{}'.format(import_path.replace(dest_dir, ''))
+  module_source = os.path.join('.',
+                               os.path.relpath(import_path, start=dest_dir))
   module_name = '-'.join(
       os.path.normpath(import_path.replace(dest_dir, '')).split(
           os.sep)).lstrip('-').rstrip()
@@ -199,7 +200,8 @@ def GenerateImportScript(import_data, dest_file=None, dest_dir=None):
       output_template.render_context(ctx)
     os.chmod(output_file_name, 0o755)
   except files.Error as e:
-    raise TerraformGenerationError('Error writing import script::{}'.format(e))
+    raise TerraformGenerationError(  # pylint: disable=raise-missing-from
+        'Error writing import script::{}'.format(e))
   return output_file_name, len(import_data)
 
 
@@ -226,7 +228,8 @@ def GenerateModuleFile(import_data, project, dest_file=None, dest_dir=None):
       output_template.render_context(ctx)
     os.chmod(output_file_name, 0o755)
   except files.Error as e:
-    raise TerraformGenerationError('Error writing import script::{}'.format(e))
+    raise TerraformGenerationError(  # pylint: disable=raise-missing-from
+        'Error writing import script::{}'.format(e))
   return output_file_name, len(module_contents)
 
 

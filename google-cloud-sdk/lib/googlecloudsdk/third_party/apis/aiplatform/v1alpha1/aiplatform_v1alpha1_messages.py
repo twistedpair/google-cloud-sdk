@@ -1950,7 +1950,7 @@ class AiplatformProjectsLocationsMetadataStoresArtifactsPatchRequest(_messages.M
       GoogleCloudAiplatformV1alpha1Artifact resource to be passed as the
       request body.
     name: Output only. The resource name of the Artifact.
-    updateMask: Required. A FieldMask indicating which fields should be
+    updateMask: Optional. A FieldMask indicating which fields should be
       updated. Functionality of this field is not yet supported.
   """
 
@@ -2082,7 +2082,7 @@ class AiplatformProjectsLocationsMetadataStoresContextsPatchRequest(_messages.Me
       GoogleCloudAiplatformV1alpha1Context resource to be passed as the
       request body.
     name: Output only. The resource name of the Context.
-    updateMask: Required. A FieldMask indicating which fields should be
+    updateMask: Optional. A FieldMask indicating which fields should be
       updated. Functionality of this field is not yet supported.
   """
 
@@ -2254,7 +2254,7 @@ class AiplatformProjectsLocationsMetadataStoresExecutionsPatchRequest(_messages.
       GoogleCloudAiplatformV1alpha1Execution resource to be passed as the
       request body.
     name: Output only. The resource name of the Execution.
-    updateMask: Required. A FieldMask indicating which fields should be
+    updateMask: Optional. A FieldMask indicating which fields should be
       updated. Functionality of this field is not yet supported.
   """
 
@@ -24297,6 +24297,10 @@ class GoogleCloudAiplatformV1alpha1TrainingPipeline(_messages.Message):
       numeric characters, underscores and dashes. International characters are
       allowed. See https://goo.gl/xmQnxf for more information and examples of
       labels.
+    modelId: Optional. The ID to use for the uploaded Model, which will become
+      the final component of the model resource name. This value may be up to
+      63 characters, and valid characters are `[a-z0-9_-]`. The first
+      character cannot be a number or hyphen.
     modelToUpload: Describes the Model that may be uploaded (via
       ModelService.UploadModel) by this TrainingPipeline. The
       TrainingPipeline's training_task_definition should make clear whether
@@ -24400,15 +24404,16 @@ class GoogleCloudAiplatformV1alpha1TrainingPipeline(_messages.Message):
   error = _messages.MessageField('GoogleRpcStatus', 5)
   inputDataConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1InputDataConfig', 6)
   labels = _messages.MessageField('LabelsValue', 7)
-  modelToUpload = _messages.MessageField('GoogleCloudAiplatformV1alpha1Model', 8)
-  name = _messages.StringField(9)
-  parentModel = _messages.StringField(10)
-  startTime = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  trainingTaskDefinition = _messages.StringField(13)
-  trainingTaskInputs = _messages.MessageField('extra_types.JsonValue', 14)
-  trainingTaskMetadata = _messages.MessageField('extra_types.JsonValue', 15)
-  updateTime = _messages.StringField(16)
+  modelId = _messages.StringField(8)
+  modelToUpload = _messages.MessageField('GoogleCloudAiplatformV1alpha1Model', 9)
+  name = _messages.StringField(10)
+  parentModel = _messages.StringField(11)
+  startTime = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  trainingTaskDefinition = _messages.StringField(14)
+  trainingTaskInputs = _messages.MessageField('extra_types.JsonValue', 15)
+  trainingTaskMetadata = _messages.MessageField('extra_types.JsonValue', 16)
+  updateTime = _messages.StringField(17)
 
 
 class GoogleCloudAiplatformV1alpha1Trial(_messages.Message):

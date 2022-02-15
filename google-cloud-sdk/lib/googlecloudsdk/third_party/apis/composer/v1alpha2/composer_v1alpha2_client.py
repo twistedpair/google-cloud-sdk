@@ -450,6 +450,33 @@ class ComposerV1alpha2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListImportErrors(self, request, global_params=None):
+      r"""Lists DAG import errors.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsListImportErrorsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListImportErrorsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListImportErrors')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListImportErrors.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:listImportErrors',
+        http_method='GET',
+        method_id='composer.projects.locations.environments.listImportErrors',
+        ordered_params=['environment'],
+        path_params=['environment'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha2/{+environment}:listImportErrors',
+        request_field='',
+        request_type_name='ComposerProjectsLocationsEnvironmentsListImportErrorsRequest',
+        response_type_name='ListImportErrorsResponse',
+        supports_download=False,
+    )
+
     def LoadEnvironmentState(self, request, global_params=None):
       r"""Loads Cloud Composer environment state. As a result of this operation, a snapshot of environment's specified in LoadEnvironmentStateRequest is loaded into the environment.
 

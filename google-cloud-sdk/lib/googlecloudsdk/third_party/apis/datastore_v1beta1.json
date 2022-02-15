@@ -668,12 +668,14 @@
           "enumDescriptions": [
             "Unspecified.",
             "Pessimistic concurrency.",
-            "Optimistic concurrency."
+            "Optimistic concurrency.",
+            "Optimistic concurrency with entity groups."
           ],
           "enum": [
             "CONCURRENCY_MODE_UNSPECIFIED",
             "PESSIMISTIC",
-            "OPTIMISTIC"
+            "OPTIMISTIC",
+            "OPTIMISTIC_WITH_ENTITY_GROUPS"
           ]
         }
       }
@@ -689,12 +691,14 @@
           "enumDescriptions": [
             "Unspecified.",
             "Pessimistic concurrency.",
-            "Optimistic concurrency."
+            "Optimistic concurrency.",
+            "Optimistic concurrency with entity groups."
           ],
           "enum": [
             "CONCURRENCY_MODE_UNSPECIFIED",
             "PESSIMISTIC",
-            "OPTIMISTIC"
+            "OPTIMISTIC",
+            "OPTIMISTIC_WITH_ENTITY_GROUPS"
           ]
         }
       }

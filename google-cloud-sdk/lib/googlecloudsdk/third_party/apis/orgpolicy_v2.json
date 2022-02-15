@@ -610,6 +610,12 @@
                   "location": "path",
                   "required": true,
                   "type": "string"
+                },
+                "updateMask": {
+                  "description": "Field mask used to specify the fields to be overwritten in the policy by the set. The fields specified in the update_mask are relative to the policy, not the full request.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
                 }
               },
               "parameterOrder": [
@@ -825,6 +831,12 @@
                   "location": "path",
                   "required": true,
                   "type": "string"
+                },
+                "updateMask": {
+                  "description": "Field mask used to specify the fields to be overwritten in the policy by the set. The fields specified in the update_mask are relative to the policy, not the full request.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
                 }
               },
               "parameterOrder": [
@@ -1040,6 +1052,12 @@
                   "location": "path",
                   "required": true,
                   "type": "string"
+                },
+                "updateMask": {
+                  "description": "Field mask used to specify the fields to be overwritten in the policy by the set. The fields specified in the update_mask are relative to the policy, not the full request.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
                 }
               },
               "parameterOrder": [

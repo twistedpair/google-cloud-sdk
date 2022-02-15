@@ -1232,7 +1232,14 @@ class GoogleRpcStatus(_messages.Message):
 
 
 class GoogleTypeDate(_messages.Message):
-  r"""A GoogleTypeDate object.
+  r"""Represents a whole or partial calendar date, such as a birthday. The
+  time of day and time zone are either specified elsewhere or are
+  insignificant. The date is relative to the Gregorian Calendar. This can
+  represent one of the following: * A full date, with non-zero year, month,
+  and day values * A month and day, with a zero year (e.g., an anniversary) *
+  A year on its own, with a zero month and a zero day * A year and month, with
+  a zero day (e.g., a credit card expiration date) Related types: *
+  google.type.TimeOfDay * google.type.DateTime * google.protobuf.Timestamp
 
   Fields:
     day: Day of a month. Must be from 1 to 31 and valid for the year and

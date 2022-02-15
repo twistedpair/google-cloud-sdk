@@ -82,6 +82,18 @@ network:
     help: Bare Metal Solution network.
   disable_auto_completers: false
 
+nfs_share:
+  name: nfs_share
+  collection: baremetalsolution.projects.locations.nfsShares
+  attributes:
+  - *project
+  - *region
+  - &nfs_share
+    parameter_name: nfsSharesId
+    attribute_name: nfs_share
+    help: Bare Metal Solution NFS share.
+  disable_auto_completers: false
+
 lun:
   name: lun
   collection: baremetalsolution.projects.locations.volumes.luns

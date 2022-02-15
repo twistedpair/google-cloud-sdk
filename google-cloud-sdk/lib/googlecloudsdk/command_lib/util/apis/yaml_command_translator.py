@@ -213,12 +213,12 @@ class AsyncOperationPoller(waiter.OperationPoller):
     """
     request_type = self.method.GetRequestType()
     relative_name = operation_ref.RelativeName()
-    fields = {
-        f.name: getattr(  # pylint:disable=g-complex-comprehension
-            operation_ref,
-            self.spec.async_.operation_get_method_params.get(f.name, f.name),
-            relative_name)
-        for f in request_type.all_fields()}
+    fields = {}
+    for f in request_type.all_fields():
+      fields[f.name] = getattr(
+          operation_ref,
+          self.spec.async_.operation_get_method_params.get(f.name, f.name),
+          relative_name)
     request = request_type(**fields)
     for hook in self.spec.async_.modify_request_hooks:
       request = hook(operation_ref, self.args, request)

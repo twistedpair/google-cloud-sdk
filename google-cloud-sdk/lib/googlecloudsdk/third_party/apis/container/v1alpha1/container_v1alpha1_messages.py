@@ -175,14 +175,16 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
       standard'
     imageType: The image type to use for NAP created node.
     management: NodeManagement configuration for this NodePool.
-    minCpuPlatform: Minimum CPU platform to be used by this instance. The
-      instance may be scheduled on the specified or newer CPU platform.
-      Applicable values are the friendly names of CPU platforms, such as
-      `minCpuPlatform: "Intel Haswell"` or `minCpuPlatform: "Intel Sandy
-      Bridge"`. For more information, read [how to specify min CPU
+    minCpuPlatform: Deprecated. Minimum CPU platform to be used for NAP
+      created node pools. The instance may be scheduled on the specified or
+      newer CPU platform. Applicable values are the friendly names of CPU
+      platforms, such as minCpuPlatform: Intel Haswell or minCpuPlatform:
+      Intel Sandy Bridge. For more information, read [how to specify min CPU
       platform](https://cloud.google.com/compute/docs/instances/specify-min-
-      cpu-platform) To unset the min cpu platform field pass "automatic" as
-      field value.
+      cpu-platform) This field is deprecated, min_cpu_platform should be
+      specified using cloud.google.com/requested-min-cpu-platform label
+      selector on the pod. To unset the min cpu platform field pass
+      "automatic" as field value.
     oauthScopes: The set of Google API scopes to be made available on all of
       the node VMs under the "default" service account. The following scopes
       are recommended, but not required, and by default are not included: *
@@ -1017,10 +1019,16 @@ class ClusterUpdate(_messages.Message):
       LEGACY_DATAPATH: Use the IPTables implementation based on kube-proxy.
       ADVANCED_DATAPATH: Use the eBPF based data plane with additional
         visibility features.
+      MIGRATE_TO_ADVANCED_DATAPATH: Cluster has some existing nodes but new
+        nodes should use ADVANCED_DATAPATH.
+      MIGRATE_TO_LEGACY_DATAPATH: Cluster has some existing nodes but new
+        nodes should use LEGACY_DATAPATH.
     """
     DATAPATH_PROVIDER_UNSPECIFIED = 0
     LEGACY_DATAPATH = 1
     ADVANCED_DATAPATH = 2
+    MIGRATE_TO_ADVANCED_DATAPATH = 3
+    MIGRATE_TO_LEGACY_DATAPATH = 4
 
   class DesiredPrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
     r"""The desired state of IPv6 connectivity to Google Services.
@@ -1855,7 +1863,14 @@ class DatabaseEncryption(_messages.Message):
 
 
 class Date(_messages.Message):
-  r"""A Date object.
+  r"""Represents a whole or partial calendar date, such as a birthday. The
+  time of day and time zone are either specified elsewhere or are
+  insignificant. The date is relative to the Gregorian Calendar. This can
+  represent one of the following: * A full date, with non-zero year, month,
+  and day values * A month and day, with a zero year (e.g., an anniversary) *
+  A year on its own, with a zero month and a zero day * A year and month, with
+  a zero day (e.g., a credit card expiration date) Related types: *
+  google.type.TimeOfDay * google.type.DateTime * google.protobuf.Timestamp
 
   Fields:
     day: Day of a month. Must be from 1 to 31 and valid for the year and
@@ -3001,10 +3016,16 @@ class NetworkConfig(_messages.Message):
       LEGACY_DATAPATH: Use the IPTables implementation based on kube-proxy.
       ADVANCED_DATAPATH: Use the eBPF based data plane with additional
         visibility features.
+      MIGRATE_TO_ADVANCED_DATAPATH: Cluster has some existing nodes but new
+        nodes should use ADVANCED_DATAPATH.
+      MIGRATE_TO_LEGACY_DATAPATH: Cluster has some existing nodes but new
+        nodes should use LEGACY_DATAPATH.
     """
     DATAPATH_PROVIDER_UNSPECIFIED = 0
     LEGACY_DATAPATH = 1
     ADVANCED_DATAPATH = 2
+    MIGRATE_TO_ADVANCED_DATAPATH = 3
+    MIGRATE_TO_LEGACY_DATAPATH = 4
 
   class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
     r"""The desired state of IPv6 connectivity to Google Services. By default,

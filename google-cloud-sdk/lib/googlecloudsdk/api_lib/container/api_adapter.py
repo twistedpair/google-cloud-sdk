@@ -470,8 +470,7 @@ class CreateClusterOptions(object):
       boot_disk_kms_key=None,
       node_pool_name=None,
       tags=None,
-      network_tags=None,
-      nap_network_tags=None,
+      autoprovisioning_network_tags=None,
       node_labels=None,
       node_taints=None,
       enable_autoscaling=None,
@@ -596,6 +595,7 @@ class CreateClusterOptions(object):
       monitoring=None,
       enable_managed_prometheus=None,
       maintenance_interval=None,
+      disable_pod_cidr_overprovision=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -625,8 +625,7 @@ class CreateClusterOptions(object):
     self.boot_disk_kms_key = boot_disk_kms_key
     self.node_pool_name = node_pool_name
     self.tags = tags
-    self.network_tags = network_tags
-    self.nap_network_tags = nap_network_tags
+    self.autoprovisioning_network_tags = autoprovisioning_network_tags
     self.node_labels = node_labels
     self.node_taints = node_taints
     self.enable_autoscaling = enable_autoscaling
@@ -751,6 +750,7 @@ class CreateClusterOptions(object):
     self.monitoring = monitoring
     self.enable_managed_prometheus = enable_managed_prometheus
     self.maintenance_interval = maintenance_interval
+    self.disable_pod_cidr_overprovision = disable_pod_cidr_overprovision
 
 
 class UpdateClusterOptions(object):
@@ -846,7 +846,7 @@ class UpdateClusterOptions(object):
       enable_service_externalips=None,
       security_group=None,
       enable_gcfs=None,
-      nap_network_tags=None,
+      autoprovisioning_network_tags=None,
       enable_image_streaming=None,
       enable_managed_prometheus=None,
       disable_managed_prometheus=None,
@@ -942,7 +942,7 @@ class UpdateClusterOptions(object):
     self.enable_service_externalips = enable_service_externalips
     self.security_group = security_group
     self.enable_gcfs = enable_gcfs
-    self.nap_network_tags = nap_network_tags
+    self.autoprovisioning_network_tags = autoprovisioning_network_tags
     self.enable_image_streaming = enable_image_streaming
     self.enable_managed_prometheus = enable_managed_prometheus
     self.disable_managed_prometheus = disable_managed_prometheus
@@ -1030,7 +1030,8 @@ class CreateNodePoolOptions(object):
                standard_rollout_policy=None,
                maintenance_interval=None,
                network_performance_config=None,
-               enable_confidential_nodes=None):
+               enable_confidential_nodes=None,
+               disable_pod_cidr_overprovision=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -1089,6 +1090,7 @@ class CreateNodePoolOptions(object):
     self.maintenance_interval = maintenance_interval
     self.network_performance_config = network_performance_config
     self.enable_confidential_nodes = enable_confidential_nodes
+    self.disable_pod_cidr_overprovision = disable_pod_cidr_overprovision
 
 
 class UpdateNodePoolOptions(object):
@@ -1621,17 +1623,11 @@ class APIAdapter(object):
       cluster.nodePoolDefaults.nodeConfigDefaults.gcfsConfig = (
           self.messages.GcfsConfig(enabled=options.enable_gcfs))
 
-    if options.network_tags:
+    if options.autoprovisioning_network_tags:
       if cluster.nodePoolAutoConfig is None:
         cluster.nodePoolAutoConfig = self.messages.NodePoolAutoConfig()
       cluster.nodePoolAutoConfig.networkTags = (
-          self.messages.NetworkTags(tags=options.network_tags))
-
-    if options.nap_network_tags:
-      if cluster.nodePoolAutoConfig is None:
-        cluster.nodePoolAutoConfig = self.messages.NodePoolAutoConfig()
-      cluster.nodePoolAutoConfig.networkTags = (
-          self.messages.NetworkTags(tags=options.nap_network_tags))
+          self.messages.NetworkTags(tags=options.autoprovisioning_network_tags))
 
     if options.enable_image_streaming:
       if cluster.nodePoolDefaults is None:
@@ -2538,10 +2534,10 @@ class APIAdapter(object):
           desiredGcfsConfig=self.messages.GcfsConfig(
               enabled=options.enable_gcfs))
 
-    if options.nap_network_tags is not None:
+    if options.autoprovisioning_network_tags is not None:
       update = self.messages.ClusterUpdate(
           desiredNodePoolAutoConfigNetworkTags=self.messages.NetworkTags(
-              tags=options.nap_network_tags))
+              tags=options.autoprovisioning_network_tags))
 
     if options.enable_image_streaming is not None:
       update = self.messages.ClusterUpdate(
@@ -3426,7 +3422,8 @@ class APIAdapter(object):
     if (options.pod_ipv4_range is None and
         options.create_pod_ipv4_range is None and
         options.enable_private_nodes is None and
-        options.network_performance_config is None):
+        options.network_performance_config is None and
+        options.disable_pod_cidr_overprovision is None):
       return None
 
     network_config = self.messages.NodeNetworkConfig()
@@ -3443,6 +3440,9 @@ class APIAdapter(object):
           'range', None)
     if options.enable_private_nodes is not None:
       network_config.enablePrivateNodes = options.enable_private_nodes
+    if options.disable_pod_cidr_overprovision is not None:
+      network_config.podCidrOverprovisionConfig = self.messages.PodCIDROverprovisionConfig(
+          disable=options.disable_pod_cidr_overprovision)
     return network_config
 
   def _GetNetworkPerformanceConfig(self, options):
@@ -3911,6 +3911,10 @@ class V1Beta1Adapter(V1Adapter):
           .enable_experimental_vertical_pod_autoscaling)
       if options.enable_experimental_vertical_pod_autoscaling:
         cluster.verticalPodAutoscaling.enabled = True
+
+    if options.disable_pod_cidr_overprovision is not None:
+      cluster.ipAllocationPolicy.podCidrOverprovisionConfig = self.messages.PodCIDROverprovisionConfig(
+          disable=options.disable_pod_cidr_overprovision)
 
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
@@ -4419,6 +4423,10 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           .enable_experimental_vertical_pod_autoscaling)
       if options.enable_experimental_vertical_pod_autoscaling:
         cluster.verticalPodAutoscaling.enabled = True
+
+    if options.disable_pod_cidr_overprovision is not None:
+      cluster.ipAllocationPolicy.podCidrOverprovisionConfig = self.messages.PodCIDROverprovisionConfig(
+          disable=options.disable_pod_cidr_overprovision)
 
     cluster.master = _GetMasterForClusterCreate(options, self.messages)
 

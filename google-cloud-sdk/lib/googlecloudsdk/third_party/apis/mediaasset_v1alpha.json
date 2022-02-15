@@ -247,6 +247,28 @@
         "rule": {
           "description": "Required. The resource name of the rule, in the following form: `projects\/{project}\/locations\/{location}\/assetTypes\/{type}\/rule\/{rule}`.",
           "type": "string"
+        },
+        "state": {
+          "description": "Current state of the action.",
+          "type": "string",
+          "enumDescriptions": [
+            "Transformation state is unspecified.",
+            "Transformation is queued.",
+            "Transformation is in running state.",
+            "Transformation has been completed successfully.",
+            "Transformation has been completed unsuccessfully.",
+            "Transformation has been cancelled.",
+            "Transformation is in cancelling state."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "QUEUED",
+            "RUNNING",
+            "SUCCEEDED",
+            "FAILED",
+            "CANCELLED",
+            "CANCELLING"
+          ]
         }
       }
     },

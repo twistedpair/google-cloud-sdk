@@ -664,6 +664,15 @@ class GcsApi(cloud_api.CloudApi):
             rewriteToken=resume_rewrite_token,
             maxBytesRewrittenPerCall=max_bytes_per_call)
 
+        encryption_key = getattr(
+            request_config.resource_args, 'encryption_key', None)
+        if encryption_key and encryption_key.type == encryption_util.KeyType.CMEK:
+          # This key is also provided in destination_metadata.kmsKeyName by
+          # update_object_metadata_from_request_config. This has no effect on
+          # the copy object request, which references the field below, and is a
+          # side-effect of logic required for uploads and compose operations.
+          request.destinationKmsKeyName = encryption_key.key
+
         rewrite_response = self.client.objects.Rewrite(request)
         processed_bytes = rewrite_response.totalBytesRewritten
         if progress_callback:

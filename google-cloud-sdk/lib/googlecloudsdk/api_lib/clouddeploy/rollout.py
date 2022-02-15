@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import list_pager
+
 from googlecloudsdk.api_lib.clouddeploy import client_util
 from googlecloudsdk.command_lib.deploy import deploy_util
 from googlecloudsdk.core import log
@@ -67,25 +69,34 @@ class RolloutClient(object):
         name=name)
     return self._service.Get(request)
 
-  def List(self, release_name, filter_str=None, order_by=None, page_size=0):
+  def List(self,
+           release_name,
+           filter_str=None,
+           order_by=None,
+           limit=None,
+           page_size=None):
     """Lists rollout resources that belongs to a release.
 
     Args:
       release_name: str, name of the release.
       filter_str: optional[str], list filter.
       order_by: optional[str], field to sort by.
-      page_size: optional[int], the maximum number of `Rollout` objects to
+      limit: optional[int], the maximum number of `Rollout` objects to
         return.
-
+      page_size: optional[int], the number of `Rollout` objects to
+        return per request.
     Returns:
       Rollout list response.
     """
     request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsListRequest(
-        parent=release_name,
-        filter=filter_str,
-        orderBy=order_by,
-        pageSize=page_size)
-    return self._service.List(request)
+        parent=release_name, filter=filter_str, orderBy=order_by)
+    return list_pager.YieldFromList(
+        self._service,
+        request,
+        field='rollouts',
+        limit=limit,
+        batch_size=page_size,
+        batch_size_attribute='pageSize')
 
   def Create(self, rollout_ref, rollout_obj, annotations=None, labels=None):
     """Creates a rollout resource.

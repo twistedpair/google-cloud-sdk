@@ -1032,10 +1032,13 @@ class GoogleDatastoreAdminV1PrepareStepDetails(_messages.Message):
       CONCURRENCY_MODE_UNSPECIFIED: Unspecified.
       PESSIMISTIC: Pessimistic concurrency.
       OPTIMISTIC: Optimistic concurrency.
+      OPTIMISTIC_WITH_ENTITY_GROUPS: Optimistic concurrency with entity
+        groups.
     """
     CONCURRENCY_MODE_UNSPECIFIED = 0
     PESSIMISTIC = 1
     OPTIMISTIC = 2
+    OPTIMISTIC_WITH_ENTITY_GROUPS = 3
 
   concurrencyMode = _messages.EnumField('ConcurrencyModeValueValuesEnum', 1)
 
@@ -1071,10 +1074,13 @@ class GoogleDatastoreAdminV1RedirectWritesStepDetails(_messages.Message):
       CONCURRENCY_MODE_UNSPECIFIED: Unspecified.
       PESSIMISTIC: Pessimistic concurrency.
       OPTIMISTIC: Optimistic concurrency.
+      OPTIMISTIC_WITH_ENTITY_GROUPS: Optimistic concurrency with entity
+        groups.
     """
     CONCURRENCY_MODE_UNSPECIFIED = 0
     PESSIMISTIC = 1
     OPTIMISTIC = 2
+    OPTIMISTIC_WITH_ENTITY_GROUPS = 3
 
   concurrencyMode = _messages.EnumField('ConcurrencyModeValueValuesEnum', 1)
 

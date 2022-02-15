@@ -164,7 +164,14 @@ class CancelOperationRequest(_messages.Message):
 
 
 class Date(_messages.Message):
-  r"""A Date object.
+  r"""Represents a whole or partial calendar date, such as a birthday. The
+  time of day and time zone are either specified elsewhere or are
+  insignificant. The date is relative to the Gregorian Calendar. This can
+  represent one of the following: * A full date, with non-zero year, month,
+  and day values * A month and day, with a zero year (e.g., an anniversary) *
+  A year on its own, with a zero month and a zero day * A year and month, with
+  a zero day (e.g., a credit card expiration date) Related types: *
+  google.type.TimeOfDay * google.type.DateTime * google.protobuf.Timestamp
 
   Fields:
     day: Day of a month. Must be from 1 to 31 and valid for the year and
@@ -488,64 +495,60 @@ class LoggingConfig(_messages.Message):
 
 
 class MetadataOptions(_messages.Message):
-  r"""Specifies the metadata options for running a transfer.
+  r"""Specifies the metadata options for running a transfer. These options
+  only apply to transfers involving a POSIX filesystem and are ignored for
+  other transfers.
 
   Enums:
     AclValueValuesEnum: Specifies how each object's ACLs should be preserved
       for transfers between Google Cloud Storage buckets. If unspecified, the
       default behavior is the same as ACL_DESTINATION_BUCKET_DEFAULT.
-    GidValueValuesEnum: Specifies how each file's GID attribute should be
-      handled by the transfer. If unspecified, the default behavior is the
-      same as GID_SKIP when the source is a POSIX file system.
+    GidValueValuesEnum: Specifies how each file's POSIX group ID (GID)
+      attribute should be handled by the transfer. By default, GID is not
+      preserved.
     KmsKeyValueValuesEnum: Specifies how each object's Cloud KMS customer-
       managed encryption key (CMEK) is preserved for transfers between Google
       Cloud Storage buckets. If unspecified, the default behavior is the same
       as KMS_KEY_DESTINATION_BUCKET_DEFAULT.
     ModeValueValuesEnum: Specifies how each file's mode attribute should be
-      handled by the transfer. If unspecified, the default behavior is the
-      same as MODE_SKIP when the source is a POSIX file system.
+      handled by the transfer. By default, mode is not preserved.
     StorageClassValueValuesEnum: Specifies the storage class to set on objects
       being transferred to Google Cloud Storage buckets. If unspecified, the
       default behavior is the same as
       STORAGE_CLASS_DESTINATION_BUCKET_DEFAULT.
     SymlinkValueValuesEnum: Specifies how symlinks should be handled by the
-      transfer. If unspecified, the default behavior is the same as
-      SYMLINK_SKIP when the source is a POSIX file system.
+      transfer. By default, symlinks are not preserved.
     TemporaryHoldValueValuesEnum: Specifies how each object's temporary hold
       status should be preserved for transfers between Google Cloud Storage
       buckets. If unspecified, the default behavior is the same as
       TEMPORARY_HOLD_PRESERVE.
-    UidValueValuesEnum: Specifies how each file's UID attribute should be
-      handled by the transfer. If unspecified, the default behavior is the
-      same as UID_SKIP when the source is a POSIX file system.
+    UidValueValuesEnum: Specifies how each file's POSIX user ID (UID)
+      attribute should be handled by the transfer. By default, UID is not
+      preserved.
 
   Fields:
     acl: Specifies how each object's ACLs should be preserved for transfers
       between Google Cloud Storage buckets. If unspecified, the default
       behavior is the same as ACL_DESTINATION_BUCKET_DEFAULT.
-    gid: Specifies how each file's GID attribute should be handled by the
-      transfer. If unspecified, the default behavior is the same as GID_SKIP
-      when the source is a POSIX file system.
+    gid: Specifies how each file's POSIX group ID (GID) attribute should be
+      handled by the transfer. By default, GID is not preserved.
     kmsKey: Specifies how each object's Cloud KMS customer-managed encryption
       key (CMEK) is preserved for transfers between Google Cloud Storage
       buckets. If unspecified, the default behavior is the same as
       KMS_KEY_DESTINATION_BUCKET_DEFAULT.
     mode: Specifies how each file's mode attribute should be handled by the
-      transfer. If unspecified, the default behavior is the same as MODE_SKIP
-      when the source is a POSIX file system.
+      transfer. By default, mode is not preserved.
     storageClass: Specifies the storage class to set on objects being
       transferred to Google Cloud Storage buckets. If unspecified, the default
       behavior is the same as STORAGE_CLASS_DESTINATION_BUCKET_DEFAULT.
-    symlink: Specifies how symlinks should be handled by the transfer. If
-      unspecified, the default behavior is the same as SYMLINK_SKIP when the
-      source is a POSIX file system.
+    symlink: Specifies how symlinks should be handled by the transfer. By
+      default, symlinks are not preserved.
     temporaryHold: Specifies how each object's temporary hold status should be
       preserved for transfers between Google Cloud Storage buckets. If
       unspecified, the default behavior is the same as
       TEMPORARY_HOLD_PRESERVE.
-    uid: Specifies how each file's UID attribute should be handled by the
-      transfer. If unspecified, the default behavior is the same as UID_SKIP
-      when the source is a POSIX file system.
+    uid: Specifies how each file's POSIX user ID (UID) attribute should be
+      handled by the transfer. By default, UID is not preserved.
   """
 
   class AclValueValuesEnum(_messages.Enum):
@@ -569,13 +572,12 @@ class MetadataOptions(_messages.Message):
     ACL_PRESERVE = 2
 
   class GidValueValuesEnum(_messages.Enum):
-    r"""Specifies how each file's GID attribute should be handled by the
-    transfer. If unspecified, the default behavior is the same as GID_SKIP
-    when the source is a POSIX file system.
+    r"""Specifies how each file's POSIX group ID (GID) attribute should be
+    handled by the transfer. By default, GID is not preserved.
 
     Values:
       GID_UNSPECIFIED: GID behavior is unspecified.
-      GID_SKIP: Skip GID during a transfer job.
+      GID_SKIP: Do not preserve GID during a transfer job.
       GID_NUMBER: Preserve GID during a transfer job.
     """
     GID_UNSPECIFIED = 0
@@ -603,12 +605,11 @@ class MetadataOptions(_messages.Message):
 
   class ModeValueValuesEnum(_messages.Enum):
     r"""Specifies how each file's mode attribute should be handled by the
-    transfer. If unspecified, the default behavior is the same as MODE_SKIP
-    when the source is a POSIX file system.
+    transfer. By default, mode is not preserved.
 
     Values:
       MODE_UNSPECIFIED: Mode behavior is unspecified.
-      MODE_SKIP: Skip mode during a transfer job.
+      MODE_SKIP: Do not preserve mode during a transfer job.
       MODE_PRESERVE: Preserve mode during a transfer job.
     """
     MODE_UNSPECIFIED = 0
@@ -641,14 +642,12 @@ class MetadataOptions(_messages.Message):
     STORAGE_CLASS_ARCHIVE = 6
 
   class SymlinkValueValuesEnum(_messages.Enum):
-    r"""Specifies how symlinks should be handled by the transfer. If
-    unspecified, the default behavior is the same as SYMLINK_SKIP when the
-    source is a POSIX file system.
+    r"""Specifies how symlinks should be handled by the transfer. By default,
+    symlinks are not preserved.
 
     Values:
-      SYMLINK_UNSPECIFIED: Symlink behavior is unspecified. The default
-        behavior is to skip symlinks during a transfer job.
-      SYMLINK_SKIP: Skip symlinks during a transfer job.
+      SYMLINK_UNSPECIFIED: Symlink behavior is unspecified.
+      SYMLINK_SKIP: Do not preserve symlinks during a transfer job.
       SYMLINK_PRESERVE: Preserve symlinks during a transfer job.
     """
     SYMLINK_UNSPECIFIED = 0
@@ -672,13 +671,12 @@ class MetadataOptions(_messages.Message):
     TEMPORARY_HOLD_PRESERVE = 2
 
   class UidValueValuesEnum(_messages.Enum):
-    r"""Specifies how each file's UID attribute should be handled by the
-    transfer. If unspecified, the default behavior is the same as UID_SKIP
-    when the source is a POSIX file system.
+    r"""Specifies how each file's POSIX user ID (UID) attribute should be
+    handled by the transfer. By default, UID is not preserved.
 
     Values:
       UID_UNSPECIFIED: UID behavior is unspecified.
-      UID_SKIP: Skip UID during a transfer job.
+      UID_SKIP: Do not preserve UID during a transfer job.
       UID_NUMBER: Preserve UID during a transfer job.
     """
     UID_UNSPECIFIED = 0

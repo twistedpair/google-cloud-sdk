@@ -5,6 +5,121 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 373.0.0 (2022-02-15)
+
+### Breaking Changes
+
+*   **(Cloud Filestore)** Undeprecate `--locations` flag to `gcloud filestore`.
+*   **(Cloud Pubsub Emulator)** Changed the default hostname to IPv6 localhost [::1] for all environments.
+  * For IPv4-only environments, pass a IPv4 address to `--host:port`.
+*   **(Cloud Pubsublite Emulator)** Changed the default hostname to IPv6 localhost [::1] for all environments.
+  * For IPv4-only environments, pass a IPv4 address to `--host:port`.
+*   **(Translation API)** Removed support for `gcloud beta transcoder` command group.
+
+
+### Google Cloud CLI
+
+* Added `--scopes` flag to `gcloud auth application-default print-access-token`
+  command to print an access token with the given scopes.
+
+### AI Platform
+
+* Fixed issue where `gcloud ai-platform local train` mistakenly overrode it to the default value when the flag `--worker-count` or `--parameter-server-count` is specified to be 0.
+
+### Anthos Multi-Cloud
+
+*   Added `--config-encryption-kms-key-arn` flag to `gcloud container aws
+    clusters update` to update the Amazon Resource Name (ARN) of the AWS
+    KMS key to encrypt user data.
+
+### Bare Metal Solution
+
+* Removed `gcloud bms volumes snapshot` and `gcloud bms volumes restore` from GA.
+
+### Cloud Dataplex
+
+* Promoted `lakes` command group to GA.
+* Promoted `zones` command group to GA.
+* Promoted `assets` command group to GA.
+* Promoted `tasks` command group to GA.
+
+### Cloud Datastream
+
+* Fix bug with `gcloud datastream connection-profiles create` command when specify `--private-connection` flag.
+
+### Cloud Memorystore
+
+* Added `--read-replica-mode` and `--secondary-ip-range` to `gcloud beta redis instances update`.
+* Updated `gcloud beta redis instances describe` to include secondary-ip-range.
+
+### Cloud On Demand Scanning
+
+* Added `GO` option to `--additional-package-types` flag for
+  `gcloud artifacts docker images scan` to enable scanning of Go third-party and
+  standard library packages in Go binaries.
+
+### Cloud SQL
+
+* Added `--maintenance-version` flag to `gcloud sql instances patch`.
+
+### Cloud Spanner
+
+*   Promoted the database dialect flag to beta and GA in `gcloud spanner databases create` command.
+
+### Cloud Speech API
+
+* Added `--min-diarization-speaker-count` and `--max-diarization-speaker-count`
+  to `gcloud beta ml speech` command, replacing `--diarization-speaker-count`
+  which used to set both of the new flags to same value.
+
+### Compute Engine
+
+* Added `--provisioning-model` and `--instance-termination-action` flags for `gcloud compute create-with-container` command.
+* Modified the API calls to use correct (RFC7396) null semantics in Patch for removing stateful IPs that were made by using the following flags of `gcloud beta compute instance-groups managed update` and `gcloud beta compute instance-groups managed instance-configs update`:
+    - `--remove-stateful-internal-ips`,
+    - `--remove-stateful-external-ips`.
+* Promoted `--provisioning-model` and `--instance-termination-action` flags for `gcloud compute <instances|instance-templates|instances bulk> create` commands.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.73.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Dataproc Metastore
+
+* Added the following alpha and beta commands to work with Dataproc Metastore service databases and tables:
+  * `metastore services databases get-iam-policy`
+  * `metastore services databases set-iam-policy`
+  * `metastore services databases add-iam-policy-binding`
+  * `metastore services databases remove-iam-policy-binding`
+  * `metastore services databases tables get-iam-policy`
+  * `metastore services databases tables set-iam-policy`
+  * `metastore services databases tables add-iam-policy-binding`
+  * `metastore services databases tables remove-iam-policy-binding`
+
+### Identity and Access Management
+
+* Added `--include-aws-session-token-url` flag to `gcloud iam workload-identity-pools create-cred-config` command to include AWS token url to the credential source while generating AWS credentials config file.
+* Added `--include-deny` flag to `gcloud beta projects get-ancestors-iam-policy`
+  and `gcloud beta resource-manager folders get-ancestors-iam-policy` to specify
+  if it should return deny policies on the hierarchy.
+
+### Kubernetes Engine
+
+* Added `--spot` flag to `gcloud container clusters/node-pools create` to allow creating spot VM for node pools.
+* Adds support for linux/arm version of kubectl.
+* Additional kubectl versions:
+  * kubectl.1.18 (1.18.20)
+  * kubectl.1.19 (1.19.14)
+  * kubectl.1.20 (1.20.15)
+  * kubectl.1.21 (1.21.9)
+  * kubectl.1.22 (1.22.6)
+  * kubectl.1.23 (1.23.3)
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 372.0.0 (2022-02-08)
 
 ### Breaking Changes

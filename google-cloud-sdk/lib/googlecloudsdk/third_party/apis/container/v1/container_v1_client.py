@@ -109,6 +109,33 @@ class ContainerV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def CompleteUpgrade(self, request, global_params=None):
+      r"""CompleteNodePoolUpgrade will signal an on-going node pool upgrade to complete.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersNodePoolsCompleteUpgradeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('CompleteUpgrade')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CompleteUpgrade.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:completeUpgrade',
+        http_method='POST',
+        method_id='container.projects.locations.clusters.nodePools.completeUpgrade',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:completeUpgrade',
+        request_field='completeNodePoolUpgradeRequest',
+        request_type_name='ContainerProjectsLocationsClustersNodePoolsCompleteUpgradeRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a node pool for a cluster.
 

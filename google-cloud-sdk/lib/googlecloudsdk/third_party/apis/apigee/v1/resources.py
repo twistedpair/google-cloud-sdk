@@ -184,6 +184,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_ENDPOINTATTACHMENTS = (
+      'organizations.endpointAttachments',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/endpointAttachments/'
+              '{endpointAttachmentsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_ENVGROUPS = (
       'organizations.envgroups',
       '{+name}',
@@ -499,6 +510,17 @@ class Collections(enum.Enum):
       {
           '':
               'organizations/{organizationsId}/reports/{reportsId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_SENSEPROFILES = (
+      'organizations.senseProfiles',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/senseProfiles/'
+              '{senseProfilesId}',
       },
       ['name'],
       True

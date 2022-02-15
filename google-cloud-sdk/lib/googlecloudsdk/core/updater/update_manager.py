@@ -185,7 +185,7 @@ def FilterMetaComponents(components):
 
 
 class UpdateManager(object):
-  """Main class for performing updates for the Cloud SDK."""
+  """Main class for performing updates for the Google Cloud CLI."""
 
   BIN_DIR_NAME = 'bin'
   VERSIONED_SNAPSHOT_FORMAT = 'components-v{0}.json'
@@ -1073,7 +1073,7 @@ version [{1}].  To clear your fixed version setting, run:
       self.__Write(
           log.status,
           """\
-To revert your SDK to the previously installed version, you may run:
+To revert your CLI to the previously installed version, you may run:
   $ gcloud components update --version {current}
 """.format(current=current_version), word_wrap=False)
 
@@ -1164,8 +1164,8 @@ To revert your SDK to the previously installed version, you may run:
                     .format(', '.join(completely_invalid_seeds)))
       if update_required_seeds:
         msgs.append('The following components are not available for your '
-                    'current SDK version [{}]. Please run `gcloud components '
-                    'update` to update your SDK.'
+                    'current CLI version [{}]. Please run `gcloud components '
+                    'update` to update your Google Cloud CLI.'
                     .format(', '.join(update_required_seeds)))
       raise InvalidComponentError(' '.join(msgs))
 

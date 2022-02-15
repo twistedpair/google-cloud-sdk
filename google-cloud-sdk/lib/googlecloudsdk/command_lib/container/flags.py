@@ -1478,77 +1478,51 @@ info."""
       hidden=suppressed)
 
 
-def AddNetworkTagsFlag(parser, help_text):
-  """Adds a --network-tags to the given parser."""
+def AddAutoprovisioningNetworkTagsFlag(parser, help_text):
+  """Adds a --autoprovisioning-network-tags to the given parser."""
   parser.add_argument(
-      '--network-tags',
-      metavar='NAPNETWORKTAGS',
+      '--autoprovisioning-network-tags',
+      metavar='TAGS',
       hidden=True,
       type=arg_parsers.ArgList(min_length=1),
       help=help_text)
 
 
-def AddNetworkTagsCreate(parser):
-  AddNetworkTagsFlag(
+def AddAutoprovisioningNetworkTagsCreate(parser):
+  AddAutoprovisioningNetworkTagsFlag(
       parser, """\
-Applies the given Compute Engine tags (comma separated) on all nodes in the auto-provisioned node pools of the new AutoPilot cluster.
+Applies the given Compute Engine tags (comma separated) on all nodes in the auto-provisioned node pools of the new Standard cluster or the new Autopilot cluster.
 
 Examples:
 
-  $ {command} example-cluster --network-tags=tag1,tag2
+  $ {command} example-cluster --autoprovisioning-network-tags=tag1,tag2
 
-New nodes in auto-provisoned node pools, including ones created by resize or recreate, will have these tags
+New nodes in auto-provisioned node pools, including ones created by resize or recreate, will have these tags
 on the Compute Engine API instance object and can be used in firewall rules.
 See https://cloud.google.com/sdk/gcloud/reference/compute/firewall-rules/create
 for examples.
 """)
 
 
-def AddNAPNetworkTagsFlag(parser, help_text):
-  """Adds a --nap-network-tags to the given parser."""
-  parser.add_argument(
-      '--nap-network-tags',
-      metavar='NAPNETWORKTAGS',
-      hidden=True,
-      type=arg_parsers.ArgList(min_length=1),
-      help=help_text)
-
-
-def AddNAPNetworkTagsCreate(parser):
-  AddNAPNetworkTagsFlag(
-      parser, """\
-Applies the given Compute Engine tags (comma separated) on all nodes in the auto-provisioned node pools of the new standard cluster.
-
-Examples:
-
-  $ {command} example-cluster --nap-network-tags=tag1,tag2
-
-New nodes in auto-provisoned node pools, including ones created by resize or recreate, will have these tags
-on the Compute Engine API instance object and can be used in firewall rules.
-See https://cloud.google.com/sdk/gcloud/reference/compute/firewall-rules/create
-for examples.
-""")
-
-
-def AddNAPNetworkTagsUpdate(parser):
-  """Adds a --nap-network-tags flag to the given parser."""
+def AddAutoprovisioningNetworkTagsUpdate(parser):
+  """Adds a --autoprovisioning-network-tags flag to the given parser."""
   help_text = """\
-Replaces all the user specified Compute Engine tags on all nodes in an existing
-auto-provisioned node pool with the given tags (comma separated).
+Replaces the user specified Compute Engine tags on all nodes in all the existing
+auto-provisioned node pools in the Standard cluster or the Autopilot with the given tags (comma separated).
 
 Examples:
 
-  $ {command} example-cluster --nap-network-tags=tag1,tag2
+  $ {command} example-cluster --autoprovisioning-network-tags=tag1,tag2
 
-New nodes in auto-provisoned node pools, including ones created by resize or recreate, will have these tags
+New nodes in auto-provisioned node pools, including ones created by resize or recreate, will have these tags
 on the Compute Engine API instance object and these tags can be used in
 firewall rules.
 See https://cloud.google.com/sdk/gcloud/reference/compute/firewall-rules/create
 for examples.
 """
   parser.add_argument(
-      '--nap-network-tags',
-      metavar='NAPNETWORKTAGS',
+      '--autoprovisioning-network-tags',
+      metavar='TAGS',
       hidden=True,
       type=arg_parsers.ArgList(),
       help=help_text)
@@ -2854,7 +2828,7 @@ def WarnForUnspecifiedIpAllocationPolicy(args):
 
 
 def WarnForNodeModification(args, enable_autorepair):
-  if (args.image_type or '').lower() != 'ubuntu':
+  if not (args.image_type or '').lower().startswith('ubuntu'):
     return
   if enable_autorepair or args.enable_autoupgrade:
     log.status.Print(
@@ -4325,6 +4299,20 @@ Enables use of services with externalIPs field.
       default=None,
       help=help_text,
       hidden=False)
+
+
+def AddDisablePodCIDROverprovisionFlag(parser, hidden=True):
+  """Adds a --disable-pod-cidr-overprovision flag to the given parser."""
+  help_text = """\
+Disables pod cidr overprovision on nodes.
+Pod cidr overprovisioning is enabled by default.
+"""
+  parser.add_argument(
+      '--disable-pod-cidr-overprovision',
+      action='store_true',
+      default=None,
+      help=help_text,
+      hidden=hidden)
 
 
 def AddNodePoolEnablePrivateNodes(parser, for_update=False, hidden=True):  # pylint: disable=unused-argument

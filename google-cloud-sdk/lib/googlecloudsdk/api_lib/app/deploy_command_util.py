@@ -364,7 +364,8 @@ def BuildAndPushDockerImage(
     code_bucket_ref,
     gcr_domain,
     runtime_builder_strategy=runtime_builders.RuntimeBuilderStrategy.NEVER,
-    parallel_build=False):
+    parallel_build=False,
+    use_flex_with_buildpacks=False):
   """Builds and pushes a set of docker images.
 
   Args:
@@ -381,6 +382,8 @@ def BuildAndPushDockerImage(
       to use the new CloudBuild-based runtime builders (alternative is old
       externalized runtimes).
     parallel_build: bool, if True, enable parallel build and deploy.
+    use_flex_with_buildpacks: bool, if true, use the build-image and
+      run-image built through buildpacks.
 
   Returns:
     BuildArtifact, Representing the pushed container image or in-progress build.
@@ -435,7 +438,8 @@ def BuildAndPushDockerImage(
   metrics.CustomTimedEvent(metric_names.CLOUDBUILD_UPLOAD)
 
   if use_runtime_builders:
-    builder_reference = runtime_builders.FromServiceInfo(service, upload_dir)
+    builder_reference = runtime_builders.FromServiceInfo(
+        service, upload_dir, use_flex_with_buildpacks)
     log.info('Using runtime builder [%s]', builder_reference.build_file_uri)
     builder_reference.WarnIfDeprecated()
     yaml_path = util.ConvertToPosixPath(relative_yaml_path)

@@ -44,6 +44,7 @@ class CloudbuildV2(base_api.BaseApiClient):
     self.projects_locations_results_records = self.ProjectsLocationsResultsRecordsService(self)
     self.projects_locations_results = self.ProjectsLocationsResultsService(self)
     self.projects_locations_taskRuns = self.ProjectsLocationsTaskRunsService(self)
+    self.projects_locations_workflows = self.ProjectsLocationsWorkflowsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -471,6 +472,178 @@ class CloudbuildV2(base_api.BaseApiClient):
         relative_path='v2/{+name}',
         request_field='taskRun',
         request_type_name='CloudbuildProjectsLocationsTaskRunsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsWorkflowsService(base_api.BaseApiService):
+    """Service class for the projects_locations_workflows resource."""
+
+    _NAME = 'projects_locations_workflows'
+
+    def __init__(self, client):
+      super(CloudbuildV2.ProjectsLocationsWorkflowsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new Workflow in a given project and location.
+
+      Args:
+        request: (CloudbuildProjectsLocationsWorkflowsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/workflows',
+        http_method='POST',
+        method_id='cloudbuild.projects.locations.workflows.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['validateOnly', 'workflowId'],
+        relative_path='v2/{+parent}/workflows',
+        request_field='workflow',
+        request_type_name='CloudbuildProjectsLocationsWorkflowsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single Workflow.
+
+      Args:
+        request: (CloudbuildProjectsLocationsWorkflowsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}',
+        http_method='DELETE',
+        method_id='cloudbuild.projects.locations.workflows.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag', 'validateOnly'],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='CloudbuildProjectsLocationsWorkflowsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single Workflow.
+
+      Args:
+        request: (CloudbuildProjectsLocationsWorkflowsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Workflow) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}',
+        http_method='GET',
+        method_id='cloudbuild.projects.locations.workflows.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='CloudbuildProjectsLocationsWorkflowsGetRequest',
+        response_type_name='Workflow',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Workflows in a given project and location.
+
+      Args:
+        request: (CloudbuildProjectsLocationsWorkflowsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListWorkflowsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/workflows',
+        http_method='GET',
+        method_id='cloudbuild.projects.locations.workflows.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/workflows',
+        request_field='',
+        request_type_name='CloudbuildProjectsLocationsWorkflowsListRequest',
+        response_type_name='ListWorkflowsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single Workflow.
+
+      Args:
+        request: (CloudbuildProjectsLocationsWorkflowsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}',
+        http_method='PATCH',
+        method_id='cloudbuild.projects.locations.workflows.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'updateMask', 'validateOnly'],
+        relative_path='v2/{+name}',
+        request_field='workflow',
+        request_type_name='CloudbuildProjectsLocationsWorkflowsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Run(self, request, global_params=None):
+      r"""Runs a Workflow.
+
+      Args:
+        request: (CloudbuildProjectsLocationsWorkflowsRunRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Run')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Run.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}:run',
+        http_method='POST',
+        method_id='cloudbuild.projects.locations.workflows.run',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:run',
+        request_field='runWorkflowRequest',
+        request_type_name='CloudbuildProjectsLocationsWorkflowsRunRequest',
         response_type_name='Operation',
         supports_download=False,
     )

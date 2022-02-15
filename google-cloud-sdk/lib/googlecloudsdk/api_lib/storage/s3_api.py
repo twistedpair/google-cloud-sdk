@@ -26,6 +26,7 @@ import botocore
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors
 from googlecloudsdk.api_lib.storage import request_config_factory
+from googlecloudsdk.api_lib.storage import s3_metadata_field_converters
 from googlecloudsdk.api_lib.storage import s3_metadata_util
 from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage import storage_url
@@ -87,30 +88,19 @@ class S3Api(cloud_api.CloudApi):
   @_catch_client_error_raise_s3_api_error()
   def create_bucket(self, bucket_resource, request_config, fields_scope=None):
     """See super class."""
-    del request_config  # Unused. TODO(b/203088483): Extract values.
     del fields_scope  # Unused in S3 client.
 
-    if bucket_resource.retention_period:
-      raise ValueError(
-          'S3 API does not accept retention_period argument for create_bucket.')
-    if bucket_resource.default_storage_class:
-      raise ValueError(
-          'S3 API does not accept default_storage_class argument for create_bucket.'
-      )
-    if bucket_resource.uniform_bucket_level_access:
-      raise ValueError(
-          'S3 API does not accept uniform_bucket_level_access argument for create_bucket.'
-      )
+    resource_args = request_config.resource_args
 
-    if bucket_resource.location:
+    if resource_args.location:
       with BOTO3_CLIENT_LOCK:
         # Create client with appropriate endpoint for creating regional bucket.
         client = boto3.client(
             storage_url.ProviderPrefix.S3.value,
-            region_name=bucket_resource.location,
+            region_name=resource_args.location,
             endpoint_url=properties.VALUES.storage.s3_endpoint_url.Get())
       create_bucket_configuration = {
-          'LocationConstraint': bucket_resource.location
+          'LocationConstraint': resource_args.location
       }
     else:
       client = self.client
@@ -122,6 +112,14 @@ class S3Api(cloud_api.CloudApi):
     metadata = client.create_bucket(
         Bucket=bucket_resource.storage_url.bucket_name,
         CreateBucketConfiguration=create_bucket_configuration)
+
+    if (
+        resource_args.cors_file_path or resource_args.labels_file_path or
+        resource_args.lifecycle_file_path or resource_args.log_bucket or
+        resource_args.log_object_prefix or resource_args.versioning or
+        resource_args.web_error_page or resource_args.web_main_page_suffix):
+      return self.patch_bucket(bucket_resource, request_config)
+
     backend_location = metadata.get('Location')
     return s3_resource_reference.S3BucketResource(
         bucket_resource.storage_url,
@@ -179,83 +177,77 @@ class S3Api(cloud_api.CloudApi):
         storage_url.CloudUrl(storage_url.ProviderPrefix.S3, bucket_name),
         metadata=metadata)
 
+  def _make_patch_request(self, bucket_resource, patch_function, patch_kwargs):
+    patch_kwargs['Bucket'] = bucket_resource.storage_url.bucket_name
+    try:
+      patch_function(**patch_kwargs)
+    except botocore.exceptions.ClientError as error:
+      _raise_if_not_found_error(error, bucket_resource.storage_url.bucket_name)
+      log.error(errors.S3ApiError(error))
+
   def patch_bucket(self,
                    bucket_resource,
                    request_config,
                    fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""
-    del fields_scope, request_config  # Unused.
+    if request_config.predefined_acl_string:
+      self._make_patch_request(bucket_resource, self.client.put_bucket_acl, {
+          'ACL': request_config.predefined_acl_string,
+      })
 
-    if ('FullACLConfiguration' in bucket_resource.metadata or
-        'ACL' in bucket_resource.metadata):
-      try:
-        if 'FullACLConfiguration' in bucket_resource.metadata:
-          # Can contain canned ACL and other settings.
-          # Takes priority over 'ACL' metadata key.
-          kwargs = bucket_resource.metadata['FullACLConfiguration']
-        else:
-          # Data returned by get_bucket_acl.
-          kwargs = {'AccessControlPolicy': bucket_resource.metadata['ACL']}
-        kwargs['Bucket'] = bucket_resource.name
-        self.client.put_bucket_acl(**kwargs)
-      except botocore.exceptions.ClientError as error:
-        _raise_if_not_found_error(error, bucket_resource.name)
-        # Don't return any ACL information in case the failure affected both
-        # metadata keys.
-        bucket_resource.metadata.pop('FullACLConfiguration', None)
-        bucket_resource.metadata.pop('ACL', None)
-        log.error(errors.S3ApiError(error))
+    resource_args = request_config.resource_args
+    if resource_args.cors_file_path:
+      self._make_patch_request(
+          bucket_resource, self.client.put_bucket_cors, {
+              'CORSConfiguration': s3_metadata_field_converters.process_cors(
+                  resource_args.cors_file_path)
+          })
 
-    patchable_metadata = {  # Key -> (client function, function kwargs).
-        'CORSRules': (
-            self.client.put_bucket_cors,
-            {'CORSConfiguration': {
-                'CORSRules': bucket_resource.metadata.get('CORSRules'),
-            }}),
-        'ServerSideEncryptionConfiguration': (
-            self.client.put_bucket_encryption,
-            {'ServerSideEncryptionConfiguration': bucket_resource.metadata.get(
-                'ServerSideEncryptionConfiguration'),
-            }),
-        'LifecycleConfiguration': (
-            self.client.put_bucket_lifecycle_configuration,
-            {'LifecycleConfiguration': bucket_resource.metadata.get(
-                'LifecycleConfiguration'),
-            }),
-        'LoggingEnabled': (
-            self.client.put_bucket_logging,
-            {'BucketLoggingStatus': {
-                'LoggingEnabled': bucket_resource.metadata.get(
-                    'LoggingEnabled'),
-            }}),
-        'Payer': (
-            self.client.put_bucket_request_payment,
-            {'RequestPaymentConfiguration': {
-                'Payer': bucket_resource.metadata.get('Payer'),
-            }}),
-        'Versioning': (
-            self.client.put_bucket_versioning,
-            {'VersioningConfiguration': bucket_resource.metadata.get(
-                'Versioning'),
-            }),
-        'Website': (
-            self.client.put_bucket_website,
-            {'WebsiteConfiguration': bucket_resource.metadata.get('Website')}),
-    }
-    for metadata_key, (patch_function,
-                       patch_kwargs) in patchable_metadata.items():
-      if metadata_key not in bucket_resource.metadata:
-        continue
+    if resource_args.labels_file_path:
+      self._make_patch_request(
+          bucket_resource, self.client.put_bucket_tagging, {
+              'Tagging':
+                  s3_metadata_field_converters.process_labels(
+                      resource_args.labels_file_path)
+          })
 
-      patch_kwargs['Bucket'] = bucket_resource.name
-      try:
-        patch_function(**patch_kwargs)
-      except botocore.exceptions.ClientError as error:
-        _raise_if_not_found_error(error, bucket_resource.name)
-        log.error(errors.S3ApiError(error))
-        del bucket_resource.metadata[metadata_key]
+    if resource_args.lifecycle_file_path:
+      self._make_patch_request(
+          bucket_resource, self.client.put_bucket_lifecycle_configuration, {
+              'LifecycleConfiguration':
+                  s3_metadata_field_converters.process_lifecycle(
+                      resource_args.lifecycle_file_path),
+          })
 
-    return bucket_resource
+    # TODO(b/203088239): Fix patching so that all possible branches can be
+    # tested.
+    if resource_args.log_bucket or resource_args.log_object_prefix:
+      self._make_patch_request(
+          bucket_resource, self.client.put_bucket_logging, {
+              'BucketLoggingStatus':
+                  s3_metadata_field_converters.process_logging(
+                      resource_args.log_bucket, resource_args.log_object_prefix)
+          })
+
+    if resource_args.versioning:
+      self._make_patch_request(
+          bucket_resource, self.client.put_bucket_versioning, {
+              'VersioningConfiguration':
+                  s3_metadata_field_converters.process_versioning(
+                      resource_args.versioning)
+          })
+
+    if resource_args.web_error_page or resource_args.web_main_page_suffix:
+      self._make_patch_request(
+          bucket_resource, self.client.put_bucket_website, {
+              'WebsiteConfiguration':
+                  s3_metadata_field_converters.process_website(
+                      resource_args.web_error_page,
+                      resource_args.web_main_page_suffix)
+          })
+
+    return self.get_bucket(
+        bucket_resource.storage_url.bucket_name, fields_scope=fields_scope)
 
   def list_buckets(self, fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""

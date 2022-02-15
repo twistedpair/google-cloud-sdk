@@ -151,14 +151,16 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
     imageType: The image type to use for NAP created node.
     management: Specifies the node management options for NAP created node-
       pools.
-    minCpuPlatform: Minimum CPU platform to be used for NAP created node
-      pools. The instance may be scheduled on the specified or newer CPU
-      platform. Applicable values are the friendly names of CPU platforms,
-      such as minCpuPlatform: Intel Haswell or minCpuPlatform: Intel Sandy
-      Bridge. For more information, read [how to specify min CPU
+    minCpuPlatform: Deprecated. Minimum CPU platform to be used for NAP
+      created node pools. The instance may be scheduled on the specified or
+      newer CPU platform. Applicable values are the friendly names of CPU
+      platforms, such as minCpuPlatform: Intel Haswell or minCpuPlatform:
+      Intel Sandy Bridge. For more information, read [how to specify min CPU
       platform](https://cloud.google.com/compute/docs/instances/specify-min-
-      cpu-platform) To unset the min cpu platform field pass "automatic" as
-      field value.
+      cpu-platform) This field is deprecated, min_cpu_platform should be
+      specified using cloud.google.com/requested-min-cpu-platform label
+      selector on the pod. To unset the min cpu platform field pass
+      "automatic" as field value.
     oauthScopes: Scopes that are used by NAP when creating node pools.
     serviceAccount: The Google Cloud Platform Service Account to be used by
       the node VMs.
@@ -744,10 +746,16 @@ class ClusterUpdate(_messages.Message):
         features. See the [GKE Dataplane V2
         documentation](https://cloud.google.com/kubernetes-engine/docs/how-
         to/dataplane-v2) for more.
+      MIGRATE_TO_ADVANCED_DATAPATH: Cluster has some existing nodes but new
+        nodes should use ADVANCED_DATAPATH.
+      MIGRATE_TO_LEGACY_DATAPATH: Cluster has some existing nodes but new
+        nodes should use LEGACY_DATAPATH.
     """
     DATAPATH_PROVIDER_UNSPECIFIED = 0
     LEGACY_DATAPATH = 1
     ADVANCED_DATAPATH = 2
+    MIGRATE_TO_ADVANCED_DATAPATH = 3
+    MIGRATE_TO_LEGACY_DATAPATH = 4
 
   class DesiredPrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
     r"""The desired state of IPv6 connectivity to Google Services.
@@ -830,6 +838,13 @@ class CompleteIPRotationRequest(_messages.Message):
   name = _messages.StringField(2)
   projectId = _messages.StringField(3)
   zone = _messages.StringField(4)
+
+
+class CompleteNodePoolUpgradeRequest(_messages.Message):
+  r"""CompleteNodePoolUpgradeRequest sets the name of target node pool to
+  complete upgrade.
+  """
+
 
 
 class ConfidentialNodes(_messages.Message):
@@ -966,6 +981,22 @@ class ContainerProjectsLocationsClustersListRequest(_messages.Message):
   parent = _messages.StringField(1, required=True)
   projectId = _messages.StringField(2)
   zone = _messages.StringField(3)
+
+
+class ContainerProjectsLocationsClustersNodePoolsCompleteUpgradeRequest(_messages.Message):
+  r"""A ContainerProjectsLocationsClustersNodePoolsCompleteUpgradeRequest
+  object.
+
+  Fields:
+    completeNodePoolUpgradeRequest: A CompleteNodePoolUpgradeRequest resource
+      to be passed as the request body.
+    name: The name (project, location, cluster, node pool id) of the node pool
+      to complete upgrade. Specified in the format
+      'projects/*/locations/*/clusters/*/nodePools/*'.
+  """
+
+  completeNodePoolUpgradeRequest = _messages.MessageField('CompleteNodePoolUpgradeRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class ContainerProjectsLocationsClustersNodePoolsDeleteRequest(_messages.Message):
@@ -2285,10 +2316,16 @@ class NetworkConfig(_messages.Message):
         features. See the [GKE Dataplane V2
         documentation](https://cloud.google.com/kubernetes-engine/docs/how-
         to/dataplane-v2) for more.
+      MIGRATE_TO_ADVANCED_DATAPATH: Cluster has some existing nodes but new
+        nodes should use ADVANCED_DATAPATH.
+      MIGRATE_TO_LEGACY_DATAPATH: Cluster has some existing nodes but new
+        nodes should use LEGACY_DATAPATH.
     """
     DATAPATH_PROVIDER_UNSPECIFIED = 0
     LEGACY_DATAPATH = 1
     ADVANCED_DATAPATH = 2
+    MIGRATE_TO_ADVANCED_DATAPATH = 3
+    MIGRATE_TO_LEGACY_DATAPATH = 4
 
   class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
     r"""The desired state of IPv6 connectivity to Google Services. By default,

@@ -27,10 +27,21 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import storage_url
+from googlecloudsdk.core import log
 from googlecloudsdk.core.util import debug_output
 
 
 DEFAULT_CONTENT_TYPE = 'application/octet-stream'
+
+
+# Bucket update fields and corresponding flags unsupported by S3.
+S3_UNSUPPORTED_FLAGS = [
+    ('default_encryption_key', '--default-encryption-key'),
+    ('default_event_based_hold', '--default-event-based-hold'),
+    ('default_storage_class', '--default-storage-class'),
+    ('retention_period', '--retention-period'),
+    ('uniform_bucket_level_access', '--uniform-bucket-level-access'),
+]
 
 
 class _BucketConfig(object):
@@ -43,6 +54,8 @@ class _BucketConfig(object):
     labels_to_remove (None|List[str]): Labels to remove from a bucket.
     lifecycle_file_path (None|str): Path to file with lifecycle settings.
     location (str|None): Location of bucket.
+    log_bucket (str|None): Destination bucket for current bucket's logs.
+    log_object_prefix (str|None): Prefix for objects containing logs.
     versioning (None|bool): Whether to turn on object versioning in a bucket.
     web_error_page (None|str): Error page address if bucket is being used
       to host a website.
@@ -57,6 +70,8 @@ class _BucketConfig(object):
                labels_to_remove=None,
                lifecycle_file_path=None,
                location=None,
+               log_bucket=None,
+               log_object_prefix=None,
                versioning=None,
                web_error_page=None,
                web_main_page_suffix=None):
@@ -66,6 +81,8 @@ class _BucketConfig(object):
     self.labels_to_append = labels_to_append
     self.labels_to_remove = labels_to_remove
     self.lifecycle_file_path = lifecycle_file_path
+    self.log_bucket = log_bucket
+    self.log_object_prefix = log_object_prefix
     self.versioning = versioning
     self.web_error_page = web_error_page
     self.web_main_page_suffix = web_main_page_suffix
@@ -78,8 +95,10 @@ class _BucketConfig(object):
             self.labels_file_path == other.labels_file_path and
             self.labels_to_append == other.labels_to_append and
             self.labels_to_remove == other.labels_to_remove and
-            self.location == other.location and
             self.lifecycle_file_path == other.lifecycle_file_path and
+            self.location == other.location and
+            self.log_bucket == other.log_bucket and
+            self.log_object_prefix == other.log_object_prefix and
             self.versioning == other.versioning and
             self.web_error_page == other.web_error_page and
             self.web_main_page_suffix == other.web_main_page_suffix)
@@ -100,8 +119,6 @@ class _GcsBucketConfig(_BucketConfig):
       automatically be applied to new objects in bucket.
     default_storage_class (str|None): Storage class assigned to objects in the
       bucket by default.
-    log_bucket (str|None): Destination bucket for current bucket's logs.
-    log_object_prefix (str|None): Prefix for objects containing logs.
     retention_period (int|None): Minimum retention period in seconds for objects
       in a bucket. Attempts to delete an object earlier will be denied.
     uniform_bucket_level_access (bool|None):
@@ -128,12 +145,11 @@ class _GcsBucketConfig(_BucketConfig):
     super(_GcsBucketConfig,
           self).__init__(cors_file_path, labels_file_path, labels_to_append,
                          labels_to_remove, lifecycle_file_path, location,
-                         versioning, web_error_page, web_main_page_suffix)
+                         log_bucket, log_object_prefix, versioning,
+                         web_error_page, web_main_page_suffix)
     self.default_encryption_key = default_encryption_key
     self.default_event_based_hold = default_event_based_hold
     self.default_storage_class = default_storage_class
-    self.log_bucket = log_bucket
-    self.log_object_prefix = log_object_prefix
     self.retention_period = retention_period
     self.uniform_bucket_level_access = uniform_bucket_level_access
 
@@ -142,8 +158,6 @@ class _GcsBucketConfig(_BucketConfig):
             self.default_encryption_key == other.default_encryption_key and
             self.default_event_based_hold == other.default_event_based_hold and
             self.default_storage_class == other.default_storage_class and
-            self.log_bucket == other.log_bucket and
-            self.log_object_prefix == other.log_object_prefix and
             self.retention_period == other.retention_period and
             self.uniform_bucket_level_access
             == other.uniform_bucket_level_access)
@@ -376,9 +390,6 @@ def _get_request_config_resource_args(url,
               user_resource_args.default_event_based_hold)
           new_resource_args.default_storage_class = (
               user_resource_args.default_storage_class)
-          new_resource_args.log_bucket = user_resource_args.log_bucket
-          new_resource_args.log_object_prefix = (
-              user_resource_args.log_object_prefix)
           new_resource_args.retention_period = (
               user_resource_args.retention_period)
           new_resource_args.uniform_bucket_level_access = (
@@ -387,22 +398,39 @@ def _get_request_config_resource_args(url,
       elif url.scheme == storage_url.ProviderPrefix.S3:
         new_resource_args = _S3BucketConfig()
 
-      if user_resource_args:
-        new_resource_args.cors_file_path = user_resource_args.cors_file_path
-        new_resource_args.labels_file_path = user_resource_args.labels_file_path
-        new_resource_args.labels_to_append = user_resource_args.labels_to_append
-        new_resource_args.labels_to_remove = user_resource_args.labels_to_remove
-        new_resource_args.lifecycle_file_path = (
-            user_resource_args.lifecycle_file_path)
-        new_resource_args.versioning = user_resource_args.versioning
-        new_resource_args.web_error_page = user_resource_args.web_error_page
-        new_resource_args.web_main_page_suffix = (
-            user_resource_args.web_main_page_suffix)
+        unsupported_flags_present = []
+        for field, flag in S3_UNSUPPORTED_FLAGS:
+          if getattr(user_resource_args, field, None):
+            unsupported_flags_present.append(flag)
+
+        if unsupported_flags_present:
+          log.warning('Some flags do not have S3 support: {}.'.format(
+              ', '.join(unsupported_flags_present)))
 
     else:
       new_resource_args = _BucketConfig()
 
     new_resource_args.location = getattr(user_resource_args, 'location', None)
+    new_resource_args.cors_file_path = getattr(
+        user_resource_args, 'cors_file_path', None)
+    new_resource_args.labels_file_path = getattr(
+        user_resource_args, 'labels_file_path', None)
+    new_resource_args.labels_to_append = getattr(
+        user_resource_args, 'labels_to_append', None)
+    new_resource_args.labels_to_remove = getattr(
+        user_resource_args, 'labels_to_remove', None)
+    new_resource_args.lifecycle_file_path = getattr(
+        user_resource_args, 'lifecycle_file_path', None)
+    new_resource_args.log_bucket = getattr(
+        user_resource_args, 'log_bucket', None)
+    new_resource_args.log_object_prefix = getattr(
+        user_resource_args, 'log_object_prefix', None)
+    new_resource_args.versioning = getattr(
+        user_resource_args, 'versioning', None)
+    new_resource_args.web_error_page = getattr(
+        user_resource_args, 'web_error_page', None)
+    new_resource_args.web_main_page_suffix = getattr(
+        user_resource_args, 'web_main_page_suffix', None)
 
   elif url.is_object():
     if url.scheme == storage_url.ProviderPrefix.GCS:

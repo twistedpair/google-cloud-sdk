@@ -112,16 +112,46 @@ class Application(_messages.Message):
 class ApplicationStatus(_messages.Message):
   r"""Status of the application.
 
+  Messages:
+    ResourcesValue: The map of resource status where the key is the name of
+      resources and the value is the resource status.
+
   Fields:
     modifyTime: Time at which the status was last updated.
     name: The resource name of the application status, in the following form:
       `projects/{project}/locations/{location}/applications/{name}/status`
-    resource: Repeated field with status per resource.
+    resources: The map of resource status where the key is the name of
+      resources and the value is the resource status.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourcesValue(_messages.Message):
+    r"""The map of resource status where the key is the name of resources and
+    the value is the resource status.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResourcesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ResourcesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourcesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ResourceStatus attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ResourceStatus', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   modifyTime = _messages.StringField(1)
   name = _messages.StringField(2)
-  resource = _messages.MessageField('ResourceStatus', 3, repeated=True)
+  resources = _messages.MessageField('ResourcesValue', 3)
 
 
 class BindingStatus(_messages.Message):
@@ -489,10 +519,20 @@ class GcpResourceStatus(_messages.Message):
       GCP_RESOURCE_STATE_UNKNOWN: <no description>
       GCP_RESOURCE_STATE_DEPLOYED: The resource has been deployed.
       GCP_RESOURCE_STATE_MISSING: The resource is missing.
+      GCP_RESOURCE_STATE_PROVISIONING: The resource has been deployed and is
+        provisioning.
+      GCP_RESOURCE_STATE_READY: The resource has been deployed and is working
+        as intended. This is intended for resources that have a health
+        indicator.
+      GCP_RESOURCE_STATE_FAILED: The resource has failed and the full error
+        message will be populated in the resource.
     """
     GCP_RESOURCE_STATE_UNKNOWN = 0
     GCP_RESOURCE_STATE_DEPLOYED = 1
     GCP_RESOURCE_STATE_MISSING = 2
+    GCP_RESOURCE_STATE_PROVISIONING = 3
+    GCP_RESOURCE_STATE_READY = 4
+    GCP_RESOURCE_STATE_FAILED = 5
 
   dirty = _messages.BooleanField(1)
   errorMessage = _messages.StringField(2)
@@ -1139,9 +1179,11 @@ class RunappsProjectsLocationsApplicationsGetStatusRequest(_messages.Message):
 
   Fields:
     name: Required. Name of the resource
+    readMask: Field mask used for limiting the resources to query status on.
   """
 
   name = _messages.StringField(1, required=True)
+  readMask = _messages.StringField(2)
 
 
 class RunappsProjectsLocationsApplicationsListRequest(_messages.Message):

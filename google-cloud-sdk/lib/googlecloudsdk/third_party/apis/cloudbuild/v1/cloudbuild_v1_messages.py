@@ -2902,87 +2902,6 @@ class GoogleDevtoolsCloudbuildV1BuildOptionsPoolOptionWorkerConfig(_messages.Mes
   vcpuCount = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
 
 
-class GoogleDevtoolsCloudbuildV1NetworkConfig(_messages.Message):
-  r"""Network configuration for a PrivatePool.
-
-  Enums:
-    EgressOptionValueValuesEnum: Immutable. Define whether workloads on the
-      PrivatePool can talk to public IPs. If unset, the value NO_PUBLIC_EGRESS
-      will be used.
-
-  Fields:
-    egressOption: Immutable. Define whether workloads on the PrivatePool can
-      talk to public IPs. If unset, the value NO_PUBLIC_EGRESS will be used.
-    peeredNetwork: Required. Immutable. The network definition that the
-      workers are peered to. If this section is left empty, the workers will
-      be peered to `WorkerPool.project_id` on the service producer network.
-      Must be in the format `projects/{project}/global/networks/{network}`,
-      where `{project}` is a project number, such as `12345`, and `{network}`
-      is the name of a VPC network in the project. See [Understanding network
-      configuration options](https://cloud.google.com/build/docs/private-
-      pools/set-up-private-pool-environment)
-  """
-
-  class EgressOptionValueValuesEnum(_messages.Enum):
-    r"""Immutable. Define whether workloads on the PrivatePool can talk to
-    public IPs. If unset, the value NO_PUBLIC_EGRESS will be used.
-
-    Values:
-      EGRESS_OPTION_UNSPECIFIED: Unspecified policy - this is treated as
-        NO_PUBLIC_EGRESS.
-      NO_PUBLIC_EGRESS: Public egress is disallowed.
-      PUBLIC_EGRESS: Public egress is allowed.
-    """
-    EGRESS_OPTION_UNSPECIFIED = 0
-    NO_PUBLIC_EGRESS = 1
-    PUBLIC_EGRESS = 2
-
-  egressOption = _messages.EnumField('EgressOptionValueValuesEnum', 1)
-  peeredNetwork = _messages.StringField(2)
-
-
-class GoogleDevtoolsCloudbuildV1PrivatePoolConfigWorkerConfig(_messages.Message):
-  r"""Defines the configuration to be used for creating workers in the pool.
-
-  Fields:
-    defaultMemoryGb: The default amount of memory (in GB) per workload. User
-      workloads that request memory below this range will fail. Minimum value
-      is 4; cannot be more than max_memory_gb.
-    defaultVcpuCount: The default amount of vCPU per workload. User workloads
-      that request vCPU below this range will fail. Minimum value is 1; cannot
-      be more than max_vcpu_count.
-    maxMemoryGb: The maximum amount of memory (in GB) per workload. User
-      workloads that request memory above this range will fail. Cannot be less
-      than default_memory_gb; limit is 128.
-    maxVcpuCount: The maximum amount of vCPU per workload. User workloads that
-      request vCPU above this range will fail. Cannot be less than
-      default_vcpu_count; limit is 32.
-  """
-
-  defaultMemoryGb = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  defaultVcpuCount = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  maxMemoryGb = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
-  maxVcpuCount = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
-
-
-class GoogleDevtoolsCloudbuildV1ScalingConfig(_messages.Message):
-  r"""Defines the scaling configuration for the pool.
-
-  Fields:
-    maxMemoryGb: The maximum amount of memory (in GB) allowed for the entire
-      cluster. If unset, a value of ### will be used
-    maxVcpuCount: The maximum amount of vCPU allowed for the entire cluster.
-      If unset, a value of ### will be used
-    readyWorkers: The number of preemptible workers (pods) that will run with
-      the minimum vCPU and memory to keep resources ready for customer
-      workloads in the cluster. If unset, a value of 0 will be used.
-  """
-
-  maxMemoryGb = _messages.IntegerField(1)
-  maxVcpuCount = _messages.IntegerField(2)
-  readyWorkers = _messages.IntegerField(3)
-
-
 class GoogleDevtoolsCloudbuildV2OperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
@@ -3674,52 +3593,6 @@ class PoolOption(_messages.Message):
 
   name = _messages.StringField(1)
   workerConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV1BuildOptionsPoolOptionWorkerConfig', 2)
-
-
-class PrivatePoolConfig(_messages.Message):
-  r"""Configuration for a PrivatePool.
-
-  Enums:
-    PrivilegedModeValueValuesEnum: Immutable. Specifies the privileged mode
-      for the worker pool. Once created, this setting cannot be changed on the
-      worker pool, as we are unable to guarantee that the cluster has not been
-      altered by misuse of privileged Docker daemon.
-
-  Fields:
-    networkConfig: Network configuration for the pool.
-    privilegedMode: Immutable. Specifies the privileged mode for the worker
-      pool. Once created, this setting cannot be changed on the worker pool,
-      as we are unable to guarantee that the cluster has not been altered by
-      misuse of privileged Docker daemon.
-    scalingConfig: Configuration options for worker pool.
-    workerConfig: Configuration options for individual workers.
-  """
-
-  class PrivilegedModeValueValuesEnum(_messages.Enum):
-    r"""Immutable. Specifies the privileged mode for the worker pool. Once
-    created, this setting cannot be changed on the worker pool, as we are
-    unable to guarantee that the cluster has not been altered by misuse of
-    privileged Docker daemon.
-
-    Values:
-      PRIVILEGED_MODE_UNSPECIFIED: Unspecified - this is treated as
-        NON_PRIVILEGED_ONLY.
-      NON_PRIVILEGED_ONLY: Users can only run builds using a non-privileged
-        Docker daemon. This is suitable for most cases.
-      PRIVILEGED_PERMITTED: Users are allowed to run builds using a privileged
-        Docker daemon. This setting should be used with caution, as using a
-        privileged Docker daemon introduces a security risk. A user would want
-        this if they need to run "docker-in-docker", i.e. their builds use
-        docker or docker-compose.
-    """
-    PRIVILEGED_MODE_UNSPECIFIED = 0
-    NON_PRIVILEGED_ONLY = 1
-    PRIVILEGED_PERMITTED = 2
-
-  networkConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV1NetworkConfig', 1)
-  privilegedMode = _messages.EnumField('PrivilegedModeValueValuesEnum', 2)
-  scalingConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV1ScalingConfig', 3)
-  workerConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV1PrivatePoolConfigWorkerConfig', 4)
 
 
 class PrivatePoolV1Config(_messages.Message):
@@ -4563,7 +4436,6 @@ class WorkerPool(_messages.Message):
       value of `{worker_pool}` is provided by `worker_pool_id` in
       `CreateWorkerPool` request and the value of `{location}` is determined
       by the endpoint accessed.
-    privatePoolConfig: Private Pool configuration.
     privatePoolV1Config: Legacy Private Pool configuration.
     state: Output only. `WorkerPool` state.
     uid: Output only. A unique identifier for the `WorkerPool`.
@@ -4623,11 +4495,10 @@ class WorkerPool(_messages.Message):
   etag = _messages.StringField(5)
   hybridPoolConfig = _messages.MessageField('HybridPoolConfig', 6)
   name = _messages.StringField(7)
-  privatePoolConfig = _messages.MessageField('PrivatePoolConfig', 8)
-  privatePoolV1Config = _messages.MessageField('PrivatePoolV1Config', 9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  uid = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  privatePoolV1Config = _messages.MessageField('PrivatePoolV1Config', 8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -79,7 +79,7 @@ def GenerateAuthProviderCmdArgs(track, cluster_id, project_id, location):
   """Generates command arguments for kubeconfig's authorization provider.
 
   Args:
-    track: str, command track to use.
+    track: ReleaseTrack of gcloud command.
     cluster_id: str, ID of the cluster.
     project_id: str, ID of the project of the cluster.
     location: str, Google location of the cluster.
@@ -87,10 +87,10 @@ def GenerateAuthProviderCmdArgs(track, cluster_id, project_id, location):
   Returns:
     The command arguments for kubeconfig's authorization provider.
   """
-  template = ('{track} edge-cloud container clusters print-access-token '
+  template = ('{prefix}edge-cloud container clusters print-access-token '
               '{cluster_id} --project={project_id} --location={location}')
   return template.format(
-      track=track,
+      prefix='' if track.prefix is None else track.prefix + ' ',
       cluster_id=cluster_id,
       project_id=project_id,
       location=location)

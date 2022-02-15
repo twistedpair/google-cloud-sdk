@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2021 Google LLC. All Rights Reserved.
+# Copyright 2022 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -227,3 +227,20 @@ def AddVolumeSnapshotArgToParser(parser, positional=False):
 def AddVolumeSnapshotAutoDeleteBehaviorArgToParser(parser):
   """Sets up an argument for a volume snapshot auto-delete-behavior enum."""
   VOLUME_SNAPSHOT_AUTO_DELETE_BEHAVIOR_MAPPER.choice_arg.AddToParser(parser)
+
+
+def AddNfsShareArgToParser(parser, positional=False):
+  """Sets up an argument for an nfs-share resource."""
+  if positional:
+    name = 'nfs_share'
+  else:
+    name = '--nfs_share'
+  nfs_data = yaml_data.ResourceYAMLData.FromPath(
+      'bms.nfs_share')
+  resource_spec = concepts.ResourceSpec.FromYaml(nfs_data.GetData())
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name=name,
+      concept_spec=resource_spec,
+      required=True,
+      group_help='nfs_share.')
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)

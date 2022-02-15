@@ -260,6 +260,7 @@ class CloudSqlSettings(_messages.Message):
       MYSQL_8_0: MySQL 8.0.
       POSTGRES_12: PostgreSQL 12.
       POSTGRES_13: PostgreSQL 13.
+      POSTGRES_14: PostgreSQL 14.
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_6 = 1
@@ -270,6 +271,7 @@ class CloudSqlSettings(_messages.Message):
     MYSQL_8_0 = 6
     POSTGRES_12 = 7
     POSTGRES_13 = 8
+    POSTGRES_14 = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DatabaseFlagsValue(_messages.Message):

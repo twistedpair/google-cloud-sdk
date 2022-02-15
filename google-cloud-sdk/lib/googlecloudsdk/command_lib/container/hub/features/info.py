@@ -95,6 +95,12 @@ _INFO = {
             api='multiclusterservicediscovery.googleapis.com',
             cmd_group='multi-cluster-services',
         ),
+    'policycontroller':
+        Info(
+            display_name='Policy Controller',
+            api='anthospolicycontroller.googleapis.com',
+            cmd_group='policycontroller',
+        ),
     'servicedirectory':
         Info(
             display_name='Service Directory',

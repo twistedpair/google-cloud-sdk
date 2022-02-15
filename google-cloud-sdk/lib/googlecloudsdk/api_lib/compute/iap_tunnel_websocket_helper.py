@@ -25,13 +25,13 @@ import sys
 import threading
 import traceback
 
+from googlecloudsdk.api_lib.compute import iap_tunnel_lightweight_websocket as iap_websocket
 from googlecloudsdk.api_lib.compute import iap_tunnel_websocket_utils as utils
 from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import encoding
 import six
-
 import websocket
 
 TUNNEL_CLOUDPROXY_ORIGIN = 'bot:iap-tunneler'
@@ -52,8 +52,8 @@ class WebSocketSendError(exceptions.Error):
 class IapTunnelWebSocketHelper(object):
   """Helper class for common operations on websocket and related metadata."""
 
-  def __init__(
-      self, url, headers, ignore_certs, proxy_info, on_data, on_close):
+  def __init__(self, url, headers, ignore_certs, proxy_info, on_data, on_close,
+               should_use_new_websocket):
     self._on_data = on_data
     self._on_close = on_close
     self._proxy_info = proxy_info
@@ -79,9 +79,23 @@ class IapTunnelWebSocketHelper(object):
 
     self._is_closed = False
     self._error_msg = ''
-    self._websocket = websocket.WebSocketApp(
-        url, header=headers, on_close=self._OnClose, on_data=self._OnData,
-        on_error=self._OnError, subprotocols=[utils.SUBPROTOCOL_NAME])
+    self._should_use_new_websocket = should_use_new_websocket
+    if self._should_use_new_websocket:
+      self._websocket = iap_websocket.IapLightWeightWebsocket(
+          url,
+          header=headers,
+          on_close=self._OnClose,
+          on_data=self._OnData,
+          on_error=self._OnError,
+          subprotocols=[utils.SUBPROTOCOL_NAME])
+    else:
+      self._websocket = websocket.WebSocketApp(
+          url,
+          header=headers,
+          on_close=self._OnClose,
+          on_data=self._OnData,
+          on_error=self._OnError,
+          subprotocols=[utils.SUBPROTOCOL_NAME])
 
   def __del__(self):
     self.Close()
@@ -131,7 +145,11 @@ class IapTunnelWebSocketHelper(object):
     """Send WebSocket Close message if possible."""
     # Save self._websocket.sock, because some other thread could set it to None
     # while this function is executing.
-    sock = self._websocket.sock
+    if self._should_use_new_websocket:
+      sock = self._websocket
+    else:
+      sock = self._websocket.sock
+
     if sock:
       log.debug('CLOSE')
       try:
@@ -180,7 +198,7 @@ class IapTunnelWebSocketHelper(object):
       log.info('Error while processing Close message', exc_info=True)
       raise
 
-  def _OnData(self, binary_data, opcode, unused_finished):
+  def _OnData(self, binary_data, opcode, unused_finished=0):
     """Callback for WebSocket Data messages."""
     log.debug('RECV opcode [%r] data_len [%d] binary_data[:20] [%r]', opcode,
               len(binary_data), binary_data[:20])

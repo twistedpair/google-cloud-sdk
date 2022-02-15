@@ -530,7 +530,8 @@ class Finding(_messages.Message):
   Enums:
     FindingClassValueValuesEnum: The class of the finding.
     MuteValueValuesEnum: Indicates the mute state of a finding (either
-      unspecified, muted, unmuted or undefined).
+      unspecified, muted, unmuted or undefined). Unlike other attributes of a
+      finding, a finding provider shouldn't set the value of mute.
     SeverityValueValuesEnum: The severity of the finding. This field is
       managed by the source that writes the finding.
     StateValueValuesEnum: The state of the finding.
@@ -581,10 +582,12 @@ class Finding(_messages.Message):
     mitreAttack: MITRE ATT&CK tactics and techniques related to this finding.
       See: https://attack.mitre.org
     mute: Indicates the mute state of a finding (either unspecified, muted,
-      unmuted or undefined).
+      unmuted or undefined). Unlike other attributes of a finding, a finding
+      provider shouldn't set the value of mute.
     muteInitiator: First known as mute_annotation. Records additional
       information about the mute operation e.g. mute config that muted the
-      finding, user who muted the finding, etc.
+      finding, user who muted the finding, etc. Unlike other attributes of a
+      finding, a finding provider shouldn't set the value of mute.
     muteUpdateTime: Output only. The most recent time this finding was muted
       or unmuted.
     name: The relative resource name of this finding. See:
@@ -640,7 +643,8 @@ class Finding(_messages.Message):
 
   class MuteValueValuesEnum(_messages.Enum):
     r"""Indicates the mute state of a finding (either unspecified, muted,
-    unmuted or undefined).
+    unmuted or undefined). Unlike other attributes of a finding, a finding
+    provider shouldn't set the value of mute.
 
     Values:
       MUTE_UNSPECIFIED: Unspecified.

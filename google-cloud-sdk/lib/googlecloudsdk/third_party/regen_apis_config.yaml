@@ -145,6 +145,8 @@ apis:
     v1beta2:
       discovery_doc: artifactregistry_v1beta2.json
       default: true
+    v1:
+      discovery_doc: artifactregistry_v1.json
   assuredworkloads:
     v1beta1:
       discovery_doc: assuredworkloads_v1beta1.json
@@ -616,6 +618,10 @@ apis:
       default: true
     v1beta1:
       discovery_doc: eventarc_v1beta1.json
+  eventarcpublishing:
+    v1:
+      discovery_doc: eventarcpublishing_v1.json
+      default: true
   eventflow:
     v1beta2:
       discovery_doc: eventflow_v1beta2.json
@@ -777,6 +783,8 @@ apis:
           path: projects/{project}/iap_web/{iapWebId}/services/{serviceId}
         projects.iap_web.services.versions:
           path: projects/{project}/iap_web/{iapWebId}/services/{serviceId}/versions/{versionId}
+        projects.iap_tcp.dest_groups:
+          path: projects/{project}/iap_tunnel/locations/{region}/destGroups/{groupId}
     v1:
       discovery_doc: iap_v1.json
       default: true
@@ -787,6 +795,8 @@ apis:
           path: projects/{project}/iap_web/{iapWebId}/services/{serviceId}
         projects.iap_web.services.versions:
           path: projects/{project}/iap_web/{iapWebId}/services/{serviceId}/versions/{versionId}
+        projects.iap_tcp.dest_groups:
+          path: projects/{project}/iap_tunnel/locations/{region}/destGroups/{groupId}
   ids:
     v1:
       discovery_doc: ids_v1.json
@@ -841,8 +851,18 @@ apis:
   metastore:
     v1alpha:
       discovery_doc: metastore_v1alpha.json
+      resources:
+        projects.locations.services.databases:
+          path: projects/{projectsId}/locations/{locationsId}/services/{servicesId}/databases/{databasesId}
+        projects.locations.services.databases.tables:
+          path: projects/{projectsId}/locations/{locationsId}/services/{servicesId}/databases/{databasesId}/tables/{tablesId}
     v1beta:
       discovery_doc: metastore_v1beta.json
+      resources:
+        projects.locations.services.databases:
+          path: projects/{projectsId}/locations/{locationsId}/services/{servicesId}/databases/{databasesId}
+        projects.locations.services.databases.tables:
+          path: projects/{projectsId}/locations/{locationsId}/services/{servicesId}/databases/{databasesId}/tables/{tablesId}
     v1:
       discovery_doc: metastore_v1.json
       default: true

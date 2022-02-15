@@ -285,33 +285,6 @@ class EdgenetworkV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single InterconnectAttachment.
-
-      Args:
-        request: (EdgenetworkProjectsLocationsZonesInterconnectAttachmentsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/interconnectAttachments/{interconnectAttachmentsId}',
-        http_method='PATCH',
-        method_id='edgenetwork.projects.locations.zones.interconnectAttachments.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1alpha1/{+name}',
-        request_field='interconnectAttachment',
-        request_type_name='EdgenetworkProjectsLocationsZonesInterconnectAttachmentsPatchRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
   class ProjectsLocationsZonesInterconnectsService(base_api.BaseApiService):
     """Service class for the projects_locations_zones_interconnects resource."""
 
@@ -427,33 +400,6 @@ class EdgenetworkV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='EdgenetworkProjectsLocationsZonesInterconnectsListRequest',
         response_type_name='ListInterconnectsResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Interconnect.
-
-      Args:
-        request: (EdgenetworkProjectsLocationsZonesInterconnectsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}/interconnects/{interconnectsId}',
-        http_method='PATCH',
-        method_id='edgenetwork.projects.locations.zones.interconnects.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1alpha1/{+name}',
-        request_field='interconnect',
-        request_type_name='EdgenetworkProjectsLocationsZonesInterconnectsPatchRequest',
-        response_type_name='Operation',
         supports_download=False,
     )
 

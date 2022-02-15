@@ -2080,7 +2080,7 @@
           "$ref": "NodeManagement"
         },
         "minCpuPlatform": {
-          "description": "Minimum CPU platform to be used by this instance. The instance may be scheduled on the specified or newer CPU platform. Applicable values are the friendly names of CPU platforms, such as `minCpuPlatform: \"Intel Haswell\"` or `minCpuPlatform: \"Intel Sandy Bridge\"`. For more information, read [how to specify min CPU platform](https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform) To unset the min cpu platform field pass \"automatic\" as field value.",
+          "description": "Deprecated. Minimum CPU platform to be used for NAP created node pools. The instance may be scheduled on the specified or newer CPU platform. Applicable values are the friendly names of CPU platforms, such as minCpuPlatform: Intel Haswell or minCpuPlatform: Intel Sandy Bridge. For more information, read [how to specify min CPU platform](https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform) This field is deprecated, min_cpu_platform should be specified using cloud.google.com\/requested-min-cpu-platform label selector on the pod. To unset the min cpu platform field pass \"automatic\" as field value.",
           "type": "string"
         },
         "diskSizeGb": {
@@ -2137,12 +2137,16 @@
           "enumDescriptions": [
             "Default value.",
             "Use the IPTables implementation based on kube-proxy.",
-            "Use the eBPF based GKE Dataplane V2 with additional features. See the [GKE Dataplane V2 documentation](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/dataplane-v2) for more."
+            "Use the eBPF based GKE Dataplane V2 with additional features. See the [GKE Dataplane V2 documentation](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/dataplane-v2) for more.",
+            "Cluster has some existing nodes but new nodes should use ADVANCED_DATAPATH.",
+            "Cluster has some existing nodes but new nodes should use LEGACY_DATAPATH."
           ],
           "enum": [
             "DATAPATH_PROVIDER_UNSPECIFIED",
             "LEGACY_DATAPATH",
-            "ADVANCED_DATAPATH"
+            "ADVANCED_DATAPATH",
+            "MIGRATE_TO_ADVANCED_DATAPATH",
+            "MIGRATE_TO_LEGACY_DATAPATH"
           ]
         },
         "privateIpv6GoogleAccess": {
@@ -3283,12 +3287,16 @@
           "enumDescriptions": [
             "Default value.",
             "Use the IPTables implementation based on kube-proxy.",
-            "Use the eBPF based GKE Dataplane V2 with additional features. See the [GKE Dataplane V2 documentation](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/dataplane-v2) for more."
+            "Use the eBPF based GKE Dataplane V2 with additional features. See the [GKE Dataplane V2 documentation](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/dataplane-v2) for more.",
+            "Cluster has some existing nodes but new nodes should use ADVANCED_DATAPATH.",
+            "Cluster has some existing nodes but new nodes should use LEGACY_DATAPATH."
           ],
           "enum": [
             "DATAPATH_PROVIDER_UNSPECIFIED",
             "LEGACY_DATAPATH",
-            "ADVANCED_DATAPATH"
+            "ADVANCED_DATAPATH",
+            "MIGRATE_TO_ADVANCED_DATAPATH",
+            "MIGRATE_TO_LEGACY_DATAPATH"
           ]
         },
         "desiredPrivateIpv6GoogleAccess": {
@@ -3980,6 +3988,7 @@
     },
     "Date": {
       "id": "Date",
+      "description": "Represents a whole or partial calendar date, such as a birthday. The time of day and time zone are either specified elsewhere or are insignificant. The date is relative to the Gregorian Calendar. This can represent one of the following: * A full date, with non-zero year, month, and day values * A month and day, with a zero year (e.g., an anniversary) * A year on its own, with a zero month and a zero day * A year and month, with a zero day (e.g., a credit card expiration date) Related types: * google.type.TimeOfDay * google.type.DateTime * google.protobuf.Timestamp",
       "type": "object",
       "properties": {
         "year": {

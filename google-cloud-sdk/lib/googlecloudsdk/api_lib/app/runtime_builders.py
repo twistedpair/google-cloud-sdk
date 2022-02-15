@@ -577,10 +577,12 @@ class Resolver(object):
 
   # The name of the manifest in the builders root that registers the runtimes.
   MANIFEST_NAME = 'runtimes.yaml'
+  BUILDPACKS_MANIFEST_NAME = 'runtimes_buildpacks.yaml'
   # The name of the file in your local source for when you are using custom.
   CLOUDBUILD_FILE = 'cloudbuild.yaml'
 
-  def __init__(self, runtime, source_dir, legacy_runtime_version):
+  def __init__(self, runtime, source_dir, legacy_runtime_version,
+               use_flex_with_buildpacks=False):
     """Instantiates a resolver.
 
     Args:
@@ -588,6 +590,8 @@ class Resolver(object):
       source_dir: str, The local path of the source code being deployed.
       legacy_runtime_version: str, The value from runtime_config.runtime_version
         in app.yaml. This is only used in legacy mode.
+      use_flex_with_buildpacks: bool, if true, use the build-image and
+      run-image built through buildpacks.
 
     Returns:
       Resolver, The instantiated resolver.
@@ -597,6 +601,9 @@ class Resolver(object):
     self.legacy_runtime_version = legacy_runtime_version
     self.build_file_root = properties.VALUES.app.runtime_builders_root.Get(
         required=True)
+    self.use_flex_with_buildpacks = use_flex_with_buildpacks
+    log.debug('Using use_flex_with_buildpacks [%s]',
+              self.use_flex_with_buildpacks)
     log.debug('Using runtime builder root [%s]', self.build_file_root)
 
   def GetBuilderReference(self):
@@ -668,7 +675,15 @@ class Resolver(object):
     Returns:
       BuilderReference or None
     """
-    manifest_uri = _Join(self.build_file_root, Resolver.MANIFEST_NAME)
+
+    manifest_file_name = (
+        Resolver.BUILDPACKS_MANIFEST_NAME
+        if self.use_flex_with_buildpacks
+        else Resolver.MANIFEST_NAME)
+
+    manifest_uri = _Join(self.build_file_root, manifest_file_name)
+
+    log.debug('Using manifest_uri [%s]', manifest_uri)
     try:
       manifest = Manifest.LoadFromURI(manifest_uri)
       return manifest.GetBuilderReference(self.runtime)
@@ -728,12 +743,14 @@ class Resolver(object):
     return BuilderReference(self.runtime, file_uri)
 
 
-def FromServiceInfo(service, source_dir):
+def FromServiceInfo(service, source_dir, use_flex_with_buildpacks=False):
   """Constructs a BuilderReference from a ServiceYamlInfo.
 
   Args:
     service: ServiceYamlInfo, The parsed service config.
     source_dir: str, the source containing the application directory to build.
+    use_flex_with_buildpacks: bool, if true, use the build-image and
+      run-image built through buildpacks.
 
   Returns:
     RuntimeBuilderVersion for the service.
@@ -741,5 +758,6 @@ def FromServiceInfo(service, source_dir):
   runtime_config = service.parsed.runtime_config
   legacy_version = (runtime_config.get('runtime_version', None)
                     if runtime_config else None)
-  resolver = Resolver(service.runtime, source_dir, legacy_version)
+  resolver = Resolver(service.runtime, source_dir, legacy_version,
+                      use_flex_with_buildpacks)
   return resolver.GetBuilderReference()

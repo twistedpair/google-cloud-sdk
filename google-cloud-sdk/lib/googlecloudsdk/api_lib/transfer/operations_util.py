@@ -155,8 +155,8 @@ def display_monitoring_view(name):
   initial_operation = api_get(name)
   initial_metadata = encoding.MessageToDict(initial_operation.metadata)
 
-  log.status.Print('Operation name: ' +
-                   name_util.remove_operation_prefix(initial_operation.name))
+  operation_name = name_util.remove_operation_prefix(initial_operation.name)
+  log.status.Print('Operation name: ' + operation_name)
   log.status.Print(
       'Parent job: ' +
       name_util.remove_job_prefix(initial_metadata['transferJobName']))
@@ -168,3 +168,10 @@ def display_monitoring_view(name):
 
   if 'endTime' in final_metadata:
     log.status.Print('\nEnd time: ' + final_metadata['endTime'])
+
+  if 'errorBreakdowns' in final_metadata:
+    # TODO(b/217184716) Remove "alpha" on GA release.
+    describe_command = ('gcloud alpha transfer operations describe ' +
+                        operation_name)
+    log.status.Print(
+        '\nTo investigate errors, run: \n{}\n'.format(describe_command))

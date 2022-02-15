@@ -186,89 +186,50 @@
       "properties": {
       }
     },
-    "ListPipelineRunsResponse": {
-      "id": "ListPipelineRunsResponse",
-      "description": "Message for response to listing PipelineRuns",
-      "type": "object",
-      "properties": {
-        "pipelineRuns": {
-          "description": "The list of PipelineRun",
-          "type": "array",
-          "items": {
-            "$ref": "PipelineRun"
-          }
-        },
-        "nextPageToken": {
-          "description": "A token identifying a page of results the server should return.",
-          "type": "string"
-        }
-      }
-    },
-    "PipelineRun": {
-      "id": "PipelineRun",
-      "description": "Message describing PipelineRun object",
+    "Workflow": {
+      "id": "Workflow",
+      "description": "Message describing Workflow object.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The `PipelineRun` name with format `projects\/{project}\/locations\/{location}\/pipelineRuns\/{pipeline_run}`",
+          "description": "Output only. Format: `projects\/{project}\/locations\/{location}\/workflows\/{workflow}`",
           "readOnly": true,
           "type": "string"
         },
         "uid": {
-          "description": "Output only. A unique identifier for the `PipelineRun`.",
+          "description": "Output only. A unique identifier for the `Workflow`.",
           "readOnly": true,
           "type": "string"
         },
-        "createTime": {
-          "description": "Output only. Time at which the request to create the `PipelineRun` was received.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. Time at which the request to update the `PipelineRun` was received.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "labels": {
-          "description": "Map of key-value pairs of user-defined labels.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "annotations": {
-          "description": "User annotations. See https:\/\/google.aip.dev\/128#annotations",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "workflow": {
-          "description": "Output only. The Workflow used to create this PipelineRun.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "workerPool": {
-          "description": "Output only. The WorkerPool used to run this PipelineRun.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "pipelineSpec": {
-          "description": "PipelineSpec defines the desired state of Pipeline.",
-          "$ref": "PipelineSpec"
-        },
-        "pipelineRef": {
-          "description": "PipelineRef refer to a specific instance of a Pipeline.",
-          "$ref": "PipelineRef"
-        },
-        "params": {
-          "description": "Params is a list of parameter names and values.",
+        "secrets": {
+          "description": "Pairs a secret environment variable with a SecretVersion in Secret Manager.",
           "type": "array",
           "items": {
-            "$ref": "Param"
+            "$ref": "GoogleDevtoolsCloudbuildV2SecretManagerSecret"
           }
+        },
+        "pipelineSpec": {
+          "description": "Fields from both the Workflow and the PipelineSpec will be used to form the full PipelineRun.",
+          "$ref": "PipelineSpec"
+        },
+        "bundle": {
+          "description": "A Tekton Bundle is an OCI Image that Tekton understands. OCI is the spec for container images that docker and others (such as Tekton Bundles) follow.",
+          "type": "string"
+        },
+        "params": {
+          "description": "List of parameters.",
+          "type": "array",
+          "items": {
+            "$ref": "ParamSpec"
+          }
+        },
+        "serviceAccount": {
+          "description": "If omitted, the default Cloud Build Service Account is used instead. Format: `projects\/{project}\/locations\/{location}\/serviceAccounts\/{serviceAccount}`",
+          "type": "string"
+        },
+        "options": {
+          "description": "Workflow runs can be modified through several Workflow options.",
+          "$ref": "WorkflowOptions"
         },
         "workspaces": {
           "description": "Workspaces is a list of WorkspaceBindings from volumes to workspaces.",
@@ -278,56 +239,59 @@
           }
         },
         "timeout": {
-          "description": "Time after which the Pipeline times out.",
+          "description": "Time after which the Workflow times out.",
           "type": "string",
           "format": "google-duration"
         },
-        "serviceAccount": {
-          "description": "Service account used in the Pipeline.",
-          "type": "string"
-        },
-        "pipelineRunStatus": {
-          "description": "Status of the PipelineRun.",
-          "type": "string",
-          "enumDescriptions": [
-            "Default enum type; should not be used.",
-            "Cancelled status."
-          ],
-          "enum": [
-            "PIPELINE_RUN_STATUS_UNSPECIFIED",
-            "PIPELINE_RUN_CANCELLED"
-          ]
-        },
-        "conditions": {
-          "description": "Output only. Kubernetes Conditions convention for PipelineRun status and error.",
-          "readOnly": true,
-          "type": "array",
-          "items": {
-            "$ref": "Condition"
+        "labels": {
+          "description": "Map of key-value pairs of user-defined labels.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
           }
         },
-        "startTime": {
-          "description": "Output only. Time the pipeline is actually started.",
+        "createTime": {
+          "description": "Output only. Server assigned timestamp for when the workflow was created.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
-        "completionTime": {
-          "description": "Output only. Time the pipeline completed.",
+        "updateTime": {
+          "description": "Output only. Server assigned timestamp for when the workflow was last updated.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
-        "taskRuns": {
-          "description": "Output only. List of TaskRuns and their status.",
+        "deleteTime": {
+          "description": "Output only. Server assigned timestamp for when the workflow was deleted.",
           "readOnly": true,
-          "type": "array",
-          "items": {
-            "$ref": "PipelineRunTaskRunStatus"
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "annotations": {
+          "description": "User annotations. See https:\/\/google.aip.dev\/128#annotations",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
           }
         },
         "etag": {
           "description": "Needed for declarative-friendly resources.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleDevtoolsCloudbuildV2SecretManagerSecret": {
+      "id": "GoogleDevtoolsCloudbuildV2SecretManagerSecret",
+      "description": "Pairs a secret environment variable with a SecretVersion in Secret Manager.",
+      "type": "object",
+      "properties": {
+        "secretVersion": {
+          "description": "Resource name of the SecretVersion. In format: projects\/*\/secrets\/*\/versions\/*",
+          "type": "string"
+        },
+        "env": {
+          "description": "Environment variable name to associate with the secret.",
           "type": "string"
         }
       }
@@ -907,17 +871,39 @@
         }
       }
     },
-    "PipelineRef": {
-      "id": "PipelineRef",
-      "description": "PipelineRef can be used to refer to a specific instance of a Pipeline.",
+    "WorkflowOptions": {
+      "id": "WorkflowOptions",
+      "description": "Workflow runs can be modified through several Workflow options.",
       "type": "object",
       "properties": {
-        "name": {
-          "description": "Name of the Pipeline.",
-          "type": "string"
+        "executionEnvironment": {
+          "description": "Contains the workerpool.",
+          "$ref": "ExecutionEnvironment"
         },
-        "bundle": {
-          "description": "Bundle url reference to a Tekton Bundle.",
+        "statusUpdateOptions": {
+          "description": "How\/where status on the workflow is posted.",
+          "$ref": "WorkflowStatusUpdateOptions"
+        }
+      }
+    },
+    "ExecutionEnvironment": {
+      "id": "ExecutionEnvironment",
+      "description": "Contains the workerpool.",
+      "type": "object",
+      "properties": {
+        "workerPool": {
+          "description": "Required. The workerpool used to run the PipelineRun.",
+          "type": "string"
+        }
+      }
+    },
+    "WorkflowStatusUpdateOptions": {
+      "id": "WorkflowStatusUpdateOptions",
+      "description": "Configure how\/where status is posted.",
+      "type": "object",
+      "properties": {
+        "pubsubTopic": {
+          "description": "Controls which Pub\/Sub topic is used to send status updates as a build progresses and terminates. Default: projects\/\/pub-sub\/topics\/cloud-build",
           "type": "string"
         }
       }
@@ -1007,6 +993,207 @@
           "additionalProperties": {
             "type": "string"
           }
+        }
+      }
+    },
+    "ListWorkflowsResponse": {
+      "id": "ListWorkflowsResponse",
+      "description": "Message for response to listing Workflows.",
+      "type": "object",
+      "properties": {
+        "workflows": {
+          "description": "The list of Workflows.",
+          "type": "array",
+          "items": {
+            "$ref": "Workflow"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results the server should return.",
+          "type": "string"
+        }
+      }
+    },
+    "RunWorkflowRequest": {
+      "id": "RunWorkflowRequest",
+      "description": "Message for running a Workflow.",
+      "type": "object",
+      "properties": {
+        "params": {
+          "description": "Run-time params.",
+          "type": "array",
+          "items": {
+            "$ref": "Param"
+          }
+        },
+        "validateOnly": {
+          "description": "When true, the query is validated only, but not executed.",
+          "type": "boolean"
+        },
+        "etag": {
+          "description": "Needed for declarative-friendly resources.",
+          "type": "string"
+        }
+      }
+    },
+    "ListPipelineRunsResponse": {
+      "id": "ListPipelineRunsResponse",
+      "description": "Message for response to listing PipelineRuns",
+      "type": "object",
+      "properties": {
+        "pipelineRuns": {
+          "description": "The list of PipelineRun",
+          "type": "array",
+          "items": {
+            "$ref": "PipelineRun"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results the server should return.",
+          "type": "string"
+        }
+      }
+    },
+    "PipelineRun": {
+      "id": "PipelineRun",
+      "description": "Message describing PipelineRun object",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The `PipelineRun` name with format `projects\/{project}\/locations\/{location}\/pipelineRuns\/{pipeline_run}`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. A unique identifier for the `PipelineRun`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Time at which the request to create the `PipelineRun` was received.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Time at which the request to update the `PipelineRun` was received.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Map of key-value pairs of user-defined labels.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "annotations": {
+          "description": "User annotations. See https:\/\/google.aip.dev\/128#annotations",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "workflow": {
+          "description": "Output only. The Workflow used to create this PipelineRun.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "workerPool": {
+          "description": "Output only. The WorkerPool used to run this PipelineRun.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "pipelineSpec": {
+          "description": "PipelineSpec defines the desired state of Pipeline.",
+          "$ref": "PipelineSpec"
+        },
+        "pipelineRef": {
+          "description": "PipelineRef refer to a specific instance of a Pipeline.",
+          "$ref": "PipelineRef"
+        },
+        "params": {
+          "description": "Params is a list of parameter names and values.",
+          "type": "array",
+          "items": {
+            "$ref": "Param"
+          }
+        },
+        "workspaces": {
+          "description": "Workspaces is a list of WorkspaceBindings from volumes to workspaces.",
+          "type": "array",
+          "items": {
+            "$ref": "WorkspaceBinding"
+          }
+        },
+        "timeout": {
+          "description": "Time after which the Pipeline times out.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "serviceAccount": {
+          "description": "Service account used in the Pipeline.",
+          "type": "string"
+        },
+        "pipelineRunStatus": {
+          "description": "Status of the PipelineRun.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default enum type; should not be used.",
+            "Cancelled status."
+          ],
+          "enum": [
+            "PIPELINE_RUN_STATUS_UNSPECIFIED",
+            "PIPELINE_RUN_CANCELLED"
+          ]
+        },
+        "conditions": {
+          "description": "Output only. Kubernetes Conditions convention for PipelineRun status and error.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "Condition"
+          }
+        },
+        "startTime": {
+          "description": "Output only. Time the pipeline is actually started.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "completionTime": {
+          "description": "Output only. Time the pipeline completed.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "taskRuns": {
+          "description": "Output only. List of TaskRuns and their status.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "PipelineRunTaskRunStatus"
+          }
+        },
+        "etag": {
+          "description": "Needed for declarative-friendly resources.",
+          "type": "string"
+        }
+      }
+    },
+    "PipelineRef": {
+      "id": "PipelineRef",
+      "description": "PipelineRef can be used to refer to a specific instance of a Pipeline.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the Pipeline.",
+          "type": "string"
+        },
+        "bundle": {
+          "description": "Bundle url reference to a Tekton Bundle.",
+          "type": "string"
         }
       }
     },
@@ -2334,32 +2521,6 @@
         "name": {
           "description": "The `WorkerPool` resource to execute the build on. You must have `cloudbuild.workerpools.use` on the project hosting the WorkerPool. Format projects\/{project}\/locations\/{location}\/workerPools\/{workerPoolId}",
           "type": "string"
-        },
-        "workerConfig": {
-          "description": "Configuration per workload.",
-          "$ref": "GoogleDevtoolsCloudbuildV1BuildOptionsPoolOptionWorkerConfig"
-        }
-      }
-    },
-    "GoogleDevtoolsCloudbuildV1BuildOptionsPoolOptionWorkerConfig": {
-      "id": "GoogleDevtoolsCloudbuildV1BuildOptionsPoolOptionWorkerConfig",
-      "description": "Configuration per workload for both Private Pools and Hybrid Pools.",
-      "type": "object",
-      "properties": {
-        "vcpuCount": {
-          "description": "The number of vCPUs which are requested for the build container. If unset, a value of 1 will be used.",
-          "type": "number",
-          "format": "float"
-        },
-        "memoryGb": {
-          "description": "The memory (in GB) which is requested for the build container. If unset, a value of 4 GB will be used.",
-          "type": "number",
-          "format": "float"
-        },
-        "diskSizeGb": {
-          "description": "The disk size (in GB) which is requested for the build container. If unset, a value of 10 GB will be used.",
-          "type": "string",
-          "format": "int64"
         }
       }
     },
@@ -3164,6 +3325,50 @@
         }
       }
     },
+    "RunWorkflowCustomOperationMetadata": {
+      "id": "RunWorkflowCustomOperationMetadata",
+      "description": "Represents the custom metadata of the RunWorkflow long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "requestedCancellation": {
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "pipelineRunId": {
+          "description": "Output only. ID of the pipeline run created by RunWorkflow.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
     "OperationMetadata": {
       "id": "OperationMetadata",
       "description": "Represents the metadata of the long-running operation.",
@@ -3268,6 +3473,226 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                }
+              }
+            },
+            "workflows": {
+              "methods": {
+                "create": {
+                  "id": "cloudbuild.projects.locations.workflows.create",
+                  "path": "v2/{+parent}/workflows",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/workflows",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Format: `projects\/{project}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "workflowId": {
+                      "description": "Required. The ID to use for the Workflow, which will become the final component of the Workflow\u2019s resource name.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "validateOnly": {
+                      "description": "When true, the query is validated only, but not executed.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Workflow"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new Workflow in a given project and location."
+                },
+                "patch": {
+                  "id": "cloudbuild.projects.locations.workflows.patch",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. Format: `projects\/{project}\/locations\/{location}\/workflows\/{workflow}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "The list of fields to be updated.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "allowMissing": {
+                      "description": "If set to true, and the workflow is not found, a new workflow will be created. In this situation, `update_mask` is ignored.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "validateOnly": {
+                      "description": "When true, the query is validated only, but not executed.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Workflow"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the parameters of a single Workflow."
+                },
+                "delete": {
+                  "id": "cloudbuild.projects.locations.workflows.delete",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format: `projects\/{project}\/locations\/{location}\/workflow\/{workflow}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "etag": {
+                      "description": "The etag of the workflow. If this is provided, it must match the server\u2019s etag.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "validateOnly": {
+                      "description": "When true, the query is validated only, but not executed.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single Workflow."
+                },
+                "get": {
+                  "id": "cloudbuild.projects.locations.workflows.get",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format: `projects\/{project}\/locations\/{location}\/workflow\/{workflow}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Workflow"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single Workflow."
+                },
+                "list": {
+                  "id": "cloudbuild.projects.locations.workflows.list",
+                  "path": "v2/{+parent}/workflows",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/workflows",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Format: `projects\/{project}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Number of results to return in the list.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Page start.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Filter for the results.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "The order to sort results by.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListWorkflowsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists Workflows in a given project and location."
+                },
+                "run": {
+                  "id": "cloudbuild.projects.locations.workflows.run",
+                  "path": "v2/{+name}:run",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}:run",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format: `projects\/{project}\/locations\/{location}\/workflow\/{workflow}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "RunWorkflowRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Runs a Workflow."
                 }
               }
             },

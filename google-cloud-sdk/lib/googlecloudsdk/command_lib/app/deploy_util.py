@@ -133,18 +133,27 @@ class FlexImageBuildOptions(enum.Enum):
   """Enum declaring different options for building image for flex deploys."""
   ON_CLIENT = 1
   ON_SERVER = 2
+  BUILDPACK_ON_CLIENT = 3
 
 
 def GetFlexImageBuildOption(default_strategy=FlexImageBuildOptions.ON_CLIENT):
   """Determines where the build should be performed."""
   trigger_build_server_side = (
       properties.VALUES.app.trigger_build_server_side.GetBool(required=False))
-  if trigger_build_server_side is None:
-    return default_strategy
-  elif trigger_build_server_side:
-    return FlexImageBuildOptions.ON_SERVER
+  use_flex_with_buildpacks = (
+      properties.VALUES.app.use_flex_with_buildpacks.GetBool(required=False))
+
+  if trigger_build_server_side:
+    result = FlexImageBuildOptions.ON_SERVER
+  elif (trigger_build_server_side is None and not use_flex_with_buildpacks):
+    result = default_strategy
+  elif use_flex_with_buildpacks:
+    result = FlexImageBuildOptions.BUILDPACK_ON_CLIENT
   else:
-    return FlexImageBuildOptions.ON_CLIENT
+    result = FlexImageBuildOptions.ON_CLIENT
+
+  log.debug('Flex image build option: %s', result)
+  return result
 
 
 class DeployOptions(object):
@@ -162,7 +171,7 @@ class DeployOptions(object):
       Only supported in v1beta and v1alpha App Engine Admin API.
     flex_image_build_option: FlexImageBuildOptions, whether a flex deployment
       should upload files so that the server can build the image, or build the
-      image on client.
+      image on client, or build the image on client using the buildpacks.
   """
 
   def __init__(self,
@@ -192,7 +201,7 @@ class DeployOptions(object):
         Only supported in v1beta and v1alpha App Engine Admin API.
       flex_image_build_option: FlexImageBuildOptions, whether a flex deployment
         should upload files so that the server can build the image or build the
-        image on client.
+        image on client or build the image on client using the buildpacks.
 
     Returns:
       DeployOptions, the deploy options.
@@ -261,7 +270,7 @@ class ServiceDeployer(object):
         of the image. E.g. `us.gcr.io`.
       flex_image_build_option: FlexImageBuildOptions, whether a flex deployment
         should upload files so that the server can build the image or build the
-        image on client.
+        image on client or build the image on client using the buildpacks.
 
     Returns:
       BuildArtifact, a wrapper which contains either the build ID for
@@ -298,7 +307,9 @@ class ServiceDeployer(object):
             new_version.project, service, upload_dir, source_files,
             new_version.id, code_bucket_ref, gcr_domain,
             self.deploy_options.runtime_builder_strategy,
-            self.deploy_options.parallel_build)
+            self.deploy_options.parallel_build,
+            flex_image_build_option ==
+            FlexImageBuildOptions.BUILDPACK_ON_CLIENT)
 
     return build
 
@@ -346,7 +357,7 @@ class ServiceDeployer(object):
         have been uploaded
       flex_image_build_option: FlexImageBuildOptions, whether a flex deployment
         should upload files so that the server can build the image or build the
-        image on client.
+        image on client or build the image on client using the buildpacks.
 
     Returns:
       Dictionary mapping source files to Google Cloud Storage locations.
@@ -413,7 +424,7 @@ class ServiceDeployer(object):
         to finish.
       flex_image_build_option: FlexImageBuildOptions, whether a flex deployment
         should upload files so that the server can build the image or build the
-        image on client.
+        image on client or build the image on client using the buildpacks.
       ignore_file: custom ignore_file name. Override .gcloudignore file to
         customize files to be skipped.
       service_account: identity this version runs as. If not set, Admin API
@@ -524,9 +535,9 @@ def ArgsDeploy(parser):
           properties.VALUES.app.promote_by_default),
       help='Promote the deployed version to receive all traffic.')
   parser.add_argument(
-      '--no-cache',
+      '--cache',
       action='store_true',
-      default=False,
+      default=True,
       help='Skip caching mechanisms involved in the deployment process, in '
       'particular do not use cached dependencies during the build step.')
   staging_group = parser.add_mutually_exclusive_group(hidden=True)
@@ -593,7 +604,7 @@ def RunDeploy(
       Only supported in v1beta and v1alpha App Engine Admin API.
     flex_image_build_option: FlexImageBuildOptions, whether a flex deployment
       should upload files so that the server can build the image or build the
-      image on client.
+      image on client or build the image on client using the buildpacks.
     use_legacy_apis: bool, if true, use the legacy deprecated admin-console-hr
       superapp for queue.yaml and cron.yaml uploads instead of Cloud Tasks &
       Cloud Scheduler FEs.
@@ -684,7 +695,7 @@ def RunDeploy(
           args.image_url,
           all_services,
           app.gcrDomain,
-          disable_build_cache=args.no_cache,
+          disable_build_cache=(not args.cache),
           wait_for_stop_version=wait_for_stop_version,
           flex_image_build_option=flex_image_build_option,
           ignore_file=args.ignore_file,

@@ -23,31 +23,33 @@ location:
 
 connection:
   name: connection
-  collection: beyondcorp.projects.locations.connections
-  request_id_field: connectionId
+  collection: beyondcorp.projects.locations.appConnections
+  request_id_field: appConnectionId
   disable_auto_completers: false
   attributes:
   - *project
   - *location
   - &connection
-    parameter_name: connectionsId
-    attribute_name: connection
+    parameter_name: appConnectionsId
+    attribute_name: google_cloud_beyondcorp_appconnections_v1alpha_app_connection
     help: |
       The connection_id for the Connection Resource of the Beyondcorp service.
 
+
 connector:
   name: connector
-  collection: beyondcorp.projects.locations.connectors
-  request_id_field: connectorId
+  collection: beyondcorp.projects.locations.appConnectors
+  request_id_field: appConnectorId
   disable_auto_completers: false
   attributes:
   - *project
   - *location
   - &connector
-    parameter_name: connectorsId
-    attribute_name: connector
+    parameter_name: appConnectorsId
+    attribute_name: google_cloud_beyondcorp_appconnectors_v1alpha_app_connector
     help: |
       The connector_id for the Connector Resource of the Beyondcorp service.
+
 
 operation:
   name: operation

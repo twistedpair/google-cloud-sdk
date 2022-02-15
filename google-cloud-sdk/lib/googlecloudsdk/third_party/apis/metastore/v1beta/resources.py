@@ -74,6 +74,22 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SERVICES_DATABASES = (
+      'projects.locations.services.databases',
+      'projects/{projectsId}/locations/{locationsId}/services/{servicesId}/'
+      'databases/{databasesId}',
+      {},
+      ['projectsId', 'locationsId', 'servicesId', 'databasesId'],
+      True
+  )
+  PROJECTS_LOCATIONS_SERVICES_DATABASES_TABLES = (
+      'projects.locations.services.databases.tables',
+      'projects/{projectsId}/locations/{locationsId}/services/{servicesId}/'
+      'databases/{databasesId}/tables/{tablesId}',
+      {},
+      ['projectsId', 'locationsId', 'servicesId', 'databasesId', 'tablesId'],
+      True
+  )
   PROJECTS_LOCATIONS_SERVICES_METADATAIMPORTS = (
       'projects.locations.services.metadataImports',
       '{+name}',

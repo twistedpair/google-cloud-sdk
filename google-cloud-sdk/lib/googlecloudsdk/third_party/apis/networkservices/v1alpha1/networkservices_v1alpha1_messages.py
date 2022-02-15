@@ -974,6 +974,7 @@ class Gateway(_messages.Message):
       single coniguration to the proxy/load balancer. Max length 64
       characters. Scope should start with a letter and can only have letters,
       numbers, hyphens.
+    selfLink: Output only. Server-defined URL of this resource
     serverTlsPolicy: Optional. A fully-qualified ServerTLSPolicy URL
       reference. Specifies how TLS traffic is terminated. If empty, TLS
       termination is disabled.
@@ -1029,10 +1030,11 @@ class Gateway(_messages.Message):
   name = _messages.StringField(5)
   ports = _messages.IntegerField(6, repeated=True, variant=_messages.Variant.INT32)
   scope = _messages.StringField(7)
-  serverTlsPolicy = _messages.StringField(8)
-  swgConfig = _messages.MessageField('GatewaySecureWebGatewayConfig', 9)
-  type = _messages.EnumField('TypeValueValuesEnum', 10)
-  updateTime = _messages.StringField(11)
+  selfLink = _messages.StringField(8)
+  serverTlsPolicy = _messages.StringField(9)
+  swgConfig = _messages.MessageField('GatewaySecureWebGatewayConfig', 10)
+  type = _messages.EnumField('TypeValueValuesEnum', 11)
+  updateTime = _messages.StringField(12)
 
 
 class GatewaySecureWebGatewayConfig(_messages.Message):
@@ -1043,18 +1045,26 @@ class GatewaySecureWebGatewayConfig(_messages.Message):
       presents a Certificate (selected based on SNI) when establishing a TLS
       connection. This feature only applies to gateways of type
       'SECURE_WEB_GATEWAY'.
+    network: The relative resource name identifying the VPC network that is
+      using this configuration. For example:
+      `projects/*/global/networks/network-1`
     securityPolicy: A fully-qualified SecurityPolicy URL reference. Defines
       how a server should apply security policy to inbound (VM to Proxy)
       initiated connections.
+    subnetwork: The relative resource name identifying the subnetwork in which
+      this SWG is allocated. For example: `projects/*/regions/us-
+      central1/subnetworks/network-1`
   """
 
   certificateUrls = _messages.StringField(1, repeated=True)
-  securityPolicy = _messages.StringField(2)
+  network = _messages.StringField(2)
+  securityPolicy = _messages.StringField(3)
+  subnetwork = _messages.StringField(4)
 
 
 class GrpcRoute(_messages.Message):
-  r"""GrpcRoute is the resource defining how gRPC traffic routed by a Router
-  resource is routed.
+  r"""GrpcRoute is the resource defining how gRPC traffic routed by a Mesh or
+  Gateway resource is routed.
 
   Messages:
     LabelsValue: Optional. Set of label tags associated with the GrpcRoute
@@ -1085,13 +1095,10 @@ class GrpcRoute(_messages.Message):
       will be rejected. For example, while it is acceptable for routes for the
       hostnames "*.foo.bar.com" and "*.bar.com" to be associated with the same
       route, it is not possible to associate two routes both with "*.bar.com"
-      or both with "bar.com". In the case that multiple routes match the
-      hostname, the most specific match will be selected. For example,
-      "foo.bar.baz.com" will take precedence over "*.bar.baz.com" and
-      "*.bar.baz.com" will take precedence over "*.baz.com". If a port is
-      specified, then gRPC clients must use the channel URI with the port to
-      match this rule (i.e. "xds:///service:123"), otherwise they must supply
-      the URI without a port (i.e. "xds:///service").
+      or both with "bar.com". If a port is specified, then gRPC clients must
+      use the channel URI with the port to match this rule (i.e.
+      "xds:///service:123"), otherwise they must supply the URI without a port
+      (i.e. "xds:///service").
     labels: Optional. Set of label tags associated with the GrpcRoute
       resource.
     meshes: Optional. Meshes defines a list of meshes this GrpcRoute is
@@ -1100,13 +1107,11 @@ class GrpcRoute(_messages.Message):
       `projects/*/locations/global/meshes/`
     name: Required. Name of the GrpcRoute resource. It matches pattern
       `projects/*/locations/global/grpcRoutes/`
-    routers: Optional. Routers define a list of routers this GrpcRoute should
-      be served by. Each router reference should match the pattern:
-      `projects/*/locations/global/routers/`
     rules: Required. A list of detailed rules defining how to route traffic.
       Within a single GrpcRoute, the GrpcRoute.RouteAction associated with the
       first matching GrpcRoute.RouteRule will be executed. At least one rule
       must be supplied.
+    selfLink: Output only. Server-defined URL of this resource
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
@@ -1141,8 +1146,8 @@ class GrpcRoute(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   meshes = _messages.StringField(6, repeated=True)
   name = _messages.StringField(7)
-  routers = _messages.StringField(8, repeated=True)
-  rules = _messages.MessageField('GrpcRouteRouteRule', 9, repeated=True)
+  rules = _messages.MessageField('GrpcRouteRouteRule', 8, repeated=True)
+  selfLink = _messages.StringField(9)
   updateTime = _messages.StringField(10)
 
 
@@ -1569,7 +1574,7 @@ class HttpFilters(_messages.Message):
 
 class HttpRoute(_messages.Message):
   r"""HttpRoute is the resource defining how HTTP traffic should be routed by
-  a Router resource.
+  a Mesh or Gateway resource.
 
   Messages:
     LabelsValue: Optional. Set of label tags associated with the HttpRoute
@@ -1598,13 +1603,10 @@ class HttpRoute(_messages.Message):
       type SIDECAR
     name: Required. Name of the HttpRoute resource. It matches pattern
       `projects/*/locations/global/httpRoutes/http_route_name>`.
-    routers: Optional. Routers define a list of routers this HttpRoute should
-      be served by. Each router reference should match the pattern:
-      `projects/*/locations/global/routers/` The attached Router should be of
-      a type PROXY
     rules: Required. Rules that define how traffic is routed and handled.
       Rules will be matched sequentially based on the RouteMatch specified for
       the rule.
+    selfLink: Output only. Server-defined URL of this resource
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
@@ -1639,8 +1641,8 @@ class HttpRoute(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   meshes = _messages.StringField(6, repeated=True)
   name = _messages.StringField(7)
-  routers = _messages.StringField(8, repeated=True)
-  rules = _messages.MessageField('HttpRouteRouteRule', 9, repeated=True)
+  rules = _messages.MessageField('HttpRouteRouteRule', 8, repeated=True)
+  selfLink = _messages.StringField(9)
   updateTime = _messages.StringField(10)
 
 
@@ -2546,6 +2548,7 @@ class Mesh(_messages.Message):
     labels: Optional. Set of label tags associated with the Mesh resource.
     name: Required. Name of the Mesh resource. It matches pattern
       `projects/*/locations/global/meshes/`.
+    selfLink: Output only. Server-defined URL of this resource
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
@@ -2578,7 +2581,8 @@ class Mesh(_messages.Message):
   interceptionPort = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  selfLink = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class MetadataLabelMatcher(_messages.Message):
@@ -5675,7 +5679,7 @@ class Status(_messages.Message):
 
 class TcpRoute(_messages.Message):
   r"""TcpRoute is the resource defining how TCP traffic should be routed by a
-  Router resource.
+  Mesh/Gateway resource.
 
   Messages:
     LabelsValue: Optional. Set of label tags associated with the TcpRoute
@@ -5697,13 +5701,10 @@ class TcpRoute(_messages.Message):
       type SIDECAR
     name: Required. Name of the TcpRoute resource. It matches pattern
       `projects/*/locations/global/tcpRoutes/tcp_route_name>`.
-    routers: Optional. Routers define a list of routers this TcpRoute should
-      be served by. Each router reference should match the pattern:
-      `projects/*/locations/global/routers/` The attached Router should be of
-      a type PROXY
     rules: Required. Rules that define how traffic is routed and handled. At
       least one RouteRule must be supplied. If there are multiple rules then
       the action taken will be the first rule to match.
+    selfLink: Output only. Server-defined URL of this resource
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
@@ -5737,8 +5738,8 @@ class TcpRoute(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   meshes = _messages.StringField(5, repeated=True)
   name = _messages.StringField(6)
-  routers = _messages.StringField(7, repeated=True)
-  rules = _messages.MessageField('TcpRouteRouteRule', 8, repeated=True)
+  rules = _messages.MessageField('TcpRouteRouteRule', 7, repeated=True)
+  selfLink = _messages.StringField(8)
   updateTime = _messages.StringField(9)
 
 
@@ -5903,6 +5904,7 @@ class TlsRoute(_messages.Message):
     rules: Required. Rules that define how traffic is routed and handled. At
       least one RouteRule must be supplied. If there are multiple rules then
       the action taken will be the first rule to match.
+    selfLink: Output only. Server-defined URL of this resource
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
@@ -5912,7 +5914,8 @@ class TlsRoute(_messages.Message):
   meshes = _messages.StringField(4, repeated=True)
   name = _messages.StringField(5)
   rules = _messages.MessageField('TlsRouteRouteRule', 6, repeated=True)
-  updateTime = _messages.StringField(7)
+  selfLink = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class TlsRouteRouteAction(_messages.Message):

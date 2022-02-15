@@ -197,6 +197,13 @@
       "properties": {
       }
     },
+    "CancelOperationRequest": {
+      "id": "CancelOperationRequest",
+      "description": "The request message for Operations.CancelOperation.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "Environment": {
       "id": "Environment",
       "description": "An environment for running orchestration tasks.",
@@ -336,6 +343,10 @@
         "masterAuthorizedNetworksConfig": {
           "description": "Optional. The configuration options for GKE clusters master authorized networks. By default master authorized networks feature is: - in case of private environment: enabled with no external networks allowlisted. - in case of public environment: disabled.",
           "$ref": "MasterAuthorizedNetworksConfig"
+        },
+        "recoveryConfig": {
+          "description": "Optional. The Recovery settings configuration of an environment. This field is supported for Cloud Composer environments in versions composer-2.*.*-airflow-*.*.* and newer.",
+          "$ref": "RecoveryConfig"
         }
       }
     },
@@ -747,6 +758,41 @@
         }
       }
     },
+    "RecoveryConfig": {
+      "id": "RecoveryConfig",
+      "description": "The Recovery settings of an environment.",
+      "type": "object",
+      "properties": {
+        "scheduledSnapshotsConfig": {
+          "description": "Optional. The configuration for scheduled snapshot creation mechanism.",
+          "$ref": "ScheduledSnapshotsConfig"
+        },
+        "snapshotsLocation": {
+          "description": "Optional. The default Cloud Storage location for storing snapshots. Automatically created snapshots are stored in this location. If not set, the snapshots are stored in \/snapshots folder in the environment's Cloud Storage bucket.",
+          "type": "string"
+        }
+      }
+    },
+    "ScheduledSnapshotsConfig": {
+      "id": "ScheduledSnapshotsConfig",
+      "description": "The configuration for scheduled snapshot creation mechanism.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Optional. Whether scheduled snapshots creation is enabled.",
+          "type": "boolean"
+        },
+        "snapshotsCreationSchedule": {
+          "description": "Optional. The cron expression representing the time when snapshots creation mechanism runs. This field is subject to additional validation around frequency of execution.",
+          "type": "string"
+        },
+        "snapshotsRetentionDays": {
+          "description": "Optional. The number of days describing the minimum period for how long to store snapshots. If the scheduled snapshot creation is enabled this value must be a non-negative integer.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "ListEnvironmentsResponse": {
       "id": "ListEnvironmentsResponse",
       "description": "The environments in a project and location.",
@@ -780,6 +826,32 @@
         "imageVersion": {
           "description": "The version of the software running in the environment. This encapsulates both the version of Cloud Composer functionality and the version of Apache Airflow. It must match the regular expression `composer-([0-9]+\\.[0-9]+\\.[0-9]+|latest)-airflow-[0-9]+\\.[0-9]+(\\.[0-9]+.*)?`. When used as input, the server also checks if the provided version is supported and denies the request for an unsupported version. The Cloud Composer portion of the version is a [semantic version](https:\/\/semver.org) or `latest`. When the patch version is omitted, the current Cloud Composer patch version is selected. When `latest` is provided instead of an explicit version number, the server replaces `latest` with the current Cloud Composer version and stores that version number in the same field. The portion of the image version that follows `airflow-` is an official Apache Airflow repository [release name](https:\/\/github.com\/apache\/incubator-airflow\/releases). See also [Version List] (\/composer\/docs\/concepts\/versioning\/composer-versions).",
           "type": "string"
+        }
+      }
+    },
+    "StoreEnvironmentStateRequest": {
+      "id": "StoreEnvironmentStateRequest",
+      "description": "Store environment state request.",
+      "type": "object",
+      "properties": {
+        "snapshotLocation": {
+          "description": "Location in a Cloud Storage where the snapshot of the state is going to be stored, e.g.: \"gs:\/\/my-bucket\/snapshots\".",
+          "type": "string"
+        }
+      }
+    },
+    "LoadEnvironmentStateRequest": {
+      "id": "LoadEnvironmentStateRequest",
+      "description": "Load environment state request.",
+      "type": "object",
+      "properties": {
+        "snapshotPath": {
+          "description": "A Cloud Storage path to a snapshot to load, e.g.: \"gs:\/\/my-bucket\/snapshots\/project_location_environment_timestamp\".",
+          "type": "string"
+        },
+        "skipPypiPackagesInstallation": {
+          "description": "Whether or not to skip installing Pypi packages when loading the environment's state.",
+          "type": "boolean"
         }
       }
     },
@@ -837,6 +909,7 @@
     },
     "Date": {
       "id": "Date",
+      "description": "Represents a whole or partial calendar date, such as a birthday. The time of day and time zone are either specified elsewhere or are insignificant. The date is relative to the Gregorian Calendar. This can represent one of the following: * A full date, with non-zero year, month, and day values * A month and day, with a zero year (e.g., an anniversary) * A year on its own, with a zero month and a zero day * A year and month, with a zero day (e.g., a credit card expiration date) Related types: * google.type.TimeOfDay * google.type.DateTime * google.protobuf.Timestamp",
       "type": "object",
       "properties": {
         "year": {
@@ -1080,6 +1153,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                },
+                "cancel": {
+                  "id": "composer.projects.locations.operations.cancel",
+                  "path": "v1beta1/{+name}:cancel",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "CancelOperationRequest"
+                  },
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
                 }
               }
             },
@@ -1288,6 +1389,62 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Check if an upgrade operation on the environment will succeed. In case of problems detailed info can be found in the returned Operation."
+                },
+                "storeEnvironmentState": {
+                  "id": "composer.projects.locations.environments.storeEnvironmentState",
+                  "path": "v1beta1/{+environment}:storeEnvironmentState",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:storeEnvironmentState",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "environment": {
+                      "description": "The resource name of the source environment in the form: \"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "environment"
+                  ],
+                  "request": {
+                    "$ref": "StoreEnvironmentStateRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Stores Cloud Composer environment state. As a result of this operation, snapshot of environment's state is stored in a location specified in the StoreEnvironmentStateRequest."
+                },
+                "loadEnvironmentState": {
+                  "id": "composer.projects.locations.environments.loadEnvironmentState",
+                  "path": "v1beta1/{+environment}:loadEnvironmentState",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:loadEnvironmentState",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "environment": {
+                      "description": "The resource name of the target environment in the form: \"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\"",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "environment"
+                  ],
+                  "request": {
+                    "$ref": "LoadEnvironmentStateRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Loads Cloud Composer environment state. As a result of this operation, a snapshot of environment's specified in LoadEnvironmentStateRequest is loaded into the environment."
                 }
               }
             },

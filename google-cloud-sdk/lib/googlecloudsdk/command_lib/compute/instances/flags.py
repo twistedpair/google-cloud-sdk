@@ -1621,9 +1621,14 @@ def AddProvisioningModelVmArgs(parser):
       '--provisioning-model',
       choices={
           'SPOT': (
-              'Spot VM instances are preemptible VM instances without '
-              'a 24-hour limit. They typically cost much less than '
-              'a default VM, but have no guaranteed runtime.')
+              'Spot VMs are spare capacity; Spot VMs are discounted '
+              'to have much lower prices than standard VMs '
+              'but have no guaranteed runtime. Spot VMs are the new version '
+              'of preemptible VM instances, except Spot VMs do not have '
+              'a 24-hour maximum runtime.'),
+          'STANDARD': ('Default. Standard provisioning model for VM instances, '
+                       'which has user-controlled runtime '
+                       'but no Spot discounts.')
       },
       type=arg_utils.ChoiceToEnumName,
       help="""\
@@ -1648,7 +1653,7 @@ def AddInstanceTerminationActionVmArgs(parser):
   parser.add_argument(
       '--instance-termination-action',
       choices={
-          'STOP': 'Stop the VM without preserving memory. '
+          'STOP': 'Default. Stop the VM without preserving memory. '
                   'The VM can be restarted later.',
           'DELETE': 'Permanently delete the VM.'
       },

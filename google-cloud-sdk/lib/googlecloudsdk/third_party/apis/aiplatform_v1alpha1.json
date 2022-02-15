@@ -4916,6 +4916,10 @@
           "description": "Describes the Model that may be uploaded (via ModelService.UploadModel) by this TrainingPipeline. The TrainingPipeline's training_task_definition should make clear whether this Model description should be populated, and if there are any special requirements regarding how it should be filled. If nothing is mentioned in the training_task_definition, then it should be assumed that this field should not be filled and the training task either uploads the Model without a need of this information, or that training task does not support uploading a Model as part of the pipeline. When the Pipeline's state becomes `PIPELINE_STATE_SUCCEEDED` and the trained Model had been uploaded into Vertex AI, then the model_to_upload's resource name is populated. The Model is always uploaded into the Project and Location in which this pipeline is.",
           "$ref": "GoogleCloudAiplatformV1alpha1Model"
         },
+        "modelId": {
+          "description": "Optional. The ID to use for the uploaded Model, which will become the final component of the model resource name. This value may be up to 63 characters, and valid characters are `[a-z0-9_-]`. The first character cannot be a number or hyphen.",
+          "type": "string"
+        },
         "parentModel": {
           "description": "Optional. When specify this field, the `model_to_upload` will not be uploaded as a new model, instead, it will become a new version of this `parent_model`.",
           "type": "string"
@@ -28242,7 +28246,7 @@
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Required. A FieldMask indicating which fields should be updated. Functionality of this field is not yet supported.",
+                          "description": "Optional. A FieldMask indicating which fields should be updated. Functionality of this field is not yet supported.",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
@@ -28384,7 +28388,7 @@
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Required. A FieldMask indicating which fields should be updated. Functionality of this field is not yet supported.",
+                          "description": "Optional. A FieldMask indicating which fields should be updated. Functionality of this field is not yet supported.",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
@@ -28607,7 +28611,7 @@
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Required. A FieldMask indicating which fields should be updated. Functionality of this field is not yet supported.",
+                          "description": "Optional. A FieldMask indicating which fields should be updated. Functionality of this field is not yet supported.",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"

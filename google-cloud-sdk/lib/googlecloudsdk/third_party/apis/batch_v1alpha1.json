@@ -342,6 +342,10 @@
           "description": "Max number of tasks that can be run on a node at the same time. Default is 1.",
           "type": "string",
           "format": "int64"
+        },
+        "requireHostsFile": {
+          "description": "When true, Batch will populate a file with a list of all VMs assigned to the TaskGroup and set the BATCH_HOSTS_FILE environment variable to the path of that file. Defaults to false.",
+          "type": "boolean"
         }
       }
     },

@@ -12,12 +12,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """A library containing flags used by Transcoder commands."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
+
+from googlecloudsdk.calliope import actions
 
 
 def AddCreateJobFlags(parser):
@@ -27,12 +28,24 @@ def AddCreateJobFlags(parser):
   job_config.add_argument('--file', help='Path to job config.')
   job_config.add_argument('--template-id', help='Job template id.')
 
-  parser.add_argument('--input-uri', help='Google Cloud Storage URI. If inputs '
-                      'URI exists in job config, this value will be ignored')
-  parser.add_argument('--output-uri', help='Google Cloud Storage directory URI '
-                      '(followed by a trailing forward slash). If output URI'
-                      'exists in job config, this value will be ignored.')
-  parser.add_argument('--priority', help='Job priority, default 0.')
+  parser.add_argument(
+      '--input-uri',
+      help='Google Cloud Storage URI. If inputs '
+      'URI exists in job config, this value will be ignored')
+  parser.add_argument(
+      '--output-uri',
+      help='Google Cloud Storage directory URI '
+      '(followed by a trailing forward slash). If output URI'
+      'exists in job config, this value will be ignored.')
+  parser.add_argument(
+      '--priority',
+      help='Job priority, default 0.',
+      hidden=True,
+      action=actions.DeprecationAction(
+          '--region',
+          warn='The {flag_name} option is deprecated.',
+          error='The {flag_name} option is removed.',
+          removed=True))
 
 
 def AddCreateTemplateFlags(parser):
@@ -40,5 +53,3 @@ def AddCreateTemplateFlags(parser):
   template_config = parser.add_mutually_exclusive_group(required=True)
   template_config.add_argument('--json', help='Job template in json format.')
   template_config.add_argument('--file', help='Path to job template.')
-
-

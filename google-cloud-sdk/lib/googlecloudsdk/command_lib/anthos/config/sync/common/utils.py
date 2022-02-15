@@ -1,0 +1,411 @@
+# -*- coding: utf-8 -*- #
+# Copyright 2022 Google LLC. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""Utils for running gcloud command and kubectl command."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+import contextlib
+import fnmatch
+import io
+import json
+import os
+import re
+import signal
+
+from googlecloudsdk.api_lib.container import util
+from googlecloudsdk.command_lib.anthos.config.sync.common import exceptions
+from googlecloudsdk.core import execution_utils
+from googlecloudsdk.core import log
+from googlecloudsdk.core.util import files
+
+_KUBECONFIGENV = 'KUBECONFIG'
+_DEFAULTKUBECONFIG = 'config_sync'
+
+
+def GetObjectKey(obj):
+  """Return the Object Key containing namespace and name."""
+  namespace = obj['metadata'].get('namespace', '')
+  name = obj['metadata']['name']
+  return namespace, name
+
+
+def MembershipMatched(membership, target_membership):
+  """Check if the current membership matches the specified memberships.
+
+  Args:
+    membership: string The current membership.
+    target_membership: string The specified memberships.
+
+  Returns:
+    Returns True if matching; False otherwise.
+  """
+  if not target_membership:
+    return True
+
+  if target_membership and '*' in target_membership:
+    return fnmatch.fnmatch(membership, target_membership)
+  else:
+    members = target_membership.split(',')
+    for m in members:
+      if m == membership:
+        return True
+    return False
+
+
+def GetConfigManagement(membership, cluster_type):
+  """Get ConfigManagement to check if multi-repo is enabled.
+
+  Args:
+    membership: The membership name or cluster name of the current cluster.
+    cluster_type: The type of the current cluster. It is either a Fleet-cluster
+      or a Config-controller cluster.
+
+  Raises:
+    Error: errors that happen when getting the object from the cluster.
+  """
+  config_management = None
+  err = None
+  timed_out = True
+  with Timeout(5):
+    config_management, err = RunKubectl([
+        'get', 'configmanagements.configmanagement.gke.io/config-management',
+        '-o', 'json'
+    ])
+    timed_out = False
+  if timed_out and cluster_type != 'Config Controller':
+    raise exceptions.ConfigSyncError(
+        'Timed out getting ConfigManagement object. ' +
+        'Make sure you have setup Connect Gateway for ' + membership +
+        ' following the instruction from ' +
+        'https://cloud.google.com/anthos/multicluster-management/gateway/setup'
+    )
+  if timed_out:
+    raise exceptions.ConfigSyncError(
+        'Timed out getting ConfigManagement object from ' + membership)
+
+  if err:
+    raise exceptions.ConfigSyncError(
+        'Error getting ConfigManagement object from {}: {}\n'.format(
+            membership, err))
+  config_management_obj = json.loads(config_management)
+  if 'enableMultiRepo' not in config_management_obj['spec'] or (
+      not config_management_obj['spec']['enableMultiRepo']):
+    raise exceptions.ConfigSyncError(
+        'Legacy mode is used in {}. '.format(membership) +
+        'Please enable the multi-repo feature to use this command.')
+  if 'status' not in config_management_obj:
+    log.status.Print(
+        'The ConfigManagement object is not reconciled in {}. '.format(
+            membership) +
+        'Please check if the Config Management is running on it.')
+  errors = config_management_obj.get('status', {}).get('errors')
+  if errors:
+    log.status.Print(
+        'The ConfigManagement object contains errors in{}:\n{}'.format(
+            membership, errors))
+
+
+def KubeconfigForMembership(project, membership):
+  """Get the kubeconfig of a membership.
+
+  If the kubeconfig for the membership already exists locally, use it;
+  Otherwise run a gcloud command to get the credential for it.
+
+  Args:
+    project: The project ID of the membership.
+    membership: The name of the membership.
+
+  Returns:
+    None
+
+  Raises:
+      Error: The error occured when it failed to get credential for the
+      membership.
+  """
+  context = 'connectgateway_{project}_{membership}'.format(
+      project=project, membership=membership)
+  command = ['config', 'use-context', context]
+  _, err = RunKubectl(command)
+  if err is None:
+    return
+
+  # kubeconfig for the membership doesn't exit locally
+  # run a gcloud command to get the credential of the given
+  # membership
+
+  # Check if the membership is for a GKE cluster.
+  # If it is, use the kubeconfig for the GKE cluster.
+  args = [
+      'container', 'fleet', 'memberships', 'describe', membership, '--project',
+      project, '--format', 'json'
+  ]
+  output, err = _RunGcloud(args)
+  if err:
+    raise exceptions.ConfigSyncError(
+        'Error describing the membership {}: {}'.format(membership, err))
+  if output:
+    description = json.loads(output)
+    cluster_link = description.get('endpoint',
+                                   {}).get('gkeCluster',
+                                           {}).get('resourceLink', '')
+    if cluster_link:
+      m = re.compile('.*/projects/(.*)/locations/(.*)/clusters/(.*)').match(
+          cluster_link)
+      project = ''
+      location = ''
+      cluster = ''
+      try:
+        project = m.group(1)
+        location = m.group(2)
+        cluster = m.group(3)
+      except IndexError:
+        pass
+      if project and location and cluster:
+        KubeconfigForCluster(project, location, cluster)
+        return
+
+  args = [
+      'container', 'fleet', 'memberships', 'get-credentials', membership,
+      '--project', project
+  ]
+  _, err = _RunGcloud(args)
+  if err:
+    raise exceptions.ConfigSyncError(
+        'Error getting credential for membership {}: {}'.format(
+            membership, err))
+
+
+def KubeconfigForCluster(project, region, cluster):
+  """Get the kubeconfig of a GKE cluster.
+
+  If the kubeconfig for the GKE cluster already exists locally, use it;
+  Otherwise run a gcloud command to get the credential for it.
+
+  Args:
+    project: The project ID of the cluster.
+    region: The region of the cluster.
+    cluster: The name of the cluster.
+
+  Returns:
+    None
+
+  Raises:
+    Error: The error occured when it failed to get credential for the cluster.
+  """
+  context = 'gke_{project}_{region}_{cluster}'.format(
+      project=project, region=region, cluster=cluster)
+  command = ['config', 'use-context', context]
+  _, err = RunKubectl(command)
+  if err is None:
+    return None
+  # kubeconfig for the cluster doesn't exit locally
+  # run a gcloud command to get the credential of the given
+  # cluster
+  args = [
+      'container', 'clusters', 'get-credentials', cluster, '--region', region,
+      '--project', project
+  ]
+  _, err = _RunGcloud(args)
+  if err:
+    raise exceptions.ConfigSyncError(
+        'Error getting credential for cluster {}: {}'.format(cluster, err))
+
+
+def ListConfigControllerClusters(project):
+  """Runs a gcloud command to list the clusters that host Config Controller.
+
+  Currently the Config Controller only works in the region
+  us-central1 according to Config Controller doc
+  https://cloud.google.com/anthos-config-management/docs/how-to/config-controller-setup
+
+  Args:
+    project: project that the Config Controller is in.
+
+  Returns:
+    The list of (cluster, region) for Config Controllers.
+
+  Raises:
+    Error: The error occured when it failed to list clusters.
+  """
+  # TODO(b/202418506) Check if there is any library
+  # function to list the clusters.
+  args = [
+      'container', 'clusters', 'list', '--project', project, '--filter',
+      'name:krmapihost', '--format', 'table(name,location)'
+  ]
+  output, err = _RunGcloud(args)
+  if err:
+    raise exceptions.ConfigSyncError('Error listing clusters: {}'.format(err))
+
+  clusters = []
+  for cluster in output.split('\n'):
+    c = _ParseClusterLocation(cluster)
+    if c:
+      clusters.append(c)
+  return clusters
+
+
+def ListMemberships(project):
+  """List hte memberships from a given project.
+
+  Args:
+    project: project that the memberships are in.
+
+  Returns:
+    The memberships registered to the fleet hosted by the given project.
+
+  Raises:
+    Error: The error occured when it failed to list memberships.
+  """
+  # TODO(b/202418506) Check if there is any library
+  # function to list the memberships.
+  args = [
+      'container', 'fleet', 'memberships', 'list', '--format', 'table(name)',
+      '--project', project
+  ]
+  output, err = _RunGcloud(args)
+  if err:
+    raise exceptions.ConfigSyncError(
+        'Error listing memberships: {}'.format(err))
+
+  memberships = []
+  for membership in output.replace('\n', ' ').split():
+    if membership != 'NAME':
+      memberships.append(membership)
+  return memberships
+
+
+def RunKubectl(args):
+  """Runs a kubectl command with the cluster referenced by this client.
+
+  Args:
+    args: command line arguments to pass to kubectl
+
+  Returns:
+    The contents of stdout if the return code is 0, stderr (or a fabricated
+    error if stderr is empty) otherwise
+  """
+  cmd = [util.CheckKubectlInstalled()]
+  cmd.extend(args)
+  out = io.StringIO()
+  err = io.StringIO()
+  env = _GetEnvs()
+  returncode = execution_utils.Exec(
+      cmd,
+      no_exit=True,
+      out_func=out.write,
+      err_func=err.write,
+      in_str=None,
+      env=env)
+
+  if returncode != 0 and not err.getvalue():
+    err.write('kubectl exited with return code {}'.format(returncode))
+
+  return out.getvalue() if returncode == 0 else None, err.getvalue(
+  ) if returncode != 0 else None
+
+
+def _RunGcloud(args):
+  """Runs a gcloud command.
+
+  Args:
+    args: command line arguments to pass to gcloud
+
+  Returns:
+    The contents of stdout if the return code is 0, stderr (or a fabricated
+    error if stderr is empty) otherwise
+  """
+  cmd = execution_utils.ArgsForGcloud()
+  cmd.extend(args)
+  out = io.StringIO()
+  err = io.StringIO()
+  env = _GetEnvs()
+  returncode = execution_utils.Exec(
+      cmd,
+      no_exit=True,
+      out_func=out.write,
+      err_func=err.write,
+      in_str=None,
+      env=env)
+
+  if returncode != 0 and not err.getvalue():
+    err.write('gcloud exited with return code {}'.format(returncode))
+  return out.getvalue() if returncode == 0 else None, err.getvalue(
+  ) if returncode != 0 else None
+
+
+def _GetEnvs():
+  """Get the environment variables that should be passed to kubectl/gcloud commands.
+
+  Returns:
+    The dictionary that includes the environment varialbes.
+  """
+  env = dict(os.environ)
+  if _KUBECONFIGENV not in env:
+    env[_KUBECONFIGENV] = files.ExpandHomeDir(
+        os.path.join('~', '.kube', _DEFAULTKUBECONFIG))
+  return env
+
+
+def _ParseClusterLocation(cluster_and_location):
+  """Get the cluster and location for the Config Controller cluster.
+
+  Args:
+    cluster_and_location: The one line string that contains the Config
+      Controller resource name and its location.
+
+  Returns:
+    The tuple of cluster and region.
+  """
+  if not cluster_and_location or cluster_and_location.startswith('NAME'):
+    return None
+  cluster = ''
+  region = ''
+  strings = cluster_and_location.split(' ')
+  for s in strings:
+    if s.startswith('krmapihost'):
+      cluster = s
+    elif s:
+      region = s
+  return (cluster, region)
+
+
+@contextlib.contextmanager
+def Timeout(time):
+  """set timeout for a python function."""
+  # Register a function to raise a TimeoutError on the signal.
+  signal.signal(signal.SIGALRM, RaiseTimeout)
+  # Schedule the signal to be sent after ``time``
+  signal.alarm(time)
+
+  try:
+    yield
+  except KubectlTimeOutError:
+    pass
+  finally:
+    # Unregister the signal so it won't be triggered
+    # if the timeout is not reached.
+    signal.signal(signal.SIGALRM, signal.SIG_IGN)
+
+
+def RaiseTimeout(signum, frame):
+  """Raise a timeout error."""
+  raise KubectlTimeOutError
+
+
+class KubectlTimeOutError(Exception):
+  pass

@@ -33038,6 +33038,8 @@ class FirewallPolicyRule(_messages.Message):
       priority must be a positive value between 0 and 2147483647. Rules are
       evaluated from highest to lowest priority where 0 is the highest
       priority and 2147483647 is the lowest prority.
+    ruleName: An optional name for the rule. This field is not a unique
+      identifier and can be updated.
     ruleTupleCount: [Output Only] Calculation of the complexity of a single
       firewall policy rule.
     targetResources: A list of network resource URLs to which this rule
@@ -33075,10 +33077,11 @@ class FirewallPolicyRule(_messages.Message):
   kind = _messages.StringField(6, default='compute#firewallPolicyRule')
   match = _messages.MessageField('FirewallPolicyRuleMatcher', 7)
   priority = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  ruleTupleCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  targetResources = _messages.StringField(10, repeated=True)
-  targetSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 11, repeated=True)
-  targetServiceAccounts = _messages.StringField(12, repeated=True)
+  ruleName = _messages.StringField(9)
+  ruleTupleCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  targetResources = _messages.StringField(11, repeated=True)
+  targetSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 12, repeated=True)
+  targetServiceAccounts = _messages.StringField(13, repeated=True)
 
 
 class FirewallPolicyRuleMatcher(_messages.Message):
@@ -34954,23 +34957,25 @@ class GuestOsFeature(_messages.Message):
       values, use commas to separate values. Set to one or more of the
       following values: - VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET -
       UEFI_COMPATIBLE - SECURE_BOOT - GVNIC - SEV_CAPABLE -
-      SUSPEND_RESUME_COMPATIBLE For more information, see Enabling guest
-      operating system features.
+      SUSPEND_RESUME_COMPATIBLE - SEV_SNP_CAPABLE For more information, see
+      Enabling guest operating system features.
 
   Fields:
     type: The ID of a supported feature. To add multiple values, use commas to
       separate values. Set to one or more of the following values: -
       VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET - UEFI_COMPATIBLE -
-      SECURE_BOOT - GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE For more
-      information, see Enabling guest operating system features.
+      SECURE_BOOT - GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE -
+      SEV_SNP_CAPABLE For more information, see Enabling guest operating
+      system features.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The ID of a supported feature. To add multiple values, use commas to
     separate values. Set to one or more of the following values: -
     VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET - UEFI_COMPATIBLE -
-    SECURE_BOOT - GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE For more
-    information, see Enabling guest operating system features.
+    SECURE_BOOT - GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE -
+    SEV_SNP_CAPABLE For more information, see Enabling guest operating system
+    features.
 
     Values:
       BARE_METAL_LINUX_COMPATIBLE: <no description>
@@ -38702,8 +38707,9 @@ class InstanceGroup(_messages.Message):
     namedPorts:  Assigns a name to a port number. For example: {name: "http",
       port: 80} This allows the system to reference ports by the assigned name
       instead of a port number. Named ports can also contain multiple ports.
-      For example: [{name: "http", port: 80},{name: "http", port: 8080}] Named
-      ports apply to all instances in this instance group.
+      For example: [{name: "app1", port: 8080}, {name: "app1", port: 8081},
+      {name: "app2", port: 8082}] Named ports apply to all instances in this
+      instance group.
     network: [Output Only] The URL of the network to which all instances in
       the instance group belong. If your instance has multiple network
       interfaces, then the network and subnetwork fields only refer to the
@@ -42141,7 +42147,8 @@ class InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy(_messages.Me
   r"""A InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy object.
 
   Enums:
-    TypeValueValuesEnum: [Output Only] The type of the firewall policy.
+    TypeValueValuesEnum: [Output Only] The type of the firewall policy. Can be
+      one of HIERARCHY, NETWORK, NETWORK_REGIONAL.
 
   Fields:
     displayName: [Output Only] Deprecated, please use short name instead. The
@@ -42149,11 +42156,13 @@ class InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy(_messages.Me
     name: [Output Only] The name of the firewall policy.
     rules: The rules that apply to the network.
     shortName: [Output Only] The short name of the firewall policy.
-    type: [Output Only] The type of the firewall policy.
+    type: [Output Only] The type of the firewall policy. Can be one of
+      HIERARCHY, NETWORK, NETWORK_REGIONAL.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""[Output Only] The type of the firewall policy.
+    r"""[Output Only] The type of the firewall policy. Can be one of
+    HIERARCHY, NETWORK, NETWORK_REGIONAL.
 
     Values:
       HIERARCHY: <no description>
@@ -43558,8 +43567,7 @@ class InterconnectAttachment(_messages.Message):
       the subnet) to be used for the customer router address. The id must be
       in the range of 1 to 6. If a subnet mask is supplied, it must be /125,
       and the subnet should either be 0 or match the selected subnet.
-    dataplaneVersion: [Output only for types PARTNER and DEDICATED. Not
-      present for PARTNER_PROVIDER.] Dataplane version for this
+    dataplaneVersion: [Output Only] Dataplane version for this
       InterconnectAttachment. This field is only present for Dataplane version
       2 and higher. Absence of this field in the API output indicates that the
       Dataplane is version 1.
@@ -46110,6 +46118,8 @@ class LocationPolicyLocation(_messages.Message):
     PreferenceValueValuesEnum: Preference for a given location.
 
   Fields:
+    constraints: Constraints that the caller requires on the result
+      distribution in this zone.
     preference: Preference for a given location.
   """
 
@@ -46125,7 +46135,19 @@ class LocationPolicyLocation(_messages.Message):
     DENY = 1
     PREFERENCE_UNSPECIFIED = 2
 
-  preference = _messages.EnumField('PreferenceValueValuesEnum', 1)
+  constraints = _messages.MessageField('LocationPolicyLocationConstraints', 1)
+  preference = _messages.EnumField('PreferenceValueValuesEnum', 2)
+
+
+class LocationPolicyLocationConstraints(_messages.Message):
+  r"""Per-zone constraints on location policy for this zone.
+
+  Fields:
+    maxCount: Maximum number of items that are allowed to be placed in this
+      zone. The value must be non-negative.
+  """
+
+  maxCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class LogConfig(_messages.Message):
@@ -47544,7 +47566,10 @@ class Network(_messages.Message):
   (VPC) Network.
 
   Enums:
-    NetworkFirewallPolicyEnforcementOrderValueValuesEnum:
+    NetworkFirewallPolicyEnforcementOrderValueValuesEnum: The network firewall
+      policy enforcement order. Can be either AFTER_CLASSIC_FIREWALL or
+      BEFORE_CLASSIC_FIREWALL. Defaults to AFTER_CLASSIC_FIREWALL if the field
+      is not specified.
 
   Fields:
     IPv4Range: Deprecated in favor of subnet mode networks. The range of
@@ -47590,8 +47615,10 @@ class Network(_messages.Message):
       must be a lowercase letter, and all following characters (except for the
       last character) must be a dash, lowercase letter, or digit. The last
       character must be a lowercase letter or digit.
-    networkFirewallPolicyEnforcementOrder: A
-      NetworkFirewallPolicyEnforcementOrderValueValuesEnum attribute.
+    networkFirewallPolicyEnforcementOrder: The network firewall policy
+      enforcement order. Can be either AFTER_CLASSIC_FIREWALL or
+      BEFORE_CLASSIC_FIREWALL. Defaults to AFTER_CLASSIC_FIREWALL if the field
+      is not specified.
     peerings: [Output Only] A list of network peerings for the resource.
     region: [Output Only] URL of the region where the regional network
       resides. This field is not applicable to global network. You must
@@ -47608,7 +47635,9 @@ class Network(_messages.Message):
   """
 
   class NetworkFirewallPolicyEnforcementOrderValueValuesEnum(_messages.Enum):
-    r"""NetworkFirewallPolicyEnforcementOrderValueValuesEnum enum type.
+    r"""The network firewall policy enforcement order. Can be either
+    AFTER_CLASSIC_FIREWALL or BEFORE_CLASSIC_FIREWALL. Defaults to
+    AFTER_CLASSIC_FIREWALL if the field is not specified.
 
     Values:
       AFTER_CLASSIC_FIREWALL: <no description>
@@ -48072,7 +48101,7 @@ class NetworkEndpointGroup(_messages.Message):
 
   Enums:
     NetworkEndpointTypeValueValuesEnum: Type of network endpoints in this
-      network endpoint group. Can be one of GCE_VM_IP_PORT,
+      network endpoint group. Can be one of GCE_VM_IP, GCE_VM_IP_PORT,
       NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT, INTERNET_IP_PORT,
       SERVERLESS, PRIVATE_SERVICE_CONNECT.
     TypeValueValuesEnum: Specify the type of this network endpoint group. Only
@@ -48113,7 +48142,7 @@ class NetworkEndpointGroup(_messages.Message):
     network: The URL of the network to which all network endpoints in the NEG
       belong. Uses "default" project network if unspecified.
     networkEndpointType: Type of network endpoints in this network endpoint
-      group. Can be one of GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT,
+      group. Can be one of GCE_VM_IP, GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT,
       INTERNET_FQDN_PORT, INTERNET_IP_PORT, SERVERLESS,
       PRIVATE_SERVICE_CONNECT.
     pscTargetService: The target service url used to set up private service
@@ -48139,7 +48168,7 @@ class NetworkEndpointGroup(_messages.Message):
 
   class NetworkEndpointTypeValueValuesEnum(_messages.Enum):
     r"""Type of network endpoints in this network endpoint group. Can be one
-    of GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT,
+    of GCE_VM_IP, GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT,
     INTERNET_IP_PORT, SERVERLESS, PRIVATE_SERVICE_CONNECT.
 
     Values:
@@ -48472,12 +48501,12 @@ class NetworkEndpointGroupCloudRun(_messages.Message):
       additional fine-grained traffic routing information. The tag must be
       1-63 characters long, and comply with RFC1035. Example value:
       "revision-0010".
-    urlMask: A template to parse service and tag fields from a request URL.
-      URL mask allows for routing to multiple Run services without having to
-      create multiple network endpoint groups and backend services. For
+    urlMask: A template to parse <service> and <tag> fields from a request
+      URL. URL mask allows for routing to multiple Run services without having
+      to create multiple network endpoint groups and backend services. For
       example, request URLs "foo1.domain.com/bar1" and "foo1.domain.com/bar2"
       can be backed by the same Serverless Network Endpoint Group (NEG) with
-      URL mask ".domain.com/". The URL mask will parse them to {
+      URL mask "<tag>.domain.com/<service>". The URL mask will parse them to {
       service="bar1", tag="foo1" } and { service="bar2", tag="foo2" }
       respectively.
   """
@@ -55610,11 +55639,7 @@ class Quota(_messages.Message):
       INTERCONNECT_TOTAL_GBPS: <no description>
       INTERNAL_ADDRESSES: <no description>
       INTERNAL_FORWARDING_RULES_PER_NETWORK: <no description>
-      INTERNAL_FORWARDING_RULES_WITH_GLOBAL_ACCESS_PER_NETWORK: <no
-        description>
       INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK: <no
-        description>
-      INTERNAL_TARGET_INSTANCE_WITH_GLOBAL_ACCESS_PER_NETWORK: <no
         description>
       INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES: <no description>
       IN_PLACE_SNAPSHOTS: <no description>
@@ -55753,88 +55778,86 @@ class Quota(_messages.Message):
     INTERCONNECT_TOTAL_GBPS = 54
     INTERNAL_ADDRESSES = 55
     INTERNAL_FORWARDING_RULES_PER_NETWORK = 56
-    INTERNAL_FORWARDING_RULES_WITH_GLOBAL_ACCESS_PER_NETWORK = 57
-    INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK = 58
-    INTERNAL_TARGET_INSTANCE_WITH_GLOBAL_ACCESS_PER_NETWORK = 59
-    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 60
-    IN_PLACE_SNAPSHOTS = 61
-    IN_USE_ADDRESSES = 62
-    IN_USE_BACKUP_SCHEDULES = 63
-    IN_USE_MAINTENANCE_WINDOWS = 64
-    IN_USE_SNAPSHOT_SCHEDULES = 65
-    LOCAL_SSD_TOTAL_GB = 66
-    M1_CPUS = 67
-    M2_CPUS = 68
-    M3_CPUS = 69
-    MACHINE_IMAGES = 70
-    N2A_CPUS = 71
-    N2D_CPUS = 72
-    N2_CPUS = 73
-    NETWORKS = 74
-    NETWORK_ENDPOINT_GROUPS = 75
-    NETWORK_FIREWALL_POLICIES = 76
-    NODE_GROUPS = 77
-    NODE_TEMPLATES = 78
-    NVIDIA_A100_GPUS = 79
-    NVIDIA_K80_GPUS = 80
-    NVIDIA_P100_GPUS = 81
-    NVIDIA_P100_VWS_GPUS = 82
-    NVIDIA_P4_GPUS = 83
-    NVIDIA_P4_VWS_GPUS = 84
-    NVIDIA_T4_GPUS = 85
-    NVIDIA_T4_VWS_GPUS = 86
-    NVIDIA_V100_GPUS = 87
-    PACKET_MIRRORINGS = 88
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 89
-    PREEMPTIBLE_CPUS = 90
-    PREEMPTIBLE_LOCAL_SSD_GB = 91
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 92
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 93
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 94
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 95
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 96
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 97
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 98
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 99
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 100
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 101
-    PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 102
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 103
-    PSC_INTERNAL_LB_FORWARDING_RULES = 104
-    PUBLIC_ADVERTISED_PREFIXES = 105
-    PUBLIC_DELEGATED_PREFIXES = 106
-    REGIONAL_AUTOSCALERS = 107
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 108
-    RESERVATIONS = 109
-    RESOURCE_POLICIES = 110
-    ROUTERS = 111
-    ROUTES = 112
-    SECURITY_POLICIES = 113
-    SECURITY_POLICIES_PER_REGION = 114
-    SECURITY_POLICY_CEVAL_RULES = 115
-    SECURITY_POLICY_RULES = 116
-    SECURITY_POLICY_RULES_PER_REGION = 117
-    SERVICE_ATTACHMENTS = 118
-    SNAPSHOTS = 119
-    SSD_TOTAL_GB = 120
-    SSL_CERTIFICATES = 121
-    STATIC_ADDRESSES = 122
-    STATIC_BYOIP_ADDRESSES = 123
-    SUBNETWORKS = 124
-    SUBNET_RANGES_PER_NETWORK = 125
-    T2A_CPUS = 126
-    T2D_CPUS = 127
-    TARGET_HTTPS_PROXIES = 128
-    TARGET_HTTP_PROXIES = 129
-    TARGET_INSTANCES = 130
-    TARGET_POOLS = 131
-    TARGET_SSL_PROXIES = 132
-    TARGET_TCP_PROXIES = 133
-    TARGET_VPN_GATEWAYS = 134
-    URL_MAPS = 135
-    VPN_GATEWAYS = 136
-    VPN_TUNNELS = 137
-    XPN_SERVICE_PROJECTS = 138
+    INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK = 57
+    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 58
+    IN_PLACE_SNAPSHOTS = 59
+    IN_USE_ADDRESSES = 60
+    IN_USE_BACKUP_SCHEDULES = 61
+    IN_USE_MAINTENANCE_WINDOWS = 62
+    IN_USE_SNAPSHOT_SCHEDULES = 63
+    LOCAL_SSD_TOTAL_GB = 64
+    M1_CPUS = 65
+    M2_CPUS = 66
+    M3_CPUS = 67
+    MACHINE_IMAGES = 68
+    N2A_CPUS = 69
+    N2D_CPUS = 70
+    N2_CPUS = 71
+    NETWORKS = 72
+    NETWORK_ENDPOINT_GROUPS = 73
+    NETWORK_FIREWALL_POLICIES = 74
+    NODE_GROUPS = 75
+    NODE_TEMPLATES = 76
+    NVIDIA_A100_GPUS = 77
+    NVIDIA_K80_GPUS = 78
+    NVIDIA_P100_GPUS = 79
+    NVIDIA_P100_VWS_GPUS = 80
+    NVIDIA_P4_GPUS = 81
+    NVIDIA_P4_VWS_GPUS = 82
+    NVIDIA_T4_GPUS = 83
+    NVIDIA_T4_VWS_GPUS = 84
+    NVIDIA_V100_GPUS = 85
+    PACKET_MIRRORINGS = 86
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 87
+    PREEMPTIBLE_CPUS = 88
+    PREEMPTIBLE_LOCAL_SSD_GB = 89
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 90
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 91
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 92
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 93
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 94
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 95
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 96
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 97
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 98
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 99
+    PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 100
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 101
+    PSC_INTERNAL_LB_FORWARDING_RULES = 102
+    PUBLIC_ADVERTISED_PREFIXES = 103
+    PUBLIC_DELEGATED_PREFIXES = 104
+    REGIONAL_AUTOSCALERS = 105
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 106
+    RESERVATIONS = 107
+    RESOURCE_POLICIES = 108
+    ROUTERS = 109
+    ROUTES = 110
+    SECURITY_POLICIES = 111
+    SECURITY_POLICIES_PER_REGION = 112
+    SECURITY_POLICY_CEVAL_RULES = 113
+    SECURITY_POLICY_RULES = 114
+    SECURITY_POLICY_RULES_PER_REGION = 115
+    SERVICE_ATTACHMENTS = 116
+    SNAPSHOTS = 117
+    SSD_TOTAL_GB = 118
+    SSL_CERTIFICATES = 119
+    STATIC_ADDRESSES = 120
+    STATIC_BYOIP_ADDRESSES = 121
+    SUBNETWORKS = 122
+    SUBNET_RANGES_PER_NETWORK = 123
+    T2A_CPUS = 124
+    T2D_CPUS = 125
+    TARGET_HTTPS_PROXIES = 126
+    TARGET_HTTP_PROXIES = 127
+    TARGET_INSTANCES = 128
+    TARGET_POOLS = 129
+    TARGET_SSL_PROXIES = 130
+    TARGET_TCP_PROXIES = 131
+    TARGET_VPN_GATEWAYS = 132
+    URL_MAPS = 133
+    VPN_GATEWAYS = 134
+    VPN_TUNNELS = 135
+    XPN_SERVICE_PROJECTS = 136
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -57497,17 +57520,20 @@ class RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewal
   ewallPolicy object.
 
   Enums:
-    TypeValueValuesEnum: [Output Only] The type of the firewall policy.
+    TypeValueValuesEnum: [Output Only] The type of the firewall policy. Can be
+      one of HIERARCHY, NETWORK, NETWORK_REGIONAL.
 
   Fields:
     displayName: [Output Only] The display name of the firewall policy.
     name: [Output Only] The name of the firewall policy.
     rules: The rules that apply to the network.
-    type: [Output Only] The type of the firewall policy.
+    type: [Output Only] The type of the firewall policy. Can be one of
+      HIERARCHY, NETWORK, NETWORK_REGIONAL.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""[Output Only] The type of the firewall policy.
+    r"""[Output Only] The type of the firewall policy. Can be one of
+    HIERARCHY, NETWORK, NETWORK_REGIONAL.
 
     Values:
       HIERARCHY: <no description>
@@ -58680,8 +58706,8 @@ class ResourcePolicyDailyCycle(_messages.Message):
   r"""Time window specified for daily operations.
 
   Fields:
-    daysInCycle: Defines a schedule with units measured in months. The value
-      determines how many months pass between the start of each cycle.
+    daysInCycle: Defines a schedule with units measured in days. The value
+      determines how many days pass between the start of each cycle.
     duration: [Output only] A predetermined duration for the window,
       automatically chosen to be the smallest possible in the given scenario.
     startTime: Start time of the window. This must be in UTC format that
@@ -61021,7 +61047,8 @@ class RouterStatusBgpPeerStatus(_messages.Message):
       as third-party router appliances such as Next Gen Firewalls, Virtual
       Routers, or Router Appliances. The VM instance is the peer side of the
       BGP session.
-    state: BGP state as specified in RFC1771.
+    state: The state of the BGP session. For a list of possible values for
+      this field, see BGP session states.
     status: Status of the BGP peer: {UP, DOWN}
     statusReason: Indicates why particular status was returned.
     uptime: Time this session has been up. Format: 14 years, 51 weeks, 6 days,
@@ -62171,10 +62198,10 @@ class SecurityPolicy(_messages.Message):
 
   Enums:
     TypeValueValuesEnum: The type indicates the intended use of the security
-      policy. CLOUD_ARMOR - Cloud Armor backend security policies can be
+      policy. - CLOUD_ARMOR: Cloud Armor backend security policies can be
       configured to filter incoming HTTP requests targeting backend services.
-      They filter requests before they hit the origin servers.
-      CLOUD_ARMOR_EDGE - Cloud Armor edge security policies can be configured
+      They filter requests before they hit the origin servers. -
+      CLOUD_ARMOR_EDGE: Cloud Armor edge security policies can be configured
       to filter incoming HTTP requests targeting backend services (including
       Cloud CDN-enabled) as well as backend buckets (Cloud Storage). They
       filter requests before the request is served from Google's cache.
@@ -62246,10 +62273,10 @@ class SecurityPolicy(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
-    type: The type indicates the intended use of the security policy.
-      CLOUD_ARMOR - Cloud Armor backend security policies can be configured to
+    type: The type indicates the intended use of the security policy. -
+      CLOUD_ARMOR: Cloud Armor backend security policies can be configured to
       filter incoming HTTP requests targeting backend services. They filter
-      requests before they hit the origin servers. CLOUD_ARMOR_EDGE - Cloud
+      requests before they hit the origin servers. - CLOUD_ARMOR_EDGE: Cloud
       Armor edge security policies can be configured to filter incoming HTTP
       requests targeting backend services (including Cloud CDN-enabled) as
       well as backend buckets (Cloud Storage). They filter requests before the
@@ -62257,10 +62284,10 @@ class SecurityPolicy(_messages.Message):
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""The type indicates the intended use of the security policy.
-    CLOUD_ARMOR - Cloud Armor backend security policies can be configured to
+    r"""The type indicates the intended use of the security policy. -
+    CLOUD_ARMOR: Cloud Armor backend security policies can be configured to
     filter incoming HTTP requests targeting backend services. They filter
-    requests before they hit the origin servers. CLOUD_ARMOR_EDGE - Cloud
+    requests before they hit the origin servers. - CLOUD_ARMOR_EDGE: Cloud
     Armor edge security policies can be configured to filter incoming HTTP
     requests targeting backend services (including Cloud CDN-enabled) as well
     as backend buckets (Cloud Storage). They filter requests before the
@@ -62861,11 +62888,12 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       is present in the request, the key type defaults to ALL. - XFF_IP: The
       first IP address (i.e. the originating client IP address) specified in
       the list of IPs under X-Forwarded-For HTTP header. If no such header is
-      present or the value is not a valid IP, the key type defaults to ALL. -
-      HTTP_COOKIE: The value of the HTTP cookie whose name is configured under
-      "enforce_on_key_name". The key value is truncated to the first 128 bytes
-      of the cookie value. If no such cookie is present in the request, the
-      key type defaults to ALL.
+      present or the value is not a valid IP, the key defaults to the source
+      IP address of the request i.e. key type IP. - HTTP_COOKIE: The value of
+      the HTTP cookie whose name is configured under "enforce_on_key_name".
+      The key value is truncated to the first 128 bytes of the cookie value.
+      If no such cookie is present in the request, the key type defaults to
+      ALL.
 
   Fields:
     banDurationSec: Can only be specified if the action for the rule is
@@ -62889,20 +62917,21 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       key type defaults to ALL. - XFF_IP: The first IP address (i.e. the
       originating client IP address) specified in the list of IPs under
       X-Forwarded-For HTTP header. If no such header is present or the value
-      is not a valid IP, the key type defaults to ALL. - HTTP_COOKIE: The
-      value of the HTTP cookie whose name is configured under
-      "enforce_on_key_name". The key value is truncated to the first 128 bytes
-      of the cookie value. If no such cookie is present in the request, the
-      key type defaults to ALL.
+      is not a valid IP, the key defaults to the source IP address of the
+      request i.e. key type IP. - HTTP_COOKIE: The value of the HTTP cookie
+      whose name is configured under "enforce_on_key_name". The key value is
+      truncated to the first 128 bytes of the cookie value. If no such cookie
+      is present in the request, the key type defaults to ALL.
     enforceOnKeyName: Rate limit key name applicable only for the following
       key types: HTTP_HEADER -- Name of the HTTP header whose value is taken
       as the key value. HTTP_COOKIE -- Name of the HTTP cookie whose value is
       taken as the key value.
     exceedAction: Action to take for requests that are above the configured
       rate limit threshold, to either deny with a specified HTTP response
-      code, or redirect to a different endpoint. Valid options are "deny()"
-      where valid values for status are 403, 404, 429, and 502, and "redirect"
-      where the redirect parameters come from exceed_redirect_options below.
+      code, or redirect to a different endpoint. Valid options are
+      "deny(status)", where valid values for status are 403, 404, 429, and
+      502, and "redirect" where the redirect parameters come from
+      exceedRedirectOptions below.
     exceedRedirectOptions: Parameters defining the redirect action that is
       used as the exceed action. Cannot be specified if the exceed action is
       not redirect.
@@ -62921,10 +62950,11 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
     type defaults to ALL. - XFF_IP: The first IP address (i.e. the originating
     client IP address) specified in the list of IPs under X-Forwarded-For HTTP
     header. If no such header is present or the value is not a valid IP, the
-    key type defaults to ALL. - HTTP_COOKIE: The value of the HTTP cookie
-    whose name is configured under "enforce_on_key_name". The key value is
-    truncated to the first 128 bytes of the cookie value. If no such cookie is
-    present in the request, the key type defaults to ALL.
+    key defaults to the source IP address of the request i.e. key type IP. -
+    HTTP_COOKIE: The value of the HTTP cookie whose name is configured under
+    "enforce_on_key_name". The key value is truncated to the first 128 bytes
+    of the cookie value. If no such cookie is present in the request, the key
+    type defaults to ALL.
 
     Values:
       ALL: <no description>

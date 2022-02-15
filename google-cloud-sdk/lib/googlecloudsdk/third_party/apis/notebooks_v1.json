@@ -329,12 +329,16 @@
           "enumDescriptions": [
             "The runtime substate is unknown.",
             "The runtime is known to be in an healthy state (for example, critical daemons are running) Applies to ACTIVE state.",
-            "The runtime is known to be in an unhealthy state (for example, critical daemons are not running) Applies to ACTIVE state."
+            "The runtime is known to be in an unhealthy state (for example, critical daemons are not running) Applies to ACTIVE state.",
+            "The runtime has not installed health monitoring agent. Applies to ACTIVE state.",
+            "The runtime health monitoring agent is not running. Applies to ACTIVE state."
           ],
           "enum": [
             "HEALTH_STATE_UNSPECIFIED",
             "HEALTHY",
-            "UNHEALTHY"
+            "UNHEALTHY",
+            "AGENT_NOT_INSTALLED",
+            "AGENT_NOT_RUNNING"
           ]
         },
         "accessConfig": {
@@ -817,7 +821,7 @@
     },
     "ResetRuntimeRequest": {
       "id": "ResetRuntimeRequest",
-      "description": "Request for reseting a Managed Notebook Runtime.",
+      "description": "Request for resetting a Managed Notebook Runtime.",
       "type": "object",
       "properties": {
       }
@@ -852,12 +856,23 @@
           "type": "string",
           "enumDescriptions": [
             "Event is not specified.",
-            "The instance \/ runtime is idle"
+            "The instance \/ runtime is idle",
+            "The instance \/ runtime is available. This event indicates that instance \/ runtime underlying compute is operational.",
+            "The instance \/ runtime health is available. This event indicates that instance \/ runtime health information."
           ],
           "enum": [
             "EVENT_TYPE_UNSPECIFIED",
-            "IDLE"
+            "IDLE",
+            "HEARTBEAT",
+            "HEALTH"
           ]
+        },
+        "details": {
+          "description": "Optional. Event details. This field is used to pass event information.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1558,7 +1573,7 @@
     },
     "ResetInstanceRequest": {
       "id": "ResetInstanceRequest",
-      "description": "Request for reseting a notebook instance",
+      "description": "Request for resetting a notebook instance",
       "type": "object",
       "properties": {
       }

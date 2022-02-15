@@ -2060,9 +2060,12 @@ class OidcConfig(_messages.Message):
   Fields:
     certificateAuthorityData: PEM-encoded CA for OIDC provider.
     clientId: ID for OIDC client application.
+    clientSecret: Unencrypted OIDC client secret will be passed to the GKE Hub
+      CLH.
     deployCloudConsoleProxy: Flag to denote if reverse proxy is used to
       connect to auth provider. This flag should be set to true when provider
       is not reachable by Google Cloud Console.
+    encryptedClientSecret: Output only. Encrypted OIDC Client secret
     extraParams: Comma-separated list of key-value pairs.
     groupPrefix: Prefix to prepend to group name.
     groupsClaim: Claim in OIDC ID token that holds group information.
@@ -2077,15 +2080,17 @@ class OidcConfig(_messages.Message):
 
   certificateAuthorityData = _messages.StringField(1)
   clientId = _messages.StringField(2)
-  deployCloudConsoleProxy = _messages.BooleanField(3)
-  extraParams = _messages.StringField(4)
-  groupPrefix = _messages.StringField(5)
-  groupsClaim = _messages.StringField(6)
-  issuerUri = _messages.StringField(7)
-  kubectlRedirectUri = _messages.StringField(8)
-  scopes = _messages.StringField(9)
-  userClaim = _messages.StringField(10)
-  userPrefix = _messages.StringField(11)
+  clientSecret = _messages.StringField(3)
+  deployCloudConsoleProxy = _messages.BooleanField(4)
+  encryptedClientSecret = _messages.BytesField(5)
+  extraParams = _messages.StringField(6)
+  groupPrefix = _messages.StringField(7)
+  groupsClaim = _messages.StringField(8)
+  issuerUri = _messages.StringField(9)
+  kubectlRedirectUri = _messages.StringField(10)
+  scopes = _messages.StringField(11)
+  userClaim = _messages.StringField(12)
+  userPrefix = _messages.StringField(13)
 
 
 class Operation(_messages.Message):

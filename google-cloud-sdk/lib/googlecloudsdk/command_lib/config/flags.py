@@ -28,9 +28,9 @@ INSTALLATION_FLAG = base.Argument(
     required=False,
     action='store_true',
     help="""\
-        If set, the property is updated for the entire Cloud SDK installation.
-        Otherwise, by default, the property is updated only in the currently
-        active configuration."""
+        If set, the property is updated for the entire Google Cloud CLI
+        installation. Otherwise, by default, the property is updated only in the
+        currently active configuration."""
     )
 
 

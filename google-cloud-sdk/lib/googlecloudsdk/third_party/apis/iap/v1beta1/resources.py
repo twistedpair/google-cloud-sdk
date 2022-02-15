@@ -31,6 +31,13 @@ class Collections(enum.Enum):
       ['project'],
       True
   )
+  PROJECTS_IAP_TCP_DEST_GROUPS = (
+      'projects.iap_tcp.dest_groups',
+      'projects/{project}/iap_tunnel/locations/{region}/destGroups/{groupId}',
+      {},
+      ['project', 'region', 'groupId'],
+      True
+  )
   PROJECTS_IAP_WEB = (
       'projects.iap_web',
       'projects/{project}/iap_web/{iapWebId}',
