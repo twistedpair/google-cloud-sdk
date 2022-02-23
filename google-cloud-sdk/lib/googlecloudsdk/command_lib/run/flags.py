@@ -2207,7 +2207,7 @@ def AddTaskFilterFlags(parser):
       action=arg_parsers.ExtendConstAction,
       dest='filter_flags',
       const=['Succeeded', 'Failed', 'Cancelled'],
-      help='Include suceeded, failed, and canceled tasks.')
+      help='Include suceeded, failed, and cancelled tasks.')
   parser.add_argument(
       '--no-completed',
       action=arg_parsers.ExtendConstAction,

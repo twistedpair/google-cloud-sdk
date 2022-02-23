@@ -129,6 +129,20 @@ class AutoscalingPolicy(_messages.Message):
   workerConfig = _messages.MessageField('InstanceGroupAutoscalingPolicyConfig', 6)
 
 
+class AuxiliaryServicesConfig(_messages.Message):
+  r"""Auxiliary services configuration for a Cluster.
+
+  Fields:
+    metastoreConfig: Optional. The Hive Metastore configuration for this
+      workload.
+    sparkHistoryServerConfig: Optional. The Spark History Server configuration
+      for the workload.
+  """
+
+  metastoreConfig = _messages.MessageField('MetastoreConfig', 1)
+  sparkHistoryServerConfig = _messages.MessageField('SparkHistoryServerConfig', 2)
+
+
 class BasicAutoscalingAlgorithm(_messages.Message):
   r"""Basic algorithm for autoscaling.
 
@@ -5917,6 +5931,8 @@ class VirtualClusterConfig(_messages.Message):
   dataproc-on-gke-cluster).
 
   Fields:
+    auxiliaryServicesConfig: Optional. Configuration of auxiliary services
+      used by this cluster.
     kubernetesClusterConfig: Required. The configuration for running the
       Dataproc cluster on Kubernetes.
     softwareConfig: Optional. The config settings for cluster software.
@@ -5943,10 +5959,11 @@ class VirtualClusterConfig(_messages.Message):
       name, not a gs://... URI to a Cloud Storage bucket.
   """
 
-  kubernetesClusterConfig = _messages.MessageField('KubernetesClusterConfig', 1)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 2)
-  stagingBucket = _messages.StringField(3)
-  tempBucket = _messages.StringField(4)
+  auxiliaryServicesConfig = _messages.MessageField('AuxiliaryServicesConfig', 1)
+  kubernetesClusterConfig = _messages.MessageField('KubernetesClusterConfig', 2)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 3)
+  stagingBucket = _messages.StringField(4)
+  tempBucket = _messages.StringField(5)
 
 
 class WorkflowGraph(_messages.Message):

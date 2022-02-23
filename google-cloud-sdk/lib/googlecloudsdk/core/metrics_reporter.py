@@ -36,11 +36,10 @@ sys.path.pop(0)
 
 # pylint: disable=g-import-not-at-top
 from googlecloudsdk.core import argv_utils
-from googlecloudsdk.core import http_proxy
 from googlecloudsdk.core.util import files
 
 try:
-  from googlecloudsdk.core import http
+  from googlecloudsdk.core import requests
 except ImportError:
   # Do nothing if we can't import the lib.
   sys.exit(0)
@@ -60,15 +59,11 @@ def ReportMetrics(metrics_file_path):
     metrics = pickle.load(metrics_file)
   os.remove(metrics_file_path)
 
-  http_client = http.HttpClient(timeout=TIMEOUT_IN_SEC,
-                                proxy_info=http_proxy.GetHttpProxyInfo())
+  session = requests.Session()
 
   for metric in metrics:
-    http_client.request(
-        metric[0],
-        method=metric[1],
-        body=metric[2],
-        headers=metric[3])
+    session.request(metric[1], metric[0], data=metric[2], headers=metric[3],
+                    timeout=TIMEOUT_IN_SEC)
 
 if __name__ == '__main__':
   try:

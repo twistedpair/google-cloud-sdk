@@ -622,32 +622,6 @@ class ServicemanagementV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Enable(self, request, global_params=None):
-      r"""Enables a service for a project, so it can be used for the project. See [Cloud Auth Guide](https://cloud.google.com/docs/authentication) for more information. Operation.
-
-      Args:
-        request: (ServicemanagementServicesEnableRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Enable')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Enable.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='POST',
-        method_id='servicemanagement.services.enable',
-        ordered_params=['serviceName'],
-        path_params=['serviceName'],
-        query_params=[],
-        relative_path='v1/services/{serviceName}:enable',
-        request_field='enableServiceRequest',
-        request_type_name='ServicemanagementServicesEnableRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
     def GenerateConfigReport(self, request, global_params=None):
       r"""Generates and returns a report (errors, warnings and changes from existing configurations) associated with GenerateConfigReportRequest.new_value If GenerateConfigReportRequest.old_value is specified, GenerateConfigReportRequest will contain a single ChangeReport based on the comparison between GenerateConfigReportRequest.new_value and GenerateConfigReportRequest.old_value. If GenerateConfigReportRequest.old_value is not specified, this method will compare GenerateConfigReportRequest.new_value with the last pushed service configuration.
 

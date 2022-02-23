@@ -3322,14 +3322,15 @@ class SpannerProjectsInstanceConfigOperationsListRequest(_messages.Message):
       the type of metadata. For example, the type string for
       CreateInstanceConfigMetadata is `type.googleapis.com/google.spanner.admi
       n.database.v1.CreateInstanceConfigMetadata`. * `metadata.` - any field
-      in metadata.value. * `error` - Error associated with the long-running
-      operation. * `response.@type` - the type of response. * `response.` -
-      any field in response.value. You can combine multiple expressions by
-      enclosing each expression in parentheses. By default, expressions are
-      combined with AND logic. However, you can specify AND, OR, and NOT logic
-      explicitly. Here are a few examples: * `done:true` - The operation is
-      complete. * `(metadata.@type=` \ `type.googleapis.com/google.spanner.adm
-      in.instance.v1.CreateInstanceConfigMetadata) AND` \
+      in metadata.value. `metadata.@type` must be specified first, if
+      filtering on metadata fields. * `error` - Error associated with the
+      long-running operation. * `response.@type` - the type of response. *
+      `response.` - any field in response.value. You can combine multiple
+      expressions by enclosing each expression in parentheses. By default,
+      expressions are combined with AND logic. However, you can specify AND,
+      OR, and NOT logic explicitly. Here are a few examples: * `done:true` -
+      The operation is complete. * `(metadata.@type=` \ `type.googleapis.com/g
+      oogle.spanner.admin.instance.v1.CreateInstanceConfigMetadata) AND` \
       `(metadata.instance_config.name:custom-config) AND` \
       `(metadata.progress.start_time < \"2021-03-28T14:50:00Z\") AND` \
       `(error:*)` - Return operations where: * The operation's metadata type
@@ -3462,7 +3463,7 @@ class SpannerProjectsInstancesBackupOperationsListRequest(_messages.Message):
       `metadata.@type` - the type of metadata. For example, the type string
       for CreateBackupMetadata is `type.googleapis.com/google.spanner.admin.da
       tabase.v1.CreateBackupMetadata`. * `metadata.` - any field in
-      metadata.value. `metadata.type_url` must be specified if filtering on
+      metadata.value. `metadata.@type` must be specified first if filtering on
       metadata fields. * `error` - Error associated with the long-running
       operation. * `response.@type` - the type of response. * `response.` -
       any field in response.value. You can combine multiple expressions by
@@ -3767,7 +3768,8 @@ class SpannerProjectsInstancesDatabaseOperationsListRequest(_messages.Message):
       the type of metadata. For example, the type string for
       RestoreDatabaseMetadata is `type.googleapis.com/google.spanner.admin.dat
       abase.v1.RestoreDatabaseMetadata`. * `metadata.` - any field in
-      metadata.value. * `error` - Error associated with the long-running
+      metadata.value. `metadata.@type` must be specified first, if filtering
+      on metadata fields. * `error` - Error associated with the long-running
       operation. * `response.@type` - the type of response. * `response.` -
       any field in response.value. You can combine multiple expressions by
       enclosing each expression in parentheses. By default, expressions are

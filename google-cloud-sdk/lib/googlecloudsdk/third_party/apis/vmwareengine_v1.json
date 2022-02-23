@@ -324,11 +324,11 @@
       "type": "object",
       "properties": {
         "network": {
-          "description": "Required. The relative resource name of the consumer VPC network this private cloud is attached to. Specify the name in the following form: `projects\/{project}\/global\/networks\/{network_id}` where `{project}` can either be a project number or a project ID.",
+          "description": "Optional. DEPRECATED: Optional. The relative resource name of the consumer VPC network this private cloud is attached to. Specify the name in the following form: `projects\/{project}\/global\/networks\/{network_id}` where `{project}` can either be a project number or a project ID.",
           "type": "string"
         },
         "serviceNetwork": {
-          "description": "Output only. The relative resource name of the service VPC network this private cloud is attached to. The name is specified in the following form: `projects\/{service_project_number}\/global\/networks\/{network_id}`.",
+          "description": "Output only. DEPRECATED: Output only. The relative resource name of the service VPC network this private cloud is attached to. The name is specified in the following form: `projects\/{service_project_number}\/global\/networks\/{network_id}`.",
           "readOnly": true,
           "type": "string"
         },
@@ -812,7 +812,7 @@
           "$ref": "NetworkService"
         },
         "network": {
-          "description": "Required. Name of the network in the consumer project which is peered or will be peered with the service network. Provide the network name in the form of `projects\/{project}\/global\/networks\/{network}`, where `{project}` is the project ID or project number of the project containing the network. In case of shared VPC, use the project ID or project number of the host project containing the shared VPC network.",
+          "description": "Optional. DEPRECATED: Optional. Name of the network in the consumer project which is peered or will be peered with the service network. Provide the network name in the form of `projects\/{project}\/global\/networks\/{network}`, where `{project}` is the project ID or project number of the project containing the network. In case of shared VPC, use the project ID or project number of the host project containing the shared VPC network.",
           "type": "string"
         },
         "edgeServicesCidr": {

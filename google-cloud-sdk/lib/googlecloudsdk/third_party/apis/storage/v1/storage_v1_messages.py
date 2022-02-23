@@ -1237,6 +1237,8 @@ class StandardQueryParameters(_messages.Message):
       Must not exceed 40 characters.
     trace: A tracing token of the form "token:<tokenid>" to include in api
       requests.
+    uploadType: Upload protocol for media (e.g. "media", "multipart",
+      "resumable").
     userIp: Deprecated. Please use quotaUser instead.
   """
 
@@ -1255,7 +1257,8 @@ class StandardQueryParameters(_messages.Message):
   prettyPrint = _messages.BooleanField(5, default=True)
   quotaUser = _messages.StringField(6)
   trace = _messages.StringField(7)
-  userIp = _messages.StringField(8)
+  uploadType = _messages.StringField(8)
+  userIp = _messages.StringField(9)
 
 
 class StorageBucketAccessControlsDeleteRequest(_messages.Message):

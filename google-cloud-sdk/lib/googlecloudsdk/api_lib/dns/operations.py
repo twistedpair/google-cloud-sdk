@@ -30,19 +30,21 @@ class Poller(waiter.OperationPoller):
   See https://cloud.google.com/speech/reference/rpc/google.longrunning
   """
 
-  def __init__(self, operations_client):
+  def __init__(self, operations_client, api_version='v1'):
     """Sets up poller for dns operations.
 
     Args:
       operations_client: Client, client for retrieving information about
           ongoing operation.
+      api_version: Cloud DNS api version this poller should use.
     """
     self.operations_client = operations_client
+    self.api_version = api_version
 
   def IsDone(self, operation):
     """Overrides."""
-    if operation.status == \
-        self.operations_client.messages.Operation.StatusValueValuesEnum.done:
+    done_enum = self.operations_client.messages.Operation.StatusValueValuesEnum.DONE if self.api_version == 'v2' else self.operations_client.messages.Operation.StatusValueValuesEnum.done
+    if operation.status == done_enum:
       return True
     return False
 
@@ -69,8 +71,8 @@ class Poller(waiter.OperationPoller):
     return operation.zoneContext.newValue
 
 
-def WaitFor(version, operation_ref, message):
-  operation_poller = Poller(Client.FromApiVersion(version))
+def WaitFor(version, operation_ref, message, location=None):
+  operation_poller = Poller(Client.FromApiVersion(version, location), version)
   return waiter.WaitFor(operation_poller, operation_ref, message)
 
 
@@ -79,26 +81,32 @@ class Client(object):
 
   _API_NAME = 'dns'
 
-  def __init__(self, version, client, messages=None):
+  def __init__(self, version, client, messages=None, location=None):
     self.version = version
     self.client = client
     self._service = self.client.managedZoneOperations
     self.messages = messages or client.MESSAGES_MODULE
+    self.location = location
 
   @classmethod
-  def FromApiVersion(cls, version):
-    return cls(version, util.GetApiClient(version))
+  def FromApiVersion(cls, version, location=None):
+    return cls(
+        version, util.GetApiClient(version), messages=None, location=location)
 
   def Get(self, operation_ref):
-    return self._service.Get(
-        self.messages.DnsManagedZoneOperationsGetRequest(
-            operation=operation_ref.Name(),
-            managedZone=operation_ref.managedZone,
-            project=operation_ref.project))
+    request = self.messages.DnsManagedZoneOperationsGetRequest(
+        operation=operation_ref.Name(),
+        managedZone=operation_ref.managedZone,
+        project=operation_ref.project)
+    if self.location:
+      request.location = self.location
+    return self._service.Get(request)
 
   def List(self, zone_ref, limit=None):
     request = self.messages.DnsManagedZoneOperationsListRequest(
         managedZone=zone_ref.Name(),
         project=zone_ref.project)
+    if self.location:
+      request.location = self.location
     return list_pager.YieldFromList(
         self._service, request, limit=limit, field='operations')

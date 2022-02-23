@@ -168,6 +168,18 @@ def CreateCLI(surfaces, translator=None):
       'container.hub.deploy',
       os.path.join(pkg_root, 'surface', 'container', 'fleet',
                    'deploy'))
+  loader.AddModule(
+      'container.hub.ingress',
+      os.path.join(pkg_root, 'surface', 'container', 'fleet',
+                   'ingress'))
+  loader.AddModule(
+      'container.hub.mesh',
+      os.path.join(pkg_root, 'surface', 'container', 'fleet',
+                   'mesh'))
+  loader.AddModule(
+      'container.hub.identity_service',
+      os.path.join(pkg_root, 'surface', 'container', 'fleet',
+                   'identity_service'))
 
   # Check for updates on shutdown but not for any of the updater commands.
   # Skip update checks for 'gcloud version' command as it does that manually.

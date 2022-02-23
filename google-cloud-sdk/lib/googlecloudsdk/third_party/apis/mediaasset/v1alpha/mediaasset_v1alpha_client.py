@@ -1311,6 +1311,33 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Search(self, request, global_params=None):
+      r"""Search returns the resources (e.g., assets and annotations) under a Catalog that match the given query. Search covers both media content and metadata.
+
+      Args:
+        request: (MediaassetProjectsLocationsCatalogsSearchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CatalogSearchResponse) The response message.
+      """
+      config = self.GetMethodConfig('Search')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Search.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/catalogs/{catalogsId}:search',
+        http_method='POST',
+        method_id='mediaasset.projects.locations.catalogs.search',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:search',
+        request_field='catalogSearchRequest',
+        request_type_name='MediaassetProjectsLocationsCatalogsSearchRequest',
+        response_type_name='CatalogSearchResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsComplexTypesService(base_api.BaseApiService):
     """Service class for the projects_locations_complexTypes resource."""
 

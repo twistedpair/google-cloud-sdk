@@ -230,6 +230,14 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "layoutName": {
+          "description": "The deployment layout type. Defined by the NetworkLayout.name in \/\/cloud\/kubernetes\/edge\/network\/proto\/network_layout.proto The layout definition must exist in \/\/cloud\/kubernetes\/edge\/network\/service\/config\/network_layout",
+          "type": "string"
+        },
+        "migrateToCcfe": {
+          "description": "Optional. \/ Skip GNAS site creation if set to true. This flag should be used for \/ migration only.",
+          "type": "boolean"
         }
       }
     },
@@ -1105,45 +1113,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Creates a new Zone in a given project and location."
-                },
-                "patch": {
-                  "id": "edgenetwork.projects.locations.zones.patch",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}",
-                  "httpMethod": "PATCH",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The resource name of the zone.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/zones\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "updateMask": {
-                      "description": "Required. Field mask is used to specify the fields to be overwritten in the Zone resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
-                      "location": "query",
-                      "type": "string",
-                      "format": "google-fieldmask"
-                    },
-                    "requestId": {
-                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "Zone"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Updates the parameters of a single Zone."
                 },
                 "delete": {
                   "id": "edgenetwork.projects.locations.zones.delete",

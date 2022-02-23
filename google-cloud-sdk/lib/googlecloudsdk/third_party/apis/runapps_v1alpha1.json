@@ -22,6 +22,7 @@
   "baseUrl": "https://runapps.googleapis.com/",
   "batchPath": "batch",
   "version_module": true,
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",

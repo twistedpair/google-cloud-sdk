@@ -79,6 +79,12 @@ class Client(object):
     req.awsServicesAuthentication = sa
     return sa
 
+  def _AddAwsProxyConfig(self, req):
+    msg = 'GoogleCloudGkemulticloud{}AwsProxyConfig'.format(self.version)
+    pc = getattr(self.messages, msg)()
+    req.proxyConfig = pc
+    return pc
+
   def _CreateAwsClusterUser(self, username):
     msg = 'GoogleCloudGkemulticloud{}AwsClusterUser'.format(self.version)
     return getattr(self.messages, msg)(username=username)
@@ -247,6 +253,9 @@ class Client(object):
       cp.configEncryption = self._CreateAwsConfigEncryption(
           args.config_encryption_kms_key_arn)
       update_mask.append('control_plane.config_encryption.kms_key_arn')
+    if args.security_group_ids:
+      cp.securityGroupIds.extend(args.security_group_ids)
+      update_mask.append('control_plane.security_group_ids')
 
     services_auth = self._AddAwsServicesAuthentication(cp)
     if args.role_arn:
@@ -260,6 +269,14 @@ class Client(object):
       for username in args.admin_users:
         a.adminUsers.append(self._CreateAwsClusterUser(username))
       update_mask.append('authorization.admin_users')
+
+    proxy_config = self._AddAwsProxyConfig(cp)
+    if args.proxy_secret_arn:
+      proxy_config.secretArn = args.proxy_secret_arn
+      update_mask.append('control_plane.proxy_config.secret_arn')
+    if args.proxy_secret_version_id:
+      proxy_config.secretVersion = args.proxy_secret_version_id
+      update_mask.append('control_plane.proxy_config.secret_version')
 
     req.updateMask = ','.join(update_mask)
 

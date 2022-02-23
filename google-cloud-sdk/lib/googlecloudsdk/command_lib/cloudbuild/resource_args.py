@@ -23,15 +23,6 @@ from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.core import properties
 
 
-def GetTriggerResourceSpec():
-  return concepts.ResourceSpec(
-      'cloudbuild.projects.locations.triggers',
-      resource_name='trigger',
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      locationsId=RegionAttributeConfig(),
-      triggersId=TriggerAttributeConfig())
-
-
 def RegionAttributeConfig():
   fallthroughs = [
       deps.PropertyFallthrough(properties.VALUES.builds.region)
@@ -42,7 +33,31 @@ def RegionAttributeConfig():
       help_text='The Cloud location for the {resource}.')
 
 
+def GetTriggerResourceSpec():
+  return concepts.ResourceSpec(
+      'cloudbuild.projects.locations.triggers',
+      resource_name='trigger',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=RegionAttributeConfig(),
+      triggersId=TriggerAttributeConfig())
+
+
 def TriggerAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='trigger',
       help_text='Build Trigger ID')
+
+
+def GetWorkflowResourceSpec():
+  return concepts.ResourceSpec(
+      'cloudbuild.projects.locations.workflows',
+      api_version='v2',
+      resource_name='workflow',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=RegionAttributeConfig(),
+      workflowsId=WorkflowAttributeConfig())
+
+
+def WorkflowAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='workflow', help_text='Workflow ID')

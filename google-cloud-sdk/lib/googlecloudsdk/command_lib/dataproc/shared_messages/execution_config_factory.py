@@ -89,12 +89,12 @@ def AddArguments(parser):
       hidden=True,  # Not supported yet.
       choices=_PERFORMANCE_TIER,
       help_str=(
-          'Performance tier for a batch job performance. '
+          'Performance tier for a batch/session job performance. '
           'The default performance level is STANDARD.')).AddToParser(parser)
 
   parser.add_argument(
       '--service-account',
-      help='The IAM service account to be used for a batch job.')
+      help='The IAM service account to be used for a batch/session job.')
 
   network_group = parser.add_mutually_exclusive_group()
   network_group.add_argument(

@@ -6,7 +6,7 @@
   "canonicalName": "Edge Container",
   "version": "v1alpha",
   "revision": "0",
-  "title": "Edge Container API",
+  "title": "Distributed Cloud Edge Container API",
   "description": "",
   "ownerDomain": "google.com",
   "ownerName": "Google",

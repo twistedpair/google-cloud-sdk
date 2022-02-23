@@ -30,8 +30,8 @@ from googlecloudsdk.core.util import encoding
 API_NAME = 'runapps'
 API_VERSION = 'v1alpha1'
 
-# Max wait time before timing out
-_POLLING_TIMEOUT_MS = 180000
+# Max wait time before timing out, match timeout of CP
+_POLLING_TIMEOUT_MS = 600000
 # Max wait time between poll retries before timing out
 _RETRY_TIMEOUT_MS = 1000
 

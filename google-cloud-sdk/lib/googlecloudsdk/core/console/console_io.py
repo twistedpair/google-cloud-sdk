@@ -598,7 +598,7 @@ def PromptChoice(options, default=None, message=None,
 
 
 def PromptWithValidator(validator, error_message, prompt_string,
-                        message=None):
+                        message=None, allow_invalid=False):
   """Prompts the user for a string that must pass a validator.
 
   Args:
@@ -609,6 +609,7 @@ def PromptWithValidator(validator, error_message, prompt_string,
     prompt_string: str, A string to print when prompting the user to enter a
       choice.  If not given, a default prompt is used.
     message: str, An optional message to print before prompting.
+    allow_invalid: bool, Allow returning the answer if validation fails.
 
   Returns:
     str, The string entered by the user, or the default if no value was
@@ -617,16 +618,29 @@ def PromptWithValidator(validator, error_message, prompt_string,
   if properties.VALUES.core.disable_prompts.GetBool():
     return None
 
+  # Display prompts in detailed JSON format when running tests.
+  style = properties.VALUES.core.interactive_ux_style.Get()
+  if style == properties.VALUES.core.InteractiveUXStyles.TESTING.name:
+    write = lambda x: None
+    sys.stderr.write(JsonUXStub(
+        UXElementType.PROMPT_WITH_VALIDATOR, error_message=error_message,
+        prompt_string=prompt_string, message=message,
+        allow_invalid=allow_invalid) + '\n')
+  else:
+    write = sys.stderr.write
+
   if message:
-    sys.stderr.write(_DoWrap(message) + '\n')
+    write(_DoWrap(message) + '\n')
 
   while True:
-    sys.stderr.write(_DoWrap(prompt_string))
+    write(_DoWrap(prompt_string))
     answer = _GetInput()
     if validator(answer):
       return answer
     else:
-      sys.stderr.write(_DoWrap(error_message) + '\n')
+      write(_DoWrap(error_message) + '\n')
+      if allow_invalid and PromptContinue(default=False):
+        return answer
 
 
 def LazyFormat(s, **kwargs):
@@ -1069,6 +1083,8 @@ class UXElementType(enum.Enum):
   PROMPT_CONTINUE = (3, 'message', 'prompt_string', 'cancel_string')
   PROMPT_RESPONSE = (4, 'message')
   PROMPT_CHOICE = (5, 'message', 'prompt_string', 'choices')
+  PROMPT_WITH_VALIDATOR = (6, 'error_message', 'prompt_string', 'message',
+                           'allow_invalid')
 
   def __init__(self, ordinal, *data_fields):
     # We need to pass in something unique here because if two event types

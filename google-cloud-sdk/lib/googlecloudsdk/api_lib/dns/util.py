@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
@@ -44,3 +45,26 @@ def GetApiFromTrack(track):
 
 def GetApiClient(version):
   return apis.GetClientInstance('dns', version)
+
+
+# Prepare necessary parameters for registry to return the correct resource name.
+def GetParamsForRegistry(version, args, parent=None):
+  params = {'project': properties.VALUES.core.project.GetOrFail}
+  if version == 'v2':
+    params['location'] = args.location
+  if parent is not None:
+    if parent == 'managedZones':
+      params['managedZone'] = args.zone
+    if parent == 'responsePolicies':
+      params['responsePolicy'] = args.response_policy
+  return params
+
+
+def GetApiFromTrackAndArgs(track, args):
+  if (track == base.ReleaseTrack.BETA or
+      track == base.ReleaseTrack.ALPHA) and args.IsSpecified('location'):
+    # Has specified a zone, use v2 api
+    return 'v2'
+  else:
+    # Has not specified a zone, use a v1 api depending on the version track.
+    return GetApiFromTrack(track)

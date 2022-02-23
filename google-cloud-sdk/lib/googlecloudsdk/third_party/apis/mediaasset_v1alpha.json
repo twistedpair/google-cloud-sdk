@@ -793,9 +793,9 @@
             "Segment-level search. That is, search over segments within videos and annotations."
           ],
           "enum": [
-            "REQUEST_TYPE_UNSPECIFIED",
-            "REQUEST_TYPE_ASSET",
-            "REQUEST_TYPE_SEGMENT"
+            "SEARCH_REQUEST_TYPE_UNSPECIFIED",
+            "SEARCH_REQUEST_TYPE_ASSET",
+            "SEARCH_REQUEST_TYPE_SEGMENT"
           ]
         },
         "query": {
@@ -1124,6 +1124,58 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "CatalogSearchRequest": {
+      "id": "CatalogSearchRequest",
+      "description": "Request message for CatalogsService.SearchCatalog.",
+      "type": "object",
+      "properties": {
+        "pageSize": {
+          "description": "The maximum number of items to return. If unspecified, server will pick an appropriate default. Server may return fewer items than requested. A caller should only rely on response's next_page_token to determine if there are more realms left to be queried.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageToken": {
+          "description": "The next_page_token value returned from a previous Search request, if any.",
+          "type": "string"
+        },
+        "type": {
+          "description": "By default, search at segment level.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified type.",
+            "Video-level search. That is, search over videos and video-level metadata.",
+            "Segment-level search. That is, search over segments within videos and annotations."
+          ],
+          "enum": [
+            "SEARCH_REQUEST_TYPE_UNSPECIFIED",
+            "SEARCH_REQUEST_TYPE_ASSET",
+            "SEARCH_REQUEST_TYPE_SEGMENT"
+          ]
+        },
+        "query": {
+          "description": "Search query.",
+          "type": "string"
+        }
+      }
+    },
+    "CatalogSearchResponse": {
+      "id": "CatalogSearchResponse",
+      "description": "Response message for CatalogsService.SearchCatalog.",
+      "type": "object",
+      "properties": {
+        "items": {
+          "description": "Returned search results.",
+          "type": "array",
+          "items": {
+            "$ref": "SearchResultItem"
+          }
+        },
+        "nextPageToken": {
+          "description": "The next-page continuation token.",
+          "type": "string"
         }
       }
     },
@@ -3799,6 +3851,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Updates the parameters of a single catalog."
+                },
+                "search": {
+                  "id": "mediaasset.projects.locations.catalogs.search",
+                  "path": "v1alpha/{+name}:search",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/catalogs/{catalogsId}:search",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The catalog resource name, in the following form: `projects\/{project}\/locations\/{location}\/catalogs\/{catalog}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/catalogs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "CatalogSearchRequest"
+                  },
+                  "response": {
+                    "$ref": "CatalogSearchResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Search returns the resources (e.g., assets and annotations) under a Catalog that match the given query. Search covers both media content and metadata."
                 }
               }
             },

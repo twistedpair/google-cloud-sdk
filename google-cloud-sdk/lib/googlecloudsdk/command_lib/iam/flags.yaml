@@ -262,6 +262,20 @@ workload_identity_pool_provider:
       follow the
       [SAML 2.0 metadata specification](https://www.oasis-open.org/committees/download.php/35391/sstc-saml-metadata-errata-2.0-wd-04-diff.pdf).
 
+workload_identity_pool_provider_key:
+  use:
+    api_field: workloadIdentityPoolProviderKey.keyData.keySpec
+    arg_name: spec
+    required: true
+    help_text: |-
+      The specifications for the key.
+  spec:
+    api_field: workloadIdentityPoolProviderKey.use
+    arg_name: use
+    required: true
+    help_text: |-
+      The purpose of the key.
+
 workforce_pool:
   parent:
     api_field: workforcePool.parent

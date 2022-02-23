@@ -45,6 +45,7 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
     self.projects_locations_provisioningConfigs = self.ProjectsLocationsProvisioningConfigsService(self)
     self.projects_locations_provisioningQuotas = self.ProjectsLocationsProvisioningQuotasService(self)
     self.projects_locations_snapshotSchedulePolicies = self.ProjectsLocationsSnapshotSchedulePoliciesService(self)
+    self.projects_locations_sshKeys = self.ProjectsLocationsSshKeysService(self)
     self.projects_locations_volumes_luns = self.ProjectsLocationsVolumesLunsService(self)
     self.projects_locations_volumes_snapshots = self.ProjectsLocationsVolumesSnapshotsService(self)
     self.projects_locations_volumes = self.ProjectsLocationsVolumesService(self)
@@ -60,6 +61,60 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
       super(BaremetalsolutionV2.ProjectsLocationsInstancesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def DisableInteractiveSerialConsole(self, request, global_params=None):
+      r"""Disable the interactive serial console feature on an instance.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsInstancesDisableInteractiveSerialConsoleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DisableInteractiveSerialConsole')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DisableInteractiveSerialConsole.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:disableInteractiveSerialConsole',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.instances.disableInteractiveSerialConsole',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:disableInteractiveSerialConsole',
+        request_field='disableInteractiveSerialConsoleRequest',
+        request_type_name='BaremetalsolutionProjectsLocationsInstancesDisableInteractiveSerialConsoleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def EnableInteractiveSerialConsole(self, request, global_params=None):
+      r"""Enable the interactive serial console feature on an instance.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsInstancesEnableInteractiveSerialConsoleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('EnableInteractiveSerialConsole')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EnableInteractiveSerialConsole.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:enableInteractiveSerialConsole',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.instances.enableInteractiveSerialConsole',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:enableInteractiveSerialConsole',
+        request_field='enableInteractiveSerialConsoleRequest',
+        request_type_name='BaremetalsolutionProjectsLocationsInstancesEnableInteractiveSerialConsoleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       r"""Get details about a single server.
@@ -260,6 +315,33 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListNetworkUsage(self, request, global_params=None):
+      r"""List all Networks (and used IPs for each Network) in the vendor account associated with the specified project.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsNetworksListNetworkUsageRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListNetworkUsageResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListNetworkUsage')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListNetworkUsage.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/networks:listNetworkUsage',
+        http_method='GET',
+        method_id='baremetalsolution.projects.locations.networks.listNetworkUsage',
+        ordered_params=['location'],
+        path_params=['location'],
+        query_params=[],
+        relative_path='v2/{+location}/networks:listNetworkUsage',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsNetworksListNetworkUsageRequest',
+        response_type_name='ListNetworkUsageResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Update details of a single network.
 
@@ -343,11 +425,38 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         method_id='baremetalsolution.projects.locations.nfsShares.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/nfsShares',
         request_field='',
         request_type_name='BaremetalsolutionProjectsLocationsNfsSharesListRequest',
         response_type_name='ListNfsSharesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update details of a single NFS share.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsNfsSharesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/nfsShares/{nfsSharesId}',
+        http_method='PATCH',
+        method_id='baremetalsolution.projects.locations.nfsShares.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='nfsShare',
+        request_type_name='BaremetalsolutionProjectsLocationsNfsSharesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -567,6 +676,97 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         request_field='snapshotSchedulePolicy',
         request_type_name='BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesPatchRequest',
         response_type_name='SnapshotSchedulePolicy',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSshKeysService(base_api.BaseApiService):
+    """Service class for the projects_locations_sshKeys resource."""
+
+    _NAME = 'projects_locations_sshKeys'
+
+    def __init__(self, client):
+      super(BaremetalsolutionV2.ProjectsLocationsSshKeysService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Register a public SSH key in the specified project for use with the interactive serial console feature.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsSshKeysCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SSHKey) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/sshKeys',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.sshKeys.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['sshKeyId'],
+        relative_path='v2/{+parent}/sshKeys',
+        request_field='sSHKey',
+        request_type_name='BaremetalsolutionProjectsLocationsSshKeysCreateRequest',
+        response_type_name='SSHKey',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a public SSH key registered in the specified project.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsSshKeysDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/sshKeys/{sshKeysId}',
+        http_method='DELETE',
+        method_id='baremetalsolution.projects.locations.sshKeys.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsSshKeysDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the public SSH keys registered for the specified project. These SSH keys are used only for the interactive serial console feature.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsSshKeysListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSSHKeysResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/sshKeys',
+        http_method='GET',
+        method_id='baremetalsolution.projects.locations.sshKeys.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/sshKeys',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsSshKeysListRequest',
+        response_type_name='ListSSHKeysResponse',
         supports_download=False,
     )
 

@@ -1321,6 +1321,8 @@ class GoogleCloudDatacatalogV1DataSource(_messages.Message):
       `//bigquery.googleapis.com/projects/{PROJECT_ID}/locations/{LOCATION}/da
       tasets/{DATASET_ID}/tables/{TABLE_ID}`
     service: Service that physically stores the data.
+    sourceEntry: Output only. Data Catalog entry name, if applicable.
+    storageProperties: Detailed properties of the underlying storage.
   """
 
   class ServiceValueValuesEnum(_messages.Enum):
@@ -1337,6 +1339,8 @@ class GoogleCloudDatacatalogV1DataSource(_messages.Message):
 
   resource = _messages.StringField(1)
   service = _messages.EnumField('ServiceValueValuesEnum', 2)
+  sourceEntry = _messages.StringField(3)
+  storageProperties = _messages.MessageField('GoogleCloudDatacatalogV1StorageProperties', 4)
 
 
 class GoogleCloudDatacatalogV1DataSourceConnectionSpec(_messages.Message):
@@ -1369,6 +1373,8 @@ class GoogleCloudDatacatalogV1DatabaseTableSpec(_messages.Message):
     TypeValueValuesEnum: Type of this table.
 
   Fields:
+    dataplexTable: Fields specific to a Dataplex table and present only in the
+      Dataplex table entries.
     type: Type of this table.
   """
 
@@ -1384,7 +1390,95 @@ class GoogleCloudDatacatalogV1DatabaseTableSpec(_messages.Message):
     NATIVE = 1
     EXTERNAL = 2
 
-  type = _messages.EnumField('TypeValueValuesEnum', 1)
+  dataplexTable = _messages.MessageField('GoogleCloudDatacatalogV1DataplexTableSpec', 1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
+class GoogleCloudDatacatalogV1DataplexExternalTable(_messages.Message):
+  r"""External table registered by Dataplex. Dataplex publishes data
+  discovered from an asset into multiple other systems (BigQuery, DPMS) in
+  form of tables. We call them "external tables". External tables are also
+  synced into the Data Catalog. This message contains pointers to those
+  external tables (fully qualified name, resource name et cetera) within the
+  Data Catalog.
+
+  Enums:
+    SystemValueValuesEnum: Service in which the external table is registered.
+
+  Fields:
+    dataCatalogEntry: Name of the Data Catalog entry representing the external
+      table.
+    fullyQualifiedName: Fully qualified name (FQN) of the external table.
+    googleCloudResource: Google Cloud resource name of the external table.
+    system: Service in which the external table is registered.
+  """
+
+  class SystemValueValuesEnum(_messages.Enum):
+    r"""Service in which the external table is registered.
+
+    Values:
+      INTEGRATED_SYSTEM_UNSPECIFIED: Default unknown system.
+      BIGQUERY: BigQuery.
+      CLOUD_PUBSUB: Cloud Pub/Sub.
+      DATAPROC_METASTORE: Dataproc Metastore.
+      DATAPLEX: Dataplex.
+    """
+    INTEGRATED_SYSTEM_UNSPECIFIED = 0
+    BIGQUERY = 1
+    CLOUD_PUBSUB = 2
+    DATAPROC_METASTORE = 3
+    DATAPLEX = 4
+
+  dataCatalogEntry = _messages.StringField(1)
+  fullyQualifiedName = _messages.StringField(2)
+  googleCloudResource = _messages.StringField(3)
+  system = _messages.EnumField('SystemValueValuesEnum', 4)
+
+
+class GoogleCloudDatacatalogV1DataplexFilesetSpec(_messages.Message):
+  r"""Entry specyfication for a Dataplex fileset.
+
+  Fields:
+    dataplexSpec: Common Dataplex fields.
+  """
+
+  dataplexSpec = _messages.MessageField('GoogleCloudDatacatalogV1DataplexSpec', 1)
+
+
+class GoogleCloudDatacatalogV1DataplexSpec(_messages.Message):
+  r"""Common Dataplex fields.
+
+  Fields:
+    asset: Fully qualified resource name of an asset in Dataplex, to which the
+      underlying data source (Cloud Storage bucket or BigQuery dataset) of the
+      entity is attached.
+    compressionFormat: Compression format of the data, e.g., zip, gzip etc.
+    dataFormat: Format of the data.
+    projectId: Project ID of the underlying Cloud Storage or BigQuery data.
+      Note that this may not be the same project as the correspondingly
+      Dataplex lake / zone / asset.
+  """
+
+  asset = _messages.StringField(1)
+  compressionFormat = _messages.StringField(2)
+  dataFormat = _messages.MessageField('GoogleCloudDatacatalogV1PhysicalSchema', 3)
+  projectId = _messages.StringField(4)
+
+
+class GoogleCloudDatacatalogV1DataplexTableSpec(_messages.Message):
+  r"""Entry specification for a Dataplex table.
+
+  Fields:
+    dataplexSpec: Common Dataplex fields.
+    externalTables: List of external tables registered by Dataplex in other
+      systems based on the same underlying data. External tables allow to
+      query this data in those systems.
+    userManaged: Indicates if the table schema is managed by the user or not.
+  """
+
+  dataplexSpec = _messages.MessageField('GoogleCloudDatacatalogV1DataplexSpec', 1)
+  externalTables = _messages.MessageField('GoogleCloudDatacatalogV1DataplexExternalTable', 2, repeated=True)
+  userManaged = _messages.BooleanField(3)
 
 
 class GoogleCloudDatacatalogV1Entry(_messages.Message):
@@ -1438,6 +1532,8 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       letters, numbers (0-9), underscores (_), dashes (-), spaces ( ), and
       can't start or end with spaces. The maximum size is 200 bytes when
       encoded in UTF-8. Default value is an empty string.
+    filesetSpec: Specification that applies to a fileset resource. Valid only
+      for entries with the `FILESET` type.
     fullyQualifiedName: Fully qualified name (FQN) of the resource. Set
       automatically for entries representing resources from synced systems.
       Settable only during creation and read-only afterwards. Can be used for
@@ -1509,11 +1605,13 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       BIGQUERY: BigQuery.
       CLOUD_PUBSUB: Cloud Pub/Sub.
       DATAPROC_METASTORE: Dataproc Metastore.
+      DATAPLEX: Dataplex.
     """
     INTEGRATED_SYSTEM_UNSPECIFIED = 0
     BIGQUERY = 1
     CLOUD_PUBSUB = 2
     DATAPROC_METASTORE = 3
+    DATAPLEX = 4
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the entry. Only used for entries with types listed in the
@@ -1537,6 +1635,8 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       DATA_SOURCE_CONNECTION: Output only. Connection to a data source. For
         example, a BigQuery connection.
       ROUTINE: Output only. Routine, for example, a BigQuery routine.
+      LAKE: A Dataplex lake.
+      ZONE: A Dataplex zone.
       SERVICE: A service, for example, a Dataproc Metastore service.
     """
     ENTRY_TYPE_UNSPECIFIED = 0
@@ -1548,7 +1648,9 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
     DATABASE = 6
     DATA_SOURCE_CONNECTION = 7
     ROUTINE = 8
-    SERVICE = 9
+    LAKE = 9
+    ZONE = 10
+    SERVICE = 11
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1586,20 +1688,21 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
   databaseTableSpec = _messages.MessageField('GoogleCloudDatacatalogV1DatabaseTableSpec', 8)
   description = _messages.StringField(9)
   displayName = _messages.StringField(10)
-  fullyQualifiedName = _messages.StringField(11)
-  gcsFilesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1GcsFilesetSpec', 12)
-  integratedSystem = _messages.EnumField('IntegratedSystemValueValuesEnum', 13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  linkedResource = _messages.StringField(15)
-  name = _messages.StringField(16)
-  personalDetails = _messages.MessageField('GoogleCloudDatacatalogV1PersonalDetails', 17)
-  routineSpec = _messages.MessageField('GoogleCloudDatacatalogV1RoutineSpec', 18)
-  schema = _messages.MessageField('GoogleCloudDatacatalogV1Schema', 19)
-  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 20)
-  type = _messages.EnumField('TypeValueValuesEnum', 21)
-  usageSignal = _messages.MessageField('GoogleCloudDatacatalogV1UsageSignal', 22)
-  userSpecifiedSystem = _messages.StringField(23)
-  userSpecifiedType = _messages.StringField(24)
+  filesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1FilesetSpec', 11)
+  fullyQualifiedName = _messages.StringField(12)
+  gcsFilesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1GcsFilesetSpec', 13)
+  integratedSystem = _messages.EnumField('IntegratedSystemValueValuesEnum', 14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  linkedResource = _messages.StringField(16)
+  name = _messages.StringField(17)
+  personalDetails = _messages.MessageField('GoogleCloudDatacatalogV1PersonalDetails', 18)
+  routineSpec = _messages.MessageField('GoogleCloudDatacatalogV1RoutineSpec', 19)
+  schema = _messages.MessageField('GoogleCloudDatacatalogV1Schema', 20)
+  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 21)
+  type = _messages.EnumField('TypeValueValuesEnum', 22)
+  usageSignal = _messages.MessageField('GoogleCloudDatacatalogV1UsageSignal', 23)
+  userSpecifiedSystem = _messages.StringField(24)
+  userSpecifiedType = _messages.StringField(25)
 
 
 class GoogleCloudDatacatalogV1EntryGroup(_messages.Message):
@@ -1709,6 +1812,18 @@ class GoogleCloudDatacatalogV1FieldTypeEnumTypeEnumValue(_messages.Message):
   """
 
   displayName = _messages.StringField(1)
+
+
+class GoogleCloudDatacatalogV1FilesetSpec(_messages.Message):
+  r"""Specification that applies to a fileset. Valid only for entries with the
+  'FILESET' type.
+
+  Fields:
+    dataplexFileset: Fields specific to a Dataplex fileset and present only in
+      the Dataplex fileset entries.
+  """
+
+  dataplexFileset = _messages.MessageField('GoogleCloudDatacatalogV1DataplexFilesetSpec', 1)
 
 
 class GoogleCloudDatacatalogV1GcsFileSpec(_messages.Message):
@@ -2276,11 +2391,13 @@ class GoogleCloudDatacatalogV1SearchCatalogResult(_messages.Message):
       BIGQUERY: BigQuery.
       CLOUD_PUBSUB: Cloud Pub/Sub.
       DATAPROC_METASTORE: Dataproc Metastore.
+      DATAPLEX: Dataplex.
     """
     INTEGRATED_SYSTEM_UNSPECIFIED = 0
     BIGQUERY = 1
     CLOUD_PUBSUB = 2
     DATAPROC_METASTORE = 3
+    DATAPLEX = 4
 
   class SearchResultTypeValueValuesEnum(_messages.Enum):
     r"""Type of the search result. You can use this field to determine which
@@ -2369,6 +2486,31 @@ class GoogleCloudDatacatalogV1StarEntryRequest(_messages.Message):
 
 class GoogleCloudDatacatalogV1StarEntryResponse(_messages.Message):
   r"""Response message for StarEntry. Empty for now"""
+
+
+class GoogleCloudDatacatalogV1StorageProperties(_messages.Message):
+  r"""Details the properties of the underlying storage.
+
+  Fields:
+    filePattern: Patterns to identify a set of files for this fileset.
+      Examples of a valid `file_pattern`: * `gs://bucket_name/dir/*`: matches
+      all files in the `bucket_name/dir` directory *
+      `gs://bucket_name/dir/**`: matches all files in the `bucket_name/dir`
+      and all subdirectories recursively * `gs://bucket_name/file*`: matches
+      files prefixed by `file` in `bucket_name` * `gs://bucket_name/??.txt`:
+      matches files with two characters followed by `.txt` in `bucket_name` *
+      `gs://bucket_name/[aeiou].txt`: matches files that contain a single
+      vowel character followed by `.txt` in `bucket_name` *
+      `gs://bucket_name/[a-m].txt`: matches files that contain `a`, `b`, ...
+      or `m` followed by `.txt` in `bucket_name` * `gs://bucket_name/a/*/b`:
+      matches all files in `bucket_name` that match the `a/*/b` pattern, such
+      as `a/c/b`, `a/d/b` * `gs://another_bucket/a.txt`: matches
+      `gs://another_bucket/a.txt`
+    fileType: File type in MIME format, for example, `text/plain`.
+  """
+
+  filePattern = _messages.StringField(1, repeated=True)
+  fileType = _messages.StringField(2)
 
 
 class GoogleCloudDatacatalogV1SystemTimestamps(_messages.Message):

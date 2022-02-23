@@ -20,6 +20,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import io
+import json
 import os
 import re
 
@@ -75,6 +76,23 @@ def GetClusterUUID(kube_client):
       deduced from the command line flags or environment
   """
   return kube_client.GetNamespaceUID('kube-system')
+
+
+def GetClusterServerVersion(kube_client):
+  """Gets the UUID of the kube-system namespace.
+
+  Args:
+    kube_client: A KubernetesClient.
+
+  Returns:
+    the cluster server version
+
+  Raises:
+    exceptions.Error: If the cluster server version cannot be acquired.
+    calliope_exceptions.MinimumArgumentException: if a kubeconfig file cannot be
+      deduced from the command line flags or environment
+  """
+  return kube_client.GetServerVersion()
 
 
 def DeleteNamespace(kube_client, namespace):
@@ -154,7 +172,7 @@ class KubeconfigProcessor(object):
       kubeconfig: the kubeconfig path
       internal_ip: whether to persist the internal IP of the endpoint.
       cross_connect_subnetwork: full path of the cross connect subnet whose
-      endpoint to persist (optional)
+        endpoint to persist (optional)
       private_endpoint_fqdn: whether to persist the private fqdn.
       context: the context to use
 
@@ -300,7 +318,7 @@ class KubernetesClient(object):
       kubeconfig: the kubeconfig path
       internal_ip: whether to persist the internal IP of the endpoint.
       cross_connect_subnetwork: full path of the cross connect subnet whose
-      endpoint to persist (optional)
+        endpoint to persist (optional)
       private_endpoint_fqdn: whether to persist the private fqdn.
       context: the context to use
       public_issuer_url: the public issuer url
@@ -386,6 +404,27 @@ class KubernetesClient(object):
           'Failed to get the UID of the cluster: {}'.format(err))
     return out.replace("'", '')
 
+  def GetServerVersion(self):
+    """Get server version of the cluster.
+
+    Raises:
+      exceptions.Error: if failing to get namespaces.
+
+    Returns:
+      Server version of the cluster in major.minor format (e.g. 1.21)
+    """
+    out, err = self._RunKubectl(['version', '-o', 'json'], None)
+    if err:
+      raise exceptions.Error(
+          'Failed to get the server version of the cluster: {}'.format(err))
+
+    # kubectl version operation does not support jsonpath to retrieve the
+    # details of the individual fields, so this is a workaround for now.
+    out = json.loads(out)
+    version_str = out['serverVersion']['major'] + '.' + out['serverVersion'][
+        'minor']
+    return version_str
+
   def GetEvents(self, namespace):
     out, err = self._RunKubectl([
         'get', 'events', '--namespace=' + namespace,
@@ -470,11 +509,11 @@ class KubernetesClient(object):
     namespace_pattern = re.compile('^role/')
 
     rbac_to_check = [('clusterrole',
-                      self.RbacPolicyName('impersonate', project_id,
-                                          membership, user)),
+                      self.RbacPolicyName('impersonate', project_id, membership,
+                                          user)),
                      ('clusterrolebinding',
-                      self.RbacPolicyName('impersonate', project_id,
-                                          membership, user))]
+                      self.RbacPolicyName('impersonate', project_id, membership,
+                                          user))]
     # Check anthos-support permission policy when '--anthos-support' specified.
     if anthos_support:
       rbac_to_check.append(('clusterrolebinding',
@@ -522,11 +561,11 @@ class KubernetesClient(object):
     namespace_pattern = re.compile('^role/')
 
     rbac_to_check = [('clusterrole',
-                      self.RbacPolicyName('impersonate', project_id,
-                                          membership, user)),
+                      self.RbacPolicyName('impersonate', project_id, membership,
+                                          user)),
                      ('clusterrolebinding',
-                      self.RbacPolicyName('impersonate', project_id,
-                                          membership, user))]
+                      self.RbacPolicyName('impersonate', project_id, membership,
+                                          user))]
     # Check anthos-support permission policy when '--anthos-support' specified.
     if anthos_support:
       rbac_to_check.append(('clusterrolebinding',
@@ -1022,13 +1061,9 @@ def _ParseGKECluster(gke_cluster):
       '`{{REGION OR ZONE}}/{{CLUSTER_NAME`}}`'.format(gke_cluster))
 
 
-def _GetGKEKubeconfig(api_adapter, project, location_id,
-                      cluster_id,
-                      temp_kubeconfig_dir,
-                      internal_ip,
-                      cross_connect_subnetwork,
-                      private_endpoint_fqdn
-                      ):
+def _GetGKEKubeconfig(api_adapter, project, location_id, cluster_id,
+                      temp_kubeconfig_dir, internal_ip,
+                      cross_connect_subnetwork, private_endpoint_fqdn):
   """The kubeconfig of GKE Cluster is fetched using the GKE APIs.
 
   The 'KUBECONFIG' value in `os.environ` will be temporarily updated with
@@ -1042,14 +1077,14 @@ def _GetGKEKubeconfig(api_adapter, project, location_id,
 
   Args:
     api_adapter: the GKE api adapter used for running kubernetes commands
-    project: string, the project id of the cluster for which kube config is
-      to be fetched
+    project: string, the project id of the cluster for which kube config is to
+      be fetched
     location_id: string, the id of the location to which the cluster belongs
     cluster_id: string, the id of the cluster
     temp_kubeconfig_dir: TemporaryDirectory object
     internal_ip: whether to persist the internal IP of the endpoint.
     cross_connect_subnetwork: full path of the cross connect subnet whose
-    endpoint to persist (optional)
+      endpoint to persist (optional)
     private_endpoint_fqdn: whether to persist the private fqdn.
 
   Raises:

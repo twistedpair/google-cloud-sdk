@@ -32,12 +32,12 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import store as c_store
 
 
-def WarnIfSettingNonExistentRegionZone(prop, zonal=True):
+def WarnIfSettingNonExistentRegionZone(value, zonal=True):
   """Warn if setting 'compute/region' or 'compute/zone' to wrong value."""
   zonal_msg = ('{} is not a valid zone. Run `gcloud compute zones list` to '
-               'get all zones.'.format(prop))
+               'get all zones.'.format(value))
   regional_msg = ('{} is not a valid region. Run `gcloud compute regions list`'
-                  'to get all regions.'.format(prop))
+                  'to get all regions.'.format(value))
   holder = base_classes.ComputeApiHolder(base.ReleaseTrack.GA)
   client = holder.client
   # pylint: disable=protected-access
@@ -53,14 +53,16 @@ def WarnIfSettingNonExistentRegionZone(prop, zonal=True):
   try:
     response = lister.Invoke(request_data, list_implementation)
     zones = [i['name'] for i in list(response)]
-    if prop not in zones:
+    if value not in zones:
       log.warning(zonal_msg if zonal else regional_msg)
+      return True
   except (lister.ListException,
           apitools_exceptions.HttpError,
           c_store.NoCredentialsForAccountException,
           api_lib_util_exceptions.HttpException):
     log.warning('Property validation for compute/{} was skipped.'.format(
         'zone' if zonal else 'region'))
+  return False
 
 
 def WarnIfSettingProjectWithNoAccess(scope, project):
@@ -85,15 +87,17 @@ def WarnIfSettingProjectWithNoAccess(scope, project):
       log.warning(
           'You do not appear to have access to project [{}] or'
           ' it does not exist.'.format(project))
+      return True
+  return False
 
 
-def WarnIfActivateUseClientCertificate(prop):
-  """Warns if setting context_aware/use_client_certificate to True."""
-  if not prop.GetBool():
-    return
-  mtls_not_supported_msg = (
-      'Some services may not support client certificate authorization in '
-      'this version of gcloud. When a command sends requests to such services, '
-      'the requests will be executed without using a client certificate.\n\n'
-      'Please run $ gcloud topic client-certificate for more information.')
-  log.warning(mtls_not_supported_msg)
+def WarnIfActivateUseClientCertificate(value):
+  """Warns if setting context_aware/use_client_certificate to truthy."""
+  if value.lower() in ['1', 'true', 'on', 'yes', 'y']:
+    mtls_not_supported_msg = (
+        'Some services may not support client certificate authorization in '
+        'this version of gcloud. When a command sends requests to such '
+        'services, the requests will be executed without using a client '
+        'certificate.\n\n'
+        'Please run $ gcloud topic client-certificate for more information.')
+    log.warning(mtls_not_supported_msg)

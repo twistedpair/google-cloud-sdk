@@ -151,13 +151,17 @@ class RequestWrapper(transport.CredentialWrappingMixin,
         return response, content
       content_text = six.ensure_text(content)
       try:
-        err_msg = json.loads(content_text)['error']['message']
+        err_details = json.loads(content_text)['error']['details']
       except (KeyError, json.JSONDecodeError):
         return response, content
 
-      if transport.USER_PROJECT_OVERRIDE_ERR_MSG not in err_msg:
-        return response, content
-      return orig_request(*args, **kwargs)
+      for err_detail in err_details:
+        if (err_detail.get('@type')
+            == 'type.googleapis.com/google.rpc.ErrorInfo' and
+            err_detail.get('reason') == transport.USER_PROJECT_ERROR_REASON and
+            err_detail.get('domain') == transport.USER_PROJECT_ERROR_DOMAIN):
+          return orig_request(*args, **kwargs)
+      return response, content
 
     if base.UserProjectQuotaWithFallbackEnabled():
       http_client.request = RequestWithRetry

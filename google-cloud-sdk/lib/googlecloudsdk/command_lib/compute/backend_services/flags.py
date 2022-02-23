@@ -24,6 +24,7 @@ from googlecloudsdk.command_lib.compute import exceptions as compute_exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.util import completers
+from googlecloudsdk.command_lib.util.apis import arg_utils
 
 DEFAULT_LIST_FORMAT = """\
     table(
@@ -207,15 +208,12 @@ def BackendServiceArgumentForTargetTcpProxy(required=True):
         """)
 
 
-def AddLoadBalancingScheme(parser,
-                           include_l7_ilb=False,
-                           include_gfe3=False,
-                           include_l7_rxlb=False):
+def AddLoadBalancingScheme(parser, include_l7_ilb=False):
   parser.add_argument(
       '--load-balancing-scheme',
-      choices=['INTERNAL', 'EXTERNAL', 'INTERNAL_SELF_MANAGED'] +
-      (['INTERNAL_MANAGED'] if include_l7_ilb else []) +
-      (['EXTERNAL_MANAGED'] if include_gfe3 or include_l7_rxlb else []),
+      choices=[
+          'INTERNAL', 'EXTERNAL', 'INTERNAL_SELF_MANAGED', 'EXTERNAL_MANAGED'
+      ] + (['INTERNAL_MANAGED'] if include_l7_ilb else []),
       type=lambda x: x.replace('-', '_').upper(),
       default='EXTERNAL',
       help="""\
@@ -240,6 +238,23 @@ def AddSubsettingPolicy(parser):
       Default value is NONE which implies that subsetting is disabled.
       For Layer 4 Internal Load Balancing, if subsetting is enabled,
       only the algorithm CONSISTENT_HASH_SUBSETTING can be specified.
+      """)
+
+
+def AddLocalityLbPolicy(parser):
+  """Add flags related to lb algorithm used within the scope of the locality.
+
+  Args:
+    parser: The parser that parses args from user input.
+  """
+  parser.add_argument(
+      '--locality-lb-policy',
+      choices=['INVALID_LB_POLICY', 'ROUND_ROBIN', 'LEAST_REQUEST', 'RING_HASH',
+               'RANDOM', 'ORIGINAL_DESTINATION', 'MAGLEV', 'WEIGHTED_MAGLEV'],
+      type=lambda x: x.replace('-', '_').upper(),
+      default=None,
+      help="""\
+      The load balancing algorithm used within the scope of the locality.
       """)
 
 
@@ -616,6 +631,23 @@ def AddServiceBindings(parser, required=False, is_update=False, help_text=None):
         action='store_true',
         default=None,
         help='No service bindings should be attached to the backend service.')
+
+
+def AddCompressionMode(parser):
+  """Add support for --compression-mode flag."""
+  return parser.add_argument(
+      '--compression-mode',
+      choices=['DISABLED', 'AUTOMATIC'],
+      type=arg_utils.ChoiceToEnumName,
+      help="""\
+      Compress text responses using Brotli or gzip compression, based on
+      the client's Accept-Encoding header. Two modes are supported:
+      AUTOMATIC (recommended) - automatically uses the best compression based
+      on the Accept-Encoding header sent by the client. In most cases, this
+      will result in Brotli compression being favored.
+      DISABLED - disables compression. Existing compressed responses cached
+      by Cloud CDN will not be served to clients.
+      """)
 
 
 def AddIap(parser, help=None):  # pylint: disable=redefined-builtin

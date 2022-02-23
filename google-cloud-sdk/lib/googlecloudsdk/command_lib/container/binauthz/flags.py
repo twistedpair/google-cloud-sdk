@@ -154,6 +154,35 @@ def AddArtifactUrlFlag(parser, required=True):
             ' or may optionally contain the `http` or `https` scheme'))
 
 
+def _GetPlatformResourceSpec():
+  return concepts.ResourceSpec(
+      'binaryauthorization.projects.platforms',
+      resource_name='platform',
+      api_version='v1',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      platformsId=concepts.ResourceParameterAttributeConfig(
+          name='platform', help_text='The platform.'))
+
+
+def AddPlatformResourceArg(parser, verb):
+  """Add a resource argument for a platform (containing platform policies).
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to list'. (No other
+      values besides 'to list' are expected.)
+  """
+  # Note: "resource arguments" (go/gcloud-creating-commands#resource-arguments)
+  # requires the main resource to be a positional argument, not a keyword, so
+  # --platform is not allowed when the main resource is a platform, even though
+  # it is allowed when the main resource is a policy.
+  concept_parsers.ConceptParser.ForResource(
+      'platform_resource_name',
+      _GetPlatformResourceSpec(),
+      'The platform whose policies {}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
 def _GetPlatformPolicyResourceSpec():
   return concepts.ResourceSpec(
       'binaryauthorization.projects.platforms.policies',
@@ -162,7 +191,8 @@ def _GetPlatformPolicyResourceSpec():
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       platformsId=concepts.ResourceParameterAttributeConfig(
           name='platform',
-          help_text='The platform that the {resource} belongs to.'),
+          help_text='The platform that the {resource} belongs to. '
+          'PLATFORM must be one of the following: cloudRun.'),
       policyId=concepts.ResourceParameterAttributeConfig(
           name='policy', help_text='The ID of the {resource}.'))
 

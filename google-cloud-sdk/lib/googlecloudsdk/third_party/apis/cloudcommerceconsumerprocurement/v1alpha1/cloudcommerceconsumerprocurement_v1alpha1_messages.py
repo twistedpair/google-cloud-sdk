@@ -253,13 +253,13 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersListRequest(_messages
     filter: The filter that can be used to limit the list request. The filter
       is a query string that can match a selected set of attributes with
       string values. For example `display_name=abc`. Supported query
-      attributes are * `display_name` * `product_external_name` If the query
-      contains some special characters other than letters, underscore, or
-      digits, the phrase must be quoted with double quotes. For example,
-      `display_name="foo:bar"`, where the display name needs to be quoted
-      because it contains special character colon. Queries can be combined
-      with `OR`, and `NOT` to form more complex queries. They can also be
-      grouped to force a desired evaluation order. For example,
+      attributes are * `display_name` * `product_external_name` * `account` If
+      the query contains some special characters other than letters,
+      underscore, or digits, the phrase must be quoted with double quotes. For
+      example, `display_name="foo:bar"`, where the display name needs to be
+      quoted because it contains special character colon. Queries can be
+      combined with `OR`, and `NOT` to form more complex queries. They can
+      also be grouped to force a desired evaluation order. For example,
       `display_name=abc OR display_name=def`.
     pageSize: The maximum number of entries that are requested. The default
       page size is 25 and the maximum page size is 200.

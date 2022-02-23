@@ -94,19 +94,28 @@ def AddParametersArg(parser):
       'integration type. Only simple values can be specified with this flag.')
 
 
+# TODO(b/219101793): Replace with validator that references INTEGRATION_TYPES.
 def ValidateParameters(integration_type, parameters, is_create=True):
   """Validates given params conform to what's expected from the integration."""
+  requires = []
   if integration_type == 'custom-domain':
     if is_create:
       requires = ['domain']
-      for key in requires:
-        if key not in parameters:
-          raise exceptions.ArgumentError(
-              '[{}] is required to create integration of type [{}]'.format(
-                  key, integration_type))
+  elif integration_type == 'redis':
+    if is_create:
+      # Set default
+      if 'memory-size-gb' not in parameters:
+        parameters['memory-size-gb'] = 1
+
   else:
     raise exceptions.ArgumentError(
         'Integration of type {} is not supported'.format(integration_type))
+
+  for key in requires:
+    if key not in parameters:
+      raise exceptions.ArgumentError(
+          '[{}] is required to create integration of type [{}]'.format(
+              key, integration_type))
 
 
 def ListIntegrationsOfService(parser):

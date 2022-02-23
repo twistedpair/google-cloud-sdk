@@ -139,6 +139,22 @@ def AddConfigEncryptionKmsKeyArn(parser, required=True):
   _AddKmsKeyArn(parser, 'config-encryption', 'user data', required=required)
 
 
+def AddProxySecretArn(parser, required=False):
+  parser.add_argument(
+      '--proxy-secret-arn',
+      required=required,
+      help=('ARN of the AWS Secrets Manager secret that contains a proxy '
+            'configuration.'))
+
+
+def AddProxySecretVersionId(parser, required=False):
+  parser.add_argument(
+      '--proxy-secret-version-id',
+      required=required,
+      help=('Version ID string of the AWS Secrets Manager secret that contains '
+            'a proxy configuration.'))
+
+
 def AddProxyConfig(parser):
   """Add proxy configuration flags.
 
@@ -147,13 +163,5 @@ def AddProxyConfig(parser):
   """
 
   group = parser.add_argument_group('Proxy config')
-  group.add_argument(
-      '--proxy-secret-arn',
-      required=True,
-      help=('ARN of the AWS Secrets Manager secret that contains a proxy '
-            'configuration.'))
-  group.add_argument(
-      '--proxy-secret-version-id',
-      required=True,
-      help=('Version ID string of the AWS Secrets Manager secret that contains '
-            'a proxy configuration.'))
+  AddProxySecretArn(group, required=True)
+  AddProxySecretVersionId(group, required=True)

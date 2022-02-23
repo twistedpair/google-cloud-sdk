@@ -177,6 +177,11 @@ properties:
   networkPerformanceConfig:
     description: A NetworkPerformanceConfig attribute.
     $ref: NetworkPerformanceConfig.yaml
+  params:
+    description: |-
+      Input only. [Input Only] Additional params passed with the
+      request, but not persisted as part of resource payload.
+    $ref: InstanceParams.yaml
   postKeyRevocationActionType:
     description: PostKeyRevocationActionType of the instance.
     type: string

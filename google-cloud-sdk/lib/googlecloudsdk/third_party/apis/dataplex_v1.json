@@ -240,11 +240,11 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Optional. User friendly display name.",
+          "description": "Optional. Display name must be shorter than or equal to 63 characters.",
           "type": "string"
         },
         "description": {
-          "description": "Optional. User friendly longer description text.",
+          "description": "Optional. User friendly longer description text. Must be shorter than or equal to 1024 characters.",
           "type": "string"
         },
         "createTime": {
@@ -260,15 +260,15 @@
           "format": "google-datetime"
         },
         "id": {
-          "description": "Required. A user-provided entity ID. It is mutable, and will be used as the published table name. Specifying a new ID in an update entity request will override the existing value.",
+          "description": "Required. A user-provided entity ID. It is mutable, and will be used as the published table name. Specifying a new ID in an update entity request will override the existing value. The ID must contain only letters (a-z, A-Z), numbers (0-9), and underscores. Must begin with a letter.",
           "type": "string"
         },
         "etag": {
-          "description": "Optional. The etag for this entity. Required for update requests. It must match the server's etag.",
+          "description": "Optional. The etag for this entity. Required for update and delete requests. Must match the server's etag.",
           "type": "string"
         },
         "type": {
-          "description": "Required. The type of entity.",
+          "description": "Required. Immutable. The type of entity.",
           "type": "string",
           "enumDescriptions": [
             "Type unspecified.",
@@ -282,7 +282,7 @@
           ]
         },
         "asset": {
-          "description": "Required. The name of the asset associated with the storage location containing the entity data.",
+          "description": "Required. Immutable. The ID of the asset associated with the storage location containing the entity data. The entity must be with in the same zone with the asset.",
           "type": "string"
         },
         "dataPath": {
@@ -299,7 +299,7 @@
           "type": "string"
         },
         "system": {
-          "description": "Required. Identifies the storage system of the entity data.",
+          "description": "Required. Immutable. Identifies the storage system of the entity data.",
           "type": "string",
           "enumDescriptions": [
             "Storage system unspecified.",
@@ -333,7 +333,7 @@
       "type": "object",
       "properties": {
         "format": {
-          "description": "Output only. The data format associated with the stored data, which represents content type values.",
+          "description": "Output only. The data format associated with the stored data, which represents content type values. The value is inferred from mime type.",
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -382,7 +382,7 @@
           ]
         },
         "mimeType": {
-          "description": "Required. The mime type descriptor for the data. This field is valid for formats other than UNKNOWN and MIXED.",
+          "description": "Required. The mime type descriptor for the data. Must match the pattern {type}\/{subtype}. Supported values: - application\/x-parquet - application\/x-avro - application\/x-orc - application\/x-tfrecord - application\/json - application\/{subtypes} - text\/csv - text\/ - image\/{image subtype} - video\/{video subtype} - audio\/{audio subtype}",
           "type": "string"
         },
         "csv": {
@@ -401,11 +401,11 @@
       "type": "object",
       "properties": {
         "encoding": {
-          "description": "Optional. The character encoding of the data. The default is UTF-8.",
+          "description": "Optional. The character encoding of the data. Accepts \"US-ASCII\", \"UTF-8\", and \"ISO-8859-1\". Defaults to UTF-8 if unspecified.",
           "type": "string"
         },
         "headerRows": {
-          "description": "Optional. The number of rows to interpret as header rows that should be skipped when reading data rows.",
+          "description": "Optional. The number of rows to interpret as header rows that should be skipped when reading data rows. Defaults to 0.",
           "type": "integer",
           "format": "int32"
         },
@@ -414,7 +414,7 @@
           "type": "string"
         },
         "quote": {
-          "description": "Optional. The character used to quote column values. Defaults to empty, implying unquoted data.",
+          "description": "Optional. The character used to quote column values. Accepts '\"' and '''. Defaults to '\"' if unspecified.",
           "type": "string"
         }
       }
@@ -425,7 +425,7 @@
       "type": "object",
       "properties": {
         "encoding": {
-          "description": "Optional. The character encoding of the data. The default is UTF-8.",
+          "description": "Optional. The character encoding of the data. Accepts \"US-ASCII\", \"UTF-8\" and \"ISO-8859-1\". Defaults to UTF-8 if not specified.",
           "type": "string"
         }
       }
@@ -470,7 +470,7 @@
       "type": "object",
       "properties": {
         "userManaged": {
-          "description": "Required. Whether the schema is user-managed or managed by the service. User-managed schemas are not automatically updated by discovery jobs.",
+          "description": "Required. Whether the schema is user-managed or managed by the service. - Set user_manage to false if you would like Dataplex to help you manage the schema. You will get the full service provided by Dataplex discovery, including new data discovery, schema inference and schema evolution. You can still provide input the schema of the entities, for example renaming a schema field, changing CSV or Json options if you think the discovered values are not as accurate. Dataplex will consider your input as the initial schema (as if they were produced by the previous discovery run), and will evolve schema or flag actions based on that. - Set user_manage to true if you would like to fully manage the entity schema by yourself. This is useful when you would like to manually specify the schema for a table. In this case, the schema defined by the user is guaranteed to be kept unchanged and would not be overwritten. But this also means Dataplex will not provide schema evolution management for you. Dataplex will still be able to manage partition registration (i.e., keeping the list of partitions up to date) when Dataplex discovery is turned on and user_managed is set to true.",
           "type": "boolean"
         },
         "fields": {
@@ -507,11 +507,11 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. The name of the field.",
+          "description": "Required. The name of the field. The maximum length is 767 characters. The name must begins with a letter and not contains : and ..",
           "type": "string"
         },
         "description": {
-          "description": "Optional. User friendly field description.",
+          "description": "Optional. User friendly field description. Must be less than or equal to 1024 characters.",
           "type": "string"
         },
         "type": {
@@ -581,15 +581,15 @@
     },
     "GoogleCloudDataplexV1SchemaPartitionField": {
       "id": "GoogleCloudDataplexV1SchemaPartitionField",
-      "description": "Represents a key field within the entity's partition structure.",
+      "description": "Represents a key field within the entity's partition structure. You could have up to 20 partition fields, but only the first 10 partitions have the filtering ability due to performance consideration.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. The name of the field.",
+          "description": "Required. Partition name is editable if only the partition style is not HIVE compatible. The maximum length allowed is 767 characters.",
           "type": "string"
         },
         "type": {
-          "description": "Required. The type of field.",
+          "description": "Required. Immutable. The type of field.",
           "type": "string",
           "enumDescriptions": [
             "SchemaType unspecified.",
@@ -654,7 +654,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of the partition, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/entities\/{entity_id}\/partitions\/{partition_id}. {partition_id} is a generated unique ID.",
+          "description": "Output only. The values must be HTML URL encoded two times before constructing the path. For example, if you have a value of \"US:CA\", encoded it two times and you get \"US%253ACA\". Then if you have the 2nd value is \"CA#Sunnyvale\", encoded two times and you get \"CA%2523Sunnyvale\". The partition values path is \"US%253ACA\/CA%2523Sunnyvale\". The final URL will be \"https:\/\/...\/partitions\/US%253ACA\/CA%2523Sunnyvale\". The name field in the responses will always have the encoded format.",
           "readOnly": true,
           "type": "string"
         },
@@ -666,11 +666,11 @@
           }
         },
         "location": {
-          "description": "Required. Immutable. The location of the entity data within the partition, for example, gs:\/\/bucket\/path\/to\/entity\/key1=value1\/key2=value2.",
+          "description": "Required. Immutable. The location of the entity data within the partition, for example, gs:\/\/bucket\/path\/to\/entity\/key1=value1\/key2=value2. Or projects\/\/datasets\/\/tables\/",
           "type": "string"
         },
         "etag": {
-          "description": "Optional. The etag for this partition. Required for update requests. It must match the server's etag.",
+          "description": "Optional. The etag for this partition.",
           "type": "string"
         }
       }
@@ -1486,7 +1486,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Immutable. Relative name of the cloud resource that contains the data that is being managed within a lake. For example: projects\/{project_number}\/buckets\/{bucket_id} projects\/{project_number}\/datasets\/{dataset_id} If the creation policy indicates ATTACH behavior, then an existing resource must be provided. If the policy indicates CREATE behavior, new resource will be created with the given name.However if it is empty, then the resource will be created using {asset_id}-{UUID} template for name. The location of the referenced resource must always match that of the asset.",
+          "description": "Immutable. Relative name of the cloud resource that contains the data that is being managed within a lake. For example: projects\/{project_number}\/buckets\/{bucket_id} projects\/{project_number}\/datasets\/{dataset_id}",
           "type": "string"
         },
         "type": {
@@ -2242,7 +2242,7 @@
           "format": "int32"
         },
         "nodeCount": {
-          "description": "Optional. Total number of worker nodes in the cluster 1 master + N workers.",
+          "description": "Optional. Total number of nodes in the sessions created for this environment.",
           "type": "integer",
           "format": "int32"
         },
@@ -2277,7 +2277,7 @@
           }
         },
         "properties": {
-          "description": "Optional. Override to common configuration of open source components installed on the Dataproc cluster. The properties to set on daemon config files. Property keys are specified in prefix:property format.",
+          "description": "Optional. Spark properties to provide configuration for use in sessions created for this environment. The properties to set on daemon config files. Property keys are specified in prefix:property format. The prefix must be \"spark\".",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -4007,7 +4007,7 @@
                               "type": "string"
                             },
                             "etag": {
-                              "description": "Optional. The etag associated with the partition if it was previously retrieved.",
+                              "description": "Required. The etag associated with the partition if it was previously retrieved.",
                               "location": "query",
                               "type": "string"
                             }
@@ -4044,7 +4044,7 @@
                                 "The API will default to the BASIC view.",
                                 "Minimal view that does not include the schema.",
                                 "Include basic information and schema.",
-                                "Include everything."
+                                "Include everything. Currently, this is the same as the SCHEMA view."
                               ],
                               "enum": [
                                 "ENTITY_VIEW_UNSPECIFIED",
@@ -4094,7 +4094,7 @@
                               ]
                             },
                             "pageSize": {
-                              "description": "Optional. Maximum number of entities to return. The service may return fewer than this value. If unspecified, at most 10 entities will be returned. The maximum value is 1000; values above 1000 are set to 1000.",
+                              "description": "Optional. Maximum number of entities to return. The service may return fewer than this value. If unspecified, 100 entities will be returned by default. The maximum value is 500; larger values will will be truncated to 500.",
                               "location": "query",
                               "type": "integer",
                               "format": "int32"
@@ -4105,7 +4105,7 @@
                               "type": "string"
                             },
                             "filter": {
-                              "description": "Optional. Filter request by name prefix.",
+                              "description": "Optional. The following filter parameters can be added to the URL to limit the entities returned by the API: Entity ID: ?filter=\"id=entityID\" Asset ID: ?filter=\"asset=assetID\" Data path ?filter=\"data_path=gs:\/\/my-bucket\" Is HIVE compatible: ?filter=\u201Dhive_compatible=true\u201D Is BigQuery compatible: ?filter=\u201Dbigquery_compatible=true\u201D",
                               "location": "query",
                               "type": "string"
                             }
@@ -4166,7 +4166,7 @@
                               "httpMethod": "DELETE",
                               "parameters": {
                                 "name": {
-                                  "description": "Required. The resource name of the partition. format: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/entities\/{entity_id}\/partitions\/{partition_id}.",
+                                  "description": "Required. The resource name of the partition. format: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/entities\/{entity_id}\/partitions\/{partition_value_path}. The {partition_value_path} segment consists of an ordered sequence of partition values separated by \"\/\". All values must be provided.",
                                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/zones\/[^\/]+\/entities\/[^\/]+\/partitions\/.*$",
                                   "location": "path",
                                   "required": true,
@@ -4196,7 +4196,7 @@
                               "httpMethod": "GET",
                               "parameters": {
                                 "name": {
-                                  "description": "Required. The resource name of the partition: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/entities\/{entity_id}\/partitions\/{partition_id}.",
+                                  "description": "Required. The resource name of the partition: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/entities\/{entity_id}\/partitions\/{partition_value_path}. The {partition_value_path} segment consists of an ordered sequence of partition values separated by \"\/\". All values must be provided.",
                                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/zones\/[^\/]+\/entities\/[^\/]+\/partitions\/.*$",
                                   "location": "path",
                                   "required": true,
@@ -4228,7 +4228,7 @@
                                   "type": "string"
                                 },
                                 "pageSize": {
-                                  "description": "Optional. Maximum number of partitions to return. The service may return fewer than this value. If unspecified, at most 10 partitions will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                                  "description": "Optional. Maximum number of partitions to return. The service may return fewer than this value. If unspecified, 100 partitions will be returned by default. The maximum page size is 500; larger values will will be truncated to 500.",
                                   "location": "query",
                                   "type": "integer",
                                   "format": "int32"
@@ -4239,7 +4239,7 @@
                                   "type": "string"
                                 },
                                 "filter": {
-                                  "description": "Optional. Filter request.",
+                                  "description": "Optional. Filter the partitions returned to the caller using a key vslue pair expression. The filter expression supports: logical operators: AND, OR comparison operators: <, >, >=, <= ,=, != LIKE operators: The right hand of a LIKE operator supports \u201C.\u201D and \u201C*\u201D for wildcard searches, for example \"value1 LIKE \".*oo.*\" parenthetical grouping: ( )Sample filter expression: `?filter=\"key1 < value1 OR key2 > value2\"Notes: Keys to the left of operators are case insensitive. Partition results are sorted first by creation time, then by lexicographic order. Up to 20 key value filter pairs are allowed, but due to performance considerations, only the first 10 will be used as a filter.",
                                   "location": "query",
                                   "type": "string"
                                 }

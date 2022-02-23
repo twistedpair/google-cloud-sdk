@@ -450,7 +450,7 @@
                 "https://www.googleapis.com/auth/cloud-billing",
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Creates a new budget. See Quotas and limits for more information on the limits of the number of budgets you can create."
+              "description": "Creates a new budget. See [Quotas and limits](https:\/\/cloud.google.com\/billing\/quotas) for more information on the limits of the number of budgets you can create."
             },
             "patch": {
               "id": "billingbudgets.billingAccounts.budgets.patch",

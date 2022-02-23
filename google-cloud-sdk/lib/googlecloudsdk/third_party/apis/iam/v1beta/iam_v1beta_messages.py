@@ -199,7 +199,7 @@ class GoogleIamV1betaWorkloadIdentityPoolProvider(_messages.Message):
       Google Cloud IAM attribute to map to. The following keys are supported:
       * `google.subject`: The principal IAM is authenticating. You can
       reference this value in IAM bindings. This is also the subject that
-      appears in Cloud Logging logs. Cannot exceed 127 characters. *
+      appears in Cloud Logging logs. Cannot exceed 127 bytes. *
       `google.groups`: Groups the external identity belongs to. You can grant
       groups access to resources using an IAM `principalSet` binding; access
       applies to all members of the group. You can also provide custom
@@ -256,8 +256,8 @@ class GoogleIamV1betaWorkloadIdentityPoolProvider(_messages.Message):
       Cloud IAM attribute to map to. The following keys are supported: *
       `google.subject`: The principal IAM is authenticating. You can reference
       this value in IAM bindings. This is also the subject that appears in
-      Cloud Logging logs. Cannot exceed 127 characters. * `google.groups`:
-      Groups the external identity belongs to. You can grant groups access to
+      Cloud Logging logs. Cannot exceed 127 bytes. * `google.groups`: Groups
+      the external identity belongs to. You can grant groups access to
       resources using an IAM `principalSet` binding; access applies to all
       members of the group. You can also provide custom attributes by
       specifying `attribute.{custom_attribute}`, where `{custom_attribute}` is
@@ -328,8 +328,8 @@ class GoogleIamV1betaWorkloadIdentityPoolProvider(_messages.Message):
     attribute to map to. The following keys are supported: * `google.subject`:
     The principal IAM is authenticating. You can reference this value in IAM
     bindings. This is also the subject that appears in Cloud Logging logs.
-    Cannot exceed 127 characters. * `google.groups`: Groups the external
-    identity belongs to. You can grant groups access to resources using an IAM
+    Cannot exceed 127 bytes. * `google.groups`: Groups the external identity
+    belongs to. You can grant groups access to resources using an IAM
     `principalSet` binding; access applies to all members of the group. You
     can also provide custom attributes by specifying
     `attribute.{custom_attribute}`, where `{custom_attribute}` is the name of

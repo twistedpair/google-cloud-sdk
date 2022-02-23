@@ -331,7 +331,8 @@ class BatchProjectsLocationsJobsTaskGroupsTasksListRequest(_messages.Message):
       be of the format State=TaskStatus.State e.g. State=RUNNING
     pageSize: Page size.
     pageToken: Page token.
-    parent: Required. Path of the Job from which Tasks are being requested.
+    parent: Required. Path of the TaskGroup from which Tasks are being
+      requested.
   """
 
   filter = _messages.StringField(1)
@@ -959,6 +960,9 @@ class JobStatus(_messages.Message):
       map key is TaskGroup ID.
 
   Fields:
+    runDuration: The duration of time the Job is in status RUNNING. Once the
+      Job completes (i.e. the Job status is either SUCCEEDED/FAILED) the run
+      duration represents the time it took the Job to complete.
     state: Job state
     statusEvents: Job status events
     taskGroups: Aggregated task status for each TaskGroup in the Job. The map
@@ -1016,9 +1020,10 @@ class JobStatus(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  state = _messages.EnumField('StateValueValuesEnum', 1)
-  statusEvents = _messages.MessageField('StatusEvent', 2, repeated=True)
-  taskGroups = _messages.MessageField('TaskGroupsValue', 3)
+  runDuration = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+  statusEvents = _messages.MessageField('StatusEvent', 3, repeated=True)
+  taskGroups = _messages.MessageField('TaskGroupsValue', 4)
 
 
 class LifecyclePolicy(_messages.Message):
@@ -1737,8 +1742,8 @@ class TaskGroup(_messages.Message):
       restrictions](https://cloud.google.com/compute/docs/labeling-
       resources#restrictions) apply. Label names that start with "goog-" or
       "google-" are reserved.
-    name: TaskGroup name. The system generates this field based on parent Job
-      name. For example: "projects/123456/locations/us-
+    name: Output only. TaskGroup name. The system generates this field based
+      on parent Job name. For example: "projects/123456/locations/us-
       west1/jobs/job01/taskGroups/default-group".
     parallelism: Max number of tasks that can run in parallel. Default to
       min(task_count, 1000).

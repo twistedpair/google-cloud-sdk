@@ -281,6 +281,10 @@ class _Sections(object):
       SDK.
     container: Section, The section containing container properties for the
       Cloud SDK.
+    container_aws: Section, The section containing properties for Anthos
+      clusters on AWS.
+    container_azure: Section, The section containing properties for Anthos
+      clusters on Azure.
     context_aware: Section, The section containing context aware access
       configurations for the Cloud SDK.
     core: Section, The section containing core properties for the Cloud SDK.
@@ -398,6 +402,8 @@ class _Sections(object):
     self.composer = _SectionComposer()
     self.compute = _SectionCompute()
     self.container = _SectionContainer()
+    self.container_aws = _SectionContainerAws()
+    self.container_azure = _SectionContainerAzure()
     self.context_aware = _SectionContextAware()
     self.core = _SectionCore()
     self.ssh = _SectionSsh()
@@ -468,6 +474,8 @@ class _Sections(object):
         self.composer,
         self.compute,
         self.container,
+        self.container_aws,
+        self.container_azure,
         self.context_aware,
         self.core,
         self.ssh,
@@ -1263,27 +1271,41 @@ class _SectionAuth(_Section):
         'information.')
     self.impersonate_service_account = self._Add(
         'impersonate_service_account',
-        help_text='After setting this property, all API requests will be made '
-        'as the given service account instead of the currently selected '
-        'account. This is done without needing to create, download, and '
-        'activate a key for the account. In order to perform operations as the '
-        'service account, your currently selected account must have an IAM '
-        'role that includes the iam.serviceAccounts.getAccessToken permission '
-        'for the service account. The roles/iam.serviceAccountTokenCreator '
-        'role has this permission or you may create a custom role. '
-        'A list of service accounts, separated with comma, can be '
-        'specified. In such cases, it creates an impersonation '
-        'delegation chain. Any given service account in the list must '
-        'have the roles/iam.serviceAccountTokenCreator role on its '
-        'subsequent service account. For example, when '
-        '--impersonate-service-account=sv1@developer.gserviceaccount.com,'
-        'sv2@developer.gserviceaccount.com, the active account must have '
-        'the roles/iam.serviceAccountTokenCreator role on '
-        'sv1@developer.gserviceaccount.com which must has the '
-        'roles/iam.serviceAccountTokenCreator role on '
-        'sv2@developer.gserviceaccount.com. '
-        'sv2@developer.gserviceaccount.com is target impersonated service '
-        'account and sv1@developer.gserviceaccount.com is the delegate.',
+        help_text="""\
+        For this `gcloud` invocation, all API requests will be
+        made as the given service account or target service account in an
+        impersonation delegation chain instead of the currently selected
+        account. You can specify either a single service account as the
+        impersonator, or a comma-separated list of service accounts to
+        create an impersonation delegation chain. This is done without
+        needing to create, download, and activate a key for the service
+        account or accounts.
+
+        In order to make API requests as a service account, your
+        currently selected account must have an IAM role that includes
+        the `iam.serviceAccounts.getAccessToken` permission for the
+        service account or accounts.
+
+        The `roles/iam.serviceAccountTokenCreator` role has
+        the `iam.serviceAccounts.getAccessToken permission`. You can
+        also create a custom role.
+
+        You can specify a list of service accounts, separated with
+        commas. This creates an impersonation delegation chain in which
+        each service account delegates its permissions to the next
+        service account in the chain. Each service account in the list
+        must have the `roles/iam.serviceAccountTokenCreator` role on the
+        next service account in the list. For example, when
+        `--impersonate-service-account=`
+        ``SERVICE_ACCOUNT_1'',``SERVICE_ACCOUNT_2'',
+        the active account must have the
+        `roles/iam.serviceAccountTokenCreator` role on
+        ``SERVICE_ACCOUNT_1'', which must have the
+        `roles/iam.serviceAccountTokenCreator` role on
+        ``SERVICE_ACCOUNT_2''.
+        ``SERVICE_ACCOUNT_1'' is the impersonated service
+        account and ``SERVICE_ACCOUNT_2'' is the delegate.
+        """,
     )
     self.disable_code_verifier = self._AddBool(
         'disable_code_verifier',
@@ -1315,13 +1337,8 @@ class _SectionAws(_Section):
     super(_SectionAws, self).__init__('aws', hidden=True)
     self.location = self._Add(
         'location',
-        help_text='Default Google Cloud location `gcloud` should use for '
-        'container aws surface.',
-        hidden=True)
-    self.aws_region = self._Add(
-        'aws_region',
-        help_text='Default AWS region `gcloud` should use for '
-        'container aws surface.',
+        help_text=('DEPRECATED. Use `container_aws/location` instead. '
+                   'This property will be removed in a future release.'),
         hidden=True)
 
 
@@ -1329,16 +1346,11 @@ class _SectionAzure(_Section):
   """Contains the properties for the 'azure' section."""
 
   def __init__(self):
-    super(_SectionAzure, self).__init__('azure')
+    super(_SectionAzure, self).__init__('azure', hidden=True)
     self.location = self._Add(
         'location',
-        help_text='Default Google Cloud location `gcloud` should use for '
-        'container azure surface.',
-        hidden=True)
-    self.azure_region = self._Add(
-        'azure_region',
-        help_text='Default Azure region `gcloud` should use for '
-        'container azure surface.',
+        help_text=('DEPRECATED. Use `container_azure/location` instead. '
+                   'This property will be removed in a future release.'),
         hidden=True)
 
 
@@ -1356,17 +1368,15 @@ class _SectionBilling(_Section):
         'quota_project',
         default=_SectionBilling.CURRENT_PROJECT,
         help_text=textwrap.dedent("""\
-        Project that will be charged quota for the
-        operations performed in `gcloud`. When unset, the default is
-        [CURRENT_PROJECT]; this will charge quota against the currently set
-        project for operations performed on it. Additionally, some existing
-        APIs will continue to use a shared project for quota by default, when
-        this property is unset.
-        +
-        If you need to operate on one project, but
-        need quota against a different project, you can use this property to
-        specify the alternate project."""))
-
+             The Google Cloud project that is billed and charged quota for
+             operations performed in `gcloud`. When unset, the default is
+             [CURRENT_PROJECT]. This default bills and charges quota against the
+             current project. If you need to operate on one project, but need to
+             bill your usage against or use quota from a different project, you
+             can use this flag to specify the billing project. If both
+             `billing/quota_project` and `--billing-project` are specified,
+             `--billing-project` takes precedence.
+             """))
 
 class _SectionBlueprints(_Section):
   """Contains the properties for the 'blueprints' section."""
@@ -1580,6 +1590,28 @@ class _SectionContainer(_Section):
         hidden=True,
         help_text='If True, validate that the --tag value to container builds '
         'submit is in the gcr.io or *.gcr.io namespace.')
+
+
+class _SectionContainerAws(_Section):
+  """Contains the properties for the 'container_aws' section."""
+
+  def __init__(self):
+    super(_SectionContainerAws, self).__init__('container_aws')
+    self.location = self._Add(
+        'location',
+        help_text=('Default Google Cloud location to use for Anthos clusters '
+                   'on AWS.'))
+
+
+class _SectionContainerAzure(_Section):
+  """Contains the properties for the 'container_azure' section."""
+
+  def __init__(self):
+    super(_SectionContainerAzure, self).__init__('container_azure')
+    self.location = self._Add(
+        'location',
+        help_text=('Default Google Cloud location to use for Anthos clusters '
+                   'on Azure.'))
 
 
 class _SectionContextAware(_Section):
@@ -2080,8 +2112,15 @@ class _SectionDiagnostics(_Section):
 
   def __init__(self):
     super(_SectionDiagnostics, self).__init__('diagnostics', hidden=True)
+    # TODO(b/188055204): Remove legacy property once Cloud Shell is updated
     self.hidden_property_whitelist = self._Add(
         'hidden_property_whitelist',
+        internal=True,
+        help_text=('Comma separated list of hidden properties that should be '
+                   'allowed by the hidden properties diagnostic.'))
+
+    self.hidden_property_allowlist = self._Add(
+        'hidden_property_allowlist',
         internal=True,
         help_text=('Comma separated list of hidden properties that should be '
                    'allowed by the hidden properties diagnostic.'))

@@ -43,7 +43,11 @@ class Client(object):
     self.client = apis.GetClientInstance(API_NAME, self.api_version)
     self.messages = apis.GetMessagesModule(API_NAME, self.api_version)
 
-  def YieldAttestations(self, note_ref, artifact_url=None):
+  def YieldAttestations(self,
+                        note_ref,
+                        artifact_url=None,
+                        page_size=None,
+                        limit=None):
     """Yields occurrences associated with given AA Note.
 
     Args:
@@ -51,6 +55,10 @@ class Client(object):
         occurrences. (containeranalysis.projects.notes Resource)
       artifact_url: URL of the artifact for which to fetch occurrences. If None,
         then all occurrences attached to the AA Note are returned.
+      page_size: The number of attestations to retrieve per request. (If None,
+        use the default page size.)
+      limit: The maxium number of attestations to retrieve. (If None,
+        unlimited.)
 
     Yields:
       Occurrences bound to `note_ref` with matching `artifact_url` (if passed).
@@ -64,8 +72,9 @@ class Client(object):
                         if artifact_url is not None else ''),
             )),
         field='occurrences',
-        batch_size=100,
+        batch_size=page_size or 100,  # Default batch_size.
         batch_size_attribute='pageSize',
+        limit=limit,
     )
 
     # TODO(b/69380601): This should be handled by the filter parameter to

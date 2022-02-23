@@ -274,7 +274,7 @@ def _GetAccessTokenCallback(credentials):
     return None
   log.debug('credentials type for _GetAccessTokenCallback is [%s].',
             six.text_type(credentials))
-  store.Refresh(credentials)
+  store.RefreshIfAlmostExpire(credentials)
 
   if creds.IsGoogleAuthCredentials(credentials):
     return credentials.token

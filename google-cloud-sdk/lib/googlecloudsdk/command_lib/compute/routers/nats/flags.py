@@ -115,9 +115,8 @@ def _AddRulesArg(parser):
       help=textwrap.dedent("""\
           Path to YAML file containing NAT Rules applied to the NAT.
           The YAML file format must follow the REST API schema for NAT Rules.
-          See [API Discovery docs]
-          (https://www.googleapis.com/discovery/v1/apis/compute/alpha/rest) for
-          reference."""),
+          See [API Discovery docs](https://www.googleapis.com/discovery/v1/apis/compute/alpha/rest)
+          for reference."""),
       required=False)
 
 

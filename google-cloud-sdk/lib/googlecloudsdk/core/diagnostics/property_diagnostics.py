@@ -30,12 +30,12 @@ import six
 class PropertyDiagnostic(diagnostic_base.Diagnostic):
   """Diagnoses issues that may be caused by properties."""
 
-  def __init__(self, ignore_hidden_property_whitelist):
+  def __init__(self, ignore_hidden_property_allowlist):
     intro = ('Property diagnostic detects issues that may be caused by '
              'properties.')
     super(PropertyDiagnostic, self).__init__(
         intro=intro, title='Property diagnostic',
-        checklist=[HiddenPropertiesChecker(ignore_hidden_property_whitelist)])
+        checklist=[HiddenPropertiesChecker(ignore_hidden_property_allowlist)])
 
 
 def _AllProperties():
@@ -47,14 +47,16 @@ def _AllProperties():
 class HiddenPropertiesChecker(check_base.Checker):
   """Checks whether any hidden properties have been set."""
 
-  _WHITELIST = {
+  _ALLOWLIST = (
       'metrics/environment',
-  }
+  )
 
-  def __init__(self, ignore_hidden_property_whitelist):
-    self.ignore_hidden_property_whitelist = ignore_hidden_property_whitelist
-    self.whitelist = set(
-        (properties.VALUES.diagnostics.hidden_property_whitelist.Get() or '')
+  def __init__(self, ignore_hidden_property_allowlist):
+    self.ignore_hidden_property_allowlist = ignore_hidden_property_allowlist
+    # TODO(b/188055204): Remove legacy property once Cloud Shell is updated
+    self.allowlist = set(
+        (properties.VALUES.diagnostics.hidden_property_allowlist.Get() or
+         properties.VALUES.diagnostics.hidden_property_whitelist.Get() or '')
         .split(',')
     )
     self._properties_file = named_configs.ActivePropertiesFile.Load()
@@ -94,10 +96,10 @@ class HiddenPropertiesChecker(check_base.Checker):
     return result, None
 
   def _CheckHiddenProperty(self, prop):
-    if six.text_type(prop) in self._WHITELIST:
+    if six.text_type(prop) in self._ALLOWLIST:
       return
-    if not self.ignore_hidden_property_whitelist and \
-        six.text_type(prop) in self.whitelist:
+    if (not self.ignore_hidden_property_allowlist and
+        six.text_type(prop) in self.allowlist):
       return
 
     # pylint:disable=protected-access

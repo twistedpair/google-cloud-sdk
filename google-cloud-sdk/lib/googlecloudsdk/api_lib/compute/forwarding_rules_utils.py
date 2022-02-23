@@ -95,12 +95,11 @@ def GetGlobalTarget(resources, args):
     return flags.TARGET_TCP_PROXY_ARG.ResolveAsResource(args, resources)
 
 
-def _ValidateRegionalArgs(args, include_l7_rxlb):
+def _ValidateRegionalArgs(args):
   """Validate the regional forwarding rules args.
 
   Args:
       args: The arguments given to the create/set-target command.
-      include_l7_rxlb: The flag to enable Regional L7 XLB.
   """
 
   if getattr(args, 'global', None):
@@ -124,28 +123,6 @@ def _ValidateRegionalArgs(args, include_l7_rxlb):
           'whose [--load-balancing-scheme] is internal, '
           'please use [--ports] flag instead.')
 
-  schemes_allowing_network_fields = ['INTERNAL', 'INTERNAL_MANAGED']
-  if include_l7_rxlb:
-    schemes_allowing_network_fields.append('EXTERNAL_MANAGED')
-
-  ip_version = getattr(args, 'ip_version', None)
-  if ip_version == 'IPV6' and (
-      getattr(args, 'load_balancing_scheme', None) not in [None, 'EXTERNAL'] or
-      not getattr(args, 'backend_service', None) or
-      not getattr(args, 'subnet', None) or getattr(args, 'network', None)):
-    raise exceptions.ArgumentError(
-        'IPv6 forwarding rules are only supported for EXTERNAL '
-        '[--load-balancing-scheme] with Backend Service and must '
-        'be assigned a subnetwork only.')
-  elif (ip_version != 'IPV6' and getattr(args, 'subnet', None) or
-        getattr(args, 'network', None)) and not getattr(
-            args, 'target_service_attachment', None) and getattr(
-                args, 'load_balancing_scheme',
-                None) not in schemes_allowing_network_fields:
-    raise exceptions.ArgumentError(
-        'You cannot specify [--subnet] or [--network] for non-internal '
-        '[--load-balancing-scheme] non-PSC forwarding rule.')
-
   if getattr(args, 'load_balancing_scheme', None) == 'INTERNAL_SELF_MANAGED':
     raise exceptions.ArgumentError(
         'You cannot specify an INTERNAL_SELF_MANAGED [--load-balancing-scheme] '
@@ -157,10 +134,9 @@ def GetRegionalTarget(client,
                       args,
                       forwarding_rule_ref,
                       include_l7_internal_load_balancing=False,
-                      include_l7_rxlb=False,
                       include_target_service_attachment=False):
   """Return the forwarding target for a regionally scoped request."""
-  _ValidateRegionalArgs(args, include_l7_rxlb=include_l7_rxlb)
+  _ValidateRegionalArgs(args)
   region_arg = forwarding_rule_ref.region
   project_arg = forwarding_rule_ref.project
   if args.target_pool:

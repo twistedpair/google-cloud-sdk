@@ -1515,7 +1515,8 @@ class OSPolicyResourceExecResourceExec(_messages.Message):
     r"""Required. The script interpreter to use.
 
     Values:
-      INTERPRETER_UNSPECIFIED: Defaults to NONE.
+      INTERPRETER_UNSPECIFIED: Invalid value, the request will return
+        validation error.
       NONE: If an interpreter is not specified, the source is executed
         directly. This execution, without an interpreter, only succeeds for
         executables and scripts that have shebang lines.

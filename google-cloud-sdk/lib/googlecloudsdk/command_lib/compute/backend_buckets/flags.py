@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.util.apis import arg_utils
 
 
 _GCS_BUCKET_DETAILED_HELP = """\
@@ -124,4 +125,21 @@ def AddCacheKeyExtendedCachingArgs(parser):
       Specifies a comma-separated list of query string parameters to include
       in cache keys. All other parameters are excluded. '&' and '=' are
       percent encoded and not treated as delimiters.
+      """)
+
+
+def AddCompressionMode(parser):
+  """Add support for --compression-mode flag."""
+  return parser.add_argument(
+      '--compression-mode',
+      choices=['DISABLED', 'AUTOMATIC'],
+      type=arg_utils.ChoiceToEnumName,
+      help="""\
+      Compress text responses using Brotli or gzip compression, based on
+      the client's Accept-Encoding header. Two modes are supported:
+      AUTOMATIC (recommended) - automatically uses the best compression based
+      on the Accept-Encoding header sent by the client. In most cases, this
+      will result in Brotli compression being favored.
+      DISABLED - disables compression. Existing compressed responses cached
+      by Cloud CDN will not be served to clients.
       """)

@@ -554,9 +554,9 @@ class Cluster(_messages.Message):
       for hosting containers. This is provisioned from within the
       `container_ipv4_cidr` range. This field will only be set when cluster is
       in route-based network mode.
-    nodePoolAutoConfig: node pool configs that apply to all auto-provisioned
+    nodePoolAutoConfig: Node pool configs that apply to all auto-provisioned
       node pools in autopilot clusters and node auto-provisioning enabled
-      clusters
+      clusters.
     nodePoolDefaults: Default NodePool settings for the entire cluster. These
       settings are overridden if specified on the specific NodePool object.
     nodePools: The node pools associated with this cluster. This field should
@@ -569,6 +569,7 @@ class Cluster(_messages.Message):
       field is deprecated, use private_cluster_config.enable_private_nodes
       instead.
     privateClusterConfig: Configuration for private cluster.
+    protectConfig: Enable/Disable Protect API features for the cluster.
     releaseChannel: Release channel configuration.
     resourceLabels: The resource labels for the cluster to use to annotate any
       related Google Compute Engine resources.
@@ -720,24 +721,25 @@ class Cluster(_messages.Message):
   podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 55)
   privateCluster = _messages.BooleanField(56)
   privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 57)
-  releaseChannel = _messages.MessageField('ReleaseChannel', 58)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 59)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 60)
-  selfLink = _messages.StringField(61)
-  servicesIpv4Cidr = _messages.StringField(62)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 63)
-  status = _messages.EnumField('StatusValueValuesEnum', 64)
-  statusMessage = _messages.StringField(65)
-  subnetwork = _messages.StringField(66)
-  tpuConfig = _messages.MessageField('TpuConfig', 67)
-  tpuIpv4CidrBlock = _messages.StringField(68)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 69)
-  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 70)
-  workloadCertificates = _messages.MessageField('WorkloadCertificates', 71)
-  workloadConfig = _messages.MessageField('WorkloadConfig', 72)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 73)
-  workloadMonitoringEnabledEap = _messages.BooleanField(74)
-  zone = _messages.StringField(75)
+  protectConfig = _messages.MessageField('ProtectConfig', 58)
+  releaseChannel = _messages.MessageField('ReleaseChannel', 59)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 60)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 61)
+  selfLink = _messages.StringField(62)
+  servicesIpv4Cidr = _messages.StringField(63)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 64)
+  status = _messages.EnumField('StatusValueValuesEnum', 65)
+  statusMessage = _messages.StringField(66)
+  subnetwork = _messages.StringField(67)
+  tpuConfig = _messages.MessageField('TpuConfig', 68)
+  tpuIpv4CidrBlock = _messages.StringField(69)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 70)
+  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 71)
+  workloadCertificates = _messages.MessageField('WorkloadCertificates', 72)
+  workloadConfig = _messages.MessageField('WorkloadConfig', 73)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 74)
+  workloadMonitoringEnabledEap = _messages.BooleanField(75)
+  zone = _messages.StringField(76)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -921,6 +923,7 @@ class ClusterUpdate(_messages.Message):
     desiredPrivateClusterConfig: The desired private cluster configuration.
     desiredPrivateIpv6GoogleAccess: The desired state of IPv6 connectivity to
       Google Services.
+    desiredProtectConfig: Enable/Disable Protect API features for the cluster.
     desiredReleaseChannel: The desired release channel configuration.
     desiredResourceUsageExportConfig: The desired configuration for exporting
       resource usage.
@@ -1021,18 +1024,19 @@ class ClusterUpdate(_messages.Message):
   desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 38)
   desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 39)
   desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 40)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 41)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 42)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 43)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 44)
-  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 45)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 46)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 47)
-  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 48)
-  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 49)
-  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 50)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 51)
-  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 52)
+  desiredProtectConfig = _messages.MessageField('ProtectConfig', 41)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 42)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 43)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 44)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 45)
+  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 46)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 47)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 48)
+  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 49)
+  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 50)
+  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 51)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 52)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 53)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -3305,11 +3309,16 @@ class NodeKubeletConfig(_messages.Message):
       with certain resource characteristics to be granted increased CPU
       affinity and exclusivity on the node. The default value is 'none' if
       unspecified.
+    podPidsLimit: Set the Pod PID limits. See
+      https://kubernetes.io/docs/concepts/policy/pid-limiting/#pod-pid-limits
+      Controls the maximum number of processes allowed to run in a pod. The
+      value must be greater than or equal to 1024 and less than 4194304.
   """
 
   cpuCfsQuota = _messages.BooleanField(1)
   cpuCfsQuotaPeriod = _messages.StringField(2)
   cpuManagerPolicy = _messages.StringField(3)
+  podPidsLimit = _messages.IntegerField(4)
 
 
 class NodeLabels(_messages.Message):
@@ -3909,6 +3918,18 @@ class PrivateClusterMasterGlobalAccessConfig(_messages.Message):
   enabled = _messages.BooleanField(1)
 
 
+class ProtectConfig(_messages.Message):
+  r"""ProtectConfig defines the flags needed to enable/disable features for
+  the Protect API.
+
+  Fields:
+    workloadConfig: WorkloadConfig defines which actions are enabled for a
+      cluster's workload configurations.
+  """
+
+  workloadConfig = _messages.MessageField('WorkloadConfig', 1)
+
+
 class PubSub(_messages.Message):
   r"""Pub/Sub specific notification config.
 
@@ -4121,8 +4142,8 @@ class RollbackNodePoolUpgradeRequest(_messages.Message):
     projectId: Required. Deprecated. The Google Developers Console [project ID
       or project number](https://support.google.com/cloud/answer/6158840).
       This field has been deprecated and replaced by the name field.
-    respectPdb: Required. Option for rollback to ignore the
-      PodDisruptionBudget. Default value is false.
+    respectPdb: Option for rollback to ignore the PodDisruptionBudget. Default
+      value is false.
     zone: Required. Deprecated. The name of the Google Compute Engine
       [zone](https://cloud.google.com/compute/docs/zones#available) in which
       the cluster resides. This field has been deprecated and replaced by the
@@ -5488,20 +5509,24 @@ class WorkloadConfig(_messages.Message):
   configurations for the cluster.
 
   Enums:
-    AuditModeValueValuesEnum: Sets which mode the audit scanning should be for
-      a cluster.
+    AuditModeValueValuesEnum: Sets which mode of auditing should be used for
+      the cluster's workloads.
 
   Fields:
-    auditMode: Sets which mode the audit scanning should be for a cluster.
+    auditMode: Sets which mode of auditing should be used for the cluster's
+      workloads.
   """
 
   class AuditModeValueValuesEnum(_messages.Enum):
-    r"""Sets which mode the audit scanning should be for a cluster.
+    r"""Sets which mode of auditing should be used for the cluster's
+    workloads.
 
     Values:
       MODE_UNSPECIFIED: Default value meaning that no mode has been specified.
-      DISABLED: This disables WorkloafConfiguration on the cluster, meaning
-        that nothing is surfaced.
+      DISABLED: This disables Workload Configuration auditing on the cluster,
+        meaning that nothing is surfaced.
+      BASIC: Applies the default set of policy auditing to a cluster's
+        workloads.
       BASELINE: Surfaces configurations that are not in line with the Pod
         Security Standard Baseline policy.
       RESTRICTED: Surfaces configurations that are not in line with the Pod
@@ -5509,8 +5534,9 @@ class WorkloadConfig(_messages.Message):
     """
     MODE_UNSPECIFIED = 0
     DISABLED = 1
-    BASELINE = 2
-    RESTRICTED = 3
+    BASIC = 2
+    BASELINE = 3
+    RESTRICTED = 4
 
   auditMode = _messages.EnumField('AuditModeValueValuesEnum', 1)
 

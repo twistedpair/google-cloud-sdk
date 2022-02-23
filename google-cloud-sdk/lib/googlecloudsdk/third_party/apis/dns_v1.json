@@ -4,7 +4,7 @@
  "id": "dns:v1",
  "name": "dns",
  "version": "v1",
- "revision": "20220204",
+ "revision": "20220211",
  "title": "Google Cloud DNS API",
  "description": "Configures and serves authoritative DNS records.",
  "ownerDomain": "google.com",
@@ -15,10 +15,10 @@
  },
  "documentationLink": "https://developers.google.com/cloud-dns",
  "protocol": "rest",
- "baseUrl": "https://dns.googleapis.com/dns/v1/projects/",
- "basePath": "/dns/v1/projects/",
+ "baseUrl": "https://dns.googleapis.com/dns/v1/",
+ "basePath": "/dns/v1/",
  "rootUrl": "https://dns.googleapis.com/",
- "servicePath": "dns/v1/projects/",
+ "servicePath": "dns/v1/",
  "batchPath": "batch/dns/v1",
  "parameters": {
   "alt": {
@@ -280,6 +280,60 @@
      "type": "string",
      "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#dnsKeySpec\".",
      "default": "dns#dnsKeySpec"
+    }
+   }
+  },
+  "DnsKeysAdminCreateRequest": {
+   "id": "DnsKeysAdminCreateRequest",
+   "type": "object",
+   "properties": {
+    "dnsKey": {
+     "$ref": "DnsKey"
+    },
+    "managedZone": {
+     "type": "string"
+    },
+    "project": {
+     "type": "string"
+    }
+   }
+  },
+  "DnsKeysAdminCreateResponse": {
+   "id": "DnsKeysAdminCreateResponse",
+   "type": "object",
+   "properties": {
+    "dnsKey": {
+     "$ref": "DnsKey"
+    },
+    "header": {
+     "$ref": "ResponseHeader"
+    }
+   }
+  },
+  "DnsKeysAdminDeleteRequest": {
+   "id": "DnsKeysAdminDeleteRequest",
+   "type": "object",
+   "properties": {
+    "dnsKeyId": {
+     "type": "string"
+    },
+    "force": {
+     "type": "boolean"
+    },
+    "managedZone": {
+     "type": "string"
+    },
+    "project": {
+     "type": "string"
+    }
+   }
+  },
+  "DnsKeysAdminDeleteResponse": {
+   "id": "DnsKeysAdminDeleteResponse",
+   "type": "object",
+   "properties": {
+    "header": {
+     "$ref": "ResponseHeader"
     }
    }
   },
@@ -1274,7 +1328,7 @@
    "methods": {
     "create": {
      "id": "dns.changes.create",
-     "path": "{project}/managedZones/{managedZone}/changes",
+     "path": "projects/{project}/managedZones/{managedZone}/changes",
      "httpMethod": "POST",
      "description": "",
      "parameters": {
@@ -1310,7 +1364,7 @@
     },
     "get": {
      "id": "dns.changes.get",
-     "path": "{project}/managedZones/{managedZone}/changes/{changeId}",
+     "path": "projects/{project}/managedZones/{managedZone}/changes/{changeId}",
      "httpMethod": "GET",
      "description": "",
      "parameters": {
@@ -1351,7 +1405,7 @@
     },
     "list": {
      "id": "dns.changes.list",
-     "path": "{project}/managedZones/{managedZone}/changes",
+     "path": "projects/{project}/managedZones/{managedZone}/changes",
      "httpMethod": "GET",
      "description": "",
      "parameters": {
@@ -1408,9 +1462,41 @@
   },
   "dnsKeys": {
    "methods": {
+    "admincreate": {
+     "id": "dns.dnsKeys.admincreate",
+     "path": "dnsKeys/admincreate",
+     "httpMethod": "POST",
+     "description": "",
+     "request": {
+      "$ref": "DnsKeysAdminCreateRequest"
+     },
+     "response": {
+      "$ref": "DnsKeysAdminCreateResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform.read-only",
+      "https://www.googleapis.com/auth/ndev.clouddns.readonly"
+     ]
+    },
+    "admindelete": {
+     "id": "dns.dnsKeys.admindelete",
+     "path": "dnsKeys/admindelete",
+     "httpMethod": "POST",
+     "description": "",
+     "request": {
+      "$ref": "DnsKeysAdminDeleteRequest"
+     },
+     "response": {
+      "$ref": "DnsKeysAdminDeleteResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform.read-only",
+      "https://www.googleapis.com/auth/ndev.clouddns.readonly"
+     ]
+    },
     "get": {
      "id": "dns.dnsKeys.get",
-     "path": "{project}/managedZones/{managedZone}/dnsKeys/{dnsKeyId}",
+     "path": "projects/{project}/managedZones/{managedZone}/dnsKeys/{dnsKeyId}",
      "httpMethod": "GET",
      "description": "",
      "parameters": {
@@ -1455,7 +1541,7 @@
     },
     "list": {
      "id": "dns.dnsKeys.list",
-     "path": "{project}/managedZones/{managedZone}/dnsKeys",
+     "path": "projects/{project}/managedZones/{managedZone}/dnsKeys",
      "httpMethod": "GET",
      "description": "",
      "parameters": {
@@ -1503,7 +1589,7 @@
    "methods": {
     "get": {
      "id": "dns.managedZoneOperations.get",
-     "path": "{project}/managedZones/{managedZone}/operations/{operation}",
+     "path": "projects/{project}/managedZones/{managedZone}/operations/{operation}",
      "httpMethod": "GET",
      "description": "",
      "parameters": {
@@ -1544,7 +1630,7 @@
     },
     "list": {
      "id": "dns.managedZoneOperations.list",
-     "path": "{project}/managedZones/{managedZone}/operations",
+     "path": "projects/{project}/managedZones/{managedZone}/operations",
      "httpMethod": "GET",
      "description": "",
      "parameters": {
@@ -1601,7 +1687,7 @@
    "methods": {
     "create": {
      "id": "dns.managedZones.create",
-     "path": "{project}/managedZones",
+     "path": "projects/{project}/managedZones",
      "httpMethod": "POST",
      "description": "",
      "parameters": {
@@ -1631,7 +1717,7 @@
     },
     "delete": {
      "id": "dns.managedZones.delete",
-     "path": "{project}/managedZones/{managedZone}",
+     "path": "projects/{project}/managedZones/{managedZone}",
      "httpMethod": "DELETE",
      "description": "",
      "parameters": {
@@ -1661,7 +1747,7 @@
     },
     "get": {
      "id": "dns.managedZones.get",
-     "path": "{project}/managedZones/{managedZone}",
+     "path": "projects/{project}/managedZones/{managedZone}",
      "httpMethod": "GET",
      "description": "",
      "parameters": {
@@ -1696,7 +1782,7 @@
     },
     "list": {
      "id": "dns.managedZones.list",
-     "path": "{project}/managedZones",
+     "path": "projects/{project}/managedZones",
      "httpMethod": "GET",
      "description": "",
      "parameters": {
@@ -1734,7 +1820,7 @@
     },
     "patch": {
      "id": "dns.managedZones.patch",
-     "path": "{project}/managedZones/{managedZone}",
+     "path": "projects/{project}/managedZones/{managedZone}",
      "httpMethod": "PATCH",
      "description": "",
      "parameters": {
@@ -1770,7 +1856,7 @@
     },
     "update": {
      "id": "dns.managedZones.update",
-     "path": "{project}/managedZones/{managedZone}",
+     "path": "projects/{project}/managedZones/{managedZone}",
      "httpMethod": "PUT",
      "description": "",
      "parameters": {
@@ -1810,7 +1896,7 @@
    "methods": {
     "create": {
      "id": "dns.policies.create",
-     "path": "{project}/policies",
+     "path": "projects/{project}/policies",
      "httpMethod": "POST",
      "description": "",
      "parameters": {
@@ -1840,7 +1926,7 @@
     },
     "delete": {
      "id": "dns.policies.delete",
-     "path": "{project}/policies/{policy}",
+     "path": "projects/{project}/policies/{policy}",
      "httpMethod": "DELETE",
      "description": "",
      "parameters": {
@@ -1870,7 +1956,7 @@
     },
     "get": {
      "id": "dns.policies.get",
-     "path": "{project}/policies/{policy}",
+     "path": "projects/{project}/policies/{policy}",
      "httpMethod": "GET",
      "description": "",
      "parameters": {
@@ -1905,7 +1991,7 @@
     },
     "list": {
      "id": "dns.policies.list",
-     "path": "{project}/policies",
+     "path": "projects/{project}/policies",
      "httpMethod": "GET",
      "description": "",
      "parameters": {
@@ -1939,7 +2025,7 @@
     },
     "patch": {
      "id": "dns.policies.patch",
-     "path": "{project}/policies/{policy}",
+     "path": "projects/{project}/policies/{policy}",
      "httpMethod": "PATCH",
      "description": "",
      "parameters": {
@@ -1975,7 +2061,7 @@
     },
     "update": {
      "id": "dns.policies.update",
-     "path": "{project}/policies/{policy}",
+     "path": "projects/{project}/policies/{policy}",
      "httpMethod": "PUT",
      "description": "",
      "parameters": {
@@ -2015,7 +2101,7 @@
    "methods": {
     "get": {
      "id": "dns.projects.get",
-     "path": "{project}",
+     "path": "projects/{project}",
      "httpMethod": "GET",
      "description": "",
      "parameters": {
@@ -2048,7 +2134,7 @@
    "methods": {
     "create": {
      "id": "dns.resourceRecordSets.create",
-     "path": "{project}/managedZones/{managedZone}/rrsets",
+     "path": "projects/{project}/managedZones/{managedZone}/rrsets",
      "httpMethod": "POST",
      "description": "",
      "parameters": {
@@ -2084,7 +2170,7 @@
     },
     "delete": {
      "id": "dns.resourceRecordSets.delete",
-     "path": "{project}/managedZones/{managedZone}/rrsets/{name}/{type}",
+     "path": "projects/{project}/managedZones/{managedZone}/rrsets/{name}/{type}",
      "httpMethod": "DELETE",
      "description": "",
      "parameters": {
@@ -2130,7 +2216,7 @@
     },
     "get": {
      "id": "dns.resourceRecordSets.get",
-     "path": "{project}/managedZones/{managedZone}/rrsets/{name}/{type}",
+     "path": "projects/{project}/managedZones/{managedZone}/rrsets/{name}/{type}",
      "httpMethod": "GET",
      "description": "",
      "parameters": {
@@ -2180,7 +2266,7 @@
     },
     "list": {
      "id": "dns.resourceRecordSets.list",
-     "path": "{project}/managedZones/{managedZone}/rrsets",
+     "path": "projects/{project}/managedZones/{managedZone}/rrsets",
      "httpMethod": "GET",
      "description": "",
      "parameters": {
@@ -2228,7 +2314,7 @@
     },
     "patch": {
      "id": "dns.resourceRecordSets.patch",
-     "path": "{project}/managedZones/{managedZone}/rrsets/{name}/{type}",
+     "path": "projects/{project}/managedZones/{managedZone}/rrsets/{name}/{type}",
      "httpMethod": "PATCH",
      "description": "",
      "parameters": {
@@ -2284,7 +2370,7 @@
    "methods": {
     "create": {
      "id": "dns.responsePolicies.create",
-     "path": "{project}/responsePolicies",
+     "path": "projects/{project}/responsePolicies",
      "httpMethod": "POST",
      "description": "",
      "parameters": {
@@ -2314,7 +2400,7 @@
     },
     "delete": {
      "id": "dns.responsePolicies.delete",
-     "path": "{project}/responsePolicies/{responsePolicy}",
+     "path": "projects/{project}/responsePolicies/{responsePolicy}",
      "httpMethod": "DELETE",
      "description": "",
      "parameters": {
@@ -2344,7 +2430,7 @@
     },
     "get": {
      "id": "dns.responsePolicies.get",
-     "path": "{project}/responsePolicies/{responsePolicy}",
+     "path": "projects/{project}/responsePolicies/{responsePolicy}",
      "httpMethod": "GET",
      "description": "",
      "parameters": {
@@ -2379,7 +2465,7 @@
     },
     "list": {
      "id": "dns.responsePolicies.list",
-     "path": "{project}/responsePolicies",
+     "path": "projects/{project}/responsePolicies",
      "httpMethod": "GET",
      "description": "",
      "parameters": {
@@ -2413,7 +2499,7 @@
     },
     "patch": {
      "id": "dns.responsePolicies.patch",
-     "path": "{project}/responsePolicies/{responsePolicy}",
+     "path": "projects/{project}/responsePolicies/{responsePolicy}",
      "httpMethod": "PATCH",
      "description": "",
      "parameters": {
@@ -2449,7 +2535,7 @@
     },
     "update": {
      "id": "dns.responsePolicies.update",
-     "path": "{project}/responsePolicies/{responsePolicy}",
+     "path": "projects/{project}/responsePolicies/{responsePolicy}",
      "httpMethod": "PUT",
      "description": "",
      "parameters": {
@@ -2489,7 +2575,7 @@
    "methods": {
     "create": {
      "id": "dns.responsePolicyRules.create",
-     "path": "{project}/responsePolicies/{responsePolicy}/rules",
+     "path": "projects/{project}/responsePolicies/{responsePolicy}/rules",
      "httpMethod": "POST",
      "description": "",
      "parameters": {
@@ -2525,7 +2611,7 @@
     },
     "delete": {
      "id": "dns.responsePolicyRules.delete",
-     "path": "{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}",
+     "path": "projects/{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}",
      "httpMethod": "DELETE",
      "description": "",
      "parameters": {
@@ -2561,7 +2647,7 @@
     },
     "get": {
      "id": "dns.responsePolicyRules.get",
-     "path": "{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}",
+     "path": "projects/{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}",
      "httpMethod": "GET",
      "description": "",
      "parameters": {
@@ -2602,7 +2688,7 @@
     },
     "list": {
      "id": "dns.responsePolicyRules.list",
-     "path": "{project}/responsePolicies/{responsePolicy}/rules",
+     "path": "projects/{project}/responsePolicies/{responsePolicy}/rules",
      "httpMethod": "GET",
      "description": "",
      "parameters": {
@@ -2642,7 +2728,7 @@
     },
     "patch": {
      "id": "dns.responsePolicyRules.patch",
-     "path": "{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}",
+     "path": "projects/{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}",
      "httpMethod": "PATCH",
      "description": "",
      "parameters": {
@@ -2684,7 +2770,7 @@
     },
     "update": {
      "id": "dns.responsePolicyRules.update",
-     "path": "{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}",
+     "path": "projects/{project}/responsePolicies/{responsePolicy}/rules/{responsePolicyRule}",
      "httpMethod": "PUT",
      "description": "",
      "parameters": {

@@ -561,6 +561,13 @@ def GetResponsePolicyRulesBehaviorFlagMapper(messages):
       help_str='The response policy rule query behavior.')
 
 
+def GetResponsePolicyRulesBehavior():
+  return base.Argument(
+      '--behavior',
+      choices=['behaviorUnspecified', 'bypassResponsePolicy'],
+      help='The response policy rule query behavior.')
+
+
 def AddResponsePolicyRulesBehaviorFlagArgs(parser, messages):
   GetResponsePolicyRulesBehaviorFlagMapper(messages).choice_arg.AddToParser(
       parser)
@@ -606,3 +613,43 @@ def GetManagedZoneLoggingArg():
       '--log-dns-queries',
       action=arg_parsers.StoreTrueFalseAction,
       help='Specifies whether to enable query logging. Defaults to False.')
+
+
+def GetResponsePolicyNameArg(positional=True, required=True):
+  if positional:
+    return base.Argument(
+        'response_policy',
+        type=str,
+        metavar='RESPONSE_POLICY_NAME',
+        help='Name of the response policy.')
+  else:
+    return base.Argument(
+        '--response_policy',
+        type=str,
+        required=required,
+        metavar='RESPONSE_POLICY_NAME',
+        help='Name of the response policy.')
+
+
+def GetResponsePoliciesNameArg(positional=True, required=True):
+  if positional:
+    return base.Argument(
+        'response_policies',
+        type=str,
+        metavar='RESPONSE_POLICY_NAME',
+        help='Name of the response policy.')
+  else:
+    return base.Argument(
+        '--response_policies',
+        type=str,
+        required=required,
+        metavar='RESPONSE_POLICY_NAME',
+        help='Name of the response policy.')
+
+
+def GetLocationArg():
+  return base.Argument(
+      '--location',
+      type=str,
+      help='Specifies the desired service location the request is sent to. '
+      'Default to Cloud DNS global service.')

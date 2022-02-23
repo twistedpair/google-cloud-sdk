@@ -41,14 +41,13 @@ class Client(object):
             name=attestor_ref.RelativeName(),
         ))
 
-  def List(self, project_ref, limit=None, batch_size=500):
+  def List(self, project_ref, limit=None, page_size=None):
     """List the attestors associated with the current project."""
     return list_pager.YieldFromList(
         self.client.projects_attestors,
         self.messages.BinaryauthorizationProjectsAttestorsListRequest(
-            parent=project_ref.RelativeName(),
-        ),
-        batch_size=batch_size,
+            parent=project_ref.RelativeName(),),
+        batch_size=page_size or 100,  # Default batch_size.
         limit=limit,
         field='attestors',
         batch_size_attribute='pageSize')

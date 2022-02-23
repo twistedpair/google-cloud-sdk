@@ -85,6 +85,13 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SSHKEYS = (
+      'projects.locations.sshKeys',
+      'projects/{projectsId}/locations/{locationsId}/sshKeys/{sshKeysId}',
+      {},
+      ['projectsId', 'locationsId', 'sshKeysId'],
+      True
+  )
   PROJECTS_LOCATIONS_VOLUMES = (
       'projects.locations.volumes',
       '{+name}',

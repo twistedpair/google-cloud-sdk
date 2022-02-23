@@ -751,16 +751,19 @@ def GetMultiScopeDescriberHelp(resource, scopes):
 To get details about a zonal {0} in the ``us-central1-b'' zone, run:
 
   $ {{command}} --zone=us-central1-b
+
 """
   region_example_text = """\
 To get details about a regional {0} in the ``us-central1'' regions, run:
 
   $ {{command}} --region=us-central1
+
 """
   global_example_text = """\
 To get details about a global {0}, run:
 
   $ {{command}} --global
+
 """
   return {
       'brief': ('Display detailed information about {0} {1}'

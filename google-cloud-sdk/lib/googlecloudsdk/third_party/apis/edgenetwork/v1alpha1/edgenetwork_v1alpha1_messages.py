@@ -450,36 +450,6 @@ class EdgenetworkProjectsLocationsZonesNetworksListRequest(_messages.Message):
   parent = _messages.StringField(5, required=True)
 
 
-class EdgenetworkProjectsLocationsZonesPatchRequest(_messages.Message):
-  r"""A EdgenetworkProjectsLocationsZonesPatchRequest object.
-
-  Fields:
-    name: Required. The resource name of the zone.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the Zone resource by the update. The fields specified in
-      the update_mask are relative to the resource, not the full request. A
-      field will be overwritten if it is in the mask. If the user does not
-      provide a mask then all fields will be overwritten.
-    zone: A Zone resource to be passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  updateMask = _messages.StringField(3)
-  zone = _messages.MessageField('Zone', 4)
-
-
 class EdgenetworkProjectsLocationsZonesRoutersCreateRequest(_messages.Message):
   r"""A EdgenetworkProjectsLocationsZonesRoutersCreateRequest object.
 
@@ -1550,6 +1520,12 @@ class Zone(_messages.Message):
   Fields:
     createTime: Output only. The time when the zone was created.
     labels: Labels as key value pairs
+    layoutName: The deployment layout type. Defined by the NetworkLayout.name
+      in //cloud/kubernetes/edge/network/proto/network_layout.proto The layout
+      definition must exist in
+      //cloud/kubernetes/edge/network/service/config/network_layout
+    migrateToCcfe: Optional. / Skip GNAS site creation if set to true. This
+      flag should be used for / migration only.
     name: Required. The resource name of the zone.
     updateTime: Output only. The time when the zone was last updated.
   """
@@ -1580,8 +1556,10 @@ class Zone(_messages.Message):
 
   createTime = _messages.StringField(1)
   labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
+  layoutName = _messages.StringField(3)
+  migrateToCcfe = _messages.BooleanField(4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 encoding.AddCustomJsonFieldMapping(

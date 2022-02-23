@@ -683,6 +683,84 @@ def GetPrivateIpv6GoogleAccessTypeMapperForUpdate(messages, hidden=False):
       help_str='')
 
 
+def _GetStackTypeCustomMappings():
+  return {
+      'IPV4': 'ipv4',
+      'IPV4_IPV6': 'ipv4-ipv6',
+  }
+
+
+def GetStackTypeMapper(messages, hidden=True):
+  """Returns a mapper from text options to the StackType enum.
+
+  Args:
+    messages: The message module.
+    hidden: Whether the flag should be hidden in the choice_arg
+  """
+
+  help_text = """
+Sets the stack type for the cluster nodes and pods.
+
+STACK_TYPE must be one of:
+
+  ipv4
+    Default value. Creates IPv4 single stack clusters.
+
+  ipv4-ipv6
+    Creates dual stack clusters.
+
+  $ gcloud alpha container clusters create \
+      --stack-type=ipv4
+  $ gcloud alpha container clusters create \
+      --stack-type=ipv4-ipv6
+"""
+  return arg_utils.ChoiceEnumMapper(
+      '--stack-type',
+      messages.IPAllocationPolicy.StackTypeValueValuesEnum,
+      _GetStackTypeCustomMappings(),
+      hidden=hidden,
+      help_str=help_text)
+
+
+def _GetIpv6AccessTypeCustomMappings():
+  return {
+      'INTERNAL': 'internal',
+      'EXTERNAL': 'external',
+  }
+
+
+def GetIpv6AccessTypeMapper(messages, hidden=True):
+  """Returns a mapper from text options to the Ipv6AccessType enum.
+
+  Args:
+    messages: The message module.
+    hidden: Whether the flag should be hidden in the choice_arg
+  """
+
+  help_text = """
+Sets the IPv6 access type for the subnet created by GKE.
+
+IPV6_ACCESS_TYPE must be one of:
+
+  internal
+    Creates a subnet with INTERNAL IPv6 access type.
+
+  external
+    Default value. Creates a subnet with EXTERNAL IPv6 access type.
+
+  $ gcloud alpha container clusters create \
+      --ipv6-access-type=internal
+  $ gcloud alpha container clusters create \
+      --ipv6-access-type=external
+"""
+  return arg_utils.ChoiceEnumMapper(
+      '--ipv6-access-type',
+      messages.IPAllocationPolicy.Ipv6AccessTypeValueValuesEnum,
+      _GetIpv6AccessTypeCustomMappings(),
+      hidden=hidden,
+      help_str=help_text)
+
+
 def HasUnknownKeys(actual, known):
   if not actual:
     return

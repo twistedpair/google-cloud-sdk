@@ -337,8 +337,12 @@
           ]
         },
         "dumpPath": {
-          "description": "The path to the dump file in Google Cloud Storage, in the format: (gs:\/\/[BUCKET_NAME]\/[OBJECT_NAME]).",
+          "description": "The path to the dump file in Google Cloud Storage, in the format: (gs:\/\/[BUCKET_NAME]\/[OBJECT_NAME]). This field and the \"dump_flags\" field are mutually exclusive.",
           "type": "string"
+        },
+        "dumpFlags": {
+          "description": "The initial dump flags. This field and the \"dump_path\" field are mutually exclusive.",
+          "$ref": "DumpFlags"
         },
         "source": {
           "description": "Required. The resource name (URI) of the source connection profile.",
@@ -384,6 +388,35 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "DumpFlags": {
+      "id": "DumpFlags",
+      "description": "Dump flags definition.",
+      "type": "object",
+      "properties": {
+        "dumpFlags": {
+          "description": "The flags for the initial dump.",
+          "type": "array",
+          "items": {
+            "$ref": "DumpFlag"
+          }
+        }
+      }
+    },
+    "DumpFlag": {
+      "id": "DumpFlag",
+      "description": "Dump flag definition.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the flag",
+          "type": "string"
+        },
+        "value": {
+          "description": "The value of the flag.",
+          "type": "string"
         }
       }
     },

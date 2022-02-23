@@ -579,6 +579,12 @@ apis:
       mtls_endpoint_override: https://dns.mtls.googleapis.com/dns/v1beta2/
     v1alpha2:
       discovery_doc: dns_v1alpha2.json
+    v2:
+      discovery_doc: dns_v2.json
+      mtls_endpoint_override: https://dns.mtls.googleapis.com/dns/v2/
+      resources:
+        projects:
+          path: projects/{project}
   domains:
     v1:
       discovery_doc: domains_v1.json
@@ -759,8 +765,6 @@ apis:
       resources:
         iamPolicies:
           path: iamPolicies
-        locations.workforcePools.subjects:
-          path: locations/{locationsId}/workforcePools/{workforcePoolsId}/subjects/{subjectsId}
     v2alpha:
       discovery_doc: iam_v2alpha.json
     v2beta:
@@ -1142,6 +1146,10 @@ apis:
       discovery_doc: sqladmin_v1beta4.json
       unelidable_request_methods:
       - sql.instances.insert
+  stream:
+    v1alpha1:
+      discovery_doc: stream_v1alpha1.json
+      default: true
   storage:
     v1:
       discovery_doc: storage_v1.json
@@ -1313,3 +1321,7 @@ apis:
       discovery_doc: baremetalsolution_v2.json
       default: true
       enable_mtls: false
+      resources:
+        projects.locations.sshKeys:
+          path: projects/{projectsId}/locations/{locationsId}/sshKeys/{sshKeysId}
+          enable_uri_parsing: true

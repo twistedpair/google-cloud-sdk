@@ -517,8 +517,7 @@ class EdgeCacheOrigin(_messages.Message):
       resource.
 
   Fields:
-    createTime: Output only. A human-readable description of the resource.
-      Creation timestamp in RFC3339 text format.
+    createTime: Output only. Creation timestamp in RFC3339 text format.
     description: Optional. A human-readable description of the resource.
     failoverOrigin: Optional. The EdgeCacheOrigin resource to try when the
       current origin cannot be reached. After maxAttempts is reached, the

@@ -89,7 +89,7 @@ def _PromptForProjectId(project_ids, limit_exceeded):
   """
   if project_ids is None:
     return console_io.PromptResponse(
-        'Enter project id you would like to use:  ') or None
+        'Enter project ID you would like to use:  ') or None
   elif not project_ids:
     if not console_io.PromptContinue(
         'This account has no projects.',
@@ -106,22 +106,28 @@ def _PromptForProjectId(project_ids, limit_exceeded):
     elif idx == 0:
       return console_io.PromptWithValidator(
           _IsExistingProject,
-          'Project ID does not exist or is not active. Please enter an '
-          'existing and active Project ID.',
-          'Enter an existing project id you would like to use:  ')
+          'Project ID does not exist or is not active.',
+          'Enter project ID you would like to use:  ',
+          allow_invalid=True)
     elif idx == 1:
       return _CREATE_PROJECT_SENTINEL
     else:
       project_ids = _GetProjectIds()
 
   idx = console_io.PromptChoice(
-      project_ids + ['Create a new project'],
+      project_ids + ['Enter a project ID', 'Create a new project'],
       message='Pick cloud project to use: ',
       allow_freeform=True,
       freeform_suggester=usage_text.TextChoiceSuggester())
   if idx is None:
     return None
   elif idx == len(project_ids):
+    return console_io.PromptWithValidator(
+        _IsExistingProject,
+        'Project ID does not exist or is not active.',
+        'Enter project ID you would like to use:  ',
+        allow_invalid=True)
+  elif idx == len(project_ids) + 1:
     return _CREATE_PROJECT_SENTINEL
   return project_ids[idx]
 
@@ -168,9 +174,17 @@ def PickProject(preselected=None):
   if project_ids is not None and len(project_ids) > _PROJECT_LIST_LIMIT:
     limit_exceeded = True
 
-  project_id = preselected or _PromptForProjectId(project_ids, limit_exceeded)
+  selected = None
+  if preselected:
+    project_id = preselected
+  else:
+    project_id = _PromptForProjectId(project_ids, limit_exceeded)
+    if project_id is not _CREATE_PROJECT_SENTINEL:
+      selected = project_id
+
   if not limit_exceeded:
-    if project_ids is None or project_id in project_ids or project_id is None:
+    if (project_ids is None or project_id in project_ids or
+        project_id is None or selected):
       return project_id
   else:
     # If we fall into limit_exceeded logic and preselected was None, then

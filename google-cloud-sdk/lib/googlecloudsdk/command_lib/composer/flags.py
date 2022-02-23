@@ -796,7 +796,7 @@ MASTER_IPV4_CIDR_FLAG = base.Argument(
     default=None,
     type=MASTER_IPV4_CIDR_BLOCK_FORMAT_VALIDATOR,
     help="""\
-    IPv4 CIDR range to use for the cluste master network. This should have a
+    IPv4 CIDR range to use for the cluster master network. This should have a
     size of the netmask between 23 and 28.
 
     Cannot be specified unless '--enable-private-environment' is also

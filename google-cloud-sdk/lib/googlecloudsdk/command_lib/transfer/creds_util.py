@@ -95,18 +95,41 @@ def get_values_for_keys_from_file(file_path, keys):
   return result
 
 
-def get_aws_creds():
-  """Returns creds from common AWS config file paths.
+def get_aws_creds_from_file(file_path):
+  """Scans file for AWS credentials keys.
+
+  Key fields prefixed with "aws" take precedence.
+
+  Args:
+    file_path (str): Path to creds file.
 
   Returns:
-    Dict with AWS creds if valid config file present, else dict with None
-      values for credentials.
+    Tuple of (access_key_id, secret_access_key).
+    Each tuple entry can be a string or None.
+  """
+  creds_dict = get_values_for_keys_from_file(file_path, [
+      'aws_access_key_id', 'aws_secret_access_key', 'access_key_id',
+      'secret_access_key', 'role_arn'
+  ])
+  access_key_id = creds_dict.get('aws_access_key_id',
+                                 creds_dict.get('access_key_id', None))
+  secret_access_key = creds_dict.get('aws_secret_access_key',
+                                     creds_dict.get('secret_access_key', None))
+  role_arn = creds_dict.get('role_arn', None)
+  return access_key_id, secret_access_key, role_arn
+
+
+def get_default_aws_creds():
+  """Returns creds from common AWS config file paths.
+
+  Currently does not return "role_arn" because there is no way to extract
+  this data from a boto3 Session object.
+
+  Returns:
+    Tuple of (access_key_id, secret_access_key, role_arn).
+    Each tuple entry can be a string or None.
   """
   credentials = boto3.session.Session().get_credentials()
-
   if credentials:
-    return {
-        'aws_access_key_id': credentials.access_key,
-        'aws_secret_access_key': credentials.secret_key
-    }
-  return {'aws_access_key_id': None, 'aws_secret_access_key': None}
+    return credentials.access_key, credentials.secret_key
+  return None, None

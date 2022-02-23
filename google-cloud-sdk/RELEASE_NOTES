@@ -5,6 +5,93 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 374.0.0 (2022-02-23)
+
+### Breaking Changes
+
+*   **(Google Cloud CLI)** Updated `gcloud auth application-default login` to use `--no-browser` in
+  place of `--no-launch-browser` when using `--client-id-file`.
+
+
+### Google Cloud CLI
+
+*   Added `gcloud config configurations rename` which allows for
+    renaming of existing configurations.
+
+### Anthos Multi-Cloud
+
+*   Added `--security-group-ids` flag to `gcloud container aws clusters update`
+    to update the IDs of additional security groups to add to control
+    plane replicas.
+*   Added `--proxy-secret-arn` flag to `gcloud container aws clusters update`
+    to update the Amazon Resource Name (ARN) of the AWS Secrets Manager secret
+    containing a proxy configuration.
+*   Added `--proxy-secret-version-id` flag to `gcloud container aws clusters
+    update` to update the version ID of the AWS Secrets Manager secret
+    containing a proxy configuration.
+*   Deprecated `aws/location` property of `gcloud container aws`. Use
+    `container_aws/location` to set the default Google Cloud location for
+    `gcloud container aws`.
+*   Deprecated `azure/location` property of `gcloud container azure`. Use
+    `container_azure/location` to set the default Google Cloud location for
+    `gcloud container azure`.
+
+### App Engine
+
+* Fixed bug in devappserver causing "ImportError: cannot import name apiproxy"
+  errors.
+
+### BigQuery
+
+* Fix 'collections' error for Python 3.10.
+* Add `--concurrency` flag for reservations. Mark `--max_concurrency` as deprecated.
+* Minor bug fixes and dependency updates.
+
+### Cloud DNS
+
+* Added Location flag to Cloud DNS Managed Zones, Response Policies beta commands. This flag can be specified to target Cloud DNS Zonal Servers.
+
+### Compute Engine
+
+* Added `--compression-mode` flag to `gcloud beta compute backend-services <create | update>`.
+* Added `--compression-mode` flag to `gcloud beta compute backend-buckets <create | update>`.
+* Promoted `--resource-manager-tags` flag of `gcloud compute instances create`, `gcloud compute instance-templates create`
+  and `gcloud compute instances bulk create` to GA.
+* Added `project-number` as an option for `--service-proxy` of `gcloud beta compute instance-templates create`.
+* Promoted enum `CLIENT_IP_NO_DESTINATION` of `--session-affinity` of `gcloud backend-services <create | update>` to Beta and GA.
+* Modified `--load-balancing-scheme` flag of `gcloud compute backend-services create` and `gcloud compute forwarding-rules create` to accept choice 'EXTERNAL_MANAGED' in GA.
+
+### Compute OS Config
+
+* Added `gcloud compute osconfig pause` and gcloud compute os-config resume` commands.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.74.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Eventarc
+
+* Added `--event-filters-path-pattern` flag to `gcloud eventarc triggers create` and `gcloud eventarc triggers update` to allow path pattern matching in Cloud Audit Log resource name filter.
+
+### Kubernetes Engine
+
+* Added `--autoprovisioning-network-tags` flag of `gcloud container clusters create`, `gcloud container clusters create-auto`and `gcloud container clusters update` to beta, GA.
+
+### Miscellaneous
+
+*   Updated `gcloud config get-value` to `gcloud config get` per user feedback.
+    The `get-value` command will remain as a hidden alias for `get`.
+*   Updated `gcloud config set` to prompt when attempting to set a project,
+    zone, or region to an invalid value. If `--quiet` is provided, or the
+    command is not run interactively, the warning is still printed and the
+    specified value is set.
+*   Updated `gcloud init` to allow selection of an unverified project ID.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 373.0.0 (2022-02-15)
 
 ### Breaking Changes

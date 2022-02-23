@@ -527,6 +527,13 @@ class Collections(enum.Enum):
       ['project', 'region', 'targetHttpsProxy'],
       True
   )
+  REGIONTARGETTCPPROXIES = (
+      'regionTargetTcpProxies',
+      'projects/{project}/regions/{region}/targetTcpProxies/{targetTcpProxy}',
+      {},
+      ['project', 'region', 'targetTcpProxy'],
+      True
+  )
   REGIONURLMAPS = (
       'regionUrlMaps',
       'projects/{project}/regions/{region}/urlMaps/{urlMap}',

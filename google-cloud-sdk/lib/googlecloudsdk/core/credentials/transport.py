@@ -39,6 +39,11 @@ from google.auth import exceptions as google_auth_exceptions
 class Error(exceptions.Error):
   """Exceptions for the credentials transport module."""
 
+
+USER_PROJECT_ERROR_REASON = 'USER_PROJECT_DENIED'
+USER_PROJECT_ERROR_DOMAIN = 'googleapis.com'
+
+
 # TODO(b/204349801): Avoid using the hardcoded error message.
 USER_PROJECT_OVERRIDE_ERR_MSG = (
     'Grant the caller the roles/serviceusage.serviceUsageConsumer role, or '

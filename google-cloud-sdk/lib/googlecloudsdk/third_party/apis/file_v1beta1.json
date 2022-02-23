@@ -352,6 +352,12 @@
               "KMS_KEY_ISSUE"
             ]
           }
+        },
+        "maxShareCount": {
+          "description": "Output only. The max number of shares allowed.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
         }
       }
     },

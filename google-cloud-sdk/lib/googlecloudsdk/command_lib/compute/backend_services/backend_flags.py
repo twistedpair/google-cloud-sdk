@@ -246,8 +246,8 @@ def AddMaxUtilization(parser):
 
       You can use this parameter with other parameters for defining target
       capacity. For usage guidelines, see
-      <a href="https://cloud.google.com/load-balancing/docs/backend-service#balancing-mode-combos">Balancing
-      mode combinations</a>.""")
+      [Balancing mode combinations](https://cloud.google.com/load-balancing/docs/backend-service#balancing-mode-combos).
+      """)
 
 
 def AddCapacityScalar(parser,
@@ -258,8 +258,7 @@ def AddCapacityScalar(parser,
       Scales down the target capacity (max utilization, max rate, or max
       connections) without changing the target capacity. For usage guidelines
       and examples, see
-      <a href="https://cloud.google.com/load-balancing/docs/backend-service#capacity_scaler">Capacity
-      scaler</a>.
+      [Capacity scaler](https://cloud.google.com/load-balancing/docs/backend-service#capacity_scaler).
       """
   incompatible_types = []
   if support_global_neg:

@@ -452,8 +452,8 @@ class DeployedFleetDetails(_messages.Message):
 
 
 class DeployedFleetStatus(_messages.Message):
-  r"""DeployedFleetStatus has details about the Agones fleets such as how many
-  are running, how many allocated, and so on.
+  r"""DeployedFleetStatus has details about the Agones fleets, such as how
+  many are running, how many are allocated, and so on.
 
   Fields:
     allocatedReplicas: The number of GameServer replicas in the ALLOCATED
@@ -541,8 +541,8 @@ class FleetConfig(_messages.Message):
   r"""Fleet configs for Agones.
 
   Fields:
-    fleetSpec: Agones fleet spec. Example spec:
-      `https://agones.dev/site/docs/reference/fleet/`.
+    fleetSpec: Agones fleet spec (see [example
+      spec](https://agones.dev/site/docs/reference/fleet/)).
     name: The name of the FleetConfig.
   """
 
@@ -558,21 +558,23 @@ class GameServerCluster(_messages.Message):
       label is a key-value pair.
 
   Fields:
-    clusterState: Output only. The state of the Kubernetes cluster, this will
-      be available if 'view' is set to `FULL` in the relevant List/Get/Preview
-      request.
+    clusterState: Output only. The state of the Kubernetes cluster in preview.
+      This will be available if view is set to FULL in the relevant
+      list/get/preview request.
     connectionInfo: The game server cluster connection information. This
       information is used to manage game server clusters.
     createTime: Output only. The creation time.
     description: Human readable description of the cluster.
-    etag: ETag of the resource.
+    etag: Used to perform consistent read-modify-write updates. If not set, a
+      blind "overwrite" update happens.
     labels: The labels associated with this game server cluster. Each label is
       a key-value pair.
     name: Required. The resource name of the game server cluster, in the
-      following form: `projects/{project}/locations/{location}/realms/{realm}/
-      gameServerClusters/{cluster}`. For example, `projects/my-
-      project/locations/{location}/realms/zanzibar/gameServerClusters/my-
-      onprem-cluster`.
+      following form: `projects/{project}/locations/{locationId}/realms/{realm
+      Id}/gameServerClusters/{gameServerClusterId}`. For example,
+      `projects/my-
+      project/locations/global/realms/zanzibar/gameServerClusters/my-gke-
+      cluster`.
     updateTime: Output only. The last-modified time.
   """
 
@@ -641,8 +643,8 @@ class GameServerConfig(_messages.Message):
     labels: The labels associated with this game server config. Each label is
       a key-value pair.
     name: The resource name of the game server config, in the following form:
-      `projects/{project}/locations/{location}/gameServerDeployments/{deployme
-      nt}/configs/{config}`. For example, `projects/my-
+      `projects/{project}/locations/{locationId}/gameServerDeployments/{deploy
+      mentId}/configs/{configId}`. For example, `projects/my-
       project/locations/global/gameServerDeployments/my-game/configs/my-
       config`.
     scalingConfigs: The autoscaling settings.
@@ -704,13 +706,14 @@ class GameServerDeployment(_messages.Message):
 
   Fields:
     createTime: Output only. The creation time.
-    description: Human readable description of the game server delpoyment.
-    etag: ETag of the resource.
+    description: Human readable description of the game server deployment.
+    etag: Used to perform consistent read-modify-write updates. If not set, a
+      blind "overwrite" update happens.
     labels: The labels associated with this game server deployment. Each label
       is a key-value pair.
     name: The resource name of the game server deployment, in the following
-      form: `projects/{project}/locations/{location}/gameServerDeployments/{de
-      ployment}`. For example, `projects/my-
+      form: `projects/{project}/locations/{locationId}/gameServerDeployments/{
+      deploymentId}`. For example, `projects/my-
       project/locations/global/gameServerDeployments/my-deployment`.
     updateTime: Output only. The last-modified time.
   """
@@ -763,8 +766,8 @@ class GameServerDeploymentRollout(_messages.Message):
       overrides. Overrides are processed in the order they are listed. Once a
       match is found for a realm, the rest of the list is not processed.
     name: The resource name of the game server deployment rollout, in the
-      following form: `projects/{project}/locations/{location}/gameServerDeplo
-      yments/{deployment}/rollout`. For example, `projects/my-
+      following form: `projects/{project}/locations/{locationId}/gameServerDep
+      loyments/{deploymentId}/rollout`. For example, `projects/my-
       project/locations/global/gameServerDeployments/my-deployment/rollout`.
     updateTime: Output only. The last-modified time.
   """
@@ -782,12 +785,12 @@ class GameservicesProjectsLocationsGameServerDeploymentsConfigsCreateRequest(_me
   object.
 
   Fields:
-    configId: Required. The ID of the game server config resource to be
-      created.
+    configId: Required. The ID of the game server config resource to create.
     gameServerConfig: A GameServerConfig resource to be passed as the request
       body.
     parent: Required. The parent resource name, in the following form: `projec
-      ts/{project}/locations/{location}/gameServerDeployments/{deployment}/`.
+      ts/{project}/locations/{locationId}/gameServerDeployments/{deploymentId}
+      /`.
   """
 
   configId = _messages.StringField(1)
@@ -801,8 +804,8 @@ class GameservicesProjectsLocationsGameServerDeploymentsConfigsDeleteRequest(_me
 
   Fields:
     name: Required. The name of the game server config to delete, in the
-      following form: `projects/{project}/locations/{location}/gameServerDeplo
-      yments/{deployment}/configs/{config}`.
+      following form: `projects/{project}/locations/{locationId}/gameServerDep
+      loyments/{deploymentId}/configs/{configId}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -814,8 +817,8 @@ class GameservicesProjectsLocationsGameServerDeploymentsConfigsGetRequest(_messa
 
   Fields:
     name: Required. The name of the game server config to retrieve, in the
-      following form: `projects/{project}/locations/{location}/gameServerDeplo
-      yments/{deployment}/configs/{config}`.
+      following form: `projects/{project}/locations/{locationId}/gameServerDep
+      loyments/{deploymentId}/configs/{configId}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -826,18 +829,21 @@ class GameservicesProjectsLocationsGameServerDeploymentsConfigsListRequest(_mess
   object.
 
   Fields:
-    filter: Optional. The filter to apply to list results.
-    orderBy: Optional. Specifies the ordering of results following syntax at
-      https://cloud.google.com/apis/design/design_patterns#sorting_order.
+    filter: Optional. The filter to apply to list results (see
+      [Filtering](https://google.aip.dev/160)).
+    orderBy: Optional. Specifies the ordering of results following [Cloud API
+      syntax](https://cloud.google.com/apis/design/design_patterns#sorting_ord
+      er).
     pageSize: Optional. The maximum number of items to return. If unspecified,
-      server will pick an appropriate default. Server may return fewer items
-      than requested. A caller should only rely on response's next_page_token
-      to determine if there are more GameServerConfigs left to be queried.
+      the server picks an appropriate default. The server may return fewer
+      items than requested. A caller should only rely on response's
+      next_page_token to determine if there are more GameServerConfigs left to
+      be queried.
     pageToken: Optional. The next_page_token value returned from a previous
       list request, if any.
     parent: Required. The parent resource name, in the following form: `projec
-      ts/{project}/locations/{location}/gameServerDeployments/{deployment}/con
-      figs/*`.
+      ts/{project}/locations/{locationId}/gameServerDeployments/{deploymentId}
+      /configs/*`.
   """
 
   filter = _messages.StringField(1)
@@ -852,12 +858,12 @@ class GameservicesProjectsLocationsGameServerDeploymentsCreateRequest(_messages.
   object.
 
   Fields:
-    deploymentId: Required. The ID of the game server delpoyment resource to
-      be created.
+    deploymentId: Required. The ID of the game server deployment resource to
+      create.
     gameServerDeployment: A GameServerDeployment resource to be passed as the
       request body.
     parent: Required. The parent resource name, in the following form:
-      `projects/{project}/locations/{location}`.
+      `projects/{project}/locations/{locationId}`.
   """
 
   deploymentId = _messages.StringField(1)
@@ -870,9 +876,9 @@ class GameservicesProjectsLocationsGameServerDeploymentsDeleteRequest(_messages.
   object.
 
   Fields:
-    name: Required. The name of the game server delpoyment to delete, in the
-      following form: `projects/{project}/locations/{location}/gameServerDeplo
-      yments/{deployment}`.
+    name: Required. The name of the game server deployment to delete, in the
+      following form: `projects/{project}/locations/{locationId}/gameServerDep
+      loyments/{deploymentId}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -885,9 +891,9 @@ class GameservicesProjectsLocationsGameServerDeploymentsFetchDeploymentStateRequ
   Fields:
     fetchDeploymentStateRequest: A FetchDeploymentStateRequest resource to be
       passed as the request body.
-    name: Required. The name of the game server delpoyment, in the following
-      form: `projects/{project}/locations/{location}/gameServerDeployments/{de
-      ployment}`.
+    name: Required. The name of the game server deployment, in the following
+      form: `projects/{project}/locations/{locationId}/gameServerDeployments/{
+      deploymentId}`.
   """
 
   fetchDeploymentStateRequest = _messages.MessageField('FetchDeploymentStateRequest', 1)
@@ -924,9 +930,9 @@ class GameservicesProjectsLocationsGameServerDeploymentsGetRequest(_messages.Mes
   r"""A GameservicesProjectsLocationsGameServerDeploymentsGetRequest object.
 
   Fields:
-    name: Required. The name of the game server delpoyment to retrieve, in the
-      following form: `projects/{project}/locations/{location}/gameServerDeplo
-      yments/{deployment}`.
+    name: Required. The name of the game server deployment to retrieve, in the
+      following form: `projects/{project}/locations/{locationId}/gameServerDep
+      loyments/{deploymentId}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -937,9 +943,9 @@ class GameservicesProjectsLocationsGameServerDeploymentsGetRolloutRequest(_messa
   object.
 
   Fields:
-    name: Required. The name of the game server delpoyment to retrieve, in the
-      following form: `projects/{project}/locations/{location}/gameServerDeplo
-      yments/{deployment}/rollout`.
+    name: Required. The name of the game server deployment rollout to
+      retrieve, in the following form: `projects/{project}/locations/{location
+      Id}/gameServerDeployments/{deploymentId}/rollout`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -949,18 +955,20 @@ class GameservicesProjectsLocationsGameServerDeploymentsListRequest(_messages.Me
   r"""A GameservicesProjectsLocationsGameServerDeploymentsListRequest object.
 
   Fields:
-    filter: Optional. The filter to apply to list results.
-    orderBy: Optional. Specifies the ordering of results following syntax at
-      https://cloud.google.com/apis/design/design_patterns#sorting_order.
+    filter: Optional. The filter to apply to list results (see
+      [Filtering](https://google.aip.dev/160)).
+    orderBy: Optional. Specifies the ordering of results following [Cloud API
+      syntax](https://cloud.google.com/apis/design/design_patterns#sorting_ord
+      er).
     pageSize: Optional. The maximum number of items to return. If unspecified,
-      the server will pick an appropriate default. The server may return fewer
-      items than requested. A caller should only rely on response's
+      the server picks an appropriate default. The server may return fewer
+      items than requested. A caller should only rely on the response's
       next_page_token to determine if there are more GameServerDeployments
       left to be queried.
     pageToken: Optional. The next_page_token value returned from a previous
-      List request, if any.
+      list request, if any.
     parent: Required. The parent resource name, in the following form:
-      `projects/{project}/locations/{location}`.
+      `projects/{project}/locations/{locationId}`.
   """
 
   filter = _messages.StringField(1)
@@ -977,13 +985,13 @@ class GameservicesProjectsLocationsGameServerDeploymentsPatchRequest(_messages.M
     gameServerDeployment: A GameServerDeployment resource to be passed as the
       request body.
     name: The resource name of the game server deployment, in the following
-      form: `projects/{project}/locations/{location}/gameServerDeployments/{de
-      ployment}`. For example, `projects/my-
+      form: `projects/{project}/locations/{locationId}/gameServerDeployments/{
+      deploymentId}`. For example, `projects/my-
       project/locations/global/gameServerDeployments/my-deployment`.
-    updateMask: Required. Mask of fields to update. At least one path must be
-      supplied in this field. For the `FieldMask` definition, see
-      https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmask
+    updateMask: Required. The update mask to apply to the resource. At least
+      one path must be supplied in this field. For more information, see the
+      [`FieldMask` definition](https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask).
   """
 
   gameServerDeployment = _messages.MessageField('GameServerDeployment', 1)
@@ -1000,15 +1008,15 @@ class GameservicesProjectsLocationsGameServerDeploymentsPreviewRolloutRequest(_m
     gameServerDeploymentRollout: A GameServerDeploymentRollout resource to be
       passed as the request body.
     name: The resource name of the game server deployment rollout, in the
-      following form: `projects/{project}/locations/{location}/gameServerDeplo
-      yments/{deployment}/rollout`. For example, `projects/my-
+      following form: `projects/{project}/locations/{locationId}/gameServerDep
+      loyments/{deploymentId}/rollout`. For example, `projects/my-
       project/locations/global/gameServerDeployments/my-deployment/rollout`.
     previewTime: Optional. The target timestamp to compute the preview.
       Defaults to the immediately after the proposed rollout completes.
-    updateMask: Optional. Mask of fields to update. At least one path must be
-      supplied in this field. For the `FieldMask` definition, see
-      https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmask
+    updateMask: Optional. The update mask to apply to the resource. At least
+      one path must be supplied in this field. For more information, see the
+      [`FieldMask` definition](https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask).
   """
 
   gameServerDeploymentRollout = _messages.MessageField('GameServerDeploymentRollout', 1)
@@ -1058,13 +1066,13 @@ class GameservicesProjectsLocationsGameServerDeploymentsUpdateRolloutRequest(_me
     gameServerDeploymentRollout: A GameServerDeploymentRollout resource to be
       passed as the request body.
     name: The resource name of the game server deployment rollout, in the
-      following form: `projects/{project}/locations/{location}/gameServerDeplo
-      yments/{deployment}/rollout`. For example, `projects/my-
+      following form: `projects/{project}/locations/{locationId}/gameServerDep
+      loyments/{deploymentId}/rollout`. For example, `projects/my-
       project/locations/global/gameServerDeployments/my-deployment/rollout`.
-    updateMask: Required. Mask of fields to update. At least one path must be
-      supplied in this field. For the `FieldMask` definition, see
-      https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmask
+    updateMask: Required. The update mask to apply to the resource. At least
+      one path must be supplied in this field. For more information, see the
+      [`FieldMask` definition](https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask).
   """
 
   gameServerDeploymentRollout = _messages.MessageField('GameServerDeploymentRollout', 1)
@@ -1159,9 +1167,9 @@ class GameservicesProjectsLocationsRealmsCreateRequest(_messages.Message):
 
   Fields:
     parent: Required. The parent resource name, in the following form:
-      `projects/{project}/locations/{location}`.
+      `projects/{project}/locations/{locationId}`.
     realm: A Realm resource to be passed as the request body.
-    realmId: Required. The ID of the realm resource to be created.
+    realmId: Required. The ID of the realm resource to create.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1174,7 +1182,7 @@ class GameservicesProjectsLocationsRealmsDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the realm to delete, in the following form:
-      `projects/{project}/locations/{location}/realms/{realm}`.
+      `projects/{project}/locations/{locationId}/realms/{realmId}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1188,9 +1196,9 @@ class GameservicesProjectsLocationsRealmsGameServerClustersCreateRequest(_messag
     gameServerCluster: A GameServerCluster resource to be passed as the
       request body.
     gameServerClusterId: Required. The ID of the game server cluster resource
-      to be created.
+      to create.
     parent: Required. The parent resource name, in the following form:
-      `projects/{project}/locations/{location}/realms/{realm-id}`.
+      `projects/{project}/locations/{locationId}/realms/{realmId}`.
   """
 
   gameServerCluster = _messages.MessageField('GameServerCluster', 1)
@@ -1204,8 +1212,8 @@ class GameservicesProjectsLocationsRealmsGameServerClustersDeleteRequest(_messag
 
   Fields:
     name: Required. The name of the game server cluster to delete, in the
-      following form:
-      `projects/{project}/locations/{location}/gameServerClusters/{cluster}`.
+      following form: `projects/{project}/locations/{locationId}/gameServerClu
+      sters/{gameServerClusterId}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1220,19 +1228,19 @@ class GameservicesProjectsLocationsRealmsGameServerClustersGetRequest(_messages.
       objects. When `FULL` is specified, the `cluster_state` field is also
       returned in the GameServerCluster object, which includes the state of
       the referenced Kubernetes cluster such as versions and provider info.
-      The default/unset value is GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED, same as
-      BASIC, which does not return the `cluster_state` field.
+      The default/unset value is `GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED`, the
+      same as `BASIC`, which does not return the `cluster_state` field.
 
   Fields:
     name: Required. The name of the game server cluster to retrieve, in the
-      following form: `projects/{project}/locations/{location}/realms/{realm-
-      id}/gameServerClusters/{cluster}`.
+      following form: `projects/{project}/locations/{locationId}/realms/{realm
+      Id}/gameServerClusters/{gameServerClusterId}`.
     view: Optional. View for the returned GameServerCluster objects. When
       `FULL` is specified, the `cluster_state` field is also returned in the
       GameServerCluster object, which includes the state of the referenced
       Kubernetes cluster such as versions and provider info. The default/unset
-      value is GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED, same as BASIC, which does
-      not return the `cluster_state` field.
+      value is `GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED`, the same as `BASIC`,
+      which does not return the `cluster_state` field.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
@@ -1240,17 +1248,18 @@ class GameservicesProjectsLocationsRealmsGameServerClustersGetRequest(_messages.
     is specified, the `cluster_state` field is also returned in the
     GameServerCluster object, which includes the state of the referenced
     Kubernetes cluster such as versions and provider info. The default/unset
-    value is GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED, same as BASIC, which does
-    not return the `cluster_state` field.
+    value is `GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED`, the same as `BASIC`,
+    which does not return the `cluster_state` field.
 
     Values:
-      GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED: The default / unset value. The API
-        will default to the BASIC view.
-      BASIC: Include basic information of a GameServerCluster resource and
-        omit `cluster_state`. This is the default value (for
-        ListGameServerClusters, GetGameServerCluster and
+      GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED: If the value is not set, Google
+        Cloud Game Servers defaults to the `BASIC` view.
+      BASIC: Includes basic information of a GameServerCluster resource and
+        omits `cluster_state`. This is the default value (for methods
+        ListGameServerClusters, GetGameServerCluster, and
         PreviewCreateGameServerCluster).
-      FULL: Include everything.
+      FULL: Include basic information of a GameServerCluster resource as well
+        as `cluster_state`.
     """
     GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED = 0
     BASIC = 1
@@ -1269,28 +1278,30 @@ class GameservicesProjectsLocationsRealmsGameServerClustersListRequest(_messages
       objects. When `FULL` is specified, the `cluster_state` field is also
       returned in the GameServerCluster object, which includes the state of
       the referenced Kubernetes cluster such as versions and provider info.
-      The default/unset value is GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED, same as
-      BASIC, which does not return the `cluster_state` field.
+      The default/unset value is `GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED`, the
+      same as `BASIC`, which does not return the `cluster_state` field.
 
   Fields:
-    filter: Optional. The filter to apply to list results.
-    orderBy: Optional. Specifies the ordering of results following syntax at
-      https://cloud.google.com/apis/design/design_patterns#sorting_order.
+    filter: Optional. The filter to apply to list results (see
+      [Filtering](https://google.aip.dev/160)).
+    orderBy: Optional. Specifies the ordering of results following [Cloud API
+      syntax](https://cloud.google.com/apis/design/design_patterns#sorting_ord
+      er).
     pageSize: Optional. The maximum number of items to return. If unspecified,
-      the server will pick an appropriate default. The server may return fewer
+      the server picks an appropriate default. The server may return fewer
       items than requested. A caller should only rely on response's
       next_page_token to determine if there are more GameServerClusters left
       to be queried.
     pageToken: Optional. The next_page_token value returned from a previous
-      List request, if any.
+      list request, if any.
     parent: Required. The parent resource name, in the following form:
-      "projects/{project}/locations/{location}/realms/{realm}".
+      `projects/{project}/locations/{locationId}/realms/{realmId}`.
     view: Optional. View for the returned GameServerCluster objects. When
       `FULL` is specified, the `cluster_state` field is also returned in the
       GameServerCluster object, which includes the state of the referenced
       Kubernetes cluster such as versions and provider info. The default/unset
-      value is GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED, same as BASIC, which does
-      not return the `cluster_state` field.
+      value is `GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED`, the same as `BASIC`,
+      which does not return the `cluster_state` field.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
@@ -1298,17 +1309,18 @@ class GameservicesProjectsLocationsRealmsGameServerClustersListRequest(_messages
     is specified, the `cluster_state` field is also returned in the
     GameServerCluster object, which includes the state of the referenced
     Kubernetes cluster such as versions and provider info. The default/unset
-    value is GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED, same as BASIC, which does
-    not return the `cluster_state` field.
+    value is `GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED`, the same as `BASIC`,
+    which does not return the `cluster_state` field.
 
     Values:
-      GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED: The default / unset value. The API
-        will default to the BASIC view.
-      BASIC: Include basic information of a GameServerCluster resource and
-        omit `cluster_state`. This is the default value (for
-        ListGameServerClusters, GetGameServerCluster and
+      GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED: If the value is not set, Google
+        Cloud Game Servers defaults to the `BASIC` view.
+      BASIC: Includes basic information of a GameServerCluster resource and
+        omits `cluster_state`. This is the default value (for methods
+        ListGameServerClusters, GetGameServerCluster, and
         PreviewCreateGameServerCluster).
-      FULL: Include everything.
+      FULL: Include basic information of a GameServerCluster resource as well
+        as `cluster_state`.
     """
     GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED = 0
     BASIC = 1
@@ -1330,14 +1342,15 @@ class GameservicesProjectsLocationsRealmsGameServerClustersPatchRequest(_message
     gameServerCluster: A GameServerCluster resource to be passed as the
       request body.
     name: Required. The resource name of the game server cluster, in the
-      following form: `projects/{project}/locations/{location}/realms/{realm}/
-      gameServerClusters/{cluster}`. For example, `projects/my-
-      project/locations/{location}/realms/zanzibar/gameServerClusters/my-
-      onprem-cluster`.
-    updateMask: Required. Mask of fields to update. At least one path must be
-      supplied in this field. For the `FieldMask` definition, see
-      https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmask
+      following form: `projects/{project}/locations/{locationId}/realms/{realm
+      Id}/gameServerClusters/{gameServerClusterId}`. For example,
+      `projects/my-
+      project/locations/global/realms/zanzibar/gameServerClusters/my-gke-
+      cluster`.
+    updateMask: Required. The update mask to apply to the resource. At least
+      one path must be supplied in this field. For more information, see the
+      [`FieldMask` definition](https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask).
   """
 
   gameServerCluster = _messages.MessageField('GameServerCluster', 1)
@@ -1351,33 +1364,34 @@ class GameservicesProjectsLocationsRealmsGameServerClustersPreviewCreateRequest(
   object.
 
   Enums:
-    ViewValueValuesEnum: Optional. This field is deprecated, preview will
+    ViewValueValuesEnum: Optional. This field is deprecated. Preview will
       always return KubernetesClusterState.
 
   Fields:
     gameServerCluster: A GameServerCluster resource to be passed as the
       request body.
     gameServerClusterId: Required. The ID of the game server cluster resource
-      to be created.
+      to create.
     parent: Required. The parent resource name, in the following form:
-      `projects/{project}/locations/{location}/realms/{realm}`.
+      `projects/{project}/locations/{locationId}/realms/{realmId}`.
     previewTime: Optional. The target timestamp to compute the preview.
-    view: Optional. This field is deprecated, preview will always return
+    view: Optional. This field is deprecated. Preview will always return
       KubernetesClusterState.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    r"""Optional. This field is deprecated, preview will always return
+    r"""Optional. This field is deprecated. Preview will always return
     KubernetesClusterState.
 
     Values:
-      GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED: The default / unset value. The API
-        will default to the BASIC view.
-      BASIC: Include basic information of a GameServerCluster resource and
-        omit `cluster_state`. This is the default value (for
-        ListGameServerClusters, GetGameServerCluster and
+      GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED: If the value is not set, Google
+        Cloud Game Servers defaults to the `BASIC` view.
+      BASIC: Includes basic information of a GameServerCluster resource and
+        omits `cluster_state`. This is the default value (for methods
+        ListGameServerClusters, GetGameServerCluster, and
         PreviewCreateGameServerCluster).
-      FULL: Include everything.
+      FULL: Include basic information of a GameServerCluster resource as well
+        as `cluster_state`.
     """
     GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED = 0
     BASIC = 1
@@ -1397,8 +1411,8 @@ class GameservicesProjectsLocationsRealmsGameServerClustersPreviewDeleteRequest(
 
   Fields:
     name: Required. The name of the game server cluster to delete, in the
-      following form:
-      `projects/{project}/locations/{location}/gameServerClusters/{cluster}`.
+      following form: `projects/{project}/locations/{locationId}/gameServerClu
+      sters/{gameServerClusterId}`.
     previewTime: Optional. The target timestamp to compute the preview.
   """
 
@@ -1415,15 +1429,16 @@ class GameservicesProjectsLocationsRealmsGameServerClustersPreviewUpdateRequest(
     gameServerCluster: A GameServerCluster resource to be passed as the
       request body.
     name: Required. The resource name of the game server cluster, in the
-      following form: `projects/{project}/locations/{location}/realms/{realm}/
-      gameServerClusters/{cluster}`. For example, `projects/my-
-      project/locations/{location}/realms/zanzibar/gameServerClusters/my-
-      onprem-cluster`.
+      following form: `projects/{project}/locations/{locationId}/realms/{realm
+      Id}/gameServerClusters/{gameServerClusterId}`. For example,
+      `projects/my-
+      project/locations/global/realms/zanzibar/gameServerClusters/my-gke-
+      cluster`.
     previewTime: Optional. The target timestamp to compute the preview.
     updateMask: Required. Mask of fields to update. At least one path must be
-      supplied in this field. For the `FieldMask` definition, see
-      https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmask
+      supplied in this field. For more information, see the [`FieldMask`
+      definition](https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask).
   """
 
   gameServerCluster = _messages.MessageField('GameServerCluster', 1)
@@ -1437,7 +1452,7 @@ class GameservicesProjectsLocationsRealmsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the realm to retrieve, in the following form:
-      `projects/{project}/locations/{location}/realms/{realm}`.
+      `projects/{project}/locations/{locationId}/realms/{realmId}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1447,17 +1462,20 @@ class GameservicesProjectsLocationsRealmsListRequest(_messages.Message):
   r"""A GameservicesProjectsLocationsRealmsListRequest object.
 
   Fields:
-    filter: Optional. The filter to apply to list results.
-    orderBy: Optional. Specifies the ordering of results following syntax at
-      https://cloud.google.com/apis/design/design_patterns#sorting_order.
+    filter: Optional. The filter to apply to list results (see
+      [Filtering](https://google.aip.dev/160)).
+    orderBy: Optional. Specifies the ordering of results following [Cloud API
+      syntax](https://cloud.google.com/apis/design/design_patterns#sorting_ord
+      er).
     pageSize: Optional. The maximum number of items to return. If unspecified,
-      server will pick an appropriate default. Server may return fewer items
-      than requested. A caller should only rely on response's next_page_token
-      to determine if there are more realms left to be queried.
+      the server picks an appropriate default. The server may return fewer
+      items than requested. A caller should only rely on the response's
+      next_page_token to determine if there are more realms left to be
+      queried.
     pageToken: Optional. The next_page_token value returned from a previous
-      List request, if any.
+      list request, if any.
     parent: Required. The parent resource name, in the following form:
-      `projects/{project}/locations/{location}`.
+      `projects/{project}/locations/{locationId}`.
   """
 
   filter = _messages.StringField(1)
@@ -1472,12 +1490,13 @@ class GameservicesProjectsLocationsRealmsPatchRequest(_messages.Message):
 
   Fields:
     name: The resource name of the realm, in the following form:
-      `projects/{project}/locations/{location}/realms/{realm}`. For example,
-      `projects/my-project/locations/{location}/realms/my-realm`.
+      `projects/{project}/locations/{locationId}/realms/{realmId}`. For
+      example, `projects/my-project/locations/global/realms/my-realm`.
     realm: A Realm resource to be passed as the request body.
-    updateMask: Required. The update mask applies to the resource. For the
-      `FieldMask` definition, see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmask
+    updateMask: Required. The update mask to apply to the resource. For more
+      information, see the [`FieldMask`
+      definition](https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask).
   """
 
   name = _messages.StringField(1, required=True)
@@ -1490,13 +1509,14 @@ class GameservicesProjectsLocationsRealmsPreviewUpdateRequest(_messages.Message)
 
   Fields:
     name: The resource name of the realm, in the following form:
-      `projects/{project}/locations/{location}/realms/{realm}`. For example,
-      `projects/my-project/locations/{location}/realms/my-realm`.
+      `projects/{project}/locations/{locationId}/realms/{realmId}`. For
+      example, `projects/my-project/locations/global/realms/my-realm`.
     previewTime: Optional. The target timestamp to compute the preview.
     realm: A Realm resource to be passed as the request body.
-    updateMask: Required. The update mask applies to the resource. For the
-      `FieldMask` definition, see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmask
+    updateMask: Required. The update mask to apply to the resource. For more
+      information, see the [`FieldMask`
+      definition](https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask).
   """
 
   name = _messages.StringField(1, required=True)
@@ -1511,8 +1531,8 @@ class GkeClusterReference(_messages.Message):
   Fields:
     cluster: The full or partial name of a GKE cluster, using one of the
       following forms: *
-      `projects/{project}/locations/{location}/clusters/{cluster}` *
-      `locations/{location}/clusters/{cluster}` * `{cluster}` If project and
+      `projects/{project}/locations/{locationId}/clusters/{cluster}` *
+      `locations/{locationId}/clusters/{cluster}` * `{cluster}` If project and
       location are not specified, the project and location of the
       GameServerCluster resource are used to generate the full name of the GKE
       cluster.
@@ -1539,7 +1559,7 @@ class KubernetesClusterState(_messages.Message):
       currently used in the registered Kubernetes cluster (as detected by the
       Cloud Game Servers service).
     provider: Output only. The cloud provider type reported by the first
-      node's providerID in the list of nodes on the Kubernetes endpoint. On
+      node's `providerID` in the list of nodes on the Kubernetes endpoint. On
       Kubernetes platforms that support zero-node clusters (like GKE-on-GCP),
       the provider type will be empty.
     versionInstalledErrorMessage: Output only. The detailed error message for
@@ -1551,10 +1571,11 @@ class KubernetesClusterState(_messages.Message):
     Agones/Kubernetes.
 
     Values:
-      INSTALLATION_STATE_UNSPECIFIED: The default value. This value is used if
-        the state is omitted.
-      AGONES_KUBERNETES_VERSION_SUPPORTED: The combination of Agones and
-        Kubernetes versions is supported by Google Cloud Game Servers.
+      INSTALLATION_STATE_UNSPECIFIED: The default installation state. This
+        value is used if the state is omitted.
+      AGONES_KUBERNETES_VERSION_SUPPORTED: Both the Agones and Kubernetes
+        versions are supported by Google Cloud Game Servers and Agones and
+        Kubernetes versions are compatible.
       AGONES_VERSION_UNSUPPORTED: The installed version of Agones is not
         supported by Google Cloud Game Servers.
       AGONES_KUBERNETES_VERSION_UNSUPPORTED: The installed version of Agones
@@ -1568,7 +1589,8 @@ class KubernetesClusterState(_messages.Message):
         cluster is not recognized because the API server didn't return
         parsable version info on path/version.
       VERSION_VERIFICATION_FAILED: Failed to read or verify the version of
-        Agones or Kubernetes. See version_installed_error_message for details.
+        Agones or Kubernetes. See `version_installed_error_message` for
+        details.
       AGONES_NOT_INSTALLED: Agones is not installed.
     """
     INSTALLATION_STATE_UNSPECIFIED = 0
@@ -2104,9 +2126,9 @@ class PreviewCreateGameServerClusterResponse(_messages.Message):
   GameServerClustersService.PreviewCreateGameServerCluster.
 
   Fields:
-    clusterState: Output only. The state of the Kubernetes cluster in preview,
-      this will be available if 'view' is set to `FULL` in the relevant
-      List/Get/Preview request.
+    clusterState: Output only. The state of the Kubernetes cluster in preview.
+      This will be available if view is set to FULL in the relevant
+      list/get/preview request.
     etag: The ETag of the game server cluster.
     targetState: The target state.
   """
@@ -2179,15 +2201,16 @@ class Realm(_messages.Message):
   Fields:
     createTime: Output only. The creation time.
     description: Human readable description of the realm.
-    etag: ETag of the resource.
+    etag: Used to perform consistent read-modify-write updates. If not set, a
+      blind "overwrite" update happens.
     labels: The labels associated with this realm. Each label is a key-value
       pair.
     name: The resource name of the realm, in the following form:
-      `projects/{project}/locations/{location}/realms/{realm}`. For example,
-      `projects/my-project/locations/{location}/realms/my-realm`.
+      `projects/{project}/locations/{locationId}/realms/{realmId}`. For
+      example, `projects/my-project/locations/global/realms/my-realm`.
     timeZone: Required. Time zone where all policies targeting this realm are
-      evaluated. The value of this field must be from the IANA time zone
-      database: https://www.iana.org/time-zones.
+      evaluated. The value of this field must be from the [IANA time zone
+      database](https://www.iana.org/time-zones).
     updateTime: Output only. The last-modified time.
   """
 
@@ -2291,10 +2314,10 @@ class ScalingConfig(_messages.Message):
   r"""Autoscaling config for an Agones fleet.
 
   Fields:
-    fleetAutoscalerSpec: Required. Agones fleet autoscaler spec. Example spec:
-      https://agones.dev/site/docs/reference/fleetautoscaler/
-    name: Required. The name of the Scaling Config
-    schedules: The schedules to which this Scaling Config applies.
+    fleetAutoscalerSpec: Required. Agones fleet autoscaler spec (see [example
+      spec](https://agones.dev/site/docs/reference/fleetautoscaler/)).
+    name: Required. The name of the scaling config.
+    schedules: The schedules to which this scaling config applies.
     selectors: Labels used to identify the game server clusters to which this
       Agones scaling config applies. A game server cluster is subject to this
       Agones scaling config if its labels match any of the selector entries.
@@ -2309,9 +2332,9 @@ class ScalingConfig(_messages.Message):
 class Schedule(_messages.Message):
   r"""The schedule of a recurring or one time event. The event's time span is
   specified by start_time and end_time. If the scheduled event's timespan is
-  larger than the cron_spec + cron_job_duration, the event will be recurring.
-  If only cron_spec + cron_job_duration are specified, the event is effective
-  starting at the local time specified by cron_spec, and is recurring. ```
+  larger than cron_spec added with cron_job_duration, the event is recurring.
+  If only cron_spec and cron_job_duration are specified, the event starts at
+  the local time specified by cron_spec, and is recurring. ```
   start_time|-------[cron job]-------[cron job]-------[cron job]---|end_time
   cron job: cron spec start time + duration ```
 
@@ -2319,8 +2342,8 @@ class Schedule(_messages.Message):
     cronJobDuration: The duration for the cron job event. The duration of the
       event is effective after the cron job's start time.
     cronSpec: The cron definition of the scheduled event. See
-      https://en.wikipedia.org/wiki/Cron. Cron spec specifies the local time
-      as defined by the realm.
+      https://en.wikipedia.org/wiki/Cron. The cron spec specifies the local
+      time as defined by the realm.
     endTime: The end time of the event.
     startTime: The start time of the event.
   """
@@ -2353,9 +2376,9 @@ class SpecSource(_messages.Message):
 
   Fields:
     gameServerConfigName: The game server config resource. Uses the form: `pro
-      jects/{project}/locations/{location}/gameServerDeployments/{deployment_i
-      d}/configs/{config_id}`.
-    name: The name of the Agones leet config or Agones scaling config used to
+      jects/{project}/locations/{locationId}/gameServerDeployments/{deployment
+      Id}/configs/{configId}`.
+    name: The name of the Agones fleet config or Agones scaling config used to
       derive the Agones fleet or Agones autoscaler spec.
   """
 
@@ -2484,11 +2507,11 @@ class TargetDetails(_messages.Message):
     fleetDetails: Agones fleet details for game server clusters and game
       server deployments.
     gameServerClusterName: The game server cluster name. Uses the form: `proje
-      cts/{project}/locations/{location}/realms/{realm}/gameServerClusters/{cl
-      uster}`.
+      cts/{project}/locations/{locationId}/realms/{realmId}/gameServerClusters
+      /{gameServerClusterId}`.
     gameServerDeploymentName: The game server deployment name. Uses the form:
-      `projects/{project}/locations/{location}/gameServerDeployments/{deployme
-      nt_id}`.
+      `projects/{project}/locations/{locationId}/gameServerDeployments/{deploy
+      mentId}`.
   """
 
   fleetDetails = _messages.MessageField('TargetFleetDetails', 1, repeated=True)

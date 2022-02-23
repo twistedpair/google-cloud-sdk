@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
 from apitools.base.py import encoding
 from googlecloudsdk.calliope import arg_parsers
 
@@ -30,13 +31,15 @@ class RuntimeConfigFactory(object):
   RuntimeConfig message from parsed arguments.
   """
 
-  def __init__(self, dataproc):
+  def __init__(self, dataproc, use_config_property=False):
     """Factory for RuntimeConfig message.
 
     Args:
       dataproc: Api_lib.dataproc.Dataproc instance.
+      use_config_property: Use --property instead of --properties
     """
     self.dataproc = dataproc
+    self.use_config_property = use_config_property
 
   def GetMessage(self, args):
     """Builds a RuntimeConfig message.
@@ -56,9 +59,17 @@ class RuntimeConfigFactory(object):
     if args.container_image:
       kwargs['containerImage'] = args.container_image
 
-    if args.properties:
+    flat_property = collections.OrderedDict()
+    if self.use_config_property:
+      if args.property:
+        for entry in args.property:
+          for k, v in entry.items():
+            flat_property[k] = v
+    elif args.properties:
+      flat_property = args.properties
+    if flat_property:
       kwargs['properties'] = encoding.DictToAdditionalPropertyMessage(
-          args.properties,
+          flat_property,
           self.dataproc.messages.RuntimeConfig.PropertiesValue,
           sort_items=True)
 
@@ -71,27 +82,35 @@ class RuntimeConfigFactory(object):
     return self.dataproc.messages.RuntimeConfig(**kwargs)
 
 
-def AddArguments(parser):
+def AddArguments(parser, use_config_property=False):
   """Adds arguments related to RuntimeConfig message to the given parser."""
   parser.add_argument(
       '--container-image',
-      help=('Optional custom container image to use for the batch job runtime '
-            'environment. If not specified, a default container image will be '
-            'used. The value should follow the container image naming format: '
-            '{registry}/{repository}/{name}:{tag}, for example, '
+      help=('Optional custom container image to use for the batch/session '
+            'runtime environment. If not specified, a default container image '
+            'will be used. The value should follow the container image naming '
+            'format: {registry}/{repository}/{name}:{tag}, for example, '
             'gcr.io/my-project/my-image:1.2.3'))
-  parser.add_argument(
-      '--properties',
-      type=arg_parsers.ArgDict(),
-      metavar='PROPERTY=VALUE',
-      help="""\
-      Specifies configuration properties for the batch job. Properties are
-      mapped to configuration files for the batch job. See
-      [Dataproc Serverless for Spark job capabilities]
-      (https://cloud.google.com/dataproc-serverless/docs/overview#for_spark_job_capabilities)
-      for the list of supported properties.""")
+  if use_config_property:
+    parser.add_argument(
+        '--property',
+        type=arg_parsers.ArgDict(),
+        action='append',
+        metavar='PROPERTY=VALUE',
+        help='Specifies configuration properties.')
+  else:
+    parser.add_argument(
+        '--properties',
+        type=arg_parsers.ArgDict(),
+        metavar='PROPERTY=VALUE',
+        help="""\
+        Specifies configuration properties for the batch job. Properties are
+        mapped to configuration files for the batch job. See
+        [Dataproc Serverless for Spark job capabilities]
+        (https://cloud.google.com/dataproc-serverless/docs/overview#for_spark_job_capabilities)
+        for the list of supported properties.""")
 
   parser.add_argument(
       '--version',
-      help=('Optional Batch runtime version.  If not specified, a default '
+      help=('Optional runtime version.  If not specified, a default '
             'version will be used.'))

@@ -1009,6 +1009,55 @@ class CatalogIndexedFieldConfig(_messages.Message):
   expression = _messages.StringField(1)
 
 
+class CatalogSearchRequest(_messages.Message):
+  r"""Request message for CatalogsService.SearchCatalog.
+
+  Enums:
+    TypeValueValuesEnum: By default, search at segment level.
+
+  Fields:
+    pageSize: The maximum number of items to return. If unspecified, server
+      will pick an appropriate default. Server may return fewer items than
+      requested. A caller should only rely on response's next_page_token to
+      determine if there are more realms left to be queried.
+    pageToken: The next_page_token value returned from a previous Search
+      request, if any.
+    query: Search query.
+    type: By default, search at segment level.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""By default, search at segment level.
+
+    Values:
+      SEARCH_REQUEST_TYPE_UNSPECIFIED: Unspecified type.
+      SEARCH_REQUEST_TYPE_ASSET: Video-level search. That is, search over
+        videos and video-level metadata.
+      SEARCH_REQUEST_TYPE_SEGMENT: Segment-level search. That is, search over
+        segments within videos and annotations.
+    """
+    SEARCH_REQUEST_TYPE_UNSPECIFIED = 0
+    SEARCH_REQUEST_TYPE_ASSET = 1
+    SEARCH_REQUEST_TYPE_SEGMENT = 2
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  query = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+
+
+class CatalogSearchResponse(_messages.Message):
+  r"""Response message for CatalogsService.SearchCatalog.
+
+  Fields:
+    items: Returned search results.
+    nextPageToken: The next-page continuation token.
+  """
+
+  items = _messages.MessageField('SearchResultItem', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ComplexFieldAllowedValues(_messages.Message):
   r"""A ComplexFieldAllowedValues object.
 
@@ -3033,6 +3082,20 @@ class MediaassetProjectsLocationsCatalogsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class MediaassetProjectsLocationsCatalogsSearchRequest(_messages.Message):
+  r"""A MediaassetProjectsLocationsCatalogsSearchRequest object.
+
+  Fields:
+    catalogSearchRequest: A CatalogSearchRequest resource to be passed as the
+      request body.
+    name: Required. The catalog resource name, in the following form:
+      `projects/{project}/locations/{location}/catalogs/{catalog}`.
+  """
+
+  catalogSearchRequest = _messages.MessageField('CatalogSearchRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class MediaassetProjectsLocationsComplexTypesCreateRequest(_messages.Message):
   r"""A MediaassetProjectsLocationsComplexTypesCreateRequest object.
 
@@ -3970,15 +4033,15 @@ class SearchAssetTypeRequest(_messages.Message):
     r"""By default, search at segment level.
 
     Values:
-      REQUEST_TYPE_UNSPECIFIED: Unspecified type.
-      REQUEST_TYPE_ASSET: Video-level search. That is, search over videos and
-        video-level metadata.
-      REQUEST_TYPE_SEGMENT: Segment-level search. That is, search over
+      SEARCH_REQUEST_TYPE_UNSPECIFIED: Unspecified type.
+      SEARCH_REQUEST_TYPE_ASSET: Video-level search. That is, search over
+        videos and video-level metadata.
+      SEARCH_REQUEST_TYPE_SEGMENT: Segment-level search. That is, search over
         segments within videos and annotations.
     """
-    REQUEST_TYPE_UNSPECIFIED = 0
-    REQUEST_TYPE_ASSET = 1
-    REQUEST_TYPE_SEGMENT = 2
+    SEARCH_REQUEST_TYPE_UNSPECIFIED = 0
+    SEARCH_REQUEST_TYPE_ASSET = 1
+    SEARCH_REQUEST_TYPE_SEGMENT = 2
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)

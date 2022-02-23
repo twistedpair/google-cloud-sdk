@@ -29,7 +29,7 @@ class Any(_messages.Message):
   ... }  The pack methods provided by protobuf library will by default use
   'type.googleapis.com/full.type.name' as the type URL and the unpack methods
   only use the fully qualified type name after the last '/' in the type URL,
-  for example "foo.bar.com/x/y.z" will yield type name "y.z".    JSON ==== The
+  for example "foo.bar.com/x/y.z" will yield type name "y.z".    JSON  The
   JSON representation of an `Any` value uses the regular representation of the
   deserialized, embedded message, with an additional field `@type` which
   contains the type URL. Example:  package google.profile; message Person {

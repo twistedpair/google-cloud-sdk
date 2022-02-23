@@ -123,6 +123,7 @@ def AddServiceProxyConfigArgs(parser, hide_arguments=False,
         'exclude-outbound-port-ranges': str,
         'scope': str,
         'mesh': str,
+        'project-number': str,
     })
     service_proxy_help += textwrap.dedent("""
     *intercept-all-outbound-traffic*::: Enables interception of all outgoing
@@ -157,6 +158,10 @@ def AddServiceProxyConfigArgs(parser, hide_arguments=False,
     routing information that corresponds to the routes attached to the mesh with
     this mesh name. When mesh is specified, the network value is ignored. You
     cannot specify `scope` and `mesh` values at the same time.
+
+    *project-number*::: Project number defines the project where Mesh and
+    Gateway resources are created. If not specified, the project where the
+    instance exists is used.
     """)
 
   service_proxy_group.add_argument(

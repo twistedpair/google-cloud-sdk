@@ -53,6 +53,7 @@ from googlecloudsdk.core.resource import resource_filter
 from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_projection_spec
 from googlecloudsdk.core.resource import resource_property
+from googlecloudsdk.core.resource import resource_transform
 
 
 class _Expr(object):
@@ -110,6 +111,12 @@ class BackendBase(object):
     Returns:
       Returns (frontend_expression, backend_expression) for expression.
     """
+    if defaults and defaults.symbols:
+      conditionals = defaults.symbols.get(
+          resource_transform.GetTypeDataName('conditionals'))
+      if hasattr(conditionals, 'flatten') and conditionals.flatten:
+        # If --flatten flag is presented we cannot do serverside filtering.
+        return expression, None
     self.partial_rewrite = False
     defaults = resource_projection_spec.ProjectionSpec(defaults=defaults)
     defaults.symbols = _BelieveMe()

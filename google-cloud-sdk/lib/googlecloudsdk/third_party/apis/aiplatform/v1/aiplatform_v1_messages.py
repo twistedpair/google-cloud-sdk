@@ -3920,7 +3920,7 @@ class GoogleCloudAiplatformV1Attribution(_messages.Message):
       by output_index. For example, the predicted class name by a multi-
       classification Model. This field is only populated iff the Model
       predicts display names as a separate field along with the explained
-      output. The predicted display name must has the same shape of the
+      output. The predicted display name must have the same shape of the
       explained output, and can be located using output_index.
     outputIndex: Output only. The index that locates the explained prediction
       output. If the prediction output is a scalar value, output_index is not

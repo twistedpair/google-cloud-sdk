@@ -13,7 +13,7 @@
 # limitations under the License.
 
 service_account:
-  api_field: googleCloudBeyondcorpAppconnectorsV1alphaAppConnector.principalInfo.serviceAccount.email
+  api_field: connector.principalInfo.serviceAccount.email
   arg_name: member
   required: true
   processor: googlecloudsdk.command_lib.beyondcorp.app.util:MemberProcessor
@@ -21,7 +21,7 @@ service_account:
     Connector service account email in form of 'serviceAccount:email'.
 
 display_name:
-  api_field: googleCloudBeyondcorpAppconnectorsV1alphaAppConnector.displayName
+  api_field: connector.displayName
   arg_name: display-name
   required: false
   help_text: |-

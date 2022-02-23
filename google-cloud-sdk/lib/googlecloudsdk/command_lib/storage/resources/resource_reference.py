@@ -282,3 +282,120 @@ class UnknownResource(Resource):
   def is_container(self):
     raise errors.ValueCannotBeDeterminedError(
         'Unknown whether or not UnknownResource is a container.')
+
+
+class DisplayableBucketData(object):
+  """Class representing a BucketResource for display purpose.
+
+  All the public attributes in this object will be displayed by
+  the list and describe commands. Objects get displayed recursively, e.g.
+  if a field represents a datetime object, the display logic in gcloud will
+  display each member of the datetime object as well. Hence, it is recommended
+  to stringify any member before it gets sent to the gcloud's resource printers.
+
+  Attributes:
+    name (str): Name of bucket.
+    url_string (str): The url string representing the bucket.
+    acl (dict|str|None): ACLs for the bucket.
+      If the API call to fetch the data failed, this can be an error string.
+    bucket_policy_only (dict|None): Bucket policy only settings.
+    cors_config (dict|str|None): The CORS configuration for the bucket.
+      If the API call to fetch the data failed, this can be an error string.
+    creation_time (str|None): Bucket's creation time.
+    default_acl (dict|None): Default ACLs for the bucket.
+    default_event_based_hold (bool|None): Default Event Based Hold status.
+    default_kms_key (str|None): The default KMS key for the bucket.
+    encryption_config (dict|str|None): The encryption configuration of the
+      bucket. Applies to S3 buckets only.
+    etag (str|None): ETag for the bucket.
+    labels (dict|None): Labels for the bucket.
+    lifecycle_config (dict|str|None): The lifecycle configuration for the
+      bucket. For S3, the value can be an error string.
+    location (str|None): Represents region bucket was created in.
+    location_type (str|None): Location type of the bucket.
+    logging_config (dict|str|None): The logging configuration for the bucket.
+      If the API call to fetch the data failed, this can be an error string.
+    metageneration (int|None): Bucket's metageneration.
+    project_number (int|None): The project number to which the bucket belongs.
+    public_access_prevention (str|None): Public access prevention status.
+    requester_pays (bool|str|None): The "requester pays" status of the bucket.
+      For S3, the value can be an error string.
+    retention_policy (dict|None): Default time to hold items in bucket in
+      seconds.
+    rpo (str|None): Recovery Point Objective status.
+    satisifes_pzs (bool|None): Zone Separation status.
+    storage_class (str|None): Storage class of the bucket.
+    update_time (str|None): Bucket's update time.
+    versioning_enabled (bool|str|None): If True, versioning is enabled.
+      If the API call to fetch the data failed, this can be an error string.
+    website_config (dict|str|None): The website configuration for the bucket.
+      If the API call to fetch the data failed, this can be an error string.
+  """
+
+  def __init__(self,
+               name,
+               url_string,
+               acl=None,
+               bucket_policy_only=None,
+               cors_config=None,
+               creation_time=None,
+               default_acl=None,
+               default_event_based_hold=None,
+               default_kms_key=None,
+               encryption_config=None,
+               etag=None,
+               labels=None,
+               lifecycle_config=None,
+               location=None,
+               location_type=None,
+               logging_config=None,
+               metageneration=None,
+               project_number=None,
+               public_access_prevention=None,
+               requester_pays=None,
+               retention_policy=None,
+               rpo=None,
+               satisifes_pzs=None,
+               storage_class=None,
+               update_time=None,
+               versioning_enabled=None,
+               website_config=None):
+    """Initializes DisplayableBucketData."""
+    self.name = name
+    self.url_string = url_string
+    self.acl = acl
+    self.bucket_policy_only = bucket_policy_only
+    self.cors_config = cors_config
+    self.creation_time = (
+        resource_util.get_formatted_timestamp_in_utc(creation_time)
+        if creation_time is not None else None)
+    self.default_acl = default_acl
+    self.default_event_based_hold = default_event_based_hold
+    self.default_kms_key = default_kms_key
+    self.encryption_config = encryption_config
+    self.etag = etag
+    self.labels = labels
+    self.lifecycle_config = lifecycle_config
+    self.location = location
+    self.location_type = location_type
+    self.logging_config = logging_config
+    self.metageneration = metageneration
+    self.project_number = project_number
+    self.public_access_prevention = public_access_prevention
+    self.requester_pays = requester_pays
+    self.retention_policy = retention_policy
+    self.rpo = rpo
+    self.satisifes_pzs = satisifes_pzs
+    self.storage_class = storage_class
+    self.update_time = (
+        resource_util.get_formatted_timestamp_in_utc(update_time)
+        if update_time is not None else None)
+    self.versioning_enabled = versioning_enabled
+    self.website_config = website_config
+
+  def __eq__(self, other):
+    if not isinstance(other, type(self)):
+      return NotImplemented
+    # Using __dict__ should be safe because all the fields in this object
+    # are comparable and we do not expect this object to be hashable.
+    return self.__dict__ == other.__dict__

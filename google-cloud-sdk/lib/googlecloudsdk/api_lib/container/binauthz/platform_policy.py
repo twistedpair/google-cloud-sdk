@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import list_pager
+
 from googlecloudsdk.api_lib.container.binauthz import apis
 
 
@@ -29,7 +31,7 @@ class Client(object):
     self.messages = apis.GetMessagesModule(api_version)
 
   def Describe(self, policy_ref):
-    """Describe a policy.
+    """Describes a policy.
 
     Args:
       policy_ref: the resource name of the policy being described.
@@ -42,7 +44,7 @@ class Client(object):
     return self.client.projects_platforms_policies.Get(get_req)
 
   def Update(self, policy_ref, policy):
-    """Update a policy.
+    """Updates a policy.
 
     Args:
       policy_ref: the resource name of the policy being updated.
@@ -53,3 +55,62 @@ class Client(object):
     """
     policy.name = policy_ref
     return self.client.projects_platforms_policies.ReplacePlatformPolicy(policy)
+
+  def List(
+      self,
+      platform_ref,
+      page_size=100,
+      limit=None,
+  ):
+    """Lists policies.
+
+    Args:
+      platform_ref: the resource name of the platform whose policies are being
+        listed.
+      page_size: The number of policies to retrieve in one request (when None,
+        use the default size).
+      limit: int, The maximum number of policies to yield (when None, unlimted).
+
+    Returns:
+      A list of policies for the given platform.
+    """
+    return list_pager.YieldFromList(
+        self.client.projects_platforms_policies,
+        self.messages.BinaryauthorizationProjectsPlatformsPoliciesListRequest(
+            parent=platform_ref),
+        field='platformPolicies',
+        limit=limit,
+        batch_size_attribute='pageSize',
+        batch_size=page_size or 100  # Default batch_size.
+    )
+
+  def Create(self, policy_resource_name, policy):
+    """Creates a policy.
+
+    Args:
+      policy_resource_name: Resource object representing the resource name of
+        the policy to create.
+      policy: The policy to create.
+
+    Returns:
+      The policy resource.
+    """
+    request = (
+        self.messages.BinaryauthorizationProjectsPlatformsPoliciesCreateRequest(
+            parent=policy_resource_name.Parent().RelativeName(),
+            policyId=policy_resource_name.Name(),
+            platformPolicy=policy))
+    return self.client.projects_platforms_policies.Create(request)
+
+  def Delete(self, policy_ref):
+    """Deletes a policy.
+
+    Args:
+      policy_ref: the resource name of the policy being deleted.
+
+    Returns:
+      The resource name of the deleted policy.
+    """
+    request = self.messages.BinaryauthorizationProjectsPlatformsPoliciesDeleteRequest(
+        name=policy_ref)
+    return self.client.projects_platforms_policies.Delete(request)

@@ -500,8 +500,12 @@
           "$ref": "WorkloadConfig"
         },
         "nodePoolAutoConfig": {
-          "description": "node pool configs that apply to all auto-provisioned node pools in autopilot clusters and node auto-provisioning enabled clusters",
+          "description": "Node pool configs that apply to all auto-provisioned node pools in autopilot clusters and node auto-provisioning enabled clusters.",
           "$ref": "NodePoolAutoConfig"
+        },
+        "protectConfig": {
+          "description": "Enable\/Disable Protect API features for the cluster.",
+          "$ref": "ProtectConfig"
         }
       }
     },
@@ -903,6 +907,11 @@
         "cpuCfsQuotaPeriod": {
           "description": "Set the CPU CFS quota period value 'cpu.cfs_period_us'. The string must be a sequence of decimal numbers, each with optional fraction and a unit suffix, such as \"300ms\". Valid time units are \"ns\", \"us\" (or \"\u00B5s\"), \"ms\", \"s\", \"m\", \"h\". The value must be a positive duration.",
           "type": "string"
+        },
+        "podPidsLimit": {
+          "description": "Set the Pod PID limits. See https:\/\/kubernetes.io\/docs\/concepts\/policy\/pid-limiting\/#pod-pid-limits Controls the maximum number of processes allowed to run in a pod. The value must be greater than or equal to 1024 and less than 4194304.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -3012,17 +3021,19 @@
       "type": "object",
       "properties": {
         "auditMode": {
-          "description": "Sets which mode the audit scanning should be for a cluster.",
+          "description": "Sets which mode of auditing should be used for the cluster's workloads.",
           "type": "string",
           "enumDescriptions": [
             "Default value meaning that no mode has been specified.",
-            "This disables WorkloafConfiguration on the cluster, meaning that nothing is surfaced.",
+            "This disables Workload Configuration auditing on the cluster, meaning that nothing is surfaced.",
+            "Applies the default set of policy auditing to a cluster's workloads.",
             "Surfaces configurations that are not in line with the Pod Security Standard Baseline policy.",
             "Surfaces configurations that are not in line with the Pod Security Standard Restricted policy."
           ],
           "enum": [
             "MODE_UNSPECIFIED",
             "DISABLED",
+            "BASIC",
             "BASELINE",
             "RESTRICTED"
           ]
@@ -3051,6 +3062,17 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "ProtectConfig": {
+      "id": "ProtectConfig",
+      "description": "ProtectConfig defines the flags needed to enable\/disable features for the Protect API.",
+      "type": "object",
+      "properties": {
+        "workloadConfig": {
+          "description": "WorkloadConfig defines which actions are enabled for a cluster's workload configurations.",
+          "$ref": "WorkloadConfig"
         }
       }
     },
@@ -3598,6 +3620,10 @@
         "desiredNodePoolAutoConfigNetworkTags": {
           "description": "The desired network tags that apply to all auto-provisioned node pools in autopilot clusters and node auto-provisioning enabled clusters.",
           "$ref": "NetworkTags"
+        },
+        "desiredProtectConfig": {
+          "description": "Enable\/Disable Protect API features for the cluster.",
+          "$ref": "ProtectConfig"
         }
       }
     },
@@ -4415,7 +4441,7 @@
           "type": "string"
         },
         "respectPdb": {
-          "description": "Required. Option for rollback to ignore the PodDisruptionBudget. Default value is false.",
+          "description": "Option for rollback to ignore the PodDisruptionBudget. Default value is false.",
           "type": "boolean"
         }
       }

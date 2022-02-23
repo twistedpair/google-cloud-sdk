@@ -257,7 +257,7 @@ def AddEventFiltersArg(parser, release_track, required=False):
 def AddEventFiltersPathPatternArg(parser,
                                   release_track,
                                   required=False,
-                                  hidden=True):
+                                  hidden=False):
   """Adds an argument for the trigger's event filters in path pattern format."""
   if release_track == base.ReleaseTrack.GA:
     parser.add_argument(

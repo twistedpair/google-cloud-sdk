@@ -264,6 +264,20 @@ class BatchGetAssetsHistoryResponse(_messages.Message):
   assets = _messages.MessageField('TemporalAsset', 1, repeated=True)
 
 
+class BatchGetEffectiveIamPoliciesResponse(_messages.Message):
+  r"""A response message for AssetService.BatchGetEffectiveIamPolicies.
+
+  Fields:
+    policyResults: The effective policies for a batch of resources. Note that
+      the results order is the same as the order of
+      BatchGetEffectiveIamPoliciesRequest.names. When a resource does not have
+      any effective IAM policies, its corresponding policy_result will contain
+      empty EffectiveIamPolicy.policies.
+  """
+
+  policyResults = _messages.MessageField('EffectiveIamPolicy', 1, repeated=True)
+
+
 class BigQueryDestination(_messages.Message):
   r"""A BigQuery destination for exporting assets to.
 
@@ -721,6 +735,31 @@ class CloudassetBatchGetAssetsHistoryRequest(_messages.Message):
   readTimeWindow_endTime = _messages.StringField(4)
   readTimeWindow_startTime = _messages.StringField(5)
   relationshipTypes = _messages.StringField(6, repeated=True)
+
+
+class CloudassetEffectiveIamPoliciesBatchGetRequest(_messages.Message):
+  r"""A CloudassetEffectiveIamPoliciesBatchGetRequest object.
+
+  Fields:
+    names: Required. The names refer to the [full_resource_names]
+      (https://cloud.google.com/asset-inventory/docs/resource-name-format) of
+      [searchable asset types](https://cloud.google.com/asset-
+      inventory/docs/supported-asset-types#searchable_asset_types). A maximum
+      of 20 resources' effective policies can be retrieved in a batch.
+    scope: Required. Only IAM policies on or below the scope will be returned.
+      This can only be an organization number (such as "organizations/123"), a
+      folder number (such as "folders/123"), a project ID (such as
+      "projects/my-project-id"), or a project number (such as
+      "projects/12345"). To know how to get organization id, visit [here
+      ](https://cloud.google.com/resource-manager/docs/creating-managing-
+      organization#retrieving_your_organization_id). To know how to get folder
+      or project id, visit [here ](https://cloud.google.com/resource-
+      manager/docs/creating-managing-
+      folders#viewing_or_listing_folders_and_projects).
+  """
+
+  names = _messages.StringField(1, repeated=True)
+  scope = _messages.StringField(2, required=True)
 
 
 class CloudassetExportAssetsRequest(_messages.Message):
@@ -1199,6 +1238,31 @@ class Date(_messages.Message):
   day = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   month = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class EffectiveIamPolicy(_messages.Message):
+  r"""The effective IAM policies on one resource.
+
+  Fields:
+    fullResourceName: The [full_resource_name]
+      (https://cloud.google.com/asset-inventory/docs/resource-name-format) for
+      which the policies are computed. This is one of the
+      BatchGetEffectiveIamPoliciesRequest.names the caller provides in the
+      request.
+    policies: The effective policies for the full_resource_name. These
+      policies include the policy set on the full_resource_name and those set
+      on its parents and ancestors up to the
+      BatchGetEffectiveIamPoliciesRequest.scope. Note that these policies are
+      not filtered according to the resource type of the full_resource_name.
+      These policies are hierarchically ordered by
+      PolicyInfo.attached_resource starting from full_resource_name itself to
+      its parents and ancestors, such that policies[i]'s
+      PolicyInfo.attached_resource is the child of policies[i+1]'s
+      PolicyInfo.attached_resource, if policies[i+1] exists.
+  """
+
+  fullResourceName = _messages.StringField(1)
+  policies = _messages.MessageField('PolicyInfo', 2, repeated=True)
 
 
 class Empty(_messages.Message):
@@ -3562,6 +3626,19 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class PolicyInfo(_messages.Message):
+  r"""The IAM policy and its attached resource.
+
+  Fields:
+    attachedResource: The full resource name the policy is directly attached
+      to.
+    policy: The IAM policy that's directly attached to the attached_resource.
+  """
+
+  attachedResource = _messages.StringField(1)
+  policy = _messages.MessageField('Policy', 2)
 
 
 class PubsubDestination(_messages.Message):

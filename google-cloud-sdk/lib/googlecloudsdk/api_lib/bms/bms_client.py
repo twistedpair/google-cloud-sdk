@@ -74,6 +74,7 @@ class BmsClient(object):
     self.locations_service = self._client.projects_locations
     self.luns_service = self._client.projects_locations_volumes_luns
     self.nfs_shares_service = self._client.projects_locations_nfsShares
+    self.ssh_keys_service = self._client.projects_locations_sshKeys
 
   @property
   def client(self):
@@ -503,3 +504,51 @@ class BmsClient(object):
         batch_size_attribute='pageSize',
         batch_size=page_size,
         field='nfsShares')
+
+  def UpdateNfsShare(self, nfs_share_resource, labels):
+    """Update an existing nfs share resource."""
+    updated_fields = []
+    if labels is not None:
+      updated_fields.append('labels')
+
+    nfs_share_msg = self.messages.NfsShare(
+        name=nfs_share_resource.RelativeName(), labels=labels)
+
+    request = self.messages.BaremetalsolutionProjectsLocationsNfsSharesPatchRequest(
+        name=nfs_share_resource.RelativeName(),
+        nfsShare=nfs_share_msg,
+        updateMask=','.join(updated_fields))
+
+    return self.nfs_shares_service.Patch(request)
+
+  def ListSshKeys(self,
+                  project_resource,
+                  limit=None,
+                  page_size=None):
+    parent = 'projects/%s/locations/global' % project_resource
+    request = (
+        self.messages
+        .BaremetalsolutionProjectsLocationsSshKeysListRequest(
+            parent=parent))
+    return list_pager.YieldFromList(
+        self.ssh_keys_service,
+        request,
+        limit=limit,
+        batch_size_attribute='pageSize',
+        batch_size=page_size,
+        field='sshKeys')
+
+  def CreateSshKey(self,
+                   resource,
+                   public_key):
+    """Sends request to create an SSH key."""
+    request = self.messages.BaremetalsolutionProjectsLocationsSshKeysCreateRequest(
+        parent=resource.Parent().RelativeName(),
+        sshKeyId=resource.Name(),
+        sSHKey=self.messages.SSHKey(publicKey=public_key))
+    return self.ssh_keys_service.Create(request)
+
+  def DeleteSshKey(self, resource):
+    request = self.messages.BaremetalsolutionProjectsLocationsSshKeysDeleteRequest(
+        name=resource.RelativeName())
+    return self.ssh_keys_service.Delete(request)

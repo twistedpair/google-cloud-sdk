@@ -291,7 +291,8 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "TaskGroup name. The system generates this field based on parent Job name. For example: \"projects\/123456\/locations\/us-west1\/jobs\/job01\/taskGroups\/default-group\".",
+          "description": "Output only. TaskGroup name. The system generates this field based on parent Job name. For example: \"projects\/123456\/locations\/us-west1\/jobs\/job01\/taskGroups\/default-group\".",
+          "readOnly": true,
           "type": "string"
         },
         "taskSpec": {
@@ -858,6 +859,11 @@
           "additionalProperties": {
             "$ref": "TaskGroupStatus"
           }
+        },
+        "runDuration": {
+          "description": "The duration of time the Job is in status RUNNING. Once the Job completes (i.e. the Job status is either SUCCEEDED\/FAILED) the run duration represents the time it took the Job to complete.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },
@@ -1776,7 +1782,7 @@
                           "httpMethod": "GET",
                           "parameters": {
                             "parent": {
-                              "description": "Required. Path of the Job from which Tasks are being requested.",
+                              "description": "Required. Path of the TaskGroup from which Tasks are being requested.",
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+\/taskGroups\/[^\/]+$",
                               "location": "path",
                               "required": true,

@@ -1764,6 +1764,10 @@
         "kubernetesClusterConfig": {
           "description": "Required. The configuration for running the Dataproc cluster on Kubernetes.",
           "$ref": "KubernetesClusterConfig"
+        },
+        "auxiliaryServicesConfig": {
+          "description": "Optional. Configuration of auxiliary services used by this cluster.",
+          "$ref": "AuxiliaryServicesConfig"
         }
       }
     },
@@ -1804,6 +1808,21 @@
           "additionalProperties": {
             "type": "string"
           }
+        }
+      }
+    },
+    "AuxiliaryServicesConfig": {
+      "id": "AuxiliaryServicesConfig",
+      "description": "Auxiliary services configuration for a Cluster.",
+      "type": "object",
+      "properties": {
+        "metastoreConfig": {
+          "description": "Optional. The Hive Metastore configuration for this workload.",
+          "$ref": "MetastoreConfig"
+        },
+        "sparkHistoryServerConfig": {
+          "description": "Optional. The Spark History Server configuration for the workload.",
+          "$ref": "SparkHistoryServerConfig"
         }
       }
     },

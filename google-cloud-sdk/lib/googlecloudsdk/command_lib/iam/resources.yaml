@@ -147,6 +147,40 @@ workload_identity_pool_provider_operation:
       The ID of the operation.
   disable_auto_completers: false
 
+workload_identity_pool_provider_key:
+  name: workload identity pool provider key
+  collection: iam.projects.locations.workloadIdentityPools.providers.keys
+  request_id_field: workloadIdentityPoolProviderKeyId
+  attributes:
+  - *project
+  - *location
+  - *workload_identity_pool
+  - *workload_identity_pool_provider
+  - &workload_identity_pool_provider_key
+    parameter_name: keysId
+    attribute_name: key
+    help: |
+      The ID for the key, which becomes the final component of the resource name. This value
+      must be 4-32 characters, and may contain the characters [a-z0-9-]. The prefix `gcp-` is
+      reserved for use by Google, and may not be specified.
+  disable_auto_completers: false
+
+workload_identity_pool_provider_key_operation:
+  name: workload identity pool provider key operation
+  collection: iam.projects.locations.workloadIdentityPools.providers.keys.operations
+  attributes:
+  - *project
+  - *location
+  - *workload_identity_pool
+  - *workload_identity_pool_provider
+  - *workload_identity_pool_provider_key
+  - &workload_identity_pool_provider_key_operation
+    parameter_name: operationsId
+    attribute_name: operation
+    help: |
+      The ID of the operation.
+  disable_auto_completers: false
+
 # Gcloud disallows positional arguments with dashes (-) but the resource is expected to be referred
 # to with dashes when used in non-positional manner. To avoid the conflict, we define two
 # near-identical resources (only differing by attribute_name).
@@ -235,6 +269,20 @@ workforce_pool_provider_operation:
   - *workforce_pool
   - *workforce_pool_provider
   - &workforce_pool_provider_operation
+    parameter_name: operationsId
+    attribute_name: operation
+    help: |
+      The ID of the operation.
+  disable_auto_completers: false
+
+workforce_pool_subject_operation:
+  name: workforce pool subject operation
+  collection: iam.locations.workforcePools.subjects.operations
+  attributes:
+  - *wf_location
+  - *workforce_pool
+  - *workforce_pool_subject
+  - &workforce_pool_subject_operation
     parameter_name: operationsId
     attribute_name: operation
     help: |

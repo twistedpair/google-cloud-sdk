@@ -522,6 +522,10 @@ class MetadataOptions(_messages.Message):
       status should be preserved for transfers between Google Cloud Storage
       buckets. If unspecified, the default behavior is the same as
       TEMPORARY_HOLD_PRESERVE.
+    TimeCreatedValueValuesEnum: Specifies how each object's `timeCreated`
+      metadata is preserved for transfers between Google Cloud Storage
+      buckets. If unspecified, the default behavior is the same as
+      TIME_CREATED_SKIP.
     UidValueValuesEnum: Specifies how each file's POSIX user ID (UID)
       attribute should be handled by the transfer. By default, UID is not
       preserved.
@@ -547,6 +551,9 @@ class MetadataOptions(_messages.Message):
       preserved for transfers between Google Cloud Storage buckets. If
       unspecified, the default behavior is the same as
       TEMPORARY_HOLD_PRESERVE.
+    timeCreated: Specifies how each object's `timeCreated` metadata is
+      preserved for transfers between Google Cloud Storage buckets. If
+      unspecified, the default behavior is the same as TIME_CREATED_SKIP.
     uid: Specifies how each file's POSIX user ID (UID) attribute should be
       handled by the transfer. By default, UID is not preserved.
   """
@@ -670,6 +677,24 @@ class MetadataOptions(_messages.Message):
     TEMPORARY_HOLD_SKIP = 1
     TEMPORARY_HOLD_PRESERVE = 2
 
+  class TimeCreatedValueValuesEnum(_messages.Enum):
+    r"""Specifies how each object's `timeCreated` metadata is preserved for
+    transfers between Google Cloud Storage buckets. If unspecified, the
+    default behavior is the same as TIME_CREATED_SKIP.
+
+    Values:
+      TIME_CREATED_UNSPECIFIED: TimeCreated behavior is unspecified.
+      TIME_CREATED_SKIP: Do not preserve the `timeCreated` metadata from the
+        source object.
+      TIME_CREATED_PRESERVE_AS_CUSTOM_TIME: Preserves the source object's
+        `timeCreated` metadata in the `customTime` field in the destination
+        object. Note that any value stored in the source object's `customTime`
+        field will not be propagated to the destination object.
+    """
+    TIME_CREATED_UNSPECIFIED = 0
+    TIME_CREATED_SKIP = 1
+    TIME_CREATED_PRESERVE_AS_CUSTOM_TIME = 2
+
   class UidValueValuesEnum(_messages.Enum):
     r"""Specifies how each file's POSIX user ID (UID) attribute should be
     handled by the transfer. By default, UID is not preserved.
@@ -690,7 +715,8 @@ class MetadataOptions(_messages.Message):
   storageClass = _messages.EnumField('StorageClassValueValuesEnum', 5)
   symlink = _messages.EnumField('SymlinkValueValuesEnum', 6)
   temporaryHold = _messages.EnumField('TemporaryHoldValueValuesEnum', 7)
-  uid = _messages.EnumField('UidValueValuesEnum', 8)
+  timeCreated = _messages.EnumField('TimeCreatedValueValuesEnum', 8)
+  uid = _messages.EnumField('UidValueValuesEnum', 9)
 
 
 class NotificationConfig(_messages.Message):
@@ -1320,7 +1346,8 @@ class StoragetransferTransferOperationsListRequest(_messages.Message):
       `jobNames`, `operationNames`, and `transferStatuses` are optional. The
       valid values for `transferStatuses` are case-insensitive: IN_PROGRESS,
       PAUSED, SUCCESS, FAILED, and ABORTED.
-    name: Not used.
+    name: Required. The name of the type being listed; must be
+      `transferOperations`.
     pageSize: The list page size. The max allowed value is 256.
     pageToken: The list page token.
   """

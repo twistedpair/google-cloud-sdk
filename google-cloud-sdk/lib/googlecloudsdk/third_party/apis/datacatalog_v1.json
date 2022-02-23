@@ -249,13 +249,15 @@
             "Default unknown system.",
             "BigQuery.",
             "Cloud Pub\/Sub.",
-            "Dataproc Metastore."
+            "Dataproc Metastore.",
+            "Dataplex."
           ],
           "enum": [
             "INTEGRATED_SYSTEM_UNSPECIFIED",
             "BIGQUERY",
             "CLOUD_PUBSUB",
-            "DATAPROC_METASTORE"
+            "DATAPROC_METASTORE",
+            "DATAPLEX"
           ]
         },
         "userSpecifiedSystem": {
@@ -379,6 +381,8 @@
             "A database.",
             "Output only. Connection to a data source. For example, a BigQuery connection.",
             "Output only. Routine, for example, a BigQuery routine.",
+            "A Dataplex lake.",
+            "A Dataplex zone.",
             "A service, for example, a Dataproc Metastore service."
           ],
           "enum": [
@@ -391,6 +395,8 @@
             "DATABASE",
             "DATA_SOURCE_CONNECTION",
             "ROUTINE",
+            "LAKE",
+            "ZONE",
             "SERVICE"
           ]
         },
@@ -406,13 +412,15 @@
             "Default unknown system.",
             "BigQuery.",
             "Cloud Pub\/Sub.",
-            "Dataproc Metastore."
+            "Dataproc Metastore.",
+            "Dataplex."
           ],
           "enum": [
             "INTEGRATED_SYSTEM_UNSPECIFIED",
             "BIGQUERY",
             "CLOUD_PUBSUB",
-            "DATAPROC_METASTORE"
+            "DATAPROC_METASTORE",
+            "DATAPLEX"
           ]
         },
         "userSpecifiedSystem": {
@@ -450,6 +458,10 @@
         "routineSpec": {
           "description": "Specification that applies to a user-defined function or procedure. Valid only for entries with the `ROUTINE` type.",
           "$ref": "GoogleCloudDatacatalogV1RoutineSpec"
+        },
+        "filesetSpec": {
+          "description": "Specification that applies to a fileset resource. Valid only for entries with the `FILESET` type.",
+          "$ref": "GoogleCloudDatacatalogV1FilesetSpec"
         },
         "displayName": {
           "description": "Display name of an entry. The name must contain only Unicode letters, numbers (0-9), underscores (_), dashes (-), spaces ( ), and can't start or end with spaces. The maximum size is 200 bytes when encoded in UTF-8. Default value is an empty string.",
@@ -689,7 +701,178 @@
             "NATIVE",
             "EXTERNAL"
           ]
+        },
+        "dataplexTable": {
+          "description": "Fields specific to a Dataplex table and present only in the Dataplex table entries.",
+          "$ref": "GoogleCloudDatacatalogV1DataplexTableSpec"
         }
+      }
+    },
+    "GoogleCloudDatacatalogV1DataplexTableSpec": {
+      "id": "GoogleCloudDatacatalogV1DataplexTableSpec",
+      "description": "Entry specification for a Dataplex table.",
+      "type": "object",
+      "properties": {
+        "externalTables": {
+          "description": "List of external tables registered by Dataplex in other systems based on the same underlying data. External tables allow to query this data in those systems.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDatacatalogV1DataplexExternalTable"
+          }
+        },
+        "dataplexSpec": {
+          "description": "Common Dataplex fields.",
+          "$ref": "GoogleCloudDatacatalogV1DataplexSpec"
+        },
+        "userManaged": {
+          "description": "Indicates if the table schema is managed by the user or not.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1DataplexExternalTable": {
+      "id": "GoogleCloudDatacatalogV1DataplexExternalTable",
+      "description": "External table registered by Dataplex. Dataplex publishes data discovered from an asset into multiple other systems (BigQuery, DPMS) in form of tables. We call them \"external tables\". External tables are also synced into the Data Catalog. This message contains pointers to those external tables (fully qualified name, resource name et cetera) within the Data Catalog.",
+      "type": "object",
+      "properties": {
+        "system": {
+          "description": "Service in which the external table is registered.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default unknown system.",
+            "BigQuery.",
+            "Cloud Pub\/Sub.",
+            "Dataproc Metastore.",
+            "Dataplex."
+          ],
+          "enum": [
+            "INTEGRATED_SYSTEM_UNSPECIFIED",
+            "BIGQUERY",
+            "CLOUD_PUBSUB",
+            "DATAPROC_METASTORE",
+            "DATAPLEX"
+          ]
+        },
+        "fullyQualifiedName": {
+          "description": "Fully qualified name (FQN) of the external table.",
+          "type": "string"
+        },
+        "googleCloudResource": {
+          "description": "Google Cloud resource name of the external table.",
+          "type": "string"
+        },
+        "dataCatalogEntry": {
+          "description": "Name of the Data Catalog entry representing the external table.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1DataplexSpec": {
+      "id": "GoogleCloudDatacatalogV1DataplexSpec",
+      "description": "Common Dataplex fields.",
+      "type": "object",
+      "properties": {
+        "asset": {
+          "description": "Fully qualified resource name of an asset in Dataplex, to which the underlying data source (Cloud Storage bucket or BigQuery dataset) of the entity is attached.",
+          "type": "string"
+        },
+        "dataFormat": {
+          "description": "Format of the data.",
+          "$ref": "GoogleCloudDatacatalogV1PhysicalSchema"
+        },
+        "compressionFormat": {
+          "description": "Compression format of the data, e.g., zip, gzip etc.",
+          "type": "string"
+        },
+        "projectId": {
+          "description": "Project ID of the underlying Cloud Storage or BigQuery data. Note that this may not be the same project as the correspondingly Dataplex lake \/ zone \/ asset.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1PhysicalSchema": {
+      "id": "GoogleCloudDatacatalogV1PhysicalSchema",
+      "description": "Native schema used by a resource represented as an entry. Used by query engines for deserializing and parsing source data.",
+      "type": "object",
+      "properties": {
+        "avro": {
+          "description": "Schema in Avro JSON format.",
+          "$ref": "GoogleCloudDatacatalogV1PhysicalSchemaAvroSchema"
+        },
+        "thrift": {
+          "description": "Schema in Thrift format.",
+          "$ref": "GoogleCloudDatacatalogV1PhysicalSchemaThriftSchema"
+        },
+        "protobuf": {
+          "description": "Schema in protocol buffer format.",
+          "$ref": "GoogleCloudDatacatalogV1PhysicalSchemaProtobufSchema"
+        },
+        "parquet": {
+          "description": "Marks a Parquet-encoded data source.",
+          "$ref": "GoogleCloudDatacatalogV1PhysicalSchemaParquetSchema"
+        },
+        "orc": {
+          "description": "Marks an ORC-encoded data source.",
+          "$ref": "GoogleCloudDatacatalogV1PhysicalSchemaOrcSchema"
+        },
+        "csv": {
+          "description": "Marks a CSV-encoded data source.",
+          "$ref": "GoogleCloudDatacatalogV1PhysicalSchemaCsvSchema"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1PhysicalSchemaAvroSchema": {
+      "id": "GoogleCloudDatacatalogV1PhysicalSchemaAvroSchema",
+      "description": "Schema in Avro JSON format.",
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "JSON source of the Avro schema.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1PhysicalSchemaThriftSchema": {
+      "id": "GoogleCloudDatacatalogV1PhysicalSchemaThriftSchema",
+      "description": "Schema in Thrift format.",
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "Thrift IDL source of the schema.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1PhysicalSchemaProtobufSchema": {
+      "id": "GoogleCloudDatacatalogV1PhysicalSchemaProtobufSchema",
+      "description": "Schema in protocol buffer format.",
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "Protocol buffer source of the schema.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1PhysicalSchemaParquetSchema": {
+      "id": "GoogleCloudDatacatalogV1PhysicalSchemaParquetSchema",
+      "description": "Marks a Parquet-encoded data source.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudDatacatalogV1PhysicalSchemaOrcSchema": {
+      "id": "GoogleCloudDatacatalogV1PhysicalSchemaOrcSchema",
+      "description": "Marks an ORC-encoded data source.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudDatacatalogV1PhysicalSchemaCsvSchema": {
+      "id": "GoogleCloudDatacatalogV1PhysicalSchemaCsvSchema",
+      "description": "Marks a CSV-encoded data source.",
+      "type": "object",
+      "properties": {
       }
     },
     "GoogleCloudDatacatalogV1DataSourceConnectionSpec": {
@@ -848,6 +1031,28 @@
         }
       }
     },
+    "GoogleCloudDatacatalogV1FilesetSpec": {
+      "id": "GoogleCloudDatacatalogV1FilesetSpec",
+      "description": "Specification that applies to a fileset. Valid only for entries with the 'FILESET' type.",
+      "type": "object",
+      "properties": {
+        "dataplexFileset": {
+          "description": "Fields specific to a Dataplex fileset and present only in the Dataplex fileset entries.",
+          "$ref": "GoogleCloudDatacatalogV1DataplexFilesetSpec"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1DataplexFilesetSpec": {
+      "id": "GoogleCloudDatacatalogV1DataplexFilesetSpec",
+      "description": "Entry specyfication for a Dataplex fileset.",
+      "type": "object",
+      "properties": {
+        "dataplexSpec": {
+          "description": "Common Dataplex fields.",
+          "$ref": "GoogleCloudDatacatalogV1DataplexSpec"
+        }
+      }
+    },
     "GoogleCloudDatacatalogV1BusinessContext": {
       "id": "GoogleCloudDatacatalogV1BusinessContext",
       "description": "Business Context of the entry.",
@@ -951,91 +1156,6 @@
         }
       }
     },
-    "GoogleCloudDatacatalogV1PhysicalSchema": {
-      "id": "GoogleCloudDatacatalogV1PhysicalSchema",
-      "description": "Native schema used by a resource represented as an entry. Used by query engines for deserializing and parsing source data.",
-      "type": "object",
-      "properties": {
-        "avro": {
-          "description": "Schema in Avro JSON format.",
-          "$ref": "GoogleCloudDatacatalogV1PhysicalSchemaAvroSchema"
-        },
-        "thrift": {
-          "description": "Schema in Thrift format.",
-          "$ref": "GoogleCloudDatacatalogV1PhysicalSchemaThriftSchema"
-        },
-        "protobuf": {
-          "description": "Schema in protocol buffer format.",
-          "$ref": "GoogleCloudDatacatalogV1PhysicalSchemaProtobufSchema"
-        },
-        "parquet": {
-          "description": "Marks a Parquet-encoded data source.",
-          "$ref": "GoogleCloudDatacatalogV1PhysicalSchemaParquetSchema"
-        },
-        "orc": {
-          "description": "Marks an ORC-encoded data source.",
-          "$ref": "GoogleCloudDatacatalogV1PhysicalSchemaOrcSchema"
-        },
-        "csv": {
-          "description": "Marks a CSV-encoded data source.",
-          "$ref": "GoogleCloudDatacatalogV1PhysicalSchemaCsvSchema"
-        }
-      }
-    },
-    "GoogleCloudDatacatalogV1PhysicalSchemaAvroSchema": {
-      "id": "GoogleCloudDatacatalogV1PhysicalSchemaAvroSchema",
-      "description": "Schema in Avro JSON format.",
-      "type": "object",
-      "properties": {
-        "text": {
-          "description": "JSON source of the Avro schema.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudDatacatalogV1PhysicalSchemaThriftSchema": {
-      "id": "GoogleCloudDatacatalogV1PhysicalSchemaThriftSchema",
-      "description": "Schema in Thrift format.",
-      "type": "object",
-      "properties": {
-        "text": {
-          "description": "Thrift IDL source of the schema.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudDatacatalogV1PhysicalSchemaProtobufSchema": {
-      "id": "GoogleCloudDatacatalogV1PhysicalSchemaProtobufSchema",
-      "description": "Schema in protocol buffer format.",
-      "type": "object",
-      "properties": {
-        "text": {
-          "description": "Protocol buffer source of the schema.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudDatacatalogV1PhysicalSchemaParquetSchema": {
-      "id": "GoogleCloudDatacatalogV1PhysicalSchemaParquetSchema",
-      "description": "Marks a Parquet-encoded data source.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "GoogleCloudDatacatalogV1PhysicalSchemaOrcSchema": {
-      "id": "GoogleCloudDatacatalogV1PhysicalSchemaOrcSchema",
-      "description": "Marks an ORC-encoded data source.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "GoogleCloudDatacatalogV1PhysicalSchemaCsvSchema": {
-      "id": "GoogleCloudDatacatalogV1PhysicalSchemaCsvSchema",
-      "description": "Marks a CSV-encoded data source.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "GoogleCloudDatacatalogV1UsageSignal": {
       "id": "GoogleCloudDatacatalogV1UsageSignal",
       "description": "The set of all usage signals that Data Catalog stores. Note: Usually, these signals are updated daily. In rare cases, an update may fail but will be performed again on the next day.",
@@ -1103,6 +1223,33 @@
         },
         "resource": {
           "description": "Full name of a resource as defined by the service. For example: `\/\/bigquery.googleapis.com\/projects\/{PROJECT_ID}\/locations\/{LOCATION}\/datasets\/{DATASET_ID}\/tables\/{TABLE_ID}`",
+          "type": "string"
+        },
+        "sourceEntry": {
+          "description": "Output only. Data Catalog entry name, if applicable.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "storageProperties": {
+          "description": "Detailed properties of the underlying storage.",
+          "$ref": "GoogleCloudDatacatalogV1StorageProperties"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1StorageProperties": {
+      "id": "GoogleCloudDatacatalogV1StorageProperties",
+      "description": "Details the properties of the underlying storage.",
+      "type": "object",
+      "properties": {
+        "filePattern": {
+          "description": "Patterns to identify a set of files for this fileset. Examples of a valid `file_pattern`: * `gs:\/\/bucket_name\/dir\/*`: matches all files in the `bucket_name\/dir` directory * `gs:\/\/bucket_name\/dir\/**`: matches all files in the `bucket_name\/dir` and all subdirectories recursively * `gs:\/\/bucket_name\/file*`: matches files prefixed by `file` in `bucket_name` * `gs:\/\/bucket_name\/??.txt`: matches files with two characters followed by `.txt` in `bucket_name` * `gs:\/\/bucket_name\/[aeiou].txt`: matches files that contain a single vowel character followed by `.txt` in `bucket_name` * `gs:\/\/bucket_name\/[a-m].txt`: matches files that contain `a`, `b`, ... or `m` followed by `.txt` in `bucket_name` * `gs:\/\/bucket_name\/a\/*\/b`: matches all files in `bucket_name` that match the `a\/*\/b` pattern, such as `a\/c\/b`, `a\/d\/b` * `gs:\/\/another_bucket\/a.txt`: matches `gs:\/\/another_bucket\/a.txt`",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fileType": {
+          "description": "File type in MIME format, for example, `text\/plain`.",
           "type": "string"
         }
       }

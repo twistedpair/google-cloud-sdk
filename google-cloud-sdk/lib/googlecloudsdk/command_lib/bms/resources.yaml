@@ -94,6 +94,18 @@ nfs_share:
     help: Bare Metal Solution NFS share.
   disable_auto_completers: false
 
+serial_console_ssh_key:
+  name: serial_console_ssh_key
+  collection: baremetalsolution.projects.locations.sshKeys
+  attributes:
+  - *project
+  - *global_only_region
+  - &serial_console_ssh_key
+    parameter_name: sshKeysId
+    attribute_name: serial_console_ssh_key
+    help: Bare Metal Solution interactive serial console SSH key.
+  disable_auto_completers: false
+
 lun:
   name: lun
   collection: baremetalsolution.projects.locations.volumes.luns

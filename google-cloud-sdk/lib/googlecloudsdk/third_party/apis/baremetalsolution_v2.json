@@ -514,6 +514,61 @@
       "properties": {
       }
     },
+    "EnableInteractiveSerialConsoleRequest": {
+      "id": "EnableInteractiveSerialConsoleRequest",
+      "description": "Message for enabling the interactive serial console on an instance.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "DisableInteractiveSerialConsoleRequest": {
+      "id": "DisableInteractiveSerialConsoleRequest",
+      "description": "Message for disabling the interactive serial console on an instance.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ListSSHKeysResponse": {
+      "id": "ListSSHKeysResponse",
+      "description": "Message for response of ListSSHKeys.",
+      "type": "object",
+      "properties": {
+        "sshKeys": {
+          "description": "The SSH keys registered in the project.",
+          "type": "array",
+          "items": {
+            "$ref": "SSHKey"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "SSHKey": {
+      "id": "SSHKey",
+      "description": "An SSH key, used for authorizing with the interactive serial console feature.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The name of this SSH key. Currently, the only valid value for the location is \"global\".",
+          "readOnly": true,
+          "type": "string"
+        },
+        "publicKey": {
+          "description": "The public SSH key. This must be in OpenSSH .authorized_keys format.",
+          "type": "string"
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "ListVolumesResponse": {
       "id": "ListVolumesResponse",
       "description": "Response message containing the list of storage volumes.",
@@ -633,6 +688,10 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "snapshotEnabled": {
+          "description": "Whether snapshots are enabled.",
+          "type": "boolean"
         }
       }
     },
@@ -655,6 +714,11 @@
           "description": "The amount, in GiB, of available space in this storage volume's reserved snapshot space.",
           "type": "string",
           "format": "int64"
+        },
+        "reservedSpacePercent": {
+          "description": "Percent of the total Volume size reserved for snapshot copies. Enabling snapshots requires reserving 20% or more of the storage volume space for snapshots. Maximum reserved space for snapshots is 40%. Setting this field will effectively set snapshot_enabled to true.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -676,6 +740,38 @@
         },
         "unreachable": {
           "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ListNetworkUsageResponse": {
+      "id": "ListNetworkUsageResponse",
+      "description": "Response with Networks with IPs",
+      "type": "object",
+      "properties": {
+        "networks": {
+          "description": "Networks with IPs.",
+          "type": "array",
+          "items": {
+            "$ref": "NetworkUsage"
+          }
+        }
+      }
+    },
+    "NetworkUsage": {
+      "id": "NetworkUsage",
+      "description": "Network with all used IP addresses.",
+      "type": "object",
+      "properties": {
+        "network": {
+          "description": "Network.",
+          "$ref": "Network"
+        },
+        "usedIps": {
+          "description": "All used IP addresses in this network.",
           "type": "array",
           "items": {
             "type": "string"
@@ -765,13 +861,6 @@
           "description": "A list of snapshot names created in this schedule.",
           "type": "string"
         }
-      }
-    },
-    "Empty": {
-      "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
-      "type": "object",
-      "properties": {
       }
     },
     "VolumeSnapshot": {
@@ -902,6 +991,13 @@
           "type": "array",
           "items": {
             "$ref": "AllowedClient"
+          }
+        },
+        "labels": {
+          "description": "Labels as key value pairs.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
           }
         }
       }
@@ -1113,6 +1209,10 @@
         "ticketId": {
           "description": "A generated buganizer id to track provisioning request.",
           "type": "string"
+        },
+        "handoverServiceAccount": {
+          "description": "A service account to enable customers to access instance credentials upon handover.",
+          "type": "string"
         }
       }
     },
@@ -1167,6 +1267,10 @@
         },
         "address": {
           "description": "IPv4 address to be assigned to the server.",
+          "type": "string"
+        },
+        "existingNetworkId": {
+          "description": "Name of the existing network to use.",
           "type": "string"
         }
       }
@@ -1248,6 +1352,10 @@
         },
         "userNote": {
           "description": "User note field, it can be used by customers to add additional information for the BMS Ops team (b\/194021617).",
+          "type": "string"
+        },
+        "gcpService": {
+          "description": "The GCP service of the network. Available gcp_service are in https:\/\/cloud.google.com\/bare-metal\/docs\/bms-planning.",
           "type": "string"
         }
       }
@@ -1341,6 +1449,10 @@
         },
         "userNote": {
           "description": "User note field, it can be used by customers to add additional information for the BMS Ops team (b\/194021617).",
+          "type": "string"
+        },
+        "gcpService": {
+          "description": "The GCP service of the storage volume. Available gcp_service are in https:\/\/cloud.google.com\/bare-metal\/docs\/bms-planning.",
           "type": "string"
         }
       }
@@ -1702,6 +1814,160 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Starts a server that was shutdown."
+                },
+                "enableInteractiveSerialConsole": {
+                  "id": "baremetalsolution.projects.locations.instances.enableInteractiveSerialConsole",
+                  "path": "v2/{+name}:enableInteractiveSerialConsole",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:enableInteractiveSerialConsole",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "EnableInteractiveSerialConsoleRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Enable the interactive serial console feature on an instance."
+                },
+                "disableInteractiveSerialConsole": {
+                  "id": "baremetalsolution.projects.locations.instances.disableInteractiveSerialConsole",
+                  "path": "v2/{+name}:disableInteractiveSerialConsole",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:disableInteractiveSerialConsole",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "DisableInteractiveSerialConsoleRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Disable the interactive serial console feature on an instance."
+                }
+              }
+            },
+            "sshKeys": {
+              "methods": {
+                "list": {
+                  "id": "baremetalsolution.projects.locations.sshKeys.list",
+                  "path": "v2/{+parent}/sshKeys",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/sshKeys",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent containing the SSH keys. Currently, the only valid value for the location is \"global\".",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of items to return.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The next_page_token value returned from a previous List request, if any.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListSSHKeysResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists the public SSH keys registered for the specified project. These SSH keys are used only for the interactive serial console feature."
+                },
+                "create": {
+                  "id": "baremetalsolution.projects.locations.sshKeys.create",
+                  "path": "v2/{+parent}/sshKeys",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/sshKeys",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent containing the SSH keys.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "sshKeyId": {
+                      "description": "Required. The ID to use for the key, which will become the final component of the key's resource name. This value must match the regex: [a-zA-Z0-9@.\\-_]{1,64}",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "SSHKey"
+                  },
+                  "response": {
+                    "$ref": "SSHKey"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Register a public SSH key in the specified project for use with the interactive serial console feature."
+                },
+                "delete": {
+                  "id": "baremetalsolution.projects.locations.sshKeys.delete",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/sshKeys/{sshKeysId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the SSH key to delete. Currently, the only valid value for the location is \"global\".",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/sshKeys\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a public SSH key registered in the specified project."
                 }
               }
             },
@@ -1787,7 +2053,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "The list of fields to update. The only currently supported fields are: `snapshot_auto_delete_behavior` `snapshot_schedule_policy_name` 'labels' 'requested_size_gib'",
+                      "description": "The list of fields to update. The only currently supported fields are: `snapshot_auto_delete_behavior` `snapshot_schedule_policy_name` 'labels' 'requested_size_gib' 'snapshot_enabled' 'snapshot_reservation_detail.reserved_space_percent'",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -2066,6 +2332,31 @@
                   ],
                   "description": "List network in a given project and location."
                 },
+                "listNetworkUsage": {
+                  "id": "baremetalsolution.projects.locations.networks.listNetworkUsage",
+                  "path": "v2/{+location}/networks:listNetworkUsage",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/networks:listNetworkUsage",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "location": {
+                      "description": "Required. Parent value (project and location).",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "location"
+                  ],
+                  "response": {
+                    "$ref": "ListNetworkUsageResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "List all Networks (and used IPs for each Network) in the vendor account associated with the specified project."
+                },
                 "get": {
                   "id": "baremetalsolution.projects.locations.networks.get",
                   "path": "v2/{+name}",
@@ -2339,6 +2630,11 @@
                       "description": "A token identifying a page of results from the server.",
                       "location": "query",
                       "type": "string"
+                    },
+                    "filter": {
+                      "description": "List filter.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -2351,6 +2647,40 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "List NFS shares."
+                },
+                "patch": {
+                  "id": "baremetalsolution.projects.locations.nfsShares.patch",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/nfsShares/{nfsSharesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The name of the NFS share.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nfsShares\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "The list of fields to update. The only currently supported fields are: `labels`",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "NfsShare"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Update details of a single NFS share."
                 }
               }
             },

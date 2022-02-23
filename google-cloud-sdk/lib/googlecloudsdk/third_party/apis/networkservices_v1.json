@@ -512,7 +512,7 @@
           "type": "string"
         },
         "createTime": {
-          "description": "Output only. A human-readable description of the resource. Creation timestamp in RFC3339 text format.",
+          "description": "Output only. Creation timestamp in RFC3339 text format.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"

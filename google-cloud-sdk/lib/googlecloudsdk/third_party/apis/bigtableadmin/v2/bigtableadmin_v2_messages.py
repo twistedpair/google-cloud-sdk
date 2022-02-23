@@ -831,8 +831,8 @@ class BigtableadminProjectsInstancesTablesListRequest(_messages.Message):
 
   Enums:
     ViewValueValuesEnum: The view to be applied to the returned tables'
-      fields. Only NAME_ONLY view (default) and REPLICATION_VIEW are
-      supported.
+      fields. Only NAME_ONLY view (default), REPLICATION_VIEW and
+      ENCRYPTION_VIEW are supported.
 
   Fields:
     pageSize: Maximum number of results per page. A page_size of zero lets the
@@ -847,12 +847,13 @@ class BigtableadminProjectsInstancesTablesListRequest(_messages.Message):
       be listed. Values are of the form
       `projects/{project}/instances/{instance}`.
     view: The view to be applied to the returned tables' fields. Only
-      NAME_ONLY view (default) and REPLICATION_VIEW are supported.
+      NAME_ONLY view (default), REPLICATION_VIEW and ENCRYPTION_VIEW are
+      supported.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
     r"""The view to be applied to the returned tables' fields. Only NAME_ONLY
-    view (default) and REPLICATION_VIEW are supported.
+    view (default), REPLICATION_VIEW and ENCRYPTION_VIEW are supported.
 
     Values:
       VIEW_UNSPECIFIED: Uses the default view for each method as documented in

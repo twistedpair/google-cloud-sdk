@@ -20,6 +20,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.run.integrations.formatters import base_formatter
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import custom_printer_base as cp
 
 
@@ -73,6 +74,32 @@ class CustomDomainFormatter(base_formatter.BaseFormatter):
             ]),
         ])
     ])
+
+  def CallToAction(self, record):
+    """Call to action to configure IP for the domain.
+
+    Args:
+      record: dict, the integration.
+
+    Returns:
+      A formatted string of the call to action message,
+      or None if no call to action is required.
+    """
+    resource_config = record.get('config')
+    resource_status = record.get('status')
+    if not resource_status or not resource_status:
+      return None
+
+    domain = resource_config.get('router', {}).get('domain')
+    gcp_resources = resource_status.get('gcpResource', {})
+    ssl_status = self._GetSSLStatus(gcp_resources)
+    ip = resource_status.get('routerDetails', {}).get('ipAddress')
+    if domain and ip and ssl_status != 'READY':
+      con = console_attr.GetConsoleAttr()
+      return ('{} To complete the process, please ensure the following '
+              'DNS records are configured on the domain "{}":\n'
+              '    A: {}'.format(con.Colorize('!', 'yellow'), domain, ip))
+    return None
 
   def _GetServiceName(self, ref):
     parts = ref.split('/')

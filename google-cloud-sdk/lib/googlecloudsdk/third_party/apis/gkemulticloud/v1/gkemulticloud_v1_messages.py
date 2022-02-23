@@ -285,7 +285,9 @@ class GkemulticloudProjectsLocationsAwsClustersPatchRequest(_messages.Message):
       * `control_plane.aws_services_authentication.role_arn`. *
       `control_plane.aws_services_authentication.role_session_name`. *
       `control_plane.config_encryption.kms_key_arn`. *
-      `control_plane.instance_type`.
+      `control_plane.instance_type`. * `control_plane.security_group_ids`. *
+      `control_plane.proxy_config.secret_arn`. *
+      `control_plane.proxy_config.secret_version`.
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """

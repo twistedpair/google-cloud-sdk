@@ -91,7 +91,7 @@ class Task(container_resource.ContainerResource):
       return self._PickSymbol('\N{HEAVY CHECK MARK}', '+', encoding), 'green'
     elif self.running_state == 'Failed':
       return 'X', 'red'
-    elif self.running_state == 'Canceled':
+    elif self.running_state == 'Cancelled':
       return '!', 'yellow'
     elif self.running_state == 'Abandoned':
       return '-', 'yellow'

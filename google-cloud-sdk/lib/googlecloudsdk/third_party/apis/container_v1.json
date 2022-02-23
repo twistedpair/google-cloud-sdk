@@ -413,7 +413,7 @@
           "$ref": "MonitoringConfig"
         },
         "nodePoolAutoConfig": {
-          "description": "node pool configs that apply to all auto-provisioned node pools in autopilot clusters and node auto-provisioning enabled clusters",
+          "description": "Node pool configs that apply to all auto-provisioned node pools in autopilot clusters and node auto-provisioning enabled clusters.",
           "$ref": "NodePoolAutoConfig"
         }
       }
@@ -746,6 +746,11 @@
         "cpuCfsQuotaPeriod": {
           "description": "Set the CPU CFS quota period value 'cpu.cfs_period_us'. The string must be a sequence of decimal numbers, each with optional fraction and a unit suffix, such as \"300ms\". Valid time units are \"ns\", \"us\" (or \"\u00B5s\"), \"ms\", \"s\", \"m\", \"h\". The value must be a positive duration.",
           "type": "string"
+        },
+        "podPidsLimit": {
+          "description": "Set the Pod PID limits. See https:\/\/kubernetes.io\/docs\/concepts\/policy\/pid-limiting\/#pod-pid-limits Controls the maximum number of processes allowed to run in a pod. The value must be greater than or equal to 1024 and less than 4194304.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -1089,6 +1094,11 @@
         "upgradeSettings": {
           "description": "Upgrade settings control disruption and speed of the upgrade.",
           "$ref": "UpgradeSettings"
+        },
+        "updateInfo": {
+          "description": "Output only. [Output only] Update info contains relevant information during a node pool update.",
+          "readOnly": true,
+          "$ref": "UpdateInfo"
         }
       }
     },
@@ -1275,6 +1285,126 @@
           "description": "The maximum number of nodes that can be simultaneously unavailable during the upgrade process. A node is considered available if its status is Ready.",
           "type": "integer",
           "format": "int32"
+        },
+        "strategy": {
+          "description": "Update strategy of the node pool.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value.",
+            "Rolling update is the traditional way of updating node pool. max_surge and max_unavailable determines the level of update parallelism.",
+            "Blue\/green update."
+          ],
+          "enum": [
+            "NODE_POOL_UPDATE_STRATEGY_UNSPECIFIED",
+            "ROLLING",
+            "BLUE_GREEN"
+          ]
+        },
+        "blueGreenSettings": {
+          "description": "Settings for blue\/green update strategy.",
+          "$ref": "BlueGreenSettings"
+        }
+      }
+    },
+    "BlueGreenSettings": {
+      "id": "BlueGreenSettings",
+      "description": "Settings for blue\/green update.",
+      "type": "object",
+      "properties": {
+        "standardRolloutPolicy": {
+          "description": "Standard policy for the blue\/green update.",
+          "$ref": "StandardRolloutPolicy"
+        },
+        "nodePoolSoakDuration": {
+          "description": "Time needed after draining entire blue pool. After this period, blue pool will be cleaned up.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "StandardRolloutPolicy": {
+      "id": "StandardRolloutPolicy",
+      "description": "Standard rollout policy is the default policy for blue\/green.",
+      "type": "object",
+      "properties": {
+        "batchPercentage": {
+          "description": "Percentage of the bool pool nodes to drain in a batch. The range of this field should be (0.0, 1.0].",
+          "type": "number",
+          "format": "float"
+        },
+        "batchNodeCount": {
+          "description": "Number of blue nodes to drain in a batch.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "batchSoakDuration": {
+          "description": "Soak time after each batch gets drained. Default to zero.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "UpdateInfo": {
+      "id": "UpdateInfo",
+      "description": "UpdateInfo contains resource (instance groups, etc), status and other intermediate information relevant to a node pool upgrade.",
+      "type": "object",
+      "properties": {
+        "blueGreenInfo": {
+          "description": "Information of a blue\/green update.",
+          "$ref": "BlueGreenInfo"
+        }
+      }
+    },
+    "BlueGreenInfo": {
+      "id": "BlueGreenInfo",
+      "description": "Information relevant to blue\/green update.",
+      "type": "object",
+      "properties": {
+        "phase": {
+          "description": "Current blue\/green update phase.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified phase.",
+            "Blue\/green update has been initiated.",
+            "Start creating green pool nodes.",
+            "Start cordoning blue pool nodes.",
+            "Start draining blue pool nodes.",
+            "Start soaking time after draining entire blue pool.",
+            "Start deleting blue nodes.",
+            "Rollback has been initiated."
+          ],
+          "enum": [
+            "PHASE_UNSPECIFIED",
+            "UPDATE_STARTED",
+            "CREATING_GREEN_POOL",
+            "CORDONING_BLUE_POOL",
+            "DRAINING_BLUE_POOL",
+            "NODE_POOL_SOAKING",
+            "DELETING_BLUE_POOL",
+            "ROLLBACK_STARTED"
+          ]
+        },
+        "blueInstanceGroupUrls": {
+          "description": "The resource URLs of the [managed instance groups] (\/compute\/docs\/instance-groups\/creating-groups-of-managed-instances) associated with blue pool.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "greenInstanceGroupUrls": {
+          "description": "The resource URLs of the [managed instance groups] (\/compute\/docs\/instance-groups\/creating-groups-of-managed-instances) associated with green pool.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "bluePoolDeletionStartTime": {
+          "description": "Time to start deleting blue pool to complete blue\/green update, in [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
+          "type": "string"
+        },
+        "greenPoolVersion": {
+          "description": "Version of green pool.",
+          "type": "string"
         }
       }
     },
@@ -2155,7 +2285,7 @@
     },
     "NodePoolAutoConfig": {
       "id": "NodePoolAutoConfig",
-      "description": "node pool configs that apply to all auto-provisioned node pools in autopilot clusters and node auto-provisioning enabled clusters",
+      "description": "Node pool configs that apply to all auto-provisioned node pools in autopilot clusters and node auto-provisioning enabled clusters.",
       "type": "object",
       "properties": {
         "networkTags": {
@@ -3329,6 +3459,10 @@
         "name": {
           "description": "The name (project, location, cluster, node pool id) of the node poll to rollback upgrade. Specified in the format `projects\/*\/locations\/*\/clusters\/*\/nodePools\/*`.",
           "type": "string"
+        },
+        "respectPdb": {
+          "description": "Option for rollback to ignore the PodDisruptionBudget. Default value is false.",
+          "type": "boolean"
         }
       }
     },

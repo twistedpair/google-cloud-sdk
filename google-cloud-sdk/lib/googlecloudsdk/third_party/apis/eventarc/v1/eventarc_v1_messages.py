@@ -312,9 +312,10 @@ class EventType(_messages.Message):
     filteringAttributes: Output only. Filtering attributes for the event type.
     type: Output only. The full name of the event type (for example,
       "google.cloud.storage.object.v1.finalized"). In the form of {provider-
-      id}.{resource}.{version}.{verb}. Types MUST be versioned and event
-      schemas are guaranteed to remain backward compatible within one version.
-      Note that event type versions and API versions do not need to match.
+      specific-prefix}.{resource}.{version}.{verb}. Types MUST be versioned
+      and event schemas are guaranteed to remain backward compatible within
+      one version. Note that event type versions and API versions do not need
+      to match.
   """
 
   description = _messages.StringField(1)
@@ -1363,7 +1364,7 @@ class Provider(_messages.Message):
       example "Cloud Storage".
     eventTypes: Output only. Event types for this provider.
     name: Output only. In
-      `projects/{project}/locations/{location}/providers/{provider-id}`
+      `projects/{project}/locations/{location}/providers/{provider_id}`
       format.
   """
 

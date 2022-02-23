@@ -1286,6 +1286,22 @@
             "AUTOMATIC",
             "MANUAL"
           ]
+        },
+        "defaultChannel": {
+          "description": "Determines which release channel to use for default injection and service mesh APIs.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified",
+            "RAPID channel is offered on an early access basis for customers who want to test new releases.",
+            "REGULAR channel is intended for production users who want to take advantage of new features.",
+            "STABLE channel includes versions that are known to be stable and reliable in production."
+          ],
+          "enum": [
+            "CHANNEL_UNSPECIFIED",
+            "RAPID",
+            "REGULAR",
+            "STABLE"
+          ]
         }
       }
     },
@@ -1637,6 +1653,31 @@
           "items": {
             "$ref": "ServiceMeshControlPlaneRevision"
           }
+        },
+        "dataPlaneManagement": {
+          "description": "Output only. Status of data plane management.",
+          "readOnly": true,
+          "$ref": "ServiceMeshDataPlaneManagement"
+        },
+        "defaultChannel": {
+          "description": "Release channel to use for default injection and service mesh APIs.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified",
+            "RAPID channel is offered on an early access basis for customers who want to test new releases.",
+            "REGULAR channel is intended for production users who want to take advantage of new features.",
+            "STABLE channel includes versions that are known to be stable and reliable in production."
+          ],
+          "enum": [
+            "CHANNEL_UNSPECIFIED",
+            "RAPID",
+            "REGULAR",
+            "STABLE"
+          ]
+        },
+        "configApiVersion": {
+          "description": "The API version (i.e. Istio CRD version) for configuring service mesh in this cluster. This version is influenced by the `default_channel` field.",
+          "type": "string"
         }
       }
     },
@@ -1662,7 +1703,8 @@
             "PROVISIONING means that provisioning is in progress.",
             "ACTIVE means that the component is ready for use.",
             "STALLED means that provisioning could not be done.",
-            "NEEDS_ATTENTION means that the component is ready, but some user intervention is required. (For example that the user should migrate workloads to a new control plane revision.)"
+            "NEEDS_ATTENTION means that the component is ready, but some user intervention is required. (For example that the user should migrate workloads to a new control plane revision.)",
+            "DEGRADED means that the component is ready, but operating in a degraded state."
           ],
           "enum": [
             "LIFECYCLE_STATE_UNSPECIFIED",
@@ -1671,7 +1713,8 @@
             "PROVISIONING",
             "ACTIVE",
             "STALLED",
-            "NEEDS_ATTENTION"
+            "NEEDS_ATTENTION",
+            "DEGRADED"
           ]
         }
       }
@@ -1746,7 +1789,8 @@
             "PROVISIONING means that provisioning is in progress.",
             "ACTIVE means that the component is ready for use.",
             "STALLED means that provisioning could not be done.",
-            "NEEDS_ATTENTION means that the component is ready, but some user intervention is required. (For example that the user should migrate workloads to a new control plane revision.)"
+            "NEEDS_ATTENTION means that the component is ready, but some user intervention is required. (For example that the user should migrate workloads to a new control plane revision.)",
+            "DEGRADED means that the component is ready, but operating in a degraded state."
           ],
           "enum": [
             "LIFECYCLE_STATE_UNSPECIFIED",
@@ -1755,7 +1799,8 @@
             "PROVISIONING",
             "ACTIVE",
             "STALLED",
-            "NEEDS_ATTENTION"
+            "NEEDS_ATTENTION",
+            "DEGRADED"
           ]
         },
         "details": {
@@ -1768,6 +1813,44 @@
         "owner": {
           "description": "Owner of the control plane revision.",
           "type": "string"
+        }
+      }
+    },
+    "ServiceMeshDataPlaneManagement": {
+      "id": "ServiceMeshDataPlaneManagement",
+      "description": "Status of data plane management. Only reported per-member.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Lifecycle status of data plane management.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified",
+            "DISABLED means that the component is not enabled.",
+            "FAILED_PRECONDITION means that provisioning cannot proceed because of some characteristic of the member cluster.",
+            "PROVISIONING means that provisioning is in progress.",
+            "ACTIVE means that the component is ready for use.",
+            "STALLED means that provisioning could not be done.",
+            "NEEDS_ATTENTION means that the component is ready, but some user intervention is required. (For example that the user should migrate workloads to a new control plane revision.)",
+            "DEGRADED means that the component is ready, but operating in a degraded state."
+          ],
+          "enum": [
+            "LIFECYCLE_STATE_UNSPECIFIED",
+            "DISABLED",
+            "FAILED_PRECONDITION",
+            "PROVISIONING",
+            "ACTIVE",
+            "STALLED",
+            "NEEDS_ATTENTION",
+            "DEGRADED"
+          ]
+        },
+        "details": {
+          "description": "Explanation of the status.",
+          "type": "array",
+          "items": {
+            "$ref": "ServiceMeshStatusDetails"
+          }
         }
       }
     },

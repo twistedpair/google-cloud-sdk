@@ -29,7 +29,6 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
-
 API_NAME = 'file'
 V1_API_VERSION = 'v1'
 ALPHA_API_VERSION = 'v1p1alpha1'
@@ -477,8 +476,7 @@ class AlphaFilestoreAdapter(object):
   def ValidateFileShareForUpdate(self, instance_config, file_share):
     """Validate the updated file share configuration.
 
-    The new config must have the same name as the existing config and a larger
-    size than the existing capacity.
+    The new config must have the same name as the existing config.
 
     Args:
       instance_config: Instance message for existing instance.
@@ -563,7 +561,7 @@ class BetaFilestoreAdapter(AlphaFilestoreAdapter):
         if location is None:
           raise InvalidArgumentError(
               "If 'source-backup' is specified, 'source-backup-region' must also "
-              "be specified.")
+              'be specified.')
 
       source_backup = self._ParseSourceBackupFromFileshare(file_share)
 
@@ -589,7 +587,9 @@ class FilestoreAdapter(BetaFilestoreAdapter):
     self.client = GetClient(version=V1_API_VERSION)
     self.messages = GetMessages(version=V1_API_VERSION)
 
-  def ParseFileShareIntoInstance(self, instance, file_share,
+  def ParseFileShareIntoInstance(self,
+                                 instance,
+                                 file_share,
                                  instance_zone=None):
     """Parse specified file share configs into an instance message."""
     del instance_zone  # Unused.
@@ -612,38 +612,6 @@ class FilestoreAdapter(BetaFilestoreAdapter):
           sourceBackup=source_backup,
           nfsExportOptions=nfs_export_options)
       instance.fileShares.append(file_share_config)
-
-  def ValidateFileShareForUpdate(self, instance_config, file_share):
-    """Validate the updated file share configuration.
-
-    The new config must have the same name as the existing config and a larger
-    size than the existing capacity.
-
-    Args:
-      instance_config: Instance message for existing instance.
-      file_share: dict with keys 'name' and 'capacity'.
-
-    Raises:
-      InvalidNameError: If the names don't match.
-      InvalidCapacityError: If the capacity is not larger.
-      ValueError: If the instance doesn't have an existing file share.
-    """
-    existing = self.FileSharesFromInstance(instance_config)
-    if not existing:
-      # This should never happen because all instances have one file share.
-      raise ValueError('Existing instance does not have file shares configured')
-    existing_file_share = existing[0]
-    if existing_file_share.name != file_share.get('name'):
-      raise InvalidNameError(
-          'Must update an existing file share. Existing file share is named '
-          '[{}]. Requested update had name [{}].'.format(
-              existing_file_share.name, file_share.get('name')))
-    new_capacity = utils.BytesToGb(file_share.get('capacity'))
-    if not existing_file_share.capacityGb < new_capacity:
-      raise InvalidCapacityError(
-          'Must update the file share to a larger capacity. Existing capacity: '
-          '[{}]. New capacity requested: [{}].'.format(
-              existing_file_share.capacityGb, new_capacity))
 
 
 def GetFilestoreRegistry(api_version=V1_API_VERSION):

@@ -1647,45 +1647,6 @@
       "type": "object",
       "properties": {
       }
-    },
-    "UserInvitation": {
-      "id": "UserInvitation",
-      "description": "The `UserInvitation` resource represents an email that can be sent to an unmanaged user account inviting them to join the customer's Google Workspace or Cloud Identity account. An unmanaged account shares an email address domain with the Google Workspace or Cloud Identity account but is not managed by it yet. If the user accepts the `UserInvitation`, the user account will become managed.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Shall be of the form `customers\/{customer}\/userinvitations\/{user_email_address}`.",
-          "type": "string"
-        },
-        "state": {
-          "description": "State of the `UserInvitation`.",
-          "type": "string",
-          "enumDescriptions": [
-            "The default value. This value is used if the state is omitted.",
-            "The `UserInvitation` has been created and is ready for sending as an email.",
-            "The user has been invited by email.",
-            "The user has accepted the invitation and is part of the organization.",
-            "The user declined the invitation."
-          ],
-          "enum": [
-            "STATE_UNSPECIFIED",
-            "NOT_YET_SENT",
-            "INVITED",
-            "ACCEPTED",
-            "DECLINED"
-          ]
-        },
-        "mailsSentCount": {
-          "description": "Number of invitation emails sent to the user.",
-          "type": "string",
-          "format": "int64"
-        },
-        "updateTime": {
-          "description": "Time when the `UserInvitation` was last updated.",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
     }
   },
   "resources": {

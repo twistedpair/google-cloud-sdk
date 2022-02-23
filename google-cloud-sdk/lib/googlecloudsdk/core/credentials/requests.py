@@ -136,14 +136,18 @@ class RequestWrapper(transport.CredentialWrappingMixin,
       old_encoding = response.encoding
       response.encoding = response.encoding or core_transport.ENCODING
       try:
-        err_msg = response.json()['error']['message']
+        err_details = response.json()['error']['details']
       except (KeyError, ValueError):
         return response
       finally:
         response.encoding = old_encoding
-      if transport.USER_PROJECT_OVERRIDE_ERR_MSG not in err_msg:
-        return response
-      return orig_request(*args, **kwargs)
+      for err_detail in err_details:
+        if (err_detail.get('@type')
+            == 'type.googleapis.com/google.rpc.ErrorInfo' and
+            err_detail.get('reason') == transport.USER_PROJECT_ERROR_REASON and
+            err_detail.get('domain') == transport.USER_PROJECT_ERROR_DOMAIN):
+          return orig_request(*args, **kwargs)
+      return response
 
     if base.UserProjectQuotaWithFallbackEnabled():
       http_client.request = RequestWithRetry

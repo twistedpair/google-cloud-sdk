@@ -284,7 +284,8 @@ class ResourcePrinter(object):
     if self._non_empty_projection_required and (
         not self.column_attributes or not self.column_attributes.Columns()):
       raise ProjectionRequiredError(
-          'Format [{0}] requires a non-empty projection.'.format(self._name))
+          'Format [{0}] requires a non-empty projection. Use key parameters to specify a projection like so `{0}(foo, bar.baz)`'
+          .format(self._name))
     # Resources may be a generator and since generators can raise exceptions, we
     # have to call Finish() in the finally block to make sure that the resources
     # we've been able to pull out of the generator are printed before control is

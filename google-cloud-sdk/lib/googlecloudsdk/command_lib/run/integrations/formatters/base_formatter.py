@@ -35,6 +35,19 @@ class BaseFormatter:
   def TransformComponentStatus(self, record):
     """Override to describe the format of the components and status of the integration."""
 
+  def CallToAction(self, record):
+    """Override to return call to action message.
+
+    Args:
+      record: dict, the integration.
+
+    Returns:
+      A formatted string of the call to action message,
+      or None if no call to action is required.
+    """
+    del record  # Unused
+    return None
+
   def PrintType(self, ctype):
     """Return the type in a user friendly format.
 
@@ -63,6 +76,9 @@ class BaseFormatter:
     return {
         'GCP_RESOURCE_STATE_DEPLOYED': 'DEPLOYED',
         'GCP_RESOURCE_STATE_MISSING': 'MISSING',
+        'GCP_RESOURCE_STATE_PROVISIONING': 'PROVISIONING',
+        'GCP_RESOURCE_STATE_READY': 'READY',
+        'GCP_RESOURCE_STATE_FAILED': 'FAILED',
     }.get(state, 'UNKNOWN')
 
   def PrintStatus(self, status):
@@ -87,11 +103,16 @@ class BaseFormatter:
     """
     con = console_attr.GetConsoleAttr()
     encoding = console_attr.GetConsoleAttr().GetEncoding()
-    if status == 'DEPLOYED':
+    if status == 'DEPLOYED' or status == 'READY':
       return con.Colorize(
           self._PickSymbol('\N{HEAVY CHECK MARK}', '+', encoding), 'green')
+    if status == 'PROVISIONING':
+      return con.Colorize(self._PickSymbol(
+          '\N{HORIZONTAL ELLIPSIS}', '.', encoding), 'yellow')
     if status == 'MISSING':
       return con.Colorize('?', 'yellow')
+    if status == 'FAILED':
+      return con.Colorize('X', 'red')
     return con.Colorize('~', 'blue')
 
   def _PickSymbol(self, best, alt, encoding):

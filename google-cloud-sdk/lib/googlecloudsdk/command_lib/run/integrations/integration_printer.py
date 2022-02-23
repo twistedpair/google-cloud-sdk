@@ -40,14 +40,15 @@ class IntegrationPrinter(cp.CustomPrinterBase):
     """Transform an integration into the output structure of marker classes."""
 
     integration_type = record['type']
-    formatter = self.GetFormatter(integration_type)
+    formatter = GetFormatter(integration_type)
     config_block = formatter.TransformConfig(record)
     component_block = None
     if 'status' in record and record['status'] is not None:
       component_block = formatter.TransformComponentStatus(record)
     if not component_block:
       component_block = 'Status not available'
-    return cp.Lines([
+
+    lines = [
         self.Header(record),
         ' ',
         config_block,
@@ -58,7 +59,14 @@ class IntegrationPrinter(cp.CustomPrinterBase):
                 component_block
             ])
         ]),
-    ])
+    ]
+
+    call_to_action = formatter.CallToAction(record)
+    if call_to_action:
+      lines.append(' ')
+      lines.append(call_to_action)
+
+    return cp.Lines(lines)
 
   def Header(self, record):
     """Print the header of the integration.
@@ -73,14 +81,15 @@ class IntegrationPrinter(cp.CustomPrinterBase):
     return con.Emphasize('{} integration {} in region {}'.format(
         record.get('type'), record.get('name'), record.get('region')))
 
-  def GetFormatter(self, integration_type):
-    """Returns the formatter for the given integration type.
 
-    Args:
-      integration_type: string, the integration type.
+def GetFormatter(integration_type):
+  """Returns the formatter for the given integration type.
 
-    Returns:
-      A formatter object.
-    """
-    return _INTEGRATION_FORMATTER_MAPS.get(integration_type,
-                                           _FALLBACK_FORMATTER)
+  Args:
+    integration_type: string, the integration type.
+
+  Returns:
+    A formatter object.
+  """
+  return _INTEGRATION_FORMATTER_MAPS.get(integration_type,
+                                         _FALLBACK_FORMATTER)

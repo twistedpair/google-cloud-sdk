@@ -147,6 +147,58 @@ class DnsV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Admincreate(self, request, global_params=None):
+      r"""Admincreate method for the dnsKeys service.
+
+      Args:
+        request: (DnsKeysAdminCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DnsKeysAdminCreateResponse) The response message.
+      """
+      config = self.GetMethodConfig('Admincreate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Admincreate.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='dns.dnsKeys.admincreate',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='dnsKeys/admincreate',
+        request_field='<request>',
+        request_type_name='DnsKeysAdminCreateRequest',
+        response_type_name='DnsKeysAdminCreateResponse',
+        supports_download=False,
+    )
+
+    def Admindelete(self, request, global_params=None):
+      r"""Admindelete method for the dnsKeys service.
+
+      Args:
+        request: (DnsKeysAdminDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DnsKeysAdminDeleteResponse) The response message.
+      """
+      config = self.GetMethodConfig('Admindelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Admindelete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='dns.dnsKeys.admindelete',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='dnsKeys/admindelete',
+        request_field='<request>',
+        request_type_name='DnsKeysAdminDeleteRequest',
+        response_type_name='DnsKeysAdminDeleteResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Get method for the dnsKeys service.
 

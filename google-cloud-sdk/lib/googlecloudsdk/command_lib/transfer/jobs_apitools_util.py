@@ -154,22 +154,19 @@ def _create_or_modify_creds(transfer_spec, args, messages):
   """Creates or modifies TransferSpec source creds based on args."""
   if transfer_spec.awsS3DataSource:
     if getattr(args, 'source_creds_file', None):
-      creds_dict = creds_util.get_values_for_keys_from_file(
-          args.source_creds_file,
-          ['aws_access_key_id', 'aws_secret_access_key', 'role_arn'])
+      access_key_id, secret_access_key, role_arn = (
+          creds_util.get_aws_creds_from_file(args.source_creds_file))
     else:
       log.warning('No --source-creds-file flag. Checking system config files'
                   ' for AWS credentials.')
-      creds_dict = creds_util.get_aws_creds()
+      access_key_id, secret_access_key = creds_util.get_default_aws_creds()
+      role_arn = None
 
-    aws_access_key = creds_dict.get('aws_access_key_id', None)
-    secret_access_key = creds_dict.get('aws_secret_access_key', None)
-    role_arn = creds_dict.get('role_arn', None)
-    if not ((aws_access_key and secret_access_key) or role_arn):
+    if not ((access_key_id and secret_access_key) or role_arn):
       log.warning('Missing AWS source creds.')
 
     transfer_spec.awsS3DataSource.awsAccessKey = messages.AwsAccessKey(
-        accessKeyId=aws_access_key, secretAccessKey=secret_access_key)
+        accessKeyId=access_key_id, secretAccessKey=secret_access_key)
     transfer_spec.awsS3DataSource.roleArn = role_arn
 
   elif transfer_spec.azureBlobStorageDataSource:
@@ -426,7 +423,7 @@ def _create_or_modify_logging_config(job, args, messages):
     job.loggingConfig.logActionStates = action_states
 
 
-def _generate_patch_transfer_job_message(messages, job):
+def generate_patch_transfer_job_message(messages, job, field_mask):
   """Generates Apitools patch message for transfer jobs."""
   project_id = job.projectId
   job.projectId = None
@@ -441,7 +438,7 @@ def _generate_patch_transfer_job_message(messages, job):
       updateTransferJobRequest=messages.UpdateTransferJobRequest(
           projectId=project_id,
           transferJob=job,
-          updateTransferJobFieldMask=UPDATE_FIELD_MASK,
+          updateTransferJobFieldMask=field_mask,
       ))
 
 
@@ -477,5 +474,5 @@ def generate_transfer_job_message(args, messages, existing_job=None):
   _create_or_modify_logging_config(job, args, messages)
 
   if existing_job:
-    return _generate_patch_transfer_job_message(messages, job)
+    return generate_patch_transfer_job_message(messages, job, UPDATE_FIELD_MASK)
   return job

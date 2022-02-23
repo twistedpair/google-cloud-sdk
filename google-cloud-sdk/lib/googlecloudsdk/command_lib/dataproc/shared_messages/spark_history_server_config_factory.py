@@ -55,7 +55,7 @@ def AddArguments(parser):
   """Adds related arguments to aprser."""
   parser.add_argument(
       '--history-server-cluster',
-      help=('Spark History Server configuration for the batch job. '
+      help=('Spark History Server configuration for the batch/session job. '
             'Resource name of an existing Dataproc cluster to act as a '
             'Spark History Server for the workload in the format: "projects/'
             '{project_id}/regions/{region}/clusters/{cluster_name}".'))

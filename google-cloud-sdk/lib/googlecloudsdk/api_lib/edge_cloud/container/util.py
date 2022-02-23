@@ -23,7 +23,8 @@ from googlecloudsdk.calliope import base
 
 VERSION_MAP = {
     base.ReleaseTrack.ALPHA: 'v1alpha',
-    base.ReleaseTrack.BETA: 'v1beta'
+    base.ReleaseTrack.BETA: 'v1beta',
+    base.ReleaseTrack.GA: 'v1',
 }
 
 

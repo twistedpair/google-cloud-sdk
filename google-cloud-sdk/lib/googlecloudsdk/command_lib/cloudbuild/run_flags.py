@@ -18,20 +18,36 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.command_lib.cloudbuild import resource_args
+from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
-def AddCreateFlags(parser):
+
+def AddsCreateFlags(parser):
   parser.add_argument(
       '--file',
       required=True,
       help='The YAML file to use as the PipelineRun/TaskRun configuration file.'
   )
-  parser.add_argument(
+  AddsRegionResourceArg(parser)
+
+
+def AddsRegionResourceArg(parser):
+  """Add region resource argument to parser."""
+  region_resource_spec = concepts.ResourceSpec(
+      'cloudbuild.projects.locations',
+      resource_name='region',
+      locationsId=resource_args.RegionAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+  concept_parsers.ConceptParser.ForResource(
       '--region',
-      required=True,
-      help='Cloud region where the PipelineRun/TaskRun is.')
+      region_resource_spec,
+      'Region for Cloud Build.',
+      required=True).AddToParser(parser)
 
 
-def AddRunFlags(parser):
+def AddsRunFlags(parser):
   """Add flags related to a run to parser."""
   parser.add_argument('RUN_ID', help='The ID of the PipelineRun/TaskRun/Build.')
   parser.add_argument(
@@ -44,7 +60,4 @@ def AddRunFlags(parser):
       ],
       default='none',
       help='Type of Run.')
-  parser.add_argument(
-      '--region',
-      required=True,
-      help='Cloud region where the PipelineRun/TaskRun/Build is.')
+  AddsRegionResourceArg(parser)

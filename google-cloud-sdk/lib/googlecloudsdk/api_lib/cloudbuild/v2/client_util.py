@@ -22,12 +22,12 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 
 _API_NAME = 'cloudbuild'
-_GA_API_VERSION = 'v2'
+GA_API_VERSION = 'v2'
 
 RELEASE_TRACK_TO_API_VERSION = {
-    base.ReleaseTrack.GA: _GA_API_VERSION,
-    base.ReleaseTrack.BETA: _GA_API_VERSION,
-    base.ReleaseTrack.ALPHA: _GA_API_VERSION,
+    base.ReleaseTrack.GA: GA_API_VERSION,
+    base.ReleaseTrack.BETA: GA_API_VERSION,
+    base.ReleaseTrack.ALPHA: GA_API_VERSION,
 }
 
 

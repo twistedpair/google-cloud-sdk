@@ -31,10 +31,10 @@ DELIVERY_PIPELINE_KIND_V1BETA1 = 'DeliveryPipeline'
 TARGET_KIND_V1BETA1 = 'Target'
 API_VERSION_V1BETA1 = 'deploy.cloud.google.com/v1beta1'
 API_VERSION_V1 = 'deploy.cloud.google.com/v1'
-DELIVERY_PIPELINE_FIELDS = ['description', 'serialPipeline']
-TARGET_FIELDS = ['description', 'requireApproval', 'gke', 'executionConfigs']
 METADATA_FIELDS = ['annotations', 'labels']
 USAGE_CHOICES = ['RENDER', 'DEPLOY']
+EXCLUDE_FIELDS = ['createTime', 'etag', 'uid', 'updateTime', 'name'
+                 ] + METADATA_FIELDS
 
 
 def ParseDeployConfig(messages, manifests, region):
@@ -64,8 +64,8 @@ def ParseDeployConfig(messages, manifests, region):
       _ParseV1Config(messages, manifest['kind'], manifest, project, region,
                      resource_dict)
     else:
-      raise exceptions.CloudDeployConfigError('api version {} not supported'.
-                                              format(api_version))
+      raise exceptions.CloudDeployConfigError(
+          'api version {} not supported'.format(api_version))
 
   return resource_dict
 
@@ -153,7 +153,7 @@ def _CreateDeliveryPipelineResource(messages, delivery_pipeline_name, project,
   return resource, resource_ref
 
 
-def ProtoToManifest(resource, resource_ref, kind, fields):
+def ProtoToManifest(resource, resource_ref, kind):
   """Converts a resource message to a cloud deploy resource manifest.
 
   The manifest can be applied by 'deploy apply' command.
@@ -162,7 +162,6 @@ def ProtoToManifest(resource, resource_ref, kind, fields):
     resource: message in googlecloudsdk.third_party.apis.clouddeploy.
     resource_ref: cloud deploy resource object.
     kind: kind of the cloud deploy resource
-    fields: the fields in the resource that will be used in the manifest.
 
   Returns:
     A dictionary that represents the cloud deploy resource.
@@ -178,11 +177,13 @@ def ProtoToManifest(resource, resource_ref, kind, fields):
   # Sets the name to resource ID instead of the full name.
   manifest['metadata']['name'] = resource_ref.Name()
 
-  for k in fields:
-    v = getattr(resource, k)
+  for f in resource.all_fields():
+    if f.name in EXCLUDE_FIELDS:
+      continue
+    v = getattr(resource, f.name)
     # Skips the 'zero' values in the message.
     if v:
-      manifest[k] = v
+      manifest[f.name] = v
 
   return manifest
 

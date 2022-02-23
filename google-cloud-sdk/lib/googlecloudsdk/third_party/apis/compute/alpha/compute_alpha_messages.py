@@ -13925,12 +13925,23 @@ class ComputeInstancesSimulateMaintenanceEventRequest(_messages.Message):
   Fields:
     instance: Name of the instance scoping this request.
     project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
     zone: The name of the zone for this request.
   """
 
   instance = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeInstancesStartRequest(_messages.Message):
@@ -23897,6 +23908,144 @@ class ComputeRegionTargetHttpsProxiesSetUrlMapRequest(_messages.Message):
 
 class ComputeRegionTargetHttpsProxiesTestIamPermissionsRequest(_messages.Message):
   r"""A ComputeRegionTargetHttpsProxiesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
+class ComputeRegionTargetTcpProxiesDeleteRequest(_messages.Message):
+  r"""A ComputeRegionTargetTcpProxiesDeleteRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    targetTcpProxy: Name of the TargetTcpProxy resource to delete.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  targetTcpProxy = _messages.StringField(4, required=True)
+
+
+class ComputeRegionTargetTcpProxiesGetRequest(_messages.Message):
+  r"""A ComputeRegionTargetTcpProxiesGetRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    targetTcpProxy: Name of the TargetTcpProxy resource to return.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  targetTcpProxy = _messages.StringField(3, required=True)
+
+
+class ComputeRegionTargetTcpProxiesInsertRequest(_messages.Message):
+  r"""A ComputeRegionTargetTcpProxiesInsertRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    targetTcpProxy: A TargetTcpProxy resource to be passed as the request
+      body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  targetTcpProxy = _messages.MessageField('TargetTcpProxy', 4)
+
+
+class ComputeRegionTargetTcpProxiesListRequest(_messages.Message):
+  r"""A ComputeRegionTargetTcpProxiesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
+      instances, you can exclude instances named `example-instance` by
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
+      fields. For example, you could specify `scheduling.automaticRestart =
+      false` to include instances only if they are not scheduled for automatic
+      restarts. You can use filtering on nested fields to filter based on
+      resource labels. To filter on multiple expressions, provide each
+      separate expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ```
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+
+
+class ComputeRegionTargetTcpProxiesTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeRegionTargetTcpProxiesTestIamPermissionsRequest object.
 
   Fields:
     project: Project ID for this request.
@@ -37257,9 +37406,10 @@ class HttpRouteAction(_messages.Message):
       backend service, delays can be introduced by a load balancer on a
       percentage of requests before sending those requests to the backend
       service. Similarly requests from clients can be aborted by the load
-      balancer for a percentage of requests. For the requests impacted by
-      fault injection, timeout and retry_policy is ignored by clients that are
-      configured with a fault_injection_policy.
+      balancer for a percentage of requests. timeout and retry_policy is
+      ignored by clients that are configured with a fault_injection_policy if:
+      1. The traffic is generated by fault injection AND 2. The fault
+      injection is not a delay fault injection.
     maxStreamDuration: Specifies the maximum duration (timeout) for streams on
       the selected route. Unlike the timeout field where the timeout duration
       starts from the time the request has been fully processed (known as
@@ -62204,7 +62354,12 @@ class SecurityPolicy(_messages.Message):
       CLOUD_ARMOR_EDGE: Cloud Armor edge security policies can be configured
       to filter incoming HTTP requests targeting backend services (including
       Cloud CDN-enabled) as well as backend buckets (Cloud Storage). They
-      filter requests before the request is served from Google's cache.
+      filter requests before the request is served from Google's cache. -
+      CLOUD_ARMOR_INTERNAL_SERVICE: Cloud Armor internal service policies can
+      be configured to filter HTTP requests targeting services managed by
+      Traffic Director in a service mesh. They filter requests before the
+      request is served from the application. This field can be set only at
+      resource creation time.
 
   Messages:
     LabelsValue: Labels for this resource. These can only be added or modified
@@ -62280,7 +62435,11 @@ class SecurityPolicy(_messages.Message):
       Armor edge security policies can be configured to filter incoming HTTP
       requests targeting backend services (including Cloud CDN-enabled) as
       well as backend buckets (Cloud Storage). They filter requests before the
-      request is served from Google's cache.
+      request is served from Google's cache. - CLOUD_ARMOR_INTERNAL_SERVICE:
+      Cloud Armor internal service policies can be configured to filter HTTP
+      requests targeting services managed by Traffic Director in a service
+      mesh. They filter requests before the request is served from the
+      application. This field can be set only at resource creation time.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
@@ -62291,7 +62450,11 @@ class SecurityPolicy(_messages.Message):
     Armor edge security policies can be configured to filter incoming HTTP
     requests targeting backend services (including Cloud CDN-enabled) as well
     as backend buckets (Cloud Storage). They filter requests before the
-    request is served from Google's cache.
+    request is served from Google's cache. - CLOUD_ARMOR_INTERNAL_SERVICE:
+    Cloud Armor internal service policies can be configured to filter HTTP
+    requests targeting services managed by Traffic Director in a service mesh.
+    They filter requests before the request is served from the application.
+    This field can be set only at resource creation time.
 
     Values:
       CLOUD_ARMOR: <no description>
@@ -66306,10 +66469,11 @@ class Subnetwork(_messages.Message):
       used for Internal HTTP(S) Load Balancing. A BACKUP subnetwork is one
       that is ready to be promoted to ACTIVE or is currently draining. This
       field can be updated with a patch request.
-    StackTypeValueValuesEnum: The stack type for this subnet to identify
-      whether the IPv6 feature is enabled or not. If not specified IPV4_ONLY
-      will be used. This field can be both set at resource creation time and
-      updated using patch.
+    StackTypeValueValuesEnum: The stack type for the subnet. If set to
+      IPV4_ONLY, new VMs in the subnet are assigned IPv4 addresses only. If
+      set to IPV4_IPV6, new VMs in the subnet can be assigned both IPv4 and
+      IPv6 addresses. If not specified, IPV4_ONLY is used. This field can be
+      both set at resource creation time and updated using patch.
     StateValueValuesEnum: [Output Only] The state of the subnetwork, which can
       be one of the following values: READY: Subnetwork is created and ready
       to use DRAINING: only applicable to subnetworks that have the purpose
@@ -66447,9 +66611,11 @@ class Subnetwork(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
-    stackType: The stack type for this subnet to identify whether the IPv6
-      feature is enabled or not. If not specified IPV4_ONLY will be used. This
-      field can be both set at resource creation time and updated using patch.
+    stackType: The stack type for the subnet. If set to IPV4_ONLY, new VMs in
+      the subnet are assigned IPv4 addresses only. If set to IPV4_IPV6, new
+      VMs in the subnet can be assigned both IPv4 and IPv6 addresses. If not
+      specified, IPV4_ONLY is used. This field can be both set at resource
+      creation time and updated using patch.
     state: [Output Only] The state of the subnetwork, which can be one of the
       following values: READY: Subnetwork is created and ready to use
       DRAINING: only applicable to subnetworks that have the purpose set to
@@ -66587,9 +66753,11 @@ class Subnetwork(_messages.Message):
     BACKUP = 1
 
   class StackTypeValueValuesEnum(_messages.Enum):
-    r"""The stack type for this subnet to identify whether the IPv6 feature is
-    enabled or not. If not specified IPV4_ONLY will be used. This field can be
-    both set at resource creation time and updated using patch.
+    r"""The stack type for the subnet. If set to IPV4_ONLY, new VMs in the
+    subnet are assigned IPv4 addresses only. If set to IPV4_IPV6, new VMs in
+    the subnet can be assigned both IPv4 and IPv6 addresses. If not specified,
+    IPV4_ONLY is used. This field can be both set at resource creation time
+    and updated using patch.
 
     Values:
       IPV4_IPV6: New VMs in this subnet can have both IPv4 and IPv6 addresses.
@@ -70404,6 +70572,8 @@ class TargetTcpProxy(_messages.Message):
       false.
     proxyHeader: Specifies the type of proxy header to append before sending
       data to the backend, either NONE or PROXY_V1. The default is NONE.
+    region: [Output Only] URL of the region where the regional TCP proxy
+      resides. This field is not applicable to global TCP proxy.
     selfLink: [Output Only] Server-defined URL for the resource.
     service: URL to the BackendService resource.
   """
@@ -70426,8 +70596,9 @@ class TargetTcpProxy(_messages.Message):
   name = _messages.StringField(5)
   proxyBind = _messages.BooleanField(6)
   proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 7)
-  selfLink = _messages.StringField(8)
-  service = _messages.StringField(9)
+  region = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+  service = _messages.StringField(10)
 
 
 class TargetTcpProxyList(_messages.Message):

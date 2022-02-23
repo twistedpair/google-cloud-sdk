@@ -21,41 +21,77 @@ from __future__ import unicode_literals
 
 from frozendict import frozendict
 
-_INTEGRATION_TYPES = frozenset([frozendict({
-    'name':
-        'custom-domain',
-    'resource_name':
-        'router',
-    'description':
-        'Configure a custom domain for Cloud Run services with Google Cloud '
-        'Load Balancer',
-    'parameters': frozenset([
-        frozendict({
-            'name': 'domain',
-            'description':
-                'The domain to configure for your Cloud Run service. This '
-                'must be a domain you can configure DNS for.',
-            'type': 'domain',
-            'required': True,
-        }),
-        frozendict({
-            'name': 'paths',
-            'description':
-                'The paths at the domain for your Cloud Run service. '
-                'Defaults to "/" if not specified. (e.g. "/foo/*" for '
-                '"example.com/foo/*")',
-            'type': 'path_matcher',
-        }),
-        frozendict({
-            'name': 'dns-zone',
-            'description':
-                'The ID of the Cloud DNS Zone already configured for this '
-                'domain. If not specified, manual DNS configuration is '
-                'expected.',
-            'type': 'string',
-        }),
-    ]),
-})])
+_INTEGRATION_TYPES = frozenset([
+    frozendict({
+        'name':
+            'custom-domain',
+        'resource_name':
+            'router',
+        'description':
+            'Configure a custom domain for Cloud Run services with Google Cloud '
+            'Load Balancer.',
+        'parameters':
+            frozenset([
+                frozendict({
+                    'name': 'domain',
+                    'description':
+                        'The domain to configure for your Cloud Run service. This '
+                        'must be a domain you can configure DNS for.',
+                    'type': 'domain',
+                    'required': True,
+                }),
+                frozendict({
+                    'name': 'dns-zone',
+                    'description':
+                        'The ID of the Cloud DNS Zone already configured for this '
+                        'domain. If not specified, manual DNS configuration is '
+                        'expected.',
+                    'type': 'string',
+                }),
+                frozendict({
+                    'name': 'paths',
+                    'description':
+                        'The paths at the domain for your Cloud Run service. '
+                        'Defaults to "/" if not specified. (e.g. "/foo/*" for '
+                        '"example.com/foo/*")',
+                    'type': 'path_matcher',
+                }),
+            ]),
+    }),
+    frozendict({
+        'name':
+            'redis',
+        'description':
+            'Configure a GCP Managed Redis instance for Cloud Run Services.',
+        'parameters':
+            frozenset([
+                frozendict({
+                    'name': 'memory-size-gb',
+                    'description': 'Memory capacity of Redis instance.',
+                    'type': 'int',
+                    'default': 1,
+                }),
+                frozendict({
+                    'name': 'tier',
+                    'description':
+                        'The service tier of the instance. '
+                        'Supported options include BASIC for standalone '
+                        'instance and STANDARD_HA for highly available '
+                        'primary/replica instances.',
+                    'type': 'string',
+                }),
+                frozendict({
+                    'name': 'version',
+                    'description':
+                        'The version of Redis software. If not '
+                        'provided, latest supported version will be used. '
+                        'Supported values include: REDIS_6_X, REDIS_5_0, '
+                        'REDIS_4_0 and REDIS_3_2.',
+                    'type': 'string',
+                }),
+            ]),
+    }),
+])
 
 
 def IntegrationTypes(client):
@@ -72,4 +108,3 @@ def IntegrationTypes(client):
   """
   del client
   return _INTEGRATION_TYPES
-

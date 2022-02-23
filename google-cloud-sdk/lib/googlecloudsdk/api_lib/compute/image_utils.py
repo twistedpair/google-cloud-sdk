@@ -338,14 +338,9 @@ def WarnAlias(alias):
   log.warning(msg)
 
 
-def AddArchitectureArg(parser, messages):
+def AddArchitectureArg(parser):
   """Add the image architecture arg."""
-  architecture_enum_type = messages.Image.ArchitectureValueValuesEnum
-  excluded_enums = [
-      'ARCHITECTURE_UNSPECIFIED',
-  ]
-  architecture_choices = sorted(
-      [e for e in architecture_enum_type.names() if e not in excluded_enums])
+  architecture_choices = sorted(['ARM64', 'X86_64'])
   parser.add_argument(
       '--architecture',
       choices=architecture_choices,

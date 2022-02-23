@@ -452,6 +452,9 @@ class ExecutionTemplate(_messages.Message):
     serviceAccount: The email address of a service account to use when running
       the execution. You must have the `iam.serviceAccounts.actAs` permission
       for the specified service account.
+    tensorboard: The name of a Vertex AI [Tensorboard] resource to which this
+      execution will upload Tensorboard logs. Format:
+      `projects/{project}/locations/{location}/tensorboards/{tensorboard}`
     vertexAiParameters: Parameters used in Vertex AI JobType executions.
   """
 
@@ -537,7 +540,8 @@ class ExecutionTemplate(_messages.Message):
   paramsYamlFile = _messages.StringField(11)
   scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 12)
   serviceAccount = _messages.StringField(13)
-  vertexAiParameters = _messages.MessageField('VertexAIParameters', 14)
+  tensorboard = _messages.StringField(14)
+  vertexAiParameters = _messages.MessageField('VertexAIParameters', 15)
 
 
 class Expr(_messages.Message):
@@ -2593,9 +2597,14 @@ class RuntimeAccessConfig(_messages.Message):
     Values:
       RUNTIME_ACCESS_TYPE_UNSPECIFIED: Unspecified access.
       SINGLE_USER: Single user login.
+      SERVICE_ACCOUNT: Service Account mode. In Service Account mode, Runtime
+        creator will specify a SA that exists in the consumer project. Using
+        Runtime Service Account field. Users accessing the Runtime need ActAs
+        (Service Account User) permission.
     """
     RUNTIME_ACCESS_TYPE_UNSPECIFIED = 0
     SINGLE_USER = 1
+    SERVICE_ACCOUNT = 2
 
   accessType = _messages.EnumField('AccessTypeValueValuesEnum', 1)
   proxyUri = _messages.StringField(2)

@@ -18,26 +18,26 @@ application_endpoint:
     Address of the remote application endpoint for the Beyondcorp Connection in form of <host>:<port>.
 
 application_endpoint_host:
-  api_field: googleCloudBeyondcorpAppconnectionsV1alphaAppConnection.applicationEndpoint.host
+  api_field: connection.applicationEndpoint.host
   arg_name: application-endpoint-host
   help_text: |-
     Hostname or IP address of the remote application endpoint.
 
 application_endpoint_port:
-  api_field: googleCloudBeyondcorpAppconnectionsV1alphaAppConnection.applicationEndpoint.port
+  api_field: connection.applicationEndpoint.port
   arg_name: application-endpoint-port
   help_text: |-
     Port of the remote application endpoint.
 
 connectors:
-  api_field: googleCloudBeyondcorpAppconnectionsV1alphaAppConnection.connectors
+  api_field: connection.connectors
   arg_name: connectors
   required: false
   help_text: |-
     List of connector name that are authorised to be associated with this Connection.
 
 connection_type:
-  api_field: googleCloudBeyondcorpAppconnectionsV1alphaAppConnection.type
+  api_field: connection.type
   arg_name: type
   required: false
   choices:
@@ -49,7 +49,7 @@ connection_type:
     The type of network connnectivity used by the connection.
 
 display_name:
-  api_field: googleCloudBeyondcorpAppconnectionsV1alphaAppConnection.displayName
+  api_field: connection.displayName
   arg_name: display-name
   required: false
   help_text: |-

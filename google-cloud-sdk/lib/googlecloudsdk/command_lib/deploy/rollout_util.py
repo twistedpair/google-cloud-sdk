@@ -22,6 +22,7 @@ from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.clouddeploy import client_util
 from googlecloudsdk.api_lib.clouddeploy import rollout
 from googlecloudsdk.command_lib.deploy import exceptions as cd_exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 
 _ROLLOUT_COLLECTION = 'clouddeploy.projects.locations.deliveryPipelines.releases.rollouts'
@@ -148,14 +149,16 @@ def CreateRollout(release_ref,
       targetId=to_target,
       description=description)
 
+  log.status.Print('Creating rollout {} in target {}'.format(
+      rollout_ref.RelativeName(), to_target))
   operation = rollout.RolloutClient().Create(rollout_ref, rollout_obj,
                                              annotations, labels)
   operation_ref = resources.REGISTRY.ParseRelativeName(
       operation.name, collection='clouddeploy.projects.locations.operations')
+
   client_util.OperationsClient().WaitForOperation(
       operation, operation_ref,
-      'Creating rollout {} in target {}'.format(rollout_ref.RelativeName(),
-                                                to_target))
+      'Waiting for rollout creation operation to complete')
 
 
 def ComputeRolloutID(release_id, target_id, rollouts):

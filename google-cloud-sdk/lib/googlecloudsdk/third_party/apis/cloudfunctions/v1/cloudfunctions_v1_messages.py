@@ -159,7 +159,6 @@ class CallFunctionResponse(_messages.Message):
 class CloudFunction(_messages.Message):
   r"""Describes a Cloud Function that contains user computation executed in
   response to an event. It encapsulate function and triggers configurations.
-  Next tag: 36
 
   Enums:
     DockerRegistryValueValuesEnum: Docker Registry to use for this deployment.
@@ -1591,8 +1590,7 @@ class Retry(_messages.Message):
 class SecretEnvVar(_messages.Message):
   r"""Configuration for a secret environment variable. It has the information
   necessary to fetch the secret value from secret manager and expose it as an
-  environment variable. Secret value is not a part of the configuration.
-  Secret values are only fetched when a new clone starts.
+  environment variable.
 
   Fields:
     key: Name of the environment variable.
@@ -1603,7 +1601,7 @@ class SecretEnvVar(_messages.Message):
     secret: Name of the secret in secret manager (not the full resource name).
     version: Version of the secret (version number or the string 'latest'). It
       is recommended to use a numeric version for secret environment variables
-      as any updates to the secret value is not reflected until new clones
+      as any updates to the secret value is not reflected until new instances
       start.
   """
 

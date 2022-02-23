@@ -202,7 +202,7 @@ class RunAppsOperations(object):
       name: name of the integration, if empty, a defalt one will be generated.
 
     Returns:
-      The deployment.
+      The name of the integration.
     """
     app_dict = self._GetDefaultAppDict()
     resources_map = app_dict[_CONFIG_KEY][_RESOURCES_KEY]
@@ -220,16 +220,21 @@ class RunAppsOperations(object):
                                               service, None, {})
     resources_map[name] = resource_config
     match_type_names = [{'type': resource_type, 'name': name}]
+    self._AddIntegrationSelectors(integration_type, match_type_names)
     if service:
       self._EnsureServiceConfig(resources_map, service)
       match_type_names.append({'type': 'service', 'name': service})
+      self._AddServiceToIntegrationRef(name, integration_type,
+                                       resources_map[service])
+
     application = encoding.DictToMessage(app_dict, self.messages.Application)
-    return self.ApplyAppConfig(
+    self.ApplyAppConfig(
         appname=_DEFAULT_APP_NAME,
         appconfig=application.config,
         message='Saving Configuration for Integration [{}]'.format(name),
         match_type_names=match_type_names,
         etag=application.etag)
+    return name
 
   def UpdateIntegration(self,
                         name,
@@ -248,7 +253,7 @@ class RunAppsOperations(object):
       IntegrationNotFoundError: If the integration is not found.
 
     Returns:
-      The deployment.
+      The name of the integration.
     """
     app_dict = self._GetDefaultAppDict()
     resources_map = app_dict[_CONFIG_KEY][_RESOURCES_KEY]
@@ -308,7 +313,7 @@ class RunAppsOperations(object):
     """
     int_types = types_utils.IntegrationTypes(self._client)
     for t in int_types:
-      if t['resource_name'] == resource_type:
+      if t.get('resource_name', None) == resource_type:
         return t['name']
     return resource_type
 
@@ -337,11 +342,8 @@ class RunAppsOperations(object):
     # Filter by type and/or service.
     output = []
     for name, resource in app_resources.items():
-      integration_type = self.GetIntegrationTypeFromConfig(resource)
-      services = self._GetRefServicesRouter(resource)
-
-      # Convert from internal resource naming to external integration naming.
-      integration_type = self.GetIntegrationType(integration_type)
+      resource_type = self.GetIntegrationTypeFromConfig(resource)
+      integration_type = self.GetIntegrationType(resource_type)
 
       # Remove invalid integrations.
       if integration_type is None:
@@ -358,6 +360,8 @@ class RunAppsOperations(object):
         continue
 
       # Optionally filter by service.
+      services = self._GetRefServices(name, resource_type, resource,
+                                      app_resources)
       if service_name_filter and service_name_filter not in services:
         continue
 
@@ -371,19 +375,63 @@ class RunAppsOperations(object):
 
     return output
 
-  def _GetRefServicesRouter(self, resource):
-    """Get referenced services from Router/GCLB.
+  def _AddServiceToIntegrationRef(self, name, integration_type, service):
+    """Add service to integration ref.
 
     Args:
-      resource: ResourceConfig, from which to determine type.
+      name: str, name of integration.
+      integration_type: str, type of integration.
+      service: dict of proto, service to add ref too.
+    """
+
+    if integration_type == 'redis':
+      # Check if ref already exists
+      refs = [ref['ref'] for ref in service['service'].get('resources', [])]
+      if 'redis/{}'.format(name) not in refs:
+        service['service'].setdefault('resources', []).append(
+            {'ref': 'redis/{}'.format(name)})
+
+  def _AddIntegrationSelectors(self, integration_type, selectors):
+    """Returns selectors based on integration type.
+
+    Args:
+      integration_type: str, type of integration.
+      selectors: list typed names, selectors to append to
+    """
+    if integration_type == 'redis':
+      # For now redis integration has a shadow VPC resource. This will hopefully
+      # change in the near future, but for now it needs to be actuated
+      selectors.append({'type': 'vpc', 'name': '*'})
+
+  def _GetRefServices(self, name, resource_type, resource, all_resources):
+    """Returns list of services referenced by integration.
+
+    Args:
+      name: str, name of integration.
+      resource_type: str, type of resource.
+      resource: dict, internal representation of resource.
+      all_resources: dict, of all resource with in appconfig default.
 
     Returns:
-      list(str), of referenced services or None if no refs found.
+      list(str), of all service names referenced.
     """
-    # Right now ingress bindings are only created from ingress to service. As
-    # such have to look each paths of router.
     output = []
-    if resource.get('router') is not None:
+
+    # TODO(b/219606516) Ideally add bidirectional references to API. If not
+    # feasible optimize code block create reverse reference table once and reuse
+    # it.
+    # For redis look for service to integration refs.
+    if resource_type == 'redis':
+      for resource_name, resource in all_resources.items():
+        ref_name = '{}/{}'.format(resource_type, name)
+        if resource.get('service', {}).get('resources'):
+          if any([
+              ref['ref'] == ref_name for ref in resource['service']['resources']
+          ]):
+            output.append(resource_name)
+
+    # For custom-domain/router look for integration to service refs.
+    elif resource_type == 'router':
       if resource.get('router', {}).get('default-route', {}).get('ref'):
         output.append(resource['router']['default-route']['ref'].replace(
             'service/', ''))
@@ -448,10 +496,21 @@ class RunAppsOperations(object):
           config['routes'].append(route)
         else:
           config['default-route'] = route
-      return {res_type: config}
+    elif res_type == 'redis':
+      instance = {}
+      if 'memory-size-gb' in parameters:
+        instance['memory-size-gb'] = parameters['memory-size-gb']
+      if 'tier' in parameters:
+        instance['tier'] = parameters['tier']
+      if 'version' in parameters:
+        instance['version'] = parameters['version']
+      config['instance'] = instance
 
-    raise exceptions.ArgumentError(
-        'Unsupported integration type [{}]'.format(res_type))
+    else:
+      raise exceptions.ArgumentError(
+          'Unsupported integration type [{}]'.format(res_type))
+
+    return {res_type: config}
 
   def _EnsureServiceConfig(self, resources_map, service_name):
     if service_name not in resources_map:
@@ -460,7 +519,7 @@ class RunAppsOperations(object):
   def _GetResourceType(self, integration_type):
     type_def = self.GetIntegrationTypeDefinition(integration_type)
     if type_def is not None:
-      res_name = type_def['resource_name']
+      res_name = type_def.get('resource_name', None)
       if res_name is not None:
         return res_name
     return integration_type
@@ -554,19 +613,3 @@ class RunAppsOperations(object):
       raise exceptions.IntegrationsOperationError(
           'Configuration returned in unexpected state "{}".'.format(
               response.status.state.name))
-
-  def IsValidIntegrationType(self, type_str):
-    """Check if integration type is supported.
-
-    Args:
-      type_str: str, of type to verify
-
-    Returns:
-      bool, True if valid
-    """
-
-    for integration in types_utils.IntegrationTypes(self._client):
-      if integration['name'] == type_str:
-        return True
-
-    return False

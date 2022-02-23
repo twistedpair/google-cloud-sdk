@@ -49,6 +49,18 @@ def _get_json_dump(resource):
       ]))
 
 
+def _message_to_dict(message):
+  """Converts message to dict. Returns None is message is None."""
+  if message is not None:
+    result = encoding.MessageToDict(message)
+    # Explicit comparison is needed because we don't want to return None for
+    # False values.
+    if result == []:  # pylint: disable=g-explicit-bool-comparison
+      return None
+    return result
+  return None
+
+
 def _get_full_bucket_metadata_string(resource):
   """Formats GCS resource metadata as string with rows.
 
@@ -452,6 +464,47 @@ class GcsBucketResource(resource_reference.BucketResource):
 
   def get_full_metadata_string(self):
     return _get_full_bucket_metadata_string(self)
+
+  def get_displayable_bucket_data(self):
+    if self.metadata.labels is not None:
+      labels = encoding.MessageToDict(self.metadata.labels)
+    else:
+      labels = None
+
+    iam_configuration = self.metadata.iamConfiguration
+
+    return resource_reference.DisplayableBucketData(
+        name=self.name,
+        url_string=self.storage_url.url_string,
+        acl=_message_to_dict(self.metadata.acl),
+        bucket_policy_only=_message_to_dict(
+            getattr(iam_configuration, 'bucketPolicyOnly', None)),
+        cors_config=_message_to_dict(self.metadata.cors),
+        creation_time=self.metadata.timeCreated,
+        default_acl=_message_to_dict(self.metadata.defaultObjectAcl),
+        default_event_based_hold=self.metadata.defaultEventBasedHold,
+        default_kms_key=getattr(self.metadata.encryption, 'defaultKmsKeyName',
+                                None),
+        etag=self.metadata.etag,
+        labels=labels,
+        lifecycle_config=_message_to_dict(self.metadata.lifecycle),
+        location=self.metadata.location,
+        location_type=self.metadata.locationType,
+        logging_config=_message_to_dict(self.metadata.logging),
+        metageneration=self.metadata.metageneration,
+        project_number=self.metadata.projectNumber,
+        public_access_prevention=getattr(iam_configuration,
+                                         'publicAccessPrevention', None),
+        requester_pays=(self.metadata.billing and
+                        self.metadata.billing.requesterPays),
+        retention_policy=_message_to_dict(self.metadata.retentionPolicy),
+        rpo=self.metadata.rpo,
+        satisifes_pzs=self.metadata.satisfiesPZS,
+        storage_class=self.metadata.storageClass,
+        update_time=self.metadata.updated,
+        versioning_enabled=(self.metadata.versioning and
+                            self.metadata.versioning.enabled),
+        website_config=_message_to_dict(self.metadata.website))
 
   def get_json_dump(self):
     return _get_json_dump(self)

@@ -194,7 +194,7 @@ def GetTierArg(messages, api_version):
                     ('enterprise', """ENTERPRISE instances offer the features\
                     and availability needed for mission-critical workloads.""")
             },
-            default='STANDARD'))
+            default='BASIC_HDD'))
   return tier_arg
 
 
@@ -256,52 +256,7 @@ def AddFileShareArg(parser,
     include_backup_flags: bool, whether to include --source-backup flags.
     required: bool, passthrough to parser.add_argument.
   """
-  file_share_help = {
-      filestore_client.V1_API_VERSION:
-          """\
-File share configuration for an instance.  Specifying both `name` and `capacity`
-is required.
-
-*capacity*::: The desired capacity of the volume. The capacity must be a whole
-number followed by a capacity unit such as ``TB'' for terabyte. If no capacity
-unit is specified, GB is assumed. The minimum capacity for a standard instance
-is 0.5TB. The minimum capacity for a premium instance is 0.5TB.
-
-*name*::: The desired logical name of the volume.
-
-*nfs-export-options*::: The NfsExportOptions for the Cloud Filestore instance file share.
-Configuring NfsExportOptions is optional.
-Use the `--flags-file` flag to specify the path to a JSON or YAML configuration file that contains the required NfsExportOptions flags.
-
-*ip-ranges*::: A list of IPv4 addresses or CIDR ranges that are allowed to mount the file share.
-IPv4 addresses format: {octet 1}.{octet 2}.{octet 3}.{octet 4}.
-CIDR range format: {octet 1}.{octet 2}.{octet 3}.{octet 4}/{mask size}.
-Overlapping IP ranges, even across NfsExportOptions, are not allowed and will return an error.
-The limit of IP ranges/addresses for each FileShareConfig among all NfsExportOptions is 64 per instance.
-
-*access-mode*::: The type of access allowed for the specified IP-addresses or CIDR ranges.
-READ_ONLY: Allows only read requests on the exported file share.
-READ_WRITE: Allows both read and write requests on the exported file share.
-The default setting is READ_WRITE.
-
-*squash-mode*::: Enables or disables root squash for the specified
-IP addresses or CIDR ranges.
-NO_ROOT_SQUASH: Disables root squash to allow root access on the exported file share.
-ROOT_SQUASH. Enables root squash to remove root access on the exported file share.
-The default setting is NO_ROOT_SQUASH.
-
-*anon_uid*::: An integer that represents the user ID of anonymous users.
-Anon_uid may only be set when squash_mode is set to ROOT_SQUASH.
-If NO_ROOT_SQUASH is specified, an error will be returned.
-The default value is 65534.
-
-*anon_gid*::: An integer that represents the group ID of anonymous groups.
-Anon_gid may only be set when squash_mode is set to ROOT_SQUASH.
-If NO_ROOT_SQUASH is specified, an error will be returned.
-The default value is 65534.
-""",
-      filestore_client.ALPHA_API_VERSION:
-          """
+  alpha_beta_help_text = """
 File share configuration for an instance. Specifying both `name` and `capacity`
 is required.
 
@@ -309,52 +264,8 @@ is required.
 unit is specified, GB is assumed. Acceptable instance capacities for each tier are as follows:
 * BASIC_HDD: 1TB-63.9TB in 1GB increments or its multiples.
 * BASIC_SSD: 2.5TB-63.9TB in 1GB increments or its multiples.
-* HIGH_SCALE_SSD: 10TiB-100TiB in 2.5TiB increments or its multiples.
-* ENTERPRISE: 1TiB-10TiB in 256GiB increments or its multiples.
-
-*name*::: The desired logical name of the volume.
-
-*nfs-export-options*::: The NfsExportOptions for the Cloud Filestore instance file share.
-Configuring NfsExportOptions is optional.
-Use the `--flags-file` flag to specify the path to a JSON or YAML configuration file that contains the required NfsExportOptions flags.
-
-*ip-ranges*::: A list of IPv4 addresses or CIDR ranges that are allowed to mount the file share.
-IPv4 addresses format: {octet 1}.{octet 2}.{octet 3}.{octet 4}.
-CIDR range format: {octet 1}.{octet 2}.{octet 3}.{octet 4}/{mask size}.
-Overlapping IP ranges, even across NfsExportOptions, are not allowed and will return an error.
-The limit of IP ranges/addresses for each FileShareConfig among all NfsExportOptions is 64 per instance.
-
-*access-mode*::: The type of access allowed for the specified IP-addresses or CIDR ranges.
-READ_ONLY: Allows only read requests on the exported file share.
-READ_WRITE: Allows both read and write requests on the exported file share.
-The default setting is READ_WRITE.
-
-*squash-mode*::: Enables or disables root squash for the specified
-IP addresses or CIDR ranges.
-NO_ROOT_SQUASH: Disables root squash to allow root access on the exported file share.
-ROOT_SQUASH. Enables root squash to remove root access on the exported file share.
-The default setting is NO_ROOT_SQUASH.
-
-*anon_uid*::: An integer that represents the user ID of anonymous users.
-Anon_uid may only be set when squash_mode is set to ROOT_SQUASH.
-If NO_ROOT_SQUASH is specified, an error will be returned.
-The default value is 65534.
-
-*anon_gid*::: An integer that represents the group ID of anonymous groups.
-Anon_gid may only be set when squash_mode is set to ROOT_SQUASH.
-If NO_ROOT_SQUASH is specified, an error will be returned.
-The default value is 65534.
-""",
-      filestore_client.BETA_API_VERSION:
-          """
-File share configuration for an instance. Specifying both `name` and `capacity`
-is required.
-
-*capacity*::: The desired capacity of the volume in GB or TB units. If no capacity
-unit is specified, GB is assumed. Acceptable instance capacities for each tier are as follows:
-* BASIC_HDD: 0.5TB-63.9TB in 1GB increments or its multiples.
-* BASIC_SSD: 0.5TB-63.9TB in 1GB increments or its multiples.
-* HIGH_SCALE_SSD: 10TiB-100TiB in 2.5TiB increments or its multiples.
+* HIGH_SCALE_SSD: 10TB-100TB in 2.5TB increments or its multiples.
+* ENTERPRISE: 1TB-10TB in 256GB increments or its multiples.
 
 *name*::: The desired logical name of the volume.
 
@@ -389,6 +300,54 @@ Anon_gid may only be set when squash_mode is set to ROOT_SQUASH.
 If NO_ROOT_SQUASH is specified, an error will be returned.
 The default value is 65534.
 """
+
+  file_share_help = {
+      filestore_client.V1_API_VERSION:
+          """\
+File share configuration for an instance.  Specifying both `name` and `capacity`
+is required.
+
+*capacity*::: The desired capacity of the volume in GB or TB units. If no capacity
+unit is specified, GB is assumed. Acceptable instance capacities for each tier are as follows:
+* BASIC_HDD: 1TB-63.9TB in 1GB increments or its multiples.
+* BASIC_SSD: 2.5TB-63.9TB in 1GB increments or its multiples.
+* ENTERPRISE: 1TB-10TB in 256GB increments or its multiples.
+
+*name*::: The desired logical name of the volume.
+
+*nfs-export-options*::: The NfsExportOptions for the Cloud Filestore instance file share.
+Configuring NfsExportOptions is optional.
+Use the `--flags-file` flag to specify the path to a JSON or YAML configuration file that contains the required NfsExportOptions flags.
+
+*ip-ranges*::: A list of IPv4 addresses or CIDR ranges that are allowed to mount the file share.
+IPv4 addresses format: {octet 1}.{octet 2}.{octet 3}.{octet 4}.
+CIDR range format: {octet 1}.{octet 2}.{octet 3}.{octet 4}/{mask size}.
+Overlapping IP ranges, even across NfsExportOptions, are not allowed and will return an error.
+The limit of IP ranges/addresses for each FileShareConfig among all NfsExportOptions is 64 per instance.
+
+*access-mode*::: The type of access allowed for the specified IP-addresses or CIDR ranges.
+READ_ONLY: Allows only read requests on the exported file share.
+READ_WRITE: Allows both read and write requests on the exported file share.
+The default setting is READ_WRITE.
+
+*squash-mode*::: Enables or disables root squash for the specified
+IP addresses or CIDR ranges.
+NO_ROOT_SQUASH: Disables root squash to allow root access on the exported file share.
+ROOT_SQUASH. Enables root squash to remove root access on the exported file share.
+The default setting is NO_ROOT_SQUASH.
+
+*anon_uid*::: An integer that represents the user ID of anonymous users.
+Anon_uid may only be set when squash_mode is set to ROOT_SQUASH.
+If NO_ROOT_SQUASH is specified, an error will be returned.
+The default value is 65534.
+
+*anon_gid*::: An integer that represents the group ID of anonymous groups.
+Anon_gid may only be set when squash_mode is set to ROOT_SQUASH.
+If NO_ROOT_SQUASH is specified, an error will be returned.
+The default value is 65534.
+""",
+      filestore_client.ALPHA_API_VERSION: alpha_beta_help_text,
+      filestore_client.BETA_API_VERSION: alpha_beta_help_text
   }
   source_snapshot_help = """\
 

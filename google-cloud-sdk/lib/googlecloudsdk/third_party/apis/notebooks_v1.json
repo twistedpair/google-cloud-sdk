@@ -709,11 +709,13 @@
           "type": "string",
           "enumDescriptions": [
             "Unspecified access.",
-            "Single user login."
+            "Single user login.",
+            "Service Account mode. In Service Account mode, Runtime creator will specify a SA that exists in the consumer project. Using Runtime Service Account field. Users accessing the Runtime need ActAs (Service Account User) permission."
           ],
           "enum": [
             "RUNTIME_ACCESS_TYPE_UNSPECIFIED",
-            "SINGLE_USER"
+            "SINGLE_USER",
+            "SERVICE_ACCOUNT"
           ]
         },
         "runtimeOwner": {
@@ -1960,10 +1962,6 @@
             "DATAPROC"
           ]
         },
-        "kernelSpec": {
-          "description": "Name of the kernel spec to use. This must be specified if the kernel spec name on the execution target does not match the name in the input notebook file.",
-          "type": "string"
-        },
         "dataprocParameters": {
           "description": "Parameters used in Dataproc JobType executions.",
           "$ref": "DataprocParameters"
@@ -1971,6 +1969,14 @@
         "vertexAiParameters": {
           "description": "Parameters used in Vertex AI JobType executions.",
           "$ref": "VertexAIParameters"
+        },
+        "kernelSpec": {
+          "description": "Name of the kernel spec to use. This must be specified if the kernel spec name on the execution target does not match the name in the input notebook file.",
+          "type": "string"
+        },
+        "tensorboard": {
+          "description": "The name of a Vertex AI [Tensorboard] resource to which this execution will upload Tensorboard logs. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}`",
+          "type": "string"
         }
       }
     },

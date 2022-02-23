@@ -111,13 +111,14 @@ def add_source_creds_flag(parser):
       help='Path to a local file on your machine that includes credentials'
       ' for an Amazon S3 or Azure Blob Storage source (not required for'
       ' Google Cloud Storage sources). If not specified for an S3 source,'
-      ' gcloud will check your system for an AWS config file. For'
+      ' gcloud will check your system for an AWS config file. However, this'
+      ' flag must be specified to use AWS\'s "role_arn" auth service. For'
       ' formatting, see:\n\n'
       'S3: https://cloud.google.com/storage-transfer/docs/reference/'
       'rest/v1/TransferSpec#AwsAccessKey\n'
       'Note: Be sure to put quotations around the JSON value strings.\n\n'
       'Azure: http://cloud/storage-transfer/docs/reference/rest/'
-      'v1/TransferSpec#AzureCredentials')
+      'v1/TransferSpec#AzureCredentials\n\n')
 
 
 def setup_parser(parser, is_update=False):

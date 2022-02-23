@@ -36,6 +36,8 @@ from six.moves import http_client
 from six.moves import urllib
 import socks
 
+_NETWORK_TIMEOUT = 60  # Timeout in seconds when testing GET requests
+
 
 class NetworkDiagnostic(diagnostic_base.Diagnostic):
   """Diagnose and fix local network connection issues."""
@@ -117,7 +119,7 @@ class ReachabilityChecker(check_base.Checker):
 
 def CheckURLHttplib2(url):
   try:
-    http.Http().request(url, method='GET')
+    http.Http(timeout=_NETWORK_TIMEOUT).request(url, method='GET')
   except (http_client.HTTPException, socket.error, ssl.SSLError,
           httplib2.HttpLib2Error, socks.HTTPError) as err:
     msg = 'httplib2 cannot reach {0}:\n{1}\n'.format(
@@ -127,7 +129,7 @@ def CheckURLHttplib2(url):
 
 def CheckURLRequests(url):
   try:
-    core_requests.GetSession().request('GET', url)
+    core_requests.GetSession(timeout=_NETWORK_TIMEOUT).request('GET', url)
   except requests.exceptions.RequestException as err:
     msg = 'requests cannot reach {0}:\n{1}\n'.format(
         url, err)

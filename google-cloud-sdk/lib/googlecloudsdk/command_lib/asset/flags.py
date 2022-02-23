@@ -296,7 +296,8 @@ def AddFeedAssetTypesArgs(parser):
       help=(
           'A comma-separated list of types of the assets types to receive '
           'updates. For example: '
-          '`compute.googleapis.com/Disk,compute.googleapis.com/Network` For '
+          '`compute.googleapis.com/Disk,compute.googleapis.com/Network`. Regular '
+          'expressions (https://github.com/google/re2/wiki/Syntax) are also supported. For '
           'more information, see: '
           'https://cloud.google.com/resource-manager/docs/cloud-asset-inventory/overview'
       ))

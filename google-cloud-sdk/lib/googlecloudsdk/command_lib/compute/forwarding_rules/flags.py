@@ -38,7 +38,7 @@ https://cloud.google.com/load-balancing/docs/forwarding-rule-concepts.
 
 Forwarding rules can be external, internal, internal managed, or
 internal self-managed, specified with the
-``--load-balancing-scheme=[EXTERNAL|INTERNAL|INTERNAL_MANAGED|INTERNAL_SELF_MANAGED]''
+``--load-balancing-scheme=[EXTERNAL|EXTERNAL_MANAGED|INTERNAL|INTERNAL_MANAGED|INTERNAL_SELF_MANAGED]''
 flag. External forwarding rules are accessible from the internet, while
 internal forwarding rules are only accessible from within their VPC
 networks. You can specify a reserved static external or internal IP
@@ -180,18 +180,16 @@ BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
                         ' region of the forwarding rule.'))
 
 
-def NetworkArg(include_l7_internal_load_balancing, include_l7_rxlb):
+def NetworkArg(include_l7_internal_load_balancing):
   """Returns the network parameter."""
 
-  load_balancing_scheme = ('--load-balancing-scheme=INTERNAL or ' +
-                           '--load-balancing-scheme=INTERNAL_SELF_MANAGED')
+  load_balancing_scheme = (
+      '--load-balancing-scheme=INTERNAL or '
+      '--load-balancing-scheme=INTERNAL_SELF_MANAGED or '
+      '--load-balancing-scheme=EXTERNAL_MANAGED (regional)')
 
   if include_l7_internal_load_balancing:
     load_balancing_scheme += ' or --load-balancing-scheme=INTERNAL_MANAGED'
-
-  if include_l7_rxlb:
-    load_balancing_scheme += (' or --load-balancing-scheme=EXTERNAL_MANAGED '
-                              '(regional)')
 
   return compute_flags.ResourceArgument(
       name='--network',
@@ -351,15 +349,12 @@ TARGET_VPN_GATEWAY_ARG = compute_flags.ResourceArgument(
                         ' region of the forwarding rule.'))
 
 
-def AddressArgHelp(include_l7_internal_load_balancing, include_gfe3,
-                   include_l7_rxlb):
+def AddressArgHelp(include_l7_internal_load_balancing):
   """Build the help text for the address argument."""
 
-  lb_schemes = '(EXTERNAL, INTERNAL, INTERNAL_SELF_MANAGED'
+  lb_schemes = '(EXTERNAL, EXTERNAL_MANAGED, INTERNAL, INTERNAL_SELF_MANAGED'
   if include_l7_internal_load_balancing:
     lb_schemes += ', INTERNAL_MANAGED'
-  if include_gfe3 or include_l7_rxlb:
-    lb_schemes += ', EXTERNAL_MANAGED'
   lb_schemes += ')'
 
   detailed_help = """\
@@ -390,8 +385,7 @@ def AddressArgHelp(include_l7_internal_load_balancing, include_gfe3,
   return textwrap.dedent(detailed_help)
 
 
-def AddressArg(include_l7_internal_load_balancing, include_gfe3,
-               include_l7_rxlb):
+def AddressArg(include_l7_internal_load_balancing):
   return compute_flags.ResourceArgument(
       name='--address',
       required=False,
@@ -402,15 +396,12 @@ def AddressArg(include_l7_internal_load_balancing, include_gfe3,
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
       short_help='IP address that the forwarding rule will serve.',
       detailed_help=AddressArgHelp(
-          include_l7_internal_load_balancing=include_l7_internal_load_balancing,
-          include_gfe3=include_gfe3,
-          include_l7_rxlb=include_l7_rxlb))
+          include_l7_internal_load_balancing=include_l7_internal_load_balancing)
+  )
 
 
 def AddUpdateArgs(parser,
                   include_l7_internal_load_balancing=False,
-                  include_gfe3=False,
-                  include_l7_rxlb=False,
                   include_psc_google_apis=False,
                   include_target_service_attachment=False):
   """Adds common flags for mutating forwarding rule targets."""
@@ -449,23 +440,19 @@ def AddUpdateArgs(parser,
         action='store')
 
   NetworkArg(
-      include_l7_internal_load_balancing=include_l7_internal_load_balancing,
-      include_l7_rxlb=include_l7_rxlb).AddArgument(parser)
+      include_l7_internal_load_balancing=include_l7_internal_load_balancing
+  ).AddArgument(parser)
   SUBNET_ARG.AddArgument(parser)
 
   AddLoadBalancingScheme(
       parser,
       include_l7_ilb=include_l7_internal_load_balancing,
-      include_gfe3=include_gfe3,
-      include_l7_rxlb=include_l7_rxlb,
       include_psc_google_apis=include_psc_google_apis,
       include_target_service_attachment=include_target_service_attachment)
 
 
 def AddLoadBalancingScheme(parser,
                            include_l7_ilb=False,
-                           include_gfe3=False,
-                           include_l7_rxlb=False,
                            include_psc_google_apis=False,
                            include_target_service_attachment=False):
   """Adds the load-balancing-scheme flag."""
@@ -477,6 +464,9 @@ def AddLoadBalancingScheme(parser,
           '--target-http-proxy, --target-https-proxy, --target-tcp-proxy, '
           '--target-ssl-proxy, --target-pool, --target-vpn-gateway, '
           '--target-instance.',
+      'EXTERNAL_MANAGED':
+          'Envoy based External HTTP(S) Load Balancing, used with '
+          '--target-http-proxy, --target-https-proxy.',
       'INTERNAL':
           'Internal load balancing or forwarding, used with --backend-service.',
       'INTERNAL_SELF_MANAGED':
@@ -488,13 +478,6 @@ def AddLoadBalancingScheme(parser,
     load_balancing_choices.update({
         'INTERNAL_MANAGED': 'Internal HTTP(S) Load Balancing, used with '
                             '--target-http-proxy, --target-https-proxy.'
-    })
-
-  if include_gfe3 or include_l7_rxlb:
-    load_balancing_choices.update({
-        'EXTERNAL_MANAGED':
-            'Envoy based External HTTP(S) Load Balancing, used with '
-            '--target-http-proxy, --target-https-proxy.'
     })
 
   # There isn't a default load-balancing-scheme for PSC forwarding rules.
@@ -623,14 +606,11 @@ def AddIpVersionGroup(parser):
 
 
 def AddAddressesAndIPVersions(parser, required,
-                              include_l7_internal_load_balancing, include_gfe3,
-                              include_l7_rxlb):
+                              include_l7_internal_load_balancing):
   """Adds Addresses and IP versions flag."""
 
   address_arg = AddressArg(
-      include_l7_internal_load_balancing=include_l7_internal_load_balancing,
-      include_gfe3=include_gfe3,
-      include_l7_rxlb=include_l7_rxlb)
+      include_l7_internal_load_balancing=include_l7_internal_load_balancing)
   group = parser.add_mutually_exclusive_group(required=required)
   AddIpVersionGroup(group)
   address_arg.AddArgument(parser, mutex_group=group)

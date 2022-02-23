@@ -172,8 +172,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.third_party.apis.accesscontextmanager.v1alpha',
                     client_classpath='accesscontextmanager_v1alpha_client.AccesscontextmanagerV1alpha',
-                    messages_modulepath='accesscontextmanager_v1alpha_messages'
-                ),
+                    messages_modulepath='accesscontextmanager_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
@@ -196,8 +195,7 @@ MAP = {
                     messages_modulepath='admin_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override='https://www.mtls.googleapis.com/admin/directory/v1/'
-            ),
+                mtls_endpoint_override='https://www.mtls.googleapis.com/admin/directory/v1/'),
     },
     'aiplatform': {
         'v1':
@@ -466,8 +464,7 @@ MAP = {
                     messages_modulepath='bigquery_v2_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override='https://bigquery.mtls.googleapis.com/bigquery/v2/'
-            ),
+                mtls_endpoint_override='https://bigquery.mtls.googleapis.com/bigquery/v2/'),
     },
     'bigquerydatatransfer': {
         'v1':
@@ -526,8 +523,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.third_party.apis.binaryauthorization.v1alpha2',
                     client_classpath='binaryauthorization_v1alpha2_client.BinaryauthorizationV1alpha2',
-                    messages_modulepath='binaryauthorization_v1alpha2_messages'
-                ),
+                    messages_modulepath='binaryauthorization_v1alpha2_messages'),
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
@@ -597,8 +593,7 @@ MAP = {
                     messages_modulepath='cloudasset_v1p2beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override='https://cloudasset.mtls.googleapis.com/'
-            ),
+                mtls_endpoint_override='https://cloudasset.mtls.googleapis.com/'),
         'v1p4alpha1':
             APIDef(
                 ApitoolsClientDef(
@@ -607,8 +602,7 @@ MAP = {
                     messages_modulepath='cloudasset_v1p4alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override='https://cloudasset.mtls.googleapis.com/'
-            ),
+                mtls_endpoint_override='https://cloudasset.mtls.googleapis.com/'),
         'v1p4beta1':
             APIDef(
                 ApitoolsClientDef(
@@ -701,8 +695,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.third_party.apis.cloudcommerceconsumerprocurement.v1alpha1',
                     client_classpath='cloudcommerceconsumerprocurement_v1alpha1_client.CloudcommerceconsumerprocurementV1alpha1',
-                    messages_modulepath='cloudcommerceconsumerprocurement_v1alpha1_messages'
-                ),
+                    messages_modulepath='cloudcommerceconsumerprocurement_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
@@ -835,8 +828,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.third_party.apis.cloudresourcemanager.v1beta1',
                     client_classpath='cloudresourcemanager_v1beta1_client.CloudresourcemanagerV1beta1',
-                    messages_modulepath='cloudresourcemanager_v1beta1_messages'
-                ),
+                    messages_modulepath='cloudresourcemanager_v1beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
@@ -848,15 +840,13 @@ MAP = {
                     messages_modulepath='cloudresourcemanager_v2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override='https://cloudresourcemanager.mtls.googleapis.com/'
-            ),
+                mtls_endpoint_override='https://cloudresourcemanager.mtls.googleapis.com/'),
         'v2alpha1':
             APIDef(
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.third_party.apis.cloudresourcemanager.v2alpha1',
                     client_classpath='cloudresourcemanager_v2alpha1_client.CloudresourcemanagerV2alpha1',
-                    messages_modulepath='cloudresourcemanager_v2alpha1_messages'
-                ),
+                    messages_modulepath='cloudresourcemanager_v2alpha1_messages'),
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
@@ -865,12 +855,10 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.third_party.apis.cloudresourcemanager.v2beta1',
                     client_classpath='cloudresourcemanager_v2beta1_client.CloudresourcemanagerV2beta1',
-                    messages_modulepath='cloudresourcemanager_v2beta1_messages'
-                ),
+                    messages_modulepath='cloudresourcemanager_v2beta1_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override='https://cloudresourcemanager.mtls.googleapis.com/'
-            ),
+                mtls_endpoint_override='https://cloudresourcemanager.mtls.googleapis.com/'),
         'v3':
             APIDef(
                 ApitoolsClientDef(
@@ -890,8 +878,7 @@ MAP = {
                     messages_modulepath='cloudscheduler_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override='https://cloudscheduler.mtls.googleapis.com/'
-            ),
+                mtls_endpoint_override='https://cloudscheduler.mtls.googleapis.com/'),
         'v1alpha1':
             APIDef(
                 ApitoolsClientDef(
@@ -1262,8 +1249,7 @@ MAP = {
                     messages_modulepath='deploymentmanager_alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override='https://www.mtls.googleapis.com/deploymentmanager/alpha/'
-            ),
+                mtls_endpoint_override='https://www.mtls.googleapis.com/deploymentmanager/alpha/'),
         'v2':
             APIDef(
                 ApitoolsClientDef(
@@ -1272,8 +1258,7 @@ MAP = {
                     messages_modulepath='deploymentmanager_v2_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override='https://www.mtls.googleapis.com/deploymentmanager/v2/'
-            ),
+                mtls_endpoint_override='https://www.mtls.googleapis.com/deploymentmanager/v2/'),
         'v2beta':
             APIDef(
                 ApitoolsClientDef(
@@ -1282,8 +1267,7 @@ MAP = {
                     messages_modulepath='deploymentmanager_v2beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override='https://www.mtls.googleapis.com/deploymentmanager/v2beta/'
-            ),
+                mtls_endpoint_override='https://www.mtls.googleapis.com/deploymentmanager/v2beta/'),
     },
     'dialogflow': {
         'v2':
@@ -1305,8 +1289,7 @@ MAP = {
                     messages_modulepath='discovery_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override='https://www.mtls.googleapis.com/discovery/v1/'
-            ),
+                mtls_endpoint_override='https://www.mtls.googleapis.com/discovery/v1/'),
     },
     'dlp': {
         'v2':
@@ -1328,8 +1311,7 @@ MAP = {
                     messages_modulepath='dns_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override='https://dns.mtls.googleapis.com/dns/v1/'
-            ),
+                mtls_endpoint_override='https://dns.mtls.googleapis.com/dns/v1/'),
         'v1alpha2':
             APIDef(
                 ApitoolsClientDef(
@@ -1347,8 +1329,16 @@ MAP = {
                     messages_modulepath='dns_v1beta2_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override='https://dns.mtls.googleapis.com/dns/v1beta2/'
-            ),
+                mtls_endpoint_override='https://dns.mtls.googleapis.com/dns/v1beta2/'),
+        'v2':
+            APIDef(
+                ApitoolsClientDef(
+                    class_path='googlecloudsdk.third_party.apis.dns.v2',
+                    client_classpath='dns_v2_client.DnsV2',
+                    messages_modulepath='dns_v2_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override='https://dns.mtls.googleapis.com/dns/v2/'),
     },
     'domains': {
         'v1':
@@ -1874,8 +1864,7 @@ MAP = {
                     client_classpath='logging_v2_client.LoggingV2',
                     messages_modulepath='logging_v2_messages'),
                 GapicClientDef(
-                    class_path='googlecloudsdk.third_party.gapic_wrappers.logging.v2'
-                ),
+                    class_path='googlecloudsdk.third_party.gapic_wrappers.logging.v2'),
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
@@ -1998,8 +1987,7 @@ MAP = {
                     messages_modulepath='monitoring_v3_messages'),
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override='https://monitoring.mtls.googleapis.com/'
-            ),
+                mtls_endpoint_override='https://monitoring.mtls.googleapis.com/'),
     },
     'networkconnectivity': {
         'v1':
@@ -2016,8 +2004,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.third_party.apis.networkconnectivity.v1alpha1',
                     client_classpath='networkconnectivity_v1alpha1_client.NetworkconnectivityV1alpha1',
-                    messages_modulepath='networkconnectivity_v1alpha1_messages'
-                ),
+                    messages_modulepath='networkconnectivity_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
@@ -2291,8 +2278,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.third_party.apis.policytroubleshooter.v2alpha1',
                     client_classpath='policytroubleshooter_v2alpha1_client.PolicytroubleshooterV2alpha1',
-                    messages_modulepath='policytroubleshooter_v2alpha1_messages'
-                ),
+                    messages_modulepath='policytroubleshooter_v2alpha1_messages'),
                 default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
@@ -2434,8 +2420,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.third_party.apis.remotebuildexecution.v1alpha',
                     client_classpath='remotebuildexecution_v1alpha_client.RemotebuildexecutionV1alpha',
-                    messages_modulepath='remotebuildexecution_v1alpha_messages'
-                ),
+                    messages_modulepath='remotebuildexecution_v1alpha_messages'),
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
@@ -2559,8 +2544,7 @@ MAP = {
                 ApitoolsClientDef(
                     class_path='googlecloudsdk.third_party.apis.serviceconsumermanagement.v1beta1',
                     client_classpath='serviceconsumermanagement_v1beta1_client.ServiceconsumermanagementV1beta1',
-                    messages_modulepath='serviceconsumermanagement_v1beta1_messages'
-                ),
+                    messages_modulepath='serviceconsumermanagement_v1beta1_messages'),
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
@@ -2614,8 +2598,7 @@ MAP = {
                     messages_modulepath='servicenetworking_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override='https://servicenetworking.mtls.googleapis.com/'
-            ),
+                mtls_endpoint_override='https://servicenetworking.mtls.googleapis.com/'),
     },
     'serviceusage': {
         'v1':
@@ -2635,8 +2618,7 @@ MAP = {
                     messages_modulepath='serviceusage_v1alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override='https://serviceusage.mtls.googleapis.com/'
-            ),
+                mtls_endpoint_override='https://serviceusage.mtls.googleapis.com/'),
         'v1beta1':
             APIDef(
                 ApitoolsClientDef(
@@ -2738,6 +2720,17 @@ MAP = {
                     class_path='googlecloudsdk.third_party.apis.storagetransfer.v1',
                     client_classpath='storagetransfer_v1_client.StoragetransferV1',
                     messages_modulepath='storagetransfer_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
+    'stream': {
+        'v1alpha1':
+            APIDef(
+                ApitoolsClientDef(
+                    class_path='googlecloudsdk.third_party.apis.stream.v1alpha1',
+                    client_classpath='stream_v1alpha1_client.StreamV1alpha1',
+                    messages_modulepath='stream_v1alpha1_messages'),
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),

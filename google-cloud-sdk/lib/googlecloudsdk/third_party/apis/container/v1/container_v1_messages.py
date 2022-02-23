@@ -202,6 +202,68 @@ class BinaryAuthorization(_messages.Message):
   enabled = _messages.BooleanField(1)
 
 
+class BlueGreenInfo(_messages.Message):
+  r"""Information relevant to blue/green update.
+
+  Enums:
+    PhaseValueValuesEnum: Current blue/green update phase.
+
+  Fields:
+    blueInstanceGroupUrls: The resource URLs of the [managed instance groups]
+      (/compute/docs/instance-groups/creating-groups-of-managed-instances)
+      associated with blue pool.
+    bluePoolDeletionStartTime: Time to start deleting blue pool to complete
+      blue/green update, in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt)
+      text format.
+    greenInstanceGroupUrls: The resource URLs of the [managed instance groups]
+      (/compute/docs/instance-groups/creating-groups-of-managed-instances)
+      associated with green pool.
+    greenPoolVersion: Version of green pool.
+    phase: Current blue/green update phase.
+  """
+
+  class PhaseValueValuesEnum(_messages.Enum):
+    r"""Current blue/green update phase.
+
+    Values:
+      PHASE_UNSPECIFIED: Unspecified phase.
+      UPDATE_STARTED: Blue/green update has been initiated.
+      CREATING_GREEN_POOL: Start creating green pool nodes.
+      CORDONING_BLUE_POOL: Start cordoning blue pool nodes.
+      DRAINING_BLUE_POOL: Start draining blue pool nodes.
+      NODE_POOL_SOAKING: Start soaking time after draining entire blue pool.
+      DELETING_BLUE_POOL: Start deleting blue nodes.
+      ROLLBACK_STARTED: Rollback has been initiated.
+    """
+    PHASE_UNSPECIFIED = 0
+    UPDATE_STARTED = 1
+    CREATING_GREEN_POOL = 2
+    CORDONING_BLUE_POOL = 3
+    DRAINING_BLUE_POOL = 4
+    NODE_POOL_SOAKING = 5
+    DELETING_BLUE_POOL = 6
+    ROLLBACK_STARTED = 7
+
+  blueInstanceGroupUrls = _messages.StringField(1, repeated=True)
+  bluePoolDeletionStartTime = _messages.StringField(2)
+  greenInstanceGroupUrls = _messages.StringField(3, repeated=True)
+  greenPoolVersion = _messages.StringField(4)
+  phase = _messages.EnumField('PhaseValueValuesEnum', 5)
+
+
+class BlueGreenSettings(_messages.Message):
+  r"""Settings for blue/green update.
+
+  Fields:
+    nodePoolSoakDuration: Time needed after draining entire blue pool. After
+      this period, blue pool will be cleaned up.
+    standardRolloutPolicy: Standard policy for the blue/green update.
+  """
+
+  nodePoolSoakDuration = _messages.StringField(1)
+  standardRolloutPolicy = _messages.MessageField('StandardRolloutPolicy', 2)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""CancelOperationRequest cancels a single operation.
 
@@ -428,9 +490,9 @@ class Cluster(_messages.Message):
       for hosting containers. This is provisioned from within the
       `container_ipv4_cidr` range. This field will only be set when cluster is
       in route-based network mode.
-    nodePoolAutoConfig: node pool configs that apply to all auto-provisioned
+    nodePoolAutoConfig: Node pool configs that apply to all auto-provisioned
       node pools in autopilot clusters and node auto-provisioning enabled
-      clusters
+      clusters.
     nodePoolDefaults: Default NodePool settings for the entire cluster. These
       settings are overridden if specified on the specific NodePool object.
     nodePools: The node pools associated with this cluster. This field should
@@ -2671,11 +2733,16 @@ class NodeKubeletConfig(_messages.Message):
       with certain resource characteristics to be granted increased CPU
       affinity and exclusivity on the node. The default value is 'none' if
       unspecified.
+    podPidsLimit: Set the Pod PID limits. See
+      https://kubernetes.io/docs/concepts/policy/pid-limiting/#pod-pid-limits
+      Controls the maximum number of processes allowed to run in a pod. The
+      value must be greater than or equal to 1024 and less than 4194304.
   """
 
   cpuCfsQuota = _messages.BooleanField(1)
   cpuCfsQuotaPeriod = _messages.StringField(2)
   cpuManagerPolicy = _messages.StringField(3)
+  podPidsLimit = _messages.IntegerField(4)
 
 
 class NodeLabels(_messages.Message):
@@ -2819,6 +2886,8 @@ class NodePool(_messages.Message):
     statusMessage: [Output only] Deprecated. Use conditions instead.
       Additional information about the current status of this node pool
       instance, if available.
+    updateInfo: Output only. [Output only] Update info contains relevant
+      information during a node pool update.
     upgradeSettings: Upgrade settings control disruption and speed of the
       upgrade.
     version: The version of the Kubernetes of this node.
@@ -2866,13 +2935,14 @@ class NodePool(_messages.Message):
   selfLink = _messages.StringField(12)
   status = _messages.EnumField('StatusValueValuesEnum', 13)
   statusMessage = _messages.StringField(14)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 15)
-  version = _messages.StringField(16)
+  updateInfo = _messages.MessageField('UpdateInfo', 15)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 16)
+  version = _messages.StringField(17)
 
 
 class NodePoolAutoConfig(_messages.Message):
-  r"""node pool configs that apply to all auto-provisioned node pools in
-  autopilot clusters and node auto-provisioning enabled clusters
+  r"""Node pool configs that apply to all auto-provisioned node pools in
+  autopilot clusters and node auto-provisioning enabled clusters.
 
   Fields:
     networkTags: The list of instance tags applied to all nodes. Tags are used
@@ -3378,6 +3448,8 @@ class RollbackNodePoolUpgradeRequest(_messages.Message):
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the name field.
+    respectPdb: Option for rollback to ignore the PodDisruptionBudget. Default
+      value is false.
     zone: Deprecated. The name of the Google Compute Engine
       [zone](https://cloud.google.com/compute/docs/zones#available) in which
       the cluster resides. This field has been deprecated and replaced by the
@@ -3388,7 +3460,8 @@ class RollbackNodePoolUpgradeRequest(_messages.Message):
   name = _messages.StringField(2)
   nodePoolId = _messages.StringField(3)
   projectId = _messages.StringField(4)
-  zone = _messages.StringField(5)
+  respectPdb = _messages.BooleanField(5)
+  zone = _messages.StringField(6)
 
 
 class SandboxConfig(_messages.Message):
@@ -3980,6 +4053,22 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class StandardRolloutPolicy(_messages.Message):
+  r"""Standard rollout policy is the default policy for blue/green.
+
+  Fields:
+    batchNodeCount: Number of blue nodes to drain in a batch.
+    batchPercentage: Percentage of the bool pool nodes to drain in a batch.
+      The range of this field should be (0.0, 1.0].
+    batchSoakDuration: Soak time after each batch gets drained. Default to
+      zero.
+  """
+
+  batchNodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  batchPercentage = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  batchSoakDuration = _messages.StringField(3)
+
+
 class StartIPRotationRequest(_messages.Message):
   r"""StartIPRotationRequest creates a new IP for the cluster and then
   performs a node upgrade on each node pool to point to the new IP.
@@ -4252,6 +4341,17 @@ class UpdateClusterRequest(_messages.Message):
   zone = _messages.StringField(5)
 
 
+class UpdateInfo(_messages.Message):
+  r"""UpdateInfo contains resource (instance groups, etc), status and other
+  intermediate information relevant to a node pool upgrade.
+
+  Fields:
+    blueGreenInfo: Information of a blue/green update.
+  """
+
+  blueGreenInfo = _messages.MessageField('BlueGreenInfo', 1)
+
+
 class UpdateMasterRequest(_messages.Message):
   r"""UpdateMasterRequest updates the master of the cluster.
 
@@ -4457,16 +4557,37 @@ class UpgradeSettings(_messages.Message):
   nodes at the same time. This ensures that there are always at least 4 nodes
   available.
 
+  Enums:
+    StrategyValueValuesEnum: Update strategy of the node pool.
+
   Fields:
+    blueGreenSettings: Settings for blue/green update strategy.
     maxSurge: The maximum number of nodes that can be created beyond the
       current size of the node pool during the upgrade process.
     maxUnavailable: The maximum number of nodes that can be simultaneously
       unavailable during the upgrade process. A node is considered available
       if its status is Ready.
+    strategy: Update strategy of the node pool.
   """
 
-  maxSurge = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  maxUnavailable = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  class StrategyValueValuesEnum(_messages.Enum):
+    r"""Update strategy of the node pool.
+
+    Values:
+      NODE_POOL_UPDATE_STRATEGY_UNSPECIFIED: Default value.
+      ROLLING: Rolling update is the traditional way of updating node pool.
+        max_surge and max_unavailable determines the level of update
+        parallelism.
+      BLUE_GREEN: Blue/green update.
+    """
+    NODE_POOL_UPDATE_STRATEGY_UNSPECIFIED = 0
+    ROLLING = 1
+    BLUE_GREEN = 2
+
+  blueGreenSettings = _messages.MessageField('BlueGreenSettings', 1)
+  maxSurge = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  maxUnavailable = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  strategy = _messages.EnumField('StrategyValueValuesEnum', 4)
 
 
 class UsableSubnetwork(_messages.Message):

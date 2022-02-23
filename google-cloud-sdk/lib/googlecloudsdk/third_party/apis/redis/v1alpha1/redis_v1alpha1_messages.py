@@ -177,8 +177,8 @@ class Instance(_messages.Message):
     ConnectModeValueValuesEnum: Optional. The network connect mode of the
       Redis instance. If not provided, the connect mode defaults to
       DIRECT_PEERING.
-    ReadReplicasModeValueValuesEnum: Optional. Read replica mode. Can only be
-      specified when trying to create the instance.
+    ReadReplicasModeValueValuesEnum: Optional. Read replicas mode for the
+      instance. Defaults to READ_REPLICAS_DISABLED.
     StateValueValuesEnum: Output only. The current state of this instance.
     TierValueValuesEnum: Required. The service tier of the instance.
     TransitEncryptionModeValueValuesEnum: Optional. The TLS mode of the Redis
@@ -250,8 +250,8 @@ class Instance(_messages.Message):
       some lag behind the primary. Write requests must target 'host'.
     readEndpointPort: Output only. The port number of the exposed readonly
       redis endpoint. Standard tier only. Write requests should target 'port'.
-    readReplicasMode: Optional. Read replica mode. Can only be specified when
-      trying to create the instance.
+    readReplicasMode: Optional. Read replicas mode for the instance. Defaults
+      to READ_REPLICAS_DISABLED.
     redisConfigs: Optional. Redis configuration parameters, according to
       http://redis.io/topics/config. Currently, the only supported parameters
       are: Redis version 3.2 and newer: * maxmemory-policy * notify-keyspace-
@@ -276,12 +276,12 @@ class Instance(_messages.Message):
       If not provided, the service will choose an unused /29 block, for
       example, 10.0.0.0/29 or 192.168.0.0/29. For READ_REPLICAS_ENABLED the
       default block size is /28.
-    secondaryIpRange: Optional. Additional ip ranges for node placement,
-      beyond those specified in reserved_ip_range. At most 1 secondary IP
-      range is supported. The mask value must not exceed /28. Not supported
-      for BASIC tier. Updates can only add new ranges, once added ranges
-      cannot be changed or deleted. Values in this list cannot overlap with
-      the reserved_ip_range. Not supported during instance creation.
+    secondaryIpRange: Optional. Additional IP range for node placement.
+      Required when enabling read replicas on an existing instance. For
+      DIRECT_PEERING mode value must be a CIDR range of size /28, or "auto".
+      For PRIVATE_SERVICE_ACCESS mode value must be the name of an allocated
+      address range associated with the private service access connection, or
+      "auto".
     serverCaCerts: Output only. List of server CA certificates for the
       instance.
     state: Output only. The current state of this instance.
@@ -310,8 +310,8 @@ class Instance(_messages.Message):
     PRIVATE_SERVICE_ACCESS = 2
 
   class ReadReplicasModeValueValuesEnum(_messages.Enum):
-    r"""Optional. Read replica mode. Can only be specified when trying to
-    create the instance.
+    r"""Optional. Read replicas mode for the instance. Defaults to
+    READ_REPLICAS_DISABLED.
 
     Values:
       READ_REPLICAS_MODE_UNSPECIFIED: If not set, Memorystore Redis backend

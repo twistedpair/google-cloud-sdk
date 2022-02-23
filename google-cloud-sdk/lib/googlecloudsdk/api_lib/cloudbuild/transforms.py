@@ -48,6 +48,7 @@ from __future__ import unicode_literals
 
 from apitools.base.py import encoding as apitools_encoding
 from googlecloudsdk.api_lib.util import apis as core_apis
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
@@ -114,15 +115,29 @@ def TransformBuildSource(r, undefined=''):
 
 
 def _GetUri(resource, undefined=None):
-  build_ref = resources.REGISTRY.Parse(
-      None,
-      params={
-          'projectId': resource.projectId,
-          'id': resource.id,
-      },
-      collection='cloudbuild.projects.builds')
-  return build_ref.SelfLink() or undefined
-
+  # pylint: disable=missing-docstring
+  messages = core_apis.GetMessagesModule('cloudbuild', 'v1')
+  if isinstance(resource, messages.Build):
+    build_ref = resources.REGISTRY.Parse(
+        None,
+        params={
+            'projectId': resource.projectId,
+            'id': resource.id,
+        },
+        collection='cloudbuild.projects.builds')
+    return build_ref.SelfLink() or undefined
+  elif isinstance(resource, messages.BuildTrigger):
+    project = properties.VALUES.core.project.Get(required=True)
+    trigger_ref = resources.REGISTRY.Parse(
+        None,
+        params={
+            'projectId': project,
+            'triggerId': resource.id,
+        },
+        collection='cloudbuild.projects.triggers')
+    return trigger_ref.SelfLink() or undefined
+  else:
+    return undefined
 
 _TRANSFORMS = {
     'build_images': TransformBuildImages,

@@ -23,8 +23,10 @@ from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.configurations import named_configs
 
 
 class _ProjectNumberPropertyFallthrough(deps.PropertyFallthrough):
@@ -75,10 +77,36 @@ def AzureClientAttributeConfig():
 
 
 def LocationAttributeConfig():
+  """Gets Google Cloud location resource attribute."""
   return concepts.ResourceParameterAttributeConfig(
       name='location',
       help_text='Google Cloud location for the {resource}.',
-      fallthroughs=[deps.PropertyFallthrough(properties.VALUES.azure.location)])
+      fallthroughs=[
+          deps.PropertyFallthrough(properties.VALUES.container_azure.location),
+          deps.Fallthrough(
+              _LocationFallthrough, 'set the property `{}` (deprecated)'.format(
+                  properties.VALUES.azure.location))
+      ])
+
+
+def _LocationFallthrough():
+  """Gets the fallthrough value for --location from the deprecated property."""
+  prop = properties.VALUES.azure.location
+  location = prop.Get()
+  if location is None:
+    return None
+  log.warning('Property [azure/location] is deprecated '
+              'and will be removed in a future release. '
+              'Use [container_azure/location] instead.')
+  properties_file = named_configs.ActivePropertiesFile.Load()
+  value = properties_file.Get(prop.section, prop.name)
+  if value == location:
+    log.warning(
+        'The value [%s] from the [azure/location] property '
+        'has been copied to the [container_azure/location] property.', location)
+    properties.PersistProperty(properties.VALUES.container_azure.location,
+                               location)
+  return location
 
 
 def ProjectAttributeConfig(use_project_number):

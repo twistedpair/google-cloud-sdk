@@ -6,7 +6,7 @@
   "canonicalName": "KRM API Hosting",
   "version": "v1alpha1",
   "revision": "0",
-  "title": "KRM API Hosting API",
+  "title": "Config Controller (KRM API Hosting API)",
   "description": "",
   "ownerDomain": "google.com",
   "ownerName": "Google",

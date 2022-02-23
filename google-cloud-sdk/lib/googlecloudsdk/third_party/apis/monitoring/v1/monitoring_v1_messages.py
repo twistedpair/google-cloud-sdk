@@ -410,6 +410,17 @@ class ChartOptions(_messages.Message):
   mode = _messages.EnumField('ModeValueValuesEnum', 1)
 
 
+class CollapsibleGroup(_messages.Message):
+  r"""A widget that groups the other widgets. All widgets that are within the
+  area spanned by the grouping widget are considered member widgets.
+
+  Fields:
+    collapsed: The collapsed state of the widget on first page load.
+  """
+
+  collapsed = _messages.BooleanField(1)
+
+
 class Column(_messages.Message):
   r"""Defines the layout properties and content for a column.
 
@@ -2062,6 +2073,9 @@ class Widget(_messages.Message):
   Fields:
     alertChart: A chart of alert policy data.
     blank: A blank space.
+    collapsibleGroup: A widget that groups the other widgets. All widgets that
+      are within the area spanned by the grouping widget are considered member
+      widgets.
     logsPanel: A widget that shows a stream of logs.
     scorecard: A scorecard summarizing time series data.
     text: A raw string or markdown displaying textual content.
@@ -2073,12 +2087,13 @@ class Widget(_messages.Message):
 
   alertChart = _messages.MessageField('AlertChart', 1)
   blank = _messages.MessageField('Empty', 2)
-  logsPanel = _messages.MessageField('LogsPanel', 3)
-  scorecard = _messages.MessageField('Scorecard', 4)
-  text = _messages.MessageField('Text', 5)
-  timeSeriesTable = _messages.MessageField('TimeSeriesTable', 6)
-  title = _messages.StringField(7)
-  xyChart = _messages.MessageField('XyChart', 8)
+  collapsibleGroup = _messages.MessageField('CollapsibleGroup', 3)
+  logsPanel = _messages.MessageField('LogsPanel', 4)
+  scorecard = _messages.MessageField('Scorecard', 5)
+  text = _messages.MessageField('Text', 6)
+  timeSeriesTable = _messages.MessageField('TimeSeriesTable', 7)
+  title = _messages.StringField(8)
+  xyChart = _messages.MessageField('XyChart', 9)
 
 
 class XyChart(_messages.Message):

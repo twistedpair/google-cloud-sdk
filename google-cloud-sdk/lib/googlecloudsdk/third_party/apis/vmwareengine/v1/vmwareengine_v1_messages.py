@@ -603,13 +603,13 @@ class NetworkConfig(_messages.Message):
       HTTPS traffic.
     managementCidr: Required. Management CIDR used by VMware management
       appliances.
-    network: Required. The relative resource name of the consumer VPC network
-      this private cloud is attached to. Specify the name in the following
-      form: `projects/{project}/global/networks/{network_id}` where
-      `{project}` can either be a project number or a project ID.
-    serviceNetwork: Output only. The relative resource name of the service VPC
-      network this private cloud is attached to. The name is specified in the
-      following form:
+    network: Optional. DEPRECATED: Optional. The relative resource name of the
+      consumer VPC network this private cloud is attached to. Specify the name
+      in the following form: `projects/{project}/global/networks/{network_id}`
+      where `{project}` can either be a project number or a project ID.
+    serviceNetwork: Output only. DEPRECATED: Output only. The relative
+      resource name of the service VPC network this private cloud is attached
+      to. The name is specified in the following form:
       `projects/{service_project_number}/global/networks/{network_id}`.
   """
 
@@ -668,12 +668,13 @@ class NetworkPolicy(_messages.Message):
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/us-central1/networkPolicies/my-network-
       policy`
-    network: Required. Name of the network in the consumer project which is
-      peered or will be peered with the service network. Provide the network
-      name in the form of `projects/{project}/global/networks/{network}`,
-      where `{project}` is the project ID or project number of the project
-      containing the network. In case of shared VPC, use the project ID or
-      project number of the host project containing the shared VPC network.
+    network: Optional. DEPRECATED: Optional. Name of the network in the
+      consumer project which is peered or will be peered with the service
+      network. Provide the network name in the form of
+      `projects/{project}/global/networks/{network}`, where `{project}` is the
+      project ID or project number of the project containing the network. In
+      case of shared VPC, use the project ID or project number of the host
+      project containing the shared VPC network.
     uid: Output only. System-generated unique identifier for the resource.
     updateTime: Output only. Last update time of this resource in RFC3339 text
       format.

@@ -26,17 +26,24 @@ from googlecloudsdk.core import log
 class Client(object):
   """API client for Cloud DNS managed zones."""
 
-  def __init__(self, version, client, messages=None):
+  def __init__(self, version, client, messages=None, location=None):
     self.version = version
     self.client = client
     self._service = self.client.managedZones
     self.messages = messages or self.client.MESSAGES_MODULE
+    self.location = location
 
   @classmethod
-  def FromApiVersion(cls, version):
-    return cls(version, util.GetApiClient(version))
+  def FromApiVersion(cls, version, location=None):
+    return cls(version, util.GetApiClient(version), location=location)
 
   def Get(self, zone_ref):
+    if self.location:
+      return self._service.Get(
+          self.messages.DnsManagedZonesGetRequest(
+              project=zone_ref.project,
+              managedZone=zone_ref.managedZone,
+              location=self.location))
     return self._service.Get(
         self.messages.DnsManagedZonesGetRequest(
             project=zone_ref.project,
@@ -69,19 +76,26 @@ class Client(object):
       zone.serviceDirectoryConfig = service_directory_config
     if cloud_logging_config:
       zone.cloudLoggingConfig = cloud_logging_config
+    request = self.messages.DnsManagedZonesPatchRequest(
+        managedZoneResource=zone,
+        project=zone_ref.project,
+        managedZone=zone_ref.Name())
 
-    operation = self._service.Patch(
-        self.messages.DnsManagedZonesPatchRequest(
-            managedZoneResource=zone,
-            project=zone_ref.project,
-            managedZone=zone_ref.Name()))
+    if self.location:
+      request.location = self.location
 
+    operation = self._service.Patch(request)
+
+    operation_param = {
+        'project': zone_ref.project,
+        'managedZone': zone_ref.Name(),
+    }
+
+    if self.location:
+      operation_param['location'] = self.location
     operation_ref = util.GetRegistry(self.version).Parse(
         operation.id,
-        params={
-            'project': zone_ref.project,
-            'managedZone': zone_ref.Name(),
-        },
+        params=operation_param,
         collection='dns.managedZoneOperations')
 
     if is_async:
@@ -93,7 +107,8 @@ class Client(object):
     return operations.WaitFor(
         self.version,
         operation_ref,
-        'Updating managed zone [{}]'.format(zone_ref.Name())
+        'Updating managed zone [{}]'.format(zone_ref.Name()),
+        self.location
     )
 
   def UpdateLabels(self, zone_ref, labels):
@@ -107,12 +122,16 @@ class Client(object):
             project=zone_ref.project,
             managedZone=zone_ref.Name()))
 
+    operation_param = {
+        'project': zone_ref.project,
+        'managedZone': zone_ref.Name(),
+    }
+
+    if self.location:
+      operation_param['location'] = self.location
     operation_ref = util.GetRegistry(self.version).Parse(
         operation.id,
-        params={
-            'project': zone_ref.project,
-            'managedZone': zone_ref.Name(),
-        },
+        params=operation_param,
         collection='dns.managedZoneOperations')
 
     return operations.WaitFor(

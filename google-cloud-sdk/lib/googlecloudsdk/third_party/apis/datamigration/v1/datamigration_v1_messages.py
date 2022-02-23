@@ -1003,6 +1003,28 @@ class DatamigrationProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class DumpFlag(_messages.Message):
+  r"""Dump flag definition.
+
+  Fields:
+    name: The name of the flag
+    value: The value of the flag.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class DumpFlags(_messages.Message):
+  r"""Dump flags definition.
+
+  Fields:
+    dumpFlags: The flags for the initial dump.
+  """
+
+  dumpFlags = _messages.MessageField('DumpFlag', 1, repeated=True)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -1251,8 +1273,11 @@ class MigrationJob(_messages.Message):
     destinationDatabase: The database engine type and provider of the
       destination.
     displayName: The migration job display name.
+    dumpFlags: The initial dump flags. This field and the "dump_path" field
+      are mutually exclusive.
     dumpPath: The path to the dump file in Google Cloud Storage, in the
-      format: (gs://[BUCKET_NAME]/[OBJECT_NAME]).
+      format: (gs://[BUCKET_NAME]/[OBJECT_NAME]). This field and the
+      "dump_flags" field are mutually exclusive.
     duration: Output only. The duration of the migration job (in seconds). A
       duration in seconds with up to nine fractional digits, terminated by
       's'. Example: "3.5s".
@@ -1383,21 +1408,22 @@ class MigrationJob(_messages.Message):
   destination = _messages.StringField(2)
   destinationDatabase = _messages.MessageField('DatabaseType', 3)
   displayName = _messages.StringField(4)
-  dumpPath = _messages.StringField(5)
-  duration = _messages.StringField(6)
-  endTime = _messages.StringField(7)
-  error = _messages.MessageField('Status', 8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  phase = _messages.EnumField('PhaseValueValuesEnum', 11)
-  reverseSshConnectivity = _messages.MessageField('ReverseSshConnectivity', 12)
-  source = _messages.StringField(13)
-  sourceDatabase = _messages.MessageField('DatabaseType', 14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 16)
-  type = _messages.EnumField('TypeValueValuesEnum', 17)
-  updateTime = _messages.StringField(18)
-  vpcPeeringConnectivity = _messages.MessageField('VpcPeeringConnectivity', 19)
+  dumpFlags = _messages.MessageField('DumpFlags', 5)
+  dumpPath = _messages.StringField(6)
+  duration = _messages.StringField(7)
+  endTime = _messages.StringField(8)
+  error = _messages.MessageField('Status', 9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  name = _messages.StringField(11)
+  phase = _messages.EnumField('PhaseValueValuesEnum', 12)
+  reverseSshConnectivity = _messages.MessageField('ReverseSshConnectivity', 13)
+  source = _messages.StringField(14)
+  sourceDatabase = _messages.MessageField('DatabaseType', 15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 17)
+  type = _messages.EnumField('TypeValueValuesEnum', 18)
+  updateTime = _messages.StringField(19)
+  vpcPeeringConnectivity = _messages.MessageField('VpcPeeringConnectivity', 20)
 
 
 class MigrationJobVerificationError(_messages.Message):

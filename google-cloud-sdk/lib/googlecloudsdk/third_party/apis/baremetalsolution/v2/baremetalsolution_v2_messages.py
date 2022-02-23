@@ -66,6 +66,36 @@ class BaremetalsolutionProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class BaremetalsolutionProjectsLocationsInstancesDisableInteractiveSerialConsoleRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsInstancesDisableInteractiveSerialCon
+  soleRequest object.
+
+  Fields:
+    disableInteractiveSerialConsoleRequest: A
+      DisableInteractiveSerialConsoleRequest resource to be passed as the
+      request body.
+    name: Required. Name of the resource.
+  """
+
+  disableInteractiveSerialConsoleRequest = _messages.MessageField('DisableInteractiveSerialConsoleRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class BaremetalsolutionProjectsLocationsInstancesEnableInteractiveSerialConsoleRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsInstancesEnableInteractiveSerialCons
+  oleRequest object.
+
+  Fields:
+    enableInteractiveSerialConsoleRequest: A
+      EnableInteractiveSerialConsoleRequest resource to be passed as the
+      request body.
+    name: Required. Name of the resource.
+  """
+
+  enableInteractiveSerialConsoleRequest = _messages.MessageField('EnableInteractiveSerialConsoleRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class BaremetalsolutionProjectsLocationsInstancesGetRequest(_messages.Message):
   r"""A BaremetalsolutionProjectsLocationsInstancesGetRequest object.
 
@@ -167,6 +197,17 @@ class BaremetalsolutionProjectsLocationsNetworksGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class BaremetalsolutionProjectsLocationsNetworksListNetworkUsageRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsNetworksListNetworkUsageRequest
+  object.
+
+  Fields:
+    location: Required. Parent value (project and location).
+  """
+
+  location = _messages.StringField(1, required=True)
+
+
 class BaremetalsolutionProjectsLocationsNetworksListRequest(_messages.Message):
   r"""A BaremetalsolutionProjectsLocationsNetworksListRequest object.
 
@@ -216,15 +257,32 @@ class BaremetalsolutionProjectsLocationsNfsSharesListRequest(_messages.Message):
   r"""A BaremetalsolutionProjectsLocationsNfsSharesListRequest object.
 
   Fields:
+    filter: List filter.
     pageSize: Requested page size. The server might return fewer items than
       requested. If unspecified, server will pick an appropriate default.
     pageToken: A token identifying a page of results from the server.
     parent: Required. Parent value for ListNfsSharesRequest.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class BaremetalsolutionProjectsLocationsNfsSharesPatchRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsNfsSharesPatchRequest object.
+
+  Fields:
+    name: Output only. The name of the NFS share.
+    nfsShare: A NfsShare resource to be passed as the request body.
+    updateMask: The list of fields to update. The only currently supported
+      fields are: `labels`
+  """
+
+  name = _messages.StringField(1, required=True)
+  nfsShare = _messages.MessageField('NfsShare', 2)
+  updateMask = _messages.StringField(3)
 
 
 class BaremetalsolutionProjectsLocationsProvisioningConfigsSubmitRequest(_messages.Message):
@@ -336,6 +394,49 @@ class BaremetalsolutionProjectsLocationsSnapshotSchedulePoliciesPatchRequest(_me
   updateMask = _messages.StringField(3)
 
 
+class BaremetalsolutionProjectsLocationsSshKeysCreateRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsSshKeysCreateRequest object.
+
+  Fields:
+    parent: Required. The parent containing the SSH keys.
+    sSHKey: A SSHKey resource to be passed as the request body.
+    sshKeyId: Required. The ID to use for the key, which will become the final
+      component of the key's resource name. This value must match the regex:
+      [a-zA-Z0-9@.\-_]{1,64}
+  """
+
+  parent = _messages.StringField(1, required=True)
+  sSHKey = _messages.MessageField('SSHKey', 2)
+  sshKeyId = _messages.StringField(3)
+
+
+class BaremetalsolutionProjectsLocationsSshKeysDeleteRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsSshKeysDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the SSH key to delete. Currently, the only
+      valid value for the location is "global".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BaremetalsolutionProjectsLocationsSshKeysListRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsSshKeysListRequest object.
+
+  Fields:
+    pageSize: The maximum number of items to return.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+    parent: Required. The parent containing the SSH keys. Currently, the only
+      valid value for the location is "global".
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class BaremetalsolutionProjectsLocationsVolumesGetRequest(_messages.Message):
   r"""A BaremetalsolutionProjectsLocationsVolumesGetRequest object.
 
@@ -399,6 +500,7 @@ class BaremetalsolutionProjectsLocationsVolumesPatchRequest(_messages.Message):
     updateMask: The list of fields to update. The only currently supported
       fields are: `snapshot_auto_delete_behavior`
       `snapshot_schedule_policy_name` 'labels' 'requested_size_gib'
+      'snapshot_enabled' 'snapshot_reservation_detail.reserved_space_percent'
     volume: A Volume resource to be passed as the request body.
   """
 
@@ -471,6 +573,10 @@ class BaremetalsolutionProjectsLocationsVolumesSnapshotsRestoreVolumeSnapshotReq
   volumeSnapshot = _messages.StringField(2, required=True)
 
 
+class DisableInteractiveSerialConsoleRequest(_messages.Message):
+  r"""Message for disabling the interactive serial console on an instance."""
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -479,6 +585,10 @@ class Empty(_messages.Message):
   representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class EnableInteractiveSerialConsoleRequest(_messages.Message):
+  r"""Message for enabling the interactive serial console on an instance."""
 
 
 class Instance(_messages.Message):
@@ -664,6 +774,16 @@ class ListLunsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListNetworkUsageResponse(_messages.Message):
+  r"""Response with Networks with IPs
+
+  Fields:
+    networks: Networks with IPs.
+  """
+
+  networks = _messages.MessageField('NetworkUsage', 1, repeated=True)
+
+
 class ListNetworksResponse(_messages.Message):
   r"""Response message containing the list of networks.
 
@@ -703,6 +823,19 @@ class ListProvisioningQuotasResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   provisioningQuotas = _messages.MessageField('ProvisioningQuota', 2, repeated=True)
+
+
+class ListSSHKeysResponse(_messages.Message):
+  r"""Message for response of ListSSHKeys.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    sshKeys: The SSH keys registered in the project.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sshKeys = _messages.MessageField('SSHKey', 2, repeated=True)
 
 
 class ListSnapshotSchedulePoliciesResponse(_messages.Message):
@@ -1008,12 +1141,14 @@ class NetworkAddress(_messages.Message):
 
   Fields:
     address: IPv4 address to be assigned to the server.
+    existingNetworkId: Name of the existing network to use.
     networkId: Id of the network to use, within the same ProvisioningConfig
       request.
   """
 
   address = _messages.StringField(1)
-  networkId = _messages.StringField(2)
+  existingNetworkId = _messages.StringField(2)
+  networkId = _messages.StringField(3)
 
 
 class NetworkConfig(_messages.Message):
@@ -1028,6 +1163,8 @@ class NetworkConfig(_messages.Message):
   Fields:
     bandwidth: Interconnect bandwidth. Set only when type is CLIENT.
     cidr: CIDR range of the network.
+    gcpService: The GCP service of the network. Available gcp_service are in
+      https://cloud.google.com/bare-metal/docs/bms-planning.
     id: A transient unique identifier to identify a volume within an
       ProvisioningConfig request.
     name: Output only. The name of the network config.
@@ -1085,12 +1222,25 @@ class NetworkConfig(_messages.Message):
 
   bandwidth = _messages.EnumField('BandwidthValueValuesEnum', 1)
   cidr = _messages.StringField(2)
-  id = _messages.StringField(3)
-  name = _messages.StringField(4)
-  serviceCidr = _messages.EnumField('ServiceCidrValueValuesEnum', 5)
-  type = _messages.EnumField('TypeValueValuesEnum', 6)
-  userNote = _messages.StringField(7)
-  vlanAttachments = _messages.MessageField('IntakeVlanAttachment', 8, repeated=True)
+  gcpService = _messages.StringField(3)
+  id = _messages.StringField(4)
+  name = _messages.StringField(5)
+  serviceCidr = _messages.EnumField('ServiceCidrValueValuesEnum', 6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
+  userNote = _messages.StringField(8)
+  vlanAttachments = _messages.MessageField('IntakeVlanAttachment', 9, repeated=True)
+
+
+class NetworkUsage(_messages.Message):
+  r"""Network with all used IP addresses.
+
+  Fields:
+    network: Network.
+    usedIps: All used IP addresses in this network.
+  """
+
+  network = _messages.MessageField('Network', 1)
+  usedIps = _messages.StringField(2, repeated=True)
 
 
 class NfsExport(_messages.Message):
@@ -1139,8 +1289,12 @@ class NfsShare(_messages.Message):
   Enums:
     StateValueValuesEnum: The state of the NFS share.
 
+  Messages:
+    LabelsValue: Labels as key value pairs.
+
   Fields:
     allowedClients: List of allowed access points.
+    labels: Labels as key value pairs.
     name: Output only. The name of the NFS share.
     nfsShareId: Output only. An identifier for the NFS share, generated by the
       backend.
@@ -1158,11 +1312,36 @@ class NfsShare(_messages.Message):
     STATE_UNSPECIFIED = 0
     PROVISIONED = 1
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels as key value pairs.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   allowedClients = _messages.MessageField('AllowedClient', 1, repeated=True)
-  name = _messages.StringField(2)
-  nfsShareId = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  volume = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  nfsShareId = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  volume = _messages.StringField(6)
 
 
 class Operation(_messages.Message):
@@ -1277,6 +1456,8 @@ class ProvisioningConfig(_messages.Message):
   r"""A provisioning configuration.
 
   Fields:
+    handoverServiceAccount: A service account to enable customers to access
+      instance credentials upon handover.
     instances: Instances to be created.
     name: Output only. The name of the provisioning config.
     networks: Networks to be created.
@@ -1284,11 +1465,12 @@ class ProvisioningConfig(_messages.Message):
     volumes: Volumes to be created.
   """
 
-  instances = _messages.MessageField('InstanceConfig', 1, repeated=True)
-  name = _messages.StringField(2)
-  networks = _messages.MessageField('NetworkConfig', 3, repeated=True)
-  ticketId = _messages.StringField(4)
-  volumes = _messages.MessageField('VolumeConfig', 5, repeated=True)
+  handoverServiceAccount = _messages.StringField(1)
+  instances = _messages.MessageField('InstanceConfig', 2, repeated=True)
+  name = _messages.StringField(3)
+  networks = _messages.MessageField('NetworkConfig', 4, repeated=True)
+  ticketId = _messages.StringField(5)
+  volumes = _messages.MessageField('VolumeConfig', 6, repeated=True)
 
 
 class ProvisioningQuota(_messages.Message):
@@ -1346,6 +1528,21 @@ class RestoreVolumeSnapshotRequest(_messages.Message):
   r"""Message for restoring a volume snapshot."""
 
 
+class SSHKey(_messages.Message):
+  r"""An SSH key, used for authorizing with the interactive serial console
+  feature.
+
+  Fields:
+    name: Output only. The name of this SSH key. Currently, the only valid
+      value for the location is "global".
+    publicKey: The public SSH key. This must be in OpenSSH .authorized_keys
+      format.
+  """
+
+  name = _messages.StringField(1)
+  publicKey = _messages.StringField(2)
+
+
 class Schedule(_messages.Message):
   r"""A snapshot schedule.
 
@@ -1369,6 +1566,11 @@ class SnapshotReservationDetail(_messages.Message):
   Fields:
     reservedSpaceGib: The space on this storage volume reserved for snapshots,
       shown in GiB.
+    reservedSpacePercent: Percent of the total Volume size reserved for
+      snapshot copies. Enabling snapshots requires reserving 20% or more of
+      the storage volume space for snapshots. Maximum reserved space for
+      snapshots is 40%. Setting this field will effectively set
+      snapshot_enabled to true.
     reservedSpaceRemainingGib: The amount, in GiB, of available space in this
       storage volume's reserved snapshot space.
     reservedSpaceUsedPercent: The percent of snapshot space on this storage
@@ -1378,8 +1580,9 @@ class SnapshotReservationDetail(_messages.Message):
   """
 
   reservedSpaceGib = _messages.IntegerField(1)
-  reservedSpaceRemainingGib = _messages.IntegerField(2)
-  reservedSpaceUsedPercent = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  reservedSpacePercent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  reservedSpaceRemainingGib = _messages.IntegerField(3)
+  reservedSpaceUsedPercent = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class SnapshotSchedulePolicy(_messages.Message):
@@ -1661,6 +1864,7 @@ class Volume(_messages.Message):
     requestedSizeGib: The requested size of this storage volume, in GiB.
     snapshotAutoDeleteBehavior: The behavior to use when snapshot reserved
       space is full.
+    snapshotEnabled: Whether snapshots are enabled.
     snapshotReservationDetail: Details about snapshot space reservation and
       usage on the storage volume.
     snapshotSchedulePolicy: The name of the snapshot schedule policy in use
@@ -1742,10 +1946,11 @@ class Volume(_messages.Message):
   remainingSpaceGib = _messages.IntegerField(6)
   requestedSizeGib = _messages.IntegerField(7)
   snapshotAutoDeleteBehavior = _messages.EnumField('SnapshotAutoDeleteBehaviorValueValuesEnum', 8)
-  snapshotReservationDetail = _messages.MessageField('SnapshotReservationDetail', 9)
-  snapshotSchedulePolicy = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 12)
+  snapshotEnabled = _messages.BooleanField(9)
+  snapshotReservationDetail = _messages.MessageField('SnapshotReservationDetail', 10)
+  snapshotSchedulePolicy = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 13)
 
 
 class VolumeConfig(_messages.Message):
@@ -1756,6 +1961,8 @@ class VolumeConfig(_messages.Message):
     TypeValueValuesEnum: The type of this Volume.
 
   Fields:
+    gcpService: The GCP service of the storage volume. Available gcp_service
+      are in https://cloud.google.com/bare-metal/docs/bms-planning.
     id: A transient unique identifier to identify a volume within an
       ProvisioningConfig request.
     lunRanges: LUN ranges to be configured. Set only when protocol is
@@ -1796,16 +2003,17 @@ class VolumeConfig(_messages.Message):
     FLASH = 1
     DISK = 2
 
-  id = _messages.StringField(1)
-  lunRanges = _messages.MessageField('LunRange', 2, repeated=True)
-  machineIds = _messages.StringField(3, repeated=True)
-  name = _messages.StringField(4)
-  nfsExports = _messages.MessageField('NfsExport', 5, repeated=True)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 6)
-  sizeGb = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  snapshotsEnabled = _messages.BooleanField(8)
-  type = _messages.EnumField('TypeValueValuesEnum', 9)
-  userNote = _messages.StringField(10)
+  gcpService = _messages.StringField(1)
+  id = _messages.StringField(2)
+  lunRanges = _messages.MessageField('LunRange', 3, repeated=True)
+  machineIds = _messages.StringField(4, repeated=True)
+  name = _messages.StringField(5)
+  nfsExports = _messages.MessageField('NfsExport', 6, repeated=True)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 7)
+  sizeGb = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  snapshotsEnabled = _messages.BooleanField(9)
+  type = _messages.EnumField('TypeValueValuesEnum', 10)
+  userNote = _messages.StringField(11)
 
 
 class VolumeSnapshot(_messages.Message):

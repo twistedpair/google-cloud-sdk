@@ -760,7 +760,7 @@
           "description": "Required. The script interpreter to use.",
           "type": "string",
           "enumDescriptions": [
-            "Defaults to NONE.",
+            "Invalid value, the request will return validation error.",
             "If an interpreter is not specified, the source is executed directly. This execution, without an interpreter, only succeeds for executables and scripts that have shebang lines.",
             "Indicates that the script runs with `\/bin\/sh` on Linux and `cmd.exe` on Windows.",
             "Indicates that the script runs with PowerShell."

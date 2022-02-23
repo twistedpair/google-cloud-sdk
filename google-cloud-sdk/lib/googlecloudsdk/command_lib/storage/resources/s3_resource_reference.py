@@ -80,6 +80,15 @@ def _get_error_or_exists_string(value):
     return resource_util.get_exists_string(value)
 
 
+def _get_error_string_or_value(value):
+  """Returns the error string if value is error or the value itself."""
+  if isinstance(value, errors.S3ApiError):
+    return str(value)
+  if isinstance(value, dict) and 'ResponseMetadata' in value:
+    value.pop('ResponseMetadata')
+  return value
+
+
 def _get_formatted_acl_section(acl_metadata):
   """Returns formatted ACLs, error, or formatted none value."""
   if isinstance(acl_metadata, errors.S3ApiError):
@@ -283,6 +292,48 @@ class S3BucketResource(resource_reference.BucketResource):
 
   def get_full_metadata_string(self):
     return _get_full_bucket_metadata_string(self)
+
+  def get_displayable_bucket_data(self):
+    # Handle versioning.
+    versioning = self.metadata.get('Versioning', {})
+    if isinstance(versioning, errors.S3ApiError):
+      versioning_enabled = str(versioning)
+    else:
+      versioning_status = versioning.get('Status')
+      if versioning_status == 'Enabled':
+        versioning_enabled = True
+      elif versioning_status == 'Suspended':
+        versioning_enabled = False
+      else:
+        versioning_enabled = None
+
+    # Handle requester pays.
+    payer = self.metadata.get('Payer')
+    if isinstance(payer, errors.S3ApiError):
+      requester_pays = str(payer)
+    elif payer == 'Requester':
+      requester_pays = True
+    elif payer == 'BucketOwner':
+      requester_pays = False
+    else:
+      requester_pays = None
+
+    return resource_reference.DisplayableBucketData(
+        name=self.name,
+        url_string=self.storage_url.url_string,
+        acl=_get_error_string_or_value(self.metadata.get('ACL')),
+        cors_config=_get_error_string_or_value(self.metadata.get('CORSRules')),
+        encryption_config=_get_error_string_or_value(
+            self.metadata.get('ServerSideEncryptionConfiguration')),
+        location=_get_error_string_or_value(
+            self.metadata.get('LocationConstraint')),
+        logging_config=_get_error_string_or_value(
+            self.metadata.get('LoggingEnabled')),
+        lifecycle_config=_get_error_string_or_value(
+            self.metadata.get('LifecycleConfiguration')),
+        requester_pays=requester_pays,
+        versioning_enabled=versioning_enabled,
+        website_config=_get_error_string_or_value(self.metadata.get('Website')))
 
   def get_json_dump(self):
     return _get_json_dump(self)

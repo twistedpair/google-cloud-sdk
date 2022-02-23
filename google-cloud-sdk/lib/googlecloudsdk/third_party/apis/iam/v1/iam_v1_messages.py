@@ -778,6 +778,16 @@ class IamLocationsWorkforcePoolsSubjectsDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class IamLocationsWorkforcePoolsSubjectsOperationsGetRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsSubjectsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class IamLocationsWorkforcePoolsSubjectsUndeleteRequest(_messages.Message):
   r"""A IamLocationsWorkforcePoolsSubjectsUndeleteRequest object.
 
@@ -1168,6 +1178,95 @@ class IamProjectsLocationsWorkloadIdentityPoolsProvidersGetRequest(_messages.Mes
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsProvidersKeysCreateRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsProvidersKeysCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The parent provider resource to create the key in.
+    workloadIdentityPoolProviderKey: A WorkloadIdentityPoolProviderKey
+      resource to be passed as the request body.
+    workloadIdentityPoolProviderKeyId: Required. The ID to use for the key,
+      which becomes the final component of the resource name. This value
+      should be 4-32 characters, and may contain the characters [a-z0-9-].
+  """
+
+  parent = _messages.StringField(1, required=True)
+  workloadIdentityPoolProviderKey = _messages.MessageField('WorkloadIdentityPoolProviderKey', 2)
+  workloadIdentityPoolProviderKeyId = _messages.StringField(3)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsProvidersKeysDeleteRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsProvidersKeysDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the encryption key to delete.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsProvidersKeysGetRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsProvidersKeysGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the key to retrieve.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsProvidersKeysListRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsProvidersKeysListRequest
+  object.
+
+  Fields:
+    pageSize: The maximum number of keys to return. If unspecified, all keys
+      are returned. The maximum value is 10; values above 10 are truncated to
+      10.
+    pageToken: A page token, received from a previous
+      `ListWorkloadIdentityPoolProviderKeys` call. Provide this to retrieve
+      the subsequent page.
+    parent: Required. The parent provider resource to list encryption keys
+      for.
+    showDeleted: Whether to return soft deleted resources as well.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  showDeleted = _messages.BooleanField(4)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsProvidersKeysOperationsGetRequest(_messages.Message):
+  r"""A
+  IamProjectsLocationsWorkloadIdentityPoolsProvidersKeysOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsProvidersKeysUndeleteRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsProvidersKeysUndeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the encryption key to undelete.
+    undeleteWorkloadIdentityPoolProviderKeyRequest: A
+      UndeleteWorkloadIdentityPoolProviderKeyRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  undeleteWorkloadIdentityPoolProviderKeyRequest = _messages.MessageField('UndeleteWorkloadIdentityPoolProviderKeyRequest', 2)
 
 
 class IamProjectsLocationsWorkloadIdentityPoolsProvidersListRequest(_messages.Message):
@@ -2015,6 +2114,61 @@ class IamRolesListRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 5)
 
 
+class KeyData(_messages.Message):
+  r"""Represents a public key data along with its format.
+
+  Enums:
+    FormatValueValuesEnum: Output only. The format of the key.
+    KeySpecValueValuesEnum: Immutable. The specifications for the key.
+
+  Fields:
+    format: Output only. The format of the key.
+    key: Output only. The key data. The format of the key is represented by
+      the `format` field.
+    keySpec: Immutable. The specifications for the key.
+    notAfterTime: Output only. Latest timestamp when this key is valid.
+      Attempts to use this key after this time will fail. Only present if the
+      key data represents a x509 certificate.
+    notBeforeTime: Output only. Earliest timestamp when this key is valid.
+      Attempts to use this key before this time will fail. Only present if the
+      key data represents a x509 certificate.
+  """
+
+  class FormatValueValuesEnum(_messages.Enum):
+    r"""Output only. The format of the key.
+
+    Values:
+      KEY_FORMAT_UNSPECIFIED: No format has been specified. This is an invalid
+        format and must not be used.
+      RSA_X509_PEM: A RSA public key wrapped in an X.509v3 certificate
+        ([RFC5280] ( https://www.ietf.org/rfc/rfc5280.txt)), encoded in
+        base64, and wrapped in [public certificate
+        label](https://datatracker.ietf.org/doc/html/rfc7468#section-5.1).
+    """
+    KEY_FORMAT_UNSPECIFIED = 0
+    RSA_X509_PEM = 1
+
+  class KeySpecValueValuesEnum(_messages.Enum):
+    r"""Immutable. The specifications for the key.
+
+    Values:
+      KEY_SPEC_UNSPECIFIED: No key specification specified.
+      RSA_2048: A 2048 bit RSA key.
+      RSA_3072: A 3072 bit RSA key.
+      RSA_4096: A 4096 bit RSA key.
+    """
+    KEY_SPEC_UNSPECIFIED = 0
+    RSA_2048 = 1
+    RSA_3072 = 2
+    RSA_4096 = 3
+
+  format = _messages.EnumField('FormatValueValuesEnum', 1)
+  key = _messages.StringField(2)
+  keySpec = _messages.EnumField('KeySpecValueValuesEnum', 3)
+  notAfterTime = _messages.StringField(4)
+  notBeforeTime = _messages.StringField(5)
+
+
 class LintPolicyRequest(_messages.Message):
   r"""The request to lint a Cloud IAM policy object.
 
@@ -2191,6 +2345,20 @@ class ListWorkforcePoolsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   workforcePools = _messages.MessageField('WorkforcePool', 2, repeated=True)
+
+
+class ListWorkloadIdentityPoolProviderKeysResponse(_messages.Message):
+  r"""Response message for ListWorkloadIdentityPoolProviderKeys.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    workloadIdentityPoolProviderKeys: A list of
+      WorkloadIdentityPoolProviderKey
+  """
+
+  nextPageToken = _messages.StringField(1)
+  workloadIdentityPoolProviderKeys = _messages.MessageField('WorkloadIdentityPoolProviderKey', 2, repeated=True)
 
 
 class ListWorkloadIdentityPoolProvidersResponse(_messages.Message):
@@ -3173,6 +3341,10 @@ class UndeleteWorkforcePoolSubjectRequest(_messages.Message):
   r"""Request message for UndeleteWorkforcePoolSubject."""
 
 
+class UndeleteWorkloadIdentityPoolProviderKeyRequest(_messages.Message):
+  r"""Request message for UndeleteWorkloadIdentityPoolProviderKey."""
+
+
 class UndeleteWorkloadIdentityPoolProviderRequest(_messages.Message):
   r"""Request message for UndeleteWorkloadIdentityPoolProvider."""
 
@@ -3528,7 +3700,7 @@ class WorkloadIdentityPoolProvider(_messages.Message):
       Google Cloud IAM attribute to map to. The following keys are supported:
       * `google.subject`: The principal IAM is authenticating. You can
       reference this value in IAM bindings. This is also the subject that
-      appears in Cloud Logging logs. Cannot exceed 127 characters. *
+      appears in Cloud Logging logs. Cannot exceed 127 bytes. *
       `google.groups`: Groups the external identity belongs to. You can grant
       groups access to resources using an IAM `principalSet` binding; access
       applies to all members of the group. You can also provide custom
@@ -3585,8 +3757,8 @@ class WorkloadIdentityPoolProvider(_messages.Message):
       Cloud IAM attribute to map to. The following keys are supported: *
       `google.subject`: The principal IAM is authenticating. You can reference
       this value in IAM bindings. This is also the subject that appears in
-      Cloud Logging logs. Cannot exceed 127 characters. * `google.groups`:
-      Groups the external identity belongs to. You can grant groups access to
+      Cloud Logging logs. Cannot exceed 127 bytes. * `google.groups`: Groups
+      the external identity belongs to. You can grant groups access to
       resources using an IAM `principalSet` binding; access applies to all
       members of the group. You can also provide custom attributes by
       specifying `attribute.{custom_attribute}`, where `{custom_attribute}` is
@@ -3657,8 +3829,8 @@ class WorkloadIdentityPoolProvider(_messages.Message):
     attribute to map to. The following keys are supported: * `google.subject`:
     The principal IAM is authenticating. You can reference this value in IAM
     bindings. This is also the subject that appears in Cloud Logging logs.
-    Cannot exceed 127 characters. * `google.groups`: Groups the external
-    identity belongs to. You can grant groups access to resources using an IAM
+    Cannot exceed 127 bytes. * `google.groups`: Groups the external identity
+    belongs to. You can grant groups access to resources using an IAM
     `principalSet` binding; access applies to all members of the group. You
     can also provide custom attributes by specifying
     `attribute.{custom_attribute}`, where `{custom_attribute}` is the name of
@@ -3725,6 +3897,58 @@ class WorkloadIdentityPoolProvider(_messages.Message):
   oidc = _messages.MessageField('Oidc', 8)
   saml = _messages.MessageField('Saml', 9)
   state = _messages.EnumField('StateValueValuesEnum', 10)
+
+
+class WorkloadIdentityPoolProviderKey(_messages.Message):
+  r"""Represents a public key configuration for your workload identity pool
+  provider. The key can be configured in your identity provider to encrypt the
+  SAML assertions. Google holds the corresponding private key which it uses to
+  decrypt encrypted tokens.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the key.
+    UseValueValuesEnum: Immutable. The purpose of the key.
+
+  Fields:
+    expireTime: Output only. Time after which the key will be permanently
+      purged and cannot be recovered. Note that the key may get purged before
+      this timestamp if the total limit of keys per provider is crossed.
+    keyData: Immutable. Public half of the asymmetric key.
+    name: Output only. The resource name of the key.
+    state: Output only. The state of the key.
+    use: Immutable. The purpose of the key.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the key.
+
+    Values:
+      STATE_UNSPECIFIED: State unspecified.
+      ACTIVE: The key is active.
+      DELETED: The key is soft-deleted. Soft-deleted keys are permanently
+        deleted after approximately 30 days. You can restore a soft-deleted
+        key using UndeleteWorkloadIdentityPoolProviderKey. While a key is
+        deleted, you cannot use it during the federation.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    DELETED = 2
+
+  class UseValueValuesEnum(_messages.Enum):
+    r"""Immutable. The purpose of the key.
+
+    Values:
+      KEY_USE_UNSPECIFIED: The key use is not known.
+      ENCRYPTION: The public key is used for encryption purposes.
+    """
+    KEY_USE_UNSPECIFIED = 0
+    ENCRYPTION = 1
+
+  expireTime = _messages.StringField(1)
+  keyData = _messages.MessageField('KeyData', 2)
+  name = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  use = _messages.EnumField('UseValueValuesEnum', 5)
 
 
 encoding.AddCustomJsonFieldMapping(

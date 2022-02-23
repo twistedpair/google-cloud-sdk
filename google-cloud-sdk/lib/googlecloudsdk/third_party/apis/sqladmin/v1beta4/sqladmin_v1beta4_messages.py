@@ -519,8 +519,12 @@ class DatabaseInstance(_messages.Message):
     FailoverReplicaValue: The name and status of the failover replica.
 
   Fields:
+    availableBackupDatabaseVersions: All available database versions in
+      restore flow.
     availableMaintenanceVersions: List all maintenance versions applicable on
       the instance
+    availableUpgradeDatabaseVersions: All available database versions in
+      upgrade flow.
     backendType: The backend type. `SECOND_GEN`: Cloud SQL database instance.
       `EXTERNAL`: A database server that is not managed by Google. This
       property is read-only; use the `tier` property in the `settings` object
@@ -818,43 +822,45 @@ class DatabaseInstance(_messages.Message):
     available = _messages.BooleanField(1)
     name = _messages.StringField(2)
 
-  availableMaintenanceVersions = _messages.StringField(1, repeated=True)
-  backendType = _messages.EnumField('BackendTypeValueValuesEnum', 2)
-  connectionName = _messages.StringField(3)
-  createTime = _messages.StringField(4)
-  currentDiskSize = _messages.IntegerField(5)
-  databaseInstalledVersion = _messages.StringField(6)
-  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 7)
-  diskEncryptionConfiguration = _messages.MessageField('DiskEncryptionConfiguration', 8)
-  diskEncryptionStatus = _messages.MessageField('DiskEncryptionStatus', 9)
-  etag = _messages.StringField(10)
-  failoverReplica = _messages.MessageField('FailoverReplicaValue', 11)
-  gceZone = _messages.StringField(12)
-  installedVersion = _messages.EnumField('InstalledVersionValueValuesEnum', 13)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 14)
-  ipAddresses = _messages.MessageField('IpMapping', 15, repeated=True)
-  ipv6Address = _messages.StringField(16)
-  kind = _messages.StringField(17)
-  maintenanceVersion = _messages.StringField(18)
-  masterInstanceName = _messages.StringField(19)
-  maxDiskSize = _messages.IntegerField(20)
-  name = _messages.StringField(21)
-  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 22)
-  outOfDiskReport = _messages.MessageField('SqlOutOfDiskReport', 23)
-  project = _messages.StringField(24)
-  region = _messages.StringField(25)
-  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 26)
-  replicaNames = _messages.StringField(27, repeated=True)
-  rootPassword = _messages.StringField(28)
-  satisfiesPzs = _messages.BooleanField(29)
-  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 30)
-  secondaryGceZone = _messages.StringField(31)
-  selfLink = _messages.StringField(32)
-  serverCaCert = _messages.MessageField('SslCert', 33)
-  serviceAccountEmailAddress = _messages.StringField(34)
-  settings = _messages.MessageField('Settings', 35)
-  state = _messages.EnumField('StateValueValuesEnum', 36)
-  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 37, repeated=True)
+  availableBackupDatabaseVersions = _messages.MessageField('MajorDatabaseVersion', 1, repeated=True)
+  availableMaintenanceVersions = _messages.StringField(2, repeated=True)
+  availableUpgradeDatabaseVersions = _messages.MessageField('MajorDatabaseVersion', 3, repeated=True)
+  backendType = _messages.EnumField('BackendTypeValueValuesEnum', 4)
+  connectionName = _messages.StringField(5)
+  createTime = _messages.StringField(6)
+  currentDiskSize = _messages.IntegerField(7)
+  databaseInstalledVersion = _messages.StringField(8)
+  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 9)
+  diskEncryptionConfiguration = _messages.MessageField('DiskEncryptionConfiguration', 10)
+  diskEncryptionStatus = _messages.MessageField('DiskEncryptionStatus', 11)
+  etag = _messages.StringField(12)
+  failoverReplica = _messages.MessageField('FailoverReplicaValue', 13)
+  gceZone = _messages.StringField(14)
+  installedVersion = _messages.EnumField('InstalledVersionValueValuesEnum', 15)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 16)
+  ipAddresses = _messages.MessageField('IpMapping', 17, repeated=True)
+  ipv6Address = _messages.StringField(18)
+  kind = _messages.StringField(19)
+  maintenanceVersion = _messages.StringField(20)
+  masterInstanceName = _messages.StringField(21)
+  maxDiskSize = _messages.IntegerField(22)
+  name = _messages.StringField(23)
+  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 24)
+  outOfDiskReport = _messages.MessageField('SqlOutOfDiskReport', 25)
+  project = _messages.StringField(26)
+  region = _messages.StringField(27)
+  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 28)
+  replicaNames = _messages.StringField(29, repeated=True)
+  rootPassword = _messages.StringField(30)
+  satisfiesPzs = _messages.BooleanField(31)
+  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 32)
+  secondaryGceZone = _messages.StringField(33)
+  selfLink = _messages.StringField(34)
+  serverCaCert = _messages.MessageField('SslCert', 35)
+  serviceAccountEmailAddress = _messages.StringField(36)
+  settings = _messages.MessageField('Settings', 37)
+  state = _messages.EnumField('StateValueValuesEnum', 38)
+  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 39, repeated=True)
 
 
 class DatabasesListResponse(_messages.Message):
@@ -1698,6 +1704,47 @@ class MaintenanceWindow(_messages.Message):
   hour = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   kind = _messages.StringField(3)
   updateTrack = _messages.EnumField('UpdateTrackValueValuesEnum', 4)
+
+
+class MajorDatabaseVersion(_messages.Message):
+  r"""A database major version.
+
+  Fields:
+    accessLevel: The access level of database version. The potential values
+      could be `TEST`, `READ_ONLY`, `DEPRECATED`, ``
+    isDefault: Whether this version is a default database version.
+    majorVersion: The version's major version name.
+    minorVersions: A list of database minor versions of a given major database
+      version.
+    version: The database version name.
+    versionDisplayName: The database version's display name.
+  """
+
+  accessLevel = _messages.StringField(1)
+  isDefault = _messages.BooleanField(2)
+  majorVersion = _messages.StringField(3)
+  minorVersions = _messages.MessageField('MinorDatabaseVersion', 4, repeated=True)
+  version = _messages.StringField(5)
+  versionDisplayName = _messages.StringField(6)
+
+
+class MinorDatabaseVersion(_messages.Message):
+  r"""A database minor version.
+
+  Fields:
+    accessLevel: The access level of database version. The potential values
+      could be `TEST`, `READ_ONLY`, `DEPRECATED`, ``
+    fullVersion: The database version's full name.
+    isDefault: Whether this version is a default database version.
+    version: The database version name.
+    versionDisplayName: The database version's display name.
+  """
+
+  accessLevel = _messages.StringField(1)
+  fullVersion = _messages.StringField(2)
+  isDefault = _messages.BooleanField(3)
+  version = _messages.StringField(4)
+  versionDisplayName = _messages.StringField(5)
 
 
 class MySqlReplicaConfiguration(_messages.Message):

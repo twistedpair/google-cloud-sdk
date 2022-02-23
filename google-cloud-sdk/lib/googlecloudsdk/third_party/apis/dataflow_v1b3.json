@@ -543,7 +543,7 @@
     },
     "Job": {
       "id": "Job",
-      "description": "Defines a job to be run by the Cloud Dataflow service. nextID: 26",
+      "description": "Defines a job to be run by the Cloud Dataflow service.",
       "type": "object",
       "properties": {
         "id": {

@@ -1032,7 +1032,7 @@ def _GetMetricOverrides(args):
       data = console_io.ReadFromFileOrStdin(
           args.metric_overrides_file, binary=False)
     return data.split('\n')
-  return None
+  return []
 
 
 def _SetDataprocMetricConfig(args, cluster_config, dataproc):
@@ -1063,21 +1063,21 @@ def _SetDataprocMetricConfig(args, cluster_config, dataproc):
   metric_source_to_overrides_dict = dict()
   metric_overrides = [m.strip() for m in _GetMetricOverrides(args) if m.strip()]
   if metric_overrides:
+    invalid_metric_overrides = []
     valid_metric_prefixes = [
         _GetCamelCaseMetricSource(ms) for ms in args.metric_sources
     ]
-    invalid_metric_overrides = []
     for metric in metric_overrides:
       prefix = metric.split(':')[0]
       if prefix not in valid_metric_prefixes:
         invalid_metric_overrides.append(metric)
       metric_source_to_overrides_dict.setdefault(prefix, []).append(metric)
-  if invalid_metric_overrides:
-    raise exceptions.ArgumentError(
-        'Found invalid metric overrides: ' +
-        ','.join(invalid_metric_overrides) +
-        '. Please ensure the metric overrides only have the following prefixes that correspond to the metric-sources that are enabled: '
-        + ','.join(valid_metric_prefixes))
+    if invalid_metric_overrides:
+      raise exceptions.ArgumentError(
+          'Found invalid metric overrides: ' +
+          ','.join(invalid_metric_overrides) +
+          '. Please ensure the metric overrides only have the following prefixes that correspond to the metric-sources that are enabled: '
+          + ','.join(valid_metric_prefixes))
 
   cluster_config.dataprocMetricConfig = (
       dataproc.messages.DataprocMetricConfig(metrics=[]))

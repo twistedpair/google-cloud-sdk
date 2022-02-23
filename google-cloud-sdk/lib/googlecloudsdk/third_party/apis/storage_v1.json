@@ -66,6 +66,11 @@
    "type": "string",
    "description": "Deprecated. Please use quotaUser instead.",
    "location": "query"
+  },
+  "uploadType": {
+    "type": "string",
+    "description": "Upload protocol for media (e.g. \"media\", \"multipart\", \"resumable\").",
+    "location": "query"
   }
  },
  "auth": {

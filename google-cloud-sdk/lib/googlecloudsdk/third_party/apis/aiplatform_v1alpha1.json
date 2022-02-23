@@ -425,6 +425,10 @@
           "description": "The Google Cloud Storage location where the output is to be written to. In the given directory a new directory will be created with name: `export-data--` where timestamp is in YYYY-MM-DDThh:mm:ss.sssZ ISO-8601 format. All export output will be written into that directory. Inside that directory, annotations with the same schema will be grouped into sub directories which are named with the corresponding annotations' schema title. Inside these sub directories, a schema.yaml will be created to describe the output format.",
           "$ref": "GoogleCloudAiplatformV1alpha1GcsDestination"
         },
+        "fractionSplit": {
+          "description": "Split based on fractions defining the size of each set.",
+          "$ref": "GoogleCloudAiplatformV1alpha1ExportFractionSplit"
+        },
         "annotationsFilter": {
           "description": "A filter on Annotations of the Dataset. Only Annotations on to-be-exported DataItems(specified by data_items_filter) that match this filter will be exported. The filter syntax is the same as in ListAnnotations.",
           "type": "string"
@@ -439,6 +443,28 @@
         "outputUriPrefix": {
           "description": "Required. Google Cloud Storage URI to output directory. If the uri doesn't end with '\/', a '\/' will be automatically appended. The directory is created if it doesn't exist.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1ExportFractionSplit": {
+      "id": "GoogleCloudAiplatformV1alpha1ExportFractionSplit",
+      "description": "Assigns the input data to training, validation, and test sets as per the given fractions. Any of `training_fraction`, `validation_fraction` and `test_fraction` may optionally be provided, they must sum to up to 1. If the provided ones sum to less than 1, the remainder is assigned to sets as decided by Vertex AI. If none of the fractions are set, by default roughly 80% of data is used for training, 10% for validation, and 10% for test.",
+      "type": "object",
+      "properties": {
+        "trainingFraction": {
+          "description": "The fraction of the input data that is to be used to train the Model.",
+          "type": "number",
+          "format": "double"
+        },
+        "validationFraction": {
+          "description": "The fraction of the input data that is to be used to validate the Model.",
+          "type": "number",
+          "format": "double"
+        },
+        "testFraction": {
+          "description": "The fraction of the input data that is to be used to evaluate the Model.",
+          "type": "number",
+          "format": "double"
         }
       }
     },
@@ -1611,6 +1637,13 @@
           "description": "Specifies the service account for workload run-as account. Users submitting jobs must have act-as permission on this run-as account. If unspecified, the [Vertex AI Custom Code Service Agent](https:\/\/cloud.google.com\/vertex-ai\/docs\/general\/access-control#service-agents) for the CustomJob's project is used.",
           "type": "string"
         },
+        "reservedIpRanges": {
+          "description": "Optional. A list of names for the reserved ip ranges under the VPC network that can be used for this job. If set, we will deploy the job within the provided ip ranges. Otherwise, the job will be deployed to any ip ranges under the provided VPC network. Example: ['vertex-ai-ip-range'].",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "tensorboard": {
           "description": "Optional. The name of a Vertex AI Tensorboard resource to which this CustomJob will upload Tensorboard logs. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}`",
           "type": "string"
@@ -2111,6 +2144,10 @@
           "description": "Deprecated. The automated early stopping using convex stopping rule.",
           "$ref": "GoogleCloudAiplatformV1alpha1StudySpecConvexStopConfig"
         },
+        "convexAutomatedStoppingSpec": {
+          "description": "The automated early stopping spec using convex stopping rule.",
+          "$ref": "GoogleCloudAiplatformV1alpha1StudySpecConvexAutomatedStoppingSpec"
+        },
         "metrics": {
           "description": "Required. Metric specs for the Study.",
           "type": "array",
@@ -2203,6 +2240,36 @@
         },
         "useSeconds": {
           "description": "This bool determines whether or not the rule is applied based on elapsed_secs or steps. If use_seconds==false, the early stopping decision is made according to the predicted objective values according to the target steps. If use_seconds==true, elapsed_secs is used instead of steps. Also, in this case, the parameters max_num_steps and min_num_steps are overloaded to contain max_elapsed_seconds and min_elapsed_seconds.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1StudySpecConvexAutomatedStoppingSpec": {
+      "id": "GoogleCloudAiplatformV1alpha1StudySpecConvexAutomatedStoppingSpec",
+      "description": "Configuration for ConvexAutomatedStoppingSpec. When there are enough completed trials (configured by min_measurement_count), for pending trials with enough measurements and steps, the policy first computes an overestimate of the objective value at max_num_steps according to the slope of the incomplete objective value curve. No prediction can be made if the curve is completely flat. If the overestimation is worse than the best objective value of the completed trials, this pending trial will be early-stopped, but a last measurement will be added to the pending trial with max_num_steps and predicted objective value from the autoregression model.",
+      "type": "object",
+      "properties": {
+        "maxStepCount": {
+          "description": "Steps used in predicting the final objective for early stopped trials. In general, it's set to be the same as the defined steps in training \/ tuning. If not defined, it will learn it from the completed trials. When use_steps is false, this field is set to the maximum elapsed seconds.",
+          "type": "string",
+          "format": "int64"
+        },
+        "minStepCount": {
+          "description": "Minimum number of steps for a trial to complete. Trials which do not have a measurement with step_count > min_step_count won't be considered for early stopping. It's ok to set it to 0, and a trial can be early stopped at any stage. By default, min_step_count is set to be one-tenth of the max_step_count. When use_elapsed_duration is true, this field is set to the minimum elapsed seconds.",
+          "type": "string",
+          "format": "int64"
+        },
+        "minMeasurementCount": {
+          "description": "The minimal number of measurements in a Trial. Early-stopping checks will not trigger if less than min_measurement_count+1 completed trials or pending trials with less than min_measurement_count measurements. If not defined, the default value is 5.",
+          "type": "string",
+          "format": "int64"
+        },
+        "learningRateParameterName": {
+          "description": "The hyper-parameter name used in the tuning job that stands for learning rate. Leave it blank if learning rate is not in a parameter in tuning. The learning_rate is used to estimate the objective value of the ongoing trial.",
+          "type": "string"
+        },
+        "useElapsedDuration": {
+          "description": "This bool determines whether or not the rule is applied based on elapsed_secs or steps. If use_elapsed_duration==false, the early stopping decision is made according to the predicted objective values according to the target steps. If use_elapsed_duration==true, elapsed_secs is used instead of steps. Also, in this case, the parameters max_num_steps and min_num_steps are overloaded to contain max_elapsed_seconds and min_elapsed_seconds.",
           "type": "boolean"
         }
       }
@@ -4756,7 +4823,7 @@
           }
         },
         "outputDisplayName": {
-          "description": "Output only. The display name of the output identified by output_index. For example, the predicted class name by a multi-classification Model. This field is only populated iff the Model predicts display names as a separate field along with the explained output. The predicted display name must has the same shape of the explained output, and can be located using output_index.",
+          "description": "Output only. The display name of the output identified by output_index. For example, the predicted class name by a multi-classification Model. This field is only populated iff the Model predicts display names as a separate field along with the explained output. The predicted display name must have the same shape of the explained output, and can be located using output_index.",
           "readOnly": true,
           "type": "string"
         },
@@ -17445,6 +17512,13 @@
           "description": "The full name of the Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Job should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in `12345`, and {network} is a network name. To specify this field, you must have already [configured VPC Network Peering for Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/general\/vpc-peering). If this field is left unspecified, the job is not peered with any network.",
           "type": "string"
         },
+        "reservedIpRanges": {
+          "description": "Optional. A list of names for the reserved ip ranges under the VPC network that can be used for this job. If set, we will deploy the job within the provided ip ranges. Otherwise, the job will be deployed to any ip ranges under the provided VPC network. Example: ['vertex-ai-ip-range'].",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "baseOutputDirectory": {
           "description": "The Cloud Storage location to store the output of this CustomJob or HyperparameterTuningJob. For HyperparameterTuningJob, the baseOutputDirectory of each child CustomJob backing a Trial is set to a subdirectory of name id under its parent HyperparameterTuningJob's baseOutputDirectory. The following Vertex AI environment variables will be passed to containers or python modules when this field is set: For CustomJob: * AIP_MODEL_DIR = `\/model\/` * AIP_CHECKPOINT_DIR = `\/checkpoints\/` * AIP_TENSORBOARD_LOG_DIR = `\/logs\/` For CustomJob backing a Trial of HyperparameterTuningJob: * AIP_MODEL_DIR = `\/\/model\/` * AIP_CHECKPOINT_DIR = `\/\/checkpoints\/` * AIP_TENSORBOARD_LOG_DIR = `\/\/logs\/`",
           "$ref": "GoogleCloudAiplatformV1beta1GcsDestination"
@@ -17655,6 +17729,10 @@
           "description": "Deprecated. The automated early stopping using convex stopping rule.",
           "$ref": "GoogleCloudAiplatformV1beta1StudySpecConvexStopConfig"
         },
+        "convexAutomatedStoppingSpec": {
+          "description": "The automated early stopping spec using convex stopping rule.",
+          "$ref": "GoogleCloudAiplatformV1beta1StudySpecConvexAutomatedStoppingSpec"
+        },
         "metrics": {
           "description": "Required. Metric specs for the Study.",
           "type": "array",
@@ -17761,6 +17839,36 @@
         },
         "useSeconds": {
           "description": "This bool determines whether or not the rule is applied based on elapsed_secs or steps. If use_seconds==false, the early stopping decision is made according to the predicted objective values according to the target steps. If use_seconds==true, elapsed_secs is used instead of steps. Also, in this case, the parameters max_num_steps and min_num_steps are overloaded to contain max_elapsed_seconds and min_elapsed_seconds.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1StudySpecConvexAutomatedStoppingSpec": {
+      "id": "GoogleCloudAiplatformV1beta1StudySpecConvexAutomatedStoppingSpec",
+      "description": "Configuration for ConvexAutomatedStoppingSpec. When there are enough completed trials (configured by min_measurement_count), for pending trials with enough measurements and steps, the policy first computes an overestimate of the objective value at max_num_steps according to the slope of the incomplete objective value curve. No prediction can be made if the curve is completely flat. If the overestimation is worse than the best objective value of the completed trials, this pending trial will be early-stopped, but a last measurement will be added to the pending trial with max_num_steps and predicted objective value from the autoregression model.",
+      "type": "object",
+      "properties": {
+        "maxStepCount": {
+          "description": "Steps used in predicting the final objective for early stopped trials. In general, it's set to be the same as the defined steps in training \/ tuning. If not defined, it will learn it from the completed trials. When use_steps is false, this field is set to the maximum elapsed seconds.",
+          "type": "string",
+          "format": "int64"
+        },
+        "minStepCount": {
+          "description": "Minimum number of steps for a trial to complete. Trials which do not have a measurement with step_count > min_step_count won't be considered for early stopping. It's ok to set it to 0, and a trial can be early stopped at any stage. By default, min_step_count is set to be one-tenth of the max_step_count. When use_elapsed_duration is true, this field is set to the minimum elapsed seconds.",
+          "type": "string",
+          "format": "int64"
+        },
+        "minMeasurementCount": {
+          "description": "The minimal number of measurements in a Trial. Early-stopping checks will not trigger if less than min_measurement_count+1 completed trials or pending trials with less than min_measurement_count measurements. If not defined, the default value is 5.",
+          "type": "string",
+          "format": "int64"
+        },
+        "learningRateParameterName": {
+          "description": "The hyper-parameter name used in the tuning job that stands for learning rate. Leave it blank if learning rate is not in a parameter in tuning. The learning_rate is used to estimate the objective value of the ongoing trial.",
+          "type": "string"
+        },
+        "useElapsedDuration": {
+          "description": "This bool determines whether or not the rule is applied based on elapsed_secs or steps. If use_elapsed_duration==false, the early stopping decision is made according to the predicted objective values according to the target steps. If use_elapsed_duration==true, elapsed_secs is used instead of steps. Also, in this case, the parameters max_num_steps and min_num_steps are overloaded to contain max_elapsed_seconds and min_elapsed_seconds.",
           "type": "boolean"
         }
       }
@@ -22230,6 +22338,13 @@
           "description": "The full name of the Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Job should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in `12345`, and {network} is a network name. To specify this field, you must have already [configured VPC Network Peering for Vertex AI](https:\/\/cloud.google.com\/vertex-ai\/docs\/general\/vpc-peering). If this field is left unspecified, the job is not peered with any network.",
           "type": "string"
         },
+        "reservedIpRanges": {
+          "description": "Optional. A list of names for the reserved ip ranges under the VPC network that can be used for this job. If set, we will deploy the job within the provided ip ranges. Otherwise, the job will be deployed to any ip ranges under the provided VPC network. Example: ['vertex-ai-ip-range'].",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "baseOutputDirectory": {
           "description": "The Cloud Storage location to store the output of this CustomJob or HyperparameterTuningJob. For HyperparameterTuningJob, the baseOutputDirectory of each child CustomJob backing a Trial is set to a subdirectory of name id under its parent HyperparameterTuningJob's baseOutputDirectory. The following Vertex AI environment variables will be passed to containers or python modules when this field is set: For CustomJob: * AIP_MODEL_DIR = `\/model\/` * AIP_CHECKPOINT_DIR = `\/checkpoints\/` * AIP_TENSORBOARD_LOG_DIR = `\/logs\/` For CustomJob backing a Trial of HyperparameterTuningJob: * AIP_MODEL_DIR = `\/\/model\/` * AIP_CHECKPOINT_DIR = `\/\/checkpoints\/` * AIP_TENSORBOARD_LOG_DIR = `\/\/logs\/`",
           "$ref": "GoogleCloudAiplatformV1GcsDestination"
@@ -22465,6 +22580,10 @@
           "description": "The automated early stopping spec using median rule.",
           "$ref": "GoogleCloudAiplatformV1StudySpecMedianAutomatedStoppingSpec"
         },
+        "convexAutomatedStoppingSpec": {
+          "description": "The automated early stopping spec using convex stopping rule.",
+          "$ref": "GoogleCloudAiplatformV1StudySpecConvexAutomatedStoppingSpec"
+        },
         "metrics": {
           "description": "Required. Metric specs for the Study.",
           "type": "array",
@@ -22541,6 +22660,36 @@
       "properties": {
         "useElapsedDuration": {
           "description": "True if median automated stopping rule applies on Measurement.elapsed_duration. It means that elapsed_duration field of latest measurement of current Trial is used to compute median objective value for each completed Trials.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1StudySpecConvexAutomatedStoppingSpec": {
+      "id": "GoogleCloudAiplatformV1StudySpecConvexAutomatedStoppingSpec",
+      "description": "Configuration for ConvexAutomatedStoppingSpec. When there are enough completed trials (configured by min_measurement_count), for pending trials with enough measurements and steps, the policy first computes an overestimate of the objective value at max_num_steps according to the slope of the incomplete objective value curve. No prediction can be made if the curve is completely flat. If the overestimation is worse than the best objective value of the completed trials, this pending trial will be early-stopped, but a last measurement will be added to the pending trial with max_num_steps and predicted objective value from the autoregression model.",
+      "type": "object",
+      "properties": {
+        "maxStepCount": {
+          "description": "Steps used in predicting the final objective for early stopped trials. In general, it's set to be the same as the defined steps in training \/ tuning. If not defined, it will learn it from the completed trials. When use_steps is false, this field is set to the maximum elapsed seconds.",
+          "type": "string",
+          "format": "int64"
+        },
+        "minStepCount": {
+          "description": "Minimum number of steps for a trial to complete. Trials which do not have a measurement with step_count > min_step_count won't be considered for early stopping. It's ok to set it to 0, and a trial can be early stopped at any stage. By default, min_step_count is set to be one-tenth of the max_step_count. When use_elapsed_duration is true, this field is set to the minimum elapsed seconds.",
+          "type": "string",
+          "format": "int64"
+        },
+        "minMeasurementCount": {
+          "description": "The minimal number of measurements in a Trial. Early-stopping checks will not trigger if less than min_measurement_count+1 completed trials or pending trials with less than min_measurement_count measurements. If not defined, the default value is 5.",
+          "type": "string",
+          "format": "int64"
+        },
+        "learningRateParameterName": {
+          "description": "The hyper-parameter name used in the tuning job that stands for learning rate. Leave it blank if learning rate is not in a parameter in tuning. The learning_rate is used to estimate the objective value of the ongoing trial.",
+          "type": "string"
+        },
+        "useElapsedDuration": {
+          "description": "This bool determines whether or not the rule is applied based on elapsed_secs or steps. If use_elapsed_duration==false, the early stopping decision is made according to the predicted objective values according to the target steps. If use_elapsed_duration==true, elapsed_secs is used instead of steps. Also, in this case, the parameters max_num_steps and min_num_steps are overloaded to contain max_elapsed_seconds and min_elapsed_seconds.",
           "type": "boolean"
         }
       }

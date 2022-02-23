@@ -929,33 +929,6 @@ class EdgenetworkV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Zone.
-
-      Args:
-        request: (EdgenetworkProjectsLocationsZonesPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/zones/{zonesId}',
-        http_method='PATCH',
-        method_id='edgenetwork.projects.locations.zones.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1alpha1/{+name}',
-        request_field='zone',
-        request_type_name='EdgenetworkProjectsLocationsZonesPatchRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 

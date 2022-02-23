@@ -1483,7 +1483,6 @@ def AddAutoprovisioningNetworkTagsFlag(parser, help_text):
   parser.add_argument(
       '--autoprovisioning-network-tags',
       metavar='TAGS',
-      hidden=True,
       type=arg_parsers.ArgList(min_length=1),
       help=help_text)
 
@@ -1523,7 +1522,6 @@ for examples.
   parser.add_argument(
       '--autoprovisioning-network-tags',
       metavar='TAGS',
-      hidden=True,
       type=arg_parsers.ArgList(),
       help=help_text)
 
@@ -2547,10 +2545,20 @@ Examples:
 
   $ {{command}} {example_target} --scopes=bigquery,storage-rw,compute-ro
 
-Multiple SCOPEs can be specified, separated by commas. `logging-write`
-and/or `monitoring` are added unless Cloud Logging and/or Cloud Monitoring
-are disabled (see `--enable-cloud-logging` and `--enable-cloud-monitoring`
-for more information).
+Multiple scopes can be specified, separated by commas. Various scopes are
+automatically added based on feature usage. Such scopes are not added if an
+equivalent scope already exists.
+
+- `monitoring-write`: always added to ensure metrics can be written
+- `logging-write`: added if Cloud Logging is enabled
+  (`--enable-cloud-logging`/`--logging`)
+- `monitoring`: added if Cloud Monitoring is enabled
+  (`--enable-cloud-monitoring`/`--monitoring`)
+- `gke-default`: added for Autopilot clusters that use the default service
+  account
+- `cloud-platform`: added for Autopilot clusters that use any other service
+  account
+
 {scopes_help}
 """.format(
     example_target=example_target, scopes_help=compute_constants.ScopesHelp()))
@@ -3124,6 +3132,34 @@ def AddPrivateIpv6GoogleAccessTypeFlag(api_version, parser, hidden=False):
   messages = apis.GetMessagesModule('container', api_version)
   util.GetPrivateIpv6GoogleAccessTypeMapper(
       messages, hidden).choice_arg.AddToParser(parser)
+
+
+def AddStackTypeFlag(parser):
+  """Adds --stack-type flag to the given parser.
+
+  Args:
+    parser: A given parser.
+  """
+  help_text = "IP stack type of the node VMs. Defaults to 'ipv4'"
+  parser.add_argument(
+      '--stack-type',
+      help=help_text,
+      hidden=True,
+      choices=['ipv4', 'ipv4-ipv6'])
+
+
+def AddIpv6AccessTypeFlag(parser):
+  """Adds --ipv6-access-type flag to the given parser.
+
+  Args:
+    parser: A given parser.
+  """
+  help_text = "IPv6 access type of the subnetwork. Defaults to 'external'"
+  parser.add_argument(
+      '--ipv6-access-type',
+      help=help_text,
+      hidden=True,
+      choices=['external', 'internal'])
 
 
 def AddEnableIntraNodeVisibilityFlag(parser, hidden=False):
