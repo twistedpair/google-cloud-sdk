@@ -23,6 +23,7 @@ import re
 
 from dns import rdatatype
 from dns import zone
+from googlecloudsdk.api_lib.dns import record_types
 from googlecloudsdk.api_lib.dns import svcb_stub
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.core import exceptions
@@ -126,31 +127,6 @@ def GetRdataTranslation(rr_type):
   return _NullTranslation
 
 
-# Record types supported by Cloud DNS. See
-# https://cloud.google.com/dns/docs/overview#supported_dns_record_types
-SUPPORTED_TYPES = frozenset((
-    rdatatype.A,
-    rdatatype.AAAA,
-    rdatatype.CAA,
-    rdatatype.CNAME,
-    rdatatype.DNSKEY,
-    rdatatype.DS,
-    svcb_stub.HTTPS,  # Replace after updating to dnspython 2.x.
-    rdatatype.IPSECKEY,
-    rdatatype.MX,
-    rdatatype.NAPTR,
-    rdatatype.NS,
-    rdatatype.PTR,
-    rdatatype.SOA,
-    rdatatype.SPF,
-    rdatatype.SRV,
-    svcb_stub.SVCB,  # Replace after updating to dnspython 2.x.
-    rdatatype.SSHFP,
-    rdatatype.TLSA,
-    rdatatype.TXT,
-))
-
-
 def _FilterOutRecord(name, rdtype, origin, replace_origin_ns=False):
   """Returns whether the given record should be filtered out.
 
@@ -185,7 +161,7 @@ def _RecordSetFromZoneRecord(name, rdset, origin, api_version='v1'):
     The ResourceRecordSet equivalent for the given zone record, or None for
     unsupported record types.
   """
-  if rdset.rdtype not in SUPPORTED_TYPES:
+  if rdset.rdtype not in record_types.SUPPORTED_TYPES:
     return None
 
   messages = core_apis.GetMessagesModule('dns', api_version)
@@ -245,7 +221,7 @@ def RecordSetsFromYamlFile(yaml_file, api_version='v1'):
   yaml_record_sets = yaml.load_all(yaml_file)
   for yaml_record_set in yaml_record_sets:
     rdata_type = rdatatype.from_text(yaml_record_set['type'])
-    if rdata_type not in SUPPORTED_TYPES:
+    if rdata_type not in record_types.SUPPORTED_TYPES:
       continue
 
     record_set = messages.ResourceRecordSet()

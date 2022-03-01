@@ -130,11 +130,20 @@ def _MatchOneWordInText(backend, key, op, warned_attribute, value, pattern):
   # Phase 1: return deprecated_matched and warn if different from matched.
   # Phase 2: return matched and warn if different from deprecated_matched.
   # Phase 3: drop deprecated logic.
+
   matched = bool(standard_regex.search(text))
   if not deprecated_regex:
     return matched
 
   deprecated_matched = bool(deprecated_regex.search(text))
+
+  # For compute's region and zone keys we also want to exact match segment(-1).
+  # We do this because exact match filter fields for zone and region are used to
+  # determine which zonal/regional endpoints to scope the request to.
+
+  if len(key) == 1 and key[0] in ['zone', 'region']:
+    deprecated_matched |= bool(deprecated_regex.search(text.split('/')[-1]))
+
   if (matched != deprecated_matched and warned_attribute and
       not getattr(backend, warned_attribute, False)):
     setattr(backend, warned_attribute, True)

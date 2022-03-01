@@ -96,7 +96,7 @@ class OrgPolicyApi(object):
     pass
 
   @abc.abstractmethod
-  def UpdatePolicy(self, policy):
+  def UpdatePolicy(self, policy, update_mask=None):
     pass
 
   @abc.abstractmethod
@@ -214,18 +214,24 @@ class OrgPolicyApiGA(OrgPolicyApi):
           parent=parent, googleCloudOrgpolicyV2Policy=policy)
       return self.client.projects_policies.Create(request=request)
 
-  def UpdatePolicy(self, policy):
+  def UpdatePolicy(self, policy, update_mask=None):
     if policy.name.startswith('organizations/'):
       request = self.messages.OrgpolicyOrganizationsPoliciesPatchRequest(
-          name=policy.name, googleCloudOrgpolicyV2Policy=policy)
+          name=policy.name,
+          googleCloudOrgpolicyV2Policy=policy,
+          updateMask=update_mask)
       return self.client.organizations_policies.Patch(request)
     elif policy.name.startswith('folders/'):
       request = self.messages.OrgpolicyFoldersPoliciesPatchRequest(
-          name=policy.name, googleCloudOrgpolicyV2Policy=policy)
+          name=policy.name,
+          googleCloudOrgpolicyV2Policy=policy,
+          updateMask=update_mask)
       return self.client.folders_policies.Patch(request)
     else:
       request = self.messages.OrgpolicyProjectsPoliciesPatchRequest(
-          name=policy.name, googleCloudOrgpolicyV2Policy=policy)
+          name=policy.name,
+          googleCloudOrgpolicyV2Policy=policy,
+          updateMask=update_mask)
       return self.client.projects_policies.Patch(request)
 
   def CreateCustomConstraint(self, custom_constraint):
@@ -298,7 +304,7 @@ class OrgPolicyApiAlpha(OrgPolicyApi):
         constraint=utils.GetConstraintFromPolicyName(policy.name))
     return self.client.policies.Create(request)
 
-  def UpdatePolicy(self, policy):
+  def UpdatePolicy(self, policy, update_mask=None):
     request = self.messages.OrgpolicyPoliciesPatchRequest(
         name=policy.name, googleCloudOrgpolicyV2alpha1Policy=policy)
     return self.client.policies.Patch(request)

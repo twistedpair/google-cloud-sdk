@@ -3,18 +3,18 @@
   "discoveryVersion": "v1",
   "id": "networkmanagement:v1beta1",
   "name": "networkmanagement",
-  "canonicalName": "Network Management Config",
+  "canonicalName": "Network Management",
   "version": "v1beta1",
   "revision": "0",
   "title": "Network Management API",
-  "description": "networkmanagementconfig-pa.googleapis.com API.",
+  "description": "The Network Management API provides a collection of network performance monitoring and diagnostic capabilities.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "http://g3doc/cloud/network/topology/boq/goa/nicbilling/server/README",
+  "documentationLink": "https://cloud.google.com/",
   "protocol": "rest",
   "rootUrl": "https://networkmanagement.googleapis.com/",
   "mtlsRootUrl": "https://networkmanagement.mtls.googleapis.com/",
@@ -1020,7 +1020,10 @@
             "Target is the internet.",
             "Target is a Google API.",
             "Target is a Google Kubernetes Engine cluster master.",
-            "Target is a Cloud SQL instance."
+            "Target is a Cloud SQL instance.",
+            "Target is a published service using [Private Service Connect](https:\/\/cloud.google.com\/vpc\/docs\/configure-private-service-connect-services).",
+            "Target is all Google APIs using [Private Service Connect](https:\/\/cloud.google.com\/vpc\/docs\/configure-private-service-connect-apis).",
+            "Target is VPC-SC using [Private Service Connect](https:\/\/cloud.google.com\/vpc\/docs\/configure-private-service-connect-apis)."
           ],
           "enum": [
             "TARGET_UNSPECIFIED",
@@ -1028,7 +1031,10 @@
             "INTERNET",
             "GOOGLE_API",
             "GKE_MASTER",
-            "CLOUD_SQL_INSTANCE"
+            "CLOUD_SQL_INSTANCE",
+            "PSC_PUBLISHED_SERVICE",
+            "PSC_GOOGLE_API",
+            "PSC_VPC_SC"
           ]
         },
         "resourceUri": {
@@ -1154,7 +1160,9 @@
             "Packet was dropped because the Cloud SQL instance has neither a private nor a public IP address.",
             "Packet could be dropped because the Cloud function is not in an active status.",
             "Packet could be dropped because no VPC connector is set.",
-            "Packet could be dropped because the VPC connector is not in a running state."
+            "Packet could be dropped because the VPC connector is not in a running state.",
+            "Packet could be dropped because it was sent from a different region to a regional forwarding without global access.",
+            "Privte Service Connect (PSC) connection is not in accepted state."
           ],
           "enum": [
             "CAUSE_UNSPECIFIED",
@@ -1181,7 +1189,9 @@
             "CLOUD_SQL_INSTANCE_NO_IP_ADDRESS",
             "CLOUD_FUNCTION_NOT_ACTIVE",
             "VPC_CONNECTOR_NOT_SET",
-            "VPC_CONNECTOR_NOT_RUNNING"
+            "VPC_CONNECTOR_NOT_RUNNING",
+            "FORWARDING_RULE_REGION_MISMATCH",
+            "PSC_CONNECTION_NOT_ACCEPTED"
           ]
         },
         "resourceUri": {

@@ -685,7 +685,7 @@
       "properties": {
         "policyControllerHubConfig": {
           "description": "Policy Controller configuration for the cluster.",
-          "$ref": "PolicyControllerPolicyControllerHubConfig"
+          "$ref": "PolicyControllerHubConfig"
         },
         "version": {
           "description": "Version of Policy Controller installed.",
@@ -693,8 +693,8 @@
         }
       }
     },
-    "PolicyControllerPolicyControllerHubConfig": {
-      "id": "PolicyControllerPolicyControllerHubConfig",
+    "PolicyControllerHubConfig": {
+      "id": "PolicyControllerHubConfig",
       "description": "Configuration for Policy Controller",
       "type": "object",
       "properties": {
@@ -1481,7 +1481,7 @@
         },
         "policyControllerHubState": {
           "description": "Policy Controller state observed by the Policy Controller Hub",
-          "$ref": "PolicyControllerPolicyControllerHubState"
+          "$ref": "PolicyControllerHubState"
         },
         "state": {
           "description": "The lifecycle state Policy Controller is in.",
@@ -1509,14 +1509,14 @@
         }
       }
     },
-    "PolicyControllerPolicyControllerHubState": {
-      "id": "PolicyControllerPolicyControllerHubState",
+    "PolicyControllerHubState": {
+      "id": "PolicyControllerHubState",
       "description": "State of the Policy Controller.",
       "type": "object",
       "properties": {
         "version": {
           "description": "The version of Gatekeeper Policy Controller deployed.",
-          "$ref": "PolicyControllerPolicyControllerHubVersion"
+          "$ref": "PolicyControllerHubVersion"
         },
         "deploymentStates": {
           "description": "Map from deployment name to deployment state. Example deployments are gatekeeper-controller-manager, gatekeeper-audit deployment, and gatekeeper-mutation.",
@@ -1539,8 +1539,8 @@
         }
       }
     },
-    "PolicyControllerPolicyControllerHubVersion": {
-      "id": "PolicyControllerPolicyControllerHubVersion",
+    "PolicyControllerHubVersion": {
+      "id": "PolicyControllerHubVersion",
       "description": "The build version of Gatekeeper that Policy Controller is using.",
       "type": "object",
       "properties": {

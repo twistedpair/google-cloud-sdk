@@ -127,11 +127,10 @@ class TailerBase(object):
     if self.out:
       self.out.Print(text.rstrip())
 
-  def _PrintFirstLine(self):
+  def _PrintFirstLine(self, msg=LOG_OUTPUT_BEGIN):
     """Print a pretty starting line to identify start of build output logs."""
     width, _ = console_attr_os.GetTermSize()
-    self._PrintLogLine(
-        self.LOG_OUTPUT_BEGIN.center(width, self.OUTPUT_LINE_CHAR))
+    self._PrintLogLine(msg.center(width, self.OUTPUT_LINE_CHAR))
 
   def _PrintLastLine(self, msg=''):
     """Print a pretty ending line to identify end of build output logs."""

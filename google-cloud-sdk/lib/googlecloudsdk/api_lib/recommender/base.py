@@ -20,6 +20,8 @@ from __future__ import unicode_literals
 
 import enum
 
+from googlecloudsdk.api_lib.util import apis
+
 API_NAME = 'recommender'
 
 RECOMMENDER_MESSAGE_PREFIX = {
@@ -35,3 +37,22 @@ class EntityType(enum.Enum):
   FOLDER = 2
   PROJECT = 3
   BILLING_ACCOUNT = 4
+
+
+class ClientBase(object):
+  """Base client class for all versions."""
+
+  def __init__(self, api_version):
+    self._client = apis.GetClientInstance(API_NAME, api_version)
+    self._api_version = api_version
+    self._messages = self._client.MESSAGES_MODULE
+    self._message_prefix = RECOMMENDER_MESSAGE_PREFIX[api_version]
+
+  def _GetMessage(self, message_name):
+    """Returns the API messages class by name."""
+    return getattr(self._messages, message_name, None)
+
+  def _GetVersionedMessage(self, message_name):
+    """Returns the versioned API messages class by name."""
+    return self._GetMessage('{prefix}{name}'.format(
+        prefix=self._message_prefix, name=message_name))

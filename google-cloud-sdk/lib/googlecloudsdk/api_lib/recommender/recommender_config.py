@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.recommender import base
 from googlecloudsdk.api_lib.recommender import flag_utils
-from googlecloudsdk.api_lib.util import apis
 
 
 def CreateClient(release_track):
@@ -30,24 +29,12 @@ def CreateClient(release_track):
   return RecommenderConfig(api_version)
 
 
-class RecommenderConfig(object):
+class RecommenderConfig(base.ClientBase):
   """Base RecommenderConfig client for all versions."""
 
   def __init__(self, api_version):
-    client = apis.GetClientInstance(base.API_NAME, api_version)
-    self._api_version = api_version
-    self._messages = client.MESSAGES_MODULE
-    self._message_prefix = base.RECOMMENDER_MESSAGE_PREFIX[api_version]
-    self._project_service = client.projects_locations_recommenders
-    self._org_service = client.organizations_locations_recommenders
-
-  def _GetMessage(self, message_name):
-    """Returns the API messages class by name."""
-
-    return getattr(
-        self._messages,
-        '{prefix}{name}'.format(prefix=self._message_prefix,
-                                name=message_name), None)
+    super(RecommenderConfig, self).__init__(api_version)
+    self._project_service = self._client.projects_locations_recommenders
 
   def Get(self, config_name):
     """Gets a RecommenderConfig.
@@ -77,13 +64,14 @@ class RecommenderConfig(object):
     """
 
     update_mask = []
-    config = self._GetMessage('RecommenderConfig')()
+    config = self._GetVersionedMessage('RecommenderConfig')()
     config.name = config_name
     config.etag = args.etag
 
     if args.config_file:
       gen_config = flag_utils.ReadConfig(
-          args.config_file, self._GetMessage('RecommenderGenerationConfig'))
+          args.config_file,
+          self._GetVersionedMessage('RecommenderGenerationConfig'))
       config.recommenderGenerationConfig = gen_config
       update_mask.append('recommender_generation_config')
 
@@ -94,7 +82,7 @@ class RecommenderConfig(object):
     if args.annotations:
       config.annotations = encoding.DictToAdditionalPropertyMessage(
           args.annotations,
-          self._GetMessage('RecommenderConfig').AnnotationsValue,
+          self._GetVersionedMessage('RecommenderConfig').AnnotationsValue,
           sort_items=True)
       update_mask.append('annotations')
 

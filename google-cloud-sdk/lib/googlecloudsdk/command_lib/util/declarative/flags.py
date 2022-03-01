@@ -23,7 +23,7 @@ import os
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base as calliope_base
-from googlecloudsdk.command_lib.util.declarative.clients import client_base
+from googlecloudsdk.command_lib.util.declarative.clients import declarative_client_base
 from googlecloudsdk.core.util import files
 
 
@@ -123,7 +123,7 @@ def AddBulkExportArgs(parser):
 def ValidateAllPathArgs(args):
   if args.IsSpecified('all'):
     if args.IsSpecified('path') and not os.path.isdir(args.path):
-      raise client_base.ClientException(
+      raise declarative_client_base.ClientException(
           'Error executing export: "{}" must be a directory when --all is specified.'
           .format(args.path))
 

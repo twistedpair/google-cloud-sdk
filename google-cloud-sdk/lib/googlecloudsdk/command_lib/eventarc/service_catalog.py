@@ -42,5 +42,5 @@ def GetMethods(service_name):
     if service['serviceName'] == service_name:
       return service['methods']
   raise InvalidServiceName(
-      '"{}" is not a known value for the serviceName CloudEvents attribute.'
+      '"{}" is not a known value for the serviceName attribute.'
       .format(service_name))

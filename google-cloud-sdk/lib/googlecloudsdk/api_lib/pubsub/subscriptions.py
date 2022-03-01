@@ -105,7 +105,8 @@ class SubscriptionsClient(object):
              dead_letter_topic=None,
              max_delivery_attempts=None,
              min_retry_delay=None,
-             max_retry_delay=None):
+             max_retry_delay=None,
+             enable_exactly_once_delivery=None):
     """Creates a Subscription.
 
     Args:
@@ -128,10 +129,13 @@ class SubscriptionsClient(object):
       dead_letter_topic (str): Topic for publishing dead messages.
       max_delivery_attempts (int): Threshold of failed deliveries before sending
         message to the dead letter topic.
-      min_retry_delay (str): The minimum delay between consecutive deliveries
-        of a given message.
-      max_retry_delay (str): The maximum delay between consecutive deliveries
-        of a given message.
+      min_retry_delay (str): The minimum delay between consecutive deliveries of
+        a given message.
+      max_retry_delay (str): The maximum delay between consecutive deliveries of
+        a given message.
+      enable_exactly_once_delivery (bool): Whether or not to set exactly once
+        delivery on the subscription.
+
     Returns:
       Subscription: the created subscription
     """
@@ -149,7 +153,8 @@ class SubscriptionsClient(object):
         filter=filter_string,
         deadLetterPolicy=self._DeadLetterPolicy(dead_letter_topic,
                                                 max_delivery_attempts),
-        retryPolicy=self._RetryPolicy(min_retry_delay, max_retry_delay))
+        retryPolicy=self._RetryPolicy(min_retry_delay, max_retry_delay),
+        enableExactlyOnceDelivery=enable_exactly_once_delivery)
 
     return self._service.Create(subscription)
 
@@ -332,7 +337,8 @@ class SubscriptionsClient(object):
             clear_dead_letter_policy=False,
             min_retry_delay=None,
             max_retry_delay=None,
-            clear_retry_policy=False):
+            clear_retry_policy=False,
+            enable_exactly_once_delivery=None):
     """Updates a Subscription.
 
     Args:
@@ -352,12 +358,15 @@ class SubscriptionsClient(object):
         message to the dead letter topic.
       clear_dead_letter_policy (bool): If set, clear the dead letter policy from
         the subscription.
-      min_retry_delay (str): The minimum delay between consecutive deliveries
-        of a given message.
-      max_retry_delay (str): The maximum delay between consecutive deliveries
-        of a given message.
+      min_retry_delay (str): The minimum delay between consecutive deliveries of
+        a given message.
+      max_retry_delay (str): The maximum delay between consecutive deliveries of
+        a given message.
       clear_retry_policy (bool): If set, clear the retry policy from the
         subscription.
+      enable_exactly_once_delivery (bool): Whether or not to set exactly once
+        delivery on the subscription.
+
     Returns:
       Subscription: The updated subscription.
     Raises:
@@ -368,6 +377,8 @@ class SubscriptionsClient(object):
         _SubscriptionUpdateSetting('pushConfig', push_config),
         _SubscriptionUpdateSetting('retainAckedMessages',
                                    retain_acked_messages),
+        _SubscriptionUpdateSetting('enableExactlyOnceDelivery',
+                                   enable_exactly_once_delivery),
         _SubscriptionUpdateSetting('messageRetentionDuration',
                                    message_retention_duration),
         _SubscriptionUpdateSetting('labels', labels),

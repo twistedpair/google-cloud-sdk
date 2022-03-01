@@ -316,19 +316,19 @@ class ConfigInfo(object):
         properties.VALUES.core.account.Get(validate=False))
     self.project = anonymizer.ProcessProject(
         properties.VALUES.core.project.Get(validate=False))
-    self.properties = properties.VALUES.AllValues()
+    self.properties = properties.VALUES.AllPropertyValues()
     if self.properties.get('core', {}).get('account'):
-      self.properties['core']['account'] = anonymizer.ProcessAccount(
-          self.properties['core']['account'])
+      self.properties['core']['account'].value = anonymizer.ProcessAccount(
+          self.properties['core']['account'].value)
     if self.properties.get('core', {}).get('project'):
-      self.properties['core']['project'] = anonymizer.ProcessProject(
-          self.properties['core']['project'])
+      self.properties['core']['project'].value = anonymizer.ProcessProject(
+          self.properties['core']['project'].value)
     if self.properties.get('proxy', {}).get('username'):
-      self.properties['proxy']['username'] = anonymizer.ProcessUsername(
-          self.properties['proxy']['username'])
+      self.properties['proxy']['username'].value = anonymizer.ProcessUsername(
+          self.properties['proxy']['username'].value)
     if self.properties.get('proxy', {}).get('password'):
-      self.properties['proxy']['password'] = anonymizer.ProcessPassword(
-          self.properties['proxy']['password'])
+      self.properties['proxy']['password'].value = anonymizer.ProcessPassword(
+          self.properties['proxy']['password'].value)
 
   def __str__(self):
     out = io.StringIO()
@@ -347,9 +347,11 @@ class ConfigInfo(object):
     out.write('Current Properties:\n')
     for section, props in six.iteritems(self.properties):
       out.write('  [{section}]\n'.format(section=section))
-      for name, value in six.iteritems(props):
-        out.write('    {name}: [{value}]\n'.format(
-            name=name, value=value))
+      for name, property_value in six.iteritems(props):
+        out.write('    {name}: [{value}] ({source})\n'.format(
+            name=name,
+            value=str(property_value.value),
+            source=property_value.source.value))
 
     return out.getvalue()
 

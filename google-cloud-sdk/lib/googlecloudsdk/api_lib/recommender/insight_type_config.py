@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.recommender import base
 from googlecloudsdk.api_lib.recommender import flag_utils
-from googlecloudsdk.api_lib.util import apis
 
 
 def CreateClient(release_track):
@@ -30,23 +29,12 @@ def CreateClient(release_track):
   return InsightTypeConfig(api_version)
 
 
-class InsightTypeConfig(object):
+class InsightTypeConfig(base.ClientBase):
   """Base InsightTypeConfig client for all versions."""
 
   def __init__(self, api_version):
-    client = apis.GetClientInstance(base.API_NAME, api_version)
-    self._api_version = api_version
-    self._messages = client.MESSAGES_MODULE
-    self._message_prefix = base.RECOMMENDER_MESSAGE_PREFIX[api_version]
-    self._project_service = client.projects_locations_insightTypes
-    self._org_service = client.organizations_locations_insightTypes
-
-  def _GetMessage(self, message_name):
-    """Returns the API messages class by name."""
-    return getattr(
-        self._messages,
-        '{prefix}{name}'.format(prefix=self._message_prefix,
-                                name=message_name), None)
+    super(InsightTypeConfig, self).__init__(api_version)
+    self._service = self._client.projects_locations_insightTypes
 
   def Get(self, config_name):
     """Gets a InsightTypeConfig.
@@ -60,7 +48,7 @@ class InsightTypeConfig(object):
     # Using Project message is ok for all entities if the name is correct.
     request = self._messages.RecommenderProjectsLocationsInsightTypesGetConfigRequest(
         name=config_name)
-    return self._project_service.GetConfig(request)
+    return self._service.GetConfig(request)
 
   def Update(self, config_name, args):
     """Updates a InsightTypeConfig.
@@ -76,13 +64,14 @@ class InsightTypeConfig(object):
     """
 
     update_mask = []
-    config = self._GetMessage('InsightTypeConfig')()
+    config = self._GetVersionedMessage('InsightTypeConfig')()
     config.name = config_name
     config.etag = args.etag
 
     if args.config_file:
       gen_config = flag_utils.ReadConfig(
-          args.config_file, self._GetMessage('InsightTypeGenerationConfig'))
+          args.config_file,
+          self._GetVersionedMessage('InsightTypeGenerationConfig'))
       config.insightTypeGenerationConfig = gen_config
       update_mask.append('insight_type_generation_config')
 
@@ -93,7 +82,7 @@ class InsightTypeConfig(object):
     if args.annotations:
       config.annotations = encoding.DictToAdditionalPropertyMessage(
           args.annotations,
-          self._GetMessage('InsightTypeConfig').AnnotationsValue,
+          self._GetVersionedMessage('InsightTypeConfig').AnnotationsValue,
           sort_items=True)
       update_mask.append('annotations')
 
@@ -117,4 +106,4 @@ class InsightTypeConfig(object):
     # Using Project message is ok for all entities if the name is correct.
     request = self._messages.RecommenderProjectsLocationsInsightTypesUpdateConfigRequest(
         **kwargs)
-    return self._project_service.UpdateConfig(request)
+    return self._service.UpdateConfig(request)

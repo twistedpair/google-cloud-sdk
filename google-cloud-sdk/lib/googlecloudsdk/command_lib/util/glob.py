@@ -198,6 +198,14 @@ class Glob(object):
       return any(self._MatchesHelper(remaining_pattern, prefix) for prefix
                  in path_prefixes)
 
+    if pattern_part == '*' and not remaining_pattern:
+      # We need to ensure that a '*' at the beginning of a pattern does not
+      # match a part with a '/' in it. That should only happen when '**' is
+      # used.
+      # For example: '*/bar' should match 'foo/bar', but not 'foo/qux/bar'.
+      if remaining_path and len(remaining_path) > 1:
+        return False
+
     if not fnmatch.fnmatch(path_part, pattern_part):
       # If the current pattern part doesn't match the current path part, the
       # whole pattern can't match the whole path. Give up!

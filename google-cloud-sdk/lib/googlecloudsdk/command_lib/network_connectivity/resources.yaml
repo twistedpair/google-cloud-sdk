@@ -19,6 +19,17 @@ region:
     help: |
       The location Id.
 
+location:
+  name: location
+  collection: networkconnectivity.projects.locations
+  attributes:
+  - *project
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    help: |
+      The location Id.
+
 operation:
   name: operation
   collection: networkconnectivity.projects.locations.operations

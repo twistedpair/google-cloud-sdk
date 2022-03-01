@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.pubsub import subscriptions
 from googlecloudsdk.api_lib.pubsub import topics
+from googlecloudsdk.api_lib.util import exceptions as exc
 from googlecloudsdk.command_lib.projects import util as projects_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -213,6 +214,7 @@ def SubscriptionDisplayDict(subscription):
       'ackDeadlineSeconds': subscription.ackDeadlineSeconds,
       'retainAckedMessages': bool(subscription.retainAckedMessages),
       'messageRetentionDuration': subscription.messageRetentionDuration,
+      'enableExactlyOnceDelivery': subscription.enableExactlyOnceDelivery,
   }
 
 
@@ -309,3 +311,51 @@ def OutputSchemaValidated(unused_response, unused_args):
 def OutputMessageValidated(unused_response, unused_args):
   """Logs a message indicating that a message is valid."""
   log.status.Print('Message is valid.')
+
+
+def ParseExactlyOnceAckIdsAndFailureReasons(ack_ids_and_failure_reasons,
+                                            ack_ids):
+  failed_ack_ids = [ack['AckId'] for ack in ack_ids_and_failure_reasons]
+  successfully_processed_ack_ids = [
+      ack_id for ack_id in ack_ids if ack_id not in failed_ack_ids
+  ]
+  return failed_ack_ids, successfully_processed_ack_ids
+
+
+def HandleExactlyOnceDeliveryError(error):
+  e = exc.HttpException(error)
+  ack_ids_and_failure_reasons = ParseExactlyOnceErrorInfo(e.payload.details)
+  # If the failure doesn't have more information (specifically for exactly
+  # once related failures), re-raise the exception.
+  if not ack_ids_and_failure_reasons:
+    raise error
+
+  return ack_ids_and_failure_reasons
+
+
+def ParseExactlyOnceErrorInfo(error_metadata):
+  """Parses error metadata for exactly once ack/modAck failures.
+
+  Args:
+    error_metadata: error metadata as dict of format ack_id -> failure_reason.
+
+  Returns:
+    list: error metadata with only exactly once failures.
+  """
+  ack_ids_and_failure_reasons = []
+
+  for error_md in error_metadata:
+    if 'reason' not in error_md or 'EXACTLY_ONCE' not in error_md['reason']:
+      continue
+    if 'metadata' not in error_md or not isinstance(error_md['metadata'], dict):
+      continue
+
+    for ack_id, failure_reason in error_md['metadata'].items():
+      if 'PERMANENT_FAILURE' in failure_reason or ('TEMPORARY_FAILURE'
+                                                   in failure_reason):
+        result = resource_projector.MakeSerializable({})
+        result['AckId'] = ack_id
+        result['FailureReason'] = failure_reason
+        ack_ids_and_failure_reasons.append(result)
+
+  return ack_ids_and_failure_reasons

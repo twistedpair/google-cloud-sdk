@@ -116,6 +116,40 @@ def _ContainsBundledPython(components):
   return len(list(set(BUNDLED_PYTHON_COMPONENTS) & set(components))) >= 1
 
 
+def _GetVersionString(component, installed_components):
+  """Return most accurate VersionString for component with id comp_id.
+
+  Component versions become stale in the case where only the architecture
+  specific component has content. In these cases show the version from the
+  architecture specific component, not the parent component.
+
+  Args:
+    component: updater.local_state.InstallationManifest of component to get
+      VersionString of.
+    installed_components: map of str to InstallationManifest of installed
+      components.
+
+  Returns:
+    str, Most accurate VersionString for comp_id.
+  """
+  comp_def = component.ComponentDefinition()
+  if comp_def.data is not None:
+    return component.VersionString()
+
+  try:
+    for dep in [
+        installed_components[d]
+        for d in comp_def.dependencies
+        if d in installed_components
+    ]:
+      dep_def = dep.ComponentDefinition()
+      if component.id in dep_def.dependencies and dep_def.platform.architectures:
+        return dep.VersionString()
+  except:  # pylint: disable=bare-except
+    pass
+  return component.VersionString()
+
+
 class Error(exceptions.Error):
   """Base exception for the update_manager module."""
   pass
@@ -672,7 +706,8 @@ version [{1}].  To clear your fixed version setting, run:
       if (component_def.is_configuration or
           component_def.is_hidden and not include_hidden):
         continue
-      versions[component_id] = component.VersionString()
+      versions[component_id] = _GetVersionString(component,
+                                                 installed_components)
     return versions
 
   def _PerformUpdateCheck(self, command_path, force=False):

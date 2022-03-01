@@ -178,6 +178,10 @@ def get_bucket_metadata_dict_from_request_config(request_config):
               resource_args.lifecycle_file_path))
     if resource_args.location is not None:
       metadata['LocationConstraint'] = resource_args.location
+    if resource_args.requester_pays is not None:
+      metadata.update(
+          s3_metadata_field_converters.process_requester_pays(
+              resource_args.requester_pays))
     if resource_args.versioning is not None:
       metadata.update(
           s3_metadata_field_converters.process_versioning(

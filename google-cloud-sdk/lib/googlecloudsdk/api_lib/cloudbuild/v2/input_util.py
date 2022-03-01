@@ -47,10 +47,22 @@ def UnrecognizedFields(message):
             f=", ".join(unrecognized_fields)))
 
 
-def WorkspaceTransform(workspace):
-  if "volumeClaimTemplate" in workspace and "spec" in workspace[
-      "volumeClaimTemplate"] and "accessModes" in workspace[
-          "volumeClaimTemplate"]["spec"]:
-    access_modes = workspace["volumeClaimTemplate"]["spec"]["accessModes"]
-    workspace["volumeClaimTemplate"]["spec"]["accessModes"] = list(
-        map(lambda mode: CamelToSnake(mode).upper(), access_modes))
+def ParamSpecTransform(param_spec):
+  if "default" in param_spec:
+    param_spec["default"] = ParamValueTransform(param_spec["default"])
+    param_spec["type"] = param_spec["default"]["type"]
+
+  if "value" in param_spec:
+    param_spec["value"] = ParamValueTransform(param_spec["value"])
+    param_spec["type"] = param_spec["value"]["type"]
+
+
+def ParamValueTransform(param_value):
+  if isinstance(param_value, str) or isinstance(param_value, float):
+    return {"type": "STRING", "stringVal": str(param_value)}
+  elif isinstance(param_value, list):
+    return {"type": "ARRAY", "arrayVal": param_value}
+  else:
+    raise cloudbuild_exceptions.InvalidYamlError(
+        "Unsupported param value type. {msg_type}".format(
+            msg_type=type(param_value)))

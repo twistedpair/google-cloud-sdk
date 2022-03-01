@@ -18,8 +18,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import json
+
+from apitools.base.py import extra_types
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.eventarc import common
+from googlecloudsdk.api_lib.eventarc import common_publishing
 from googlecloudsdk.api_lib.eventarc.base import EventarcClientBase
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import resources
@@ -37,9 +41,20 @@ class ChannelClientV1(EventarcClientBase):
   def __init__(self):
     super(ChannelClientV1, self).__init__(common.API_NAME, common.API_VERSION_1,
                                           'channel')
+
+    # Eventarc Client
     client = apis.GetClientInstance(common.API_NAME, common.API_VERSION_1)
+
     self._messages = client.MESSAGES_MODULE
     self._service = client.projects_locations_channels
+
+    # Eventarc Publishing client
+    publishing_client = apis.GetClientInstance(
+        common_publishing.API_NAME,
+        common_publishing.API_VERSION_1)
+
+    self._publishing_messages = publishing_client.MESSAGES_MODULE
+    self._publishing_service = publishing_client.projects_locations_channels
 
   def Create(self, channel_ref, channel_message, dry_run=False):
     """Creates a new Channel.
@@ -125,6 +140,35 @@ class ChannelClientV1(EventarcClientBase):
         channel=channel_message,
         updateMask=update_mask)
     return self._service.Patch(patch_req)
+
+  def Publish(self, channel_ref, cloud_event):
+    """Publish to a Channel.
+
+    Args:
+      channel_ref: Resource, the channel to publish to.
+      cloud_event: A CloudEvent representation to be passed as the request body.
+    """
+
+    # From Json string to Json Object
+    proto_decoder = extra_types.JsonProtoDecoder(json.dumps(cloud_event))
+
+    # Helpful link for easier access
+    events_value_list_entry = self._publishing_messages.GoogleCloudEventarcPublishingV1PublishEventsRequest.EventsValueListEntry
+
+    events_value_list_entry = events_value_list_entry(additionalProperties=[
+        events_value_list_entry.AdditionalProperty(
+            key=decoding.key, value=decoding.value)
+        for decoding in proto_decoder.properties
+    ])
+    publish_events_request = self._publishing_messages.GoogleCloudEventarcPublishingV1PublishEventsRequest(
+        events=[events_value_list_entry])
+    publish_req = self._publishing_messages.EventarcpublishingProjectsLocationsChannelsPublishEventsRequest(
+        channel=channel_ref.RelativeName(),
+        googleCloudEventarcPublishingV1PublishEventsRequest=publish_events_request
+    )
+
+    # GoogleCloudEventarcPublishingV1PublishEventsResponse
+    self._publishing_service.PublishEvents(publish_req)
 
   def BuildChannel(self, channel_ref, provider_ref):
     return self._messages.Channel(

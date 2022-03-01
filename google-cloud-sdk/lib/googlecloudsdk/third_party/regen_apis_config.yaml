@@ -789,6 +789,8 @@ apis:
           path: projects/{project}/iap_web/{iapWebId}/services/{serviceId}/versions/{versionId}
         projects.iap_tcp.dest_groups:
           path: projects/{project}/iap_tunnel/locations/{region}/destGroups/{groupId}
+        projects.iap_tcp.locations:
+          path: projects/{project}/iap_tunnel/locations/{region}
     v1:
       discovery_doc: iap_v1.json
       default: true
@@ -801,6 +803,8 @@ apis:
           path: projects/{project}/iap_web/{iapWebId}/services/{serviceId}/versions/{versionId}
         projects.iap_tcp.dest_groups:
           path: projects/{project}/iap_tunnel/locations/{region}/destGroups/{groupId}
+        projects.iap_tcp.locations:
+          path: projects/{project}/iap_tunnel/locations/{region}
   ids:
     v1:
       discovery_doc: ids_v1.json

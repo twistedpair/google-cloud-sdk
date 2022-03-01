@@ -223,6 +223,11 @@ def GetInsightTypeConfigName(args):
   return GetInsightTypeName(args) + '/config'
 
 
+def GetInsightName(args):
+  """Returns the resource name for the insight."""
+  return GetInsightTypeName(args) + '/insights/{0}'.format(args.INSIGHT)
+
+
 def GetRecommenderName(args):
   """Returns the resource name up to the recommender."""
   parent = GetLocationSegment(args)
@@ -232,6 +237,12 @@ def GetRecommenderName(args):
 def GetRecommenderConfigName(args):
   """Returns the resource name for the recommender config."""
   return GetRecommenderName(args) + '/config'
+
+
+def GetRecommendationName(args):
+  """Returns the resource name for the insight."""
+  return GetRecommenderName(args) + '/recommendations/{0}'.format(
+      args.RECOMMENDATION)
 
 
 def GetConfigsParentFromFlags(args, is_insight_api):
@@ -253,40 +264,3 @@ def GetConfigsParentFromFlags(args, is_insight_api):
   else:
     url = url + '/recommenders/{0}'.format(args.recommender)
   return url + '/config'
-
-
-def GetParentFromFlags(args, is_list_api, is_insight_api):
-  """Parsing args to get full url string.
-
-  Args:
-      args: argparse.Namespace, The arguments that this command was invoked
-        with.
-      is_list_api: Boolean value specifying whether this is a list api, if not
-        append recommendation id or insight id to the resource name.
-      is_insight_api: whether this is an insight api, if so, append
-        insightTypes/[INSIGHT_TYPE] rather than recommenders/[RECOMMENDER_ID].
-
-  Returns:
-      The full url string based on flags given by user.
-  """
-  url = ''
-  if args.project:
-    url = 'projects/{0}'.format(args.project)
-  elif args.billing_account:
-    url = 'billingAccounts/{0}'.format(args.billing_account)
-  elif args.folder:
-    url = 'folders/{0}'.format(args.folder)
-  elif args.organization:
-    url = 'organizations/{0}'.format(args.organization)
-
-  url = url + '/locations/{0}'.format(args.location)
-
-  if is_insight_api:
-    url = url + '/insightTypes/{0}'.format(args.insight_type)
-    if not is_list_api:
-      url = url + '/insights/{0}'.format(args.INSIGHT)
-  else:
-    url = url + '/recommenders/{0}'.format(args.recommender)
-    if not is_list_api:
-      url = url + '/recommendations/{0}'.format(args.RECOMMENDATION)
-  return url

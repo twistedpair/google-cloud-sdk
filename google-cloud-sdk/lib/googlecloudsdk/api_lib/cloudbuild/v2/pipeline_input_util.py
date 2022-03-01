@@ -48,7 +48,7 @@ def TektonYamlDataToPipelineRun(data):
         "https://github.com/tektoncd/pipeline/blob/main/docs/resources.md")
 
   for workspace in spec.get("workspaces", []):
-    input_util.WorkspaceTransform(workspace)
+    _WorkspaceTransform(workspace)
   _ServiceAccountTransform(spec)
   _ParamDictTransform(spec.get("params", []))
 
@@ -73,7 +73,7 @@ def TektonYamlDataToTaskRun(data):
         "TaskSpec or TaskRef is required.")
 
   for workspace in spec.get("workspaces", []):
-    input_util.WorkspaceTransform(workspace)
+    _WorkspaceTransform(workspace)
   _ServiceAccountTransform(spec)
   _ParamDictTransform(spec.get("params", []))
 
@@ -131,7 +131,8 @@ def _PipelineSpecTransform(spec):
 
 
 def _TaskSpecTransform(spec):
-  _ParamSpecsTransform(spec.get("params", []))
+  for param_spec in spec.get("params", []):
+    input_util.ParamSpecTransform(param_spec)
 
 
 def _TaskTransform(task):
@@ -151,28 +152,18 @@ def _TaskTransform(task):
 
 def _ParamDictTransform(params):
   for param in params:
-    param["value"] = _ParamValueTransform(param["value"])
-
-
-def _ParamSpecsTransform(param_specs):
-  for param in param_specs:
-    if "default" in param:
-      param["default"] = _ParamValueTransform(param["default"])
-    if "type" in param:
-      param["type"] = param["type"].upper()
-
-
-def _ParamValueTransform(param_value):
-  if isinstance(param_value, str):
-    return {"type": "STRING", "stringVal": param_value}
-  elif isinstance(param_value, list):
-    return {"type": "ARRAY", "arrayVal": param_value}
-  else:
-    raise cloudbuild_exceptions.InvalidYamlError(
-        "Unsupported param value type. {msg_type}".format(
-            msg_type=type(param_value)))
+    param["value"] = input_util.ParamValueTransform(param["value"])
 
 
 def _ServiceAccountTransform(spec):
   if "serviceAccountName" in spec:
     spec["serviceAccount"] = spec.pop("serviceAccountName")
+
+
+def _WorkspaceTransform(workspace):
+  if "volumeClaimTemplate" in workspace and "spec" in workspace[
+      "volumeClaimTemplate"] and "accessModes" in workspace[
+          "volumeClaimTemplate"]["spec"]:
+    access_modes = workspace["volumeClaimTemplate"]["spec"]["accessModes"]
+    workspace["volumeClaimTemplate"]["spec"]["accessModes"] = list(
+        map(lambda mode: input_util.CamelToSnake(mode).upper(), access_modes))

@@ -60,7 +60,7 @@ def ParseYamlOrJsonPolicyFile(policy_file_path, policy_message_type):
   policy_to_parse = yaml.load_path(policy_file_path)
   try:
     policy = encoding.PyValueToMessage(policy_message_type, policy_to_parse)
-  except (AttributeError) as e:
+  except (AttributeError, apitools_messages.ValidationError) as e:
     # Raised when the input file is not properly formatted YAML policy file.
     raise gcloud_exceptions.BadFileException(
         'Policy file [{0}] is not a properly formatted YAML or JSON '

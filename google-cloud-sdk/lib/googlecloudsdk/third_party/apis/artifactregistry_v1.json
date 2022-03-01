@@ -840,36 +840,6 @@
     }
   },
   "resources": {
-    "operations": {
-      "methods": {
-        "get": {
-          "id": "artifactregistry.operations.get",
-          "path": "v1/{+name}",
-          "flatPath": "v1/operations/{operationsId}",
-          "httpMethod": "GET",
-          "parameters": {
-            "name": {
-              "description": "The name of the operation resource.",
-              "pattern": "^operations\/[^\/]+$",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "response": {
-            "$ref": "Operation"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/cloud-platform.read-only"
-          ],
-          "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
-        }
-      }
-    },
     "projects": {
       "methods": {
         "getProjectSettings": {
@@ -937,6 +907,36 @@
       "resources": {
         "locations": {
           "resources": {
+            "operations": {
+              "methods": {
+                "get": {
+                  "id": "artifactregistry.projects.locations.operations.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only"
+                  ],
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                }
+              }
+            },
             "repositories": {
               "methods": {
                 "list": {
@@ -1892,6 +1892,11 @@
                         },
                         "pageToken": {
                           "description": "The next_page_token value returned from a previous list request, if any.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "The field to order the results by.",
                           "location": "query",
                           "type": "string"
                         }

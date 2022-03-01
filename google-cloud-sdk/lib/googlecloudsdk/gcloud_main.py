@@ -147,7 +147,7 @@ def CreateCLI(surfaces, translator=None):
   loader.RegisterPreRunHook(
       _IssueAIPlatformAliasWarning, include_commands=r'gcloud\..*ml-engine\..*')
 
-  # Clone 'container/hub' subgroup surfaces into 'container/fleet'
+  # Clone 'container/hub' surface into 'container/fleet'
   # for backward compatibility.
   loader.AddModule(
       'container.hub.memberships',
@@ -180,6 +180,18 @@ def CreateCLI(surfaces, translator=None):
       'container.hub.identity_service',
       os.path.join(pkg_root, 'surface', 'container', 'fleet',
                    'identity_service'))
+  loader.AddModule(
+      'container.hub.multi_cluster_services',
+      os.path.join(pkg_root, 'surface', 'container', 'fleet',
+                   'multi_cluster_services'))
+  loader.AddModule(
+      'container.hub.service_directory',
+      os.path.join(pkg_root, 'surface', 'container', 'fleet',
+                   'service_directory'))
+  loader.AddModule(
+      'container.hub.config_management',
+      os.path.join(pkg_root, 'surface', 'container', 'fleet',
+                   'config_management'))
 
   # Check for updates on shutdown but not for any of the updater commands.
   # Skip update checks for 'gcloud version' command as it does that manually.

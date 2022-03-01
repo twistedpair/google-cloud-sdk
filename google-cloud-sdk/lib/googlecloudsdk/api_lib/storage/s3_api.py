@@ -113,11 +113,11 @@ class S3Api(cloud_api.CloudApi):
         Bucket=bucket_resource.storage_url.bucket_name,
         CreateBucketConfiguration=create_bucket_configuration)
 
-    if (
-        resource_args.cors_file_path or resource_args.labels_file_path or
+    if (resource_args.cors_file_path or resource_args.labels_file_path or
         resource_args.lifecycle_file_path or resource_args.log_bucket or
-        resource_args.log_object_prefix or resource_args.versioning or
-        resource_args.web_error_page or resource_args.web_main_page_suffix):
+        resource_args.log_object_prefix or resource_args.requester_pays or
+        resource_args.versioning or resource_args.web_error_page or
+        resource_args.web_main_page_suffix):
       return self.patch_bucket(bucket_resource, request_config)
 
     backend_location = metadata.get('Location')
@@ -227,6 +227,14 @@ class S3Api(cloud_api.CloudApi):
               'BucketLoggingStatus':
                   s3_metadata_field_converters.process_logging(
                       resource_args.log_bucket, resource_args.log_object_prefix)
+          })
+
+    if resource_args.requester_pays:
+      self._make_patch_request(
+          bucket_resource, self.client.put_bucket_request_payment, {
+              'RequestPaymentConfiguration':
+                  s3_metadata_field_converters.process_requester_pays(
+                      resource_args.requester_pays)
           })
 
     if resource_args.versioning:

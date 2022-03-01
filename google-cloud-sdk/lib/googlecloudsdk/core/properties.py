@@ -124,12 +124,12 @@ def _LooksLikeAProjectName(project):
   return any(c in project for c in ' !"\'')
 
 
-def _BooleanValidator(property_name, value):
+def _BooleanValidator(property_name, property_value):
   """Validates boolean properties.
 
   Args:
     property_name: str, the name of the property
-    value: str | bool, the value to validate
+    property_value: PropertyValue | str | bool, the value to validate
 
   Raises:
     InvalidValueError: if value is not boolean
@@ -137,6 +137,10 @@ def _BooleanValidator(property_name, value):
   accepted_strings = [
       'true', '1', 'on', 'yes', 'y', 'false', '0', 'off', 'no', 'n', '', 'none'
   ]
+  if isinstance(property_value, PropertyValue):
+    value = property_value.value
+  else:
+    value = property_value
   if Stringize(value).lower() not in accepted_strings:
     raise InvalidValueError(
         'The [{0}] value [{1}] is not valid. Possible values: [{2}]. '
@@ -243,6 +247,31 @@ or it can be set temporarily by the environment variable [{env_var}]""".format(
       msg += '\n\n' + extra_msg
     super(RequiredPropertyError, self).__init__(msg)
     self.property = prop
+
+
+class PropertyValue(object):
+  """Represents a value and source for a property.
+
+  Attributes:
+    value: any, the value of the property.
+    source: enum, where the value was sourced from, or UNKNOWN.
+  """
+
+  class PropertySource(enum.Enum):
+    UNKNOWN = 'unknown'
+    PROPERTY_FILE = 'property file'
+    ENVIRONMENT = 'environment'
+    FLAG = 'flag'
+    CALLBACK = 'callback'
+    DEFAULT = 'default'
+    FEATURE_FLAG = 'feature flag'
+
+  def __init__(self, value, source=PropertySource.UNKNOWN):
+    self.value = value
+    self.source = source
+
+  def __str__(self):
+    return '{0} ({1})'.format(six.text_type(self.value), self.source.value)
 
 
 class _Sections(object):
@@ -625,6 +654,39 @@ class _Sections(object):
         result[section.name] = section_result
     return result
 
+  def AllPropertyValues(self,
+                        list_unset=False,
+                        include_hidden=False,
+                        properties_file=None,
+                        only_file_contents=False):
+    """Gets the entire collection of property values for all sections.
+
+    Args:
+      list_unset: bool, If True, include unset properties in the result.
+      include_hidden: bool, True to include hidden properties in the result. If
+        a property has a value set but is hidden, it will be included regardless
+        of this setting.
+      properties_file: PropertyFile, the file to read settings from.  If None
+        the active property file will be used.
+      only_file_contents: bool, True if values should be taken only from the
+        properties file, false if flags, env vars, etc. should be consulted too.
+        Mostly useful for listing file contents.
+
+    Returns:
+      {str:{str:PropertyValue}}, A dict of sections to dicts of properties to
+        property values.
+    """
+    result = {}
+    for section in self:
+      section_result = section.AllPropertyValues(
+          list_unset=list_unset,
+          include_hidden=include_hidden,
+          properties_file=properties_file,
+          only_file_contents=only_file_contents)
+      if section_result:
+        result[section.name] = section_result
+    return result
+
   def GetHelpString(self):
     """Gets a string with the help contents for all properties and descriptions.
 
@@ -820,7 +882,11 @@ class _Section(object):
       if only_file_contents:
         value = properties_file.Get(prop.section, prop.name)
       else:
-        value = _GetPropertyWithoutDefault(prop, properties_file)
+        property_value = _GetPropertyWithoutDefault(prop, properties_file)
+        if property_value is None:
+          value = None
+        else:
+          value = property_value.value
 
       if value is None:
         if not list_unset:
@@ -833,6 +899,59 @@ class _Section(object):
 
       # Always include if value is set (even if hidden)
       result[prop.name] = value
+    return result
+
+  def AllPropertyValues(self,
+                        list_unset=False,
+                        include_hidden=False,
+                        properties_file=None,
+                        only_file_contents=False):
+    """Gets all the properties and their values for this section.
+
+    Args:
+      list_unset: bool, If True, include unset properties in the result.
+      include_hidden: bool, True to include hidden properties in the result. If
+        a property has a value set but is hidden, it will be included regardless
+        of this setting.
+      properties_file: properties_file.PropertiesFile, the file to read settings
+        from.  If None the active property file will be used.
+      only_file_contents: bool, True if values should be taken only from the
+        properties file, false if flags, env vars, etc. should be consulted too.
+        Mostly useful for listing file contents.
+
+    Returns:
+      {str:PropertyValue}, The dict of {property:value} for this section.
+    """
+    properties_file = (
+        properties_file or named_configs.ActivePropertiesFile.Load())
+
+    result = {}
+    for prop in self:
+      if prop.is_internal:
+        # Never show internal properties, ever.
+        continue
+      if (prop.is_hidden and not include_hidden and
+          _GetPropertyWithoutCallback(prop, properties_file) is None):
+        continue
+
+      if only_file_contents:
+        property_value = PropertyValue(
+            properties_file.Get(prop.section, prop.name),
+            PropertyValue.PropertySource.PROPERTY_FILE)
+      else:
+        property_value = _GetPropertyWithoutDefault(prop, properties_file)
+
+      if (property_value is None) or (property_value.value is None):
+        if not list_unset:
+          # Never include if not set and not including unset property_values.
+          continue
+        if prop.is_hidden and not include_hidden:
+          # If including unset property_values, exclude if hidden and not
+          # including hidden properties.
+          continue
+
+      # Always include if value is set (even if hidden)
+      result[prop.name] = property_value
     return result
 
 
@@ -3235,11 +3354,31 @@ class _Property(object):
     Returns:
       str, The value for this property.
     """
-    value = _GetProperty(self, named_configs.ActivePropertiesFile.Load(),
-                         required)
+    property_value = self.GetPropertyValue(required, validate)
+    if property_value is None:
+      return None
+    return Stringize(property_value.value)
+
+  def GetPropertyValue(self, required=False, validate=True):
+    """Gets the value for this property.
+
+    Looks first in the environment, then in the workspace config, then in the
+    global config, and finally at callbacks.
+
+    Args:
+      required: bool, True to raise an exception if the property is not set.
+      validate: bool, Whether or not to run the fetched value through the
+        validation function.
+
+    Returns:
+      PropertyValue, The value for this property.
+    """
+    property_value = _GetProperty(self,
+                                  named_configs.ActivePropertiesFile.Load(),
+                                  required)
     if validate:
-      self.Validate(value)
-    return value
+      self.Validate(property_value)
+    return property_value
 
   def IsExplicitlySet(self):
     """Determines if this property has been explicitly set by the user.
@@ -3249,21 +3388,28 @@ class _Property(object):
     Returns:
       True, if the value was explicitly set, False otherwise.
     """
-    value = _GetPropertyWithoutCallback(
+    property_value = _GetPropertyWithoutCallback(
         self, named_configs.ActivePropertiesFile.Load())
-    return value is not None
+    if property_value is None:
+      return False
+    return property_value.value is not None
 
-  def Validate(self, value):
+  def Validate(self, property_value):
     """Test to see if the value is valid for this property.
 
     Args:
-      value: str, The value of the property to be validated.
+      property_value: str | PropertyValue, The value of the property to be
+        validated.
 
     Raises:
       InvalidValueError: If the value was invalid according to the property's
           validator.
     """
     if self.__validator:
+      if isinstance(property_value, PropertyValue):
+        value = property_value.value
+      else:
+        value = property_value
       try:
         self.__validator(value)
       except InvalidValueError as e:
@@ -3319,14 +3465,18 @@ class _Property(object):
       self.Validate(value)
     return value
 
-  def Set(self, value):
+  def Set(self, property_value):
     """Sets the value for this property as an environment variable.
 
     Args:
-      value: str/bool, The proposed value for this property.  If None, it is
-        removed from the environment.
+      property_value: PropertyValue | str | bool, The proposed value for this
+        property.  If None, it is removed from the environment.
     """
-    self.Validate(value)
+    self.Validate(property_value)
+    if isinstance(property_value, PropertyValue):
+      value = property_value.value
+    else:
+      value = property_value
     if value is not None:
       value = Stringize(value)
     encoding.SetEncodedValue(os.environ, self.EnvironmentName(), value)
@@ -3533,7 +3683,7 @@ def _GetProperty(prop, properties_file, required):
     RequiredPropertyError: If the property was required but unset.
 
   Returns:
-    str, The value of the property, or None if it is not set.
+    PropertyValue, The value of the property, or None if it is not set.
   """
 
   flag_to_use = None
@@ -3545,13 +3695,14 @@ def _GetProperty(prop, properties_file, required):
     if prop in first_invocation:
       flag_to_use = first_invocation.get(prop).flag
 
-  value = _GetPropertyWithoutDefault(prop, properties_file)
-  if value is not None:
-    return Stringize(value)
+  property_value = _GetPropertyWithoutDefault(prop, properties_file)
+  if property_value is not None and property_value.value is not None:
+    return property_value
 
   # Still nothing, check the final default.
   if prop.default is not None:
-    return Stringize(prop.default)
+    return PropertyValue(
+        Stringize(prop.default), PropertyValue.PropertySource.DEFAULT)
 
   # Not set, throw if required.
   if required:
@@ -3592,23 +3743,26 @@ def _GetPropertyWithoutDefault(prop, properties_file):
       properties files to use.
 
   Returns:
-    str, The value of the property, or None if it is not set.
+    PropertyValue, The value of the property, or None if it is not set.
   """
   # Try to get a value from args, env, or property file.
-  value = _GetPropertyWithoutCallback(prop, properties_file)
-  if value is not None:
-    return Stringize(value)
+  property_value = _GetPropertyWithoutCallback(prop, properties_file)
+  if property_value and property_value.value is not None:
+    return property_value
 
   # No value, try getting a value from the callbacks.
   for callback in prop.callbacks:
     value = callback()
     if value is not None:
-      return Stringize(value)
+      return PropertyValue(
+          Stringize(value), PropertyValue.PropertySource.CALLBACK)
 
   # Feature Flag callback
   if (prop.is_feature_flag and
       prop != VALUES.core.enable_feature_flags and FeatureFlagEnabled()):
-    return GetValueFromFeatureFlag(prop)
+    return PropertyValue(
+        GetValueFromFeatureFlag(prop),
+        PropertyValue.PropertySource.FEATURE_FLAG)
 
   return None
 
@@ -3630,7 +3784,7 @@ def _GetPropertyWithoutCallback(prop, properties_file):
     properties_file: PropertiesFile, An already loaded properties files to use.
 
   Returns:
-    str, The value of the property, or None if it is not set.
+    PropertyValue, The value of the property, or None if it is not set.
   """
   # Look for a value in the flags that were used on this command.
   invocation_stack = VALUES.GetInvocationStack()
@@ -3641,17 +3795,20 @@ def _GetPropertyWithoutCallback(prop, properties_file):
     if not value_flag:
       continue
     if value_flag.value is not None:
-      return Stringize(value_flag.value)
+      return PropertyValue(
+          Stringize(value_flag.value), PropertyValue.PropertySource.FLAG)
 
   # Check the environment variable overrides.
   value = encoding.GetEncodedValue(os.environ, prop.EnvironmentName())
   if value is not None:
-    return Stringize(value)
+    return PropertyValue(
+        Stringize(value), PropertyValue.PropertySource.ENVIRONMENT)
 
   # Check the property file itself.
   value = properties_file.Get(prop.section, prop.name)
   if value is not None:
-    return Stringize(value)
+    return PropertyValue(
+        Stringize(value), PropertyValue.PropertySource.PROPERTY_FILE)
 
   return None
 
@@ -3669,12 +3826,13 @@ def _GetBoolProperty(prop, properties_file, required, validate=False):
   Returns:
     bool, The value of the property, or None if it is not set.
   """
-  value = _GetProperty(prop, properties_file, required)
+  property_value = _GetProperty(prop, properties_file, required)
   if validate:
-    _BooleanValidator(prop.name, value)
-  if value is None or Stringize(value).lower() == 'none':
+    _BooleanValidator(prop.name, property_value)
+  if property_value is None or property_value.value is None or Stringize(
+      property_value.value).lower() == 'none':
     return None
-  return value.lower() in ['1', 'true', 'on', 'yes', 'y']
+  return property_value.value.lower() in ['1', 'true', 'on', 'yes', 'y']
 
 
 def _GetIntProperty(prop, properties_file, required):
@@ -3689,15 +3847,15 @@ def _GetIntProperty(prop, properties_file, required):
   Returns:
     int, The integer value of the property, or None if it is not set.
   """
-  value = _GetProperty(prop, properties_file, required)
-  if value is None:
+  property_value = _GetProperty(prop, properties_file, required)
+  if property_value is None or property_value.value is None:
     return None
   try:
-    return int(value)
+    return int(property_value.value)
   except ValueError:
     raise InvalidValueError(
         'The property [{prop}] must have an integer value: [{value}]'.format(
-            prop=prop, value=value))
+            prop=prop, value=property_value.value))
 
 
 def GetMetricsEnvironment():

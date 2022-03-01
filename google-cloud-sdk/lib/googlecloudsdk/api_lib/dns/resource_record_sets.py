@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 from dns import rdatatype
 from googlecloudsdk.api_lib.dns import import_util
+from googlecloudsdk.api_lib.dns import record_types
 from googlecloudsdk.api_lib.dns import util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import exceptions
@@ -30,12 +31,34 @@ class UnsupportedRecordType(exceptions.Error):
   """Unsupported record-set type."""
 
 
-def CreateRecordSetFromArgs(args, api_version='v1'):
+def _TryParseRRTypeFromString(type_str):
+  """Tries to parse the rrtype wire value from the given string.
+
+  Args:
+    type_str: The record type as a string (e.g. "A", "MX"...).
+
+  Raises:
+    UnsupportedRecordType: If given record-set type is not supported
+
+  Returns:
+    The wire value rrtype as an int or rdatatype enum.
+  """
+  rd_type = rdatatype.from_text(type_str)
+  if rd_type not in record_types.SUPPORTED_TYPES:
+    raise UnsupportedRecordType('Unsupported record-set type [%s]' % type_str)
+  return rd_type
+
+
+def CreateRecordSetFromArgs(args,
+                            api_version='v1',
+                            allow_extended_records=False):
   """Creates and returns a record-set from the given args.
 
   Args:
     args: The arguments to use to create the record-set.
     api_version: [str], the api version to use for creating the RecordSet.
+    allow_extended_records: [bool], enables extended records if true, otherwise
+      throws an exception when given an extended record type.
 
   Raises:
     UnsupportedRecordType: If given record-set type is not supported
@@ -44,10 +67,14 @@ def CreateRecordSetFromArgs(args, api_version='v1'):
     ResourceRecordSet, the record-set created from the given args.
   """
   messages = apis.GetMessagesModule('dns', api_version)
-  rd_type = rdatatype.from_text(args.type)
-  if rd_type not in import_util.SUPPORTED_TYPES:
-    raise UnsupportedRecordType(
-        'Unsupported record-set type [{0}]'.format(args.type))
+  if allow_extended_records:
+    if args.type in record_types.CLOUD_DNS_EXTENDED_TYPES:
+      # Extended records are internal to Cloud DNS, so don't have wire values.
+      rd_type = rdatatype.NONE
+    else:
+      rd_type = _TryParseRRTypeFromString(args.type)
+  else:
+    rd_type = _TryParseRRTypeFromString(args.type)
 
   record_set = messages.ResourceRecordSet()
   # Need to assign kind to default value for useful equals comparisons.

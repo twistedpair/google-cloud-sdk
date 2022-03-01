@@ -73,11 +73,14 @@ class MultitypeConceptSpec(concepts.ConceptSpec):
       if not given in cases where the resource is referred to in the plural.
     attributes: [concepts._Attribute], a list of attributes of the concept.
     type_enum: enum.Enum, an Enum class representing the available types.
+    allow_inactive: bool, True if resource parsing is allowed use inactive
+      attributes to decipher resource type.
   """
 
   def __init__(self, name, *concept_specs, **kwargs):
     self._name = name
     self._plural_name = kwargs.get('plural_name', None)
+    self._allow_inactive = kwargs.get('allow_inactive', False)
     self._concept_specs = concept_specs
     self._attributes = []
     self._attribute_to_types_map = {}
@@ -153,13 +156,23 @@ class MultitypeResourceSpec(MultitypeConceptSpec, concepts.ResourceSpec):
   def Pluralize(self, attribute, plural=False):
     return plural and self.IsLeafAnchor(attribute)
 
-  def _GetActivelySpecifiedAttributes(self, fallthroughs_map, parsed_args=None):
+  def _GetSpecifiedAttributes(self,
+                              fallthroughs_map,
+                              parsed_args=None,
+                              allow_inactive=False):
     """Get a list of attributes that are actively specified in runtime."""
     specified = []
-    final_map = {
-        attr: filter(operator.attrgetter('active'), fallthroughs)
-        for attr, fallthroughs in six.iteritems(fallthroughs_map)
-    }
+    final_map = {}
+    if allow_inactive:
+      final_map = {
+          attr: fallthroughs
+          for attr, fallthroughs in six.iteritems(fallthroughs_map)
+      }
+    else:
+      final_map = {
+          attr: filter(operator.attrgetter('active'), fallthroughs)
+          for attr, fallthroughs in six.iteritems(fallthroughs_map)
+      }
     for attribute in self.attributes:
       try:
         value = deps_lib.Get(attribute.name, final_map, parsed_args=parsed_args)
@@ -191,29 +204,36 @@ class MultitypeResourceSpec(MultitypeConceptSpec, concepts.ResourceSpec):
             (candidate, self._name_to_concepts[candidate.name]))
     return possible_types
 
-  def _GetActiveType(self, fallthroughs_map, parsed_args=None,
-                     type_filter=None):
+  def _GetType(self,
+               fallthroughs_map,
+               parsed_args=None,
+               type_filter=None,
+               allow_inactive=False):
     """Helper method to get the type based on actively specified info."""
-    actively_specified = self._GetActivelySpecifiedAttributes(
-        fallthroughs_map, parsed_args=parsed_args)
+    specified = self._GetSpecifiedAttributes(
+        fallthroughs_map,
+        parsed_args=parsed_args,
+        allow_inactive=allow_inactive)
 
-    active_types = self._GetPossibleTypes(actively_specified,
-                                          type_filter=type_filter)
+    types = self._GetPossibleTypes(specified, type_filter=type_filter)
 
-    if not active_types:
-      raise ConflictingTypesError(actively_specified)
+    if not types:
+      raise ConflictingTypesError(specified)
 
-    if len(active_types) == 1:
-      return active_types[0]
+    if len(types) == 1:
+      return types[0]
 
-    for i in range(len(active_types)):
-      active_type = active_types[i]
-      if all(
-          [set(active_type[1].attributes).issubset(
-              set(other_type[1].attributes))
-           for j, other_type in enumerate(active_types) if i != j]):
-        return active_type
-    raise ConflictingTypesError(actively_specified)
+    for i in range(len(types)):
+      current_type = types[i]
+      current_type_possible = True
+      for j in range(len(types)):
+        if i == j:
+          continue
+        current_type_possible = current_type_possible and set(
+            current_type[1].attributes).issubset(types[j][1].attributes)
+      if current_type_possible:
+        return current_type
+    raise ConflictingTypesError(specified)
 
   def _GetUniqueNameForSpec(self, resource_spec, final_names):
     """Overrides this functionality from generic multitype concept specs."""
@@ -262,7 +282,11 @@ class MultitypeResourceSpec(MultitypeConceptSpec, concepts.ResourceSpec):
           errors.append(six.text_type(e))
     return False, errors
 
-  def Initialize(self, fallthroughs_map, parsed_args=None, type_filter=None):
+  def Initialize(self,
+                 fallthroughs_map,
+                 parsed_args=None,
+                 type_filter=None,
+                 allow_inactive=False):
     """Initializes the concept.
 
     Determines which attributes are actively specified (i.e. on the command
@@ -288,6 +312,8 @@ class MultitypeResourceSpec(MultitypeConceptSpec, concepts.ResourceSpec):
       parsed_args: the argparse namespace.
       type_filter: a function object that takes a single type enum and returns
         a boolean value (True if that type is acceptable, False if not).
+      allow_inactive: bool, True if resource parsing is allowed use inactive
+        attributes to decipher resource type.
 
     Raises:
       ConflictingTypesError, if more than one possible type exists.
@@ -307,8 +333,23 @@ class MultitypeResourceSpec(MultitypeConceptSpec, concepts.ResourceSpec):
     full_fallthroughs_map = copy.deepcopy(fallthroughs_map)
     for attribute in self.attributes:
       self._AddAnchorFallthroughs(attribute, full_fallthroughs_map)
-    type_ = self._GetActiveType(full_fallthroughs_map, parsed_args=parsed_args,
-                                type_filter=type_filter)
+    # First try deciphering from active fallthroughs even if allow_inactive.
+    type_ = None
+    try:
+      type_ = self._GetType(
+          full_fallthroughs_map,
+          parsed_args=parsed_args,
+          type_filter=type_filter)
+    except ConflictingTypesError:
+      if not allow_inactive:
+        raise
+    if not type_ and allow_inactive:
+      type_ = self._GetType(
+          full_fallthroughs_map,
+          parsed_args=parsed_args,
+          type_filter=type_filter,
+          allow_inactive=allow_inactive)
+
     return TypedConceptResult(
         type_[1].Initialize(fallthroughs_map, parsed_args=parsed_args),
         type_[0])
@@ -397,7 +438,10 @@ class MultitypeResourceSpec(MultitypeConceptSpec, concepts.ResourceSpec):
           attribute_to_args_map, base_fallthroughs_map,
           with_anchor_fallthroughs=False)
       try:
-        return self.Initialize(fallthroughs_map, parsed_args=parsed_args)
+        return self.Initialize(
+            fallthroughs_map,
+            parsed_args=parsed_args,
+            allow_inactive=self._allow_inactive)
       except concepts.InitializationError:
         if allow_empty:
           return TypedConceptResult(None, None)

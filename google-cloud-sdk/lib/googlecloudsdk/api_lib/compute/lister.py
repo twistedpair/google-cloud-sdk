@@ -22,6 +22,7 @@ import itertools
 
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import exceptions
+from googlecloudsdk.api_lib.compute import filter_scope_rewriter
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import actions
@@ -571,6 +572,38 @@ def _TranslateZonesFlag(args, resources, message=None):
   return filter_expr, scope_set
 
 
+def _TranslateZonesFilters(args, resources):
+  """Translates simple zone=( ...
+
+  ) filters into scope set.
+
+  Args:
+    args: The argument namespace of BaseLister.
+    resources: resources.Registry, The resource registry
+
+  Returns:
+    A scope set for the request.
+  """
+  _, zones = filter_scope_rewriter.FilterScopeRewriter().Rewrite(
+      args.filter, keys={'zone'})
+  if zones:
+    zone_list = []
+    for z in zones:
+      zone_resource = resources.Parse(
+          z,
+          params={'project': properties.VALUES.core.project.GetOrFail},
+          collection='compute.zones')
+      zone_list.append(zone_resource)
+    return ZoneSet(zone_list)
+  return AllScopes([
+      resources.Parse(
+          properties.VALUES.core.project.GetOrFail(),
+          collection='compute.projects')
+  ],
+                   zonal=True,
+                   regional=False)
+
+
 def ParseZonalFlags(args, resources, message=None):
   """Make Frontend suitable for ZonalLister argument namespace.
 
@@ -590,6 +623,8 @@ def ParseZonalFlags(args, resources, message=None):
   if args.zones:
     filter_expr, scope_set = _TranslateZonesFlag(
         args, resources, message=message)
+  elif args.filter and 'zone' in args.filter:
+    scope_set = _TranslateZonesFilters(args, resources)
   else:
     scope_set = AllScopes(
         [
@@ -623,6 +658,38 @@ def _TranslateRegionsFlag(args, resources, message=None):
   return filter_expr, scope_set
 
 
+def _TranslateRegionsFilters(args, resources):
+  """Translates simple region=( ...
+
+  ) filters into scope set.
+
+  Args:
+    args: The argument namespace of BaseLister.
+    resources: resources.Registry, The resource registry
+
+  Returns:
+    A region set for the request.
+  """
+  _, regions = filter_scope_rewriter.FilterScopeRewriter().Rewrite(
+      args.filter, keys={'region'})
+  if regions:
+    region_list = []
+    for r in regions:
+      region_resource = resources.Parse(
+          r,
+          params={'project': properties.VALUES.core.project.GetOrFail},
+          collection='compute.regions')
+      region_list.append(region_resource)
+    return RegionSet(region_list)
+  return AllScopes([
+      resources.Parse(
+          properties.VALUES.core.project.GetOrFail(),
+          collection='compute.projects')
+  ],
+                   zonal=False,
+                   regional=True)
+
+
 def ParseRegionalFlags(args, resources, message=None):
   """Make Frontend suitable for RegionalLister argument namespace.
 
@@ -641,6 +708,8 @@ def ParseRegionalFlags(args, resources, message=None):
   filter_expr = frontend.filter
   if args.regions:
     filter_expr, scope_set = _TranslateRegionsFlag(args, resources)
+  elif args.filter and 'region' in args.filter:
+    scope_set = _TranslateRegionsFilters(args, resources)
   else:
     scope_set = AllScopes(
         [
@@ -672,9 +741,13 @@ def ParseMultiScopeFlags(args, resources, message=None):
   if getattr(args, 'zones', None):
     filter_expr, scope_set = _TranslateZonesFlag(
         args, resources, message=message)
+  elif args.filter and 'zone' in args.filter:
+    scope_set = _TranslateZonesFilters(args, resources)
   elif getattr(args, 'regions', None):
     filter_expr, scope_set = _TranslateRegionsFlag(
         args, resources, message=message)
+  elif args.filter and 'region' in args.filter:
+    scope_set = _TranslateRegionsFilters(args, resources)
   elif getattr(args, 'global', None):
     scope_set = GlobalScope([
         resources.Parse(

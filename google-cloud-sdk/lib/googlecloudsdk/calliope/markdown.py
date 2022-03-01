@@ -163,6 +163,180 @@ class ExampleCommandLineSplitter(object):
     return ''.join(lines)
 
 
+def NormalizeExampleSection(doc):
+  """Removes line breaks and extra spaces in example commands.
+
+  In command implementation, some example commands were manually broken into
+  multiple lines with or without "\". This function removes these line
+  breaks and let ExampleCommandLineSplitter to split the long commands
+  centrally.
+
+  This function will not change example commands in the following situations:
+
+  1. If the command is in a code block, surrounded with ```sh...```.
+  2. If the values are within a quote (single or double quote).
+
+  Args:
+    doc: str, help text to process.
+
+  Returns:
+    Modified help text.
+  """
+  example_sec_until_next_sec = re.compile(
+      r'^## EXAMPLES\n(.+?)(\n+## )', flags=re.M | re.DOTALL)
+  example_sec_until_end = re.compile(
+      r'^## EXAMPLES\n(.+)', flags=re.M | re.DOTALL)
+  match_example_sec = example_sec_until_next_sec.search(doc)
+  match_example_sec_to_end = example_sec_until_end.search(doc)
+  # no EXAMPLES section
+  if not match_example_sec and not match_example_sec_to_end:
+    return doc
+  elif match_example_sec:
+    selected_match = match_example_sec
+  else:
+    selected_match = match_example_sec_to_end
+  doc_before_examples = doc[:selected_match.start(1)]
+  example_section = doc[selected_match.start(1):selected_match.end(1)]
+  doc_after_example = doc[selected_match.end(1):]
+
+  pat_example_line = re.compile(r'^ *(\$ .*)$', re.M)
+  pat_code_block = re.compile(r'^ *```sh(.+?```)', re.M | re.DOTALL)
+  pos = 0
+  res = ''
+  while True:
+    match_example_line = pat_example_line.search(example_section, pos)
+    match_code_block = pat_code_block.search(example_section, pos)
+    if not match_code_block and not match_example_line:
+      break
+    elif match_code_block and match_example_line:
+      # If it found an example command line and a code block, pick the one
+      # closer to the starting point.
+      if match_code_block.start(1) > match_example_line.start(1):
+        example, next_pos = UnifyExampleLine(example_section,
+                                             match_example_line.start(1))
+        res += (example_section[pos:match_example_line.start(1)] + example)
+        pos = next_pos
+      else:
+        res += example_section[pos:match_code_block.end(1)]
+        pos = match_code_block.end(1)
+    elif match_code_block:
+      res += example_section[pos:match_code_block.end(1)]
+      pos = match_code_block.end(1)
+    else:
+      example, next_pos = UnifyExampleLine(example_section,
+                                           match_example_line.start(1))
+      res += (example_section[pos:match_example_line.start(1)] + example)
+      pos = next_pos
+  return (doc_before_examples + (res + example_section[pos:]) +
+          doc_after_example)
+
+
+def UnifyExampleLine(example_doc, pos):
+  """Returns the example command line at pos in one single line.
+
+  pos is the starting point of an example (starting with "$ ").
+  This function removes "\n" and "\" and redundant spaces in the example line.
+  The resulted example should be in one single line.
+
+  Args:
+    example_doc: str, Example section of the help text.
+    pos: int, Position to start. pos will be the starting position of an
+     example line.
+
+  Returns:
+    normalized example command, next starting position to search
+  """
+  pat_match_next_command = re.compile(r'\$\s+(.+?)(\n +\$\s+)',
+                                      re.DOTALL)  # match consecutive commands.
+  pat_match_empty_line_after_command = re.compile(r'\$\s+(.+?)(\n\s*\n|\n\+\n)',
+                                                  re.DOTALL)
+  match_next_command = pat_match_next_command.match(example_doc, pos)
+  match_empty_line_after_command = pat_match_empty_line_after_command.match(
+      example_doc, pos)
+  # reached to the end
+  if not match_next_command and not match_empty_line_after_command:
+    new_doc = example_doc.rstrip()
+    pat = re.compile(r'\$\s+(.+)', re.DOTALL)
+    match = pat.match(new_doc, pos)
+    example = match.group(1)
+    pat = re.compile(r'\\\n\s*')
+    example = pat.sub('', example)  # remove extra \n and \ and spaces.
+    example = RemoveSpacesLineBreaksFromExample(example)
+    return '$ ' + example, len(new_doc)
+  elif match_next_command and match_empty_line_after_command:
+    if len(match_next_command.group(1)) > len(
+        match_empty_line_after_command.group(1)):
+      selected_match = match_empty_line_after_command
+    else:
+      selected_match = match_next_command
+  else:
+    selected_match = (
+        match_next_command
+        if match_next_command else match_empty_line_after_command)
+  example = selected_match.group(1)
+  pat = re.compile(r'\\\n\s*')
+  example = pat.sub('', example)
+  example = RemoveSpacesLineBreaksFromExample(example)
+  next_pos = selected_match.end(1)
+  return '$ ' + example, next_pos
+
+
+def _PrecedingBackslashCount(res):
+  index = len(res) - 1
+  while index >= 0 and res[index] == '\\':
+    index -= 1
+  return len(res) - index - 1
+
+
+def RemoveSpacesLineBreaksFromExample(example):
+  """Returns the example with redundant spaces and line breaks removed.
+
+  If a character sequence is quoted (either single or double quote), we will
+  not touch its value. Single quote is not allowed within single quote even
+  with a preceding backslash. Double quote is allowed in double quote with
+  preceding backslash though. If the spaces and line breaks are within quote,
+  they are not touched.
+
+  Args:
+    example, str: Example line to process.
+  """
+  res = []
+  example = example.strip()
+  pos = 0
+  while pos < len(example):
+    c = example[pos]
+    if c not in ['"', "'"]:  # outside quote
+      if c == '\n':
+        c = ' '  # remove line break
+      if not (c == ' ' and res and res[-1] == ' '):  # remove redundant spaces
+        res.append(c)
+      pos += 1
+    elif c == "'":  # see single quote
+      res.append(c)
+      pos += 1
+      # proceed until seeing a closing single quote or exhausting example.
+      while pos < len(example) and example[pos] != "'":
+        res.append(example[pos])
+        pos += 1
+      if pos < len(example):  # see closing single quote
+        res.append(example[pos])
+        pos += 1
+    else:  # see double quote
+      res.append(example[pos])
+      pos += 1
+      # proceed until seeing a closing double quote or exhausting example.
+      while (
+          pos < len(example) and
+          not (example[pos] == '"' and _PrecedingBackslashCount(res) % 2 == 0)):
+        res.append(example[pos])
+        pos += 1
+      if pos < len(example):  # see closing double quote
+        res.append(example[pos])
+        pos += 1
+
+  return ''.join(res)
+
+
 class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
   """Command help markdown document generator base class.
 
@@ -665,6 +839,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
   def _ExpandFormatReferences(self, doc):
     """Expand {...} references in doc."""
     doc = self._ExpandHelpText(doc)
+    doc = NormalizeExampleSection(doc)
 
     # Split long $ ... example lines.
     pat = re.compile(r'^ *(\$ .{%d,})$' % (

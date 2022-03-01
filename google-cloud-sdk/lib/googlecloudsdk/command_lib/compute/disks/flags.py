@@ -55,38 +55,44 @@ _SOURCE_DISK_DETAILED_HELP = """\
       The source disk must be in the same zone/region as the disk to be created.
 """
 
-_ASYNC_PRIMARY_DISK_HELP = """\
-      Primary disk from which data will replicate to the disk asynchronously.
-"""
-
-_ASYNC_SECONDARY_DISK_HELP = """\
-      Secondary disk to stop asynchronous replication to. Supplied if and
-      only if the target disk is a primary disk in an asynchronously replicated
-      pair.
-"""
-
 _SOURCE_DISK_ZONE_EXPLANATION = """\
-      Zone of the source disk, this argument is not required if target disk is in same zone of source disk.
+      Zone of the source disk. This argument is not required if the target disk
+      is in the same zone as the source disk.
 """
 
 _SOURCE_DISK_REGION_EXPLANATION = """\
-      Region of the source disk, this argument is not required if target disk is in same region of source disk.
+      Region of the source disk. This argument is not required if the target
+      disk is in the same region as the source disk.
+"""
+
+_ASYNC_PRIMARY_DISK_HELP = """\
+      Primary disk for asynchronous replication. This flag is required when
+      creating a secondary disk.
 """
 
 _ASYNC_PRIMARY_DISK_ZONE_EXPLANATION = """\
-      Zone of the async primary disk, it cannot be in the same region as the secondary disk that's to be created.
+      Zone of the primary disk for asynchronous replication. The primary and
+      secondary disks must not be in the same region.
 """
 
 _ASYNC_PRIMARY_DISK_REGION_EXPLANATION = """\
-      Region of the async primary disk, it cannot be the same as the region of the secondary disk that's to be created.
+      Region of the primary disk for asynchronous replication. The primary and
+      secondary disks must not be in the same region.
+"""
+
+_ASYNC_SECONDARY_DISK_HELP = """\
+      Secondary disk for asynchronous replication. This flag is required when
+      starting replication. It is also required when stopping replication on the
+      primary disk. It must not be used when stopping replication on the
+      secondary disk.
 """
 
 _ASYNC_SECONDARY_DISK_ZONE_EXPLANATION = """\
-      Zone of the async secondary disk.
+      Zone of the secondary disk for asynchronous replication.
 """
 
 _ASYNC_SECONDARY_DISK_REGION_EXPLANATION = """\
-      Region of the async secondary disk.
+      Region of the secondary disk for asynchronous replication.
 """
 
 DEFAULT_LIST_FORMAT = """\
@@ -229,8 +235,8 @@ ASYNC_PRIMARY_DISK_ARG = compute_flags.ResourceArgument(
     completer=compute_completers.DisksCompleter,
     zonal_collection='compute.disks',
     regional_collection='compute.regionDisks',
-    short_help='Async primary disk from which data will replicate to the disk'
-    ' to be created.',
+    short_help='Primary disk for asynchronous replication. This option creates'
+    ' a secondary disk for a given primary disk.',
     detailed_help=_ASYNC_PRIMARY_DISK_HELP,
     plural=False,
     required=False,
@@ -244,7 +250,7 @@ ASYNC_SECONDARY_DISK_ARG = compute_flags.ResourceArgument(
     completer=compute_completers.DisksCompleter,
     zonal_collection='compute.disks',
     regional_collection='compute.regionDisks',
-    short_help='Async secondary disk that is being replicated to.',
+    short_help='Secondary disk for asynchronous replication.',
     detailed_help=_ASYNC_SECONDARY_DISK_HELP,
     plural=False,
     required=False,

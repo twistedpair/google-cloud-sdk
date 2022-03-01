@@ -5,6 +5,74 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 375.0.0 (2022-03-01)
+
+### Breaking Changes
+
+*   **(Miscellaneous)** Updated `.gcloudignore` pattern matching to ensure that a leading wildcard
+    does not match multiple path parts, for improved consistency with
+    `.gitignore`.
+    *   For example, `*/baz` will no longer match `foo/bar/baz`. Use `**/baz`
+        for the previous behavior.
+
+
+### App Engine
+
+* Updated the Java SDK to version 1.9.95.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/java/release-notes>.
+
+### Cloud Key Management Service
+
+*   Add `gcloud kms ekm-connections` commands to GA.
+
+### Cloud Pub/Sub
+
+*   Added `--enable-exactly-once-delivery` flag to `gcloud pubsub subscriptions create` to beta to set exactly once delivery preference in Cloud Pub/Sub subscriptions.
+*   Added `--enable-exactly-once-delivery` flag to `gcloud pubsub subscriptions update` to beta to update exactly once delivery preference for Cloud Pub/Sub subscriptions.
+
+### Cloud Security Command Center
+
+*   Added `gcloud scc bqexports` command group to support BigQueryExport features.
+
+### Cloud Speech API
+
+* Added `medical_conversation` and `medical_dictation` options for
+  `gcloud ml speech <recognize | recognize-long-running> --model` flag.
+
+### Compute Engine
+
+*   Modified `--filter` to add support for server-side zone and region filtering to `gcloud compute` list commands.
+    * Filtering will only be applied server-side if an exact match (`=`) is used in the filter expression (e.g. `--filter="zone=us-central1-a"`). Otherwise, the existing client-side filtering will be applied.
+
+### Identity and Access Management
+
+* Added `gcloud beta iam policies create` which creates a policy on the given
+  attachment point with the given name.
+* Added `gcloud beta iam policies delete` which deletes a policy on the given
+   attachment point with the given name.
+* Added `gcloud beta iam policies get` which gets a policy on the given
+  attachment point with the given name.
+* Added `gcloud beta iam policies list`which lists the policies on the given
+  attachment point.
+* Added `gcloud beta iam policies update` which updates the policy on the given
+  attachment point with the given name.
+
+### Kubernetes Engine
+
+* Promoted `--enable-identity-service` flag to GA for `gcloud container cluster create|update`.
+* Added `--enable-confidential-nodes` flag to `gcloud beta container node-pools create/update` to allow creating node-pools with confidential nodes, and updating existing node pools to confidential nodes.
+
+### Miscellaneous
+
+*   Updated `gcloud info` to display the source for each property value in
+    parenthesis after the value, to help understand if the property is set by
+    a command-line flag, an environment variable, the properties file, etc.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 374.0.0 (2022-02-23)
 
 ### Breaking Changes

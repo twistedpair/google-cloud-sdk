@@ -167,6 +167,18 @@ def process_log_config(log_bucket, log_object_prefix):
       logObjectPrefix=validated_log_object_prefix)
 
 
+def process_requester_pays(existing_billing, requester_pays):
+  """Converts requester_pays boolean to Apitools object."""
+  messages = apis.GetMessagesModule('storage', 'v1')
+  if existing_billing:
+    result_billing = existing_billing
+  else:
+    result_billing = messages.Bucket.BillingValue()
+
+  result_billing.requesterPays = requester_pays
+  return result_billing
+
+
 def process_retention_period(retention_period_string):
   """Converts retention_period string to Apitools object."""
   if retention_period_string == user_request_args_factory.CLEAR:

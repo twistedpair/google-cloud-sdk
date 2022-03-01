@@ -238,11 +238,6 @@
             "$ref": "WorkspaceBinding"
           }
         },
-        "timeout": {
-          "description": "Time after which the Workflow times out.",
-          "type": "string",
-          "format": "google-duration"
-        },
         "labels": {
           "description": "Map of key-value pairs of user-defined labels.",
           "type": "object",
@@ -883,6 +878,11 @@
         "statusUpdateOptions": {
           "description": "How\/where status on the workflow is posted.",
           "$ref": "WorkflowStatusUpdateOptions"
+        },
+        "timeout": {
+          "description": "Time after which the Workflow times out.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },

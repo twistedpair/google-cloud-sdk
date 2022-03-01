@@ -192,6 +192,10 @@ def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
       resource_args.log_object_prefix is not None):
     bucket_metadata.logging = gcs_metadata_field_converters.process_log_config(
         resource_args.log_bucket, resource_args.log_object_prefix)
+  if resource_args.requester_pays is not None:
+    bucket_metadata.billing = (
+        gcs_metadata_field_converters.process_requester_pays(
+            bucket_metadata.billing, resource_args.requester_pays))
   if resource_args.retention_period is not None:
     bucket_metadata.retentionPolicy = (
         gcs_metadata_field_converters.process_retention_period(

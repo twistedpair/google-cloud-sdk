@@ -3451,7 +3451,6 @@ class Workflow(_messages.Message):
     serviceAccount: If omitted, the default Cloud Build Service Account is
       used instead. Format: `projects/{project}/locations/{location}/serviceAc
       counts/{serviceAccount}`
-    timeout: Time after which the Workflow times out.
     uid: Output only. A unique identifier for the `Workflow`.
     updateTime: Output only. Server assigned timestamp for when the workflow
       was last updated.
@@ -3520,10 +3519,9 @@ class Workflow(_messages.Message):
   pipelineSpec = _messages.MessageField('PipelineSpec', 10)
   secrets = _messages.MessageField('GoogleDevtoolsCloudbuildV2SecretManagerSecret', 11, repeated=True)
   serviceAccount = _messages.StringField(12)
-  timeout = _messages.StringField(13)
-  uid = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
-  workspaces = _messages.MessageField('WorkspaceBinding', 16, repeated=True)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
+  workspaces = _messages.MessageField('WorkspaceBinding', 15, repeated=True)
 
 
 class WorkflowOptions(_messages.Message):
@@ -3532,10 +3530,12 @@ class WorkflowOptions(_messages.Message):
   Fields:
     executionEnvironment: Contains the workerpool.
     statusUpdateOptions: How/where status on the workflow is posted.
+    timeout: Time after which the Workflow times out.
   """
 
   executionEnvironment = _messages.MessageField('ExecutionEnvironment', 1)
   statusUpdateOptions = _messages.MessageField('WorkflowStatusUpdateOptions', 2)
+  timeout = _messages.StringField(3)
 
 
 class WorkflowStatusUpdateOptions(_messages.Message):

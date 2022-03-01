@@ -1077,7 +1077,7 @@ def AddMonitoringFlag(parser, autopilot=False):
 
   help_text = """\
 Set the components that have monitoring enabled. Valid component values are:
-`SYSTEM`, `NONE`
+`SYSTEM`, `WORKLOAD` (Deprecated), `NONE`
 
 For more information, look at
 https://cloud.google.com/stackdriver/docs/solutions/gke/installing#available-metrics
@@ -3800,7 +3800,7 @@ The set of zones in which the node pool's nodes should be located.
 
 Multiple locations can be specified, separated by commas. For example:
 
-  $ {command} node-pool-1 --node-locations=us-central1-a,us-central1-b"""
+  $ {command} node-pool-1 --cluster=sample-cluster --node-locations=us-central1-a,us-central1-b"""
   else:
     help_text = """\
 Set of zones in which the node pool's nodes should be located.
@@ -3809,7 +3809,7 @@ from the node pool, depending on whether locations are being added or removed.
 
 Multiple locations can be specified, separated by commas. For example:
 
-  $ {command} node-pool-1 --node-locations=us-central1-a,us-central1-b"""
+  $ {command} node-pool-1 --cluster=sample-cluster --node-locations=us-central1-a,us-central1-b"""
   parser.add_argument(
       '--node-locations',
       type=arg_parsers.ArgList(min_length=1),
@@ -4026,14 +4026,21 @@ either a node-pool upgrade or node-pool creation.
       '--enable-gvnic', help=help_text, default=None, action='store_true')
 
 
-def AddEnableConfidentialNodesFlag(parser, for_node_pool=False, hidden=False):
+def AddEnableConfidentialNodesFlag(parser, for_node_pool=False, hidden=False,
+                                   is_update=False):
   """Adds a --enable-confidential-nodes flag to the given parser."""
   target = 'node pool' if for_node_pool else 'cluster'
+
   help_text = """\
 Enable confidential nodes for the {}. Enabling Confidential Nodes
 will create nodes using Confidential VM
 https://cloud.google.com/compute/confidential-vm/docs/about-cvm.""".format(
     target)
+
+  if is_update:
+    help_text = """\
+    Recreate all the nodes in the node pool to be confidential VM
+    https://cloud.google.com/compute/confidential-vm/docs/about-cvm."""
 
   parser.add_argument(
       '--enable-confidential-nodes',

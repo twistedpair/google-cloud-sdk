@@ -35,6 +35,7 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
   def __init__(self, *args, **kwargs):
     super(DevSiteRenderer, self).__init__(*args, **kwargs)
     self._opentag = False
+    self._whole_example = ''
 
   def _Title(self):
     """Renders an HTML document title."""
@@ -81,6 +82,28 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
       self._out.write('\n')
       self._blank = False
 
+  def WrapFlags(self, tag, match_regex, css_classes):
+    """Wraps all regex matches from example in tag with classes."""
+    matches = [m.span() for m in re.finditer(match_regex, self._whole_example)]
+    wrapped_example = ''
+    # Two pointer flag wrapping
+    left = 0
+    for match_left, match_right in matches:
+      wrapped_example += self._whole_example[left:match_left]
+      wrapped_example += '<' + tag + ' class="' + ' '.join(css_classes) + '">'
+      wrapped_example += self._whole_example[match_left:match_right]
+      wrapped_example += '</' + tag + '>'
+      left = match_right
+    wrapped_example += self._whole_example[left:]
+    return wrapped_example
+
+  def FlushExample(self):
+    """Prints full example string with devsite tags to output stream."""
+    self._out.write('<code class="devsite-terminal">')
+    self._out.write(self.WrapFlags('span', r'-(-\w+)+', ['flag']))
+    self._out.write('</code>\n')
+    self._whole_example = ''
+
   def Example(self, line):
     """Displays line as an indented example.
 
@@ -95,27 +118,27 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
       # _Flush()
       self._fill = 2
       if not self._lang:
-        self._out.write('<pre class="prettyprint lang-sh">\n')
+        self._out.write('<pre class="prettyprint lang-sh wrap-code">\n')
       elif self._lang in ('pretty', 'yaml'):
-        self._out.write('<pre class="prettyprint lang-sh">\n')
+        self._out.write('<pre class="prettyprint lang-sh wrap-code">\n')
       else:
-        self._out.write('<pre class="prettyprint lang-{lang}">\n'.format(
-            lang=self._lang))
+        self._out.write(
+            '<pre class="prettyprint lang-{lang} wrap-code">\n'.format(
+                lang=self._lang))
     indent = len(line)
     line = line.lstrip()
     indent -= len(line)
     command_pattern = re.compile(r'\A\$\s+')
     if command_pattern.match(line):
       self._in_command_block = True
-      self._out.write('<code class="devsite-terminal">')
     if self._in_command_block:
       line = command_pattern.sub('', line)
       if line.endswith('\\'):
         # stripping '\' because devsite-terminal class is always on one line
-        self._out.write(line[:-1])
+        self._whole_example += line[:-1]
       else:
-        self._out.write(line)
-        self._out.write('</code>\n')
+        self._whole_example += line
+        self.FlushExample()
 
         self._in_command_block = False
     else:

@@ -18,8 +18,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import resources
 
 _API_NAME = 'cloudbuild'
 GA_API_VERSION = 'v2'
@@ -29,6 +32,8 @@ RELEASE_TRACK_TO_API_VERSION = {
     base.ReleaseTrack.BETA: GA_API_VERSION,
     base.ReleaseTrack.ALPHA: GA_API_VERSION,
 }
+
+CLUSTER_NAME_SELECTOR = r'projects/.*/locations/.*/memberships/(.*)'
 
 
 def GetMessagesModule(release_track=base.ReleaseTrack.GA):
@@ -60,3 +65,59 @@ def GetClientInstance(release_track=base.ReleaseTrack.GA, use_http=True):
       _API_NAME,
       RELEASE_TRACK_TO_API_VERSION[release_track],
       no_http=(not use_http))
+
+
+def GetRun(project, region, run_id, run_type):
+  """Get a PipelineRun/TaskRun."""
+  client = GetClientInstance()
+  messages = GetMessagesModule()
+  if run_type == 'pipelinerun':
+    pipeline_run_resource = resources.REGISTRY.Parse(
+        run_id,
+        collection='cloudbuild.projects.locations.pipelineRuns',
+        api_version='v2',
+        params={
+            'projectsId': project,
+            'locationsId': region,
+            'pipelineRunsId': run_id,
+        })
+    pipeline_run = client.projects_locations_pipelineRuns.Get(
+        messages.CloudbuildProjectsLocationsPipelineRunsGetRequest(
+            name=pipeline_run_resource.RelativeName(),))
+    return pipeline_run
+  elif run_type == 'taskrun':
+    task_run_resource = resources.REGISTRY.Parse(
+        run_id,
+        collection='cloudbuild.projects.locations.taskRuns',
+        api_version='v2',
+        params={
+            'projectsId': project,
+            'locationsId': region,
+            'taskRunsId': run_id,
+        })
+    task_run = client.projects_locations_taskRuns.Get(
+        messages.CloudbuildProjectsLocationsTaskRunsGetRequest(
+            name=task_run_resource.RelativeName(),))
+    return task_run
+
+
+def ClusterShortName(resource_name):
+  """Get the name part of a cluster membership's full resource name.
+
+  For example, "projects/123/locations/global/memberships/cluster2" returns
+  "cluster2".
+
+  Args:
+    resource_name: A cluster's full resource name.
+
+  Raises:
+    ValueError: If the full resource name was not well-formatted.
+
+  Returns:
+    The cluster's short name.
+  """
+  match = re.search(CLUSTER_NAME_SELECTOR, resource_name)
+  if match:
+    return match.group(1)
+  raise ValueError('The cluster membership resource name must match "%s"' %
+                   (CLUSTER_NAME_SELECTOR,))

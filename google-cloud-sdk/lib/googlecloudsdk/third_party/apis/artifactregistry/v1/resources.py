@@ -24,16 +24,6 @@ DOCS_URL = 'https://cloud.google.com/artifacts/docs/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
-  OPERATIONS = (
-      'operations',
-      '{+name}',
-      {
-          '':
-              'operations/{operationsId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
@@ -46,6 +36,17 @@ class Collections(enum.Enum):
       'projects/{projectsId}/locations/{locationsId}',
       {},
       ['projectsId', 'locationsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_OPERATIONS = (
+      'projects.locations.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_REPOSITORIES = (

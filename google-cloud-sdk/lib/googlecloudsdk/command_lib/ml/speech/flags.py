@@ -111,6 +111,11 @@ class RecognizeArgsToRequestMapper:
                 'or greater sampling rate.',
             'command_and_search':
                 'short queries such as voice commands or voice search.',
+            'medical_conversation':
+                'Best for audio that originated from a conversation between a '
+                'medical provider and patient.',
+            'medical_dictation':
+                'Best for audio that originated from dictation notes by a medical provider.',
             'phone_call':
                 'audio that originated from a phone call (typically recorded at an 8khz sampling rate).',
             'phone_call_enhanced':

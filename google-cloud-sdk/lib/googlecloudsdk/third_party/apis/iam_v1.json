@@ -1362,6 +1362,133 @@
       "properties": {
       }
     },
+    "ListWorkforcePoolProviderKeysResponse": {
+      "id": "ListWorkforcePoolProviderKeysResponse",
+      "description": "Response message for ListWorkforcePoolProviderKeys.",
+      "type": "object",
+      "properties": {
+        "workforcePoolProviderKeys": {
+          "description": "A list of WorkforcePoolProviderKeys.",
+          "type": "array",
+          "items": {
+            "$ref": "WorkforcePoolProviderKey"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "WorkforcePoolProviderKey": {
+      "id": "WorkforcePoolProviderKey",
+      "description": "Represents a public key configuration for a Workforce Pool Provider. The key can be configured in your identity provider to encrypt SAML assertions. Google holds the corresponding private key, which it uses to decrypt encrypted tokens.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of the key.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "keyData": {
+          "description": "Immutable. Public half of the asymmetric key.",
+          "$ref": "KeyData"
+        },
+        "state": {
+          "description": "Output only. The state of the key.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "State unspecified.",
+            "The key is active.",
+            "The key is soft-deleted. Soft-deleted keys are permanently deleted after approximately 30 days. You can restore a soft-deleted key using UndeleteWorkforcePoolProviderKey."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "DELETED"
+          ]
+        },
+        "use": {
+          "description": "Immutable. The purpose of the key.",
+          "type": "string",
+          "enumDescriptions": [
+            "KeyUse unspecified.",
+            "The key is used for encryption."
+          ],
+          "enum": [
+            "KEY_USE_UNSPECIFIED",
+            "ENCRYPTION"
+          ]
+        },
+        "expireTime": {
+          "description": "Output only. The time after which the key will be permanently deleted and cannot be recovered. Note that the key may get purged before this time if the total limit of keys per provider is exceeded.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "KeyData": {
+      "id": "KeyData",
+      "description": "Represents a public key data along with its format.",
+      "type": "object",
+      "properties": {
+        "format": {
+          "description": "Output only. The format of the key.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "No format has been specified. This is an invalid format and must not be used.",
+            "A RSA public key wrapped in an X.509v3 certificate ([RFC5280] ( https:\/\/www.ietf.org\/rfc\/rfc5280.txt)), encoded in base64, and wrapped in [public certificate label](https:\/\/datatracker.ietf.org\/doc\/html\/rfc7468#section-5.1)."
+          ],
+          "enum": [
+            "KEY_FORMAT_UNSPECIFIED",
+            "RSA_X509_PEM"
+          ]
+        },
+        "notBeforeTime": {
+          "description": "Output only. Earliest timestamp when this key is valid. Attempts to use this key before this time will fail. Only present if the key data represents a x509 certificate.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "notAfterTime": {
+          "description": "Output only. Latest timestamp when this key is valid. Attempts to use this key after this time will fail. Only present if the key data represents a x509 certificate.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "key": {
+          "description": "Output only. The key data. The format of the key is represented by the `format` field.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "keySpec": {
+          "description": "Immutable. The specifications for the key.",
+          "type": "string",
+          "enumDescriptions": [
+            "No key specification specified.",
+            "A 2048 bit RSA key.",
+            "A 3072 bit RSA key.",
+            "A 4096 bit RSA key."
+          ],
+          "enum": [
+            "KEY_SPEC_UNSPECIFIED",
+            "RSA_2048",
+            "RSA_3072",
+            "RSA_4096"
+          ]
+        }
+      }
+    },
+    "UndeleteWorkforcePoolProviderKeyRequest": {
+      "id": "UndeleteWorkforcePoolProviderKeyRequest",
+      "description": "Request message for UndeleteWorkforcePoolProviderKey.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "UndeleteWorkforcePoolSubjectRequest": {
       "id": "UndeleteWorkforcePoolSubjectRequest",
       "description": "Request message for UndeleteWorkforcePoolSubject.",
@@ -1629,59 +1756,6 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
-        }
-      }
-    },
-    "KeyData": {
-      "id": "KeyData",
-      "description": "Represents a public key data along with its format.",
-      "type": "object",
-      "properties": {
-        "format": {
-          "description": "Output only. The format of the key.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "No format has been specified. This is an invalid format and must not be used.",
-            "A RSA public key wrapped in an X.509v3 certificate ([RFC5280] ( https:\/\/www.ietf.org\/rfc\/rfc5280.txt)), encoded in base64, and wrapped in [public certificate label](https:\/\/datatracker.ietf.org\/doc\/html\/rfc7468#section-5.1)."
-          ],
-          "enum": [
-            "KEY_FORMAT_UNSPECIFIED",
-            "RSA_X509_PEM"
-          ]
-        },
-        "notBeforeTime": {
-          "description": "Output only. Earliest timestamp when this key is valid. Attempts to use this key before this time will fail. Only present if the key data represents a x509 certificate.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "notAfterTime": {
-          "description": "Output only. Latest timestamp when this key is valid. Attempts to use this key after this time will fail. Only present if the key data represents a x509 certificate.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "key": {
-          "description": "Output only. The key data. The format of the key is represented by the `format` field.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "keySpec": {
-          "description": "Immutable. The specifications for the key.",
-          "type": "string",
-          "enumDescriptions": [
-            "No key specification specified.",
-            "A 2048 bit RSA key.",
-            "A 3072 bit RSA key.",
-            "A 4096 bit RSA key."
-          ],
-          "enum": [
-            "KEY_SPEC_UNSPECIFIED",
-            "RSA_2048",
-            "RSA_3072",
-            "RSA_4096"
-          ]
         }
       }
     },
@@ -3889,6 +3963,162 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                    }
+                  }
+                },
+                "keys": {
+                  "methods": {
+                    "list": {
+                      "id": "iam.locations.workforcePools.providers.keys.list",
+                      "path": "v1/{+parent}/keys",
+                      "flatPath": "v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/providers/{providersId}/keys",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The provider resource to list encryption keys for. Format: `locations\/{location}\/workforcePools\/{workforce_pool_id}\/providers\/{provider_id}`",
+                          "pattern": "^locations\/[^\/]+\/workforcePools\/[^\/]+\/providers\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of keys to return. If unspecified, all keys are returned. The maximum value is 10; values above 10 are truncated to 10.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A page token, received from a previous `ListWorkforcePoolProviderKeys` call. Provide this to retrieve the subsequent page.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "showDeleted": {
+                          "description": "Whether to return soft-deleted keys.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListWorkforcePoolProviderKeysResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists all non-deleted WorkforcePoolProviderKeys in a WorkforcePoolProvider. If `show_deleted` is set to `true`, then deleted keys are also listed."
+                    },
+                    "get": {
+                      "id": "iam.locations.workforcePools.providers.keys.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/providers/{providersId}/keys/{keysId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the key to retrieve.",
+                          "pattern": "^locations\/[^\/]+\/workforcePools\/[^\/]+\/providers\/[^\/]+\/keys\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "WorkforcePoolProviderKey"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets a WorkforcePoolProviderKey."
+                    },
+                    "create": {
+                      "id": "iam.locations.workforcePools.providers.keys.create",
+                      "path": "v1/{+parent}/keys",
+                      "flatPath": "v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/providers/{providersId}/keys",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The provider to create this key in.",
+                          "pattern": "^locations\/[^\/]+\/workforcePools\/[^\/]+\/providers\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "workforcePoolProviderKeyId": {
+                          "description": "Required. The ID to use for the key, which becomes the final component of the resource name. This value must be 4-32 characters, and may contain the characters [a-z0-9-].",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "WorkforcePoolProviderKey"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new WorkforcePoolProviderKey in a WorkforcePoolProvider."
+                    },
+                    "delete": {
+                      "id": "iam.locations.workforcePools.providers.keys.delete",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/providers/{providersId}/keys/{keysId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the key to delete.",
+                          "pattern": "^locations\/[^\/]+\/workforcePools\/[^\/]+\/providers\/[^\/]+\/keys\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a WorkforcePoolProviderKey. You can undelete a key for 30 days. After 30 days, deletion is permanent."
+                    },
+                    "undelete": {
+                      "id": "iam.locations.workforcePools.providers.keys.undelete",
+                      "path": "v1/{+name}:undelete",
+                      "flatPath": "v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/providers/{providersId}/keys/{keysId}:undelete",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the key to undelete.",
+                          "pattern": "^locations\/[^\/]+\/workforcePools\/[^\/]+\/providers\/[^\/]+\/keys\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "UndeleteWorkforcePoolProviderKeyRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Undeletes a WorkforcePoolProviderKey, as long as it was deleted fewer than 30 days ago."
                     }
                   }
                 }

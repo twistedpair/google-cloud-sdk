@@ -15,21 +15,21 @@ from apitools.base.py import extra_types
 package = 'artifactregistry'
 
 
-class ArtifactregistryOperationsGetRequest(_messages.Message):
-  r"""A ArtifactregistryOperationsGetRequest object.
-
-  Fields:
-    name: The name of the operation resource.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class ArtifactregistryProjectsGetProjectSettingsRequest(_messages.Message):
   r"""A ArtifactregistryProjectsGetProjectSettingsRequest object.
 
   Fields:
     name: Required. The name of the projectSettings resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ArtifactregistryProjectsLocationsOperationsGetRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
   """
 
   name = _messages.StringField(1, required=True)
@@ -140,6 +140,7 @@ class ArtifactregistryProjectsLocationsRepositoriesFilesListRequest(_messages.Me
       with "a/b/". * `owner="projects/p1/locations/us-
       central1/repositories/repo1/packages/pkg1/versions/1.0"` --> Files owned
       by the version `1.0` in package `pkg1`.
+    orderBy: The field to order the results by.
     pageSize: The maximum number of files to return.
     pageToken: The next_page_token value returned from a previous list
       request, if any.
@@ -147,9 +148,10 @@ class ArtifactregistryProjectsLocationsRepositoriesFilesListRequest(_messages.Me
   """
 
   filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class ArtifactregistryProjectsLocationsRepositoriesGetIamPolicyRequest(_messages.Message):

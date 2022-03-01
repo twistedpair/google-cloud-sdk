@@ -74,6 +74,12 @@ def process_logging(log_bucket, log_object_prefix):
   return {'LoggingEnabled': logging_config}
 
 
+def process_requester_pays(requester_pays):
+  """Converts requester_pays boolean to S3 metadata dict."""
+  payer = 'Requester' if requester_pays else 'BucketOwner'
+  return {'Payer': payer}
+
+
 def process_versioning(versioning):
   """Converts versioning bool to S3 metadata dict."""
   versioning_string = 'Enabled' if versioning else 'Suspended'

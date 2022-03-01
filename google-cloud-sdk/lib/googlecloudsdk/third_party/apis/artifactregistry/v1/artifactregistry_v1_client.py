@@ -39,7 +39,7 @@ class ArtifactregistryV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.operations = self.OperationsService(self)
+    self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_repositories_aptArtifacts = self.ProjectsLocationsRepositoriesAptArtifactsService(self)
     self.projects_locations_repositories_dockerImages = self.ProjectsLocationsRepositoriesDockerImagesService(self)
     self.projects_locations_repositories_files = self.ProjectsLocationsRepositoriesFilesService(self)
@@ -53,13 +53,13 @@ class ArtifactregistryV1(base_api.BaseApiClient):
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
-  class OperationsService(base_api.BaseApiService):
-    """Service class for the operations resource."""
+  class ProjectsLocationsOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_operations resource."""
 
-    _NAME = 'operations'
+    _NAME = 'projects_locations_operations'
 
     def __init__(self, client):
-      super(ArtifactregistryV1.OperationsService, self).__init__(client)
+      super(ArtifactregistryV1.ProjectsLocationsOperationsService, self).__init__(client)
       self._upload_configs = {
           }
 
@@ -67,7 +67,7 @@ class ArtifactregistryV1(base_api.BaseApiClient):
       r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
-        request: (ArtifactregistryOperationsGetRequest) input message
+        request: (ArtifactregistryProjectsLocationsOperationsGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -77,15 +77,15 @@ class ArtifactregistryV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/operations/{operationsId}',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
         http_method='GET',
-        method_id='artifactregistry.operations.get',
+        method_id='artifactregistry.projects.locations.operations.get',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
         relative_path='v1/{+name}',
         request_field='',
-        request_type_name='ArtifactregistryOperationsGetRequest',
+        request_type_name='ArtifactregistryProjectsLocationsOperationsGetRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -286,7 +286,7 @@ class ArtifactregistryV1(base_api.BaseApiClient):
         method_id='artifactregistry.projects.locations.repositories.files.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
         relative_path='v1/{+parent}/files',
         request_field='',
         request_type_name='ArtifactregistryProjectsLocationsRepositoriesFilesListRequest',

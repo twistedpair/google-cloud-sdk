@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import collections
 import re
+import textwrap
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.arg_parsers import ArgumentTypeError
@@ -320,9 +321,10 @@ def ConfigureFlags(parser):
       We recommend referencing the `latest` version when using secret volumes so
       that the secret's value changes are reflected immediately.""")
 
-  update_remove_flag_group = flag_group.add_argument_group(help="""
+  update_remove_flag_group = flag_group.add_argument_group(
+      help=textwrap.dedent("""\
       Only `--update-secrets` and `--remove-secrets` can be used together. If
-      both are specified, then `--remove-secrets` will be applied first.""")
+      both are specified, then `--remove-secrets` will be applied first."""))
   update_remove_flag_group.add_argument(
       '--update-secrets',
       metavar=kv_metavar,

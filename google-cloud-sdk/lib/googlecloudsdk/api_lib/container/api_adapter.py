@@ -1671,6 +1671,10 @@ class APIAdapter(object):
       cluster.networkConfig.serviceExternalIpsConfig = self.messages.ServiceExternalIPsConfig(
           enabled=options.enable_service_externalips)
 
+    if options.enable_identity_service:
+      cluster.identityServiceConfig = self.messages.IdentityServiceConfig(
+          enabled=options.enable_identity_service)
+
     return cluster
 
   def ParseNodeConfig(self, options):
@@ -2562,6 +2566,11 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredServiceExternalIpsConfig=self.messages
           .ServiceExternalIPsConfig(enabled=options.enable_service_externalips))
+
+    if options.enable_identity_service is not None:
+      update = self.messages.ClusterUpdate(
+          desiredIdentityServiceConfig=self.messages.IdentityServiceConfig(
+              enabled=options.enable_identity_service))
 
     return update
 

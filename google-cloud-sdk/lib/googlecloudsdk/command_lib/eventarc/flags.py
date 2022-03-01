@@ -44,7 +44,7 @@ def LocationAttributeConfig(required=True):
         'use \'-\' location to aggregate results for all Eventarc locations'))
     help_text = ('The location for the Eventarc {resource}, which should be '
                  "either ``global'' or one of the supported regions. "
-                 'Use ``-'' to aggregate results for all Eventarc locations. '
+                 "Use ``-'' to aggregate results for all Eventarc locations. "
                  'Alternatively, set the [eventarc/location] property.')
   return concepts.ResourceParameterAttributeConfig(
       name='location',
@@ -216,6 +216,37 @@ def AddProviderNameArg(parser):
       hidden=True,
       help='A provider name. List results will be filtered on this provider.'
       'Only exact match of the provider name is supported.')
+
+
+def AddEventPublishingArgs(parser):
+  """Adds an argument for an Eventarc channel and channel connection."""
+  parser.add_argument(
+      '--event-id',
+      required=True,
+      help='An event id. The id of a published event.')
+
+  parser.add_argument(
+      '--event-type',
+      required=True,
+      help='An event type. The event type of a published event.')
+
+  parser.add_argument(
+      '--event-source',
+      required=True,
+      help='An event source. The event source of a published event.')
+
+  parser.add_argument(
+      '--event-data',
+      required=True,
+      help='An event data. The event data of a published event.')
+
+  parser.add_argument(
+      '--event-attributes',
+      action=arg_parsers.UpdateAction,
+      type=arg_parsers.ArgDict(),
+      metavar='ATTRIBUTE=VALUE',
+      help='Event attributes. The event attributes of a published event.'
+      'This flag can be repeated to add more attributes.')
 
 
 def AddServiceAccountArg(parser, required=False):

@@ -36,6 +36,26 @@ def JobAttributeConfig():
       help_text='The job ID for the {resource}.')
 
 
+def TaskGroupAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='task_group',
+      help_text='The task_group ID for the {resource}.')
+
+
+def TaskAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='task',
+      help_text='The task ID for the {resource}.')
+
+
+def GetLocationResourceSpec():
+  return concepts.ResourceSpec(
+      'batch.projects.locations',
+      resource_name='location',
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
 def GetJobResourceSpec():
   return concepts.ResourceSpec(
       'batch.projects.locations.jobs',
@@ -45,8 +65,47 @@ def GetJobResourceSpec():
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
+def GetTaskGroupResourceSpec():
+  return concepts.ResourceSpec(
+      'batch.projects.locations.jobs.taskGroups',
+      resource_name='task_group',
+      taskGroupsId=TaskGroupAttributeConfig(),
+      jobsId=JobAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
+def GetTaskResourceSpec():
+  return concepts.ResourceSpec(
+      'batch.projects.locations.jobs.taskGroups.tasks',
+      resource_name='task',
+      tasksId=TaskAttributeConfig(),
+      taskGroupsId=TaskGroupAttributeConfig(),
+      jobsId=JobAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
+def AddLocationResourceArgs(parser):
+  """Add the location resource argument.
+
+  Args:
+    parser: the parser for the command.
+  """
+  arg_specs = [
+      presentation_specs.ResourcePresentationSpec(
+          'LOCATION',
+          GetLocationResourceSpec(),
+          'The Batch location resource.',
+          required=True,
+          ),
+  ]
+
+  concept_parsers.ConceptParser(arg_specs).AddToParser(parser)
+
+
 def AddJobResourceArgs(parser):
-  """Add the job resource argument for a cloud Batch job.
+  """Add the job resource argument.
 
   Args:
     parser: the parser for the command.
@@ -55,7 +114,43 @@ def AddJobResourceArgs(parser):
       presentation_specs.ResourcePresentationSpec(
           'JOB',
           GetJobResourceSpec(),
-          'The Batch job to create.',
+          'The Batch job resource.',
+          required=True,
+          ),
+  ]
+
+  concept_parsers.ConceptParser(arg_specs).AddToParser(parser)
+
+
+def AddTaskGroupResourceArgs(parser):
+  """Add the task_group resource argument.
+
+  Args:
+    parser: the parser for the command.
+  """
+  arg_specs = [
+      presentation_specs.ResourcePresentationSpec(
+          'TASK_GROUP',
+          GetTaskGroupResourceSpec(),
+          'The Batch task_group resource.',
+          required=True,
+          ),
+  ]
+
+  concept_parsers.ConceptParser(arg_specs).AddToParser(parser)
+
+
+def AddTaskResourceArgs(parser):
+  """Add the task resource argument.
+
+  Args:
+    parser: the parser for the command.
+  """
+  arg_specs = [
+      presentation_specs.ResourcePresentationSpec(
+          'TASK',
+          GetTaskResourceSpec(),
+          'The Batch task resource.',
           required=True,
           ),
   ]

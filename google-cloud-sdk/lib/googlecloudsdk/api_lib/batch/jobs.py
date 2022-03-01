@@ -39,7 +39,7 @@ class JobsClient(object):
   def __init__(self, client=None, messages=None):
     self.client = client or GetClientInstance()
     self.messages = messages or GetMessagesModule(client)
-    self._service = self.client.projects_locations_jobs
+    self.service = self.client.projects_locations_jobs
 
   def Create(self, job_id, location_ref, job_config):
     create_req_type = (
@@ -48,19 +48,19 @@ class JobsClient(object):
         jobId=job_id,
         parent=location_ref.RelativeName(),
         job=self._CreateJobMessage(job_config))
-    return self._service.Create(create_req)
+    return self.service.Create(create_req)
 
   def Get(self, job_ref):
     get_req_type = (
         self.messages.BatchProjectsLocationsJobsGetRequest)
     get_req = get_req_type(name=job_ref.RelativeName())
-    return self._service.Get(get_req)
+    return self.service.Get(get_req)
 
   def Delete(self, job_ref):
     delete_req_type = (
         self.messages.BatchProjectsLocationsJobsDeleteRequest)
     delete_req = delete_req_type(name=job_ref.RelativeName())
-    return self._service.Delete(delete_req)
+    return self.service.Delete(delete_req)
 
   # TODO(b/216858129): add HEREDOC support.
   def _CreateJobMessage(self, config):

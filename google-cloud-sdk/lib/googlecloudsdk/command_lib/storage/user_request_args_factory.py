@@ -46,6 +46,7 @@ class _UserBucketArgs:
                location=None,
                log_bucket=None,
                log_object_prefix=None,
+               requester_pays=None,
                retention_period=None,
                uniform_bucket_level_access=None,
                versioning=None,
@@ -64,6 +65,7 @@ class _UserBucketArgs:
     self.log_bucket = log_bucket
     self.log_object_prefix = log_object_prefix
     self.retention_period = retention_period
+    self.requester_pays = requester_pays
     self.uniform_bucket_level_access = uniform_bucket_level_access
     self.versioning = versioning
     self.web_error_page = web_error_page
@@ -83,6 +85,7 @@ class _UserBucketArgs:
             self.location == other.location and
             self.log_bucket == other.log_bucket and
             self.log_object_prefix == other.log_object_prefix and
+            self.requester_pays == other.requester_pays and
             self.retention_period == other.retention_period and
             self.uniform_bucket_level_access
             == other.uniform_bucket_level_access and
@@ -221,6 +224,7 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
           location=getattr(args, 'location', None),
           log_bucket=log_bucket,
           log_object_prefix=log_object_prefix,
+          requester_pays=getattr(args, 'requester_pays', None),
           retention_period=retention_period,
           uniform_bucket_level_access=getattr(args,
                                               'uniform_bucket_level_access',

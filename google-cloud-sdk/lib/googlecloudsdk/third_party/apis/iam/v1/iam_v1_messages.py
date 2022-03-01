@@ -689,6 +689,79 @@ class IamLocationsWorkforcePoolsProvidersGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class IamLocationsWorkforcePoolsProvidersKeysCreateRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsProvidersKeysCreateRequest object.
+
+  Fields:
+    parent: Required. The provider to create this key in.
+    workforcePoolProviderKey: A WorkforcePoolProviderKey resource to be passed
+      as the request body.
+    workforcePoolProviderKeyId: Required. The ID to use for the key, which
+      becomes the final component of the resource name. This value must be
+      4-32 characters, and may contain the characters [a-z0-9-].
+  """
+
+  parent = _messages.StringField(1, required=True)
+  workforcePoolProviderKey = _messages.MessageField('WorkforcePoolProviderKey', 2)
+  workforcePoolProviderKeyId = _messages.StringField(3)
+
+
+class IamLocationsWorkforcePoolsProvidersKeysDeleteRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsProvidersKeysDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the key to delete.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamLocationsWorkforcePoolsProvidersKeysGetRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsProvidersKeysGetRequest object.
+
+  Fields:
+    name: Required. The name of the key to retrieve.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamLocationsWorkforcePoolsProvidersKeysListRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsProvidersKeysListRequest object.
+
+  Fields:
+    pageSize: The maximum number of keys to return. If unspecified, all keys
+      are returned. The maximum value is 10; values above 10 are truncated to
+      10.
+    pageToken: A page token, received from a previous
+      `ListWorkforcePoolProviderKeys` call. Provide this to retrieve the
+      subsequent page.
+    parent: Required. The provider resource to list encryption keys for.
+      Format: `locations/{location}/workforcePools/{workforce_pool_id}/provide
+      rs/{provider_id}`
+    showDeleted: Whether to return soft-deleted keys.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  showDeleted = _messages.BooleanField(4)
+
+
+class IamLocationsWorkforcePoolsProvidersKeysUndeleteRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsProvidersKeysUndeleteRequest object.
+
+  Fields:
+    name: Required. The name of the key to undelete.
+    undeleteWorkforcePoolProviderKeyRequest: A
+      UndeleteWorkforcePoolProviderKeyRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  undeleteWorkforcePoolProviderKeyRequest = _messages.MessageField('UndeleteWorkforcePoolProviderKeyRequest', 2)
+
+
 class IamLocationsWorkforcePoolsProvidersListRequest(_messages.Message):
   r"""A IamLocationsWorkforcePoolsProvidersListRequest object.
 
@@ -2321,6 +2394,19 @@ class ListServiceAccountsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListWorkforcePoolProviderKeysResponse(_messages.Message):
+  r"""Response message for ListWorkforcePoolProviderKeys.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    workforcePoolProviderKeys: A list of WorkforcePoolProviderKeys.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  workforcePoolProviderKeys = _messages.MessageField('WorkforcePoolProviderKey', 2, repeated=True)
+
+
 class ListWorkforcePoolProvidersResponse(_messages.Message):
   r"""Response message for ListWorkforcePoolProviders.
 
@@ -3329,6 +3415,10 @@ class UndeleteServiceAccountResponse(_messages.Message):
   restoredAccount = _messages.MessageField('ServiceAccount', 1)
 
 
+class UndeleteWorkforcePoolProviderKeyRequest(_messages.Message):
+  r"""Request message for UndeleteWorkforcePoolProviderKey."""
+
+
 class UndeleteWorkforcePoolProviderRequest(_messages.Message):
   r"""Request message for UndeleteWorkforcePoolProvider."""
 
@@ -3632,6 +3722,57 @@ class WorkforcePoolProvider(_messages.Message):
   oidc = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderOidc', 7)
   saml = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderSaml', 8)
   state = _messages.EnumField('StateValueValuesEnum', 9)
+
+
+class WorkforcePoolProviderKey(_messages.Message):
+  r"""Represents a public key configuration for a Workforce Pool Provider. The
+  key can be configured in your identity provider to encrypt SAML assertions.
+  Google holds the corresponding private key, which it uses to decrypt
+  encrypted tokens.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the key.
+    UseValueValuesEnum: Immutable. The purpose of the key.
+
+  Fields:
+    expireTime: Output only. The time after which the key will be permanently
+      deleted and cannot be recovered. Note that the key may get purged before
+      this time if the total limit of keys per provider is exceeded.
+    keyData: Immutable. Public half of the asymmetric key.
+    name: Output only. The resource name of the key.
+    state: Output only. The state of the key.
+    use: Immutable. The purpose of the key.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the key.
+
+    Values:
+      STATE_UNSPECIFIED: State unspecified.
+      ACTIVE: The key is active.
+      DELETED: The key is soft-deleted. Soft-deleted keys are permanently
+        deleted after approximately 30 days. You can restore a soft-deleted
+        key using UndeleteWorkforcePoolProviderKey.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    DELETED = 2
+
+  class UseValueValuesEnum(_messages.Enum):
+    r"""Immutable. The purpose of the key.
+
+    Values:
+      KEY_USE_UNSPECIFIED: KeyUse unspecified.
+      ENCRYPTION: The key is used for encryption.
+    """
+    KEY_USE_UNSPECIFIED = 0
+    ENCRYPTION = 1
+
+  expireTime = _messages.StringField(1)
+  keyData = _messages.MessageField('KeyData', 2)
+  name = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  use = _messages.EnumField('UseValueValuesEnum', 5)
 
 
 class WorkloadIdentityPool(_messages.Message):

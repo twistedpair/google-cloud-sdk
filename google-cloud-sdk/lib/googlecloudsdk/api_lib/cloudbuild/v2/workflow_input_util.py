@@ -43,6 +43,9 @@ def _VersionCheck(data):
 def _WorkflowTransform(workflow):
   """Transform workflow message."""
 
+  for param_spec in workflow.get("params", []):
+    input_util.ParamSpecTransform(param_spec)
+
   pipeline = workflow.pop("pipeline")
   if "spec" in pipeline:
     _PipelineSpecTransform(pipeline["spec"])
@@ -53,27 +56,77 @@ def _WorkflowTransform(workflow):
     raise cloudbuild_exceptions.InvalidYamlError(
         "PipelineSpec or Bundle is required.")
 
-  for workspace in workflow.get("workspaces", []):
-    input_util.WorkspaceTransform(workspace)
+  for workspace_binding in workflow.get("workspaces", []):
+    _WorkspaceBindingTransform(workspace_binding)
 
 
 def _PipelineSpecTransform(pipeline_spec):
-  for task in pipeline_spec.get("tasks", []):
-    _PipelineTaskTransform(task)
+  """Transform pipeline spec message."""
+
+  for pipeline_task in pipeline_spec.get("tasks", []):
+    _PipelineTaskTransform(pipeline_task)
+
+  for param_spec in pipeline_spec.get("params", []):
+    input_util.ParamSpecTransform(param_spec)
+
+  if "finally" in pipeline_spec:
+    for pipeline_task in pipeline_spec.get("finally", []):
+      for param_spec in pipeline_task.get("params", []):
+        input_util.ParamSpecTransform(param_spec)
+    pipeline_spec["finallyTasks"] = pipeline_spec.pop("finally")
 
 
 def _PipelineTaskTransform(pipeline_task):
-  task = pipeline_task.pop("task")
-  if "taskSpec" in task:
-    pipeline_task["taskSpec"] = task["taskSpec"]
-  elif "taskRef" in task:
-    pipeline_task["taskRef"] = task["taskRef"]
+  """Transform pipeline task message."""
 
-  for when_expression in pipeline_task.get("whenExpressions", []):
-    _WhenExpressionTransform(when_expression)
+  if "taskSpec" in pipeline_task:
+    popped_task_spec = pipeline_task.pop("taskSpec")
+    pipeline_task["taskSpec"] = {}
+    pipeline_task["taskSpec"]["taskSpec"] = popped_task_spec
+  elif "taskRef" in pipeline_task:
+    pipeline_task["taskRef"] = pipeline_task.pop("taskRef")
+
+  if "when" in pipeline_task:
+    for when_expression in pipeline_task.get("when", []):
+      _WhenExpressionTransform(when_expression)
+    pipeline_task["whenExpressions"] = pipeline_task.pop("when")
+
+  for param in pipeline_task.get("params", []):
+    input_util.ParamSpecTransform(param)
 
 
 def _WhenExpressionTransform(when_expression):
-  if "expressionOperator" in when_expression:
+  if "operator" in when_expression:
     when_expression["expressionOperator"] = input_util.CamelToSnake(
-        when_expression.pop("expressionOperator")).upper()
+        when_expression.pop("operator")).upper()
+
+
+def _WorkspaceBindingTransform(workspace_binding):
+  """Transform workspace binding message."""
+
+  # Empty Workspace.
+  if ("storage" not in workspace_binding) and ("accessMode"
+                                               not in workspace_binding):
+    workspace_binding["emptyDir"] = {}
+    return
+
+  # Volume Claim Template.
+  workspace_binding["volumeClaimTemplate"] = {"spec": {}}
+
+  if "accessMode" in workspace_binding:
+    access_modes = []
+    for access_mode in workspace_binding.pop("accessMode").split(" | "):
+      if access_mode == "read":
+        access_modes.append("READ_ONLY_MANY")
+      if access_mode == "read-write":
+        access_modes.append("READ_WRITE_MANY")
+    workspace_binding["volumeClaimTemplate"]["spec"][
+        "accessModes"] = access_modes
+
+  if "storage" in workspace_binding:
+    storage = workspace_binding.pop("storage")
+    workspace_binding["volumeClaimTemplate"]["spec"]["resources"] = {}
+    workspace_binding["volumeClaimTemplate"]["spec"]["resources"][
+        "requests"] = {
+            "storage": storage
+        }

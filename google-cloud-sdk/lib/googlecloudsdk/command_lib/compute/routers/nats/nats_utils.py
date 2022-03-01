@@ -68,18 +68,18 @@ def FindNatOrRaise(router, nat_name):
   raise NatNotFoundError(nat_name)
 
 
-def CreateNatMessage(args, compute_holder, with_type=False):
+def CreateNatMessage(args, compute_holder, with_private_nat=False):
   """Creates a NAT message from the specified arguments."""
   params = {'name': args.name}
 
   params['sourceSubnetworkIpRangesToNat'], params['subnetworks'] = (
       _ParseSubnetFields)(args, compute_holder)
 
-  if with_type and args.type is not None:
+  if with_private_nat and args.type is not None:
     params['type'] = (
         compute_holder.client.messages.RouterNat.TypeValueValuesEnum(args.type))
 
-  is_private = with_type and args.type == 'PRIVATE'
+  is_private = with_private_nat and args.type == 'PRIVATE'
   is_ip_allocation_specified = (
       args.auto_allocate_nat_external_ips or args.nat_external_ip_pool)
   if is_private:
@@ -115,12 +115,13 @@ def CreateNatMessage(args, compute_holder, with_type=False):
         args.enable_endpoint_independent_mapping)
 
   if args.rules:
-    params['rules'] = _ParseRulesFromYamlFile(args.rules, compute_holder)
+    params['rules'] = _ParseRulesFromYamlFile(args.rules, compute_holder,
+                                              with_private_nat)
 
   return compute_holder.client.messages.RouterNat(**params)
 
 
-def UpdateNatMessage(nat, args, compute_holder):
+def UpdateNatMessage(nat, args, compute_holder, with_private_nat=False):
   """Updates a NAT message with the specified arguments."""
   if (args.subnet_option in [
       nat_flags.SubnetOption.ALL_RANGES, nat_flags.SubnetOption.PRIMARY_RANGES
@@ -198,7 +199,8 @@ def UpdateNatMessage(nat, args, compute_holder):
         args.enable_endpoint_independent_mapping)
 
   if args.rules:
-    nat.rules = _ParseRulesFromYamlFile(args.rules, compute_holder)
+    nat.rules = _ParseRulesFromYamlFile(args.rules, compute_holder,
+                                        with_private_nat)
 
   return nat
 
@@ -319,7 +321,7 @@ def _ContainIp(ip_list, target_ip):
   return False
 
 
-def _ParseRulesFromYamlFile(file_path, compute_holder):
+def _ParseRulesFromYamlFile(file_path, compute_holder, with_private_nat):
   """Parses NAT Rules from the given YAML file."""
   with files.FileReader(file_path) as import_file:
     rules_yaml = yaml.load(import_file)
@@ -327,12 +329,12 @@ def _ParseRulesFromYamlFile(file_path, compute_holder):
       raise calliope_exceptions.InvalidArgumentException(
           '--rules', 'The YAML file must contain the \'rules\' attribute')
     return [
-        _CreateRule(rule_yaml, compute_holder)
+        _CreateRule(rule_yaml, compute_holder, with_private_nat)
         for rule_yaml in rules_yaml['rules']
     ]
 
 
-def _CreateRule(rule_yaml, compute_holder):
+def _CreateRule(rule_yaml, compute_holder, with_private_nat):
   """Creates a Rule object from the given parsed YAML."""
   rule = compute_holder.client.messages.RouterNatRule()
   if 'ruleNumber' in rule_yaml:
@@ -346,4 +348,10 @@ def _CreateRule(rule_yaml, compute_holder):
       rule.action.sourceNatActiveIps = action_yaml['sourceNatActiveIps']
     if 'sourceNatDrainIps' in action_yaml:
       rule.action.sourceNatDrainIps = action_yaml['sourceNatDrainIps']
+    if with_private_nat:
+      if 'sourceNatActiveRanges' in action_yaml:
+        rule.action.sourceNatActiveRanges = action_yaml['sourceNatActiveRanges']
+      if 'sourceNatDrainRanges' in action_yaml:
+        rule.action.sourceNatDrainRanges = action_yaml['sourceNatDrainRanges']
+
   return rule

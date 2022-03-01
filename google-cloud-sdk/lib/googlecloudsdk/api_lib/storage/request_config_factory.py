@@ -56,6 +56,8 @@ class _BucketConfig(object):
     location (str|None): Location of bucket.
     log_bucket (str|None): Destination bucket for current bucket's logs.
     log_object_prefix (str|None): Prefix for objects containing logs.
+    requester_pays (bool|None): If set requester pays all costs related to
+      accessing the bucket and its objects.
     versioning (None|bool): Whether to turn on object versioning in a bucket.
     web_error_page (None|str): Error page address if bucket is being used
       to host a website.
@@ -72,6 +74,7 @@ class _BucketConfig(object):
                location=None,
                log_bucket=None,
                log_object_prefix=None,
+               requester_pays=None,
                versioning=None,
                web_error_page=None,
                web_main_page_suffix=None):
@@ -83,6 +86,7 @@ class _BucketConfig(object):
     self.lifecycle_file_path = lifecycle_file_path
     self.log_bucket = log_bucket
     self.log_object_prefix = log_object_prefix
+    self.requester_pays = requester_pays
     self.versioning = versioning
     self.web_error_page = web_error_page
     self.web_main_page_suffix = web_main_page_suffix
@@ -99,6 +103,7 @@ class _BucketConfig(object):
             self.location == other.location and
             self.log_bucket == other.log_bucket and
             self.log_object_prefix == other.log_object_prefix and
+            self.requester_pays == other.requester_pays and
             self.versioning == other.versioning and
             self.web_error_page == other.web_error_page and
             self.web_main_page_suffix == other.web_main_page_suffix)
@@ -138,6 +143,7 @@ class _GcsBucketConfig(_BucketConfig):
                log_bucket=None,
                log_object_prefix=None,
                retention_period=None,
+               requester_pays=None,
                uniform_bucket_level_access=None,
                versioning=None,
                web_error_page=None,
@@ -145,11 +151,12 @@ class _GcsBucketConfig(_BucketConfig):
     super(_GcsBucketConfig,
           self).__init__(cors_file_path, labels_file_path, labels_to_append,
                          labels_to_remove, lifecycle_file_path, location,
-                         log_bucket, log_object_prefix, versioning,
-                         web_error_page, web_main_page_suffix)
+                         log_bucket, log_object_prefix, requester_pays,
+                         versioning, web_error_page, web_main_page_suffix)
     self.default_encryption_key = default_encryption_key
     self.default_event_based_hold = default_event_based_hold
     self.default_storage_class = default_storage_class
+    self.requester_pays = requester_pays
     self.retention_period = retention_period
     self.uniform_bucket_level_access = uniform_bucket_level_access
 
@@ -158,6 +165,7 @@ class _GcsBucketConfig(_BucketConfig):
             self.default_encryption_key == other.default_encryption_key and
             self.default_event_based_hold == other.default_event_based_hold and
             self.default_storage_class == other.default_storage_class and
+            self.requester_pays == other.requester_pays and
             self.retention_period == other.retention_period and
             self.uniform_bucket_level_access
             == other.uniform_bucket_level_access)
@@ -425,6 +433,8 @@ def _get_request_config_resource_args(url,
         user_resource_args, 'log_bucket', None)
     new_resource_args.log_object_prefix = getattr(
         user_resource_args, 'log_object_prefix', None)
+    new_resource_args.requester_pays = getattr(user_resource_args,
+                                               'requester_pays', None)
     new_resource_args.versioning = getattr(
         user_resource_args, 'versioning', None)
     new_resource_args.web_error_page = getattr(

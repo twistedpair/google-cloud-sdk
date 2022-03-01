@@ -63,7 +63,7 @@ def set_poco_hub_config_parameters_from_args(args, messages):
     poco_hub_config: Policy Controller Hub Config object with parameters filled
     out
   """
-  poco_hub_config = messages.PolicyControllerPolicyControllerHubConfig(
+  poco_hub_config = messages.PolicyControllerHubConfig(
     )
   if args.audit_interval_seconds:
     poco_hub_config.auditIntervalSeconds = args.audit_interval_seconds
