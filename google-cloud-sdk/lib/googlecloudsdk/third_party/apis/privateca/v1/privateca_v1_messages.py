@@ -1825,11 +1825,14 @@ class PrivatecaProjectsLocationsCaPoolsCertificateAuthoritiesDeleteRequest(_mess
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
+    skipGracePeriod: Optional. This field sets the CA to have a pending delete
+      duration of 0.
   """
 
   ignoreActiveCertificates = _messages.BooleanField(1)
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
+  skipGracePeriod = _messages.BooleanField(4)
 
 
 class PrivatecaProjectsLocationsCaPoolsCertificateAuthoritiesDisableRequest(_messages.Message):

@@ -18,9 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import json
-
-from apitools.base.py import extra_types
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.eventarc import common
 from googlecloudsdk.api_lib.eventarc import common_publishing
@@ -149,17 +146,12 @@ class ChannelClientV1(EventarcClientBase):
       cloud_event: A CloudEvent representation to be passed as the request body.
     """
 
-    # From Json string to Json Object
-    proto_decoder = extra_types.JsonProtoDecoder(json.dumps(cloud_event))
+    # Format to CloudEvents v1.0
+    events_value_list_entry = common_publishing.TransformEventsForPublishing(
+        self._publishing_messages
+        .GoogleCloudEventarcPublishingV1PublishEventsRequest
+        .EventsValueListEntry, cloud_event)
 
-    # Helpful link for easier access
-    events_value_list_entry = self._publishing_messages.GoogleCloudEventarcPublishingV1PublishEventsRequest.EventsValueListEntry
-
-    events_value_list_entry = events_value_list_entry(additionalProperties=[
-        events_value_list_entry.AdditionalProperty(
-            key=decoding.key, value=decoding.value)
-        for decoding in proto_decoder.properties
-    ])
     publish_events_request = self._publishing_messages.GoogleCloudEventarcPublishingV1PublishEventsRequest(
         events=[events_value_list_entry])
     publish_req = self._publishing_messages.EventarcpublishingProjectsLocationsChannelsPublishEventsRequest(
@@ -172,4 +164,6 @@ class ChannelClientV1(EventarcClientBase):
 
   def BuildChannel(self, channel_ref, provider_ref):
     return self._messages.Channel(
-        name=channel_ref.RelativeName(), provider=provider_ref.RelativeName())
+        name=channel_ref.RelativeName(),
+        provider=provider_ref
+        if provider_ref is None else provider_ref.RelativeName())

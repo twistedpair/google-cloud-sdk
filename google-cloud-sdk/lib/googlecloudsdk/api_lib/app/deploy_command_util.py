@@ -33,6 +33,7 @@ from googlecloudsdk.api_lib.app import docker_image
 from googlecloudsdk.api_lib.app import metric_names
 from googlecloudsdk.api_lib.app import runtime_builders
 from googlecloudsdk.api_lib.app import util
+from googlecloudsdk.api_lib.app import yaml_parsing
 from googlecloudsdk.api_lib.app.images import config
 from googlecloudsdk.api_lib.app.runtimes import fingerprinter
 from googlecloudsdk.api_lib.cloudbuild import build as cloudbuild_build
@@ -443,9 +444,18 @@ def BuildAndPushDockerImage(
     log.info('Using runtime builder [%s]', builder_reference.build_file_uri)
     builder_reference.WarnIfDeprecated()
     yaml_path = util.ConvertToPosixPath(relative_yaml_path)
-    build = builder_reference.LoadCloudBuild(
-        {'_OUTPUT_IMAGE': image.tagged_repo,
-         '_GAE_APPLICATION_YAML_PATH': yaml_path})
+    substitute = {
+        '_OUTPUT_IMAGE': image.tagged_repo,
+        '_GAE_APPLICATION_YAML_PATH': yaml_path,
+    }
+    if use_flex_with_buildpacks:
+      python_version = yaml_parsing.GetRuntimeConfigAttr(
+          service.parsed, 'python_version')
+      if yaml_parsing.GetRuntimeConfigAttr(service.parsed, 'python_version'):
+        substitute['_GOOGLE_RUNTIME_VERSION'] = python_version
+
+    build = builder_reference.LoadCloudBuild(substitute)
+
   else:
     build = cloud_build.GetDefaultBuild(image.tagged_repo)
 

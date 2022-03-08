@@ -339,6 +339,10 @@
         "managementCidr": {
           "description": "Required. Management CIDR used by VMware management appliances.",
           "type": "string"
+        },
+        "vmwareEngineNetwork": {
+          "description": "Optional. The relative resource name of the VMware Engine network attached to the private cloud. Specify the name in the following form: `projects\/{project}\/locations\/{location}\/vmwareEngineNetworks\/{vmware_engine_network_id}` where `{project}` can either be a project number or a project ID.",
+          "type": "string"
         }
       }
     },
@@ -593,6 +597,271 @@
         }
       }
     },
+    "ListExternalAddressesResponse": {
+      "id": "ListExternalAddressesResponse",
+      "description": "Response message for VmwareEngine.ListExternalAddresses",
+      "type": "object",
+      "properties": {
+        "externalAddresses": {
+          "description": "A list of external IP addresses.",
+          "type": "array",
+          "items": {
+            "$ref": "ExternalAddress"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached when making an aggregated query using wildcards.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ExternalAddress": {
+      "id": "ExternalAddress",
+      "description": "Represents an allocated external IP address and its corresponding internal IP address in a private cloud.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of this external IP address. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/externalAddresses\/my-address`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Creation time of this resource in RFC3339 text format.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Last update time of this resource in RFC3339 text format.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Labels are a way to attach lightweight metadata to resources for filtering and querying resource data. No more than 64 user labels can be associated with each resource. Label keys and values can be no longer than 63 characters, can only contain lowercase letters, numeric characters, underscores and dashes, where label keys must start with a letter and international characters are allowed. The empty string is a valid value. Labels are set on creation and updated like any other field. Specifically, to add a new label, you would need to provide all of the existing labels along with the new label. If you only provide a map with the new label, all of the old labels will be removed (probably not what is desired).",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "displayName": {
+          "description": "User-provided name for this resource.",
+          "type": "string"
+        },
+        "internalIp": {
+          "description": "The internal IP address of a workload VM.",
+          "type": "string"
+        },
+        "externalIp": {
+          "description": "Output only. The external IP address of a workload VM.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The state of the resource.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The default value. This value should never be used.",
+            "The address is ready.",
+            "The address is being created.",
+            "The address is being updated.",
+            "The address is being deleted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "CREATING",
+            "UPDATING",
+            "DELETING"
+          ]
+        },
+        "uid": {
+          "description": "Output only. System-generated unique identifier for the resource.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "FetchNetworkPolicyExternalAddressesResponse": {
+      "id": "FetchNetworkPolicyExternalAddressesResponse",
+      "description": "Response message for VmwareEngine.FetchNetworkPolicyExternalAddresses",
+      "type": "object",
+      "properties": {
+        "externalAddresses": {
+          "description": "A list of external IP addresses assigned to VMware workload VMs within the scope of the given network policy.",
+          "type": "array",
+          "items": {
+            "$ref": "ExternalAddress"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "ListExternalAccessRulesResponse": {
+      "id": "ListExternalAccessRulesResponse",
+      "description": "Response message for VmwareEngine.ListExternalAccessRules",
+      "type": "object",
+      "properties": {
+        "externalAccessRules": {
+          "description": "A list of external access firewall rules.",
+          "type": "array",
+          "items": {
+            "$ref": "ExternalAccessRule"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached when making an aggregated query using wildcards.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ExternalAccessRule": {
+      "id": "ExternalAccessRule",
+      "description": "External access firewall rules for filtering incoming traffic destined to `ExternalAddress` resources.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of this external access rule. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1\/networkPolicies\/my-policy\/externalAccessRules\/my-rule`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Creation time of this resource in RFC3339 text format.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Last update time of this resource in RFC3339 text format.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Labels are a way to attach lightweight metadata to resources for filtering and querying resource data. No more than 64 user labels can be associated with each resource. Label keys and values can be no longer than 63 characters, can only contain lowercase letters, numeric characters, underscores and dashes, where label keys must start with a letter and international characters are allowed. The empty string is a valid value. Labels are set on creation and updated like any other field. Specifically, to add a new label, you would need to provide all of the existing labels along with the new label. If you only provide a map with the new label, all of the old labels are removed (probably not what is desired).",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "User-provided description for this external access rule.",
+          "type": "string"
+        },
+        "priority": {
+          "description": "External access rule priority, which determines the external access rule to use when multiple rules apply. The external access rule priority is an integer from 100 to 4096, both inclusive. Priorities must be unique for a rule within the parent network policy. Lower integers indicate higher precedence. For example, a rule with priority `100` has higher precedence than a rule with priority `101`.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "action": {
+          "description": "The action that the external access rule performs.",
+          "type": "string",
+          "enumDescriptions": [
+            "Defaults to allow.",
+            "Allows connections that match the other specified components.",
+            "Blocks connections that match the other specified components."
+          ],
+          "enum": [
+            "ACTION_UNSPECIFIED",
+            "ALLOW",
+            "DENY"
+          ]
+        },
+        "ipProtocol": {
+          "description": "The IP protocol to which the external access rule applies. This value can be one of the following three protocol strings: `tcp`, `udp`, or `icmp`.",
+          "type": "string"
+        },
+        "sourceIpRanges": {
+          "description": "If source ranges are specified, the external access rule applies only to traffic that has a source IP address in these ranges. These ranges can either be expressed in the CIDR format or as an IP address. As only inbound rules are supported, `ExternalAddress` resources cannot be the source IP addresses of an external access rule. By default, the rule matches all addresses (`0.0.0.0\/0`).",
+          "type": "array",
+          "items": {
+            "$ref": "IpRange"
+          }
+        },
+        "sourcePorts": {
+          "description": "A list of source ports to which the external access rule applies. This field is only applicable for the UDP or TCP protocol. Each entry must be either an integer or a range. For example: `[\"22\"]`, `[\"80\",\"443\"]`, or `[\"12345-12349\"]`. By default, the external access rule applies to connections through any source port.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "destinationIpRanges": {
+          "description": "If destination ranges are specified, the external access rule applies only to the traffic that has a destination IP address in these ranges. The specified IP addresses must have reserved external IP addresses in the scope of the parent network policy. By default, the rule matches all external IP addresses in the scope of the parent network policy.",
+          "type": "array",
+          "items": {
+            "$ref": "IpRange"
+          }
+        },
+        "destinationPorts": {
+          "description": "A list of destination ports to which the external access rule applies. This field is only applicable for the UDP or TCP protocol. Each entry must be either an integer or a range. For example: `[\"22\"]`, `[\"80\",\"443\"]`, or `[\"12345-12349\"]`. By default, the external access rule applies to connections through any destination port.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "state": {
+          "description": "Output only. The state of the resource.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The default value. This value is used if the state is omitted.",
+            "The rule is ready.",
+            "The rule is being created.",
+            "The rule is being updated.",
+            "The rule is being deleted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "CREATING",
+            "UPDATING",
+            "DELETING"
+          ]
+        },
+        "uid": {
+          "description": "Output only. System-generated unique identifier for the resource.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "IpRange": {
+      "id": "IpRange",
+      "description": "An IP range provided in any one of the supported formats.",
+      "type": "object",
+      "properties": {
+        "ipAddress": {
+          "description": "A single IP address. For example: `10.0.0.5`.",
+          "type": "string"
+        },
+        "ipAddressRange": {
+          "description": "An IP address range in the CIDR format. For example: `10.0.0.0\/24`.",
+          "type": "string"
+        },
+        "externalAddress": {
+          "description": "The name of an `ExternalAddress` resource. The external address must have been reserved in the scope of this external access rule's parent network policy. Provide the external address name in the form of `projects\/{project}\/locations\/{location}\/privateClouds\/{private_cloud}\/externalAddresses\/{external_address}`. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/externalAddresses\/my-address`.",
+          "type": "string"
+        }
+      }
+    },
     "ListNodeTypesResponse": {
       "id": "ListNodeTypesResponse",
       "description": "Response message for VmwareEngine.ListNodeTypes",
@@ -823,6 +1092,14 @@
           "description": "Output only. System-generated unique identifier for the resource.",
           "readOnly": true,
           "type": "string"
+        },
+        "vmwareEngineNetwork": {
+          "description": "Optional. The relative resource name of the VMware Engine network. Specify the name in the following form: `projects\/{project}\/locations\/{location}\/vmwareEngineNetworks\/{vmware_engine_network_id}` where `{project}` can either be a project number or a project ID.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. User-provided description for this network policy.",
+          "type": "string"
         }
       }
     },
@@ -872,6 +1149,145 @@
         },
         "unreachable": {
           "description": "Locations that could not be reached when making an aggregated query using wildcards.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "VmwareEngineNetwork": {
+      "id": "VmwareEngineNetwork",
+      "description": "VMware Engine network resource that provides connectivity for VMware Engine private clouds.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of the VMware Engine network. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/global\/vmwareEngineNetworks\/my-network`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Creation time of this resource in RFC3339 text format.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Last update time of this resource in RFC3339 text format.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Labels are a way to attach lightweight metadata to resources for filtering and querying resource data. No more than 64 user labels can be associated with each resource. Label keys and values can be no longer than 63 characters, can only contain lowercase letters, numeric characters, underscores and dashes, where label keys must start with a letter and international characters are allowed. The empty string is a valid value. Labels are set on creation and updated like any other field. Specifically, to add a new label, you would need to provide all of the existing labels along with the new label. If you only provide a map with the new label, all of the old labels will be removed (probably not what is desired).",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "User-provided description for this VMware Engine network.",
+          "type": "string"
+        },
+        "vpcNetworks": {
+          "description": "Output only. VMware Engine service VPC networks that provide connectivity from a private cloud to customer projects, the internet, and other Google Cloud services.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "VpcNetwork"
+          }
+        },
+        "state": {
+          "description": "Output only. State of the VMware Engine network.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The default value. This value is used if the state is omitted.",
+            "The VMware Engine network is being created.",
+            "The VMware Engine network is ready.",
+            "The VMware Engine network is being updated.",
+            "The VMware Engine network is being deleted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "ACTIVE",
+            "UPDATING",
+            "DELETING"
+          ]
+        },
+        "type": {
+          "description": "Required. VMware Engine network type.",
+          "type": "string",
+          "enumDescriptions": [
+            "The default value. This value should never be used.",
+            "Network type used by private clouds created in projects without a network of type `STANDARD`. This network type is no longer used for new VMware Engine private cloud deployments.",
+            "Standard network type used for private cloud connectivity."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "LEGACY",
+            "STANDARD"
+          ]
+        },
+        "uid": {
+          "description": "Output only. System-generated unique identifier for the resource.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "etag": {
+          "description": "Checksum that may be sent on update and delete requests to ensure that the user-provided value is up to date before the server processes a request. The server computes checksums based on the value of other fields in the request.",
+          "type": "string"
+        }
+      }
+    },
+    "VpcNetwork": {
+      "id": "VpcNetwork",
+      "description": "Represents a VMware Engine VPC network that is managed by a VMware Engine network resource.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Output only. Type of VPC network (INTRANET, INTERNET, or GOOGLE_CLOUD)",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The default value. This value should never be used.",
+            "VPC network that will be peered with the consumer VPC network or other service VPC network. Access a private cloud through Compute Engine VMs on a peered VPC network or an on-premises resource connected to a peered consumer VPC network.",
+            "VPC network used for internet access to and from a private cloud.",
+            "VPC network used for access to Google Cloud services like Cloud Storage."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "INTRANET",
+            "INTERNET",
+            "GOOGLE_CLOUD"
+          ]
+        },
+        "network": {
+          "description": "Output only. The relative resource name of the service VPC network this VMware Engine network is attached to. For example: `projects\/123123\/global\/networks\/my-network`",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "ListVmwareEngineNetworksResponse": {
+      "id": "ListVmwareEngineNetworksResponse",
+      "description": "Response message for VmwareEngine.ListVmwareEngineNetworks",
+      "type": "object",
+      "properties": {
+        "vmwareEngineNetworks": {
+          "description": "A list of VMware Engine networks.",
+          "type": "array",
+          "items": {
+            "$ref": "VmwareEngineNetwork"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Unreachable resources.",
           "type": "array",
           "items": {
             "type": "string"
@@ -2012,6 +2428,188 @@
                     }
                   }
                 },
+                "externalAddresses": {
+                  "methods": {
+                    "list": {
+                      "id": "vmwareengine.projects.locations.privateClouds.externalAddresses.list",
+                      "path": "v1/{+parent}/externalAddresses",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/externalAddresses",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the private cloud to be queried for external IP addresses. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of external IP addresses to return in one page. The service may return fewer than this value. The maximum value is coerced to 50.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A page token, received from a previous `ListExternalAddresses` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListExternalAddresses` must match the call that provided the page token.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "A filter expression that matches resources returned in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of IP addresses, you can exclude the ones named `example-ip` by specifying `name != \"example-ip\"`. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (name = \"example-ip\") (createTime > \"2021-04-12T08:15:10.40Z\") ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (name = \"example-ip-1\") AND (createTime > \"2021-04-12T08:15:10.40Z\") OR (name = \"example-ip-2\") ```",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Sorts list results by a certain order. By default, returned results are ordered by `name` in ascending order. You can also sort results in descending order based on the `name` value using `orderBy=\"name desc\"`. Currently, only ordering by `name` is supported.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListExternalAddressesResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists external IP addresses assigned to VMware workload VMs in a given private cloud."
+                    },
+                    "get": {
+                      "id": "vmwareengine.projects.locations.privateClouds.externalAddresses.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/externalAddresses/{externalAddressesId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the external IP address to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/externalAddresses\/my-ip`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/externalAddresses\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "ExternalAddress"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets details of a single external IP address."
+                    },
+                    "create": {
+                      "id": "vmwareengine.projects.locations.privateClouds.externalAddresses.create",
+                      "path": "v1/{+parent}/externalAddresses",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/externalAddresses",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the private cloud to create a new external IP address in. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "externalAddressId": {
+                          "description": "Required. The user-provided identifier of the `ExternalAddress` to be created. This identifier must be unique among `ExternalAddress` resources within the parent and becomes the final token in the name URI. The identifier must meet the following requirements: * Only contains 1-63 alphanumeric characters and hyphens * Begins with an alphabetical character * Ends with a non-hyphen character * Not formatted as a UUID * Complies with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034) (section 3.5)",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server guarantees that a request doesn't result in creation of duplicate commitments for at least 60 minutes. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if the original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "ExternalAddress"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new `ExternalAddress` resource in a given private cloud. The network policy that corresponds to the private cloud must have the external IP address network service enabled (`NetworkPolicy.external_ip`)."
+                    },
+                    "patch": {
+                      "id": "vmwareengine.projects.locations.privateClouds.externalAddresses.patch",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/externalAddresses/{externalAddressesId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Output only. The resource name of this external IP address. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/externalAddresses\/my-address`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/externalAddresses\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Required. Field mask is used to specify the fields to be overwritten in the `ExternalAddress` resource by the update. The fields specified in the `update_mask` are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        },
+                        "requestId": {
+                          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server guarantees that a request doesn't result in creation of duplicate commitments for at least 60 minutes. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if the original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "ExternalAddress"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Updates the parameters of a single external IP address. Only fields specified in `update_mask` are applied. During operation processing, the resource is temporarily in the `ACTIVE` state before the operation fully completes. For that period of time, you can't update the resource. Use the operation status to determine when the processing fully completes."
+                    },
+                    "delete": {
+                      "id": "vmwareengine.projects.locations.privateClouds.externalAddresses.delete",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/externalAddresses/{externalAddressesId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the external IP address to delete. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/externalAddresses\/my-ip`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/externalAddresses\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server guarantees that a request doesn't result in creation of duplicate commitments for at least 60 minutes. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if the original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a single external IP address. When you delete an external IP address, connectivity between the external IP address and the corresponding internal IP address is lost."
+                    }
+                  }
+                },
                 "hcxActivationKeys": {
                   "methods": {
                     "create": {
@@ -2204,165 +2802,44 @@
                 }
               }
             },
-            "nodeTypes": {
+            "networkPolicies": {
               "methods": {
-                "list": {
-                  "id": "vmwareengine.projects.locations.nodeTypes.list",
-                  "path": "v1/{+parent}/nodeTypes",
-                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/nodeTypes",
+                "fetchExternalAddresses": {
+                  "id": "vmwareengine.projects.locations.networkPolicies.fetchExternalAddresses",
+                  "path": "v1/{+networkPolicy}:fetchExternalAddresses",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}:fetchExternalAddresses",
                   "httpMethod": "GET",
                   "parameters": {
-                    "parent": {
-                      "description": "Required. The resource name of the location to be queried for node types. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a`",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                    "networkPolicy": {
+                      "description": "Required. The resource name of the network policy to query for assigned external IP addresses. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1\/networkPolicies\/my-policy`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/networkPolicies\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "The maximum number of node types to return in one page. The service may return fewer than this value. The maximum value is coerced to 50.",
+                      "description": "The maximum number of external IP addresses to return in one page. The service may return fewer than this value. The maximum value is coerced to 50.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "A page token, received from a previous `ListNodeTypes` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListNodeTypes` must match the call that provided the page token.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "filter": {
-                      "description": "A filter expression that matches resources returned in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of node types, you can exclude the ones named `standard-72` by specifying `name != \"standard-72\"`. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (name = \"standard-72\") (virtual_cpu_count > 2) ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (name = \"standard-96\") AND (virtual_cpu_count > 2) OR (name = \"standard-72\") ```",
+                      "description": "A page token, received from a previous `FetchNetworkPolicyExternalAddresses` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `FetchNetworkPolicyExternalAddresses` must match the call that provided the page token.",
                       "location": "query",
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "parent"
+                    "networkPolicy"
                   ],
                   "response": {
-                    "$ref": "ListNodeTypesResponse"
+                    "$ref": "FetchNetworkPolicyExternalAddressesResponse"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists node types"
+                  "description": "Lists external IP addresses assigned to VMware workload VMs within the scope of the given network policy."
                 },
-                "get": {
-                  "id": "vmwareengine.projects.locations.nodeTypes.get",
-                  "path": "v1/{+name}",
-                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/nodeTypes/{nodeTypesId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The resource name of the node type to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-proj\/locations\/us-west1-a\/nodeTypes\/standard-72`",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodeTypes\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "NodeType"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Gets details of a single `NodeType`."
-                },
-                "setIamPolicy": {
-                  "id": "vmwareengine.projects.locations.nodeTypes.setIamPolicy",
-                  "path": "v1/{+resource}:setIamPolicy",
-                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/nodeTypes/{nodeTypesId}:setIamPolicy",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodeTypes\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "request": {
-                    "$ref": "SetIamPolicyRequest"
-                  },
-                  "response": {
-                    "$ref": "Policy"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
-                },
-                "getIamPolicy": {
-                  "id": "vmwareengine.projects.locations.nodeTypes.getIamPolicy",
-                  "path": "v1/{+resource}:getIamPolicy",
-                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/nodeTypes/{nodeTypesId}:getIamPolicy",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodeTypes\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "options.requestedPolicyVersion": {
-                      "description": "Optional. The maximum policy version that will be used to format the policy. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset. The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "response": {
-                    "$ref": "Policy"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
-                },
-                "testIamPermissions": {
-                  "id": "vmwareengine.projects.locations.nodeTypes.testIamPermissions",
-                  "path": "v1/{+resource}:testIamPermissions",
-                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/nodeTypes/{nodeTypesId}:testIamPermissions",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodeTypes\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "request": {
-                    "$ref": "TestIamPermissionsRequest"
-                  },
-                  "response": {
-                    "$ref": "TestIamPermissionsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
-                }
-              }
-            },
-            "networkPolicies": {
-              "methods": {
                 "get": {
                   "id": "vmwareengine.projects.locations.networkPolicies.get",
                   "path": "v1/{+name}",
@@ -2627,6 +3104,535 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+              ,
+              "resources": {
+                "externalAccessRules": {
+                  "methods": {
+                    "list": {
+                      "id": "vmwareengine.projects.locations.networkPolicies.externalAccessRules.list",
+                      "path": "v1/{+parent}/externalAccessRules",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}/externalAccessRules",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the network policy to query for external access firewall rules. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1\/networkPolicies\/my-policy`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/networkPolicies\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of external access rules to return in one page. The service may return fewer than this value. The maximum value is coerced to 50.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A page token, received from a previous `ListExternalAccessRulesRequest` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListExternalAccessRulesRequest` must match the call that provided the page token.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "A filter expression that matches resources returned in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of external access rules, you can exclude the ones named `example-rule` by specifying `name != \"example-rule\"`. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (name = \"example-rule\") (createTime > \"2021-04-12T08:15:10.40Z\") ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (name = \"example-rule-1\") AND (createTime > \"2021-04-12T08:15:10.40Z\") OR (name = \"example-rule-2\") ```",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Sorts list results by a certain order. By default, returned results are ordered by `name` in ascending order. You can also sort results in descending order based on the `name` value using `orderBy=\"name desc\"`. Currently, only ordering by `name` is supported.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListExternalAccessRulesResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists `ExternalAccessRule` resources in the specified network policy."
+                    },
+                    "get": {
+                      "id": "vmwareengine.projects.locations.networkPolicies.externalAccessRules.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}/externalAccessRules/{externalAccessRulesId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the external access firewall rule to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1\/networkPolicies\/my-policy\/externalAccessRules\/my-rule`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/networkPolicies\/[^\/]+\/externalAccessRules\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "ExternalAccessRule"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets details of a single external access rule."
+                    },
+                    "create": {
+                      "id": "vmwareengine.projects.locations.networkPolicies.externalAccessRules.create",
+                      "path": "v1/{+parent}/externalAccessRules",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}/externalAccessRules",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the network policy to create a new external access firewall rule in. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1\/networkPolicies\/my-policy`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/networkPolicies\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "externalAccessRuleId": {
+                          "description": "Required. The user-provided identifier of the `ExternalAccessRule` to be created. This identifier must be unique among `ExternalAccessRule` resources within the parent and becomes the final token in the name URI. The identifier must meet the following requirements: * Only contains 1-63 alphanumeric characters and hyphens * Begins with an alphabetical character * Ends with a non-hyphen character * Not formatted as a UUID * Complies with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034) (section 3.5)",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server guarantees that a request doesn't result in creation of duplicate commitments for at least 60 minutes. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if the original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "ExternalAccessRule"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new external access rule in a given network policy."
+                    },
+                    "patch": {
+                      "id": "vmwareengine.projects.locations.networkPolicies.externalAccessRules.patch",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}/externalAccessRules/{externalAccessRulesId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Output only. The resource name of this external access rule. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1\/networkPolicies\/my-policy\/externalAccessRules\/my-rule`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/networkPolicies\/[^\/]+\/externalAccessRules\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Required. Field mask is used to specify the fields to be overwritten in the `ExternalAccessRule` resource by the update. The fields specified in the `update_mask` are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        },
+                        "requestId": {
+                          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server guarantees that a request doesn't result in creation of duplicate commitments for at least 60 minutes. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if the original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "ExternalAccessRule"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Updates the parameters of a single external access rule. Only fields specified in `update_mask` are applied."
+                    },
+                    "delete": {
+                      "id": "vmwareengine.projects.locations.networkPolicies.externalAccessRules.delete",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}/externalAccessRules/{externalAccessRulesId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the external access firewall rule to delete. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1\/networkPolicies\/my-policy\/externalAccessRules\/my-rule`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/networkPolicies\/[^\/]+\/externalAccessRules\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server guarantees that a request doesn't result in creation of duplicate commitments for at least 60 minutes. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if the original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a single external access rule."
+                    }
+                  }
+                }
+              }
+            },
+            "nodeTypes": {
+              "methods": {
+                "list": {
+                  "id": "vmwareengine.projects.locations.nodeTypes.list",
+                  "path": "v1/{+parent}/nodeTypes",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/nodeTypes",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the location to be queried for node types. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of node types to return in one page. The service may return fewer than this value. The maximum value is coerced to 50.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A page token, received from a previous `ListNodeTypes` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListNodeTypes` must match the call that provided the page token.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "A filter expression that matches resources returned in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of node types, you can exclude the ones named `standard-72` by specifying `name != \"standard-72\"`. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (name = \"standard-72\") (virtual_cpu_count > 2) ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (name = \"standard-96\") AND (virtual_cpu_count > 2) OR (name = \"standard-72\") ```",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListNodeTypesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists node types"
+                },
+                "get": {
+                  "id": "vmwareengine.projects.locations.nodeTypes.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/nodeTypes/{nodeTypesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the node type to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-proj\/locations\/us-west1-a\/nodeTypes\/standard-72`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodeTypes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "NodeType"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single `NodeType`."
+                },
+                "setIamPolicy": {
+                  "id": "vmwareengine.projects.locations.nodeTypes.setIamPolicy",
+                  "path": "v1/{+resource}:setIamPolicy",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/nodeTypes/{nodeTypesId}:setIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodeTypes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "SetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                },
+                "getIamPolicy": {
+                  "id": "vmwareengine.projects.locations.nodeTypes.getIamPolicy",
+                  "path": "v1/{+resource}:getIamPolicy",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/nodeTypes/{nodeTypesId}:getIamPolicy",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodeTypes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "options.requestedPolicyVersion": {
+                      "description": "Optional. The maximum policy version that will be used to format the policy. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset. The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                },
+                "testIamPermissions": {
+                  "id": "vmwareengine.projects.locations.nodeTypes.testIamPermissions",
+                  "path": "v1/{+resource}:testIamPermissions",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/nodeTypes/{nodeTypesId}:testIamPermissions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodeTypes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "TestIamPermissionsRequest"
+                  },
+                  "response": {
+                    "$ref": "TestIamPermissionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+            },
+            "vmwareEngineNetworks": {
+              "methods": {
+                "create": {
+                  "id": "vmwareengine.projects.locations.vmwareEngineNetworks.create",
+                  "path": "v1/{+parent}/vmwareEngineNetworks",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareEngineNetworks",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the location to create the new VMware Engine network in. A VMware Engine network of type `LEGACY` is a regional resource, and a VMware Engine network of type `STANDARD` is a global resource. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/global`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "vmwareEngineNetworkId": {
+                      "description": "Required. The user-provided identifier of the new VMware Engine network. This identifier must be unique among VMware Engine network` resources within the parent and becomes the final token in the name URI. The identifier must meet the following requirements: * Only contains 1-63 alphanumeric characters and hyphens * Begins with an alphabetical character * Ends with a non-hyphen character * Not formatted as a UUID * Complies with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034) (section 3.5)",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server guarantees that a request doesn't result in creation of duplicate commitments for at least 60 minutes. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "VmwareEngineNetwork"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new VMware Engine network that can be used by a private cloud."
+                },
+                "patch": {
+                  "id": "vmwareengine.projects.locations.vmwareEngineNetworks.patch",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareEngineNetworks/{vmwareEngineNetworksId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The resource name of the VMware Engine network. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/global\/vmwareEngineNetworks\/my-network`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareEngineNetworks\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. Field mask is used to specify the fields to be overwritten in the VMware Engine network resource by the update. The fields specified in the `update_mask` are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten. Only the following fields can be updated: `labels`, `description`.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "requestId": {
+                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server guarantees that a request doesn't result in creation of duplicate commitments for at least 60 minutes. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "VmwareEngineNetwork"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Modifies a VMware Engine network resource. Only the following fields can be updated: `labels`, `description`. Only fields specified in `updateMask` are applied."
+                },
+                "delete": {
+                  "id": "vmwareengine.projects.locations.vmwareEngineNetworks.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareEngineNetworks/{vmwareEngineNetworksId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the VMware Engine network to be deleted. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/global\/vmwareEngineNetworks\/my-network`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareEngineNetworks\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server guarantees that a request doesn't result in creation of duplicate commitments for at least 60 minutes. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "etag": {
+                      "description": "Optional. Checksum used to ensure that the user-provided value is up to date before the server processes the request. The server compares provided checksum with the current checksum of the resource. If the user-provided value is out of date, this request returns an `ABORTED` error.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a `VmwareEngineNetwork` resource. You can only delete a VMware Engine network after all resources that refer to it are deleted. For example, a private cloud, a network peering, and a network policy can all refer to the same VMware Engine network."
+                },
+                "get": {
+                  "id": "vmwareengine.projects.locations.vmwareEngineNetworks.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareEngineNetworks/{vmwareEngineNetworksId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the VMware Engine network to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/global\/vmwareEngineNetworks\/my-network`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vmwareEngineNetworks\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "VmwareEngineNetwork"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Retrieves a `VmwareEngineNetwork` resource by its resource name. The resource contains details of the VMware Engine network, such as its VMware Engine network type, peered VPC networks in a service project, and state (for example, `CREATING`, `ACTIVE`, `DELETING`)."
+                },
+                "list": {
+                  "id": "vmwareengine.projects.locations.vmwareEngineNetworks.list",
+                  "path": "v1/{+parent}/vmwareEngineNetworks",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/vmwareEngineNetworks",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the location to query for VMware Engine networks. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/global`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of results to return in one page. The maximum value of this field is 25.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A page token, received from a previous `ListVmwareEngineNetworks` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListVmwareEngineNetworks` must match the call that provided the page token.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "A filter expression that matches resources returned in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of VPC network peerings, you can exclude the ones named `example-network` by specifying `name != \"example-network\"`. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (name = \"example-network\") (createTime > \"2021-04-12T08:15:10.40Z\") ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (name = \"example-network-1\") AND (createTime > \"2021-04-12T08:15:10.40Z\") OR (name = \"example-network-2\") ```",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Sorts list results by a certain order. By default, returned results are ordered by `name` in ascending order. You can also sort results in descending order based on the `name` value using `orderBy=\"name desc\"`. Currently, only ordering by `name` is supported.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListVmwareEngineNetworksResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists `VmwareEngineNetwork` resources in a given project and location."
                 }
               }
             }

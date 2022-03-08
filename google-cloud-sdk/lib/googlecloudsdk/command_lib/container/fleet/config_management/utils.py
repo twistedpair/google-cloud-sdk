@@ -18,8 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.container.hub import client
-from googlecloudsdk.api_lib.container.hub import util
+from googlecloudsdk.api_lib.container.fleet import client
+from googlecloudsdk.api_lib.container.fleet import util
 
 
 APPLY_SPEC_VERSION_1 = """

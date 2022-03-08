@@ -782,7 +782,9 @@
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
             "Nvidia Tesla T4 GPU.",
-            "Nvidia Tesla A100 GPU."
+            "Nvidia Tesla A100 GPU.",
+            "TPU v2.",
+            "TPU v3."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -791,7 +793,9 @@
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
             "NVIDIA_TESLA_T4",
-            "NVIDIA_TESLA_A100"
+            "NVIDIA_TESLA_A100",
+            "TPU_V2",
+            "TPU_V3"
           ]
         },
         "acceleratorCount": {
@@ -1414,7 +1418,7 @@
           "format": "google-datetime"
         },
         "network": {
-          "description": "Optional. The full name of the Google Compute Engine [network](https:\/\/cloud.google.com\/compute\/docs\/networks-and-firewalls#networks) to which the IndexEndpoint should be peered. Private services access must already be configured for the network. If left unspecified, the Endpoint is not peered with any network. Only one of the fields, network or enable_private_service_connect, can be set. [Format](https:\/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/networks\/insert): projects\/{project}\/global\/networks\/{network}. Where {project} is a project number, as in '12345', and {network} is network name.",
+          "description": "Optional. The full name of the Google Compute Engine [network](https:\/\/cloud.google.com\/compute\/docs\/networks-and-firewalls#networks) to which the IndexEndpoint should be peered. Private services access must already be configured for the network. If left unspecified, the Endpoint is not peered with any network. network and private_service_connect_config are mutually exclusive. [Format](https:\/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/networks\/insert): projects\/{project}\/global\/networks\/{network}. Where {project} is a project number, as in '12345', and {network} is network name.",
           "type": "string"
         },
         "enablePrivateServiceConnect": {
@@ -1552,7 +1556,8 @@
             "The job is being cancelled. From this state the job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
             "The job has been cancelled.",
             "The job has been stopped, and can be resumed.",
-            "The job has expired."
+            "The job has expired.",
+            "The job is being updated. The job is only able to be updated at RUNNING state; if the update operation succeeds, job goes back to RUNNING state; if the update operation fails, the job goes back to RUNNING state with error messages written to ModelDeploymentMonitoringJob.partial_errors field if it is a ModelDeploymentMonitoringJob."
           ],
           "enum": [
             "JOB_STATE_UNSPECIFIED",
@@ -1564,7 +1569,8 @@
             "JOB_STATE_CANCELLING",
             "JOB_STATE_CANCELLED",
             "JOB_STATE_PAUSED",
-            "JOB_STATE_EXPIRED"
+            "JOB_STATE_EXPIRED",
+            "JOB_STATE_UPDATING"
           ]
         },
         "createTime": {
@@ -1675,6 +1681,13 @@
           "description": "Optional. The number of worker replicas to use for this worker pool.",
           "type": "string",
           "format": "int64"
+        },
+        "nfsMounts": {
+          "description": "Optional. List of NFS mount spec.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1alpha1NfsMount"
+          }
         }
       }
     },
@@ -1729,6 +1742,25 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1NfsMount": {
+      "id": "GoogleCloudAiplatformV1alpha1NfsMount",
+      "description": "Represents a mount configuration for Network File System (NFS) to mount.",
+      "type": "object",
+      "properties": {
+        "server": {
+          "description": "Required. IP address of the NFS server.",
+          "type": "string"
+        },
+        "path": {
+          "description": "Required. Source path exported from NFS server. Has to start with '\/', and combined with the ip address, it indicates the source mount path in the form of `server:path`",
+          "type": "string"
+        },
+        "mountPoint": {
+          "description": "Required. Destination mount path. The NFS will be mounted for the user under \/mnt\/nfs\/",
+          "type": "string"
         }
       }
     },
@@ -1832,7 +1864,8 @@
             "The job is being cancelled. From this state the job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
             "The job has been cancelled.",
             "The job has been stopped, and can be resumed.",
-            "The job has expired."
+            "The job has expired.",
+            "The job is being updated. The job is only able to be updated at RUNNING state; if the update operation succeeds, job goes back to RUNNING state; if the update operation fails, the job goes back to RUNNING state with error messages written to ModelDeploymentMonitoringJob.partial_errors field if it is a ModelDeploymentMonitoringJob."
           ],
           "enum": [
             "JOB_STATE_UNSPECIFIED",
@@ -1844,7 +1877,8 @@
             "JOB_STATE_CANCELLING",
             "JOB_STATE_CANCELLED",
             "JOB_STATE_PAUSED",
-            "JOB_STATE_EXPIRED"
+            "JOB_STATE_EXPIRED",
+            "JOB_STATE_UPDATING"
           ]
         },
         "labelingProgress": {
@@ -2070,7 +2104,8 @@
             "The job is being cancelled. From this state the job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
             "The job has been cancelled.",
             "The job has been stopped, and can be resumed.",
-            "The job has expired."
+            "The job has expired.",
+            "The job is being updated. The job is only able to be updated at RUNNING state; if the update operation succeeds, job goes back to RUNNING state; if the update operation fails, the job goes back to RUNNING state with error messages written to ModelDeploymentMonitoringJob.partial_errors field if it is a ModelDeploymentMonitoringJob."
           ],
           "enum": [
             "JOB_STATE_UNSPECIFIED",
@@ -2082,7 +2117,8 @@
             "JOB_STATE_CANCELLING",
             "JOB_STATE_CANCELLED",
             "JOB_STATE_PAUSED",
-            "JOB_STATE_EXPIRED"
+            "JOB_STATE_EXPIRED",
+            "JOB_STATE_UPDATING"
           ]
         },
         "createTime": {
@@ -2669,7 +2705,8 @@
             "The job is being cancelled. From this state the job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
             "The job has been cancelled.",
             "The job has been stopped, and can be resumed.",
-            "The job has expired."
+            "The job has expired.",
+            "The job is being updated. The job is only able to be updated at RUNNING state; if the update operation succeeds, job goes back to RUNNING state; if the update operation fails, the job goes back to RUNNING state with error messages written to ModelDeploymentMonitoringJob.partial_errors field if it is a ModelDeploymentMonitoringJob."
           ],
           "enum": [
             "JOB_STATE_UNSPECIFIED",
@@ -2681,7 +2718,8 @@
             "JOB_STATE_CANCELLING",
             "JOB_STATE_CANCELLED",
             "JOB_STATE_PAUSED",
-            "JOB_STATE_EXPIRED"
+            "JOB_STATE_EXPIRED",
+            "JOB_STATE_UPDATING"
           ]
         },
         "error": {
@@ -3066,7 +3104,8 @@
             "The job is being cancelled. From this state the job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
             "The job has been cancelled.",
             "The job has been stopped, and can be resumed.",
-            "The job has expired."
+            "The job has expired.",
+            "The job is being updated. The job is only able to be updated at RUNNING state; if the update operation succeeds, job goes back to RUNNING state; if the update operation fails, the job goes back to RUNNING state with error messages written to ModelDeploymentMonitoringJob.partial_errors field if it is a ModelDeploymentMonitoringJob."
           ],
           "enum": [
             "JOB_STATE_UNSPECIFIED",
@@ -3078,7 +3117,8 @@
             "JOB_STATE_CANCELLING",
             "JOB_STATE_CANCELLED",
             "JOB_STATE_PAUSED",
-            "JOB_STATE_EXPIRED"
+            "JOB_STATE_EXPIRED",
+            "JOB_STATE_UPDATING"
           ]
         },
         "scheduleState": {
@@ -4746,13 +4786,11 @@
           "type": "string"
         },
         "metricsSchemaUri": {
-          "description": "Output only. Points to a YAML file stored on Google Cloud Storage describing the metrics of this ModelEvaluation. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/github.com\/OAI\/OpenAPI-Specification\/blob\/main\/versions\/3.0.2.md#schemaObject).",
-          "readOnly": true,
+          "description": "Points to a YAML file stored on Google Cloud Storage describing the metrics of this ModelEvaluation. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/github.com\/OAI\/OpenAPI-Specification\/blob\/main\/versions\/3.0.2.md#schemaObject).",
           "type": "string"
         },
         "metrics": {
-          "description": "Output only. Evaluation metrics of the Model. The schema of the metrics is stored in metrics_schema_uri",
-          "readOnly": true,
+          "description": "Evaluation metrics of the Model. The schema of the metrics is stored in metrics_schema_uri",
           "type": "any"
         },
         "createTime": {
@@ -4762,16 +4800,14 @@
           "format": "google-datetime"
         },
         "sliceDimensions": {
-          "description": "Output only. All possible dimensions of ModelEvaluationSlices. The dimensions can be used as the filter of the ModelService.ListModelEvaluationSlices request, in the form of `slice.dimension = `.",
-          "readOnly": true,
+          "description": "All possible dimensions of ModelEvaluationSlices. The dimensions can be used as the filter of the ModelService.ListModelEvaluationSlices request, in the form of `slice.dimension = `.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "modelExplanation": {
-          "description": "Output only. Aggregated explanation metrics for the Model's prediction output over the data this ModelEvaluation uses. This field is populated only if the Model is evaluated with explanations, and only for AutoML tabular Models. ",
-          "readOnly": true,
+          "description": "Aggregated explanation metrics for the Model's prediction output over the data this ModelEvaluation uses. This field is populated only if the Model is evaluated with explanations, and only for AutoML tabular Models. ",
           "$ref": "GoogleCloudAiplatformV1alpha1ModelExplanation"
         }
       }
@@ -4823,7 +4859,7 @@
           }
         },
         "outputDisplayName": {
-          "description": "Output only. The display name of the output identified by output_index. For example, the predicted class name by a multi-classification Model. This field is only populated iff the Model predicts display names as a separate field along with the explained output. The predicted display name must have the same shape of the explained output, and can be located using output_index.",
+          "description": "Output only. The display name of the output identified by output_index. For example, the predicted class name by a multi-classification Model. This field is only populated iff the Model predicts display names as a separate field along with the explained output. The predicted display name must has the same shape of the explained output, and can be located using output_index.",
           "readOnly": true,
           "type": "string"
         },
@@ -9671,6 +9707,10 @@
           "description": "The end timestamp of window where stats were generated. For objectives where time window doesn't make sense (e.g. Featurestore Snapshot Monitoring), end_time indicates the timestamp of the data used to generate stats (e.g. timestamp we take snapshots for feature values).",
           "type": "string",
           "format": "google-datetime"
+        },
+        "predictionDataQuery": {
+          "description": "The SQL query to look at raw prediction data logged to BigQuery for this statistics. .",
+          "type": "string"
         }
       }
     },
@@ -17555,6 +17595,13 @@
           "type": "string",
           "format": "int64"
         },
+        "nfsMounts": {
+          "description": "Optional. List of NFS mount spec.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1NfsMount"
+          }
+        },
         "diskSpec": {
           "description": "Disk spec.",
           "$ref": "GoogleCloudAiplatformV1beta1DiskSpec"
@@ -17612,6 +17659,25 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1NfsMount": {
+      "id": "GoogleCloudAiplatformV1beta1NfsMount",
+      "description": "Represents a mount configuration for Network File System (NFS) to mount.",
+      "type": "object",
+      "properties": {
+        "server": {
+          "description": "Required. IP address of the NFS server.",
+          "type": "string"
+        },
+        "path": {
+          "description": "Required. Source path exported from NFS server. Has to start with '\/', and combined with the ip address, it indicates the source mount path in the form of `server:path`",
+          "type": "string"
+        },
+        "mountPoint": {
+          "description": "Required. Destination mount path. The NFS will be mounted for the user under \/mnt\/nfs\/",
+          "type": "string"
         }
       }
     },
@@ -22381,6 +22447,13 @@
           "type": "string",
           "format": "int64"
         },
+        "nfsMounts": {
+          "description": "Optional. List of NFS mount spec.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1NfsMount"
+          }
+        },
         "diskSpec": {
           "description": "Disk spec.",
           "$ref": "GoogleCloudAiplatformV1DiskSpec"
@@ -22467,6 +22540,25 @@
           "items": {
             "$ref": "GoogleCloudAiplatformV1EnvVar"
           }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1NfsMount": {
+      "id": "GoogleCloudAiplatformV1NfsMount",
+      "description": "Represents a mount configuration for Network File System (NFS) to mount.",
+      "type": "object",
+      "properties": {
+        "server": {
+          "description": "Required. IP address of the NFS server.",
+          "type": "string"
+        },
+        "path": {
+          "description": "Required. Source path exported from NFS server. Has to start with '\/', and combined with the ip address, it indicates the source mount path in the form of `server:path`",
+          "type": "string"
+        },
+        "mountPoint": {
+          "description": "Required. Destination mount path. The NFS will be mounted for the user under \/mnt\/nfs\/",
+          "type": "string"
         }
       }
     },
@@ -27787,7 +27879,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "modelDeploymentMonitoringJob": {
-                      "description": "Required. ModelDeploymentMonitoring Job resource name. Format: `projects\/{project}\/locations\/{location}\/modelDeploymentMonitoringJobs\/{model_deployment_monitoring_job}",
+                      "description": "Required. ModelDeploymentMonitoring Job resource name. Format: `projects\/{project}\/locations\/{location}\/modelDeploymentMonitoringJobs\/{model_deployment_monitoring_job}`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/modelDeploymentMonitoringJobs\/[^\/]+$",
                       "location": "path",
                       "required": true,

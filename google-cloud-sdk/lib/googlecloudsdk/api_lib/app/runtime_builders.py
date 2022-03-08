@@ -324,13 +324,20 @@ class BuilderReference(object):
     build.options.substitutionOption = (
         build.options.SubstitutionOptionValueValuesEnum.ALLOW_LOOSE)
     for step in build.steps:
+      has_yaml_path = False
+      has_runtime_version = False
       for env in step.env:
         parts = env.split('=')
-        if len(parts) > 1 and parts[0] == 'GAE_APPLICATION_YAML_PATH':
-          break
-      else:
+        log.debug('Env var in build step: ' + str(parts))
+        if 'GAE_APPLICATION_YAML_PATH' in parts:
+          has_yaml_path = True
+        if 'GOOGLE_RUNTIME_VERSION' in parts:
+          has_runtime_version = True
+      if not has_yaml_path:
         step.env.append(
             'GAE_APPLICATION_YAML_PATH=${_GAE_APPLICATION_YAML_PATH}')
+      if not has_runtime_version and '_GOOGLE_RUNTIME_VERSION' in params:
+        step.env.append('GOOGLE_RUNTIME_VERSION=${_GOOGLE_RUNTIME_VERSION}')
     return build
 
   def WarnIfDeprecated(self):

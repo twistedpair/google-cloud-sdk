@@ -150,48 +150,8 @@ def CreateCLI(surfaces, translator=None):
   # Clone 'container/hub' surface into 'container/fleet'
   # for backward compatibility.
   loader.AddModule(
-      'container.hub.memberships',
-      os.path.join(pkg_root, 'surface', 'container', 'fleet', 'memberships'))
-  loader.AddModule(
-      'container.hub.anthosobservability',
-      os.path.join(pkg_root, 'surface', 'container', 'fleet',
-                   'anthosobservability'))
-  loader.AddModule(
-      'container.hub.build',
-      os.path.join(pkg_root, 'surface', 'container', 'fleet',
-                   'build'))
-  loader.AddModule(
-      'container.hub.cloudrun',
-      os.path.join(pkg_root, 'surface', 'container', 'fleet',
-                   'cloudrun'))
-  loader.AddModule(
-      'container.hub.deploy',
-      os.path.join(pkg_root, 'surface', 'container', 'fleet',
-                   'deploy'))
-  loader.AddModule(
-      'container.hub.ingress',
-      os.path.join(pkg_root, 'surface', 'container', 'fleet',
-                   'ingress'))
-  loader.AddModule(
-      'container.hub.mesh',
-      os.path.join(pkg_root, 'surface', 'container', 'fleet',
-                   'mesh'))
-  loader.AddModule(
-      'container.hub.identity_service',
-      os.path.join(pkg_root, 'surface', 'container', 'fleet',
-                   'identity_service'))
-  loader.AddModule(
-      'container.hub.multi_cluster_services',
-      os.path.join(pkg_root, 'surface', 'container', 'fleet',
-                   'multi_cluster_services'))
-  loader.AddModule(
-      'container.hub.service_directory',
-      os.path.join(pkg_root, 'surface', 'container', 'fleet',
-                   'service_directory'))
-  loader.AddModule(
-      'container.hub.config_management',
-      os.path.join(pkg_root, 'surface', 'container', 'fleet',
-                   'config_management'))
+      'container.hub',
+      os.path.join(pkg_root, 'surface', 'container', 'fleet'))
 
   # Check for updates on shutdown but not for any of the updater commands.
   # Skip update checks for 'gcloud version' command as it does that manually.

@@ -103,8 +103,14 @@
   "auth": {
     "oauth2": {
       "scopes": {
+        "https://www.googleapis.com/auth/cloud-identity.devices": {
+          "description": "Private Service: https:\/\/www.googleapis.com\/auth\/cloud-identity.devices"
+        },
         "https://www.googleapis.com/auth/cloud-identity.devices.lookup": {
           "description": "See your device details"
+        },
+        "https://www.googleapis.com/auth/cloud-identity.devices.readonly": {
+          "description": "Private Service: https:\/\/www.googleapis.com\/auth\/cloud-identity.devices.readonly"
         },
         "https://www.googleapis.com/auth/cloud-identity.groups": {
           "description": "See, change, create, and delete any of the Cloud Identity Groups that you can access, including the members of each group"
@@ -2457,6 +2463,9 @@
           "response": {
             "$ref": "Operation"
           },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-identity.devices"
+          ],
           "description": "Creates a device. Only company-owned device may be created. **Note**: This method is available only to customers who have one of the following SKUs: Enterprise Standard, Enterprise Plus, Enterprise for Education, and Cloud Identity Premium"
         },
         "get": {
@@ -2479,6 +2488,10 @@
           "response": {
             "$ref": "Device"
           },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-identity.devices",
+            "https://www.googleapis.com/auth/cloud-identity.devices.readonly"
+          ],
           "description": "Retrieves the specified device."
         },
         "list": {
@@ -2529,6 +2542,10 @@
           "response": {
             "$ref": "ListDevicesResponse"
           },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-identity.devices",
+            "https://www.googleapis.com/auth/cloud-identity.devices.readonly"
+          ],
           "description": "Lists\/Searches devices."
         },
         "delete": {
@@ -2551,6 +2568,9 @@
           "response": {
             "$ref": "Operation"
           },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-identity.devices"
+          ],
           "description": "Deletes the specified device."
         },
         "wipe": {
@@ -2576,6 +2596,9 @@
           "response": {
             "$ref": "Operation"
           },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-identity.devices"
+          ],
           "description": "Wipes all data on the specified device."
         },
         "cancelWipe": {
@@ -2601,6 +2624,9 @@
           "response": {
             "$ref": "Operation"
           },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-identity.devices"
+          ],
           "description": "Cancels an unfinished device wipe. This operation can be used to cancel device wipe in the gap between the wipe operation returning success and the device being wiped."
         }
       }
@@ -2628,6 +2654,10 @@
               "response": {
                 "$ref": "DeviceUser"
               },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-identity.devices",
+                "https://www.googleapis.com/auth/cloud-identity.devices.readonly"
+              ],
               "description": "Retrieves the specified DeviceUser"
             },
             "list": {
@@ -2671,6 +2701,10 @@
               "response": {
                 "$ref": "ListDeviceUsersResponse"
               },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-identity.devices",
+                "https://www.googleapis.com/auth/cloud-identity.devices.readonly"
+              ],
               "description": "Lists\/Searches DeviceUsers."
             },
             "delete": {
@@ -2693,6 +2727,9 @@
               "response": {
                 "$ref": "Operation"
               },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-identity.devices"
+              ],
               "description": "Deletes the specified DeviceUser. This also revokes the user's access to device data."
             },
             "lookup": {
@@ -2769,6 +2806,9 @@
               "response": {
                 "$ref": "Operation"
               },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-identity.devices"
+              ],
               "description": "Approves device to access user data."
             },
             "block": {
@@ -2794,6 +2834,9 @@
               "response": {
                 "$ref": "Operation"
               },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-identity.devices"
+              ],
               "description": "Blocks device from accessing user data"
             },
             "wipe": {
@@ -2819,6 +2862,9 @@
               "response": {
                 "$ref": "Operation"
               },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-identity.devices"
+              ],
               "description": "Wipes the user's account on a device."
             },
             "cancelWipe": {
@@ -2844,6 +2890,9 @@
               "response": {
                 "$ref": "Operation"
               },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-identity.devices"
+              ],
               "description": "Cancels an unfinished user account wipe. This operation can be used to cancel device wipe in the gap between the wipe operation returning success and the device being wiped."
             }
           }
@@ -2876,6 +2925,10 @@
                   "response": {
                     "$ref": "ClientState"
                   },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-identity.devices",
+                    "https://www.googleapis.com/auth/cloud-identity.devices.readonly"
+                  ],
                   "description": "Gets the client state for the device user"
                 },
                 "patch": {
@@ -2912,6 +2965,9 @@
                   "response": {
                     "$ref": "Operation"
                   },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-identity.devices"
+                  ],
                   "description": "Updates the client state for the device user **Note**: This method is available only to customers who have one of the following SKUs: Enterprise Standard, Enterprise Plus, Enterprise for Education, and Cloud Identity Premium"
                 }
               }

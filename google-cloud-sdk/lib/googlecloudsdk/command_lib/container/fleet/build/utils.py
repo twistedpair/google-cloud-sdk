@@ -21,7 +21,7 @@ from __future__ import unicode_literals
 import collections
 import re
 
-from googlecloudsdk.api_lib.container.hub import client
+from googlecloudsdk.api_lib.container.fleet import client
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import exceptions

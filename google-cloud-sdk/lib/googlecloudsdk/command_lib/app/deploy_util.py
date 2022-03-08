@@ -307,8 +307,7 @@ class ServiceDeployer(object):
             new_version.project, service, upload_dir, source_files,
             new_version.id, code_bucket_ref, gcr_domain,
             self.deploy_options.runtime_builder_strategy,
-            self.deploy_options.parallel_build,
-            flex_image_build_option ==
+            self.deploy_options.parallel_build, flex_image_build_option ==
             FlexImageBuildOptions.BUILDPACK_ON_CLIENT)
 
     return build
@@ -427,8 +426,8 @@ class ServiceDeployer(object):
         image on client or build the image on client using the buildpacks.
       ignore_file: custom ignore_file name. Override .gcloudignore file to
         customize files to be skipped.
-      service_account: identity this version runs as. If not set, Admin API
-        will fallback to use the App Engine default appspot SA.
+      service_account: identity this version runs as. If not set, Admin API will
+        fallback to use the App Engine default appspot SA.
     """
     log.status.Print('Beginning deployment of service [{service}]...'.format(
         service=new_version.service))
@@ -538,8 +537,8 @@ def ArgsDeploy(parser):
       '--cache',
       action='store_true',
       default=True,
-      help='Skip caching mechanisms involved in the deployment process, in '
-      'particular do not use cached dependencies during the build step.')
+      help='Enable caching mechanisms involved in the deployment process, '
+      'particularly in the build step.')
   staging_group = parser.add_mutually_exclusive_group(hidden=True)
   staging_group.add_argument(
       '--skip-staging',

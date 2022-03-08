@@ -303,7 +303,7 @@ class PrivatecaV1(base_api.BaseApiClient):
         method_id='privateca.projects.locations.caPools.certificateAuthorities.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['ignoreActiveCertificates', 'requestId'],
+        query_params=['ignoreActiveCertificates', 'requestId', 'skipGracePeriod'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='PrivatecaProjectsLocationsCaPoolsCertificateAuthoritiesDeleteRequest',

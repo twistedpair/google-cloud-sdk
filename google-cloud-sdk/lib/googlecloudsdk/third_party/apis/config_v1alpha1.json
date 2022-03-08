@@ -733,6 +733,10 @@
         "pipelineOnly": {
           "description": "Optional. If set, then only the Pipeline will run. The rendered content will still be uploaded to Cloud Storage. No dry-run will occur, and no preview diff artifacts will be generated.",
           "type": "boolean"
+        },
+        "managedPipelineOnly": {
+          "description": "Optional. If set, then only the Pipeline will run. This is functionally identical to `pipeline_only`, but only supports Pipelines consisting of Google-authored Kpt functions. Using the managed pipeline is typically significantly lower latency than `pipeline_only`.",
+          "type": "boolean"
         }
       }
     },

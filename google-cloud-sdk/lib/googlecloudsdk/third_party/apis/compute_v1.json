@@ -4,7 +4,7 @@
   "id": "compute:v1",
   "name": "compute",
   "version": "v1",
-  "revision": "20220211",
+  "revision": "20220228",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -1447,24 +1447,6 @@
         "location": {
           "description": "Optional. String indicating the location of the expression for error reporting, e.g. a file name and a position in the file.",
           "type": "string"
-        }
-      }
-    },
-    "AuditConfig": {
-      "id": "AuditConfig",
-      "description": "Specifies the audit configuration for a service. The configuration determines which permission types are logged, and what identities, if any, are exempted from logging. An AuditConfig must have one or more AuditLogConfigs. If there are AuditConfigs for both `allServices` and a specific service, the union of the two AuditConfigs is used for that service: the log_types specified in each AuditConfig are enabled, and the exempted_members in each AuditLogConfig are exempted. Example Policy with multiple AuditConfigs: { \"audit_configs\": [ { \"service\": \"allServices\", \"audit_log_configs\": [ { \"log_type\": \"DATA_READ\", \"exempted_members\": [ \"user:jose@example.com\" ] }, { \"log_type\": \"DATA_WRITE\" }, { \"log_type\": \"ADMIN_READ\" } ] }, { \"service\": \"sampleservice.googleapis.com\", \"audit_log_configs\": [ { \"log_type\": \"DATA_READ\" }, { \"log_type\": \"DATA_WRITE\", \"exempted_members\": [ \"user:aliya@example.com\" ] } ] } ] } For sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ logging. It also exempts jose@example.com from DATA_READ logging, and aliya@example.com from DATA_WRITE logging.",
-      "type": "object",
-      "properties": {
-        "service": {
-          "description": "Specifies a service that will be enabled for audit logging. For example, `storage.googleapis.com`, `cloudsql.googleapis.com`. `allServices` is a special value that covers all services.",
-          "type": "string"
-        },
-        "auditLogConfigs": {
-          "description": "The configuration for logging of each type of permission.",
-          "type": "array",
-          "items": {
-            "$ref": "AuditLogConfig"
-          }
         }
       }
     },
@@ -5122,6 +5104,11 @@
         },
         "inUseCount": {
           "description": "[Output Only] Indicates how many instances are in use.",
+          "type": "string",
+          "format": "int64"
+        },
+        "assuredCount": {
+          "description": "[Output Only] Indicates how many instances are actually usable currently.",
           "type": "string",
           "format": "int64"
         }
@@ -15953,18 +15940,18 @@
           "type": "string"
         },
         "candidateIpv6Subnets": {
-          "description": "Up to 16 candidate prefixes that control the allocation of cloudRouterIpv6Address and customerRouterIpv6Address for this attachment. Each prefix must be in the Global Unique Address (GUA) space. It is highly recommended that it be in a range owned by the requestor. A GUA in a range owned by Google will cause the request to fail. Google will select an available prefix from the supplied candidates or fail the request. If not supplied, a \/125 from a Google-owned GUA block will be selected.",
+          "description": "This field is not available.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "cloudRouterIpv6InterfaceId": {
-          "description": "If supplied, the interface id (index within the subnet) to be used for the cloud router address. The id must be in the range of 1 to 6. If a subnet mask is supplied, it must be \/125, and the subnet should either be 0 or match the selected subnet.",
+          "description": "This field is not available.",
           "type": "string"
         },
         "customerRouterIpv6InterfaceId": {
-          "description": "If supplied, the interface id (index within the subnet) to be used for the customer router address. The id must be in the range of 1 to 6. If a subnet mask is supplied, it must be \/125, and the subnet should either be 0 or match the selected subnet.",
+          "description": "This field is not available.",
           "type": "string"
         },
         "kind": {
@@ -17444,7 +17431,7 @@
           "$ref": "CustomerEncryptionKey"
         },
         "guestFlush": {
-          "description": "[Input Only] Whether to attempt an application consistent machine image by informing the OS to prepare for the snapshot process. Currently only supported on Windows instances using the Volume Shadow Copy Service (VSS).",
+          "description": "[Input Only] Whether to attempt an application consistent machine image by informing the OS to prepare for the snapshot process.",
           "type": "boolean"
         },
         "sourceDiskEncryptionKeys": {
@@ -22221,6 +22208,7 @@
             "",
             "",
             "",
+            "",
             "The total number of snapshots allowed for a single project.",
             "",
             "",
@@ -22276,6 +22264,7 @@
             "CPUS_ALL_REGIONS",
             "DISKS_TOTAL_GB",
             "E2_CPUS",
+            "EXTERNAL_MANAGED_FORWARDING_RULES",
             "EXTERNAL_NETWORK_LB_FORWARDING_RULES",
             "EXTERNAL_PROTOCOL_FORWARDING_RULES",
             "EXTERNAL_VPN_GATEWAYS",
@@ -24845,7 +24834,7 @@
       "type": "object",
       "properties": {
         "sessionInitializationMode": {
-          "description": "The BFD session initialization mode for this BGP peer. If set to ACTIVE, the Cloud Router will initiate the BFD session for this BGP peer. If set to PASSIVE, the Cloud Router will wait for the peer router to initiate the BFD session for this BGP peer. If set to DISABLED, BFD is disabled for this BGP peer. The default is PASSIVE.",
+          "description": "The BFD session initialization mode for this BGP peer. If set to ACTIVE, the Cloud Router will initiate the BFD session for this BGP peer. If set to PASSIVE, the Cloud Router will wait for the peer router to initiate the BFD session for this BGP peer. If set to DISABLED, BFD is disabled for this BGP peer. The default is DISABLED.",
           "type": "string",
           "enumDescriptions": [
             "",
@@ -33277,6 +33266,31 @@
           "type": "string"
         }
       }
+    },
+    "AuditConfig": {
+      "id": "AuditConfig",
+      "description": "Specifies the audit configuration for a service. The configuration determines which permission types are logged, and what identities, if any, are exempted from logging. An AuditConfig must have one or more AuditLogConfigs. If there are AuditConfigs for both `allServices` and a specific service, the union of the two AuditConfigs is used for that service: the log_types specified in each AuditConfig are enabled, and the exempted_members in each AuditLogConfig are exempted. Example Policy with multiple AuditConfigs: { \"audit_configs\": [ { \"service\": \"allServices\", \"audit_log_configs\": [ { \"log_type\": \"DATA_READ\", \"exempted_members\": [ \"user:jose@example.com\" ] }, { \"log_type\": \"DATA_WRITE\" }, { \"log_type\": \"ADMIN_READ\" } ] }, { \"service\": \"sampleservice.googleapis.com\", \"audit_log_configs\": [ { \"log_type\": \"DATA_READ\" }, { \"log_type\": \"DATA_WRITE\", \"exempted_members\": [ \"user:aliya@example.com\" ] } ] } ] } For sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ logging. It also exempts jose@example.com from DATA_READ logging, and aliya@example.com from DATA_WRITE logging.",
+      "type": "object",
+      "properties": {
+        "exemptedMembers": {
+          "description": "This is deprecated and has no effect. Do not use.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "auditLogConfigs": {
+          "description": "The configuration for logging of each type of permission.",
+          "type": "array",
+          "items": {
+            "$ref": "AuditLogConfig"
+          }
+        },
+        "service": {
+          "description": "Specifies a service that will be enabled for audit logging. For example, `storage.googleapis.com`, `cloudsql.googleapis.com`. `allServices` is a special value that covers all services.",
+          "type": "string"
+        }
+      }
     }
   },
   "resources": {
@@ -37709,7 +37723,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "Performs a reset on the instance. This is a hard reset the VM does not do a graceful shutdown. For more information, see Resetting an instance."
+          "description": "Performs a reset on the instance. This is a hard reset. The VM does not do a graceful shutdown. For more information, see Resetting an instance."
         },
         "simulateMaintenanceEvent": {
           "id": "compute.instances.simulateMaintenanceEvent",
@@ -46588,7 +46602,7 @@
               "type": "string"
             },
             "guestFlush": {
-              "description": "[Input Only] Whether to attempt an application consistent snapshot by informing the OS to prepare for the snapshot process. Currently only supported on Windows instances using the Volume Shadow Copy Service (VSS).",
+              "description": "[Input Only] Whether to attempt an application consistent snapshot by informing the OS to prepare for the snapshot process.",
               "location": "query",
               "type": "boolean"
             },
@@ -60353,6 +60367,56 @@
             "https://www.googleapis.com/auth/compute"
           ],
           "description": "Deletes the specified TargetHttpsProxy resource."
+        },
+        "patch": {
+          "id": "compute.regionTargetHttpsProxies.patch",
+          "path": "projects/{project}/regions/{region}/targetHttpsProxies/{targetHttpsProxy}",
+          "flatPath": "projects/{project}/regions/{region}/targetHttpsProxies/{targetHttpsProxy}",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "project": {
+              "description": "Project ID for this request.",
+              "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "region": {
+              "description": "Name of the region for this request.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "requestId": {
+              "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported ( 00000000-0000-0000-0000-000000000000).",
+              "location": "query",
+              "type": "string"
+            },
+            "targetHttpsProxy": {
+              "description": "Name of the TargetHttpsProxy resource to patch.",
+              "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project",
+            "region",
+            "targetHttpsProxy"
+          ],
+          "request": {
+            "$ref": "TargetHttpsProxy"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/compute"
+          ],
+          "description": "Patches the specified regional TargetHttpsProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules."
         },
         "setUrlMap": {
           "id": "compute.regionTargetHttpsProxies.setUrlMap",

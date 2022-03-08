@@ -14,21 +14,25 @@
 # limitations under the License.
 #
 from collections import OrderedDict
-from distutils import util
 import os
 import re
-from typing import Callable, Dict, Optional, Sequence, Tuple, Type, Union
+from typing import Dict, Optional, Sequence, Tuple, Type, Union
 import pkg_resources
 
-from google.api_core import client_options as client_options_lib  # type: ignore
-from google.api_core import exceptions as core_exceptions         # type: ignore
-from google.api_core import gapic_v1                              # type: ignore
-from google.api_core import retry as retries                      # type: ignore
+from google.api_core import client_options as client_options_lib
+from google.api_core import exceptions as core_exceptions
+from google.api_core import gapic_v1
+from google.api_core import retry as retries
 from google.auth import credentials as ga_credentials             # type: ignore
 from google.auth.transport import mtls                            # type: ignore
 from google.auth.transport.grpc import SslCredentials             # type: ignore
 from google.auth.exceptions import MutualTLSChannelError          # type: ignore
 from google.oauth2 import service_account                         # type: ignore
+
+try:
+    OptionalRetry = Union[retries.Retry, gapic_v1.method._MethodDefault]
+except AttributeError:  # pragma: NO COVER
+    OptionalRetry = Union[retries.Retry, object]  # type: ignore
 
 from google.api import distribution_pb2  # type: ignore
 from google.api import metric_pb2  # type: ignore
@@ -38,6 +42,7 @@ from googlecloudsdk.third_party.gapic_clients.logging_v2.types import logging_me
 from .transports.base import MetricsServiceV2Transport, DEFAULT_CLIENT_INFO
 from .transports.grpc import MetricsServiceV2GrpcTransport
 from .transports.grpc_asyncio import MetricsServiceV2GrpcAsyncIOTransport
+from .transports.rest import MetricsServiceV2RestTransport
 
 
 class MetricsServiceV2ClientMeta(type):
@@ -50,6 +55,7 @@ class MetricsServiceV2ClientMeta(type):
     _transport_registry = OrderedDict()  # type: Dict[str, Type[MetricsServiceV2Transport]]
     _transport_registry["grpc"] = MetricsServiceV2GrpcTransport
     _transport_registry["grpc_asyncio"] = MetricsServiceV2GrpcAsyncIOTransport
+    _transport_registry["rest"] = MetricsServiceV2RestTransport
 
     def get_transport_class(cls,
             label: str = None,
@@ -224,6 +230,65 @@ class MetricsServiceV2Client(metaclass=MetricsServiceV2ClientMeta):
         m = re.match(r"^projects/(?P<project>.+?)/locations/(?P<location>.+?)$", path)
         return m.groupdict() if m else {}
 
+    @classmethod
+    def get_mtls_endpoint_and_cert_source(cls, client_options: Optional[client_options_lib.ClientOptions] = None):
+        """Return the API endpoint and client cert source for mutual TLS.
+
+        The client cert source is determined in the following order:
+        (1) if `GOOGLE_API_USE_CLIENT_CERTIFICATE` environment variable is not "true", the
+        client cert source is None.
+        (2) if `client_options.client_cert_source` is provided, use the provided one; if the
+        default client cert source exists, use the default one; otherwise the client cert
+        source is None.
+
+        The API endpoint is determined in the following order:
+        (1) if `client_options.api_endpoint` if provided, use the provided one.
+        (2) if `GOOGLE_API_USE_CLIENT_CERTIFICATE` environment variable is "always", use the
+        default mTLS endpoint; if the environment variabel is "never", use the default API
+        endpoint; otherwise if client cert source exists, use the default mTLS endpoint, otherwise
+        use the default API endpoint.
+
+        More details can be found at https://google.aip.dev/auth/4114.
+
+        Args:
+            client_options (google.api_core.client_options.ClientOptions): Custom options for the
+                client. Only the `api_endpoint` and `client_cert_source` properties may be used
+                in this method.
+
+        Returns:
+            Tuple[str, Callable[[], Tuple[bytes, bytes]]]: returns the API endpoint and the
+                client cert source to use.
+
+        Raises:
+            google.auth.exceptions.MutualTLSChannelError: If any errors happen.
+        """
+        if client_options is None:
+            client_options = client_options_lib.ClientOptions()
+        use_client_cert = os.getenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
+        use_mtls_endpoint = os.getenv("GOOGLE_API_USE_MTLS_ENDPOINT", "auto")
+        if use_client_cert not in ("true", "false"):
+            raise ValueError("Environment variable `GOOGLE_API_USE_CLIENT_CERTIFICATE` must be either `true` or `false`")
+        if use_mtls_endpoint not in ("auto", "never", "always"):
+            raise MutualTLSChannelError("Environment variable `GOOGLE_API_USE_MTLS_ENDPOINT` must be `never`, `auto` or `always`")
+
+        # Figure out the client cert source to use.
+        client_cert_source = None
+        if use_client_cert == "true":
+            if client_options.client_cert_source:
+                client_cert_source = client_options.client_cert_source
+            elif mtls.has_default_client_cert_source():
+                client_cert_source = mtls.default_client_cert_source()
+
+        # Figure out which api endpoint to use.
+        if client_options.api_endpoint is not None:
+            api_endpoint = client_options.api_endpoint
+        elif use_mtls_endpoint == "always" or (use_mtls_endpoint == "auto" and client_cert_source):
+            api_endpoint = cls.DEFAULT_MTLS_ENDPOINT
+        else:
+            api_endpoint = cls.DEFAULT_ENDPOINT
+
+        return api_endpoint, client_cert_source
+
     def __init__(self, *,
             credentials: Optional[ga_credentials.Credentials] = None,
             transport: Union[str, MetricsServiceV2Transport, None] = None,
@@ -272,48 +337,18 @@ class MetricsServiceV2Client(metaclass=MetricsServiceV2ClientMeta):
         if client_options is None:
             client_options = client_options_lib.ClientOptions()
 
-        # Create SSL credentials for mutual TLS if needed.
-        use_client_cert = bool(util.strtobool(os.getenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")))
+        api_endpoint, client_cert_source_func = self.get_mtls_endpoint_and_cert_source(client_options)
 
-        client_cert_source_func = None
-        is_mtls = False
-        if use_client_cert:
-            if client_options.client_cert_source:
-                is_mtls = True
-                client_cert_source_func = client_options.client_cert_source
-            else:
-                is_mtls = mtls.has_default_client_cert_source()
-                if is_mtls:
-                    client_cert_source_func = mtls.default_client_cert_source()
-                else:
-                    client_cert_source_func = None
-
-        # Figure out which api endpoint to use.
-        if client_options.api_endpoint is not None:
-            api_endpoint = client_options.api_endpoint
-        else:
-            use_mtls_env = os.getenv("GOOGLE_API_USE_MTLS_ENDPOINT", "auto")
-            if use_mtls_env == "never":
-                api_endpoint = self.DEFAULT_ENDPOINT
-            elif use_mtls_env == "always":
-                api_endpoint = self.DEFAULT_MTLS_ENDPOINT
-            elif use_mtls_env == "auto":
-                if is_mtls:
-                    api_endpoint = self.DEFAULT_MTLS_ENDPOINT
-                else:
-                    api_endpoint = self.DEFAULT_ENDPOINT
-            else:
-                raise MutualTLSChannelError(
-                    "Unsupported GOOGLE_API_USE_MTLS_ENDPOINT value. Accepted "
-                    "values: never, auto, always"
-                )
+        api_key_value = getattr(client_options, "api_key", None)
+        if api_key_value and credentials:
+            raise ValueError("client_options.api_key and credentials are mutually exclusive")
 
         # Save or instantiate the transport.
         # Ordinarily, we provide the transport, but allowing a custom transport
         # instance provides an extensibility point for unusual situations.
         if isinstance(transport, MetricsServiceV2Transport):
             # transport is a MetricsServiceV2Transport instance.
-            if credentials or client_options.credentials_file:
+            if credentials or client_options.credentials_file or api_key_value:
                 raise ValueError("When providing a transport instance, "
                                  "provide its credentials directly.")
             if client_options.scopes:
@@ -323,6 +358,11 @@ class MetricsServiceV2Client(metaclass=MetricsServiceV2ClientMeta):
                 )
             self._transport = transport
         else:
+            import google.auth._default  # type: ignore
+
+            if api_key_value and hasattr(google.auth._default, "get_api_key_credentials"):
+                credentials = google.auth._default.get_api_key_credentials(api_key_value)
+
             Transport = type(self).get_transport_class(transport)
             self._transport = Transport(
                 credentials=credentials,
@@ -332,20 +372,41 @@ class MetricsServiceV2Client(metaclass=MetricsServiceV2ClientMeta):
                 client_cert_source_for_mtls=client_cert_source_func,
                 quota_project_id=client_options.quota_project_id,
                 client_info=client_info,
+                always_use_jwt_access=True,
             )
 
     def list_log_metrics(self,
-            request: logging_metrics.ListLogMetricsRequest = None,
+            request: Union[logging_metrics.ListLogMetricsRequest, dict] = None,
             *,
             parent: str = None,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> pagers.ListLogMetricsPager:
         r"""Lists logs-based metrics.
 
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_list_log_metrics():
+                # Create a client
+                client = logging_v2.MetricsServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.ListLogMetricsRequest(
+                    parent="parent_value",
+                )
+
+                # Make the request
+                page_result = client.list_log_metrics(request=request)
+
+                # Handle the response
+                for response in page_result:
+                    print(response)
+
         Args:
-            request (googlecloudsdk.third_party.gapic_clients.logging_v2.types.ListLogMetricsRequest):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.ListLogMetricsRequest, dict]):
                 The request object. The parameters to ListLogMetrics.
             parent (str):
                 Required. The name of the project containing the
@@ -373,7 +434,7 @@ class MetricsServiceV2Client(metaclass=MetricsServiceV2ClientMeta):
 
         """
         # Create or coerce a protobuf request object.
-        # Sanity check: If we got a request object, we should *not* have
+        # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
         has_flattened_params = any([parent])
         if request is not None and has_flattened_params:
@@ -395,7 +456,7 @@ class MetricsServiceV2Client(metaclass=MetricsServiceV2ClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.list_log_metrics]
 
-        # Certain fields should be provided within the metadata header;
+         # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -424,17 +485,36 @@ class MetricsServiceV2Client(metaclass=MetricsServiceV2ClientMeta):
         return response
 
     def get_log_metric(self,
-            request: logging_metrics.GetLogMetricRequest = None,
+            request: Union[logging_metrics.GetLogMetricRequest, dict] = None,
             *,
             metric_name: str = None,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_metrics.LogMetric:
         r"""Gets a logs-based metric.
 
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_get_log_metric():
+                # Create a client
+                client = logging_v2.MetricsServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.GetLogMetricRequest(
+                    metric_name="metric_name_value",
+                )
+
+                # Make the request
+                response = client.get_log_metric(request=request)
+
+                # Handle the response
+                print(response)
+
         Args:
-            request (googlecloudsdk.third_party.gapic_clients.logging_v2.types.GetLogMetricRequest):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.GetLogMetricRequest, dict]):
                 The request object. The parameters to GetLogMetric.
             metric_name (str):
                 Required. The resource name of the desired metric:
@@ -468,7 +548,7 @@ class MetricsServiceV2Client(metaclass=MetricsServiceV2ClientMeta):
 
         """
         # Create or coerce a protobuf request object.
-        # Sanity check: If we got a request object, we should *not* have
+        # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
         has_flattened_params = any([metric_name])
         if request is not None and has_flattened_params:
@@ -490,7 +570,7 @@ class MetricsServiceV2Client(metaclass=MetricsServiceV2ClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.get_log_metric]
 
-        # Certain fields should be provided within the metadata header;
+         # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -510,18 +590,42 @@ class MetricsServiceV2Client(metaclass=MetricsServiceV2ClientMeta):
         return response
 
     def create_log_metric(self,
-            request: logging_metrics.CreateLogMetricRequest = None,
+            request: Union[logging_metrics.CreateLogMetricRequest, dict] = None,
             *,
             parent: str = None,
             metric: logging_metrics.LogMetric = None,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_metrics.LogMetric:
         r"""Creates a logs-based metric.
 
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_create_log_metric():
+                # Create a client
+                client = logging_v2.MetricsServiceV2Client()
+
+                # Initialize request argument(s)
+                metric = logging_v2.LogMetric()
+                metric.name = "name_value"
+                metric.filter = "filter_value"
+
+                request = logging_v2.CreateLogMetricRequest(
+                    parent="parent_value",
+                    metric=metric,
+                )
+
+                # Make the request
+                response = client.create_log_metric(request=request)
+
+                # Handle the response
+                print(response)
+
         Args:
-            request (googlecloudsdk.third_party.gapic_clients.logging_v2.types.CreateLogMetricRequest):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.CreateLogMetricRequest, dict]):
                 The request object. The parameters to CreateLogMetric.
             parent (str):
                 Required. The resource name of the project in which to
@@ -566,7 +670,7 @@ class MetricsServiceV2Client(metaclass=MetricsServiceV2ClientMeta):
 
         """
         # Create or coerce a protobuf request object.
-        # Sanity check: If we got a request object, we should *not* have
+        # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
         has_flattened_params = any([parent, metric])
         if request is not None and has_flattened_params:
@@ -590,7 +694,7 @@ class MetricsServiceV2Client(metaclass=MetricsServiceV2ClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.create_log_metric]
 
-        # Certain fields should be provided within the metadata header;
+         # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -610,18 +714,42 @@ class MetricsServiceV2Client(metaclass=MetricsServiceV2ClientMeta):
         return response
 
     def update_log_metric(self,
-            request: logging_metrics.UpdateLogMetricRequest = None,
+            request: Union[logging_metrics.UpdateLogMetricRequest, dict] = None,
             *,
             metric_name: str = None,
             metric: logging_metrics.LogMetric = None,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_metrics.LogMetric:
         r"""Creates or updates a logs-based metric.
 
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_update_log_metric():
+                # Create a client
+                client = logging_v2.MetricsServiceV2Client()
+
+                # Initialize request argument(s)
+                metric = logging_v2.LogMetric()
+                metric.name = "name_value"
+                metric.filter = "filter_value"
+
+                request = logging_v2.UpdateLogMetricRequest(
+                    metric_name="metric_name_value",
+                    metric=metric,
+                )
+
+                # Make the request
+                response = client.update_log_metric(request=request)
+
+                # Handle the response
+                print(response)
+
         Args:
-            request (googlecloudsdk.third_party.gapic_clients.logging_v2.types.UpdateLogMetricRequest):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.UpdateLogMetricRequest, dict]):
                 The request object. The parameters to UpdateLogMetric.
             metric_name (str):
                 Required. The resource name of the metric to update:
@@ -665,7 +793,7 @@ class MetricsServiceV2Client(metaclass=MetricsServiceV2ClientMeta):
 
         """
         # Create or coerce a protobuf request object.
-        # Sanity check: If we got a request object, we should *not* have
+        # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
         has_flattened_params = any([metric_name, metric])
         if request is not None and has_flattened_params:
@@ -689,7 +817,7 @@ class MetricsServiceV2Client(metaclass=MetricsServiceV2ClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.update_log_metric]
 
-        # Certain fields should be provided within the metadata header;
+         # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -709,17 +837,33 @@ class MetricsServiceV2Client(metaclass=MetricsServiceV2ClientMeta):
         return response
 
     def delete_log_metric(self,
-            request: logging_metrics.DeleteLogMetricRequest = None,
+            request: Union[logging_metrics.DeleteLogMetricRequest, dict] = None,
             *,
             metric_name: str = None,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> None:
         r"""Deletes a logs-based metric.
 
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_delete_log_metric():
+                # Create a client
+                client = logging_v2.MetricsServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.DeleteLogMetricRequest(
+                    metric_name="metric_name_value",
+                )
+
+                # Make the request
+                client.delete_log_metric(request=request)
+
         Args:
-            request (googlecloudsdk.third_party.gapic_clients.logging_v2.types.DeleteLogMetricRequest):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.DeleteLogMetricRequest, dict]):
                 The request object. The parameters to DeleteLogMetric.
             metric_name (str):
                 Required. The resource name of the metric to delete:
@@ -738,7 +882,7 @@ class MetricsServiceV2Client(metaclass=MetricsServiceV2ClientMeta):
                 sent along with the request as metadata.
         """
         # Create or coerce a protobuf request object.
-        # Sanity check: If we got a request object, we should *not* have
+        # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
         has_flattened_params = any([metric_name])
         if request is not None and has_flattened_params:
@@ -760,7 +904,7 @@ class MetricsServiceV2Client(metaclass=MetricsServiceV2ClientMeta):
         # and friendly error handling.
         rpc = self._transport._wrapped_methods[self._transport.delete_log_metric]
 
-        # Certain fields should be provided within the metadata header;
+         # Certain fields should be provided within the metadata header;
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
@@ -776,7 +920,18 @@ class MetricsServiceV2Client(metaclass=MetricsServiceV2ClientMeta):
             metadata=metadata,
         )
 
+    def __enter__(self):
+        return self
 
+    def __exit__(self, type, value, traceback):
+        """Releases underlying transport's resources.
+
+        .. warning::
+            ONLY use as a context manager if the transport is NOT shared
+            with other clients! Exiting the with block will CLOSE the transport
+            and may cause errors in other clients!
+        """
+        self.transport.close()
 
 
 

@@ -484,6 +484,36 @@
         "allTrafficOnLatestRevision": {
           "description": "Whether 100% of traffic is routed to the latest revision. On CreateFunction and UpdateFunction, when set to true, the revision being deployed will serve 100% of traffic, ignoring any traffic split settings, if any. On GetFunction, true will be returned if the latest revision is serving 100% of traffic.",
           "type": "boolean"
+        },
+        "secretEnvironmentVariables": {
+          "description": "Secret environment variables configuration.",
+          "type": "array",
+          "items": {
+            "$ref": "SecretEnvVar"
+          }
+        }
+      }
+    },
+    "SecretEnvVar": {
+      "id": "SecretEnvVar",
+      "description": "Configuration for a secret environment variable. It has the information necessary to fetch the secret value from secret manager and expose it as an environment variable.",
+      "type": "object",
+      "properties": {
+        "key": {
+          "description": "Name of the environment variable.",
+          "type": "string"
+        },
+        "projectId": {
+          "description": "Project identifier (preferrably project number but can also be the project ID) of the project that contains the secret. If not set, it will be populated with the function's project assuming that the secret exists in the same project as of the function.",
+          "type": "string"
+        },
+        "secret": {
+          "description": "Name of the secret in secret manager (not the full resource name).",
+          "type": "string"
+        },
+        "version": {
+          "description": "Version of the secret (version number or the string 'latest'). It is recommended to use a numeric version for secret environment variables as any updates to the secret value is not reflected until new instances start.",
+          "type": "string"
         }
       }
     },

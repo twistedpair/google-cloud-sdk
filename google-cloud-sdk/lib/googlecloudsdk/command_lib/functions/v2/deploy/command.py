@@ -27,6 +27,7 @@ from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import http_wrapper
 from apitools.base.py import transfer
 from googlecloudsdk.api_lib.functions.v1 import util as api_util_v1
+from googlecloudsdk.api_lib.functions.v2 import client as api_client_v2
 from googlecloudsdk.api_lib.functions.v2 import exceptions
 from googlecloudsdk.api_lib.functions.v2 import util as api_util
 from googlecloudsdk.api_lib.run import global_methods
@@ -936,8 +937,20 @@ def Run(args, release_track):
 
   is_new_function = existing_function is None
   if is_new_function and not args.runtime:
-    raise calliope_exceptions.RequiredArgumentException(
-        'runtime', 'Flag `--runtime` is required for new functions.')
+    if not console_io.CanPrompt():
+      raise calliope_exceptions.RequiredArgumentException(
+          'runtime', 'Flag `--runtime` is required for new functions.')
+    gcf_client = api_client_v2.FunctionsClient(release_track=release_track)
+    runtimes = [
+        r.name
+        for r in gcf_client.ListRuntimes(function_ref.locationsId).runtimes
+    ]
+    idx = console_io.PromptChoice(
+        runtimes, message='Please select a runtime:\n')
+    args.runtime = runtimes[idx]
+    log.status.Print(
+        'To skip this prompt, add `--runtime={}` to your command next time.\n'
+        .format(args.runtime))
 
   if existing_function and existing_function.serviceConfig:
     has_all_traffic_on_latest_revision = existing_function.serviceConfig.allTrafficOnLatestRevision

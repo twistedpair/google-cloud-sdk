@@ -484,6 +484,10 @@
         "reservedIpRange": {
           "description": "Optional. Reserved IP Range name is used for VPC Peering. The subnetwork allocation will use the range *name* if it's assigned. Example: managed-notebooks-range-c PEERING_RANGE_NAME_3=managed-notebooks-range-c gcloud compute addresses create $PEERING_RANGE_NAME_3 \\ --global \\ --prefix-length=24 \\ --description=\"Google Cloud Managed Notebooks Range 24 c\" \\ --network=$NETWORK \\ --addresses=192.168.0.0 \\ --purpose=VPC_PEERING Field value will be: `managed-notebooks-range-c`",
           "type": "string"
+        },
+        "bootImage": {
+          "description": "Optional. Boot image metadata used for runtime upgradeability.",
+          "$ref": "BootImage"
         }
       }
     },
@@ -699,6 +703,13 @@
         }
       }
     },
+    "BootImage": {
+      "id": "BootImage",
+      "description": "Definition of the boot image used by the Runtime. Used to facilitate runtime upgradeability.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "RuntimeAccessConfig": {
       "id": "RuntimeAccessConfig",
       "description": "Specifies the login configuration for Runtime",
@@ -752,7 +763,7 @@
           "format": "int32"
         },
         "installGpuDriver": {
-          "description": "Install Nvidia Driver automatically.",
+          "description": "Install Nvidia Driver automatically. Default: True",
           "type": "boolean"
         },
         "customGpuDriverPath": {
@@ -797,6 +808,10 @@
       "description": "Request for starting a Managed Notebook Runtime.",
       "type": "object",
       "properties": {
+        "requestId": {
+          "description": "Idempotent request UUID.",
+          "type": "string"
+        }
       }
     },
     "StopRuntimeRequest": {
@@ -804,6 +819,10 @@
       "description": "Request for stopping a Managed Notebook Runtime.",
       "type": "object",
       "properties": {
+        "requestId": {
+          "description": "Idempotent request UUID.",
+          "type": "string"
+        }
       }
     },
     "SwitchRuntimeRequest": {
@@ -818,6 +837,10 @@
         "acceleratorConfig": {
           "description": "accelerator config.",
           "$ref": "RuntimeAcceleratorConfig"
+        },
+        "requestId": {
+          "description": "Idempotent request UUID.",
+          "type": "string"
         }
       }
     },
@@ -826,6 +849,10 @@
       "description": "Request for resetting a Managed Notebook Runtime.",
       "type": "object",
       "properties": {
+        "requestId": {
+          "description": "Idempotent request UUID.",
+          "type": "string"
+        }
       }
     },
     "ReportRuntimeEventRequest": {
@@ -860,13 +887,15 @@
             "Event is not specified.",
             "The instance \/ runtime is idle",
             "The instance \/ runtime is available. This event indicates that instance \/ runtime underlying compute is operational.",
-            "The instance \/ runtime health is available. This event indicates that instance \/ runtime health information."
+            "The instance \/ runtime health is available. This event indicates that instance \/ runtime health information.",
+            "The instance \/ runtime is available. This event allows instance \/ runtime to send Host maintenance information to Control Plane. https:\/\/cloud.google.com\/compute\/docs\/gpus\/gpu-host-maintenance"
           ],
           "enum": [
             "EVENT_TYPE_UNSPECIFIED",
             "IDLE",
             "HEARTBEAT",
-            "HEALTH"
+            "HEALTH",
+            "MAINTENANCE"
           ]
         },
         "details": {
@@ -1139,6 +1168,10 @@
           "description": "Output only. Email address of entity that sent original CreateInstance request.",
           "readOnly": true,
           "type": "string"
+        },
+        "canIpForward": {
+          "description": "Optional. Flag to enable ip forwarding or not, default false\/off. https:\/\/cloud.google.com\/vpc\/docs\/using-routes#canipforward",
+          "type": "boolean"
         },
         "createTime": {
           "description": "Output only. Instance creation time.",
@@ -2581,6 +2614,11 @@
                       "description": "Required. User-defined unique ID of this Runtime.",
                       "location": "query",
                       "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Idempotent request UUID.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -2608,6 +2646,11 @@
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/runtimes\/[^\/]+$",
                       "location": "path",
                       "required": true,
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Idempotent request UUID.",
+                      "location": "query",
                       "type": "string"
                     }
                   },

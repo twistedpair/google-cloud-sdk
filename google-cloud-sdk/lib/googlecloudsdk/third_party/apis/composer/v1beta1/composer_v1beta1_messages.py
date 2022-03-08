@@ -212,20 +212,19 @@ class ComposerProjectsLocationsEnvironmentsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
-class ComposerProjectsLocationsEnvironmentsLoadEnvironmentStateRequest(_messages.Message):
-  r"""A ComposerProjectsLocationsEnvironmentsLoadEnvironmentStateRequest
-  object.
+class ComposerProjectsLocationsEnvironmentsLoadSnapshotRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsLoadSnapshotRequest object.
 
   Fields:
     environment: The resource name of the target environment in the form:
       "projects/{projectId}/locations/{locationId}/environments/{environmentId
       }"
-    loadEnvironmentStateRequest: A LoadEnvironmentStateRequest resource to be
-      passed as the request body.
+    loadSnapshotRequest: A LoadSnapshotRequest resource to be passed as the
+      request body.
   """
 
   environment = _messages.StringField(1, required=True)
-  loadEnvironmentStateRequest = _messages.MessageField('LoadEnvironmentStateRequest', 2)
+  loadSnapshotRequest = _messages.MessageField('LoadSnapshotRequest', 2)
 
 
 class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
@@ -353,20 +352,19 @@ class ComposerProjectsLocationsEnvironmentsRestartWebServerRequest(_messages.Mes
   restartWebServerRequest = _messages.MessageField('RestartWebServerRequest', 2)
 
 
-class ComposerProjectsLocationsEnvironmentsStoreEnvironmentStateRequest(_messages.Message):
-  r"""A ComposerProjectsLocationsEnvironmentsStoreEnvironmentStateRequest
-  object.
+class ComposerProjectsLocationsEnvironmentsSaveSnapshotRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsSaveSnapshotRequest object.
 
   Fields:
     environment: The resource name of the source environment in the form:
       "projects/{projectId}/locations/{locationId}/environments/{environmentId
       }"
-    storeEnvironmentStateRequest: A StoreEnvironmentStateRequest resource to
-      be passed as the request body.
+    saveSnapshotRequest: A SaveSnapshotRequest resource to be passed as the
+      request body.
   """
 
   environment = _messages.StringField(1, required=True)
-  storeEnvironmentStateRequest = _messages.MessageField('StoreEnvironmentStateRequest', 2)
+  saveSnapshotRequest = _messages.MessageField('SaveSnapshotRequest', 2)
 
 
 class ComposerProjectsLocationsImageVersionsListRequest(_messages.Message):
@@ -456,10 +454,11 @@ class Date(_messages.Message):
   time of day and time zone are either specified elsewhere or are
   insignificant. The date is relative to the Gregorian Calendar. This can
   represent one of the following: * A full date, with non-zero year, month,
-  and day values * A month and day, with a zero year (e.g., an anniversary) *
-  A year on its own, with a zero month and a zero day * A year and month, with
-  a zero day (e.g., a credit card expiration date) Related types: *
-  google.type.TimeOfDay * google.type.DateTime * google.protobuf.Timestamp
+  and day values. * A month and day, with a zero year (for example, an
+  anniversary). * A year on its own, with a zero month and a zero day. * A
+  year and month, with a zero day (for example, a credit card expiration
+  date). Related types: * google.type.TimeOfDay * google.type.DateTime *
+  google.protobuf.Timestamp
 
   Fields:
     day: Day of a month. Must be from 1 to 31 and valid for the year and
@@ -810,8 +809,8 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
-class LoadEnvironmentStateRequest(_messages.Message):
-  r"""Load environment state request.
+class LoadSnapshotRequest(_messages.Message):
+  r"""Request to load a snapshot into a Cloud Composer environment.
 
   Fields:
     skipPypiPackagesInstallation: Whether or not to skip installing Pypi
@@ -824,8 +823,8 @@ class LoadEnvironmentStateRequest(_messages.Message):
   snapshotPath = _messages.StringField(2)
 
 
-class LoadEnvironmentStateResponse(_messages.Message):
-  r"""Load environment state response."""
+class LoadSnapshotResponse(_messages.Message):
+  r"""Response to LoadSnapshotRequest."""
 
 
 class MaintenanceWindow(_messages.Message):
@@ -1109,16 +1108,16 @@ class OperationMetadata(_messages.Message):
       DELETE: A resource deletion operation.
       UPDATE: A resource update operation.
       CHECK: A resource check operation.
-      STORE_STATE: Stores the state of the resource operation.
-      LOAD_STATE: Loads the state of the resource operation.
+      SAVE_SNAPSHOT: Saves snapshot of the resource operation.
+      LOAD_SNAPSHOT: Loads snapshot of the resource operation.
     """
     TYPE_UNSPECIFIED = 0
     CREATE = 1
     DELETE = 2
     UPDATE = 3
     CHECK = 4
-    STORE_STATE = 5
-    LOAD_STATE = 6
+    SAVE_SNAPSHOT = 5
+    LOAD_SNAPSHOT = 6
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current operation state.
@@ -1237,6 +1236,30 @@ class RecoveryConfig(_messages.Message):
 
 class RestartWebServerRequest(_messages.Message):
   r"""Restart Airflow web server."""
+
+
+class SaveSnapshotRequest(_messages.Message):
+  r"""Request to create a snapshot of a Cloud Composer environment.
+
+  Fields:
+    snapshotLocation: Location in a Cloud Storage where the snapshot is going
+      to be stored, e.g.: "gs://my-bucket/snapshots".
+  """
+
+  snapshotLocation = _messages.StringField(1)
+
+
+class SaveSnapshotResponse(_messages.Message):
+  r"""Response to SaveSnapshotRequest.
+
+  Fields:
+    snapshotPath: The fully-resolved Cloud Storage path of the created
+      snapshot, e.g.: "gs://my-
+      bucket/snapshots/project_location_environment_timestamp". This field is
+      populated only if the snapshot creation was successful.
+  """
+
+  snapshotPath = _messages.StringField(1)
 
 
 class ScheduledSnapshotsConfig(_messages.Message):
@@ -1588,30 +1611,6 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
-
-
-class StoreEnvironmentStateRequest(_messages.Message):
-  r"""Store environment state request.
-
-  Fields:
-    snapshotLocation: Location in a Cloud Storage where the snapshot of the
-      state is going to be stored, e.g.: "gs://my-bucket/snapshots".
-  """
-
-  snapshotLocation = _messages.StringField(1)
-
-
-class StoreEnvironmentStateResponse(_messages.Message):
-  r"""Store environment state response.
-
-  Fields:
-    snapshotPath: The fully-resolved Cloud Storage path of the created
-      snapshot, e.g.: "gs://my-
-      bucket/snapshots/project_location_environment_timestamp". This field is
-      populated only if the snapshot creation was successful.
-  """
-
-  snapshotPath = _messages.StringField(1)
 
 
 class WebServerConfig(_messages.Message):

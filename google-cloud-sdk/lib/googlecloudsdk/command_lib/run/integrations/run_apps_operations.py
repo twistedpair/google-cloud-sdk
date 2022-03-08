@@ -219,12 +219,10 @@ class RunAppsOperations(object):
     resource_config = self._GetResourceConfig(resource_type, parameters,
                                               service, None, {})
     resources_map[name] = resource_config
-    match_type_names = [{'type': resource_type, 'name': name}]
-    self._AddIntegrationSelectors(integration_type, match_type_names)
+    match_type_names = self._GetCreateSelectors(name, resource_type, service)
     if service:
       self._EnsureServiceConfig(resources_map, service)
-      match_type_names.append({'type': 'service', 'name': service})
-      self._AddServiceToIntegrationRef(name, integration_type,
+      self._AddServiceToIntegrationRef(name, resource_type,
                                        resources_map[service])
 
     application = encoding.DictToMessage(app_dict, self.messages.Application)
@@ -267,10 +265,17 @@ class RunAppsOperations(object):
                                               add_service, remove_service,
                                               existing_resource)
     resources_map[name] = resource_config
-    match_type_names = [{'type': resource_type, 'name': name}]
+    match_type_names = self._GetCreateSelectors(name, resource_type,
+                                                add_service, remove_service)
+
     if add_service:
       self._EnsureServiceConfig(resources_map, add_service)
-      match_type_names.append({'type': 'service', 'name': add_service})
+      self._AddServiceToIntegrationRef(name, resource_type,
+                                       resources_map[add_service])
+    if remove_service and remove_service in resources_map:
+      self._RemoveServiceToIntegrationRef(name, resource_type,
+                                          resources_map[remove_service])
+
     application = encoding.DictToMessage(app_dict, self.messages.Application)
     return self.ApplyAppConfig(
         appname=_DEFAULT_APP_NAME,
@@ -375,33 +380,71 @@ class RunAppsOperations(object):
 
     return output
 
-  def _AddServiceToIntegrationRef(self, name, integration_type, service):
+  def _GetCreateSelectors(self,
+                          integration_name,
+                          resource_type,
+                          add_service_name,
+                          remove_service_name=None):
+    """Returns create selectors for given integration and service.
+
+    Args:
+      integration_name: str, name of integration.
+      resource_type: str, type of integration.
+      add_service_name: str, name of the service being added.
+      remove_service_name: str, name of the service being removed.
+
+    Returns:
+      list of dict typed names.
+    """
+    service_name = add_service_name if add_service_name else remove_service_name
+    selectors = [{'type': resource_type, 'name': integration_name}]
+
+    # Handle router edgecase. Selector should not be added for remove service.
+    if resource_type == 'router' and add_service_name:
+      selectors.append({'type': 'service', 'name': add_service_name})
+    elif resource_type != 'router' and service_name:
+      selectors.append({'type': 'service', 'name': service_name})
+
+    # TODO(b/217744403): Remove redis specific logic after default VPC logic
+    # is handled in CP.
+    if resource_type == 'redis':
+      # For now redis integration has a shadow VPC resource. This will hopefully
+      # change in the near future, but for now it needs to be actuated
+      selectors.append({'type': 'vpc', 'name': '*'})
+
+    return selectors
+
+  def _AddServiceToIntegrationRef(self, name, resource_type, service):
     """Add service to integration ref.
 
     Args:
       name: str, name of integration.
-      integration_type: str, type of integration.
+      resource_type: str, type of integration.
       service: dict of proto, service to add ref too.
     """
+    if resource_type == 'router':
+      return
 
-    if integration_type == 'redis':
-      # Check if ref already exists
-      refs = [ref['ref'] for ref in service['service'].get('resources', [])]
-      if 'redis/{}'.format(name) not in refs:
-        service['service'].setdefault('resources', []).append(
-            {'ref': 'redis/{}'.format(name)})
+    # Check if ref already exists
+    refs = [ref['ref'] for ref in service['service'].get('resources', [])]
+    if '{}/{}'.format(resource_type, name) not in refs:
+      service['service'].setdefault('resources', []).append(
+          {'ref': '{}/{}'.format(resource_type, name)})
 
-  def _AddIntegrationSelectors(self, integration_type, selectors):
-    """Returns selectors based on integration type.
+  def _RemoveServiceToIntegrationRef(self, name, resource_type, service):
+    """Remove service to integration ref.
 
     Args:
-      integration_type: str, type of integration.
-      selectors: list typed names, selectors to append to
+      name: str, name of integration.
+      resource_type: str, type of integration.
+      service: dict of proto, service from which to remove ref.
     """
-    if integration_type == 'redis':
-      # For now redis integration has a shadow VPC resource. This will hopefully
-      # change in the near future, but for now it needs to be actuated
-      selectors.append({'type': 'vpc', 'name': '*'})
+    if resource_type == 'router':
+      return
+
+    for ref in service.get('service', {}).get('resources', []):
+      if ref['ref'] == '{}/{}'.format(resource_type, name):
+        service['service']['resources'].remove(ref)
 
   def _GetRefServices(self, name, resource_type, resource, all_resources):
     """Returns list of services referenced by integration.
@@ -486,7 +529,13 @@ class RunAppsOperations(object):
         config['domain'] = parameters['domain']
       if remove_service:
         ref = 'service/{}'.format(remove_service)
-        config['routes'] = [x for x in config['routes'] if x['ref'] != ref]
+        if 'default-route' in config and ref in config['default-route']['ref']:
+          raise exceptions.ArgumentError(
+              'Cannot remove service associated with the default path (/*)')
+
+        config['routes'] = [
+            x for x in config.get('routes', []) if x['ref'] != ref
+        ]
       if add_service:
         route = {'ref': 'service/{}'.format(add_service)}
         if 'paths' in parameters:
@@ -497,14 +546,13 @@ class RunAppsOperations(object):
         else:
           config['default-route'] = route
     elif res_type == 'redis':
-      instance = {}
+      instance = config.setdefault('instance', {})
       if 'memory-size-gb' in parameters:
         instance['memory-size-gb'] = parameters['memory-size-gb']
       if 'tier' in parameters:
         instance['tier'] = parameters['tier']
       if 'version' in parameters:
         instance['version'] = parameters['version']
-      config['instance'] = instance
 
     else:
       raise exceptions.ArgumentError(

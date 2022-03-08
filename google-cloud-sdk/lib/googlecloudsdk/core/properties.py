@@ -1818,7 +1818,6 @@ class _SectionCore(_Section):
     self.enable_feature_flags = self._AddBool(
         'enable_feature_flags',
         default=True,
-        hidden=True,
         help_text='If True, remote config-file driven feature flags will be '
         'enabled.')
     self.resource_completion_style = self._Add(
@@ -2231,13 +2230,6 @@ class _SectionDiagnostics(_Section):
 
   def __init__(self):
     super(_SectionDiagnostics, self).__init__('diagnostics', hidden=True)
-    # TODO(b/188055204): Remove legacy property once Cloud Shell is updated
-    self.hidden_property_whitelist = self._Add(
-        'hidden_property_whitelist',
-        internal=True,
-        help_text=('Comma separated list of hidden properties that should be '
-                   'allowed by the hidden properties diagnostic.'))
-
     self.hidden_property_allowlist = self._Add(
         'hidden_property_allowlist',
         internal=True,

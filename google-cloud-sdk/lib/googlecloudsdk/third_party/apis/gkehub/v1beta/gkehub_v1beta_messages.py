@@ -13,6 +13,17 @@ from apitools.base.py import extra_types
 package = 'gkehub'
 
 
+class AnthosObservabilityFeatureSpec(_messages.Message):
+  r"""**Anthos Observability**: Spec
+
+  Fields:
+    defaultMembershipSpec: default membership spec for unconfigured
+      memberships
+  """
+
+  defaultMembershipSpec = _messages.MessageField('AnthosObservabilityMembershipSpec', 1)
+
+
 class AnthosObservabilityMembershipSpec(_messages.Message):
   r"""**Anthosobservability**: Per-Membership Feature spec.
 
@@ -23,10 +34,12 @@ class AnthosObservabilityMembershipSpec(_messages.Message):
       monitoring#optimized_metrics_default_metrics
     enableStackdriverOnApplications: enable collecting and reporting metrics
       and logs from user apps See go/onyx-application-metrics-logs-user-guide
+    version: the version of stackdriver operator used by this feature
   """
 
   doNotOptimizeMetrics = _messages.BooleanField(1)
   enableStackdriverOnApplications = _messages.BooleanField(2)
+  version = _messages.StringField(3)
 
 
 class AppDevExperienceFeatureSpec(_messages.Message):
@@ -167,12 +180,14 @@ class CommonFeatureSpec(_messages.Message):
   r"""CommonFeatureSpec contains Hub-wide configuration information
 
   Fields:
+    anthosobservability: Anthos Observability spec
     appdevexperience: Appdevexperience specific spec.
     multiclusteringress: Multicluster Ingress-specific spec.
   """
 
-  appdevexperience = _messages.MessageField('AppDevExperienceFeatureSpec', 1)
-  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 2)
+  anthosobservability = _messages.MessageField('AnthosObservabilityFeatureSpec', 1)
+  appdevexperience = _messages.MessageField('AppDevExperienceFeatureSpec', 2)
+  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 3)
 
 
 class CommonFeatureState(_messages.Message):

@@ -2977,6 +2977,21 @@ Enable Workload ALTS.
 """)
 
 
+def AddWorkloadConfigAuditFlag(parser):
+  """Adds Protect Config's Enable Workload Config audit flag to the parser."""
+  parser.add_argument(
+      '--enable-workload-config-audit',
+      default=None,
+      action='store_true',
+      hidden=True,
+      help=textwrap.dedent("""\
+      Enables Protect API's workload configuration auditing.
+
+      To disable in an existing cluster, explicitly set flag to
+      `--no-enable-workload-config-audit`.
+      """))
+
+
 def AddGkeOidcFlag(parser):
   parser.add_argument(
       '--enable-gke-oidc',

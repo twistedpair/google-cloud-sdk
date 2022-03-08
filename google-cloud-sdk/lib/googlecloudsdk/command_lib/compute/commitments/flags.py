@@ -143,6 +143,13 @@ def AddLicenceBasedFlags(parser):
   AddPlan(parser)
 
 
+def AddSplitSourceCommitment(parser):
+  return parser.add_argument(
+      '--split-source-commitment',
+      required=False,
+      help='Split the resources of previous commitment into a new commitment.')
+
+
 def AddResourcesArgGroup(parser):
   """Add the argument group for ResourceCommitment support in commitment."""
   resources_group = parser.add_group(

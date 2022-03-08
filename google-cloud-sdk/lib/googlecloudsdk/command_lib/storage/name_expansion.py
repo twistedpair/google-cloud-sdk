@@ -23,6 +23,7 @@ from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import wildcard_iterator
 from googlecloudsdk.core import log
+from googlecloudsdk.core.util import debug_output
 
 
 class NameExpansionIterator:
@@ -64,8 +65,9 @@ class NameExpansionIterator:
         or original_url.generation  # User requested a specific generation.
     )
     if not keep_generation_in_url:
-      resource.storage_url.generation = None
-      expanded_url.generation = None
+      new_storage_url = storage_url.storage_url_from_string(
+          resource.storage_url.versionless_url_string)
+      resource.storage_url = new_storage_url
     return NameExpansionResult(resource, expanded_url, original_url)
 
   def __iter__(self):
@@ -163,14 +165,18 @@ class NameExpansionResult:
     Args:
       resource (resource_reference.Resource): Yielded by the WildcardIterator.
       expanded_url (StorageUrl): The expanded url string without any wildcard.
-          This should be same as the resource.storage_url if recursion was not
-          requested. This field is only used for cp and rsync commands.
-          For everything else, this field can be ignored.
+        This value should preserve generation even if not available in
+        resource.storage_url. The versionless version of this should be same
+        as resource.storage_url if recursion was not requested. This field is
+        intended for only the cp and rsync commands.
       original_url (StorageUrl): Pre-expanded URL. Useful for knowing intention.
     """
     self.resource = resource
     self.expanded_url = expanded_url
     self.original_url = original_url
+
+  def __repr__(self):
+    return debug_output.generic_repr(self)
 
   def __str__(self):
     return self.resource.storage_url.url_string

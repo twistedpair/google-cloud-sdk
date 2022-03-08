@@ -51,10 +51,11 @@ class Date(_messages.Message):
   time of day and time zone are either specified elsewhere or are
   insignificant. The date is relative to the Gregorian Calendar. This can
   represent one of the following: * A full date, with non-zero year, month,
-  and day values * A month and day, with a zero year (e.g., an anniversary) *
-  A year on its own, with a zero month and a zero day * A year and month, with
-  a zero day (e.g., a credit card expiration date) Related types: *
-  google.type.TimeOfDay * google.type.DateTime * google.protobuf.Timestamp
+  and day values. * A month and day, with a zero year (for example, an
+  anniversary). * A year on its own, with a zero month and a zero day. * A
+  year and month, with a zero day (for example, a credit card expiration
+  date). Related types: * google.type.TimeOfDay * google.type.DateTime *
+  google.protobuf.Timestamp
 
   Fields:
     day: Day of a month. Must be from 1 to 31 and valid for the year and
@@ -147,6 +148,25 @@ class GoogleCloudMemcacheV1LocationMetadata(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   availableZones = _messages.MessageField('AvailableZonesValue', 1)
+
+
+class GoogleCloudMemcacheV1MaintenancePolicy(_messages.Message):
+  r"""Maintenance policy per instance.
+
+  Fields:
+    createTime: Output only. The time when the policy was created.
+    description: Description of what this policy is for. Create/Update methods
+      return INVALID_ARGUMENT if the length is greater than 512.
+    updateTime: Output only. The time when the policy was updated.
+    weeklyMaintenanceWindow: Required. Maintenance window that is applied to
+      resources covered by this policy. Minimum 1. For the current version,
+      the maximum number of weekly_maintenance_windows is expected to be one.
+  """
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  updateTime = _messages.StringField(3)
+  weeklyMaintenanceWindow = _messages.MessageField('WeeklyMaintenanceWindow', 4, repeated=True)
 
 
 class GoogleCloudMemcacheV1OperationMetadata(_messages.Message):
@@ -742,6 +762,10 @@ class Instance(_messages.Message):
     labels: Resource labels to represent user-provided metadata. Refer to
       cloud documentation on labels for more details.
       https://cloud.google.com/compute/docs/labeling-resources
+    maintenancePolicy: The maintenance policy for the instance. If not
+      provided, the maintenance event will be performed based on Memorystore
+      internal rollout schedule.
+    maintenanceSchedule: Output only. Published maintenance schedule.
     memcacheFullVersion: Output only. The full version of memcached server
       running on this instance. System automatically determines the full
       memcached version for an instance based on the input MemcacheVersion.
@@ -836,16 +860,18 @@ class Instance(_messages.Message):
   displayName = _messages.StringField(4)
   instanceMessages = _messages.MessageField('InstanceMessage', 5, repeated=True)
   labels = _messages.MessageField('LabelsValue', 6)
-  memcacheFullVersion = _messages.StringField(7)
-  memcacheNodes = _messages.MessageField('Node', 8, repeated=True)
-  memcacheVersion = _messages.EnumField('MemcacheVersionValueValuesEnum', 9)
-  name = _messages.StringField(10)
-  nodeConfig = _messages.MessageField('NodeConfig', 11)
-  nodeCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  parameters = _messages.MessageField('MemcacheParameters', 13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  updateTime = _messages.StringField(15)
-  zones = _messages.StringField(16, repeated=True)
+  maintenancePolicy = _messages.MessageField('GoogleCloudMemcacheV1MaintenancePolicy', 7)
+  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 8)
+  memcacheFullVersion = _messages.StringField(9)
+  memcacheNodes = _messages.MessageField('Node', 10, repeated=True)
+  memcacheVersion = _messages.EnumField('MemcacheVersionValueValuesEnum', 11)
+  name = _messages.StringField(12)
+  nodeConfig = _messages.MessageField('NodeConfig', 13)
+  nodeCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  parameters = _messages.MessageField('MemcacheParameters', 15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  updateTime = _messages.StringField(17)
+  zones = _messages.StringField(18, repeated=True)
 
 
 class InstanceMessage(_messages.Message):
@@ -1120,6 +1146,23 @@ class MaintenancePolicy(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 5)
   updatePolicy = _messages.MessageField('UpdatePolicy', 6)
   updateTime = _messages.StringField(7)
+
+
+class MaintenanceSchedule(_messages.Message):
+  r"""Upcoming maintenance schedule.
+
+  Fields:
+    endTime: Output only. The end time of any upcoming scheduled maintenance
+      for this instance.
+    scheduleDeadlineTime: Output only. The deadline that the maintenance
+      schedule start time can not go beyond, including reschedule.
+    startTime: Output only. The start time of any upcoming scheduled
+      maintenance for this instance.
+  """
+
+  endTime = _messages.StringField(1)
+  scheduleDeadlineTime = _messages.StringField(2)
+  startTime = _messages.StringField(3)
 
 
 class MaintenanceWindow(_messages.Message):
@@ -1795,6 +1838,48 @@ class WeeklyCycle(_messages.Message):
   """
 
   schedule = _messages.MessageField('Schedule', 1, repeated=True)
+
+
+class WeeklyMaintenanceWindow(_messages.Message):
+  r"""Time window specified for weekly operations.
+
+  Enums:
+    DayValueValuesEnum: Required. Allows to define schedule that runs
+      specified day of the week.
+
+  Fields:
+    day: Required. Allows to define schedule that runs specified day of the
+      week.
+    duration: Required. Duration of the time window.
+    startTime: Required. Start time of the window in UTC.
+  """
+
+  class DayValueValuesEnum(_messages.Enum):
+    r"""Required. Allows to define schedule that runs specified day of the
+    week.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
+    """
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  day = _messages.EnumField('DayValueValuesEnum', 1)
+  duration = _messages.StringField(2)
+  startTime = _messages.MessageField('TimeOfDay', 3)
 
 
 class ZoneMetadata(_messages.Message):

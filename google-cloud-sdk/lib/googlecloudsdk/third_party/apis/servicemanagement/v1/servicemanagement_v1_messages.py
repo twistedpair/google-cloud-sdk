@@ -1070,6 +1070,19 @@ class EffectiveQuotasForMetric(_messages.Message):
   metric = _messages.MessageField('MetricDescriptor', 2)
 
 
+class EnableServiceRequest(_messages.Message):
+  r"""Request message for EnableService method.
+
+  Fields:
+    consumerId: Required. The identity of consumer resource which service
+      enablement will be applied to. The Google Service Management
+      implementation accepts the following forms: - "project:" Note: this is
+      made compatible with google.api.servicecontrol.v1.Operation.consumer_id.
+  """
+
+  consumerId = _messages.StringField(1)
+
+
 class Endpoint(_messages.Message):
   r"""`Endpoint` describes a network address of a service that serves a set of
   APIs. It is commonly known as a service endpoint. A service may expose any
@@ -3322,8 +3335,7 @@ class Rollout(_messages.Message):
 
   Fields:
     createTime: Creation time of the rollout. Readonly.
-    createdBy: This field is deprecated and will be deleted. Please remove
-      usage of this field.
+    createdBy: The user who created the Rollout. Readonly.
     deleteServiceStrategy: The strategy associated with a rollout to delete a
       `ManagedService`. Readonly.
     rolloutId: Optional. Unique identifier of this Rollout. Must be no longer
@@ -3736,6 +3748,20 @@ class ServicemanagementServicesDeleteRequest(_messages.Message):
   """
 
   serviceName = _messages.StringField(1, required=True)
+
+
+class ServicemanagementServicesEnableRequest(_messages.Message):
+  r"""A ServicemanagementServicesEnableRequest object.
+
+  Fields:
+    enableServiceRequest: A EnableServiceRequest resource to be passed as the
+      request body.
+    serviceName: Required. Name of the service to enable. Specifying an
+      unknown service name will cause the request to fail.
+  """
+
+  enableServiceRequest = _messages.MessageField('EnableServiceRequest', 1)
+  serviceName = _messages.StringField(2, required=True)
 
 
 class ServicemanagementServicesGetConfigRequest(_messages.Message):

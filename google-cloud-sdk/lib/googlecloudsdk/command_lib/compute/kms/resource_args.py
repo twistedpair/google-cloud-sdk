@@ -66,8 +66,11 @@ def GetKmsKeyResourceSpec(region_fallthrough=False):
       disable_auto_completers=False)
 
 
-def AddKmsKeyResourceArg(parser, resource, region_fallthrough=False,
-                         boot_disk_prefix=False):
+def AddKmsKeyResourceArg(parser,
+                         resource,
+                         region_fallthrough=False,
+                         boot_disk_prefix=False,
+                         instance_prefix=False):
   """Add a resource argument for a KMS key.
 
   Args:
@@ -77,14 +80,23 @@ def AddKmsKeyResourceArg(parser, resource, region_fallthrough=False,
     region_fallthrough: bool, True if the command has a region flag that should
       be used as a fallthrough for the kms location.
     boot_disk_prefix: If the key flags have the 'boot-disk' prefix.
+    instance_prefix: If the key flags have the 'instance' prefix.
   """
   flag_name_overrides = None
+  kms_flags = ['kms-key', 'kms-keyring', 'kms-location', 'kms-project']
+  name = '--kms-key'
   if boot_disk_prefix:
-    kms_flags = ['kms-key', 'kms-keyring', 'kms-location', 'kms-project']
     flag_name_overrides = dict(
         [(flag, '--boot-disk-' + flag) for flag in kms_flags])
+    name = '--boot-disk-kms-key'
+  elif instance_prefix:
+    flag_name_overrides = dict([
+        (flag, '--instance-' + flag) for flag in kms_flags
+    ])
+    name = '--instance-kms-key'
+
   concept_parsers.ConceptParser.ForResource(
-      '--kms-key',
+      name,
       GetKmsKeyResourceSpec(region_fallthrough=region_fallthrough),
       'The Cloud KMS (Key Management Service) cryptokey that will be used to '
       'protect the {}.'.format(resource),

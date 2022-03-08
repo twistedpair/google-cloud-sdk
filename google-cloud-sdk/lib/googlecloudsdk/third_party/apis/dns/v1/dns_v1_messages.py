@@ -299,58 +299,6 @@ class DnsKeySpec(_messages.Message):
   kind = _messages.StringField(4, default='dns#dnsKeySpec')
 
 
-class DnsKeysAdminCreateRequest(_messages.Message):
-  r"""A DnsKeysAdminCreateRequest object.
-
-  Fields:
-    dnsKey: A DnsKey attribute.
-    managedZone: A string attribute.
-    project: A string attribute.
-  """
-
-  dnsKey = _messages.MessageField('DnsKey', 1)
-  managedZone = _messages.StringField(2)
-  project = _messages.StringField(3)
-
-
-class DnsKeysAdminCreateResponse(_messages.Message):
-  r"""A DnsKeysAdminCreateResponse object.
-
-  Fields:
-    dnsKey: A DnsKey attribute.
-    header: A ResponseHeader attribute.
-  """
-
-  dnsKey = _messages.MessageField('DnsKey', 1)
-  header = _messages.MessageField('ResponseHeader', 2)
-
-
-class DnsKeysAdminDeleteRequest(_messages.Message):
-  r"""A DnsKeysAdminDeleteRequest object.
-
-  Fields:
-    dnsKeyId: A string attribute.
-    force: A boolean attribute.
-    managedZone: A string attribute.
-    project: A string attribute.
-  """
-
-  dnsKeyId = _messages.StringField(1)
-  force = _messages.BooleanField(2)
-  managedZone = _messages.StringField(3)
-  project = _messages.StringField(4)
-
-
-class DnsKeysAdminDeleteResponse(_messages.Message):
-  r"""A DnsKeysAdminDeleteResponse object.
-
-  Fields:
-    header: A ResponseHeader attribute.
-  """
-
-  header = _messages.MessageField('ResponseHeader', 1)
-
-
 class DnsKeysListResponse(_messages.Message):
   r"""A DnsKeysListResponse object.
 

@@ -193,9 +193,9 @@ class AwsCredConfigGenerator(CredConfigGenerator):
     }
 
     if args.calliope_command.ReleaseTrack(
-    ) == calliope_base.ReleaseTrack.ALPHA and args.include_aws_session_token_url:
+    ) == calliope_base.ReleaseTrack.ALPHA and args.enable_imdsv2:
       credential_source[
-          'aws_session_token_url'] = 'http://169.254.169.254/latest/api/token'
+          'imdsv2_session_token_url'] = 'http://169.254.169.254/latest/api/token'
 
     return credential_source
 

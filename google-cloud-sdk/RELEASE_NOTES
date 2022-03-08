@@ -5,6 +5,45 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 376.0.0 (2022-03-08)
+
+### Certificate Authority Service
+
+* Added `--skip-grace-period` flag to `gcloud privateca roots delete` and `gcloud privateca subordinates delete` to delete a certificate authority without waiting for the 30-day grace period that allows undeletion.
+
+### Cloud Build
+
+* Modified `gcloud builds submit --pack` to pass `--network=cloudbuild` to pack.
+
+### Cloud Identity-Aware Proxy
+
+* Add warning message to `gcloud compute start-iap-tunnel` telling users about installing NumPy.
+
+### Cloud Run
+
+* Added `--env-vars-file` to `gcloud beta run deploy` and `gcloud run deploy` to
+specify environment variables for Cloud Run deployments.
+* Added `--env-vars-file` to `gcloud beta run services update` and
+`gcloud run services update` to update environment variables for Cloud Run
+deployments.
+
+### Compute Engine
+
+* Added `--split-source-commitment` flag to `gcloud compute commitments create` for alpha.
+
+### Database Migration
+
+* Some changes in `gcloud connection profile create cloudsql`:
+    * Fixed boolean flags to support `--flag` for setting it to true and `--no-flag` for false.
+
+### Firebase Test Lab
+
+*   Promoted `--app` flag of `gcloud firebase test ios run` to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 375.0.0 (2022-03-01)
 
 ### Breaking Changes
@@ -169,7 +208,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
   * For IPv4-only environments, pass a IPv4 address to `--host:port`.
 *   **(Cloud Pubsublite Emulator)** Changed the default hostname to IPv6 localhost [::1] for all environments.
   * For IPv4-only environments, pass a IPv4 address to `--host:port`.
-*   **(Translation API)** Removed support for `gcloud beta transcoder` command group.
+*   **(Transcoder)** Removed support for `gcloud beta transcoder` command group.
 
 
 ### Google Cloud CLI

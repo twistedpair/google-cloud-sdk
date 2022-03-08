@@ -285,7 +285,10 @@ class BigQueryDestination(_messages.Message):
     dataset: Required. The BigQuery dataset in format
       "projects/projectId/datasets/datasetId", to which the snapshot result
       should be exported. If this dataset does not exist, the export call
-      returns an INVALID_ARGUMENT error.
+      returns an INVALID_ARGUMENT error. Setting the `contentType` for
+      `exportAssets` determines the [schema](/asset-inventory/docs/exporting-
+      to-bigquery#bigquery-schema) of the BigQuery table. Setting
+      `separateTablesPerAssetType` to `TRUE` also influences the schema.
     force: If the destination table already exists and this flag is `TRUE`,
       the table will be overwritten by the contents of assets snapshot. If the
       flag is `FALSE` or unset and the destination table already exists, the
@@ -1220,10 +1223,11 @@ class Date(_messages.Message):
   time of day and time zone are either specified elsewhere or are
   insignificant. The date is relative to the Gregorian Calendar. This can
   represent one of the following: * A full date, with non-zero year, month,
-  and day values * A month and day, with a zero year (e.g., an anniversary) *
-  A year on its own, with a zero month and a zero day * A year and month, with
-  a zero day (e.g., a credit card expiration date) Related types: *
-  google.type.TimeOfDay * google.type.DateTime * google.protobuf.Timestamp
+  and day values. * A month and day, with a zero year (for example, an
+  anniversary). * A year on its own, with a zero month and a zero day. * A
+  year and month, with a zero day (for example, a credit card expiration
+  date). Related types: * google.type.TimeOfDay * google.type.DateTime *
+  google.protobuf.Timestamp
 
   Fields:
     day: Day of a month. Must be from 1 to 31 and valid for the year and

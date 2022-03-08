@@ -674,6 +674,20 @@ class BqmlTrainingRun(_messages.Message):
   trainingOptions = _messages.MessageField('TrainingOptionsValue', 4)
 
 
+class CloneDefinition(_messages.Message):
+  r"""A CloneDefinition object.
+
+  Fields:
+    baseTableReference: [Required] Reference describing the ID of the table
+      that was cloned.
+    cloneTime: [Required] The time at which the base table was cloned. This
+      value is reported in the JSON response using RFC3339 format.
+  """
+
+  baseTableReference = _messages.MessageField('TableReference', 1)
+  cloneTime = _message_types.DateTimeField(2)
+
+
 class Clustering(_messages.Message):
   r"""A Clustering object.
 
@@ -1728,6 +1742,10 @@ class JobConfigurationLoad(_messages.Message):
       and BYTE. For STRING and BYTE columns, BigQuery interprets the empty
       string as an empty value.
     parquetOptions: [Optional] Options to configure parquet support.
+    preserveAsciiControlCharacters: [Optional] Preserves the embedded ASCII
+      control characters (the first 32 characters in the ASCII-table, from
+      '\x00' to '\x1F') when loading from CSV. Only applicable to CSV, ignored
+      for other formats.
     projectionFields: If sourceFormat is set to "DATASTORE_BACKUP", indicates
       which entity properties to load into BigQuery from a Cloud Datastore
       backup. Property names are case sensitive and must be top-level
@@ -1813,19 +1831,20 @@ class JobConfigurationLoad(_messages.Message):
   maxBadRecords = _messages.IntegerField(15, variant=_messages.Variant.INT32)
   nullMarker = _messages.StringField(16)
   parquetOptions = _messages.MessageField('ParquetOptions', 17)
-  projectionFields = _messages.StringField(18, repeated=True)
-  quote = _messages.StringField(19, default='"')
-  rangePartitioning = _messages.MessageField('RangePartitioning', 20)
-  schema = _messages.MessageField('TableSchema', 21)
-  schemaInline = _messages.StringField(22)
-  schemaInlineFormat = _messages.StringField(23)
-  schemaUpdateOptions = _messages.StringField(24, repeated=True)
-  skipLeadingRows = _messages.IntegerField(25, variant=_messages.Variant.INT32)
-  sourceFormat = _messages.StringField(26)
-  sourceUris = _messages.StringField(27, repeated=True)
-  timePartitioning = _messages.MessageField('TimePartitioning', 28)
-  useAvroLogicalTypes = _messages.BooleanField(29)
-  writeDisposition = _messages.StringField(30)
+  preserveAsciiControlCharacters = _messages.BooleanField(18)
+  projectionFields = _messages.StringField(19, repeated=True)
+  quote = _messages.StringField(20, default='"')
+  rangePartitioning = _messages.MessageField('RangePartitioning', 21)
+  schema = _messages.MessageField('TableSchema', 22)
+  schemaInline = _messages.StringField(23)
+  schemaInlineFormat = _messages.StringField(24)
+  schemaUpdateOptions = _messages.StringField(25, repeated=True)
+  skipLeadingRows = _messages.IntegerField(26, variant=_messages.Variant.INT32)
+  sourceFormat = _messages.StringField(27)
+  sourceUris = _messages.StringField(28, repeated=True)
+  timePartitioning = _messages.MessageField('TimePartitioning', 29)
+  useAvroLogicalTypes = _messages.BooleanField(30)
+  writeDisposition = _messages.StringField(31)
 
 
 class JobConfigurationQuery(_messages.Message):
@@ -3057,6 +3076,7 @@ class Table(_messages.Message):
       and each label in the list must have a different key.
 
   Fields:
+    cloneDefinition: [Output-only] Clone definition.
     clustering: [Beta] Clustering specification for the table. Must be
       specified with partitioning, data in the table will be first partitioned
       and subsequently clustered.
@@ -3162,36 +3182,37 @@ class Table(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  clustering = _messages.MessageField('Clustering', 1)
-  creationTime = _messages.IntegerField(2)
-  defaultCollation = _messages.StringField(3)
-  description = _messages.StringField(4)
-  encryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 5)
-  etag = _messages.StringField(6)
-  expirationTime = _messages.IntegerField(7)
-  externalDataConfiguration = _messages.MessageField('ExternalDataConfiguration', 8)
-  friendlyName = _messages.StringField(9)
-  id = _messages.StringField(10)
-  kind = _messages.StringField(11, default='bigquery#table')
-  labels = _messages.MessageField('LabelsValue', 12)
-  lastModifiedTime = _messages.IntegerField(13, variant=_messages.Variant.UINT64)
-  location = _messages.StringField(14)
-  materializedView = _messages.MessageField('MaterializedViewDefinition', 15)
-  model = _messages.MessageField('ModelDefinition', 16)
-  numBytes = _messages.IntegerField(17)
-  numLongTermBytes = _messages.IntegerField(18)
-  numPhysicalBytes = _messages.IntegerField(19)
-  numRows = _messages.IntegerField(20, variant=_messages.Variant.UINT64)
-  rangePartitioning = _messages.MessageField('RangePartitioning', 21)
-  requirePartitionFilter = _messages.BooleanField(22, default=False)
-  schema = _messages.MessageField('TableSchema', 23)
-  selfLink = _messages.StringField(24)
-  snapshotDefinition = _messages.MessageField('SnapshotDefinition', 25)
-  streamingBuffer = _messages.MessageField('Streamingbuffer', 26)
-  tableReference = _messages.MessageField('TableReference', 27)
-  timePartitioning = _messages.MessageField('TimePartitioning', 28)
-  type = _messages.StringField(29)
-  view = _messages.MessageField('ViewDefinition', 30)
+  cloneDefinition = _messages.MessageField('CloneDefinition', 1)
+  clustering = _messages.MessageField('Clustering', 2)
+  creationTime = _messages.IntegerField(3)
+  defaultCollation = _messages.StringField(4)
+  description = _messages.StringField(5)
+  encryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 6)
+  etag = _messages.StringField(7)
+  expirationTime = _messages.IntegerField(8)
+  externalDataConfiguration = _messages.MessageField('ExternalDataConfiguration', 9)
+  friendlyName = _messages.StringField(10)
+  id = _messages.StringField(11)
+  kind = _messages.StringField(12, default='bigquery#table')
+  labels = _messages.MessageField('LabelsValue', 13)
+  lastModifiedTime = _messages.IntegerField(14, variant=_messages.Variant.UINT64)
+  location = _messages.StringField(15)
+  materializedView = _messages.MessageField('MaterializedViewDefinition', 16)
+  model = _messages.MessageField('ModelDefinition', 17)
+  numBytes = _messages.IntegerField(18)
+  numLongTermBytes = _messages.IntegerField(19)
+  numPhysicalBytes = _messages.IntegerField(20)
+  numRows = _messages.IntegerField(21, variant=_messages.Variant.UINT64)
+  rangePartitioning = _messages.MessageField('RangePartitioning', 22)
+  requirePartitionFilter = _messages.BooleanField(23, default=False)
+  schema = _messages.MessageField('TableSchema', 24)
+  selfLink = _messages.StringField(25)
+  snapshotDefinition = _messages.MessageField('SnapshotDefinition', 26)
+  streamingBuffer = _messages.MessageField('Streamingbuffer', 27)
+  tableReference = _messages.MessageField('TableReference', 28)
+  timePartitioning = _messages.MessageField('TimePartitioning', 29)
+  type = _messages.StringField(30)
+  view = _messages.MessageField('ViewDefinition', 31)
 
 
 class TableCell(_messages.Message):

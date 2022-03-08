@@ -227,8 +227,8 @@ class CertificateMapEntry(_messages.Message):
       Entry.
     description: One or more paragraphs of text description of a certificate
       map entry.
-    hostname: A Hostname (FQDN, e.g. example.com) or a wildcard hostname
-      expression (*.example.com) for a set of hostnames with common suffix.
+    hostname: A Hostname (FQDN, e.g. `example.com`) or a wildcard hostname
+      expression (`*.example.com`) for a set of hostnames with common suffix.
       Used as Server Name Indication (SNI) for selecting a proper certificate.
     labels: Set of labels associated with a Certificate Map Entry.
     matcher: A predefined matcher for particular cases, other than SNI
@@ -733,8 +733,8 @@ class DnsAuthorization(_messages.Message):
       to DNS configuration.
     domain: Required. Immutable. A domain which is being authorized. A
       DnsAuthorization resource covers a single domain and its wildcard, e.g.
-      authorization for "example.com" can be used to issue certificates for
-      "example.com" and "*.example.com".
+      authorization for `example.com` can be used to issue certificates for
+      `example.com` and `*.example.com`.
     labels: Set of labels associated with a DnsAuthorization.
     name: A user-defined name of the dns authorization. DnsAuthorization names
       must be unique globally and match pattern
@@ -782,7 +782,7 @@ class DnsResourceRecord(_messages.Message):
   Fields:
     data: Output only. Data of the DNS Resource Record.
     name: Output only. Fully qualified name of the DNS Resource Record. e.g.
-      "_acme-challenge.example.com."
+      `_acme-challenge.example.com`
     type: Output only. Type of the DNS Resource Record. Currently always set
       to "CNAME".
   """

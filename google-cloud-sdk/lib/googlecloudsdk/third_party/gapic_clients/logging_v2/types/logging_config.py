@@ -57,6 +57,9 @@ __protobuf__ = proto.module(
         'GetCmekSettingsRequest',
         'UpdateCmekSettingsRequest',
         'CmekSettings',
+        'GetSettingsRequest',
+        'UpdateSettingsRequest',
+        'Settings',
         'CopyLogEntriesRequest',
         'CopyLogEntriesMetadata',
         'CopyLogEntriesResponse',
@@ -90,6 +93,7 @@ class OperationState(proto.Enum):
 
 class LogBucket(proto.Message):
     r"""Describes a repository in which log entries are stored.
+
     Attributes:
         name (str):
             Output only. The resource name of the bucket.
@@ -193,6 +197,7 @@ class LogBucket(proto.Message):
 
 class LogView(proto.Message):
     r"""Describes a view over log entries in a bucket.
+
     Attributes:
         name (str):
             The resource name of the view.
@@ -256,6 +261,9 @@ class LogSink(proto.Message):
     A logs filter controls which log entries are exported. The sink
     must be created within a project, organization, billing account,
     or folder.
+
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
 
     Attributes:
         name (str):
@@ -348,6 +356,8 @@ class LogSink(proto.Message):
         bigquery_options (googlecloudsdk.third_party.gapic_clients.logging_v2.types.BigQueryOptions):
             Optional. Options that affect sinks exporting
             data to BigQuery.
+
+            This field is a member of `oneof`_ ``options``.
         create_time (google.protobuf.timestamp_pb2.Timestamp):
             Output only. The creation timestamp of the
             sink.
@@ -458,6 +468,7 @@ class BigQueryOptions(proto.Message):
 
 class ListBucketsRequest(proto.Message):
     r"""The parameters to ``ListBuckets``.
+
     Attributes:
         parent (str):
             Required. The parent resource whose buckets are to be
@@ -502,6 +513,7 @@ class ListBucketsRequest(proto.Message):
 
 class ListBucketsResponse(proto.Message):
     r"""The response from ListBuckets.
+
     Attributes:
         buckets (Sequence[googlecloudsdk.third_party.gapic_clients.logging_v2.types.LogBucket]):
             A list of buckets.
@@ -529,6 +541,7 @@ class ListBucketsResponse(proto.Message):
 
 class CreateBucketRequest(proto.Message):
     r"""The parameters to ``CreateBucket``.
+
     Attributes:
         parent (str):
             Required. The resource in which to create the log bucket:
@@ -569,6 +582,7 @@ class CreateBucketRequest(proto.Message):
 
 class UpdateBucketRequest(proto.Message):
     r"""The parameters to ``UpdateBucket``.
+
     Attributes:
         name (str):
             Required. The full resource name of the bucket to update.
@@ -615,6 +629,7 @@ class UpdateBucketRequest(proto.Message):
 
 class GetBucketRequest(proto.Message):
     r"""The parameters to ``GetBucket``.
+
     Attributes:
         name (str):
             Required. The resource name of the bucket:
@@ -639,6 +654,7 @@ class GetBucketRequest(proto.Message):
 
 class DeleteBucketRequest(proto.Message):
     r"""The parameters to ``DeleteBucket``.
+
     Attributes:
         name (str):
             Required. The full resource name of the bucket to delete.
@@ -663,6 +679,7 @@ class DeleteBucketRequest(proto.Message):
 
 class UndeleteBucketRequest(proto.Message):
     r"""The parameters to ``UndeleteBucket``.
+
     Attributes:
         name (str):
             Required. The full resource name of the bucket to undelete.
@@ -687,6 +704,7 @@ class UndeleteBucketRequest(proto.Message):
 
 class ListViewsRequest(proto.Message):
     r"""The parameters to ``ListViews``.
+
     Attributes:
         parent (str):
             Required. The bucket whose views are to be listed:
@@ -725,6 +743,7 @@ class ListViewsRequest(proto.Message):
 
 class ListViewsResponse(proto.Message):
     r"""The response from ListViews.
+
     Attributes:
         views (Sequence[googlecloudsdk.third_party.gapic_clients.logging_v2.types.LogView]):
             A list of views.
@@ -752,6 +771,7 @@ class ListViewsResponse(proto.Message):
 
 class CreateViewRequest(proto.Message):
     r"""The parameters to ``CreateView``.
+
     Attributes:
         parent (str):
             Required. The bucket in which to create the view
@@ -786,6 +806,7 @@ class CreateViewRequest(proto.Message):
 
 class UpdateViewRequest(proto.Message):
     r"""The parameters to ``UpdateView``.
+
     Attributes:
         name (str):
             Required. The full resource name of the view to update
@@ -829,6 +850,7 @@ class UpdateViewRequest(proto.Message):
 
 class GetViewRequest(proto.Message):
     r"""The parameters to ``GetView``.
+
     Attributes:
         name (str):
             Required. The resource name of the policy:
@@ -850,6 +872,7 @@ class GetViewRequest(proto.Message):
 
 class DeleteViewRequest(proto.Message):
     r"""The parameters to ``DeleteView``.
+
     Attributes:
         name (str):
             Required. The full resource name of the view to delete:
@@ -873,6 +896,7 @@ class DeleteViewRequest(proto.Message):
 
 class ListSinksRequest(proto.Message):
     r"""The parameters to ``ListSinks``.
+
     Attributes:
         parent (str):
             Required. The parent resource whose sinks are to be listed:
@@ -912,6 +936,7 @@ class ListSinksRequest(proto.Message):
 
 class ListSinksResponse(proto.Message):
     r"""Result returned from ``ListSinks``.
+
     Attributes:
         sinks (Sequence[googlecloudsdk.third_party.gapic_clients.logging_v2.types.LogSink]):
             A list of sinks.
@@ -939,6 +964,7 @@ class ListSinksResponse(proto.Message):
 
 class GetSinkRequest(proto.Message):
     r"""The parameters to ``GetSink``.
+
     Attributes:
         sink_name (str):
             Required. The resource name of the sink:
@@ -963,6 +989,7 @@ class GetSinkRequest(proto.Message):
 
 class CreateSinkRequest(proto.Message):
     r"""The parameters to ``CreateSink``.
+
     Attributes:
         parent (str):
             Required. The resource in which to create the sink:
@@ -1015,6 +1042,7 @@ class CreateSinkRequest(proto.Message):
 
 class UpdateSinkRequest(proto.Message):
     r"""The parameters to ``UpdateSink``.
+
     Attributes:
         sink_name (str):
             Required. The full resource name of the sink to update,
@@ -1091,6 +1119,7 @@ class UpdateSinkRequest(proto.Message):
 
 class DeleteSinkRequest(proto.Message):
     r"""The parameters to ``DeleteSink``.
+
     Attributes:
         sink_name (str):
             Required. The full resource name of the sink to delete,
@@ -1190,6 +1219,7 @@ class LogExclusion(proto.Message):
 
 class ListExclusionsRequest(proto.Message):
     r"""The parameters to ``ListExclusions``.
+
     Attributes:
         parent (str):
             Required. The parent resource whose exclusions are to be
@@ -1230,6 +1260,7 @@ class ListExclusionsRequest(proto.Message):
 
 class ListExclusionsResponse(proto.Message):
     r"""Result returned from ``ListExclusions``.
+
     Attributes:
         exclusions (Sequence[googlecloudsdk.third_party.gapic_clients.logging_v2.types.LogExclusion]):
             A list of exclusions.
@@ -1257,6 +1288,7 @@ class ListExclusionsResponse(proto.Message):
 
 class GetExclusionRequest(proto.Message):
     r"""The parameters to ``GetExclusion``.
+
     Attributes:
         name (str):
             Required. The resource name of an existing exclusion:
@@ -1281,6 +1313,7 @@ class GetExclusionRequest(proto.Message):
 
 class CreateExclusionRequest(proto.Message):
     r"""The parameters to ``CreateExclusion``.
+
     Attributes:
         parent (str):
             Required. The parent resource in which to create the
@@ -1316,6 +1349,7 @@ class CreateExclusionRequest(proto.Message):
 
 class UpdateExclusionRequest(proto.Message):
     r"""The parameters to ``UpdateExclusion``.
+
     Attributes:
         name (str):
             Required. The resource name of the exclusion to update:
@@ -1364,6 +1398,7 @@ class UpdateExclusionRequest(proto.Message):
 
 class DeleteExclusionRequest(proto.Message):
     r"""The parameters to ``DeleteExclusion``.
+
     Attributes:
         name (str):
             Required. The resource name of an existing exclusion to
@@ -1563,8 +1598,195 @@ class CmekSettings(proto.Message):
     )
 
 
+class GetSettingsRequest(proto.Message):
+    r"""The parameters to
+    [GetSettings][google.logging.v2.ConfigServiceV2.GetSettings].
+
+    See `Enabling CMEK for Log
+    Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
+    for more information.
+
+    Attributes:
+        name (str):
+            Required. The resource for which to retrieve settings.
+
+            ::
+
+                "projects/[PROJECT_ID]/settings"
+                "organizations/[ORGANIZATION_ID]/settings"
+                "billingAccounts/[BILLING_ACCOUNT_ID]/settings"
+                "folders/[FOLDER_ID]/settings"
+
+            For example:
+
+            ``"organizations/12345/settings"``
+
+            Note: Settings for the Log Router can be get for Google
+            Cloud projects, folders, organizations and billing accounts.
+            Currently it can only be configured for organizations. Once
+            configured for an organization, it applies to all projects
+            and folders in the Google Cloud organization.
+    """
+
+    name = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+
+
+class UpdateSettingsRequest(proto.Message):
+    r"""The parameters to
+    [UpdateSettings][google.logging.v2.ConfigServiceV2.UpdateSettings].
+
+    See `Enabling CMEK for Log
+    Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
+    for more information.
+
+    Attributes:
+        name (str):
+            Required. The resource name for the settings to update.
+
+            ::
+
+                "organizations/[ORGANIZATION_ID]/settings"
+
+            For example:
+
+            ``"organizations/12345/settings"``
+
+            Note: Settings for the Log Router can currently only be
+            configured for Google Cloud organizations. Once configured,
+            it applies to all projects and folders in the Google Cloud
+            organization.
+        settings (googlecloudsdk.third_party.gapic_clients.logging_v2.types.Settings):
+            Required. The settings to update.
+
+            See `Enabling CMEK for Log
+            Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
+            for more information.
+        update_mask (google.protobuf.field_mask_pb2.FieldMask):
+            Optional. Field mask identifying which fields from
+            ``settings`` should be updated. A field will be overwritten
+            if and only if it is in the update mask. Output only fields
+            cannot be updated.
+
+            See [FieldMask][google.protobuf.FieldMask] for more
+            information.
+
+            For example: ``"updateMask=kmsKeyName"``
+    """
+
+    name = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    settings = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        message='Settings',
+    )
+    update_mask = proto.Field(
+        proto.MESSAGE,
+        number=3,
+        message=field_mask_pb2.FieldMask,
+    )
+
+
+class Settings(proto.Message):
+    r"""Describes the settings associated with a project, folder,
+    organization, billing account, or flexible resource.
+
+    Attributes:
+        name (str):
+            Output only. The resource name of the
+            settings.
+        kms_key_name (str):
+            Optional. The resource name for the configured Cloud KMS
+            key.
+
+            KMS key name format:
+
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION]/keyRings/[KEYRING]/cryptoKeys/[KEY]"
+
+            For example:
+
+            ``"projects/my-project/locations/us-central1/keyRings/my-ring/cryptoKeys/my-key"``
+
+            To enable CMEK for the Log Router, set this field to a valid
+            ``kms_key_name`` for which the associated service account
+            has the required
+            ``roles/cloudkms.cryptoKeyEncrypterDecrypter`` role assigned
+            for the key.
+
+            The Cloud KMS key used by the Log Router can be updated by
+            changing the ``kms_key_name`` to a new valid key name.
+            Encryption operations that are in progress will be completed
+            with the key that was in use when they started. Decryption
+            operations will be completed using the key that was used at
+            the time of encryption unless access to that key has been
+            revoked.
+
+            To disable CMEK for the Log Router, set this field to an
+            empty string.
+
+            See `Enabling CMEK for Log
+            Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
+            for more information.
+        kms_service_account_id (str):
+            Output only. The service account that will be used by the
+            Log Router to access your Cloud KMS key.
+
+            Before enabling CMEK for Log Router, you must first assign
+            the role ``roles/cloudkms.cryptoKeyEncrypterDecrypter`` to
+            the service account that the Log Router will use to access
+            your Cloud KMS key. Use
+            [GetSettings][google.logging.v2.ConfigServiceV2.GetSettings]
+            to obtain the service account ID.
+
+            See `Enabling CMEK for Log
+            Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
+            for more information.
+        storage_location (str):
+            Optional. The Cloud region that will be used for \_Default
+            and \_Required log buckets for newly created projects and
+            folders. For example ``europe-west1``. This setting does not
+            affect the location of custom log buckets.
+        disable_default_sink (bool):
+            Optional. If set to true, the \_Default sink in newly
+            created projects and folders will created in a disabled
+            state. This can be used to automatically disable log
+            ingestion if there is already an aggregated sink configured
+            in the hierarchy. The \_Default sink can be re-enabled
+            manually if needed.
+    """
+
+    name = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    kms_key_name = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    kms_service_account_id = proto.Field(
+        proto.STRING,
+        number=3,
+    )
+    storage_location = proto.Field(
+        proto.STRING,
+        number=4,
+    )
+    disable_default_sink = proto.Field(
+        proto.BOOL,
+        number=5,
+    )
+
+
 class CopyLogEntriesRequest(proto.Message):
     r"""The parameters to CopyLogEntries.
+
     Attributes:
         name (str):
             Required. Log bucket from which to copy log entries.
@@ -1598,6 +1820,7 @@ class CopyLogEntriesRequest(proto.Message):
 
 class CopyLogEntriesMetadata(proto.Message):
     r"""Metadata for CopyLogEntries long running operations.
+
     Attributes:
         start_time (google.protobuf.timestamp_pb2.Timestamp):
             The create time of an operation.
@@ -1659,6 +1882,7 @@ class CopyLogEntriesMetadata(proto.Message):
 
 class CopyLogEntriesResponse(proto.Message):
     r"""Response type for CopyLogEntries long running operations.
+
     Attributes:
         log_entries_copied_count (int):
             Number of log entries copied.

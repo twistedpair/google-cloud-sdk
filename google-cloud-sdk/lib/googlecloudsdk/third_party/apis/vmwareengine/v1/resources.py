@@ -52,6 +52,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_NETWORKPOLICIES_EXTERNALACCESSRULES = (
+      'projects.locations.networkPolicies.externalAccessRules',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/networkPolicies/'
+              '{networkPoliciesId}/externalAccessRules/'
+              '{externalAccessRulesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_NODETYPES = (
       'projects.locations.nodeTypes',
       '{+name}',
@@ -96,6 +108,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_PRIVATECLOUDS_EXTERNALADDRESSES = (
+      'projects.locations.privateClouds.externalAddresses',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/privateClouds/'
+              '{privateCloudsId}/externalAddresses/{externalAddressesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_PRIVATECLOUDS_HCXACTIVATIONKEYS = (
       'projects.locations.privateClouds.hcxActivationKeys',
       '{+name}',
@@ -103,6 +126,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/privateClouds/'
               '{privateCloudsId}/hcxActivationKeys/{hcxActivationKeysId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_VMWAREENGINENETWORKS = (
+      'projects.locations.vmwareEngineNetworks',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'vmwareEngineNetworks/{vmwareEngineNetworksId}',
       },
       ['name'],
       True

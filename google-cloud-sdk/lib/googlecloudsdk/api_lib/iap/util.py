@@ -46,6 +46,7 @@ IAP_WEB_COLLECTION = 'iap.projects.iap_web'
 IAP_WEB_SERVICES_COLLECTION = 'iap.projects.iap_web.services'
 IAP_WEB_SERVICES_VERSIONS_COLLECTION = 'iap.projects.iap_web.services.versions'
 IAP_GATEWAY_COLLECTION = 'iap.projects.iap_gateway'
+IAP_TCP_DESTGROUP_COLLECTION = 'iap.projects.iap_tcp.dest_groups'
 
 
 def _ApiVersion(release_track):
@@ -513,3 +514,26 @@ class IapSettingsResource(object):
     request = self.messages.IapUpdateIapSettingsRequest(
         iapSettings=iap_settings, name=self.resource_name)
     return self.service.UpdateIapSettings(request)
+
+
+class IapTunnelDestGroupResource(IapIamResource):
+  """IAP TCP tunnelDestGroup IAM resource."""
+
+  def __init__(self, release_track, project, region, group_name):
+    super(IapTunnelDestGroupResource, self).__init__(release_track, project)
+    self.region = region
+    self.group_name = group_name
+
+  def _Name(self):
+    return 'iap_tunneldestgroups'
+
+  def _Parse(self):
+    project = _GetProject(self.project)
+    return self.registry.Parse(
+        None,
+        params={
+            'project': project.projectNumber,
+            'region': self.region,
+            'groupId': self.group_name,
+        },
+        collection=IAP_TCP_DESTGROUP_COLLECTION)

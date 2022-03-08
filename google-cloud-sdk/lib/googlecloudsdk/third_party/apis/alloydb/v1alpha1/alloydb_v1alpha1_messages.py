@@ -614,7 +614,8 @@ class Backup(_messages.Message):
     LabelsValue: Labels as key value pairs
 
   Fields:
-    clusterName: Required. The backup source cluster.
+    clusterName: Required. The full resource name of the backup source cluster
+      (e.g., projects//locations//clusters/).
     createTime: Output only. Create time stamp
     description: Optional. User-provided description of the backup.
     labels: Labels as key value pairs
@@ -639,11 +640,13 @@ class Backup(_messages.Message):
       READY: The backup is ready.
       CREATING: The backup is creating.
       FAILED: The backup failed.
+      DELETING: The backup is being deleted.
     """
     STATE_UNSPECIFIED = 0
     READY = 1
     CREATING = 2
     FAILED = 3
+    DELETING = 4
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The backup type, which suggests the trigger for the backup.
@@ -698,7 +701,7 @@ class CancelOperationRequest(_messages.Message):
 
 
 class Cluster(_messages.Message):
-  r"""Message describing Cluster object NEXT_ID: 14
+  r"""Message describing Cluster object NEXT_ID: 16
 
   Enums:
     DatabaseVersionValueValuesEnum: Output only. The database engine major
@@ -746,7 +749,7 @@ class Cluster(_messages.Message):
 
     Values:
       DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
-      POSTGRES_13: The database version is Postgres 13.
+      POSTGRES_13: DEPRECATED - The database version is Postgres 13.
       POSTGRES_14: The database version is Postgres 14.
     """
     DATABASE_VERSION_UNSPECIFIED = 0
@@ -1589,7 +1592,7 @@ class SupportedDatabaseFlag(_messages.Message):
 
     Values:
       DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
-      POSTGRES_13: The database version is Postgres 13.
+      POSTGRES_13: DEPRECATED - The database version is Postgres 13.
       POSTGRES_14: The database version is Postgres 14.
     """
     DATABASE_VERSION_UNSPECIFIED = 0

@@ -44,12 +44,6 @@ USER_PROJECT_ERROR_REASON = 'USER_PROJECT_DENIED'
 USER_PROJECT_ERROR_DOMAIN = 'googleapis.com'
 
 
-# TODO(b/204349801): Avoid using the hardcoded error message.
-USER_PROJECT_OVERRIDE_ERR_MSG = (
-    'Grant the caller the roles/serviceusage.serviceUsageConsumer role, or '
-    'a custom role with the serviceusage.services.use permission')
-
-
 class QuotaHandlerMixin(object):
   """Mixin for handling quota project."""
 

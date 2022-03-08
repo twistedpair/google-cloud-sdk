@@ -179,7 +179,9 @@ def _SetBuildSteps(tag, no_cache, messages, substitutions, arg_config,
           '--pack',
           'Image value must be in the *gcr.io* or *pkg.dev* namespace')
     env = buildpack[0].get('env')
-    pack_args = ['build', image, '--builder', builder]
+    pack_args = [
+        'build', image, '--network', 'cloudbuild', '--builder', builder
+    ]
     if env is not None:
       pack_args.append('--env')
       pack_args.append(env)

@@ -606,7 +606,7 @@
           }
         },
         "hostname": {
-          "description": "A Hostname (FQDN, e.g. example.com) or a wildcard hostname expression (*.example.com) for a set of hostnames with common suffix. Used as Server Name Indication (SNI) for selecting a proper certificate.",
+          "description": "A Hostname (FQDN, e.g. `example.com`) or a wildcard hostname expression (`*.example.com`) for a set of hostnames with common suffix. Used as Server Name Indication (SNI) for selecting a proper certificate.",
           "type": "string"
         },
         "matcher": {
@@ -703,7 +703,7 @@
           "type": "string"
         },
         "domain": {
-          "description": "Required. Immutable. A domain which is being authorized. A DnsAuthorization resource covers a single domain and its wildcard, e.g. authorization for \"example.com\" can be used to issue certificates for \"example.com\" and \"*.example.com\".",
+          "description": "Required. Immutable. A domain which is being authorized. A DnsAuthorization resource covers a single domain and its wildcard, e.g. authorization for `example.com` can be used to issue certificates for `example.com` and `*.example.com`.",
           "type": "string"
         },
         "dnsResourceRecord": {
@@ -719,7 +719,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Fully qualified name of the DNS Resource Record. e.g. \"_acme-challenge.example.com.\"",
+          "description": "Output only. Fully qualified name of the DNS Resource Record. e.g. `_acme-challenge.example.com`",
           "readOnly": true,
           "type": "string"
         },

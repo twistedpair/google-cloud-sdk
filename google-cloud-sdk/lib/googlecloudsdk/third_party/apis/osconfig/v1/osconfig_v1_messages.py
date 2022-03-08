@@ -281,10 +281,11 @@ class Date(_messages.Message):
   time of day and time zone are either specified elsewhere or are
   insignificant. The date is relative to the Gregorian Calendar. This can
   represent one of the following: * A full date, with non-zero year, month,
-  and day values * A month and day, with a zero year (e.g., an anniversary) *
-  A year on its own, with a zero month and a zero day * A year and month, with
-  a zero day (e.g., a credit card expiration date) Related types: *
-  google.type.TimeOfDay * google.type.DateTime * google.protobuf.Timestamp
+  and day values. * A month and day, with a zero year (for example, an
+  anniversary). * A year on its own, with a zero month and a zero day. * A
+  year and month, with a zero day (for example, a credit card expiration
+  date). Related types: * google.type.TimeOfDay * google.type.DateTime *
+  google.protobuf.Timestamp
 
   Fields:
     day: Day of a month. Must be from 1 to 31 and valid for the year and
@@ -2110,8 +2111,19 @@ class OsconfigProjectsLocationsInstancesVulnerabilityReportsListRequest(_message
   object.
 
   Fields:
-    filter: If provided, this field specifies the criteria that must be met by
-      a `vulnerabilityReport` API resource to be included in the response.
+    filter: This field supports filtering by the severity level for the
+      vulnerability. For a list of severity levels, see [Severity levels for
+      vulnerabilities](https://cloud.google.com/container-
+      analysis/docs/container-scanning-
+      overview#severity_levels_for_vulnerabilities). The filter field follows
+      the rules described in the [AIP-160](https://google.aip.dev/160)
+      guidelines as follows: + **Filter for a specific severity type**: you
+      can list reports that contain vulnerabilities that are classified as
+      medium by specifying `vulnerabilities.details.severity:MEDIUM`. +
+      **Filter for a range of severities** : you can list reports that have
+      vulnerabilities that are classified as critical or high by specifying
+      `vulnerabilities.details.severity:HIGH OR
+      vulnerabilities.details.severity:CRITICAL`
     pageSize: The maximum number of results to return.
     pageToken: A pagination token returned from a previous call to
       `ListVulnerabilityReports` that indicates where this listing should

@@ -426,6 +426,13 @@ def AddIosTestArgs(parser):
       'default: the bundle ID for the iOS application). All tests '
       'which use the same history name will have their results grouped '
       'together in the Firebase console in a time-ordered test history list.')
+  parser.add_argument(
+      '--app',
+      help='The path to the application archive (.ipa file) for game-loop '
+           'testing. The path may be in the local filesystem or in Google '
+           'Cloud Storage using gs:// notation. This flag is only valid when '
+           '*--type=game-loop* is also set.'
+  )
 
   # The following args are specific to iOS xctest tests.
   parser.add_argument(
@@ -623,13 +630,6 @@ def AddIosBetaArgs(parser):
            'specified in one test matrix, but the maximum number may also be '
            'limited by the overall test *--timeout* setting. This flag is only '
            'valid when *--type=game-loop* is also set.'
-  )
-  parser.add_argument(
-      '--app',
-      help='The path to the application archive (.ipa file) for game-loop '
-           'testing. The path may be in the local filesystem or in Google '
-           'Cloud Storage using gs:// notation. This flag is only valid when '
-           '*--type=game-loop* is also set.'
   )
 
 

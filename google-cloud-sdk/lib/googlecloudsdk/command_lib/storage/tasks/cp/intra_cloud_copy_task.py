@@ -32,6 +32,7 @@ from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_status
+from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
 
 
 class IntraCloudCopyTask(task.Task):
@@ -40,6 +41,7 @@ class IntraCloudCopyTask(task.Task):
   def __init__(self,
                source_resource,
                destination_resource,
+               delete_source=False,
                user_request_args=None):
     """Initializes task.
 
@@ -49,6 +51,8 @@ class IntraCloudCopyTask(task.Task):
       destination_resource (resource_reference.Resource): Must
         contain the full object path. Directories will not be accepted.
         Existing objects at the this location will be overwritten.
+      delete_source (bool): If copy completes successfully, delete the source
+        object afterwards.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
     super(IntraCloudCopyTask, self).__init__()
@@ -62,6 +66,7 @@ class IntraCloudCopyTask(task.Task):
 
     self._source_resource = source_resource
     self._destination_resource = destination_resource
+    self._delete_source = delete_source
     self._user_request_args = user_request_args
     self.parallel_processing_key = (
         self._destination_resource.storage_url.url_string)
@@ -89,3 +94,11 @@ class IntraCloudCopyTask(task.Task):
         self._destination_resource,
         request_config,
         progress_callback=progress_callback)
+
+    if self._delete_source:
+      return task.Output(
+          additional_task_iterators=[[
+              delete_object_task.DeleteObjectTask(
+                  self._source_resource.storage_url)
+          ]],
+          messages=None)

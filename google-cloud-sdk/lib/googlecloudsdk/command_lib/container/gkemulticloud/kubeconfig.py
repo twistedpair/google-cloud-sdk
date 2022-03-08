@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2021 Google LLC. All Rights Reserved.
+# Copyright 2022 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,9 +23,9 @@ import os
 
 from googlecloudsdk.api_lib.container import kubeconfig as kubeconfig_util
 from googlecloudsdk.api_lib.container import util
+from googlecloudsdk.command_lib.container.fleet import connect_gateway_util
+from googlecloudsdk.command_lib.container.fleet import gwkubeconfig_util
 from googlecloudsdk.command_lib.container.gkemulticloud import errors
-from googlecloudsdk.command_lib.container.hub import connect_gateway_util
-from googlecloudsdk.command_lib.container.hub import gwkubeconfig_util
 from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log

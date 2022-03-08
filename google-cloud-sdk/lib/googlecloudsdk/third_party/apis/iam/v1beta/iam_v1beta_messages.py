@@ -147,16 +147,6 @@ class GoogleIamV1betaWorkloadIdentityPool(_messages.Message):
       is re-enabled, existing tokens grant access again.
     displayName: A display name for the pool. Cannot exceed 32 characters.
     name: Output only. The resource name of the pool.
-    sessionDuration: Overrides the lifespan of access tokens issued when
-      federating using this pool. If not set, the lifespan of issued access
-      tokens is computed based on the type of identity provider: - For AWS
-      providers, the default access token lifespan is equal to 15 minutes. -
-      For OIDC providers, the default access token lifespan is equal to the
-      remaining lifespan of the exchanged OIDC ID token, with a maximum limit
-      of 1 hour. If set, session duration must be between 2 minutes and 12
-      hours. Organization administrators can further restrict the maximum
-      allowed session_duration value using the iam-
-      workloadIdentitySessionDuration Resource Setting.
     state: Output only. The state of the pool.
   """
 
@@ -182,8 +172,7 @@ class GoogleIamV1betaWorkloadIdentityPool(_messages.Message):
   disabled = _messages.BooleanField(2)
   displayName = _messages.StringField(3)
   name = _messages.StringField(4)
-  sessionDuration = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class GoogleIamV1betaWorkloadIdentityPoolProvider(_messages.Message):
@@ -299,7 +288,6 @@ class GoogleIamV1betaWorkloadIdentityPoolProvider(_messages.Message):
     displayName: A display name for the provider. Cannot exceed 32 characters.
     name: Output only. The resource name of the provider.
     oidc: An OpenId Connect 1.0 identity provider.
-    saml: An SAML 2.0 identity provider.
     state: Output only. The state of the provider.
   """
 
@@ -394,8 +382,7 @@ class GoogleIamV1betaWorkloadIdentityPoolProvider(_messages.Message):
   displayName = _messages.StringField(6)
   name = _messages.StringField(7)
   oidc = _messages.MessageField('GoogleIamV1betaWorkloadIdentityPoolProviderOidc', 8)
-  saml = _messages.MessageField('GoogleIamV1betaWorkloadIdentityPoolProviderSaml', 9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
 
 
 class GoogleIamV1betaWorkloadIdentityPoolProviderAws(_messages.Message):
@@ -426,28 +413,6 @@ class GoogleIamV1betaWorkloadIdentityPoolProviderOidc(_messages.Message):
 
   allowedAudiences = _messages.StringField(1, repeated=True)
   issuerUri = _messages.StringField(2)
-
-
-class GoogleIamV1betaWorkloadIdentityPoolProviderSaml(_messages.Message):
-  r"""Represents an SAML 2.0 identity provider.
-
-  Fields:
-    idpMetadataXml: Required. SAML Identity provider configuration metadata
-      xml doc. The xml document should comply with [SAML 2.0
-      specification](https://docs.oasis-open.org/security/saml/v2.0/saml-
-      metadata-2.0-os.pdf). The max size of the acceptable xml document will
-      be bounded to 128k characters. The metadata xml document should satisfy
-      the following constraints: 1) Must contain an Identity Provider Entity
-      ID. 2) Must contain at least one non-expired signing key certificate. 3)
-      For each signing key: a) Valid from should be no more than 7 days from
-      now. b) Valid to should be no more than 10 years in the future. 4) Upto
-      3 IdP signing keys are allowed in the metadata xml. When updating the
-      provider's metadata xml, at lease one non-expired signing key must
-      overlap with the existing metadata. This requirement is skipped if there
-      are no non-expired signing keys present in the existing metadata
-  """
-
-  idpMetadataXml = _messages.StringField(1)
 
 
 class GoogleLongrunningOperation(_messages.Message):

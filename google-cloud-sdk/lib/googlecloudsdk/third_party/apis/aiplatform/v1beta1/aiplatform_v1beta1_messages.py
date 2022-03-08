@@ -1503,32 +1503,6 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesPatchRequest(_m
   updateMask = _messages.StringField(3)
 
 
-class AiplatformProjectsLocationsFeaturestoresEntityTypesGetIamPolicyRequest(_messages.Message):
-  r"""A AiplatformProjectsLocationsFeaturestoresEntityTypesGetIamPolicyRequest
-  object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
 class AiplatformProjectsLocationsFeaturestoresEntityTypesGetRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsFeaturestoresEntityTypesGetRequest object.
 
@@ -1722,22 +1696,6 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesReadFeatureValuesReques
   googleCloudAiplatformV1beta1ReadFeatureValuesRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1ReadFeatureValuesRequest', 2)
 
 
-class AiplatformProjectsLocationsFeaturestoresEntityTypesSetIamPolicyRequest(_messages.Message):
-  r"""A AiplatformProjectsLocationsFeaturestoresEntityTypesSetIamPolicyRequest
-  object.
-
-  Fields:
-    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
-      to be passed as the request body.
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
 class AiplatformProjectsLocationsFeaturestoresEntityTypesStreamingReadFeatureValuesRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsFeaturestoresEntityTypesStreamingReadFeatur
   eValuesRequest object.
@@ -1755,40 +1713,6 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesStreamingReadFeatureVal
 
   entityType = _messages.StringField(1, required=True)
   googleCloudAiplatformV1beta1StreamingReadFeatureValuesRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1StreamingReadFeatureValuesRequest', 2)
-
-
-class AiplatformProjectsLocationsFeaturestoresEntityTypesTestIamPermissionsRequest(_messages.Message):
-  r"""A
-  AiplatformProjectsLocationsFeaturestoresEntityTypesTestIamPermissionsRequest
-  object.
-
-  Fields:
-    permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
-      For more information see [IAM
-      Overview](https://cloud.google.com/iam/docs/overview#permissions).
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
-  """
-
-  permissions = _messages.StringField(1, repeated=True)
-  resource = _messages.StringField(2, required=True)
-
-
-class AiplatformProjectsLocationsFeaturestoresGetIamPolicyRequest(_messages.Message):
-  r"""A AiplatformProjectsLocationsFeaturestoresGetIamPolicyRequest object.
-
-  Fields:
-    googleIamV1GetIamPolicyRequest: A GoogleIamV1GetIamPolicyRequest resource
-      to be passed as the request body.
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  googleIamV1GetIamPolicyRequest = _messages.MessageField('GoogleIamV1GetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
 
 
 class AiplatformProjectsLocationsFeaturestoresGetRequest(_messages.Message):
@@ -1982,38 +1906,6 @@ class AiplatformProjectsLocationsFeaturestoresSearchFeaturesRequest(_messages.Me
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   query = _messages.StringField(4)
-
-
-class AiplatformProjectsLocationsFeaturestoresSetIamPolicyRequest(_messages.Message):
-  r"""A AiplatformProjectsLocationsFeaturestoresSetIamPolicyRequest object.
-
-  Fields:
-    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
-      to be passed as the request body.
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class AiplatformProjectsLocationsFeaturestoresTestIamPermissionsRequest(_messages.Message):
-  r"""A AiplatformProjectsLocationsFeaturestoresTestIamPermissionsRequest
-  object.
-
-  Fields:
-    googleIamV1TestIamPermissionsRequest: A
-      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
-      request body.
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
-  """
-
-  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
-  resource = _messages.StringField(2, required=True)
 
 
 class AiplatformProjectsLocationsGetRequest(_messages.Message):
@@ -3487,7 +3379,7 @@ class AiplatformProjectsLocationsModelDeploymentMonitoringJobsSearchModelDeploym
       tsAnomaliesRequest resource to be passed as the request body.
     modelDeploymentMonitoringJob: Required. ModelDeploymentMonitoring Job
       resource name. Format: `projects/{project}/locations/{location}/modelDep
-      loymentMonitoringJobs/{model_deployment_monitoring_job}
+      loymentMonitoringJobs/{model_deployment_monitoring_job}`
   """
 
   googleCloudAiplatformV1beta1SearchModelDeploymentMonitoringStatsAnomaliesRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1SearchModelDeploymentMonitoringStatsAnomaliesRequest', 1)
@@ -9552,6 +9444,8 @@ class GoogleCloudAiplatformUiFeatureStatsAnomaly(_messages.Message):
       objectives where time window doesn't make sense (e.g. Featurestore
       Snapshot Monitoring), end_time indicates the timestamp of the data used
       to generate stats (e.g. timestamp we take snapshots for feature values).
+    predictionDataQuery: The SQL query to look at raw prediction data logged
+      to BigQuery for this statistics. .
     score: Feature importance score, only populated when cross-feature
       monitoring is enabled. For now only used to represent feature
       attribution score within range [0, 1] for
@@ -9568,8 +9462,9 @@ class GoogleCloudAiplatformUiFeatureStatsAnomaly(_messages.Message):
   dataStats = _messages.MessageField('GoogleCloudAiplatformUiDataStats', 3)
   distributionDeviation = _messages.FloatField(4)
   endTime = _messages.StringField(5)
-  score = _messages.FloatField(6)
-  startTime = _messages.StringField(7)
+  predictionDataQuery = _messages.StringField(6)
+  score = _messages.FloatField(7)
+  startTime = _messages.StringField(8)
 
 
 class GoogleCloudAiplatformUiFeatureValueDestination(_messages.Message):
@@ -13792,6 +13687,23 @@ class GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadataRecordError(_
   sourceGcsUri = _messages.StringField(5)
 
 
+class GoogleCloudAiplatformV1NfsMount(_messages.Message):
+  r"""Represents a mount configuration for Network File System (NFS) to mount.
+
+  Fields:
+    mountPoint: Required. Destination mount path. The NFS will be mounted for
+      the user under /mnt/nfs/
+    path: Required. Source path exported from NFS server. Has to start with
+      '/', and combined with the ip address, it indicates the source mount
+      path in the form of `server:path`
+    server: Required. IP address of the NFS server.
+  """
+
+  mountPoint = _messages.StringField(1)
+  path = _messages.StringField(2)
+  server = _messages.StringField(3)
+
+
 class GoogleCloudAiplatformV1PrivateEndpoints(_messages.Message):
   r"""PrivateEndpoints proto is used to provide paths for users to send
   requests privately. To send request via private service access, use
@@ -17077,6 +16989,7 @@ class GoogleCloudAiplatformV1WorkerPoolSpec(_messages.Message):
     containerSpec: The custom container task.
     diskSpec: Disk spec.
     machineSpec: Optional. Immutable. The specification of a single machine.
+    nfsMounts: Optional. List of NFS mount spec.
     pythonPackageSpec: The Python packaged task.
     replicaCount: Optional. The number of worker replicas to use for this
       worker pool.
@@ -17085,8 +16998,9 @@ class GoogleCloudAiplatformV1WorkerPoolSpec(_messages.Message):
   containerSpec = _messages.MessageField('GoogleCloudAiplatformV1ContainerSpec', 1)
   diskSpec = _messages.MessageField('GoogleCloudAiplatformV1DiskSpec', 2)
   machineSpec = _messages.MessageField('GoogleCloudAiplatformV1MachineSpec', 3)
-  pythonPackageSpec = _messages.MessageField('GoogleCloudAiplatformV1PythonPackageSpec', 4)
-  replicaCount = _messages.IntegerField(5)
+  nfsMounts = _messages.MessageField('GoogleCloudAiplatformV1NfsMount', 4, repeated=True)
+  pythonPackageSpec = _messages.MessageField('GoogleCloudAiplatformV1PythonPackageSpec', 5)
+  replicaCount = _messages.IntegerField(6)
 
 
 class GoogleCloudAiplatformV1XraiAttribution(_messages.Message):
@@ -17869,6 +17783,8 @@ class GoogleCloudAiplatformV1alpha1MachineSpec(_messages.Message):
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
       NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
+      TPU_V2: TPU v2.
+      TPU_V3: TPU v3.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -17877,6 +17793,8 @@ class GoogleCloudAiplatformV1alpha1MachineSpec(_messages.Message):
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
     NVIDIA_TESLA_A100 = 6
+    TPU_V2 = 7
+    TPU_V3 = 8
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -19477,7 +19395,7 @@ class GoogleCloudAiplatformV1beta1Attribution(_messages.Message):
       by output_index. For example, the predicted class name by a multi-
       classification Model. This field is only populated iff the Model
       predicts display names as a separate field along with the explained
-      output. The predicted display name must have the same shape of the
+      output. The predicted display name must has the same shape of the
       explained output, and can be located using output_index.
     outputIndex: Output only. The index that locates the explained prediction
       output. If the prediction output is a scalar value, output_index is not
@@ -19815,6 +19733,12 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJob(_messages.Message):
       JOB_STATE_CANCELLED: The job has been cancelled.
       JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
       JOB_STATE_EXPIRED: The job has expired.
+      JOB_STATE_UPDATING: The job is being updated. The job is only able to be
+        updated at RUNNING state; if the update operation succeeds, job goes
+        back to RUNNING state; if the update operation fails, the job goes
+        back to RUNNING state with error messages written to
+        ModelDeploymentMonitoringJob.partial_errors field if it is a
+        ModelDeploymentMonitoringJob.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -19826,6 +19750,7 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJob(_messages.Message):
     JOB_STATE_CANCELLED = 7
     JOB_STATE_PAUSED = 8
     JOB_STATE_EXPIRED = 9
+    JOB_STATE_UPDATING = 10
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -20627,6 +20552,12 @@ class GoogleCloudAiplatformV1beta1CustomJob(_messages.Message):
       JOB_STATE_CANCELLED: The job has been cancelled.
       JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
       JOB_STATE_EXPIRED: The job has expired.
+      JOB_STATE_UPDATING: The job is being updated. The job is only able to be
+        updated at RUNNING state; if the update operation succeeds, job goes
+        back to RUNNING state; if the update operation fails, the job goes
+        back to RUNNING state with error messages written to
+        ModelDeploymentMonitoringJob.partial_errors field if it is a
+        ModelDeploymentMonitoringJob.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -20638,6 +20569,7 @@ class GoogleCloudAiplatformV1beta1CustomJob(_messages.Message):
     JOB_STATE_CANCELLED = 7
     JOB_STATE_PAUSED = 8
     JOB_STATE_EXPIRED = 9
+    JOB_STATE_UPDATING = 10
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -20945,6 +20877,12 @@ class GoogleCloudAiplatformV1beta1DataLabelingJob(_messages.Message):
       JOB_STATE_CANCELLED: The job has been cancelled.
       JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
       JOB_STATE_EXPIRED: The job has expired.
+      JOB_STATE_UPDATING: The job is being updated. The job is only able to be
+        updated at RUNNING state; if the update operation succeeds, job goes
+        back to RUNNING state; if the update operation fails, the job goes
+        back to RUNNING state with error messages written to
+        ModelDeploymentMonitoringJob.partial_errors field if it is a
+        ModelDeploymentMonitoringJob.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -20956,6 +20894,7 @@ class GoogleCloudAiplatformV1beta1DataLabelingJob(_messages.Message):
     JOB_STATE_CANCELLED = 7
     JOB_STATE_PAUSED = 8
     JOB_STATE_EXPIRED = 9
+    JOB_STATE_UPDATING = 10
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationLabelsValue(_messages.Message):
@@ -23544,6 +23483,12 @@ class GoogleCloudAiplatformV1beta1HyperparameterTuningJob(_messages.Message):
       JOB_STATE_CANCELLED: The job has been cancelled.
       JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
       JOB_STATE_EXPIRED: The job has expired.
+      JOB_STATE_UPDATING: The job is being updated. The job is only able to be
+        updated at RUNNING state; if the update operation succeeds, job goes
+        back to RUNNING state; if the update operation fails, the job goes
+        back to RUNNING state with error messages written to
+        ModelDeploymentMonitoringJob.partial_errors field if it is a
+        ModelDeploymentMonitoringJob.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -23555,6 +23500,7 @@ class GoogleCloudAiplatformV1beta1HyperparameterTuningJob(_messages.Message):
     JOB_STATE_CANCELLED = 7
     JOB_STATE_PAUSED = 8
     JOB_STATE_EXPIRED = 9
+    JOB_STATE_UPDATING = 10
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -23936,10 +23882,10 @@ class GoogleCloudAiplatformV1beta1IndexEndpoint(_messages.Message):
       [network](https://cloud.google.com/compute/docs/networks-and-
       firewalls#networks) to which the IndexEndpoint should be peered. Private
       services access must already be configured for the network. If left
-      unspecified, the Endpoint is not peered with any network. Only one of
-      the fields, network or enable_private_service_connect, can be set. [Form
-      at](https://cloud.google.com/compute/docs/reference/rest/v1/networks/ins
-      ert): projects/{project}/global/networks/{network}. Where {project} is a
+      unspecified, the Endpoint is not peered with any network. network and
+      private_service_connect_config are mutually exclusive. [Format](https://
+      cloud.google.com/compute/docs/reference/rest/v1/networks/insert):
+      projects/{project}/global/networks/{network}. Where {project} is a
       project number, as in '12345', and {network} is network name.
     updateTime: Output only. Timestamp when this IndexEndpoint was last
       updated. This timestamp is not updated when the endpoint's
@@ -25537,6 +25483,12 @@ class GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringJob(_messages.Message
       JOB_STATE_CANCELLED: The job has been cancelled.
       JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
       JOB_STATE_EXPIRED: The job has expired.
+      JOB_STATE_UPDATING: The job is being updated. The job is only able to be
+        updated at RUNNING state; if the update operation succeeds, job goes
+        back to RUNNING state; if the update operation fails, the job goes
+        back to RUNNING state with error messages written to
+        ModelDeploymentMonitoringJob.partial_errors field if it is a
+        ModelDeploymentMonitoringJob.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -25548,6 +25500,7 @@ class GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringJob(_messages.Message
     JOB_STATE_CANCELLED = 7
     JOB_STATE_PAUSED = 8
     JOB_STATE_EXPIRED = 9
+    JOB_STATE_UPDATING = 10
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -25634,22 +25587,21 @@ class GoogleCloudAiplatformV1beta1ModelEvaluation(_messages.Message):
 
   Fields:
     createTime: Output only. Timestamp when this ModelEvaluation was created.
-    explanationSpecs: Output only. Describes the values of ExplanationSpec
-      that are used for explaining the predicted values on the evaluated data.
-    metrics: Output only. Evaluation metrics of the Model. The schema of the
-      metrics is stored in metrics_schema_uri
-    metricsSchemaUri: Output only. Points to a YAML file stored on Google
-      Cloud Storage describing the metrics of this ModelEvaluation. The schema
-      is defined as an OpenAPI 3.0.2 [Schema
-      Object](https://github.com/OAI/OpenAPI-
+    explanationSpecs: Describes the values of ExplanationSpec that are used
+      for explaining the predicted values on the evaluated data.
+    metrics: Evaluation metrics of the Model. The schema of the metrics is
+      stored in metrics_schema_uri
+    metricsSchemaUri: Points to a YAML file stored on Google Cloud Storage
+      describing the metrics of this ModelEvaluation. The schema is defined as
+      an OpenAPI 3.0.2 [Schema Object](https://github.com/OAI/OpenAPI-
       Specification/blob/main/versions/3.0.2.md#schemaObject).
-    modelExplanation: Output only. Aggregated explanation metrics for the
-      Model's prediction output over the data this ModelEvaluation uses. This
-      field is populated only if the Model is evaluated with explanations, and
-      only for AutoML tabular Models.
+    modelExplanation: Aggregated explanation metrics for the Model's
+      prediction output over the data this ModelEvaluation uses. This field is
+      populated only if the Model is evaluated with explanations, and only for
+      AutoML tabular Models.
     name: Output only. The resource name of the ModelEvaluation.
-    sliceDimensions: Output only. All possible dimensions of
-      ModelEvaluationSlices. The dimensions can be used as the filter of the
+    sliceDimensions: All possible dimensions of ModelEvaluationSlices. The
+      dimensions can be used as the filter of the
       ModelService.ListModelEvaluationSlices request, in the form of
       `slice.dimension = `.
   """
@@ -26247,6 +26199,23 @@ class GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadataRecordEr
   errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 3)
   rawRecord = _messages.StringField(4)
   sourceGcsUri = _messages.StringField(5)
+
+
+class GoogleCloudAiplatformV1beta1NfsMount(_messages.Message):
+  r"""Represents a mount configuration for Network File System (NFS) to mount.
+
+  Fields:
+    mountPoint: Required. Destination mount path. The NFS will be mounted for
+      the user under /mnt/nfs/
+    path: Required. Source path exported from NFS server. Has to start with
+      '/', and combined with the ip address, it indicates the source mount
+      path in the form of `server:path`
+    server: Required. IP address of the NFS server.
+  """
+
+  mountPoint = _messages.StringField(1)
+  path = _messages.StringField(2)
+  server = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1beta1PauseModelDeploymentMonitoringJobRequest(_messages.Message):
@@ -31532,6 +31501,7 @@ class GoogleCloudAiplatformV1beta1WorkerPoolSpec(_messages.Message):
     containerSpec: The custom container task.
     diskSpec: Disk spec.
     machineSpec: Optional. Immutable. The specification of a single machine.
+    nfsMounts: Optional. List of NFS mount spec.
     pythonPackageSpec: The Python packaged task.
     replicaCount: Optional. The number of worker replicas to use for this
       worker pool.
@@ -31540,8 +31510,9 @@ class GoogleCloudAiplatformV1beta1WorkerPoolSpec(_messages.Message):
   containerSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ContainerSpec', 1)
   diskSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1DiskSpec', 2)
   machineSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1MachineSpec', 3)
-  pythonPackageSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1PythonPackageSpec', 4)
-  replicaCount = _messages.IntegerField(5)
+  nfsMounts = _messages.MessageField('GoogleCloudAiplatformV1beta1NfsMount', 4, repeated=True)
+  pythonPackageSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1PythonPackageSpec', 5)
+  replicaCount = _messages.IntegerField(6)
 
 
 class GoogleCloudAiplatformV1beta1WriteTensorboardExperimentDataRequest(_messages.Message):
@@ -31701,203 +31672,6 @@ class GoogleCloudLocationLocation(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
-
-
-class GoogleIamV1Binding(_messages.Message):
-  r"""Associates `members`, or principals, with a `role`.
-
-  Fields:
-    condition: The condition that is associated with this binding. If the
-      condition evaluates to `true`, then this binding applies to the current
-      request. If the condition evaluates to `false`, then this binding does
-      not apply to the current request. However, a different role binding
-      might grant the same role to one or more of the principals in this
-      binding. To learn which resources support conditions in their IAM
-      policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    members: Specifies the principals requesting access for a Cloud Platform
-      resource. `members` can have the following values: * `allUsers`: A
-      special identifier that represents anyone who is on the internet; with
-      or without a Google account. * `allAuthenticatedUsers`: A special
-      identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
-      `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
-      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
-      identifier) representing a user that has been recently deleted. For
-      example, `alice@example.com?uid=123456789012345678901`. If the user is
-      recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding. *
-      `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
-      (plus unique identifier) representing a service account that has been
-      recently deleted. For example, `my-other-
-      app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the
-      service account is undeleted, this value reverts to
-      `serviceAccount:{emailid}` and the undeleted service account retains the
-      role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An
-      email address (plus unique identifier) representing a Google group that
-      has been recently deleted. For example,
-      `admins@example.com?uid=123456789012345678901`. If the group is
-      recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
-    role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
-  """
-
-  condition = _messages.MessageField('GoogleTypeExpr', 1)
-  members = _messages.StringField(2, repeated=True)
-  role = _messages.StringField(3)
-
-
-class GoogleIamV1GetIamPolicyRequest(_messages.Message):
-  r"""Request message for `GetIamPolicy` method.
-
-  Fields:
-    options: OPTIONAL: A `GetPolicyOptions` object for specifying options to
-      `GetIamPolicy`.
-  """
-
-  options = _messages.MessageField('GoogleIamV1GetPolicyOptions', 1)
-
-
-class GoogleIamV1GetPolicyOptions(_messages.Message):
-  r"""Encapsulates settings provided to GetIamPolicy.
-
-  Fields:
-    requestedPolicyVersion: Optional. The maximum policy version that will be
-      used to format the policy. Valid values are 0, 1, and 3. Requests
-      specifying an invalid value will be rejected. Requests for policies with
-      any conditional role bindings must specify version 3. Policies with no
-      conditional role bindings may specify any valid value or leave the field
-      unset. The policy in the response might use the policy version that you
-      specified, or it might use a lower policy version. For example, if you
-      specify version 3, but the policy has no conditional role bindings, the
-      response uses version 1. To learn which resources support conditions in
-      their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-  """
-
-  requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-
-
-class GoogleIamV1Policy(_messages.Message):
-  r"""An Identity and Access Management (IAM) policy, which specifies access
-  controls for Google Cloud resources. A `Policy` is a collection of
-  `bindings`. A `binding` binds one or more `members`, or principals, to a
-  single `role`. Principals can be user accounts, service accounts, Google
-  groups, and domains (such as G Suite). A `role` is a named list of
-  permissions; each `role` can be an IAM predefined role or a user-created
-  custom role. For some types of Google Cloud resources, a `binding` can also
-  specify a `condition`, which is a logical expression that allows access to a
-  resource only if the expression evaluates to `true`. A condition can add
-  constraints based on attributes of the request, the resource, or both. To
-  learn which resources support conditions in their IAM policies, see the [IAM
-  documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
-  "roles/resourcemanager.organizationAdmin", "members": [
-  "user:mike@example.com", "group:admins@example.com", "domain:google.com",
-  "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
-  "roles/resourcemanager.organizationViewer", "members": [
-  "user:eve@example.com" ], "condition": { "title": "expirable access",
-  "description": "Does not grant access after Sep 2020", "expression":
-  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
-
-  Fields:
-    bindings: Associates a list of `members`, or principals, with a `role`.
-      Optionally, may specify a `condition` that determines how and when the
-      `bindings` are applied. Each of the `bindings` must contain at least one
-      principal. The `bindings` in a `Policy` can refer to up to 1,500
-      principals; up to 250 of these principals can be Google groups. Each
-      occurrence of a principal counts towards these limits. For example, if
-      the `bindings` grant 50 different roles to `user:alice@example.com`, and
-      not to any other principal, then you can add another 1,450 principals to
-      the `bindings` in the `Policy`.
-    etag: `etag` is used for optimistic concurrency control as a way to help
-      prevent simultaneous updates of a policy from overwriting each other. It
-      is strongly suggested that systems make use of the `etag` in the read-
-      modify-write cycle to perform policy updates in order to avoid race
-      conditions: An `etag` is returned in the response to `getIamPolicy`, and
-      systems are expected to put that etag in the request to `setIamPolicy`
-      to ensure that their change will be applied to the same version of the
-      policy. **Important:** If you use IAM Conditions, you must include the
-      `etag` field whenever you call `setIamPolicy`. If you omit this field,
-      then IAM allows you to overwrite a version `3` policy with a version `1`
-      policy, and all of the conditions in the version `3` policy are lost.
-    version: Specifies the format of the policy. Valid values are `0`, `1`,
-      and `3`. Requests that specify an invalid value are rejected. Any
-      operation that affects conditional role bindings must specify version
-      `3`. This requirement applies to the following operations: * Getting a
-      policy that includes a conditional role binding * Adding a conditional
-      role binding to a policy * Changing a conditional role binding in a
-      policy * Removing any role binding, with or without a condition, from a
-      policy that includes conditions **Important:** If you use IAM
-      Conditions, you must include the `etag` field whenever you call
-      `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
-      a version `3` policy with a version `1` policy, and all of the
-      conditions in the version `3` policy are lost. If a policy does not
-      include any conditions, operations on that policy may specify any valid
-      version or leave the field unset. To learn which resources support
-      conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-  """
-
-  bindings = _messages.MessageField('GoogleIamV1Binding', 1, repeated=True)
-  etag = _messages.BytesField(2)
-  version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-
-
-class GoogleIamV1SetIamPolicyRequest(_messages.Message):
-  r"""Request message for `SetIamPolicy` method.
-
-  Fields:
-    policy: REQUIRED: The complete policy to be applied to the `resource`. The
-      size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
-  """
-
-  policy = _messages.MessageField('GoogleIamV1Policy', 1)
-
-
-class GoogleIamV1TestIamPermissionsRequest(_messages.Message):
-  r"""Request message for `TestIamPermissions` method.
-
-  Fields:
-    permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
-      For more information see [IAM
-      Overview](https://cloud.google.com/iam/docs/overview#permissions).
-  """
-
-  permissions = _messages.StringField(1, repeated=True)
-
-
-class GoogleIamV1TestIamPermissionsResponse(_messages.Message):
-  r"""Response message for `TestIamPermissions` method.
-
-  Fields:
-    permissions: A subset of `TestPermissionsRequest.permissions` that the
-      caller is allowed.
-  """
-
-  permissions = _messages.StringField(1, repeated=True)
 
 
 class GoogleLongrunningListOperationsResponse(_messages.Message):
@@ -32222,42 +31996,6 @@ class GoogleTypeColor(_messages.Message):
   blue = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   green = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
   red = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
-
-
-class GoogleTypeExpr(_messages.Message):
-  r"""Represents a textual expression in the Common Expression Language (CEL)
-  syntax. CEL is a C-like expression language. The syntax and semantics of CEL
-  are documented at https://github.com/google/cel-spec. Example (Comparison):
-  title: "Summary size limit" description: "Determines if a summary is less
-  than 100 chars" expression: "document.summary.size() < 100" Example
-  (Equality): title: "Requestor is owner" description: "Determines if
-  requestor is the document owner" expression: "document.owner ==
-  request.auth.claims.email" Example (Logic): title: "Public documents"
-  description: "Determine whether the document should be publicly visible"
-  expression: "document.type != 'private' && document.type != 'internal'"
-  Example (Data Manipulation): title: "Notification string" description:
-  "Create a notification string with a timestamp." expression: "'New message
-  received at ' + string(document.create_time)" The exact variables and
-  functions that may be referenced within an expression are determined by the
-  service that evaluates it. See the service documentation for additional
-  information.
-
-  Fields:
-    description: Optional. Description of the expression. This is a longer
-      text which describes the expression, e.g. when hovered over it in a UI.
-    expression: Textual representation of an expression in Common Expression
-      Language syntax.
-    location: Optional. String indicating the location of the expression for
-      error reporting, e.g. a file name and a position in the file.
-    title: Optional. Title for the expression, i.e. a short string describing
-      its purpose. This can be used e.g. in UIs which allow to enter the
-      expression.
-  """
-
-  description = _messages.StringField(1)
-  expression = _messages.StringField(2)
-  location = _messages.StringField(3)
-  title = _messages.StringField(4)
 
 
 class GoogleTypeMoney(_messages.Message):

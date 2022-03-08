@@ -23,7 +23,7 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import resources
 
-_DEFAULT_API_VERSION = 'v1alpha1'
+_DEFAULT_API_VERSION = 'v1'
 
 # The maximum amount of time to wait in between polling long-running operations.
 _WAIT_CEILING_MS = 10 * 1000

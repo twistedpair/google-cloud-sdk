@@ -39,6 +39,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.effectiveTags = self.EffectiveTagsService(self)
     self.folders = self.FoldersService(self)
     self.liens = self.LiensService(self)
     self.operations = self.OperationsService(self)
@@ -48,6 +49,42 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
     self.tagKeys = self.TagKeysService(self)
     self.tagValues_tagHolds = self.TagValuesTagHoldsService(self)
     self.tagValues = self.TagValuesService(self)
+
+  class EffectiveTagsService(base_api.BaseApiService):
+    """Service class for the effectiveTags resource."""
+
+    _NAME = 'effectiveTags'
+
+    def __init__(self, client):
+      super(CloudresourcemanagerV3.EffectiveTagsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Return a list of effective tags for the given cloud resource, as specified in `parent`.
+
+      Args:
+        request: (CloudresourcemanagerEffectiveTagsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListEffectiveTagsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='cloudresourcemanager.effectiveTags.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=['pageSize', 'pageToken', 'parent'],
+        relative_path='v3/effectiveTags',
+        request_field='',
+        request_type_name='CloudresourcemanagerEffectiveTagsListRequest',
+        response_type_name='ListEffectiveTagsResponse',
+        supports_download=False,
+    )
 
   class FoldersService(base_api.BaseApiService):
     """Service class for the folders resource."""

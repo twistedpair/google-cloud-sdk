@@ -37,6 +37,7 @@ from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.command_lib.storage.tasks.cp import upload_util
+from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
@@ -409,6 +410,7 @@ class DaisyChainCopyTask(task.Task):
   def __init__(self,
                source_resource,
                destination_resource,
+               delete_source=False,
                user_request_args=None):
     """Initializes task.
 
@@ -420,6 +422,8 @@ class DaisyChainCopyTask(task.Task):
         contain the full object path. Object may not exist yet.
         Existing objects at the this location will be overwritten.
         Directories will not be accepted.
+      delete_source (bool): If copy completes successfully, delete the source
+        object afterwards.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
     super(DaisyChainCopyTask, self).__init__()
@@ -431,6 +435,7 @@ class DaisyChainCopyTask(task.Task):
 
     self._source_resource = source_resource
     self._destination_resource = destination_resource
+    self._delete_source = delete_source
     self._user_request_args = user_request_args
     self.parallel_processing_key = (
         self._destination_resource.storage_url.url_string)
@@ -510,3 +515,11 @@ class DaisyChainCopyTask(task.Task):
     buffer_controller.readable_stream.close()
     if buffer_controller.exception_raised:
       raise buffer_controller.exception_raised
+
+    if self._delete_source:
+      return task.Output(
+          additional_task_iterators=[[
+              delete_object_task.DeleteObjectTask(
+                  self._source_resource.storage_url)
+          ]],
+          messages=None)

@@ -441,6 +441,10 @@
           "description": "The content that this instance serves.",
           "type": "string"
         },
+        "contentBuildVersion": {
+          "description": "The user-specified version tag and build ID of the content served in this realm.",
+          "$ref": "BuildVersion"
+        },
         "apiEndpoint": {
           "description": "Output only. The API endpoint to which an Stream client can connect to request a streaming session.",
           "readOnly": true,

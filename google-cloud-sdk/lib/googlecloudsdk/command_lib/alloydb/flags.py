@@ -251,7 +251,7 @@ def AddMachineCPU(parser):
       '--machine-cpu',
       required=True,
       type=int,
-      choices=[8, 16, 32],
+      choices=[4, 8, 16, 32, 64],
       help=(
           'Whole number value indicating how many vCPUs the machine should '
           'contain. Each vCPU count corresponds to a N2 high-mem machine: '

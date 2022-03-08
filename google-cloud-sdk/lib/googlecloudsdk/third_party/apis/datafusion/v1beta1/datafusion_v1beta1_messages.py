@@ -48,20 +48,6 @@ class Accelerator(_messages.Message):
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 1)
 
 
-class AddDnsPeeringRequest(_messages.Message):
-  r"""Request message to create dns peering.
-
-  Fields:
-    dnsPeering: Dns peering config.
-  """
-
-  dnsPeering = _messages.MessageField('DnsPeering', 1)
-
-
-class AddDnsPeeringResponse(_messages.Message):
-  r"""Response message for set dns peering method."""
-
-
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -230,45 +216,49 @@ class DatafusionProjectsLocationsInstancesDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class DatafusionProjectsLocationsInstancesDnsPeeringsAddRequest(_messages.Message):
-  r"""A DatafusionProjectsLocationsInstancesDnsPeeringsAddRequest object.
+class DatafusionProjectsLocationsInstancesDnsPeeringsCreateRequest(_messages.Message):
+  r"""A DatafusionProjectsLocationsInstancesDnsPeeringsCreateRequest object.
 
   Fields:
-    addDnsPeeringRequest: A AddDnsPeeringRequest resource to be passed as the
-      request body.
+    dnsPeering: A DnsPeering resource to be passed as the request body.
     parent: Required. The resource on which DNS peering will be created.
   """
 
-  addDnsPeeringRequest = _messages.MessageField('AddDnsPeeringRequest', 1)
+  dnsPeering = _messages.MessageField('DnsPeering', 1)
   parent = _messages.StringField(2, required=True)
+
+
+class DatafusionProjectsLocationsInstancesDnsPeeringsDeleteRequest(_messages.Message):
+  r"""A DatafusionProjectsLocationsInstancesDnsPeeringsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the DNS peering zone to delete. Format: projec
+      ts/{project}/locations/{location}/instances/{instance}/dnsPeerings/{dns_
+      peering}
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class DatafusionProjectsLocationsInstancesDnsPeeringsListRequest(_messages.Message):
   r"""A DatafusionProjectsLocationsInstancesDnsPeeringsListRequest object.
 
   Fields:
-    pageSize: The maximum number of items to return.
-    pageToken: The next_page_token value to use if there are additional
-      results to retrieve for this list request.
-    parent: Required. The resource on which dns peering will be listed.
+    pageSize: The maximum number of dns peerings to return. The service may
+      return fewer than this value. If unspecified, at most 10 dns peerings
+      will be returned. The maximum value is 50; values above 50 will be
+      coerced to 50.
+    pageToken: A page token, received from a previous `ListDnsPeerings` call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to `ListDnsPeerings` must match the call that
+      provided the page token.
+    parent: Required. The parent, which owns this collection of dns peerings.
+      Format: projects/{project}/locations/{location}/instances/{instance}
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
-
-
-class DatafusionProjectsLocationsInstancesDnsPeeringsRemoveRequest(_messages.Message):
-  r"""A DatafusionProjectsLocationsInstancesDnsPeeringsRemoveRequest object.
-
-  Fields:
-    parent: Required. The resource on which DNS peering will be removed.
-    removeDnsPeeringRequest: A RemoveDnsPeeringRequest resource to be passed
-      as the request body.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  removeDnsPeeringRequest = _messages.MessageField('RemoveDnsPeeringRequest', 2)
 
 
 class DatafusionProjectsLocationsInstancesGetIamPolicyRequest(_messages.Message):
@@ -625,19 +615,21 @@ class DnsPeering(_messages.Message):
 
   Fields:
     description: Optional. Optional description of the dns zone.
-    domain: Required. Name of the dns.
+    domain: Required. The dns name suffix of the zone.
+    name: Required. The resource name of the dns peering zone. Format: project
+      s/{project}/locations/{location}/instances/{instance}/dnsPeerings/{dns_p
+      eering}
     targetNetwork: Optional. Optional target network to which dns peering
       should happen.
     targetProject: Optional. Optional target project to which dns peering
       should happen.
-    zone: Required. Name of the zone.
   """
 
   description = _messages.StringField(1)
   domain = _messages.StringField(2)
-  targetNetwork = _messages.StringField(3)
-  targetProject = _messages.StringField(4)
-  zone = _messages.StringField(5)
+  name = _messages.StringField(3)
+  targetNetwork = _messages.StringField(4)
+  targetProject = _messages.StringField(5)
 
 
 class Empty(_messages.Message):
@@ -922,12 +914,12 @@ class ListAvailableVersionsResponse(_messages.Message):
 
 
 class ListDnsPeeringsResponse(_messages.Message):
-  r"""List dns peering response.
+  r"""Response message for list DNS peerings.
 
   Fields:
-    dnsPeerings: List of dns peering configs.
-    nextPageToken: Token to retrieve the next page of results or empty if
-      there are no more results in the list.
+    dnsPeerings: List of dns peering.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
   """
 
   dnsPeerings = _messages.MessageField('DnsPeering', 1, repeated=True)
@@ -1312,20 +1304,6 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-
-
-class RemoveDnsPeeringRequest(_messages.Message):
-  r"""Request message to remove dns peering.
-
-  Fields:
-    zone: Required. The zone to be removed.
-  """
-
-  zone = _messages.StringField(1)
-
-
-class RemoveDnsPeeringResponse(_messages.Message):
-  r"""Response message for set dns peering method."""
 
 
 class RemoveIamPolicyRequest(_messages.Message):

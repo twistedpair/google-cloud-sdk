@@ -16,12 +16,11 @@
 import warnings
 from typing import Awaitable, Callable, Dict, Optional, Sequence, Tuple, Union
 
-from google.api_core import gapic_v1                   # type: ignore
-from google.api_core import grpc_helpers_async         # type: ignore
-from google.api_core import operations_v1              # type: ignore
+from google.api_core import gapic_v1
+from google.api_core import grpc_helpers_async
+from google.api_core import operations_v1
 from google.auth import credentials as ga_credentials   # type: ignore
 from google.auth.transport.grpc import SslCredentials  # type: ignore
-import packaging.version
 
 import grpc                        # type: ignore
 from grpc.experimental import aio  # type: ignore
@@ -102,6 +101,7 @@ class ConfigServiceV2GrpcAsyncIOTransport(ConfigServiceV2Transport):
             client_cert_source_for_mtls: Callable[[], Tuple[bytes, bytes]] = None,
             quota_project_id=None,
             client_info: gapic_v1.client_info.ClientInfo = DEFAULT_CLIENT_INFO,
+            always_use_jwt_access: Optional[bool] = False,
             ) -> None:
         """Instantiate the transport.
 
@@ -125,16 +125,16 @@ class ConfigServiceV2GrpcAsyncIOTransport(ConfigServiceV2Transport):
             api_mtls_endpoint (Optional[str]): Deprecated. The mutual TLS endpoint.
                 If provided, it overrides the ``host`` argument and tries to create
                 a mutual TLS channel with client SSL credentials from
-                ``client_cert_source`` or applicatin default SSL credentials.
+                ``client_cert_source`` or application default SSL credentials.
             client_cert_source (Optional[Callable[[], Tuple[bytes, bytes]]]):
                 Deprecated. A callback to provide client SSL certificate bytes and
                 private key bytes, both in PEM format. It is ignored if
                 ``api_mtls_endpoint`` is None.
             ssl_channel_credentials (grpc.ChannelCredentials): SSL credentials
-                for grpc channel. It is ignored if ``channel`` is provided.
+                for the grpc channel. It is ignored if ``channel`` is provided.
             client_cert_source_for_mtls (Optional[Callable[[], Tuple[bytes, bytes]]]):
                 A callback to provide client certificate bytes and private key bytes,
-                both in PEM format. It is used to configure mutual TLS channel. It is
+                both in PEM format. It is used to configure a mutual TLS channel. It is
                 ignored if ``channel`` or ``ssl_channel_credentials`` is provided.
             quota_project_id (Optional[str]): An optional project to use for billing
                 and quota.
@@ -143,6 +143,8 @@ class ConfigServiceV2GrpcAsyncIOTransport(ConfigServiceV2Transport):
                 API requests. If ``None``, then default info will be used.
                 Generally, you only need to set this if you're developing
                 your own client library.
+            always_use_jwt_access (Optional[bool]): Whether self signed JWT should
+                be used for service account credentials.
 
         Raises:
             google.auth.exceptions.MutualTlsChannelError: If mutual TLS transport
@@ -153,7 +155,7 @@ class ConfigServiceV2GrpcAsyncIOTransport(ConfigServiceV2Transport):
         self._grpc_channel = None
         self._ssl_channel_credentials = ssl_channel_credentials
         self._stubs: Dict[str, Callable] = {}
-        self._operations_client = None
+        self._operations_client: Optional[operations_v1.OperationsAsyncClient] = None
 
         if api_mtls_endpoint:
             warnings.warn("api_mtls_endpoint is deprecated", DeprecationWarning)
@@ -195,14 +197,17 @@ class ConfigServiceV2GrpcAsyncIOTransport(ConfigServiceV2Transport):
             scopes=scopes,
             quota_project_id=quota_project_id,
             client_info=client_info,
-            always_use_jwt_access=True,
+            always_use_jwt_access=always_use_jwt_access,
         )
 
         if not self._grpc_channel:
             self._grpc_channel = type(self).create_channel(
                 self._host,
+                # use the credentials which are saved
                 credentials=self._credentials,
-                credentials_file=credentials_file,
+                # Set ``credentials_file`` to ``None`` here as
+                # the credentials that we saved earlier should be used.
+                credentials_file=None,
                 scopes=self._scopes,
                 ssl_credentials=self._ssl_channel_credentials,
                 quota_project_id=quota_project_id,
@@ -232,7 +237,7 @@ class ConfigServiceV2GrpcAsyncIOTransport(ConfigServiceV2Transport):
         This property caches on the instance; repeated calls return the same
         client.
         """
-        # Sanity check: Only create a new client if we do not already have one.
+        # Quick check: Only create a new client if we do not already have one.
         if self._operations_client is None:
             self._operations_client = operations_v1.OperationsAsyncClient(
                 self.grpc_channel
@@ -905,6 +910,85 @@ class ConfigServiceV2GrpcAsyncIOTransport(ConfigServiceV2Transport):
         return self._stubs['update_cmek_settings']
 
     @property
+    def get_settings(self) -> Callable[
+            [logging_config.GetSettingsRequest],
+            Awaitable[logging_config.Settings]]:
+        r"""Return a callable for the get settings method over gRPC.
+
+        Gets the Log Router settings for the given resource.
+
+        Note: Settings for the Log Router can be get for Google Cloud
+        projects, folders, organizations and billing accounts. Currently
+        it can only be configured for organizations. Once configured for
+        an organization, it applies to all projects and folders in the
+        Google Cloud organization.
+
+        See `Enabling CMEK for Log
+        Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
+        for more information.
+
+        Returns:
+            Callable[[~.GetSettingsRequest],
+                    Awaitable[~.Settings]]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'get_settings' not in self._stubs:
+            self._stubs['get_settings'] = self.grpc_channel.unary_unary(
+                '/google.logging.v2.ConfigServiceV2/GetSettings',
+                request_serializer=logging_config.GetSettingsRequest.serialize,
+                response_deserializer=logging_config.Settings.deserialize,
+            )
+        return self._stubs['get_settings']
+
+    @property
+    def update_settings(self) -> Callable[
+            [logging_config.UpdateSettingsRequest],
+            Awaitable[logging_config.Settings]]:
+        r"""Return a callable for the update settings method over gRPC.
+
+        Updates the Log Router settings for the given resource.
+
+        Note: Settings for the Log Router can currently only be
+        configured for Google Cloud organizations. Once configured, it
+        applies to all projects and folders in the Google Cloud
+        organization.
+
+        [UpdateSettings][google.logging.v2.ConfigServiceV2.UpdateSettings]
+        will fail if 1) ``kms_key_name`` is invalid, or 2) the
+        associated service account does not have the required
+        ``roles/cloudkms.cryptoKeyEncrypterDecrypter`` role assigned for
+        the key, or 3) access to the key is disabled. 4) ``location_id``
+        is not supported by Logging. 5) ``location_id`` violate
+        OrgPolicy.
+
+        See `Enabling CMEK for Log
+        Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
+        for more information.
+
+        Returns:
+            Callable[[~.UpdateSettingsRequest],
+                    Awaitable[~.Settings]]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'update_settings' not in self._stubs:
+            self._stubs['update_settings'] = self.grpc_channel.unary_unary(
+                '/google.logging.v2.ConfigServiceV2/UpdateSettings',
+                request_serializer=logging_config.UpdateSettingsRequest.serialize,
+                response_deserializer=logging_config.Settings.deserialize,
+            )
+        return self._stubs['update_settings']
+
+    @property
     def copy_log_entries(self) -> Callable[
             [logging_config.CopyLogEntriesRequest],
             Awaitable[operations_pb2.Operation]]:
@@ -930,6 +1014,9 @@ class ConfigServiceV2GrpcAsyncIOTransport(ConfigServiceV2Transport):
                 response_deserializer=operations_pb2.Operation.FromString,
             )
         return self._stubs['copy_log_entries']
+
+    def close(self):
+        return self.grpc_channel.close()
 
 
 __all__ = (

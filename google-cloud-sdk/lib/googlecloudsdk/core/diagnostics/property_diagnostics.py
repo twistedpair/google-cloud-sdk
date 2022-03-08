@@ -53,10 +53,8 @@ class HiddenPropertiesChecker(check_base.Checker):
 
   def __init__(self, ignore_hidden_property_allowlist):
     self.ignore_hidden_property_allowlist = ignore_hidden_property_allowlist
-    # TODO(b/188055204): Remove legacy property once Cloud Shell is updated
     self.allowlist = set(
-        (properties.VALUES.diagnostics.hidden_property_allowlist.Get() or
-         properties.VALUES.diagnostics.hidden_property_whitelist.Get() or '')
+        (properties.VALUES.diagnostics.hidden_property_allowlist.Get() or '')
         .split(',')
     )
     self._properties_file = named_configs.ActivePropertiesFile.Load()

@@ -550,14 +550,7 @@ def AddSetEnvVarsFlag(parser):
 
 def AddMutexEnvVarsFlags(parser):
   """Add flags for creating updating and deleting env vars."""
-  # TODO(b/119837621): Use env_vars_util.AddUpdateEnvVarsFlags when
-  # `gcloud run` supports an env var file.
-  AddMapFlagsNoFile(
-      parser,
-      flag_name='env-vars',
-      long_name='environment variables',
-      key_type=env_vars_util.EnvVarKeyType,
-      value_type=env_vars_util.EnvVarValueType)
+  env_vars_util.AddUpdateEnvVarsFlags(parser)
 
 
 def AddMemoryFlag(parser):
@@ -955,11 +948,11 @@ def AddParallelismFlag(parser):
       '--parallelism',
       type=arg_parsers.BoundedInt(lower_bound=1),
       help='Number of tasks that may run concurrently. '
-      'Must be less than or equal to the number of completions.')
+      'Must be less than or equal to the number of tasks.')
 
 
 def AddTasksFlag(parser):
-  """Add job number of tasks flag which maps to job.spec.completions."""
+  """Add job number of tasks flag which maps to job.spec.template.spec.task_count."""
   parser.add_argument(
       '--tasks',
       type=arg_parsers.BoundedInt(lower_bound=1),
@@ -987,10 +980,7 @@ def AddWaitForCompletionFlag(parser, implies_run_now=False):
   if implies_run_now:
     help_text += '  Implies --run-now.'
   parser.add_argument(
-      '--wait',
-      default=False,
-      action='store_true',
-      help=help_text)
+      '--wait', default=False, action='store_true', help=help_text)
 
 
 def AddTaskTimeoutFlags(parser):
@@ -1070,7 +1060,11 @@ def _HasChanges(args, flags):
 def _HasEnvChanges(args):
   """True iff any of the env var flags are set."""
   env_flags = [
-      'update_env_vars', 'set_env_vars', 'remove_env_vars', 'clear_env_vars'
+      'update_env_vars',
+      'set_env_vars',
+      'remove_env_vars',
+      'clear_env_vars',
+      'env_vars_file',
   ]
   return _HasChanges(args, env_flags)
 
@@ -1132,9 +1126,11 @@ def _GetEnvChanges(args):
   """Return config_changes.EnvVarLiteralChanges for given args."""
   return config_changes.EnvVarLiteralChanges(
       updates=_StripKeys(
-          getattr(args, 'update_env_vars', None) or args.set_env_vars or {}),
+          getattr(args, 'update_env_vars', None) or args.set_env_vars or
+          args.env_vars_file or {}),
       removes=_MapLStrip(getattr(args, 'remove_env_vars', None) or []),
-      clear_others=bool(args.set_env_vars or args.clear_env_vars))
+      clear_others=bool(args.set_env_vars or args.env_vars_file or
+                        args.clear_env_vars))
 
 
 def _GetScalingChanges(args):

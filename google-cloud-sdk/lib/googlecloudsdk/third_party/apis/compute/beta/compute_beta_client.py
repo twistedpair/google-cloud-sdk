@@ -6393,7 +6393,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def Reset(self, request, global_params=None):
-      r"""Performs a reset on the instance. This is a hard reset the VM does not do a graceful shutdown. For more information, see Resetting an instance.
+      r"""Performs a reset on the instance. This is a hard reset. The VM does not do a graceful shutdown. For more information, see Resetting an instance.
 
       Args:
         request: (ComputeInstancesResetRequest) input message
@@ -14513,6 +14513,32 @@ class ComputeBeta(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeRegionTargetHttpsProxiesListRequest',
         response_type_name='TargetHttpsProxyList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patches the specified regional TargetHttpsProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+
+      Args:
+        request: (ComputeRegionTargetHttpsProxiesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.regionTargetHttpsProxies.patch',
+        ordered_params=['project', 'region', 'targetHttpsProxy'],
+        path_params=['project', 'region', 'targetHttpsProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/targetHttpsProxies/{targetHttpsProxy}',
+        request_field='targetHttpsProxyResource',
+        request_type_name='ComputeRegionTargetHttpsProxiesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

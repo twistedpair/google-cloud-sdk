@@ -38,6 +38,7 @@ from googlecloudsdk.command_lib.storage.tasks.cp import copy_component_util
 from googlecloudsdk.command_lib.storage.tasks.cp import download_util
 from googlecloudsdk.command_lib.storage.tasks.cp import file_part_download_task
 from googlecloudsdk.command_lib.storage.tasks.cp import finalize_sliced_download_task
+from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
 from googlecloudsdk.command_lib.util import crc32c
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -123,6 +124,7 @@ class FileDownloadTask(task.Task):
   def __init__(self,
                source_resource,
                destination_resource,
+               delete_source=False,
                do_not_decompress=False,
                user_request_args=None):
     """Initializes task.
@@ -134,6 +136,8 @@ class FileDownloadTask(task.Task):
       destination_resource (FileObjectResource|UnknownResource): Must contain
         local filesystem path to destination object. Does not need to contain
         metadata.
+      delete_source (bool): If copy completes successfully, delete the source
+        object afterwards.
       do_not_decompress (bool): Prevents automatically decompressing
         downloaded gzips.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
@@ -141,6 +145,7 @@ class FileDownloadTask(task.Task):
     super(FileDownloadTask, self).__init__()
     self._source_resource = source_resource
     self._destination_resource = destination_resource
+    self._delete_source = delete_source
     self._do_not_decompress = do_not_decompress
     self._user_request_args = user_request_args
 
@@ -190,6 +195,7 @@ class FileDownloadTask(task.Task):
             self._source_resource,
             self._temporary_destination_resource,
             self._destination_resource,
+            delete_source=self._delete_source,
             do_not_decompress=self._do_not_decompress)
     ]
 
@@ -273,3 +279,11 @@ class FileDownloadTask(task.Task):
     # We perform cleanup here for all other types in case some corrupt files
     # were left behind.
     tracker_file_util.delete_download_tracker_files(temporary_file_url)
+
+    if self._delete_source:
+      return task.Output(
+          additional_task_iterators=[[
+              delete_object_task.DeleteObjectTask(
+                  self._source_resource.storage_url),
+          ]],
+          messages=None)

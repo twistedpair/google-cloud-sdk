@@ -18,8 +18,42 @@ location:
     attribute_name: location
     help: The location name.
     fallthroughs:
-    - hook: googlecloudsdk.command_lib.container.hub.util:DefaultToGlobal
+    - hook: googlecloudsdk.command_lib.container.fleet.util:DefaultToGlobal
       hint: "global is the only supported location"
+
+membership:
+  name: membership
+  collection: gkehub.projects.locations.memberships
+  attributes:
+  - *project
+  - *location
+  - &membership
+    parameter_name: membershipsId
+    attribute_name: membership
+    help: The membership ID.
+  request_id_field: membershipId
+
+feature:
+  name: feature
+  collection: gkehub.projects.locations.features
+  attributes:
+  - *project
+  - *location
+  - &feature
+    parameter_name: featuresId
+    attribute_name: feature
+    help: The feature ID.
+  request_id_field: featureId
+
+operation:
+  name: operation
+  collection: gkehub.projects.locations.operations
+  attributes:
+  - *project
+  - &operation
+    parameter_name: operationsId
+    attribute_name: operation
+    help: the ID of the Hub membership operation
 
 fleet:
   name: fleet

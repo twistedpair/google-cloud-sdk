@@ -590,8 +590,7 @@ def AddCreateChannelArg(parser):
               '--provider',
               ProviderResourceSpec(),
               'Provider to use for the channel.',
-              flag_name_overrides={'location': ''},
-              required=True)
+              flag_name_overrides={'location': ''})
       ],
       # This configures the fallthrough from the provider's location to the
       # primary flag for the channel's location

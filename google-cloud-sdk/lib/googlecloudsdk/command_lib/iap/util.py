@@ -42,6 +42,24 @@ SETTING_RESOURCE_TYPE_ENUM = (APP_ENGINE_RESOURCE_TYPE, WEB_RESOURCE_TYPE,
                               FOLDER_RESOURCE_TYPE)
 
 
+def AddIamDestGroupArgs(parser):
+  """Adds OAuth client args.
+
+  Args:
+    parser: An argparse.ArgumentParser-like object. It is mocked out in order to
+      capture some information, but behaves like an ArgumentParser.
+  """
+  group = parser.add_group()
+  group.add_argument(
+      '--group-name',
+      required=True,
+      help='Name of the Destination Group.')
+  group.add_argument(
+      '--region',
+      required=True,
+      help='Region of the Destination Group.')
+
+
 def AddIapIamResourceArgs(parser, use_region_arg=False, use_iap_gateway=False):
   """Adds flags for an IAP IAM resource.
 
@@ -441,3 +459,19 @@ def ParseIapGatewayResource(release_track):
   """
   project = properties.VALUES.core.project.GetOrFail()
   return iap_api.IAPGateway(release_track, project)
+
+
+def ParseIapDestGroupResource(release_track, args):
+  """Parse an IAP TCP DestGroup resource from the input arguments.
+
+  Args:
+    release_track: base.ReleaseTrack, release track of command.
+    args: an argparse namespace. All the arguments that were provided to this
+      command invocation.
+
+  Returns:
+    The specified IAP TCP DestGroup resource.
+  """
+  project = properties.VALUES.core.project.GetOrFail()
+  return iap_api.IapTunnelDestGroupResource(release_track, project, args.region,
+                                            args.group_name)

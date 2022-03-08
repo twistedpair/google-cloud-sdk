@@ -32,6 +32,10 @@ class ApplyInput(_messages.Message):
       deployment, otherwise this will be considered as a new deployment.
       Format:
       `projects/{project}/locations/{location}/deployments/{deployment}`
+    managedPipelineOnly: Optional. If set, then only the Pipeline will run.
+      This is functionally identical to `pipeline_only`, but only supports
+      Pipelines consisting of Google-authored Kpt functions. Using the managed
+      pipeline is typically significantly lower latency than `pipeline_only`.
     pipelineOnly: Optional. If set, then only the Pipeline will run. The
       rendered content will still be uploaded to Cloud Storage. No dry-run
       will occur, and no preview diff artifacts will be generated.
@@ -41,7 +45,8 @@ class ApplyInput(_messages.Message):
   configController = _messages.StringField(2)
   createConfigController = _messages.BooleanField(3)
   deployment = _messages.StringField(4)
-  pipelineOnly = _messages.BooleanField(5)
+  managedPipelineOnly = _messages.BooleanField(5)
+  pipelineOnly = _messages.BooleanField(6)
 
 
 class ApplyResults(_messages.Message):

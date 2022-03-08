@@ -23,6 +23,7 @@ import os
 import time
 
 from google.api_core import bidi
+from google.rpc import error_details_pb2
 from googlecloudsdk.api_lib.util import api_enablement
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import config
@@ -232,21 +233,30 @@ class APIEnablementInterceptor(grpc.UnaryUnaryClientInterceptor,
                                request_iterator)
 
 
+def IsUserProjectError(trailing_metadata):
+  for metadatum in trailing_metadata:
+    if metadatum.key == 'google.rpc.errorinfo-bin':
+      error_info = error_details_pb2.ErrorInfo.FromString(metadatum.value)
+      if (error_info.reason == transport.USER_PROJECT_ERROR_REASON and
+          error_info.domain == transport.USER_PROJECT_ERROR_DOMAIN):
+        return True
+  return False
+
+
 def ShouldRecoverFromQuotaProject(credentials):
   """Returns a callback for handling Quota Project fallback."""
   if not base.UserProjectQuotaWithFallbackEnabled():
     return lambda _: False
 
   def _ShouldRecover(response):
-    # pylint: disable=protected-access
     if response.code() != grpc.StatusCode.PERMISSION_DENIED:
       return False
-
-    if transport.USER_PROJECT_OVERRIDE_ERR_MSG not in response.details():
-      return False
-
-    credentials._quota_project_id = None
-    return True
+    if IsUserProjectError(response.trailing_metadata()):
+      # pylint: disable=protected-access
+      credentials._quota_project_id = None
+      # pylint: enable=protected-access
+      return True
+    return False
 
   return _ShouldRecover
 
@@ -263,18 +273,16 @@ class QuotaProjectInterceptor(grpc.UnaryUnaryClientInterceptor,
     if response.code() != grpc.StatusCode.PERMISSION_DENIED:
       return response
 
-    if transport.USER_PROJECT_OVERRIDE_ERR_MSG not in response.details():
+    if not IsUserProjectError(response.trailing_metadata()):
       return response
-
     # pylint: disable=protected-access
     quota_project = self.credentials._quota_project_id
-    if quota_project:
-      self.credentials._quota_project_id = None
-      new_response = continuation(client_call_details, request)
+    self.credentials._quota_project_id = None
+    try:
+      return continuation(client_call_details, request)
+    finally:
       self.credentials._quota_project_id = quota_project
-      return new_response
-
-    return response
+    # pylint: enable=protected-access
 
   def intercept_unary_unary(self, continuation, client_call_details, request):
     """Intercepts a unary-unary invocation asynchronously."""
@@ -882,4 +890,3 @@ def MakeAsyncTransport(client_class, credentials, address_override_func,
   return transport_class(
       channel=channel,
       host=address)
-

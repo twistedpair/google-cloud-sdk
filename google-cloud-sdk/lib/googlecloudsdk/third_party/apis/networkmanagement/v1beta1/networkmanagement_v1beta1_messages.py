@@ -526,6 +526,17 @@ class DropInfo(_messages.Message):
   resourceUri = _messages.StringField(2)
 
 
+class EdgeLocation(_messages.Message):
+  r"""Representation of a network edge location as per
+  https://cloud.google.com/vpc/docs/edge-locations.
+
+  Fields:
+    metropolitanArea: Name of the metropolitan area.
+  """
+
+  metropolitanArea = _messages.StringField(1)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -1548,6 +1559,12 @@ class ProbingDetails(_messages.Message):
 
   Fields:
     abortCause: The reason probing was aborted.
+    destinationEgressLocation: The EdgeLocation from which a packet destined
+      for/originating from the internet will egress/ingress the Google
+      network. This will only be populated for a connectivity test which has
+      an internet destination/source address. The absence of this field *must
+      not* be used as an indication that the destination/source is part of the
+      Google network.
     endpointInfo: The source and destination endpoints derived from the test
       input and used for active probing.
     error: Details about an internal failure or the cancellation of active
@@ -1596,13 +1613,14 @@ class ProbingDetails(_messages.Message):
     UNDETERMINED = 4
 
   abortCause = _messages.EnumField('AbortCauseValueValuesEnum', 1)
-  endpointInfo = _messages.MessageField('EndpointInfo', 2)
-  error = _messages.MessageField('Status', 3)
-  probingLatency = _messages.MessageField('LatencyDistribution', 4)
-  result = _messages.EnumField('ResultValueValuesEnum', 5)
-  sentProbeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  successfulProbeCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  verifyTime = _messages.StringField(8)
+  destinationEgressLocation = _messages.MessageField('EdgeLocation', 2)
+  endpointInfo = _messages.MessageField('EndpointInfo', 3)
+  error = _messages.MessageField('Status', 4)
+  probingLatency = _messages.MessageField('LatencyDistribution', 5)
+  result = _messages.EnumField('ResultValueValuesEnum', 6)
+  sentProbeCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  successfulProbeCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  verifyTime = _messages.StringField(9)
 
 
 class ReachabilityDetails(_messages.Message):

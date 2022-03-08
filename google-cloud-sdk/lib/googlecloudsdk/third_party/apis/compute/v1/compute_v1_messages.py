@@ -1443,14 +1443,17 @@ class AllocationSpecificSKUReservation(_messages.Message):
   configuration. Next ID: 5
 
   Fields:
+    assuredCount: [Output Only] Indicates how many instances are actually
+      usable currently.
     count: Specifies the number of resources that are allocated.
     inUseCount: [Output Only] Indicates how many instances are in use.
     instanceProperties: The instance properties for the reservation.
   """
 
-  count = _messages.IntegerField(1)
-  inUseCount = _messages.IntegerField(2)
-  instanceProperties = _messages.MessageField('AllocationSpecificSKUAllocationReservedInstanceProperties', 3)
+  assuredCount = _messages.IntegerField(1)
+  count = _messages.IntegerField(2)
+  inUseCount = _messages.IntegerField(3)
+  instanceProperties = _messages.MessageField('AllocationSpecificSKUAllocationReservedInstanceProperties', 4)
 
 
 class AttachedDisk(_messages.Message):
@@ -1748,13 +1751,15 @@ class AuditConfig(_messages.Message):
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
+    exemptedMembers: This is deprecated and has no effect. Do not use.
     service: Specifies a service that will be enabled for audit logging. For
       example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
       `allServices` is a special value that covers all services.
   """
 
   auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
-  service = _messages.StringField(2)
+  exemptedMembers = _messages.StringField(2, repeated=True)
+  service = _messages.StringField(3)
 
 
 class AuditLogConfig(_messages.Message):
@@ -7282,8 +7287,6 @@ class ComputeDisksCreateSnapshotRequest(_messages.Message):
     disk: Name of the persistent disk to snapshot.
     guestFlush: [Input Only] Whether to attempt an application consistent
       snapshot by informing the OS to prepare for the snapshot process.
-      Currently only supported on Windows instances using the Volume Shadow
-      Copy Service (VSS).
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -19611,6 +19614,34 @@ class ComputeRegionTargetHttpsProxiesListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+
+
+class ComputeRegionTargetHttpsProxiesPatchRequest(_messages.Message):
+  r"""A ComputeRegionTargetHttpsProxiesPatchRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    targetHttpsProxy: Name of the TargetHttpsProxy resource to patch.
+    targetHttpsProxyResource: A TargetHttpsProxy resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  targetHttpsProxy = _messages.StringField(4, required=True)
+  targetHttpsProxyResource = _messages.MessageField('TargetHttpsProxy', 5)
 
 
 class ComputeRegionTargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
@@ -35812,14 +35843,7 @@ class InterconnectAttachment(_messages.Message):
       BPS_200M: 200 Mbit/s - BPS_300M: 300 Mbit/s - BPS_400M: 400 Mbit/s -
       BPS_500M: 500 Mbit/s - BPS_1G: 1 Gbit/s - BPS_2G: 2 Gbit/s - BPS_5G: 5
       Gbit/s - BPS_10G: 10 Gbit/s - BPS_20G: 20 Gbit/s - BPS_50G: 50 Gbit/s
-    candidateIpv6Subnets: Up to 16 candidate prefixes that control the
-      allocation of cloudRouterIpv6Address and customerRouterIpv6Address for
-      this attachment. Each prefix must be in the Global Unique Address (GUA)
-      space. It is highly recommended that it be in a range owned by the
-      requestor. A GUA in a range owned by Google will cause the request to
-      fail. Google will select an available prefix from the supplied
-      candidates or fail the request. If not supplied, a /125 from a Google-
-      owned GUA block will be selected.
+    candidateIpv6Subnets: This field is not available.
     candidateSubnets: Up to 16 candidate prefixes that can be used to restrict
       the allocation of cloudRouterIpAddress and customerRouterIpAddress for
       this attachment. All prefixes must be within link-local address space
@@ -35832,10 +35856,7 @@ class InterconnectAttachment(_messages.Message):
       configured on Cloud Router Interface for this interconnect attachment.
     cloudRouterIpv6Address: [Output Only] IPv6 address + prefix length to be
       configured on Cloud Router Interface for this interconnect attachment.
-    cloudRouterIpv6InterfaceId: If supplied, the interface id (index within
-      the subnet) to be used for the cloud router address. The id must be in
-      the range of 1 to 6. If a subnet mask is supplied, it must be /125, and
-      the subnet should either be 0 or match the selected subnet.
+    cloudRouterIpv6InterfaceId: This field is not available.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     customerRouterIpAddress: [Output Only] IPv4 address + prefix length to be
@@ -35844,10 +35865,7 @@ class InterconnectAttachment(_messages.Message):
     customerRouterIpv6Address: [Output Only] IPv6 address + prefix length to
       be configured on the customer router subinterface for this interconnect
       attachment.
-    customerRouterIpv6InterfaceId: If supplied, the interface id (index within
-      the subnet) to be used for the customer router address. The id must be
-      in the range of 1 to 6. If a subnet mask is supplied, it must be /125,
-      and the subnet should either be 0 or match the selected subnet.
+    customerRouterIpv6InterfaceId: This field is not available.
     dataplaneVersion: [Output Only] Dataplane version for this
       InterconnectAttachment. This field is only present for Dataplane version
       2 and higher. Absence of this field in the API output indicates that the
@@ -37935,8 +37953,6 @@ class MachineImage(_messages.Message):
       property when you create the resource.
     guestFlush: [Input Only] Whether to attempt an application consistent
       machine image by informing the OS to prepare for the snapshot process.
-      Currently only supported on Windows instances using the Volume Shadow
-      Copy Service (VSS).
     id: [Output Only] A unique identifier for this machine image. The server
       defines this identifier.
     instanceProperties: [Output Only] Properties of source instance
@@ -45918,6 +45934,7 @@ class Quota(_messages.Message):
       CPUS_ALL_REGIONS: <no description>
       DISKS_TOTAL_GB: <no description>
       E2_CPUS: <no description>
+      EXTERNAL_MANAGED_FORWARDING_RULES: <no description>
       EXTERNAL_NETWORK_LB_FORWARDING_RULES: <no description>
       EXTERNAL_PROTOCOL_FORWARDING_RULES: <no description>
       EXTERNAL_VPN_GATEWAYS: <no description>
@@ -46047,100 +46064,101 @@ class Quota(_messages.Message):
     CPUS_ALL_REGIONS = 31
     DISKS_TOTAL_GB = 32
     E2_CPUS = 33
-    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 34
-    EXTERNAL_PROTOCOL_FORWARDING_RULES = 35
-    EXTERNAL_VPN_GATEWAYS = 36
-    FIREWALLS = 37
-    FORWARDING_RULES = 38
-    GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES = 39
-    GLOBAL_INTERNAL_ADDRESSES = 40
-    GPUS_ALL_REGIONS = 41
-    HEALTH_CHECKS = 42
-    IMAGES = 43
-    INSTANCES = 44
-    INSTANCE_GROUPS = 45
-    INSTANCE_GROUP_MANAGERS = 46
-    INSTANCE_TEMPLATES = 47
-    INTERCONNECTS = 48
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 49
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 50
-    INTERCONNECT_TOTAL_GBPS = 51
-    INTERNAL_ADDRESSES = 52
-    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 53
-    IN_PLACE_SNAPSHOTS = 54
-    IN_USE_ADDRESSES = 55
-    IN_USE_BACKUP_SCHEDULES = 56
-    IN_USE_SNAPSHOT_SCHEDULES = 57
-    LOCAL_SSD_TOTAL_GB = 58
-    M1_CPUS = 59
-    M2_CPUS = 60
-    M3_CPUS = 61
-    MACHINE_IMAGES = 62
-    N2A_CPUS = 63
-    N2D_CPUS = 64
-    N2_CPUS = 65
-    NETWORKS = 66
-    NETWORK_ENDPOINT_GROUPS = 67
-    NETWORK_FIREWALL_POLICIES = 68
-    NODE_GROUPS = 69
-    NODE_TEMPLATES = 70
-    NVIDIA_A100_GPUS = 71
-    NVIDIA_K80_GPUS = 72
-    NVIDIA_P100_GPUS = 73
-    NVIDIA_P100_VWS_GPUS = 74
-    NVIDIA_P4_GPUS = 75
-    NVIDIA_P4_VWS_GPUS = 76
-    NVIDIA_T4_GPUS = 77
-    NVIDIA_T4_VWS_GPUS = 78
-    NVIDIA_V100_GPUS = 79
-    PACKET_MIRRORINGS = 80
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 81
-    PREEMPTIBLE_CPUS = 82
-    PREEMPTIBLE_LOCAL_SSD_GB = 83
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 84
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 85
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 86
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 87
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 88
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 89
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 90
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 91
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 92
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 93
-    PSC_INTERNAL_LB_FORWARDING_RULES = 94
-    PUBLIC_ADVERTISED_PREFIXES = 95
-    PUBLIC_DELEGATED_PREFIXES = 96
-    REGIONAL_AUTOSCALERS = 97
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 98
-    RESERVATIONS = 99
-    RESOURCE_POLICIES = 100
-    ROUTERS = 101
-    ROUTES = 102
-    SECURITY_POLICIES = 103
-    SECURITY_POLICIES_PER_REGION = 104
-    SECURITY_POLICY_CEVAL_RULES = 105
-    SECURITY_POLICY_RULES = 106
-    SECURITY_POLICY_RULES_PER_REGION = 107
-    SERVICE_ATTACHMENTS = 108
-    SNAPSHOTS = 109
-    SSD_TOTAL_GB = 110
-    SSL_CERTIFICATES = 111
-    STATIC_ADDRESSES = 112
-    STATIC_BYOIP_ADDRESSES = 113
-    SUBNETWORKS = 114
-    T2A_CPUS = 115
-    T2D_CPUS = 116
-    TARGET_HTTPS_PROXIES = 117
-    TARGET_HTTP_PROXIES = 118
-    TARGET_INSTANCES = 119
-    TARGET_POOLS = 120
-    TARGET_SSL_PROXIES = 121
-    TARGET_TCP_PROXIES = 122
-    TARGET_VPN_GATEWAYS = 123
-    URL_MAPS = 124
-    VPN_GATEWAYS = 125
-    VPN_TUNNELS = 126
-    XPN_SERVICE_PROJECTS = 127
+    EXTERNAL_MANAGED_FORWARDING_RULES = 34
+    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 35
+    EXTERNAL_PROTOCOL_FORWARDING_RULES = 36
+    EXTERNAL_VPN_GATEWAYS = 37
+    FIREWALLS = 38
+    FORWARDING_RULES = 39
+    GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES = 40
+    GLOBAL_INTERNAL_ADDRESSES = 41
+    GPUS_ALL_REGIONS = 42
+    HEALTH_CHECKS = 43
+    IMAGES = 44
+    INSTANCES = 45
+    INSTANCE_GROUPS = 46
+    INSTANCE_GROUP_MANAGERS = 47
+    INSTANCE_TEMPLATES = 48
+    INTERCONNECTS = 49
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 50
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 51
+    INTERCONNECT_TOTAL_GBPS = 52
+    INTERNAL_ADDRESSES = 53
+    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 54
+    IN_PLACE_SNAPSHOTS = 55
+    IN_USE_ADDRESSES = 56
+    IN_USE_BACKUP_SCHEDULES = 57
+    IN_USE_SNAPSHOT_SCHEDULES = 58
+    LOCAL_SSD_TOTAL_GB = 59
+    M1_CPUS = 60
+    M2_CPUS = 61
+    M3_CPUS = 62
+    MACHINE_IMAGES = 63
+    N2A_CPUS = 64
+    N2D_CPUS = 65
+    N2_CPUS = 66
+    NETWORKS = 67
+    NETWORK_ENDPOINT_GROUPS = 68
+    NETWORK_FIREWALL_POLICIES = 69
+    NODE_GROUPS = 70
+    NODE_TEMPLATES = 71
+    NVIDIA_A100_GPUS = 72
+    NVIDIA_K80_GPUS = 73
+    NVIDIA_P100_GPUS = 74
+    NVIDIA_P100_VWS_GPUS = 75
+    NVIDIA_P4_GPUS = 76
+    NVIDIA_P4_VWS_GPUS = 77
+    NVIDIA_T4_GPUS = 78
+    NVIDIA_T4_VWS_GPUS = 79
+    NVIDIA_V100_GPUS = 80
+    PACKET_MIRRORINGS = 81
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 82
+    PREEMPTIBLE_CPUS = 83
+    PREEMPTIBLE_LOCAL_SSD_GB = 84
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 85
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 86
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 87
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 88
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 89
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 90
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 91
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 92
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 93
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 94
+    PSC_INTERNAL_LB_FORWARDING_RULES = 95
+    PUBLIC_ADVERTISED_PREFIXES = 96
+    PUBLIC_DELEGATED_PREFIXES = 97
+    REGIONAL_AUTOSCALERS = 98
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 99
+    RESERVATIONS = 100
+    RESOURCE_POLICIES = 101
+    ROUTERS = 102
+    ROUTES = 103
+    SECURITY_POLICIES = 104
+    SECURITY_POLICIES_PER_REGION = 105
+    SECURITY_POLICY_CEVAL_RULES = 106
+    SECURITY_POLICY_RULES = 107
+    SECURITY_POLICY_RULES_PER_REGION = 108
+    SERVICE_ATTACHMENTS = 109
+    SNAPSHOTS = 110
+    SSD_TOTAL_GB = 111
+    SSL_CERTIFICATES = 112
+    STATIC_ADDRESSES = 113
+    STATIC_BYOIP_ADDRESSES = 114
+    SUBNETWORKS = 115
+    T2A_CPUS = 116
+    T2D_CPUS = 117
+    TARGET_HTTPS_PROXIES = 118
+    TARGET_HTTP_PROXIES = 119
+    TARGET_INSTANCES = 120
+    TARGET_POOLS = 121
+    TARGET_SSL_PROXIES = 122
+    TARGET_TCP_PROXIES = 123
+    TARGET_VPN_GATEWAYS = 124
+    URL_MAPS = 125
+    VPN_GATEWAYS = 126
+    VPN_TUNNELS = 127
+    XPN_SERVICE_PROJECTS = 128
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -50113,7 +50131,7 @@ class RouterBgpPeerBfd(_messages.Message):
       the BFD session for this BGP peer. If set to PASSIVE, the Cloud Router
       will wait for the peer router to initiate the BFD session for this BGP
       peer. If set to DISABLED, BFD is disabled for this BGP peer. The default
-      is PASSIVE.
+      is DISABLED.
 
   Fields:
     minReceiveInterval: The minimum interval, in milliseconds, between BFD
@@ -50134,7 +50152,7 @@ class RouterBgpPeerBfd(_messages.Message):
       session for this BGP peer. If set to PASSIVE, the Cloud Router will wait
       for the peer router to initiate the BFD session for this BGP peer. If
       set to DISABLED, BFD is disabled for this BGP peer. The default is
-      PASSIVE.
+      DISABLED.
   """
 
   class SessionInitializationModeValueValuesEnum(_messages.Enum):
@@ -50142,7 +50160,7 @@ class RouterBgpPeerBfd(_messages.Message):
     ACTIVE, the Cloud Router will initiate the BFD session for this BGP peer.
     If set to PASSIVE, the Cloud Router will wait for the peer router to
     initiate the BFD session for this BGP peer. If set to DISABLED, BFD is
-    disabled for this BGP peer. The default is PASSIVE.
+    disabled for this BGP peer. The default is DISABLED.
 
     Values:
       ACTIVE: <no description>

@@ -174,36 +174,41 @@ class BigquerydatatransferProjectsLocationsTransferConfigsCreateRequest(_message
 
   Fields:
     authorizationCode: Optional OAuth2 authorization code to use with this
-      transfer configuration. This is required if new credentials are needed,
-      as indicated by `CheckValidCreds`. In order to obtain
+      transfer configuration. This is required only if
+      `transferConfig.dataSourceId` is 'youtube_channel' and new credentials
+      are needed, as indicated by `CheckValidCreds`. In order to obtain
       authorization_code, please make a request to https://www.gstatic.com/big
-      querydatatransfer/oauthz/auth?client_id=&scope=&redirect_uri= *
-      client_id should be OAuth client_id of BigQuery DTS API for the given
-      data source returned by ListDataSources method. * data_source_scopes are
-      the scopes returned by ListDataSources method. * redirect_uri is an
-      optional parameter. If not specified, then authorization code is posted
-      to the opener of authorization flow window. Otherwise it will be sent to
-      the redirect uri. A special value of urn:ietf:wg:oauth:2.0:oob means
-      that authorization code should be returned in the title bar of the
-      browser, with the page text prompting the user to copy the code and
-      paste it in the application.
+      querydatatransfer/oauthz/auth?client_id=&scope=&redirect_uri=urn:ietf:wg
+      :oauth:2.0:oob&response_type=authorization_code * client_id should be
+      OAuth client_id of BigQuery DTS API for the given data source returned
+      by ListDataSources method. * data_source_scopes are the scopes returned
+      by ListDataSources method. Note that this should not be set when
+      `service_account_name` is used to create the transfer config.
     parent: Required. The BigQuery project id where the transfer configuration
       should be created. Must be in the format
       projects/{project_id}/locations/{location_id} or projects/{project_id}.
       If specified location and location of the destination bigquery dataset
       do not match - the request will fail.
     serviceAccountName: Optional service account name. If this field is set,
-      transfer config will be created with this service account credentials.
-      It requires that requesting user calling this API has permissions to act
-      as this service account.
+      transfer config will be created with this service account credential. It
+      requires that requesting user calling this API has permissions to act as
+      this service account. Note that not all data sources support service
+      account credentials when creating transfer config. Please refer to this
+      public guide for the latest list of data sources with service account
+      support: https://cloud.google.com/bigquery-transfer/docs/use-service-
+      accounts
     transferConfig: A TransferConfig resource to be passed as the request
       body.
-    versionInfo: Optional version info. If users want to find a very recent
-      access token, that is, immediately after approving access, users have to
-      set the version_info claim in the token request. To obtain the
-      version_info, users must use the "none+gsession" response type. which be
-      return a version_info back in the authorization response which be be put
-      in a JWT claim in the token request.
+    versionInfo: Optional version info. This is required only if
+      `transferConfig.dataSourceId` is anything else but 'youtube_channel' and
+      new credentials are needed, as indicated by `CheckValidCreds`. In order
+      to obtain version info, please make a request to https://www.gstatic.com
+      /bigquerydatatransfer/oauthz/auth?client_id=&scope=&redirect_uri=urn:iet
+      f:wg:oauth:2.0:oob&response_type=version_info * client_id should be
+      OAuth client_id of BigQuery DTS API for the given data source returned
+      by ListDataSources method. * data_source_scopes are the scopes returned
+      by ListDataSources method. Note that this should not be set when
+      `service_account_name` is used to create the transfer config.
   """
 
   authorizationCode = _messages.StringField(1)
@@ -268,19 +273,16 @@ class BigquerydatatransferProjectsLocationsTransferConfigsPatchRequest(_messages
 
   Fields:
     authorizationCode: Optional OAuth2 authorization code to use with this
-      transfer configuration. If it is provided, the transfer configuration
-      will be associated with the authorizing user. In order to obtain
+      transfer configuration. This is required only if
+      `transferConfig.dataSourceId` is 'youtube_channel' and new credentials
+      are needed, as indicated by `CheckValidCreds`. In order to obtain
       authorization_code, please make a request to https://www.gstatic.com/big
-      querydatatransfer/oauthz/auth?client_id=&scope=&redirect_uri= *
-      client_id should be OAuth client_id of BigQuery DTS API for the given
-      data source returned by ListDataSources method. * data_source_scopes are
-      the scopes returned by ListDataSources method. * redirect_uri is an
-      optional parameter. If not specified, then authorization code is posted
-      to the opener of authorization flow window. Otherwise it will be sent to
-      the redirect uri. A special value of urn:ietf:wg:oauth:2.0:oob means
-      that authorization code should be returned in the title bar of the
-      browser, with the page text prompting the user to copy the code and
-      paste it in the application.
+      querydatatransfer/oauthz/auth?client_id=&scope=&redirect_uri=urn:ietf:wg
+      :oauth:2.0:oob&response_type=authorization_code * client_id should be
+      OAuth client_id of BigQuery DTS API for the given data source returned
+      by ListDataSources method. * data_source_scopes are the scopes returned
+      by ListDataSources method. Note that this should not be set when
+      `service_account_name` is used to create the transfer config.
     name: The resource name of the transfer config. Transfer config names have
       the form
       `projects/{project_id}/locations/{region}/transferConfigs/{config_id}`.
@@ -288,19 +290,26 @@ class BigquerydatatransferProjectsLocationsTransferConfigsPatchRequest(_messages
       required. The name is ignored when creating a transfer config.
     serviceAccountName: Optional service account name. If this field is set
       and "service_account_name" is set in update_mask, transfer config will
-      be updated to use this service account credentials. It requires that
+      be created with this service account credential. It requires that
       requesting user calling this API has permissions to act as this service
-      account.
+      account. Note that not all data sources support service account
+      credentials when creating transfer config. Please refer to this public
+      guide for the latest list of data sources with service account support:
+      https://cloud.google.com/bigquery-transfer/docs/use-service-accounts
     transferConfig: A TransferConfig resource to be passed as the request
       body.
     updateMask: Required. Required list of fields to be updated in this
       request.
-    versionInfo: Optional version info. If users want to find a very recent
-      access token, that is, immediately after approving access, users have to
-      set the version_info claim in the token request. To obtain the
-      version_info, users must use the "none+gsession" response type. which be
-      return a version_info back in the authorization response which be be put
-      in a JWT claim in the token request.
+    versionInfo: Optional version info. This is required only if
+      `transferConfig.dataSourceId` is anything else but 'youtube_channel' and
+      new credentials are needed, as indicated by `CheckValidCreds`. In order
+      to obtain version info, please make a request to https://www.gstatic.com
+      /bigquerydatatransfer/oauthz/auth?client_id=&scope=&redirect_uri=urn:iet
+      f:wg:oauth:2.0:oob&response_type=version_info * client_id should be
+      OAuth client_id of BigQuery DTS API for the given data source returned
+      by ListDataSources method. * data_source_scopes are the scopes returned
+      by ListDataSources method. Note that this should not be set when
+      `service_account_name` is used to create the transfer config.
   """
 
   authorizationCode = _messages.StringField(1)
@@ -485,36 +494,41 @@ class BigquerydatatransferProjectsTransferConfigsCreateRequest(_messages.Message
 
   Fields:
     authorizationCode: Optional OAuth2 authorization code to use with this
-      transfer configuration. This is required if new credentials are needed,
-      as indicated by `CheckValidCreds`. In order to obtain
+      transfer configuration. This is required only if
+      `transferConfig.dataSourceId` is 'youtube_channel' and new credentials
+      are needed, as indicated by `CheckValidCreds`. In order to obtain
       authorization_code, please make a request to https://www.gstatic.com/big
-      querydatatransfer/oauthz/auth?client_id=&scope=&redirect_uri= *
-      client_id should be OAuth client_id of BigQuery DTS API for the given
-      data source returned by ListDataSources method. * data_source_scopes are
-      the scopes returned by ListDataSources method. * redirect_uri is an
-      optional parameter. If not specified, then authorization code is posted
-      to the opener of authorization flow window. Otherwise it will be sent to
-      the redirect uri. A special value of urn:ietf:wg:oauth:2.0:oob means
-      that authorization code should be returned in the title bar of the
-      browser, with the page text prompting the user to copy the code and
-      paste it in the application.
+      querydatatransfer/oauthz/auth?client_id=&scope=&redirect_uri=urn:ietf:wg
+      :oauth:2.0:oob&response_type=authorization_code * client_id should be
+      OAuth client_id of BigQuery DTS API for the given data source returned
+      by ListDataSources method. * data_source_scopes are the scopes returned
+      by ListDataSources method. Note that this should not be set when
+      `service_account_name` is used to create the transfer config.
     parent: Required. The BigQuery project id where the transfer configuration
       should be created. Must be in the format
       projects/{project_id}/locations/{location_id} or projects/{project_id}.
       If specified location and location of the destination bigquery dataset
       do not match - the request will fail.
     serviceAccountName: Optional service account name. If this field is set,
-      transfer config will be created with this service account credentials.
-      It requires that requesting user calling this API has permissions to act
-      as this service account.
+      transfer config will be created with this service account credential. It
+      requires that requesting user calling this API has permissions to act as
+      this service account. Note that not all data sources support service
+      account credentials when creating transfer config. Please refer to this
+      public guide for the latest list of data sources with service account
+      support: https://cloud.google.com/bigquery-transfer/docs/use-service-
+      accounts
     transferConfig: A TransferConfig resource to be passed as the request
       body.
-    versionInfo: Optional version info. If users want to find a very recent
-      access token, that is, immediately after approving access, users have to
-      set the version_info claim in the token request. To obtain the
-      version_info, users must use the "none+gsession" response type. which be
-      return a version_info back in the authorization response which be be put
-      in a JWT claim in the token request.
+    versionInfo: Optional version info. This is required only if
+      `transferConfig.dataSourceId` is anything else but 'youtube_channel' and
+      new credentials are needed, as indicated by `CheckValidCreds`. In order
+      to obtain version info, please make a request to https://www.gstatic.com
+      /bigquerydatatransfer/oauthz/auth?client_id=&scope=&redirect_uri=urn:iet
+      f:wg:oauth:2.0:oob&response_type=version_info * client_id should be
+      OAuth client_id of BigQuery DTS API for the given data source returned
+      by ListDataSources method. * data_source_scopes are the scopes returned
+      by ListDataSources method. Note that this should not be set when
+      `service_account_name` is used to create the transfer config.
   """
 
   authorizationCode = _messages.StringField(1)
@@ -576,19 +590,16 @@ class BigquerydatatransferProjectsTransferConfigsPatchRequest(_messages.Message)
 
   Fields:
     authorizationCode: Optional OAuth2 authorization code to use with this
-      transfer configuration. If it is provided, the transfer configuration
-      will be associated with the authorizing user. In order to obtain
+      transfer configuration. This is required only if
+      `transferConfig.dataSourceId` is 'youtube_channel' and new credentials
+      are needed, as indicated by `CheckValidCreds`. In order to obtain
       authorization_code, please make a request to https://www.gstatic.com/big
-      querydatatransfer/oauthz/auth?client_id=&scope=&redirect_uri= *
-      client_id should be OAuth client_id of BigQuery DTS API for the given
-      data source returned by ListDataSources method. * data_source_scopes are
-      the scopes returned by ListDataSources method. * redirect_uri is an
-      optional parameter. If not specified, then authorization code is posted
-      to the opener of authorization flow window. Otherwise it will be sent to
-      the redirect uri. A special value of urn:ietf:wg:oauth:2.0:oob means
-      that authorization code should be returned in the title bar of the
-      browser, with the page text prompting the user to copy the code and
-      paste it in the application.
+      querydatatransfer/oauthz/auth?client_id=&scope=&redirect_uri=urn:ietf:wg
+      :oauth:2.0:oob&response_type=authorization_code * client_id should be
+      OAuth client_id of BigQuery DTS API for the given data source returned
+      by ListDataSources method. * data_source_scopes are the scopes returned
+      by ListDataSources method. Note that this should not be set when
+      `service_account_name` is used to create the transfer config.
     name: The resource name of the transfer config. Transfer config names have
       the form
       `projects/{project_id}/locations/{region}/transferConfigs/{config_id}`.
@@ -596,19 +607,26 @@ class BigquerydatatransferProjectsTransferConfigsPatchRequest(_messages.Message)
       required. The name is ignored when creating a transfer config.
     serviceAccountName: Optional service account name. If this field is set
       and "service_account_name" is set in update_mask, transfer config will
-      be updated to use this service account credentials. It requires that
+      be created with this service account credential. It requires that
       requesting user calling this API has permissions to act as this service
-      account.
+      account. Note that not all data sources support service account
+      credentials when creating transfer config. Please refer to this public
+      guide for the latest list of data sources with service account support:
+      https://cloud.google.com/bigquery-transfer/docs/use-service-accounts
     transferConfig: A TransferConfig resource to be passed as the request
       body.
     updateMask: Required. Required list of fields to be updated in this
       request.
-    versionInfo: Optional version info. If users want to find a very recent
-      access token, that is, immediately after approving access, users have to
-      set the version_info claim in the token request. To obtain the
-      version_info, users must use the "none+gsession" response type. which be
-      return a version_info back in the authorization response which be be put
-      in a JWT claim in the token request.
+    versionInfo: Optional version info. This is required only if
+      `transferConfig.dataSourceId` is anything else but 'youtube_channel' and
+      new credentials are needed, as indicated by `CheckValidCreds`. In order
+      to obtain version info, please make a request to https://www.gstatic.com
+      /bigquerydatatransfer/oauthz/auth?client_id=&scope=&redirect_uri=urn:iet
+      f:wg:oauth:2.0:oob&response_type=version_info * client_id should be
+      OAuth client_id of BigQuery DTS API for the given data source returned
+      by ListDataSources method. * data_source_scopes are the scopes returned
+      by ListDataSources method. Note that this should not be set when
+      `service_account_name` is used to create the transfer config.
   """
 
   authorizationCode = _messages.StringField(1)

@@ -167,6 +167,39 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_CONVERSATIONDATASETS = (
+      'projects.conversationDatasets',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/conversationDatasets/'
+              '{conversationDatasetsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_CONVERSATIONMODELS = (
+      'projects.conversationModels',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/conversationModels/'
+              '{conversationModelsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_CONVERSATIONMODELS_EVALUATIONS = (
+      'projects.conversationModels.evaluations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/conversationModels/'
+              '{conversationModelsId}/evaluations/{evaluationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_CONVERSATIONPROFILES = (
       'projects.conversationProfiles',
       '{+name}',
@@ -340,6 +373,40 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/agent/versions/'
               '{versionsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_CONVERSATIONDATASETS = (
+      'projects.locations.conversationDatasets',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'conversationDatasets/{conversationDatasetsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_CONVERSATIONMODELS = (
+      'projects.locations.conversationModels',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'conversationModels/{conversationModelsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_CONVERSATIONMODELS_EVALUATIONS = (
+      'projects.locations.conversationModels.evaluations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'conversationModels/{conversationModelsId}/evaluations/'
+              '{evaluationsId}',
       },
       ['name'],
       True

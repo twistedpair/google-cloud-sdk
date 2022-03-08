@@ -819,6 +819,9 @@ apis:
   krmapihosting:
     v1alpha1:
       discovery_doc: krmapihosting_v1alpha1.json
+      default: false
+    v1:
+      discovery_doc: krmapihosting_v1.json
       default: true
   language:
     v1beta2:

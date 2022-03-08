@@ -1213,6 +1213,29 @@
         "handoverServiceAccount": {
           "description": "A service account to enable customers to access instance credentials upon handover.",
           "type": "string"
+        },
+        "email": {
+          "description": "Optional. Email provided to send a confirmation with provisioning config to.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. State of ProvisioningConfig.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "State wasn't specified.",
+            "ProvisioningConfig is a draft and can be freely modified.",
+            "ProvisioningConfig was already submitted and cannot be modified."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "DRAFT",
+            "SUBMITTED"
+          ]
+        },
+        "location": {
+          "description": "Optional. Location name of this ProvisioningConfig. It is optional only for Intake UI transition period.",
+          "type": "string"
         }
       }
     },
@@ -1357,6 +1380,10 @@
         "gcpService": {
           "description": "The GCP service of the network. Available gcp_service are in https:\/\/cloud.google.com\/bare-metal\/docs\/bms-planning.",
           "type": "string"
+        },
+        "vlanSameProject": {
+          "description": "Whether the VLAN attachment pair is located in the same project.",
+          "type": "boolean"
         }
       }
     },
@@ -2753,6 +2780,93 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Submit a provisiong configuration for a given project."
+                },
+                "get": {
+                  "id": "baremetalsolution.projects.locations.provisioningConfigs.get",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/provisioningConfigs/{provisioningConfigsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the ProvisioningConfig.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/provisioningConfigs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ProvisioningConfig"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Get ProvisioningConfig by name."
+                },
+                "create": {
+                  "id": "baremetalsolution.projects.locations.provisioningConfigs.create",
+                  "path": "v2/{+parent}/provisioningConfigs",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/provisioningConfigs",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent project and location containing the ProvisioningConfig.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "ProvisioningConfig"
+                  },
+                  "response": {
+                    "$ref": "ProvisioningConfig"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Create new ProvisioningConfig."
+                },
+                "patch": {
+                  "id": "baremetalsolution.projects.locations.provisioningConfigs.patch",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/provisioningConfigs/{provisioningConfigsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The name of the provisioning config.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/provisioningConfigs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. The list of fields to update.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "ProvisioningConfig"
+                  },
+                  "response": {
+                    "$ref": "ProvisioningConfig"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Update existing ProvisioningConfig."
                 }
               }
             }

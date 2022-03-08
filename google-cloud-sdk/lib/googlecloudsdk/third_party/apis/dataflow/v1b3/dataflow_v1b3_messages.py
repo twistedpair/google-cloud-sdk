@@ -5354,6 +5354,9 @@ class SdkHarnessContainerImage(_messages.Message):
   r"""Defines a SDK harness container for executing Dataflow pipelines.
 
   Fields:
+    capabilities: The set of capabilities enumerated in the above Environment
+      proto. See also https://github.com/apache/beam/blob/master/model/pipelin
+      e/src/main/proto/beam_runner_api.proto
     containerImage: A docker container image that resides in Google Container
       Registry.
     environmentId: Environment ID for the Beam runner API proto Environment
@@ -5365,9 +5368,10 @@ class SdkHarnessContainerImage(_messages.Message):
       override this property if needed.
   """
 
-  containerImage = _messages.StringField(1)
-  environmentId = _messages.StringField(2)
-  useSingleCorePerContainer = _messages.BooleanField(3)
+  capabilities = _messages.StringField(1, repeated=True)
+  containerImage = _messages.StringField(2)
+  environmentId = _messages.StringField(3)
+  useSingleCorePerContainer = _messages.BooleanField(4)
 
 
 class SdkVersion(_messages.Message):

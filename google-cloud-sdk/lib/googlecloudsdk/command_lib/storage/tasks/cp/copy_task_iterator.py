@@ -206,6 +206,13 @@ class CopyTaskIterator:
       raise ValueError('Received multiple objects to upload, but only one'
                        'custom MD5 digest is allowed.')
 
+  def _raise_error_if_source_matches_destination(self):
+    if not self._multiple_sources:
+      source_url = self._source_name_iterator.peek().expanded_url
+      if source_url == self._raw_destination.storage_url:
+        raise errors.InvalidUrlError(
+            'Source URL matches destination URL: {}'.format(source_url))
+
   def _raise_if_destination_is_file_url_and_not_a_directory_or_pipe(self):
     if (isinstance(self._raw_destination.storage_url, storage_url.FileUrl) and
         not (_destination_is_container(self._raw_destination) or
@@ -244,6 +251,8 @@ class CopyTaskIterator:
       self._total_size += size
 
   def __iter__(self):
+    self._raise_error_if_source_matches_destination()
+
     for source in self._source_name_iterator:
 
       destination_resource = self._get_copy_destination(self._raw_destination,
@@ -260,7 +269,8 @@ class CopyTaskIterator:
                       destination_url.versionless_url_string))
         continue
 
-      if source_url != source.expanded_url and not self._multiple_sources:
+      if (not self._multiple_sources and source_url.versionless_url_string !=
+          source.expanded_url.versionless_url_string):
         # Multiple sources have been already validated in __init__.
         # This check is required for cases where recursion has been requested,
         # but there is only one object that needs to be copied over.
@@ -299,7 +309,8 @@ class CopyTaskIterator:
     completion_is_necessary = (
         _destination_is_container(raw_destination) or
         (self._multiple_sources and not _destination_is_pipe(raw_destination))
-        or source.resource.storage_url != source.expanded_url  # Recursion case.
+        or source.resource.storage_url.versionless_url_string !=
+        source.expanded_url.versionless_url_string  # Recursion case.
     )
 
     if completion_is_necessary:
@@ -329,7 +340,8 @@ class CopyTaskIterator:
     """
     destination_url = destination_container.storage_url
     source_url = source.resource.storage_url
-    if source_url != source.expanded_url:
+    if (source_url.versionless_url_string !=
+        source.expanded_url.versionless_url_string):
       # In case of recursion, the expanded_url can be the expanded wildcard URL
       # representing the container, and the source url can be the file/object.
       destination_suffix = self._get_destination_suffix_for_recursion(

@@ -54,8 +54,9 @@ def ListResources(project, name, namespace, repo_cluster, membership):
   member_rg = _GetResourceGroupsFromMemberships(
       project, name, namespace, repo_cluster, membership)
   resource_groups.extend(member_rg)
-  # TODO(b/216846414): Implement parsing of ResourceGroup to proper output type
-  return resource_groups
+
+  # Parse ResourceGroups to structured output
+  return ParseResultFromRawResourceGroups(resource_groups)
 
 
 def _GetResourceGroupsFromConfigController(
@@ -168,6 +169,97 @@ def _GetResourceGroups(cluster_name, cluster_type, name, namespace):
     _, nm = utils.GetObjectKey(item)
     if name and nm != name:
       continue
-    resource_groups.append(item)
+    resource_groups.append(RawResourceGroup(cluster_name, item))
 
   return resource_groups
+
+
+class RawResourceGroup:
+  """Representation of the raw ResourceGroup output from kubectl."""
+
+  def __init__(self, cluster, rg_dict):
+    """Initialize a RawResourceGroup object.
+
+    Args:
+      cluster: name of the cluster the results are from
+      rg_dict: raw ResourceGroup dictionary parsed from kubectl
+    """
+    self.cluster = cluster
+    self.rg_dict = rg_dict
+
+
+class ListItem:
+  """Result class to be returned to gcloud."""
+
+  def __init__(self, cluster_name='', group='', kind='', namespace='', name='',
+               status='', condition=''):
+    """Initialize a ListItem object.
+
+    Args:
+      cluster_name: name of the cluster the results are from
+      group: group of the resource
+      kind: kind of the resource
+      namespace: namespace of the resource
+      name: name of the resource
+      status: status of the resource
+      condition: condition message of the resource
+    """
+    self.cluster_name = cluster_name
+    self.group = group
+    self.kind = kind
+    self.namespace = namespace
+    self.name = name
+    self.status = status
+    self.condition = condition
+
+  @classmethod
+  def FromResourceStatus(cls, cluster_name, resource):
+    """Initialize a ListItem object from a resourceStatus.
+
+    Args:
+      cluster_name: name of the cluster the results are from
+      resource: individual resource status dictionary parsed from kubectl
+
+    Returns:
+      new instance of ListItem
+    """
+    condition = ''
+    if 'conditions' in resource:
+      delimited_msg = ', '.join(
+          ["'{}'".format(c['message']) for c in resource['conditions']])
+      condition = '[{}]'.format(delimited_msg)
+    return cls(
+        cluster_name=cluster_name,
+        group=resource['group'],
+        kind=resource['kind'],
+        namespace=resource['namespace'],
+        name=resource['name'],
+        status=resource['status'],
+        condition=condition,
+    )
+
+  def __eq__(self, other):
+    attributes = ['cluster_name', 'group', 'kind', 'namespace', 'name',
+                  'status', 'condition']
+    for a in attributes:
+      if getattr(self, a) != getattr(other, a):
+        return False
+    return True
+
+
+def ParseResultFromRawResourceGroups(raw_resource_groups):
+  """Parse from RawResourceGroup.
+
+  Args:
+    raw_resource_groups: List of RawResourceGroup
+
+  Returns:
+    List of ListItems
+  """
+  resources = []
+  for raw_rg in raw_resource_groups:
+    cluster = raw_rg.cluster
+    resource_statuses = raw_rg.rg_dict['status'].get('resourceStatuses', [])
+    for rs in resource_statuses:
+      resources.append(ListItem.FromResourceStatus(cluster, rs))
+  return resources

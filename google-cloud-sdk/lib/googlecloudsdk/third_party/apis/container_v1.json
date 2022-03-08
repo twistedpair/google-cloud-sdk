@@ -1147,6 +1147,20 @@
         "autoprovisioned": {
           "description": "Can this node pool be deleted automatically.",
           "type": "boolean"
+        },
+        "locationPolicy": {
+          "description": "Location policy used when scaling up a nodepool.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not set.",
+            "BALANCED is a best effort policy that aims to balance the sizes of different zones.",
+            "ANY policy picks zones that have the highest capacity available."
+          ],
+          "enum": [
+            "LOCATION_POLICY_UNSPECIFIED",
+            "BALANCED",
+            "ANY"
+          ]
         }
       }
     },

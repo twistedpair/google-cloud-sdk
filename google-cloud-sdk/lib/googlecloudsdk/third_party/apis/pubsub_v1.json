@@ -245,6 +245,17 @@
         "definition": {
           "description": "The definition of the schema. This should contain a string representing the full definition of the schema that is a valid schema definition of the type specified in `type`.",
           "type": "string"
+        },
+        "revisionId": {
+          "description": "Output only. Immutable. The revision ID of the schema.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "revisionCreateTime": {
+          "description": "Output only. The timestamp that the revision was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -668,7 +679,7 @@
       "type": "object",
       "properties": {
         "serviceAccountEmail": {
-          "description": "[Service account email](https:\/\/cloud.google.com\/iam\/docs\/service-accounts) to be used for generating the OIDC token. The caller (for CreateSubscription, UpdateSubscription, and ModifyPushConfig RPCs) must have the iam.serviceAccounts.actAs permission for the service account.",
+          "description": "[Service account email](https:\/\/cloud.google.com\/iam\/docs\/service-accounts) to be used for generating the OIDC token. See [Setting up push authentication](\/pubsub\/docs\/push#setting_up_for_push_authentication) for more details.",
           "type": "string"
         },
         "audience": {
@@ -695,7 +706,7 @@
           "type": "boolean"
         },
         "dropUnknownFields": {
-          "description": "When true and use_topic_shema is true, any fields that are a part of the topic schema that are not part of the BigQuery table schema are dropped when writing to BigQuery. Otherwise, the schemas must be kept in sync and any messages with extra fields are not written and remain in the subscription's backlog.",
+          "description": "When true and use_topic_schema is true, any fields that are a part of the topic schema that are not part of the BigQuery table schema are dropped when writing to BigQuery. Otherwise, the schemas must be kept in sync and any messages with extra fields are not written and remain in the subscription's backlog.",
           "type": "boolean"
         },
         "state": {

@@ -145,9 +145,9 @@ class Channel(_messages.Message):
     name: Required. The resource name of the channel. Must be unique within
       the location on the project and must be in
       `projects/{project}/locations/{location}/channels/{channel_id}` format.
-    provider: Required. The name of the event provider (e.g. Eventarc SaaS
-      partner) associated with the channel. This provider will be granted
-      permissions to publish events to the channel. Format:
+    provider: The name of the event provider (e.g. Eventarc SaaS partner)
+      associated with the channel. This provider will be granted permissions
+      to publish events to the channel. Format:
       `projects/{project}/locations/{location}/providers/{provider_id}`.
     pubsubTopic: Output only. The name of the Pub/Sub topic created and
       managed by Eventarc system as a transport for the event delivery.
@@ -764,6 +764,10 @@ class EventarcProjectsLocationsTriggersListRequest(_messages.Message):
   r"""A EventarcProjectsLocationsTriggersListRequest object.
 
   Fields:
+    filter: Filter field. Used to filter the Triggers to be listed. Possible
+      filters are described in https://google.aip.dev/160. For example, using
+      "?filter=destination:gke" would list only Triggers with a gke
+      destination.
     orderBy: The sorting order of the resources returned. Value should be a
       comma-separated list of fields. The default sorting order is ascending.
       To specify descending order for a field, append a `desc` suffix; for
@@ -777,10 +781,11 @@ class EventarcProjectsLocationsTriggersListRequest(_messages.Message):
     parent: Required. The parent collection to list triggers on.
   """
 
-  orderBy = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class EventarcProjectsLocationsTriggersPatchRequest(_messages.Message):

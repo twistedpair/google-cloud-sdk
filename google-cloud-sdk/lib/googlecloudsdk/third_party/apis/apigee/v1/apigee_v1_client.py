@@ -831,6 +831,87 @@ class ApigeeV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Creates key value entries in a org, env or apis scoped key value map.
+
+      Args:
+        request: (ApigeeOrganizationsApisKeyvaluemapsEntriesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1KeyValueEntry) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/apis/{apisId}/keyvaluemaps/{keyvaluemapsId}/entries',
+        http_method='POST',
+        method_id='apigee.organizations.apis.keyvaluemaps.entries.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/entries',
+        request_field='googleCloudApigeeV1KeyValueEntry',
+        request_type_name='ApigeeOrganizationsApisKeyvaluemapsEntriesCreateRequest',
+        response_type_name='GoogleCloudApigeeV1KeyValueEntry',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a key value entry from an org, environment or apis scoped key value map.
+
+      Args:
+        request: (ApigeeOrganizationsApisKeyvaluemapsEntriesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1KeyValueEntry) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/apis/{apisId}/keyvaluemaps/{keyvaluemapsId}/entries/{entriesId}',
+        http_method='DELETE',
+        method_id='apigee.organizations.apis.keyvaluemaps.entries.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsApisKeyvaluemapsEntriesDeleteRequest',
+        response_type_name='GoogleCloudApigeeV1KeyValueEntry',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get the Key value entry value for org, env or apis scoped Key value map.
+
+      Args:
+        request: (ApigeeOrganizationsApisKeyvaluemapsEntriesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1KeyValueEntry) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/apis/{apisId}/keyvaluemaps/{keyvaluemapsId}/entries/{entriesId}',
+        http_method='GET',
+        method_id='apigee.organizations.apis.keyvaluemaps.entries.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsApisKeyvaluemapsEntriesGetRequest',
+        response_type_name='GoogleCloudApigeeV1KeyValueEntry',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists key value entries for key values maps scoped to an organization, environment, or API proxy.
 
@@ -2595,7 +2676,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates an EndpointAttachment. **Note:** Not supported for Apigee hybrid.
+      r"""Creates an endpoint attachment. **Note:** Not supported for Apigee hybrid.
 
       Args:
         request: (ApigeeOrganizationsEndpointAttachmentsCreateRequest) input message
@@ -2649,7 +2730,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the specified EndpointAttachment.
+      r"""Gets the endpoint attachment.
 
       Args:
         request: (ApigeeOrganizationsEndpointAttachmentsGetRequest) input message
@@ -2676,7 +2757,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the EndpointAttachments in the specified Organization.
+      r"""Lists the endpoint attachments in an organization.
 
       Args:
         request: (ApigeeOrganizationsEndpointAttachmentsListRequest) input message
@@ -4096,6 +4177,87 @@ class ApigeeV1(base_api.BaseApiClient):
       super(ApigeeV1.OrganizationsEnvironmentsKeyvaluemapsEntriesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Create(self, request, global_params=None):
+      r"""Creates key value entries in a org, env or apis scoped key value map.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1KeyValueEntry) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/keyvaluemaps/{keyvaluemapsId}/entries',
+        http_method='POST',
+        method_id='apigee.organizations.environments.keyvaluemaps.entries.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/entries',
+        request_field='googleCloudApigeeV1KeyValueEntry',
+        request_type_name='ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesCreateRequest',
+        response_type_name='GoogleCloudApigeeV1KeyValueEntry',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a key value entry from an org, environment or apis scoped key value map.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1KeyValueEntry) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/keyvaluemaps/{keyvaluemapsId}/entries/{entriesId}',
+        http_method='DELETE',
+        method_id='apigee.organizations.environments.keyvaluemaps.entries.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesDeleteRequest',
+        response_type_name='GoogleCloudApigeeV1KeyValueEntry',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get the Key value entry value for org, env or apis scoped Key value map.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1KeyValueEntry) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/keyvaluemaps/{keyvaluemapsId}/entries/{entriesId}',
+        http_method='GET',
+        method_id='apigee.organizations.environments.keyvaluemaps.entries.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesGetRequest',
+        response_type_name='GoogleCloudApigeeV1KeyValueEntry',
+        supports_download=False,
+    )
 
     def List(self, request, global_params=None):
       r"""Lists key value entries for key values maps scoped to an organization, environment, or API proxy.
@@ -6503,6 +6665,87 @@ class ApigeeV1(base_api.BaseApiClient):
       super(ApigeeV1.OrganizationsKeyvaluemapsEntriesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Create(self, request, global_params=None):
+      r"""Creates key value entries in a org, env or apis scoped key value map.
+
+      Args:
+        request: (ApigeeOrganizationsKeyvaluemapsEntriesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1KeyValueEntry) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/keyvaluemaps/{keyvaluemapsId}/entries',
+        http_method='POST',
+        method_id='apigee.organizations.keyvaluemaps.entries.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/entries',
+        request_field='googleCloudApigeeV1KeyValueEntry',
+        request_type_name='ApigeeOrganizationsKeyvaluemapsEntriesCreateRequest',
+        response_type_name='GoogleCloudApigeeV1KeyValueEntry',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a key value entry from an org, environment or apis scoped key value map.
+
+      Args:
+        request: (ApigeeOrganizationsKeyvaluemapsEntriesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1KeyValueEntry) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/keyvaluemaps/{keyvaluemapsId}/entries/{entriesId}',
+        http_method='DELETE',
+        method_id='apigee.organizations.keyvaluemaps.entries.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsKeyvaluemapsEntriesDeleteRequest',
+        response_type_name='GoogleCloudApigeeV1KeyValueEntry',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get the Key value entry value for org, env or apis scoped Key value map.
+
+      Args:
+        request: (ApigeeOrganizationsKeyvaluemapsEntriesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1KeyValueEntry) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/keyvaluemaps/{keyvaluemapsId}/entries/{entriesId}',
+        http_method='GET',
+        method_id='apigee.organizations.keyvaluemaps.entries.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsKeyvaluemapsEntriesGetRequest',
+        response_type_name='GoogleCloudApigeeV1KeyValueEntry',
+        supports_download=False,
+    )
 
     def List(self, request, global_params=None):
       r"""Lists key value entries for key values maps scoped to an organization, environment, or API proxy.

@@ -1482,6 +1482,10 @@
         "probingLatency": {
           "description": "Latency as measured by active probing in one direction: from the source to the destination endpoint.",
           "$ref": "LatencyDistribution"
+        },
+        "destinationEgressLocation": {
+          "description": "The EdgeLocation from which a packet destined for\/originating from the internet will egress\/ingress the Google network. This will only be populated for a connectivity test which has an internet destination\/source address. The absence of this field *must not* be used as an indication that the destination\/source is part of the Google network.",
+          "$ref": "EdgeLocation"
         }
       }
     },
@@ -1513,6 +1517,17 @@
           "description": "percent-th percentile of latency observed, in microseconds. Fraction of percent\/100 of samples have latency lower or equal to the value of this field.",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "EdgeLocation": {
+      "id": "EdgeLocation",
+      "description": "Representation of a network edge location as per https:\/\/cloud.google.com\/vpc\/docs\/edge-locations.",
+      "type": "object",
+      "properties": {
+        "metropolitanArea": {
+          "description": "Name of the metropolitan area.",
+          "type": "string"
         }
       }
     },

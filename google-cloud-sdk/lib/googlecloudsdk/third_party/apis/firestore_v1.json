@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1",
-  "revision": "20220211",
+  "revision": "20220228",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development. ",
   "ownerDomain": "google.com",
@@ -995,7 +995,7 @@
           "$ref": "StructuredQuery"
         },
         "transaction": {
-          "description": "Reads documents in a transaction.",
+          "description": "Run the query within an already active transaction. The value here is the opaque transaction ID to execute the query in.",
           "type": "string",
           "format": "byte"
         },
@@ -1269,7 +1269,7 @@
           "format": "byte"
         },
         "document": {
-          "description": "A query result. Not set when reporting partial progress.",
+          "description": "A query result, not set when reporting partial progress.",
           "$ref": "Document"
         },
         "readTime": {

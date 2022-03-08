@@ -480,6 +480,10 @@
           "description": "Optional. The optional reservation affinity. Setting this field will apply the specified [Zonal Compute Reservation](https:\/\/cloud.google.com\/compute\/docs\/instances\/reserving-zonal-resources) to this notebook instance.",
           "$ref": "ReservationAffinity"
         },
+        "canIpForward": {
+          "description": "Optional. Flag to enable ip forwarding or not, default false\/off. https:\/\/cloud.google.com\/vpc\/docs\/using-routes#canipforward",
+          "type": "boolean"
+        },
         "createTime": {
           "description": "Output only. Instance creation time.",
           "readOnly": true,

@@ -283,7 +283,7 @@
     },
     "Cluster": {
       "id": "Cluster",
-      "description": "Message describing Cluster object NEXT_ID: 14",
+      "description": "Message describing Cluster object NEXT_ID: 16",
       "type": "object",
       "properties": {
         "name": {
@@ -341,7 +341,7 @@
           "type": "string",
           "enumDescriptions": [
             "This is an unknown database version.",
-            "The database version is Postgres 13.",
+            "DEPRECATED - The database version is Postgres 13.",
             "The database version is Postgres 14."
           ],
           "enum": [
@@ -674,13 +674,15 @@
             "The state of the backup is unknown.",
             "The backup is ready.",
             "The backup is creating.",
-            "The backup failed."
+            "The backup failed.",
+            "The backup is being deleted."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "READY",
             "CREATING",
-            "FAILED"
+            "FAILED",
+            "DELETING"
           ]
         },
         "type": {
@@ -702,7 +704,7 @@
           "type": "string"
         },
         "clusterName": {
-          "description": "Required. The backup source cluster.",
+          "description": "Required. The full resource name of the backup source cluster (e.g., projects\/\/locations\/\/clusters\/).",
           "type": "string"
         }
       }
@@ -766,7 +768,7 @@
             "type": "string",
             "enumDescriptions": [
               "This is an unknown database version.",
-              "The database version is Postgres 13.",
+              "DEPRECATED - The database version is Postgres 13.",
               "The database version is Postgres 14."
             ],
             "enum": [

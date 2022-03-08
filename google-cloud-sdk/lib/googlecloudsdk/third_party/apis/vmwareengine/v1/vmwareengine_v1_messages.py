@@ -307,6 +307,285 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class ExternalAccessRule(_messages.Message):
+  r"""External access firewall rules for filtering incoming traffic destined
+  to `ExternalAddress` resources.
+
+  Enums:
+    ActionValueValuesEnum: The action that the external access rule performs.
+    StateValueValuesEnum: Output only. The state of the resource.
+
+  Messages:
+    LabelsValue: Labels are a way to attach lightweight metadata to resources
+      for filtering and querying resource data. No more than 64 user labels
+      can be associated with each resource. Label keys and values can be no
+      longer than 63 characters, can only contain lowercase letters, numeric
+      characters, underscores and dashes, where label keys must start with a
+      letter and international characters are allowed. The empty string is a
+      valid value. Labels are set on creation and updated like any other
+      field. Specifically, to add a new label, you would need to provide all
+      of the existing labels along with the new label. If you only provide a
+      map with the new label, all of the old labels are removed (probably not
+      what is desired).
+
+  Fields:
+    action: The action that the external access rule performs.
+    createTime: Output only. Creation time of this resource in RFC3339 text
+      format.
+    description: User-provided description for this external access rule.
+    destinationIpRanges: If destination ranges are specified, the external
+      access rule applies only to the traffic that has a destination IP
+      address in these ranges. The specified IP addresses must have reserved
+      external IP addresses in the scope of the parent network policy. By
+      default, the rule matches all external IP addresses in the scope of the
+      parent network policy.
+    destinationPorts: A list of destination ports to which the external access
+      rule applies. This field is only applicable for the UDP or TCP protocol.
+      Each entry must be either an integer or a range. For example: `["22"]`,
+      `["80","443"]`, or `["12345-12349"]`. By default, the external access
+      rule applies to connections through any destination port.
+    ipProtocol: The IP protocol to which the external access rule applies.
+      This value can be one of the following three protocol strings: `tcp`,
+      `udp`, or `icmp`.
+    labels: Labels are a way to attach lightweight metadata to resources for
+      filtering and querying resource data. No more than 64 user labels can be
+      associated with each resource. Label keys and values can be no longer
+      than 63 characters, can only contain lowercase letters, numeric
+      characters, underscores and dashes, where label keys must start with a
+      letter and international characters are allowed. The empty string is a
+      valid value. Labels are set on creation and updated like any other
+      field. Specifically, to add a new label, you would need to provide all
+      of the existing labels along with the new label. If you only provide a
+      map with the new label, all of the old labels are removed (probably not
+      what is desired).
+    name: Output only. The resource name of this external access rule.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1/networkPolicies/my-
+      policy/externalAccessRules/my-rule`
+    priority: External access rule priority, which determines the external
+      access rule to use when multiple rules apply. The external access rule
+      priority is an integer from 100 to 4096, both inclusive. Priorities must
+      be unique for a rule within the parent network policy. Lower integers
+      indicate higher precedence. For example, a rule with priority `100` has
+      higher precedence than a rule with priority `101`.
+    sourceIpRanges: If source ranges are specified, the external access rule
+      applies only to traffic that has a source IP address in these ranges.
+      These ranges can either be expressed in the CIDR format or as an IP
+      address. As only inbound rules are supported, `ExternalAddress`
+      resources cannot be the source IP addresses of an external access rule.
+      By default, the rule matches all addresses (`0.0.0.0/0`).
+    sourcePorts: A list of source ports to which the external access rule
+      applies. This field is only applicable for the UDP or TCP protocol. Each
+      entry must be either an integer or a range. For example: `["22"]`,
+      `["80","443"]`, or `["12345-12349"]`. By default, the external access
+      rule applies to connections through any source port.
+    state: Output only. The state of the resource.
+    uid: Output only. System-generated unique identifier for the resource.
+    updateTime: Output only. Last update time of this resource in RFC3339 text
+      format.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""The action that the external access rule performs.
+
+    Values:
+      ACTION_UNSPECIFIED: Defaults to allow.
+      ALLOW: Allows connections that match the other specified components.
+      DENY: Blocks connections that match the other specified components.
+    """
+    ACTION_UNSPECIFIED = 0
+    ALLOW = 1
+    DENY = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the resource.
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value is used if the state is
+        omitted.
+      ACTIVE: The rule is ready.
+      CREATING: The rule is being created.
+      UPDATING: The rule is being updated.
+      DELETING: The rule is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    UPDATING = 3
+    DELETING = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels are a way to attach lightweight metadata to resources for
+    filtering and querying resource data. No more than 64 user labels can be
+    associated with each resource. Label keys and values can be no longer than
+    63 characters, can only contain lowercase letters, numeric characters,
+    underscores and dashes, where label keys must start with a letter and
+    international characters are allowed. The empty string is a valid value.
+    Labels are set on creation and updated like any other field. Specifically,
+    to add a new label, you would need to provide all of the existing labels
+    along with the new label. If you only provide a map with the new label,
+    all of the old labels are removed (probably not what is desired).
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  destinationIpRanges = _messages.MessageField('IpRange', 4, repeated=True)
+  destinationPorts = _messages.StringField(5, repeated=True)
+  ipProtocol = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  priority = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  sourceIpRanges = _messages.MessageField('IpRange', 10, repeated=True)
+  sourcePorts = _messages.StringField(11, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
+
+
+class ExternalAddress(_messages.Message):
+  r"""Represents an allocated external IP address and its corresponding
+  internal IP address in a private cloud.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the resource.
+
+  Messages:
+    LabelsValue: Labels are a way to attach lightweight metadata to resources
+      for filtering and querying resource data. No more than 64 user labels
+      can be associated with each resource. Label keys and values can be no
+      longer than 63 characters, can only contain lowercase letters, numeric
+      characters, underscores and dashes, where label keys must start with a
+      letter and international characters are allowed. The empty string is a
+      valid value. Labels are set on creation and updated like any other
+      field. Specifically, to add a new label, you would need to provide all
+      of the existing labels along with the new label. If you only provide a
+      map with the new label, all of the old labels will be removed (probably
+      not what is desired).
+
+  Fields:
+    createTime: Output only. Creation time of this resource in RFC3339 text
+      format.
+    displayName: User-provided name for this resource.
+    externalIp: Output only. The external IP address of a workload VM.
+    internalIp: The internal IP address of a workload VM.
+    labels: Labels are a way to attach lightweight metadata to resources for
+      filtering and querying resource data. No more than 64 user labels can be
+      associated with each resource. Label keys and values can be no longer
+      than 63 characters, can only contain lowercase letters, numeric
+      characters, underscores and dashes, where label keys must start with a
+      letter and international characters are allowed. The empty string is a
+      valid value. Labels are set on creation and updated like any other
+      field. Specifically, to add a new label, you would need to provide all
+      of the existing labels along with the new label. If you only provide a
+      map with the new label, all of the old labels will be removed (probably
+      not what is desired).
+    name: Output only. The resource name of this external IP address. Resource
+      names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1-a/privateClouds/my-
+      cloud/externalAddresses/my-address`
+    state: Output only. The state of the resource.
+    uid: Output only. System-generated unique identifier for the resource.
+    updateTime: Output only. Last update time of this resource in RFC3339 text
+      format.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the resource.
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value should never be used.
+      ACTIVE: The address is ready.
+      CREATING: The address is being created.
+      UPDATING: The address is being updated.
+      DELETING: The address is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    UPDATING = 3
+    DELETING = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels are a way to attach lightweight metadata to resources for
+    filtering and querying resource data. No more than 64 user labels can be
+    associated with each resource. Label keys and values can be no longer than
+    63 characters, can only contain lowercase letters, numeric characters,
+    underscores and dashes, where label keys must start with a letter and
+    international characters are allowed. The empty string is a valid value.
+    Labels are set on creation and updated like any other field. Specifically,
+    to add a new label, you would need to provide all of the existing labels
+    along with the new label. If you only provide a map with the new label,
+    all of the old labels will be removed (probably not what is desired).
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  externalIp = _messages.StringField(3)
+  internalIp = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+
+
+class FetchNetworkPolicyExternalAddressesResponse(_messages.Message):
+  r"""Response message for VmwareEngine.FetchNetworkPolicyExternalAddresses
+
+  Fields:
+    externalAddresses: A list of external IP addresses assigned to VMware
+      workload VMs within the scope of the given network policy.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  externalAddresses = _messages.MessageField('ExternalAddress', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class Hcx(_messages.Message):
   r"""Details about a HCX Cloud Manager appliance.
 
@@ -380,6 +659,27 @@ class HcxActivationKey(_messages.Message):
   uid = _messages.StringField(5)
 
 
+class IpRange(_messages.Message):
+  r"""An IP range provided in any one of the supported formats.
+
+  Fields:
+    externalAddress: The name of an `ExternalAddress` resource. The external
+      address must have been reserved in the scope of this external access
+      rule's parent network policy. Provide the external address name in the
+      form of `projects/{project}/locations/{location}/privateClouds/{private_
+      cloud}/externalAddresses/{external_address}`. For example: `projects/my-
+      project/locations/us-west1-a/privateClouds/my-
+      cloud/externalAddresses/my-address`.
+    ipAddress: A single IP address. For example: `10.0.0.5`.
+    ipAddressRange: An IP address range in the CIDR format. For example:
+      `10.0.0.0/24`.
+  """
+
+  externalAddress = _messages.StringField(1)
+  ipAddress = _messages.StringField(2)
+  ipAddressRange = _messages.StringField(3)
+
+
 class ListClustersResponse(_messages.Message):
   r"""Response message for VmwareEngine.ListClusters
 
@@ -392,6 +692,38 @@ class ListClustersResponse(_messages.Message):
   """
 
   clusters = _messages.MessageField('Cluster', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListExternalAccessRulesResponse(_messages.Message):
+  r"""Response message for VmwareEngine.ListExternalAccessRules
+
+  Fields:
+    externalAccessRules: A list of external access firewall rules.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    unreachable: Locations that could not be reached when making an aggregated
+      query using wildcards.
+  """
+
+  externalAccessRules = _messages.MessageField('ExternalAccessRule', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListExternalAddressesResponse(_messages.Message):
+  r"""Response message for VmwareEngine.ListExternalAddresses
+
+  Fields:
+    externalAddresses: A list of external IP addresses.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    unreachable: Locations that could not be reached when making an aggregated
+      query using wildcards.
+  """
+
+  externalAddresses = _messages.MessageField('ExternalAddress', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -484,6 +816,21 @@ class ListPrivateCloudsResponse(_messages.Message):
   nextPageToken = _messages.StringField(1)
   privateClouds = _messages.MessageField('PrivateCloud', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListVmwareEngineNetworksResponse(_messages.Message):
+  r"""Response message for VmwareEngine.ListVmwareEngineNetworks
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    unreachable: Unreachable resources.
+    vmwareEngineNetworks: A list of VMware Engine networks.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  unreachable = _messages.StringField(2, repeated=True)
+  vmwareEngineNetworks = _messages.MessageField('VmwareEngineNetwork', 3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -611,12 +958,18 @@ class NetworkConfig(_messages.Message):
       resource name of the service VPC network this private cloud is attached
       to. The name is specified in the following form:
       `projects/{service_project_number}/global/networks/{network_id}`.
+    vmwareEngineNetwork: Optional. The relative resource name of the VMware
+      Engine network attached to the private cloud. Specify the name in the
+      following form: `projects/{project}/locations/{location}/vmwareEngineNet
+      works/{vmware_engine_network_id}` where `{project}` can either be a
+      project number or a project ID.
   """
 
   externalIpAccess = _messages.BooleanField(1)
   managementCidr = _messages.StringField(2)
   network = _messages.StringField(3)
   serviceNetwork = _messages.StringField(4)
+  vmwareEngineNetwork = _messages.StringField(5)
 
 
 class NetworkPolicy(_messages.Message):
@@ -642,6 +995,7 @@ class NetworkPolicy(_messages.Message):
   Fields:
     createTime: Output only. Creation time of this resource in RFC3339 text
       format.
+    description: Optional. User-provided description for this network policy.
     edgeServicesCidr: Required. IP address range in CIDR notation used to
       create internet access and external IP access. An RFC 1918 CIDR block,
       with a "/26" prefix, is required. The range cannot overlap with any
@@ -678,6 +1032,10 @@ class NetworkPolicy(_messages.Message):
     uid: Output only. System-generated unique identifier for the resource.
     updateTime: Output only. Last update time of this resource in RFC3339 text
       format.
+    vmwareEngineNetwork: Optional. The relative resource name of the VMware
+      Engine network. Specify the name in the following form: `projects/{proje
+      ct}/locations/{location}/vmwareEngineNetworks/{vmware_engine_network_id}
+      ` where `{project}` can either be a project number or a project ID.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -714,14 +1072,16 @@ class NetworkPolicy(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  edgeServicesCidr = _messages.StringField(2)
-  externalIp = _messages.MessageField('NetworkService', 3)
-  internetAccess = _messages.MessageField('NetworkService', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  network = _messages.StringField(7)
-  uid = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  description = _messages.StringField(2)
+  edgeServicesCidr = _messages.StringField(3)
+  externalIp = _messages.MessageField('NetworkService', 4)
+  internetAccess = _messages.MessageField('NetworkService', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+  vmwareEngineNetwork = _messages.StringField(11)
 
 
 class NetworkService(_messages.Message):
@@ -1413,6 +1773,136 @@ class Vcenter(_messages.Message):
   version = _messages.StringField(5)
 
 
+class VmwareEngineNetwork(_messages.Message):
+  r"""VMware Engine network resource that provides connectivity for VMware
+  Engine private clouds.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the VMware Engine network.
+    TypeValueValuesEnum: Required. VMware Engine network type.
+
+  Messages:
+    LabelsValue: Labels are a way to attach lightweight metadata to resources
+      for filtering and querying resource data. No more than 64 user labels
+      can be associated with each resource. Label keys and values can be no
+      longer than 63 characters, can only contain lowercase letters, numeric
+      characters, underscores and dashes, where label keys must start with a
+      letter and international characters are allowed. The empty string is a
+      valid value. Labels are set on creation and updated like any other
+      field. Specifically, to add a new label, you would need to provide all
+      of the existing labels along with the new label. If you only provide a
+      map with the new label, all of the old labels will be removed (probably
+      not what is desired).
+
+  Fields:
+    createTime: Output only. Creation time of this resource in RFC3339 text
+      format.
+    description: User-provided description for this VMware Engine network.
+    etag: Checksum that may be sent on update and delete requests to ensure
+      that the user-provided value is up to date before the server processes a
+      request. The server computes checksums based on the value of other
+      fields in the request.
+    labels: Labels are a way to attach lightweight metadata to resources for
+      filtering and querying resource data. No more than 64 user labels can be
+      associated with each resource. Label keys and values can be no longer
+      than 63 characters, can only contain lowercase letters, numeric
+      characters, underscores and dashes, where label keys must start with a
+      letter and international characters are allowed. The empty string is a
+      valid value. Labels are set on creation and updated like any other
+      field. Specifically, to add a new label, you would need to provide all
+      of the existing labels along with the new label. If you only provide a
+      map with the new label, all of the old labels will be removed (probably
+      not what is desired).
+    name: Output only. The resource name of the VMware Engine network.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/global/vmwareEngineNetworks/my-network`
+    state: Output only. State of the VMware Engine network.
+    type: Required. VMware Engine network type.
+    uid: Output only. System-generated unique identifier for the resource.
+    updateTime: Output only. Last update time of this resource in RFC3339 text
+      format.
+    vpcNetworks: Output only. VMware Engine service VPC networks that provide
+      connectivity from a private cloud to customer projects, the internet,
+      and other Google Cloud services.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the VMware Engine network.
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value is used if the state is
+        omitted.
+      CREATING: The VMware Engine network is being created.
+      ACTIVE: The VMware Engine network is ready.
+      UPDATING: The VMware Engine network is being updated.
+      DELETING: The VMware Engine network is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    UPDATING = 3
+    DELETING = 4
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. VMware Engine network type.
+
+    Values:
+      TYPE_UNSPECIFIED: The default value. This value should never be used.
+      LEGACY: Network type used by private clouds created in projects without
+        a network of type `STANDARD`. This network type is no longer used for
+        new VMware Engine private cloud deployments.
+      STANDARD: Standard network type used for private cloud connectivity.
+    """
+    TYPE_UNSPECIFIED = 0
+    LEGACY = 1
+    STANDARD = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels are a way to attach lightweight metadata to resources for
+    filtering and querying resource data. No more than 64 user labels can be
+    associated with each resource. Label keys and values can be no longer than
+    63 characters, can only contain lowercase letters, numeric characters,
+    underscores and dashes, where label keys must start with a letter and
+    international characters are allowed. The empty string is a valid value.
+    Labels are set on creation and updated like any other field. Specifically,
+    to add a new label, you would need to provide all of the existing labels
+    along with the new label. If you only provide a map with the new label,
+    all of the old labels will be removed (probably not what is desired).
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+  vpcNetworks = _messages.MessageField('VpcNetwork', 10, repeated=True)
+
+
 class VmwareengineProjectsLocationsGetRequest(_messages.Message):
   r"""A VmwareengineProjectsLocationsGetRequest object.
 
@@ -1505,6 +1995,200 @@ class VmwareengineProjectsLocationsNetworkPoliciesDeleteRequest(_messages.Messag
 
   name = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
+
+
+class VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesCreateRequest(_messages.Message):
+  r"""A
+  VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesCreateRequest
+  object.
+
+  Fields:
+    externalAccessRule: A ExternalAccessRule resource to be passed as the
+      request body.
+    externalAccessRuleId: Required. The user-provided identifier of the
+      `ExternalAccessRule` to be created. This identifier must be unique among
+      `ExternalAccessRule` resources within the parent and becomes the final
+      token in the name URI. The identifier must meet the following
+      requirements: * Only contains 1-63 alphanumeric characters and hyphens *
+      Begins with an alphabetical character * Ends with a non-hyphen character
+      * Not formatted as a UUID * Complies with [RFC
+      1034](https://datatracker.ietf.org/doc/html/rfc1034) (section 3.5)
+    parent: Required. The resource name of the network policy to create a new
+      external access firewall rule in. Resource names are schemeless URIs
+      that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1/networkPolicies/my-policy`
+    requestId: A request ID to identify requests. Specify a unique request ID
+      so that if you must retry your request, the server will know to ignore
+      the request if it has already been completed. The server guarantees that
+      a request doesn't result in creation of duplicate commitments for at
+      least 60 minutes. For example, consider a situation where you make an
+      initial request and the request times out. If you make the request again
+      with the same request ID, the server can check if the original operation
+      with the same request ID was received, and if so, will ignore the second
+      request. This prevents clients from accidentally creating duplicate
+      commitments. The request ID must be a valid UUID with the exception that
+      zero UUID is not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  externalAccessRule = _messages.MessageField('ExternalAccessRule', 1)
+  externalAccessRuleId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesDeleteRequest(_messages.Message):
+  r"""A
+  VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the external access firewall rule to
+      delete. Resource names are schemeless URIs that follow the conventions
+      in https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1/networkPolicies/my-
+      policy/externalAccessRules/my-rule`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if the
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesGetRequest(_messages.Message):
+  r"""A
+  VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the external access firewall rule to
+      retrieve. Resource names are schemeless URIs that follow the conventions
+      in https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1/networkPolicies/my-
+      policy/externalAccessRules/my-rule`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesListRequest(_messages.Message):
+  r"""A
+  VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesListRequest
+  object.
+
+  Fields:
+    filter: A filter expression that matches resources returned in the
+      response. The expression must specify the field name, a comparison
+      operator, and the value that you want to use for filtering. The value
+      must be a string, a number, or a boolean. The comparison operator must
+      be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of
+      external access rules, you can exclude the ones named `example-rule` by
+      specifying `name != "example-rule"`. To filter on multiple expressions,
+      provide each separate expression within parentheses. For example: ```
+      (name = "example-rule") (createTime > "2021-04-12T08:15:10.40Z") ``` By
+      default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ``` (name =
+      "example-rule-1") AND (createTime > "2021-04-12T08:15:10.40Z") OR (name
+      = "example-rule-2") ```
+    orderBy: Sorts list results by a certain order. By default, returned
+      results are ordered by `name` in ascending order. You can also sort
+      results in descending order based on the `name` value using
+      `orderBy="name desc"`. Currently, only ordering by `name` is supported.
+    pageSize: The maximum number of external access rules to return in one
+      page. The service may return fewer than this value. The maximum value is
+      coerced to 50.
+    pageToken: A page token, received from a previous
+      `ListExternalAccessRulesRequest` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListExternalAccessRulesRequest` must match the call that provided the
+      page token.
+    parent: Required. The resource name of the network policy to query for
+      external access firewall rules. Resource names are schemeless URIs that
+      follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1/networkPolicies/my-policy`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesPatchRequest(_messages.Message):
+  r"""A
+  VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesPatchRequest
+  object.
+
+  Fields:
+    externalAccessRule: A ExternalAccessRule resource to be passed as the
+      request body.
+    name: Output only. The resource name of this external access rule.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1/networkPolicies/my-
+      policy/externalAccessRules/my-rule`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if the
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the `ExternalAccessRule` resource by the update. The
+      fields specified in the `update_mask` are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
+  """
+
+  externalAccessRule = _messages.MessageField('ExternalAccessRule', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class VmwareengineProjectsLocationsNetworkPoliciesFetchExternalAddressesRequest(_messages.Message):
+  r"""A
+  VmwareengineProjectsLocationsNetworkPoliciesFetchExternalAddressesRequest
+  object.
+
+  Fields:
+    networkPolicy: Required. The resource name of the network policy to query
+      for assigned external IP addresses. Resource names are schemeless URIs
+      that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1/networkPolicies/my-policy`
+    pageSize: The maximum number of external IP addresses to return in one
+      page. The service may return fewer than this value. The maximum value is
+      coerced to 50.
+    pageToken: A page token, received from a previous
+      `FetchNetworkPolicyExternalAddresses` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `FetchNetworkPolicyExternalAddresses` must match the call that provided
+      the page token.
+  """
+
+  networkPolicy = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
 
 
 class VmwareengineProjectsLocationsNetworkPoliciesGetIamPolicyRequest(_messages.Message):
@@ -2044,6 +2728,172 @@ class VmwareengineProjectsLocationsPrivateCloudsDeleteRequest(_messages.Message)
   requestId = _messages.StringField(4)
 
 
+class VmwareengineProjectsLocationsPrivateCloudsExternalAddressesCreateRequest(_messages.Message):
+  r"""A
+  VmwareengineProjectsLocationsPrivateCloudsExternalAddressesCreateRequest
+  object.
+
+  Fields:
+    externalAddress: A ExternalAddress resource to be passed as the request
+      body.
+    externalAddressId: Required. The user-provided identifier of the
+      `ExternalAddress` to be created. This identifier must be unique among
+      `ExternalAddress` resources within the parent and becomes the final
+      token in the name URI. The identifier must meet the following
+      requirements: * Only contains 1-63 alphanumeric characters and hyphens *
+      Begins with an alphabetical character * Ends with a non-hyphen character
+      * Not formatted as a UUID * Complies with [RFC
+      1034](https://datatracker.ietf.org/doc/html/rfc1034) (section 3.5)
+    parent: Required. The resource name of the private cloud to create a new
+      external IP address in. Resource names are schemeless URIs that follow
+      the conventions in https://cloud.google.com/apis/design/resource_names.
+      For example: `projects/my-project/locations/us-west1-a/privateClouds/my-
+      cloud`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if the
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  externalAddress = _messages.MessageField('ExternalAddress', 1)
+  externalAddressId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsExternalAddressesDeleteRequest(_messages.Message):
+  r"""A
+  VmwareengineProjectsLocationsPrivateCloudsExternalAddressesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the external IP address to delete.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1-a/privateClouds/my-
+      cloud/externalAddresses/my-ip`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if the
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsExternalAddressesGetRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsExternalAddressesGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the external IP address to retrieve.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1-a/privateClouds/my-
+      cloud/externalAddresses/my-ip`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsExternalAddressesListRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsExternalAddressesListRequest
+  object.
+
+  Fields:
+    filter: A filter expression that matches resources returned in the
+      response. The expression must specify the field name, a comparison
+      operator, and the value that you want to use for filtering. The value
+      must be a string, a number, or a boolean. The comparison operator must
+      be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of
+      IP addresses, you can exclude the ones named `example-ip` by specifying
+      `name != "example-ip"`. To filter on multiple expressions, provide each
+      separate expression within parentheses. For example: ``` (name =
+      "example-ip") (createTime > "2021-04-12T08:15:10.40Z") ``` By default,
+      each expression is an `AND` expression. However, you can include `AND`
+      and `OR` expressions explicitly. For example: ``` (name = "example-
+      ip-1") AND (createTime > "2021-04-12T08:15:10.40Z") OR (name = "example-
+      ip-2") ```
+    orderBy: Sorts list results by a certain order. By default, returned
+      results are ordered by `name` in ascending order. You can also sort
+      results in descending order based on the `name` value using
+      `orderBy="name desc"`. Currently, only ordering by `name` is supported.
+    pageSize: The maximum number of external IP addresses to return in one
+      page. The service may return fewer than this value. The maximum value is
+      coerced to 50.
+    pageToken: A page token, received from a previous `ListExternalAddresses`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListExternalAddresses` must match the call
+      that provided the page token.
+    parent: Required. The resource name of the private cloud to be queried for
+      external IP addresses. Resource names are schemeless URIs that follow
+      the conventions in https://cloud.google.com/apis/design/resource_names.
+      For example: `projects/my-project/locations/us-west1-a/privateClouds/my-
+      cloud`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsExternalAddressesPatchRequest(_messages.Message):
+  r"""A
+  VmwareengineProjectsLocationsPrivateCloudsExternalAddressesPatchRequest
+  object.
+
+  Fields:
+    externalAddress: A ExternalAddress resource to be passed as the request
+      body.
+    name: Output only. The resource name of this external IP address. Resource
+      names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1-a/privateClouds/my-
+      cloud/externalAddresses/my-address`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if the
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the `ExternalAddress` resource by the update. The fields
+      specified in the `update_mask` are relative to the resource, not the
+      full request. A field will be overwritten if it is in the mask. If the
+      user does not provide a mask then all fields will be overwritten.
+  """
+
+  externalAddress = _messages.MessageField('ExternalAddress', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
 class VmwareengineProjectsLocationsPrivateCloudsGetIamPolicyRequest(_messages.Message):
   r"""A VmwareengineProjectsLocationsPrivateCloudsGetIamPolicyRequest object.
 
@@ -2400,6 +3250,208 @@ class VmwareengineProjectsLocationsPrivateCloudsUndeleteRequest(_messages.Messag
 
   name = _messages.StringField(1, required=True)
   undeletePrivateCloudRequest = _messages.MessageField('UndeletePrivateCloudRequest', 2)
+
+
+class VmwareengineProjectsLocationsVmwareEngineNetworksCreateRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsVmwareEngineNetworksCreateRequest object.
+
+  Fields:
+    parent: Required. The resource name of the location to create the new
+      VMware Engine network in. A VMware Engine network of type `LEGACY` is a
+      regional resource, and a VMware Engine network of type `STANDARD` is a
+      global resource. Resource names are schemeless URIs that follow the
+      conventions in https://cloud.google.com/apis/design/resource_names. For
+      example: `projects/my-project/locations/global`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    vmwareEngineNetwork: A VmwareEngineNetwork resource to be passed as the
+      request body.
+    vmwareEngineNetworkId: Required. The user-provided identifier of the new
+      VMware Engine network. This identifier must be unique among VMware
+      Engine network` resources within the parent and becomes the final token
+      in the name URI. The identifier must meet the following requirements: *
+      Only contains 1-63 alphanumeric characters and hyphens * Begins with an
+      alphabetical character * Ends with a non-hyphen character * Not
+      formatted as a UUID * Complies with [RFC
+      1034](https://datatracker.ietf.org/doc/html/rfc1034) (section 3.5)
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  vmwareEngineNetwork = _messages.MessageField('VmwareEngineNetwork', 3)
+  vmwareEngineNetworkId = _messages.StringField(4)
+
+
+class VmwareengineProjectsLocationsVmwareEngineNetworksDeleteRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsVmwareEngineNetworksDeleteRequest object.
+
+  Fields:
+    etag: Optional. Checksum used to ensure that the user-provided value is up
+      to date before the server processes the request. The server compares
+      provided checksum with the current checksum of the resource. If the
+      user-provided value is out of date, this request returns an `ABORTED`
+      error.
+    name: Required. The resource name of the VMware Engine network to be
+      deleted. Resource names are schemeless URIs that follow the conventions
+      in https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/global/vmwareEngineNetworks/my-network`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class VmwareengineProjectsLocationsVmwareEngineNetworksGetRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsVmwareEngineNetworksGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the VMware Engine network to
+      retrieve. Resource names are schemeless URIs that follow the conventions
+      in https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/global/vmwareEngineNetworks/my-network`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class VmwareengineProjectsLocationsVmwareEngineNetworksListRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsVmwareEngineNetworksListRequest object.
+
+  Fields:
+    filter: A filter expression that matches resources returned in the
+      response. The expression must specify the field name, a comparison
+      operator, and the value that you want to use for filtering. The value
+      must be a string, a number, or a boolean. The comparison operator must
+      be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of
+      VPC network peerings, you can exclude the ones named `example-network`
+      by specifying `name != "example-network"`. To filter on multiple
+      expressions, provide each separate expression within parentheses. For
+      example: ``` (name = "example-network") (createTime >
+      "2021-04-12T08:15:10.40Z") ``` By default, each expression is an `AND`
+      expression. However, you can include `AND` and `OR` expressions
+      explicitly. For example: ``` (name = "example-network-1") AND
+      (createTime > "2021-04-12T08:15:10.40Z") OR (name = "example-network-2")
+      ```
+    orderBy: Sorts list results by a certain order. By default, returned
+      results are ordered by `name` in ascending order. You can also sort
+      results in descending order based on the `name` value using
+      `orderBy="name desc"`. Currently, only ordering by `name` is supported.
+    pageSize: The maximum number of results to return in one page. The maximum
+      value of this field is 25.
+    pageToken: A page token, received from a previous
+      `ListVmwareEngineNetworks` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `ListVmwareEngineNetworks` must match the call that provided the page
+      token.
+    parent: Required. The resource name of the location to query for VMware
+      Engine networks. Resource names are schemeless URIs that follow the
+      conventions in https://cloud.google.com/apis/design/resource_names. For
+      example: `projects/my-project/locations/global`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class VmwareengineProjectsLocationsVmwareEngineNetworksPatchRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsVmwareEngineNetworksPatchRequest object.
+
+  Fields:
+    name: Output only. The resource name of the VMware Engine network.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/global/vmwareEngineNetworks/my-network`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the VMware Engine network resource by the update. The
+      fields specified in the `update_mask` are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
+      Only the following fields can be updated: `labels`, `description`.
+    vmwareEngineNetwork: A VmwareEngineNetwork resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  updateMask = _messages.StringField(3)
+  vmwareEngineNetwork = _messages.MessageField('VmwareEngineNetwork', 4)
+
+
+class VpcNetwork(_messages.Message):
+  r"""Represents a VMware Engine VPC network that is managed by a VMware
+  Engine network resource.
+
+  Enums:
+    TypeValueValuesEnum: Output only. Type of VPC network (INTRANET, INTERNET,
+      or GOOGLE_CLOUD)
+
+  Fields:
+    network: Output only. The relative resource name of the service VPC
+      network this VMware Engine network is attached to. For example:
+      `projects/123123/global/networks/my-network`
+    type: Output only. Type of VPC network (INTRANET, INTERNET, or
+      GOOGLE_CLOUD)
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Type of VPC network (INTRANET, INTERNET, or GOOGLE_CLOUD)
+
+    Values:
+      TYPE_UNSPECIFIED: The default value. This value should never be used.
+      INTRANET: VPC network that will be peered with the consumer VPC network
+        or other service VPC network. Access a private cloud through Compute
+        Engine VMs on a peered VPC network or an on-premises resource
+        connected to a peered consumer VPC network.
+      INTERNET: VPC network used for internet access to and from a private
+        cloud.
+      GOOGLE_CLOUD: VPC network used for access to Google Cloud services like
+        Cloud Storage.
+    """
+    TYPE_UNSPECIFIED = 0
+    INTRANET = 1
+    INTERNET = 2
+    GOOGLE_CLOUD = 3
+
+  network = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 encoding.AddCustomJsonFieldMapping(

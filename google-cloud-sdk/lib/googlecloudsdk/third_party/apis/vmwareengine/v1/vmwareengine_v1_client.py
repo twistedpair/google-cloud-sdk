@@ -39,14 +39,162 @@ class VmwareengineV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_networkPolicies_externalAccessRules = self.ProjectsLocationsNetworkPoliciesExternalAccessRulesService(self)
     self.projects_locations_networkPolicies = self.ProjectsLocationsNetworkPoliciesService(self)
     self.projects_locations_nodeTypes = self.ProjectsLocationsNodeTypesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_privateClouds_clusters = self.ProjectsLocationsPrivateCloudsClustersService(self)
+    self.projects_locations_privateClouds_externalAddresses = self.ProjectsLocationsPrivateCloudsExternalAddressesService(self)
     self.projects_locations_privateClouds_hcxActivationKeys = self.ProjectsLocationsPrivateCloudsHcxActivationKeysService(self)
     self.projects_locations_privateClouds = self.ProjectsLocationsPrivateCloudsService(self)
+    self.projects_locations_vmwareEngineNetworks = self.ProjectsLocationsVmwareEngineNetworksService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsNetworkPoliciesExternalAccessRulesService(base_api.BaseApiService):
+    """Service class for the projects_locations_networkPolicies_externalAccessRules resource."""
+
+    _NAME = 'projects_locations_networkPolicies_externalAccessRules'
+
+    def __init__(self, client):
+      super(VmwareengineV1.ProjectsLocationsNetworkPoliciesExternalAccessRulesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new external access rule in a given network policy.
+
+      Args:
+        request: (VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}/externalAccessRules',
+        http_method='POST',
+        method_id='vmwareengine.projects.locations.networkPolicies.externalAccessRules.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['externalAccessRuleId', 'requestId'],
+        relative_path='v1/{+parent}/externalAccessRules',
+        request_field='externalAccessRule',
+        request_type_name='VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single external access rule.
+
+      Args:
+        request: (VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}/externalAccessRules/{externalAccessRulesId}',
+        http_method='DELETE',
+        method_id='vmwareengine.projects.locations.networkPolicies.externalAccessRules.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single external access rule.
+
+      Args:
+        request: (VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ExternalAccessRule) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}/externalAccessRules/{externalAccessRulesId}',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.networkPolicies.externalAccessRules.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesGetRequest',
+        response_type_name='ExternalAccessRule',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists `ExternalAccessRule` resources in the specified network policy.
+
+      Args:
+        request: (VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListExternalAccessRulesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}/externalAccessRules',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.networkPolicies.externalAccessRules.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/externalAccessRules',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesListRequest',
+        response_type_name='ListExternalAccessRulesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single external access rule. Only fields specified in `update_mask` are applied.
+
+      Args:
+        request: (VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}/externalAccessRules/{externalAccessRulesId}',
+        http_method='PATCH',
+        method_id='vmwareengine.projects.locations.networkPolicies.externalAccessRules.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='externalAccessRule',
+        request_type_name='VmwareengineProjectsLocationsNetworkPoliciesExternalAccessRulesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
   class ProjectsLocationsNetworkPoliciesService(base_api.BaseApiService):
     """Service class for the projects_locations_networkPolicies resource."""
@@ -109,6 +257,33 @@ class VmwareengineV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='VmwareengineProjectsLocationsNetworkPoliciesDeleteRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def FetchExternalAddresses(self, request, global_params=None):
+      r"""Lists external IP addresses assigned to VMware workload VMs within the scope of the given network policy.
+
+      Args:
+        request: (VmwareengineProjectsLocationsNetworkPoliciesFetchExternalAddressesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FetchNetworkPolicyExternalAddressesResponse) The response message.
+      """
+      config = self.GetMethodConfig('FetchExternalAddresses')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchExternalAddresses.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}:fetchExternalAddresses',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.networkPolicies.fetchExternalAddresses',
+        ordered_params=['networkPolicy'],
+        path_params=['networkPolicy'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+networkPolicy}:fetchExternalAddresses',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsNetworkPoliciesFetchExternalAddressesRequest',
+        response_type_name='FetchNetworkPolicyExternalAddressesResponse',
         supports_download=False,
     )
 
@@ -736,6 +911,151 @@ class VmwareengineV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsPrivateCloudsExternalAddressesService(base_api.BaseApiService):
+    """Service class for the projects_locations_privateClouds_externalAddresses resource."""
+
+    _NAME = 'projects_locations_privateClouds_externalAddresses'
+
+    def __init__(self, client):
+      super(VmwareengineV1.ProjectsLocationsPrivateCloudsExternalAddressesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new `ExternalAddress` resource in a given private cloud. The network policy that corresponds to the private cloud must have the external IP address network service enabled (`NetworkPolicy.external_ip`).
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsExternalAddressesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/externalAddresses',
+        http_method='POST',
+        method_id='vmwareengine.projects.locations.privateClouds.externalAddresses.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['externalAddressId', 'requestId'],
+        relative_path='v1/{+parent}/externalAddresses',
+        request_field='externalAddress',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsExternalAddressesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single external IP address. When you delete an external IP address, connectivity between the external IP address and the corresponding internal IP address is lost.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsExternalAddressesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/externalAddresses/{externalAddressesId}',
+        http_method='DELETE',
+        method_id='vmwareengine.projects.locations.privateClouds.externalAddresses.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsExternalAddressesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single external IP address.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsExternalAddressesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ExternalAddress) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/externalAddresses/{externalAddressesId}',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.privateClouds.externalAddresses.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsExternalAddressesGetRequest',
+        response_type_name='ExternalAddress',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists external IP addresses assigned to VMware workload VMs in a given private cloud.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsExternalAddressesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListExternalAddressesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/externalAddresses',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.privateClouds.externalAddresses.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/externalAddresses',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsExternalAddressesListRequest',
+        response_type_name='ListExternalAddressesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single external IP address. Only fields specified in `update_mask` are applied. During operation processing, the resource is temporarily in the `ACTIVE` state before the operation fully completes. For that period of time, you can't update the resource. Use the operation status to determine when the processing fully completes.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsExternalAddressesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/externalAddresses/{externalAddressesId}',
+        http_method='PATCH',
+        method_id='vmwareengine.projects.locations.privateClouds.externalAddresses.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='externalAddress',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsExternalAddressesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsPrivateCloudsHcxActivationKeysService(base_api.BaseApiService):
     """Service class for the projects_locations_privateClouds_hcxActivationKeys resource."""
 
@@ -1265,6 +1585,151 @@ class VmwareengineV1(base_api.BaseApiClient):
         relative_path='v1/{+name}:undelete',
         request_field='undeletePrivateCloudRequest',
         request_type_name='VmwareengineProjectsLocationsPrivateCloudsUndeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsVmwareEngineNetworksService(base_api.BaseApiService):
+    """Service class for the projects_locations_vmwareEngineNetworks resource."""
+
+    _NAME = 'projects_locations_vmwareEngineNetworks'
+
+    def __init__(self, client):
+      super(VmwareengineV1.ProjectsLocationsVmwareEngineNetworksService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new VMware Engine network that can be used by a private cloud.
+
+      Args:
+        request: (VmwareengineProjectsLocationsVmwareEngineNetworksCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vmwareEngineNetworks',
+        http_method='POST',
+        method_id='vmwareengine.projects.locations.vmwareEngineNetworks.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'vmwareEngineNetworkId'],
+        relative_path='v1/{+parent}/vmwareEngineNetworks',
+        request_field='vmwareEngineNetwork',
+        request_type_name='VmwareengineProjectsLocationsVmwareEngineNetworksCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a `VmwareEngineNetwork` resource. You can only delete a VMware Engine network after all resources that refer to it are deleted. For example, a private cloud, a network peering, and a network policy can all refer to the same VMware Engine network.
+
+      Args:
+        request: (VmwareengineProjectsLocationsVmwareEngineNetworksDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vmwareEngineNetworks/{vmwareEngineNetworksId}',
+        http_method='DELETE',
+        method_id='vmwareengine.projects.locations.vmwareEngineNetworks.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag', 'requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsVmwareEngineNetworksDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a `VmwareEngineNetwork` resource by its resource name. The resource contains details of the VMware Engine network, such as its VMware Engine network type, peered VPC networks in a service project, and state (for example, `CREATING`, `ACTIVE`, `DELETING`).
+
+      Args:
+        request: (VmwareengineProjectsLocationsVmwareEngineNetworksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VmwareEngineNetwork) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vmwareEngineNetworks/{vmwareEngineNetworksId}',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.vmwareEngineNetworks.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsVmwareEngineNetworksGetRequest',
+        response_type_name='VmwareEngineNetwork',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists `VmwareEngineNetwork` resources in a given project and location.
+
+      Args:
+        request: (VmwareengineProjectsLocationsVmwareEngineNetworksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListVmwareEngineNetworksResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vmwareEngineNetworks',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.vmwareEngineNetworks.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/vmwareEngineNetworks',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsVmwareEngineNetworksListRequest',
+        response_type_name='ListVmwareEngineNetworksResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Modifies a VMware Engine network resource. Only the following fields can be updated: `labels`, `description`. Only fields specified in `updateMask` are applied.
+
+      Args:
+        request: (VmwareengineProjectsLocationsVmwareEngineNetworksPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/vmwareEngineNetworks/{vmwareEngineNetworksId}',
+        http_method='PATCH',
+        method_id='vmwareengine.projects.locations.vmwareEngineNetworks.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='vmwareEngineNetwork',
+        request_type_name='VmwareengineProjectsLocationsVmwareEngineNetworksPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )

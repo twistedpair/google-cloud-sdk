@@ -1504,6 +1504,10 @@
           "description": "Deidentify configuration.",
           "$ref": "DeidentifyConfig"
         },
+        "gcsConfigUri": {
+          "description": "Cloud Storage location to read the JSON cloud.healthcare.deidentify.DeidentifyConfig from, overriding the default config. Must be of the form `gs:\/\/{bucket_id}\/path\/to\/object`. The Cloud Storage location must grant the Cloud IAM role `roles\/storage.objectViewer` to the project's Cloud Healthcare Service Agent service account. Only one of `config` and `gcs_config_uri` can be specified.",
+          "type": "string"
+        },
         "resourceFilter": {
           "description": "A filter specifying the resources to include in the output. If not specified, all resources are included in the output.",
           "$ref": "FhirFilter"
@@ -1534,6 +1538,10 @@
         "text": {
           "description": "Configures de-identification of text wherever it is found in the source_dataset.",
           "$ref": "TextConfig"
+        },
+        "operationMetadata": {
+          "description": "Details about the work the de-identify operation performed.",
+          "$ref": "DeidentifyOperationMetadata"
         }
       }
     },
@@ -1794,6 +1802,28 @@
       "properties": {
       }
     },
+    "DeidentifyOperationMetadata": {
+      "id": "DeidentifyOperationMetadata",
+      "description": "Details about the work the de-identify operation performed.",
+      "type": "object",
+      "properties": {
+        "fhirOutput": {
+          "description": "Details about the FHIR store to write the output to.",
+          "$ref": "FhirOutput"
+        }
+      }
+    },
+    "FhirOutput": {
+      "id": "FhirOutput",
+      "description": "Details about the FHIR store to write the output to.",
+      "type": "object",
+      "properties": {
+        "fhirStore": {
+          "description": "Name of the output FHIR store, which must already exist. You must grant the healthcare.fhirResources.update permission on the destination store to your project's **Cloud Healthcare Service Agent** [service account](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/permissions-healthcare-api-gcp-products#the_cloud_healthcare_service_agent). The destination store must set `enable_update_create` to true. The destination store must use FHIR version R4. Writing these resources will consume FHIR operations quota from the project containing the source data. De-identify operation metadata is only generated for DICOM de-identification operations.",
+          "type": "string"
+        }
+      }
+    },
     "FhirFilter": {
       "id": "FhirFilter",
       "description": "Filter configuration.",
@@ -1831,6 +1861,10 @@
         "config": {
           "description": "Deidentify configuration.",
           "$ref": "DeidentifyConfig"
+        },
+        "gcsConfigUri": {
+          "description": "Cloud Storage location to read the JSON cloud.healthcare.deidentify.DeidentifyConfig from, overriding the default config. Must be of the form `gs:\/\/{bucket_id}\/path\/to\/object`. The Cloud Storage location must grant the Cloud IAM role `roles\/storage.objectViewer` to the project's Cloud Healthcare Service Agent service account. Only one of `config` and `gcs_config_uri` can be specified.",
+          "type": "string"
         },
         "filterConfig": {
           "description": "Filter configuration.",
@@ -1894,6 +1928,10 @@
         "config": {
           "description": "Deidentify configuration.",
           "$ref": "DeidentifyConfig"
+        },
+        "gcsConfigUri": {
+          "description": "Cloud Storage location to read the JSON cloud.healthcare.deidentify.DeidentifyConfig from, overriding the default config. Must be of the form `gs:\/\/{bucket_id}\/path\/to\/object`. The Cloud Storage location must grant the Cloud IAM role `roles\/storage.objectViewer` to the project's Cloud Healthcare Service Agent service account. Only one of `config` and `gcs_config_uri` can be specified.",
+          "type": "string"
         }
       }
     },
@@ -2145,12 +2183,14 @@
           "enumDescriptions": [
             "Unspecified parser version, equivalent to V1.",
             "The `parsed_data` includes every given non-empty message field except the Field Separator (MSH-1) field. As a result, the parsed MSH segment starts with the MSH-2 field and the field numbers are off-by-one with respect to the HL7 standard.",
-            "The `parsed_data` includes every given non-empty message field."
+            "The `parsed_data` includes every given non-empty message field.",
+            "This version is the same as V2, with the following change. The `parsed_data` contains unescaped escaped field separators, component separators, sub-component separators, repetition separators, escape characters, and truncation characters. If `schema` is specified, the schematized parser uses improved parsing heuristics compared to previous versions."
           ],
           "enum": [
             "PARSER_VERSION_UNSPECIFIED",
             "V1",
-            "V2"
+            "V2",
+            "V3"
           ]
         }
       }
@@ -2716,10 +2756,6 @@
         "resourceType": {
           "description": "The FHIR resource type to search, such as Patient or Observation. For a complete list, see the FHIR Resource Index ([DSTU2](https:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/resourcelist.html), [STU3](https:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/resourcelist.html), [R4](https:\/\/hl7.org\/implement\/standards\/fhir\/R4\/resourcelist.html)).",
           "type": "string"
-        },
-        "requestBody": {
-          "description": "Raw body of the request for POST searches.",
-          "$ref": "HttpBody"
         }
       }
     },
@@ -5998,27 +6034,6 @@
                               "location": "path",
                               "required": true,
                               "type": "string"
-                            },
-                            "requestBody.contentType": {
-                              "description": "The HTTP Content-Type header value specifying the content type of the body.",
-                              "location": "query",
-                              "type": "string"
-                            },
-                            "requestBody.data": {
-                              "description": "The HTTP request\/response body as raw binary.",
-                              "location": "query",
-                              "type": "string",
-                              "format": "byte"
-                            },
-                            "requestBody.extensions": {
-                              "description": "Application specific response metadata. Must be set in the first response for streaming APIs.",
-                              "location": "query",
-                              "repeated": true,
-                              "type": "object",
-                              "additionalProperties": {
-                                "type": "any",
-                                "description": "Properties of the object. Contains field @type with type URL."
-                              }
                             }
                           },
                           "parameterOrder": [
@@ -6050,27 +6065,6 @@
                               "description": "The FHIR resource type to search, such as Patient or Observation. For a complete list, see the FHIR Resource Index ([DSTU2](https:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/resourcelist.html), [STU3](https:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/resourcelist.html), [R4](https:\/\/hl7.org\/implement\/standards\/fhir\/R4\/resourcelist.html)).",
                               "location": "query",
                               "type": "string"
-                            },
-                            "requestBody.contentType": {
-                              "description": "The HTTP Content-Type header value specifying the content type of the body.",
-                              "location": "query",
-                              "type": "string"
-                            },
-                            "requestBody.data": {
-                              "description": "The HTTP request\/response body as raw binary.",
-                              "location": "query",
-                              "type": "string",
-                              "format": "byte"
-                            },
-                            "requestBody.extensions": {
-                              "description": "Application specific response metadata. Must be set in the first response for streaming APIs.",
-                              "location": "query",
-                              "repeated": true,
-                              "type": "object",
-                              "additionalProperties": {
-                                "type": "any",
-                                "description": "Properties of the object. Contains field @type with type URL."
-                              }
                             }
                           },
                           "parameterOrder": [

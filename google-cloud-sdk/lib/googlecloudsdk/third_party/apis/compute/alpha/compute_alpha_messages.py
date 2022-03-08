@@ -661,6 +661,9 @@ class Address(_messages.Message):
     IpVersionValueValuesEnum: The IP version that will be used by this
       address. Valid options are IPV4 or IPV6. This can only be specified for
       a global address.
+    Ipv6EndpointTypeValueValuesEnum: The endpoint type of this address, which
+      should be VM. This is used for deciding which endpoint this address will
+      be assigned to during the IPv6 external IP address reservation.
     NetworkTierValueValuesEnum: This signifies the networking tier used for
       configuring this address and can only take the following values: PREMIUM
       or STANDARD. Internal IP addresses are always Premium Tier; global
@@ -707,6 +710,9 @@ class Address(_messages.Message):
       is defined by the server.
     ipVersion: The IP version that will be used by this address. Valid options
       are IPV4 or IPV6. This can only be specified for a global address.
+    ipv6EndpointType: The endpoint type of this address, which should be VM.
+      This is used for deciding which endpoint this address will be assigned
+      to during the IPv6 external IP address reservation.
     kind: [Output Only] Type of the resource. Always compute#address for
       addresses.
     labelFingerprint: A fingerprint for the labels being applied to this
@@ -800,6 +806,16 @@ class Address(_messages.Message):
     IPV4 = 0
     IPV6 = 1
     UNSPECIFIED_VERSION = 2
+
+  class Ipv6EndpointTypeValueValuesEnum(_messages.Enum):
+    r"""The endpoint type of this address, which should be VM. This is used
+    for deciding which endpoint this address will be assigned to during the
+    IPv6 external IP address reservation.
+
+    Values:
+      VM: Reserved IPv6 address will be assigned to VM.
+    """
+    VM = 0
 
   class NetworkTierValueValuesEnum(_messages.Enum):
     r"""This signifies the networking tier used for configuring this address
@@ -918,20 +934,21 @@ class Address(_messages.Message):
   description = _messages.StringField(4)
   id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
   ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 6)
-  kind = _messages.StringField(7, default='compute#address')
-  labelFingerprint = _messages.BytesField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  network = _messages.StringField(11)
-  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 12)
-  prefixLength = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  purpose = _messages.EnumField('PurposeValueValuesEnum', 14)
-  region = _messages.StringField(15)
-  selfLink = _messages.StringField(16)
-  selfLinkWithId = _messages.StringField(17)
-  status = _messages.EnumField('StatusValueValuesEnum', 18)
-  subnetwork = _messages.StringField(19)
-  users = _messages.StringField(20, repeated=True)
+  ipv6EndpointType = _messages.EnumField('Ipv6EndpointTypeValueValuesEnum', 7)
+  kind = _messages.StringField(8, default='compute#address')
+  labelFingerprint = _messages.BytesField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  name = _messages.StringField(11)
+  network = _messages.StringField(12)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 13)
+  prefixLength = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  purpose = _messages.EnumField('PurposeValueValuesEnum', 15)
+  region = _messages.StringField(16)
+  selfLink = _messages.StringField(17)
+  selfLinkWithId = _messages.StringField(18)
+  status = _messages.EnumField('StatusValueValuesEnum', 19)
+  subnetwork = _messages.StringField(20)
+  users = _messages.StringField(21, repeated=True)
 
 
 class AddressAggregatedList(_messages.Message):
@@ -1559,6 +1576,8 @@ class AttachedDisk(_messages.Message):
   r"""An instance-attached disk resource.
 
   Enums:
+    ArchitectureValueValuesEnum: [Output Only] The architecture of the
+      attached disk. Valid values are ARM64 or X86_64.
     InterfaceValueValuesEnum: Specifies the disk interface to use for
       attaching this disk, which is either SCSI or NVME. The default is SCSI.
       Persistent disks must always use SCSI and the request will fail if you
@@ -1576,6 +1595,8 @@ class AttachedDisk(_messages.Message):
       PERSISTENT. If not specified, the default is PERSISTENT.
 
   Fields:
+    architecture: [Output Only] The architecture of the attached disk. Valid
+      values are ARM64 or X86_64.
     autoDelete: Specifies whether the disk will be auto-deleted when the
       instance is deleted (but not when the disk is detached from the
       instance).
@@ -1659,6 +1680,20 @@ class AttachedDisk(_messages.Message):
       created.
   """
 
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The architecture of the attached disk. Valid values are
+    ARM64 or X86_64.
+
+    Values:
+      ARCHITECTURE_UNSPECIFIED: Default value indicating Architecture is not
+        set.
+      ARM64: Machines with architecture ARM64
+      X86_64: Machines with architecture X86_64
+    """
+    ARCHITECTURE_UNSPECIFIED = 0
+    ARM64 = 1
+    X86_64 = 2
+
   class InterfaceValueValuesEnum(_messages.Enum):
     r"""Specifies the disk interface to use for attaching this disk, which is
     either SCSI or NVME. The default is SCSI. Persistent disks must always use
@@ -1714,25 +1749,26 @@ class AttachedDisk(_messages.Message):
     PERSISTENT = 0
     SCRATCH = 1
 
-  autoDelete = _messages.BooleanField(1)
-  boot = _messages.BooleanField(2)
-  deviceName = _messages.StringField(3)
-  diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 4)
-  diskSizeGb = _messages.IntegerField(5)
-  forceAttach = _messages.BooleanField(6)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 7, repeated=True)
-  index = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  initializeParams = _messages.MessageField('AttachedDiskInitializeParams', 9)
-  interface = _messages.EnumField('InterfaceValueValuesEnum', 10)
-  kind = _messages.StringField(11, default='compute#attachedDisk')
-  licenses = _messages.StringField(12, repeated=True)
-  locked = _messages.BooleanField(13)
-  mode = _messages.EnumField('ModeValueValuesEnum', 14)
-  savedState = _messages.EnumField('SavedStateValueValuesEnum', 15)
-  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 16)
-  source = _messages.StringField(17)
-  type = _messages.EnumField('TypeValueValuesEnum', 18)
-  userLicenses = _messages.StringField(19, repeated=True)
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
+  autoDelete = _messages.BooleanField(2)
+  boot = _messages.BooleanField(3)
+  deviceName = _messages.StringField(4)
+  diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 5)
+  diskSizeGb = _messages.IntegerField(6)
+  forceAttach = _messages.BooleanField(7)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 8, repeated=True)
+  index = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  initializeParams = _messages.MessageField('AttachedDiskInitializeParams', 10)
+  interface = _messages.EnumField('InterfaceValueValuesEnum', 11)
+  kind = _messages.StringField(12, default='compute#attachedDisk')
+  licenses = _messages.StringField(13, repeated=True)
+  locked = _messages.BooleanField(14)
+  mode = _messages.EnumField('ModeValueValuesEnum', 15)
+  savedState = _messages.EnumField('SavedStateValueValuesEnum', 16)
+  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 17)
+  source = _messages.StringField(18)
+  type = _messages.EnumField('TypeValueValuesEnum', 19)
+  userLicenses = _messages.StringField(20, repeated=True)
 
 
 class AttachedDiskInitializeParams(_messages.Message):
@@ -1953,13 +1989,15 @@ class AuditConfig(_messages.Message):
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
+    exemptedMembers: This is deprecated and has no effect. Do not use.
     service: Specifies a service that will be enabled for audit logging. For
       example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
       `allServices` is a special value that covers all services.
   """
 
   auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
-  service = _messages.StringField(2)
+  exemptedMembers = _messages.StringField(2, repeated=True)
+  service = _messages.StringField(3)
 
 
 class AuditLogConfig(_messages.Message):
@@ -7993,8 +8031,6 @@ class ComputeDisksCreateSnapshotRequest(_messages.Message):
     disk: Name of the persistent disk to snapshot.
     guestFlush: [Input Only] Whether to attempt an application consistent
       snapshot by informing the OS to prepare for the snapshot process.
-      Currently only supported on Windows instances using the Volume Shadow
-      Copy Service (VSS).
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -19877,8 +19913,6 @@ class ComputeRegionDisksCreateSnapshotRequest(_messages.Message):
     disk: Name of the regional persistent disk to snapshot.
     guestFlush: [Input Only] Specifies to create an application consistent
       snapshot by informing the OS to prepare for the snapshot process.
-      Currently only supported on Windows instances using the Volume Shadow
-      Copy Service (VSS).
     project: Project ID for this request.
     region: Name of the region for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -33249,6 +33283,8 @@ class FirewallPolicyRuleMatcher(_messages.Message):
       destination of traffic. Should be specified as 2 letter country code
       defined as per ISO 3166 alpha-2 country codes. ex."US" Maximum number of
       dest region codes allowed is 5000.
+    destThreatIntelligences: Names of Network Threat Intelligence lists. The
+      IPs in these lists will be matched against traffic destination.
     layer4Configs: Pairs of IP protocols and ports that the rule should match.
     srcAddressGroups: Address groups which should be matched against the
       traffic source. Maximum number of source address groups is 10.
@@ -33264,18 +33300,22 @@ class FirewallPolicyRuleMatcher(_messages.Message):
       source of the traffic. For INGRESS rule, if all the srcSecureTag are
       INEFFECTIVE, and there is no srcIpRange, this rule will be ignored.
       Maximum number of source tag values allowed is 256.
+    srcThreatIntelligences: Names of Network Threat Intelligence lists. The
+      IPs in these lists will be matched against traffic source.
   """
 
   destAddressGroups = _messages.StringField(1, repeated=True)
   destFqdns = _messages.StringField(2, repeated=True)
   destIpRanges = _messages.StringField(3, repeated=True)
   destRegionCodes = _messages.StringField(4, repeated=True)
-  layer4Configs = _messages.MessageField('FirewallPolicyRuleMatcherLayer4Config', 5, repeated=True)
-  srcAddressGroups = _messages.StringField(6, repeated=True)
-  srcFqdns = _messages.StringField(7, repeated=True)
-  srcIpRanges = _messages.StringField(8, repeated=True)
-  srcRegionCodes = _messages.StringField(9, repeated=True)
-  srcSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 10, repeated=True)
+  destThreatIntelligences = _messages.StringField(5, repeated=True)
+  layer4Configs = _messages.MessageField('FirewallPolicyRuleMatcherLayer4Config', 6, repeated=True)
+  srcAddressGroups = _messages.StringField(7, repeated=True)
+  srcFqdns = _messages.StringField(8, repeated=True)
+  srcIpRanges = _messages.StringField(9, repeated=True)
+  srcRegionCodes = _messages.StringField(10, repeated=True)
+  srcSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 11, repeated=True)
+  srcThreatIntelligences = _messages.StringField(12, repeated=True)
 
 
 class FirewallPolicyRuleMatcherLayer4Config(_messages.Message):
@@ -42658,9 +42698,7 @@ class InstantSnapshot(_messages.Message):
       property when you create the resource.
     diskSizeGb: [Output Only] Size of the source disk, specified in GB.
     guestFlush: Whether to attempt an application consistent instant snapshot
-      by informing the OS to prepare for the snapshot process. Currently only
-      supported on Windows instances using the Volume Shadow Copy Service
-      (VSS).
+      by informing the OS to prepare for the snapshot process.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#instantSnapshot
@@ -43681,14 +43719,7 @@ class InterconnectAttachment(_messages.Message):
       BPS_200M: 200 Mbit/s - BPS_300M: 300 Mbit/s - BPS_400M: 400 Mbit/s -
       BPS_500M: 500 Mbit/s - BPS_1G: 1 Gbit/s - BPS_2G: 2 Gbit/s - BPS_5G: 5
       Gbit/s - BPS_10G: 10 Gbit/s - BPS_20G: 20 Gbit/s - BPS_50G: 50 Gbit/s
-    candidateIpv6Subnets: Up to 16 candidate prefixes that control the
-      allocation of cloudRouterIpv6Address and customerRouterIpv6Address for
-      this attachment. Each prefix must be in the Global Unique Address (GUA)
-      space. It is highly recommended that it be in a range owned by the
-      requestor. A GUA in a range owned by Google will cause the request to
-      fail. Google will select an available prefix from the supplied
-      candidates or fail the request. If not supplied, a /125 from a Google-
-      owned GUA block will be selected.
+    candidateIpv6Subnets: This field is not available.
     candidateSubnets: Up to 16 candidate prefixes that can be used to restrict
       the allocation of cloudRouterIpAddress and customerRouterIpAddress for
       this attachment. All prefixes must be within link-local address space
@@ -43701,10 +43732,7 @@ class InterconnectAttachment(_messages.Message):
       configured on Cloud Router Interface for this interconnect attachment.
     cloudRouterIpv6Address: [Output Only] IPv6 address + prefix length to be
       configured on Cloud Router Interface for this interconnect attachment.
-    cloudRouterIpv6InterfaceId: If supplied, the interface id (index within
-      the subnet) to be used for the cloud router address. The id must be in
-      the range of 1 to 6. If a subnet mask is supplied, it must be /125, and
-      the subnet should either be 0 or match the selected subnet.
+    cloudRouterIpv6InterfaceId: This field is not available.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     customerRouterIpAddress: [Output Only] IPv4 address + prefix length to be
@@ -43713,10 +43741,7 @@ class InterconnectAttachment(_messages.Message):
     customerRouterIpv6Address: [Output Only] IPv6 address + prefix length to
       be configured on the customer router subinterface for this interconnect
       attachment.
-    customerRouterIpv6InterfaceId: If supplied, the interface id (index within
-      the subnet) to be used for the customer router address. The id must be
-      in the range of 1 to 6. If a subnet mask is supplied, it must be /125,
-      and the subnet should either be 0 or match the selected subnet.
+    customerRouterIpv6InterfaceId: This field is not available.
     dataplaneVersion: [Output Only] Dataplane version for this
       InterconnectAttachment. This field is only present for Dataplane version
       2 and higher. Absence of this field in the API output indicates that the
@@ -46409,8 +46434,6 @@ class MachineImage(_messages.Message):
       property when you create the resource.
     guestFlush: [Input Only] Whether to attempt an application consistent
       machine image by informing the OS to prepare for the snapshot process.
-      Currently only supported on Windows instances using the Volume Shadow
-      Copy Service (VSS).
     id: [Output Only] A unique identifier for this machine image. The server
       defines this identifier.
     instanceProperties: [Output Only] Properties of source instance
@@ -46652,12 +46675,17 @@ class MachineType(_messages.Message):
   for your VM instances based on performance and pricing requirements. For
   more information, read Machine Types.
 
+  Enums:
+    ArchitectureValueValuesEnum: [Output Only] The architecture of the machine
+      type.
+
   Messages:
     AcceleratorsValueListEntry: A AcceleratorsValueListEntry object.
 
   Fields:
     accelerators: [Output Only] A list of accelerator configurations assigned
       to this machine type.
+    architecture: [Output Only] The architecture of the machine type.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     deprecated: [Output Only] The deprecation status associated with this
@@ -46685,6 +46713,19 @@ class MachineType(_messages.Message):
       such as us-central1-a.
   """
 
+  class ArchitectureValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The architecture of the machine type.
+
+    Values:
+      ARCHITECTURE_UNSPECIFIED: Default value indicating Architecture is not
+        set.
+      ARM64: Machines with architecture ARM64
+      X86_64: Machines with architecture X86_64
+    """
+    ARCHITECTURE_UNSPECIFIED = 0
+    ARM64 = 1
+    X86_64 = 2
+
   class AcceleratorsValueListEntry(_messages.Message):
     r"""A AcceleratorsValueListEntry object.
 
@@ -46698,20 +46739,21 @@ class MachineType(_messages.Message):
     guestAcceleratorType = _messages.StringField(2)
 
   accelerators = _messages.MessageField('AcceleratorsValueListEntry', 1, repeated=True)
-  creationTimestamp = _messages.StringField(2)
-  deprecated = _messages.MessageField('DeprecationStatus', 3)
-  description = _messages.StringField(4)
-  guestCpus = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  isSharedCpu = _messages.BooleanField(7)
-  kind = _messages.StringField(8, default='compute#machineType')
-  maximumPersistentDisks = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  maximumPersistentDisksSizeGb = _messages.IntegerField(10)
-  memoryMb = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  name = _messages.StringField(12)
-  selfLink = _messages.StringField(13)
-  selfLinkWithId = _messages.StringField(14)
-  zone = _messages.StringField(15)
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 2)
+  creationTimestamp = _messages.StringField(3)
+  deprecated = _messages.MessageField('DeprecationStatus', 4)
+  description = _messages.StringField(5)
+  guestCpus = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  isSharedCpu = _messages.BooleanField(8)
+  kind = _messages.StringField(9, default='compute#machineType')
+  maximumPersistentDisks = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  maximumPersistentDisksSizeGb = _messages.IntegerField(11)
+  memoryMb = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  name = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  selfLinkWithId = _messages.StringField(15)
+  zone = _messages.StringField(16)
 
 
 class MachineTypeAggregatedList(_messages.Message):
@@ -55768,6 +55810,7 @@ class Quota(_messages.Message):
       CPUS_ALL_REGIONS: <no description>
       DISKS_TOTAL_GB: <no description>
       E2_CPUS: <no description>
+      EXTERNAL_MANAGED_FORWARDING_RULES: <no description>
       EXTERNAL_NETWORK_LB_FORWARDING_RULES: <no description>
       EXTERNAL_PROTOCOL_FORWARDING_RULES: <no description>
       EXTERNAL_VPN_GATEWAYS: <no description>
@@ -55907,107 +55950,108 @@ class Quota(_messages.Message):
     CPUS_ALL_REGIONS = 33
     DISKS_TOTAL_GB = 34
     E2_CPUS = 35
-    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 36
-    EXTERNAL_PROTOCOL_FORWARDING_RULES = 37
-    EXTERNAL_VPN_GATEWAYS = 38
-    FIREWALLS = 39
-    FORWARDING_RULES = 40
-    GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES = 41
-    GLOBAL_INTERNAL_ADDRESSES = 42
-    GPUS_ALL_REGIONS = 43
-    HEALTH_CHECKS = 44
-    IMAGES = 45
-    INSTANCES = 46
-    INSTANCES_PER_NETWORK_GLOBAL = 47
-    INSTANCE_GROUPS = 48
-    INSTANCE_GROUP_MANAGERS = 49
-    INSTANCE_TEMPLATES = 50
-    INTERCONNECTS = 51
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 52
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 53
-    INTERCONNECT_TOTAL_GBPS = 54
-    INTERNAL_ADDRESSES = 55
-    INTERNAL_FORWARDING_RULES_PER_NETWORK = 56
-    INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK = 57
-    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 58
-    IN_PLACE_SNAPSHOTS = 59
-    IN_USE_ADDRESSES = 60
-    IN_USE_BACKUP_SCHEDULES = 61
-    IN_USE_MAINTENANCE_WINDOWS = 62
-    IN_USE_SNAPSHOT_SCHEDULES = 63
-    LOCAL_SSD_TOTAL_GB = 64
-    M1_CPUS = 65
-    M2_CPUS = 66
-    M3_CPUS = 67
-    MACHINE_IMAGES = 68
-    N2A_CPUS = 69
-    N2D_CPUS = 70
-    N2_CPUS = 71
-    NETWORKS = 72
-    NETWORK_ENDPOINT_GROUPS = 73
-    NETWORK_FIREWALL_POLICIES = 74
-    NODE_GROUPS = 75
-    NODE_TEMPLATES = 76
-    NVIDIA_A100_GPUS = 77
-    NVIDIA_K80_GPUS = 78
-    NVIDIA_P100_GPUS = 79
-    NVIDIA_P100_VWS_GPUS = 80
-    NVIDIA_P4_GPUS = 81
-    NVIDIA_P4_VWS_GPUS = 82
-    NVIDIA_T4_GPUS = 83
-    NVIDIA_T4_VWS_GPUS = 84
-    NVIDIA_V100_GPUS = 85
-    PACKET_MIRRORINGS = 86
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 87
-    PREEMPTIBLE_CPUS = 88
-    PREEMPTIBLE_LOCAL_SSD_GB = 89
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 90
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 91
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 92
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 93
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 94
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 95
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 96
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 97
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 98
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 99
-    PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 100
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 101
-    PSC_INTERNAL_LB_FORWARDING_RULES = 102
-    PUBLIC_ADVERTISED_PREFIXES = 103
-    PUBLIC_DELEGATED_PREFIXES = 104
-    REGIONAL_AUTOSCALERS = 105
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 106
-    RESERVATIONS = 107
-    RESOURCE_POLICIES = 108
-    ROUTERS = 109
-    ROUTES = 110
-    SECURITY_POLICIES = 111
-    SECURITY_POLICIES_PER_REGION = 112
-    SECURITY_POLICY_CEVAL_RULES = 113
-    SECURITY_POLICY_RULES = 114
-    SECURITY_POLICY_RULES_PER_REGION = 115
-    SERVICE_ATTACHMENTS = 116
-    SNAPSHOTS = 117
-    SSD_TOTAL_GB = 118
-    SSL_CERTIFICATES = 119
-    STATIC_ADDRESSES = 120
-    STATIC_BYOIP_ADDRESSES = 121
-    SUBNETWORKS = 122
-    SUBNET_RANGES_PER_NETWORK = 123
-    T2A_CPUS = 124
-    T2D_CPUS = 125
-    TARGET_HTTPS_PROXIES = 126
-    TARGET_HTTP_PROXIES = 127
-    TARGET_INSTANCES = 128
-    TARGET_POOLS = 129
-    TARGET_SSL_PROXIES = 130
-    TARGET_TCP_PROXIES = 131
-    TARGET_VPN_GATEWAYS = 132
-    URL_MAPS = 133
-    VPN_GATEWAYS = 134
-    VPN_TUNNELS = 135
-    XPN_SERVICE_PROJECTS = 136
+    EXTERNAL_MANAGED_FORWARDING_RULES = 36
+    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 37
+    EXTERNAL_PROTOCOL_FORWARDING_RULES = 38
+    EXTERNAL_VPN_GATEWAYS = 39
+    FIREWALLS = 40
+    FORWARDING_RULES = 41
+    GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES = 42
+    GLOBAL_INTERNAL_ADDRESSES = 43
+    GPUS_ALL_REGIONS = 44
+    HEALTH_CHECKS = 45
+    IMAGES = 46
+    INSTANCES = 47
+    INSTANCES_PER_NETWORK_GLOBAL = 48
+    INSTANCE_GROUPS = 49
+    INSTANCE_GROUP_MANAGERS = 50
+    INSTANCE_TEMPLATES = 51
+    INTERCONNECTS = 52
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 53
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 54
+    INTERCONNECT_TOTAL_GBPS = 55
+    INTERNAL_ADDRESSES = 56
+    INTERNAL_FORWARDING_RULES_PER_NETWORK = 57
+    INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK = 58
+    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 59
+    IN_PLACE_SNAPSHOTS = 60
+    IN_USE_ADDRESSES = 61
+    IN_USE_BACKUP_SCHEDULES = 62
+    IN_USE_MAINTENANCE_WINDOWS = 63
+    IN_USE_SNAPSHOT_SCHEDULES = 64
+    LOCAL_SSD_TOTAL_GB = 65
+    M1_CPUS = 66
+    M2_CPUS = 67
+    M3_CPUS = 68
+    MACHINE_IMAGES = 69
+    N2A_CPUS = 70
+    N2D_CPUS = 71
+    N2_CPUS = 72
+    NETWORKS = 73
+    NETWORK_ENDPOINT_GROUPS = 74
+    NETWORK_FIREWALL_POLICIES = 75
+    NODE_GROUPS = 76
+    NODE_TEMPLATES = 77
+    NVIDIA_A100_GPUS = 78
+    NVIDIA_K80_GPUS = 79
+    NVIDIA_P100_GPUS = 80
+    NVIDIA_P100_VWS_GPUS = 81
+    NVIDIA_P4_GPUS = 82
+    NVIDIA_P4_VWS_GPUS = 83
+    NVIDIA_T4_GPUS = 84
+    NVIDIA_T4_VWS_GPUS = 85
+    NVIDIA_V100_GPUS = 86
+    PACKET_MIRRORINGS = 87
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 88
+    PREEMPTIBLE_CPUS = 89
+    PREEMPTIBLE_LOCAL_SSD_GB = 90
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 91
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 92
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 93
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 94
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 95
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 96
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 97
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 98
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 99
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 100
+    PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 101
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 102
+    PSC_INTERNAL_LB_FORWARDING_RULES = 103
+    PUBLIC_ADVERTISED_PREFIXES = 104
+    PUBLIC_DELEGATED_PREFIXES = 105
+    REGIONAL_AUTOSCALERS = 106
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 107
+    RESERVATIONS = 108
+    RESOURCE_POLICIES = 109
+    ROUTERS = 110
+    ROUTES = 111
+    SECURITY_POLICIES = 112
+    SECURITY_POLICIES_PER_REGION = 113
+    SECURITY_POLICY_CEVAL_RULES = 114
+    SECURITY_POLICY_RULES = 115
+    SECURITY_POLICY_RULES_PER_REGION = 116
+    SERVICE_ATTACHMENTS = 117
+    SNAPSHOTS = 118
+    SSD_TOTAL_GB = 119
+    SSL_CERTIFICATES = 120
+    STATIC_ADDRESSES = 121
+    STATIC_BYOIP_ADDRESSES = 122
+    SUBNETWORKS = 123
+    SUBNET_RANGES_PER_NETWORK = 124
+    T2A_CPUS = 125
+    T2D_CPUS = 126
+    TARGET_HTTPS_PROXIES = 127
+    TARGET_HTTP_PROXIES = 128
+    TARGET_INSTANCES = 129
+    TARGET_POOLS = 130
+    TARGET_SSL_PROXIES = 131
+    TARGET_TCP_PROXIES = 132
+    TARGET_VPN_GATEWAYS = 133
+    URL_MAPS = 134
+    VPN_GATEWAYS = 135
+    VPN_TUNNELS = 136
+    XPN_SERVICE_PROJECTS = 137
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -60496,7 +60540,7 @@ class RouterBgpPeerBfd(_messages.Message):
       the BFD session for this BGP peer. If set to PASSIVE, the Cloud Router
       will wait for the peer router to initiate the BFD session for this BGP
       peer. If set to DISABLED, BFD is disabled for this BGP peer. The default
-      is PASSIVE.
+      is DISABLED.
 
   Fields:
     minReceiveInterval: The minimum interval, in milliseconds, between BFD
@@ -60531,7 +60575,7 @@ class RouterBgpPeerBfd(_messages.Message):
       session for this BGP peer. If set to PASSIVE, the Cloud Router will wait
       for the peer router to initiate the BFD session for this BGP peer. If
       set to DISABLED, BFD is disabled for this BGP peer. The default is
-      PASSIVE.
+      DISABLED.
     slowTimerInterval: The minimum interval, in milliseconds, between BFD
       control packets transmitted to and received from the peer router when
       BFD echo mode is enabled on both routers. The actual transmit and
@@ -60580,7 +60624,7 @@ class RouterBgpPeerBfd(_messages.Message):
     ACTIVE, the Cloud Router will initiate the BFD session for this BGP peer.
     If set to PASSIVE, the Cloud Router will wait for the peer router to
     initiate the BFD session for this BGP peer. If set to DISABLED, BFD is
-    disabled for this BGP peer. The default is PASSIVE.
+    disabled for this BGP peer. The default is DISABLED.
 
     Values:
       ACTIVE: <no description>
@@ -60866,6 +60910,7 @@ class RouterNat(_messages.Message):
   auto-allocate ephemeral IPs if no external IPs are provided.
 
   Enums:
+    EndpointTypesValueListEntryValuesEnum:
     NatIpAllocateOptionValueValuesEnum: Specify the NatIpAllocateOption, which
       can take one of the following values: - MANUAL_ONLY: Uses only Nat IP
       addresses provided by customers. When there are not enough specified Nat
@@ -60898,6 +60943,9 @@ class RouterNat(_messages.Message):
       to 32. If minPortsPerVm is not set, a minimum of 32 ports will be
       allocated to a VM from this NAT config.
     enableEndpointIndependentMapping: A boolean attribute.
+    endpointTypes: List of Natted endpoint types supported by the Nat Gateway.
+      If the list is empty, then it will be equivalent to include
+      ENDPOINT_TYPE_VM
     icmpIdleTimeoutSec: Timeout (in seconds) for ICMP connections. Defaults to
       30s if not set.
     logConfig: Configure logging on this NAT.
@@ -60948,6 +60996,17 @@ class RouterNat(_messages.Message):
     udpIdleTimeoutSec: Timeout (in seconds) for UDP connections. Defaults to
       30s if not set.
   """
+
+  class EndpointTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""EndpointTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      ENDPOINT_TYPE_SWG: This is used for Secure Web Gateway
+        (go/securewebgateway) endpoints.
+      ENDPOINT_TYPE_VM: This is the default.
+    """
+    ENDPOINT_TYPE_SWG = 0
+    ENDPOINT_TYPE_VM = 1
 
   class NatIpAllocateOptionValueValuesEnum(_messages.Enum):
     r"""Specify the NatIpAllocateOption, which can take one of the following
@@ -61004,21 +61063,22 @@ class RouterNat(_messages.Message):
   drainNatIps = _messages.StringField(1, repeated=True)
   enableDynamicPortAllocation = _messages.BooleanField(2)
   enableEndpointIndependentMapping = _messages.BooleanField(3)
-  icmpIdleTimeoutSec = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  logConfig = _messages.MessageField('RouterNatLogConfig', 5)
-  maxPortsPerVm = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  minPortsPerVm = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  name = _messages.StringField(8)
-  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 9)
-  natIps = _messages.StringField(10, repeated=True)
-  rules = _messages.MessageField('RouterNatRule', 11, repeated=True)
-  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 12)
-  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 13, repeated=True)
-  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  tcpTimeWaitTimeoutSec = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  type = _messages.EnumField('TypeValueValuesEnum', 17)
-  udpIdleTimeoutSec = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  endpointTypes = _messages.EnumField('EndpointTypesValueListEntryValuesEnum', 4, repeated=True)
+  icmpIdleTimeoutSec = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  logConfig = _messages.MessageField('RouterNatLogConfig', 6)
+  maxPortsPerVm = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  minPortsPerVm = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  name = _messages.StringField(9)
+  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 10)
+  natIps = _messages.StringField(11, repeated=True)
+  rules = _messages.MessageField('RouterNatRule', 12, repeated=True)
+  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 13)
+  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 14, repeated=True)
+  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  tcpTimeWaitTimeoutSec = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  type = _messages.EnumField('TypeValueValuesEnum', 18)
+  udpIdleTimeoutSec = _messages.IntegerField(19, variant=_messages.Variant.INT32)
 
 
 class RouterNatLogConfig(_messages.Message):
@@ -62828,6 +62888,8 @@ class SecurityPolicyRule(_messages.Message):
   Enums:
     DirectionValueValuesEnum: The direction in which this rule applies. This
       field may only be specified when versioned_expr is set to FIREWALL.
+    RuleManagedProtectionTierValueValuesEnum: [Output Only] The minimum
+      managed protection tier required for this rule.
 
   Fields:
     action: The Action to perform when the rule is matched. The following are
@@ -62868,6 +62930,8 @@ class SecurityPolicyRule(_messages.Message):
       specified for any other actions.
     redirectTarget: This must be specified for redirect actions. Cannot be
       specified for any other actions.
+    ruleManagedProtectionTier: [Output Only] The minimum managed protection
+      tier required for this rule.
     ruleNumber: Identifier for the rule. This is only unique within the given
       security policy. This can only be set during rule creation, if rule
       number is not specified it will be generated by the server.
@@ -62893,6 +62957,19 @@ class SecurityPolicyRule(_messages.Message):
     EGRESS = 0
     INGRESS = 1
 
+  class RuleManagedProtectionTierValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The minimum managed protection tier required for this
+    rule.
+
+    Values:
+      CAMP_PLUS: Plus tier protection.
+      CAMP_PREMIUM: Premium tier protection.
+      CAMP_STANDARD: Standard tier protection.
+    """
+    CAMP_PLUS = 0
+    CAMP_PREMIUM = 1
+    CAMP_STANDARD = 2
+
   action = _messages.StringField(1)
   description = _messages.StringField(2)
   direction = _messages.EnumField('DirectionValueValuesEnum', 3)
@@ -62905,10 +62982,11 @@ class SecurityPolicyRule(_messages.Message):
   rateLimitOptions = _messages.MessageField('SecurityPolicyRuleRateLimitOptions', 10)
   redirectOptions = _messages.MessageField('SecurityPolicyRuleRedirectOptions', 11)
   redirectTarget = _messages.StringField(12)
-  ruleNumber = _messages.IntegerField(13)
-  ruleTupleCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  targetResources = _messages.StringField(15, repeated=True)
-  targetServiceAccounts = _messages.StringField(16, repeated=True)
+  ruleManagedProtectionTier = _messages.EnumField('RuleManagedProtectionTierValueValuesEnum', 13)
+  ruleNumber = _messages.IntegerField(14)
+  ruleTupleCount = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  targetResources = _messages.StringField(16, repeated=True)
+  targetServiceAccounts = _messages.StringField(17, repeated=True)
 
 
 class SecurityPolicyRuleHttpHeaderAction(_messages.Message):
@@ -64255,8 +64333,6 @@ class Snapshot(_messages.Message):
       snapshot to a disk.
     guestFlush: [Input Only] Whether to attempt an application consistent
       snapshot by informing the OS to prepare for the snapshot process.
-      Currently only supported on Windows instances using the Volume Shadow
-      Copy Service (VSS).
     guestOsFeatures: [Output Only] A list of features to enable on the guest
       operating system. Applicable only for bootable images. Read Enabling
       guest operating system features to see a list of available options.

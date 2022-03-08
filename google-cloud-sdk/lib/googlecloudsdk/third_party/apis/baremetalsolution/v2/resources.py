@@ -74,6 +74,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_PROVISIONINGCONFIGS = (
+      'projects.locations.provisioningConfigs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'provisioningConfigs/{provisioningConfigsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_SNAPSHOTSCHEDULEPOLICIES = (
       'projects.locations.snapshotSchedulePolicies',
       '{+name}',

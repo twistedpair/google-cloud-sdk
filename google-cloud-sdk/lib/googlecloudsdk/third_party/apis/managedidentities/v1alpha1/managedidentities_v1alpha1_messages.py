@@ -204,10 +204,11 @@ class Date(_messages.Message):
   time of day and time zone are either specified elsewhere or are
   insignificant. The date is relative to the Gregorian Calendar. This can
   represent one of the following: * A full date, with non-zero year, month,
-  and day values * A month and day, with a zero year (e.g., an anniversary) *
-  A year on its own, with a zero month and a zero day * A year and month, with
-  a zero day (e.g., a credit card expiration date) Related types: *
-  google.type.TimeOfDay * google.type.DateTime * google.protobuf.Timestamp
+  and day values. * A month and day, with a zero year (for example, an
+  anniversary). * A year on its own, with a zero month and a zero day. * A
+  year and month, with a zero day (for example, a credit card expiration
+  date). Related types: * google.type.TimeOfDay * google.type.DateTime *
+  google.protobuf.Timestamp
 
   Fields:
     day: Day of a month. Must be from 1 to 31 and valid for the year and
@@ -1732,6 +1733,20 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsSchemaExtensionsCreateReque
   schemaExtensionId = _messages.StringField(3)
 
 
+class ManagedidentitiesProjectsLocationsGlobalDomainsSchemaExtensionsGetRequest(_messages.Message):
+  r"""A
+  ManagedidentitiesProjectsLocationsGlobalDomainsSchemaExtensionsGetRequest
+  object.
+
+  Fields:
+    name: Required. Managed AD Schema Extension resource name using the form:
+      `projects/{project_id}/locations/global/domains/{domain_name}/schemaExte
+      nsions/{schema_extension_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ManagedidentitiesProjectsLocationsGlobalDomainsSchemaExtensionsListRequest(_messages.Message):
   r"""A
   ManagedidentitiesProjectsLocationsGlobalDomainsSchemaExtensionsListRequest
@@ -2499,9 +2514,6 @@ class SchemaExtension(_messages.Message):
     fileContents: File uploaded as a byte stream input.
     gcsPath: File stored in Cloud Storage bucket and represented in the form
       projects/{project_id}/buckets/{bucket_name}/objects/{object_name}
-    ldif: Deprecated. Please use ldif_source field. LDIF File Resource name
-      for Schema Extensions. Represented in the form of
-      projects/{project_id}/buckets/{bucket_name}/objects/{object_name}
     name: The unique name of the Schema Extension in the form of projects/{pro
       ject_id}/locations/global/domains/{domain_name}/schemaExtensions/{schema
       _extension}
@@ -2530,11 +2542,10 @@ class SchemaExtension(_messages.Message):
   description = _messages.StringField(3)
   fileContents = _messages.BytesField(4)
   gcsPath = _messages.StringField(5)
-  ldif = _messages.StringField(6)
-  name = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  statusMessage = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  name = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  statusMessage = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class SetIamPolicyRequest(_messages.Message):

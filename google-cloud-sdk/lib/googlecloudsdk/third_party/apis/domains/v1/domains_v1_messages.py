@@ -1309,8 +1309,8 @@ class PostalAddress(_messages.Message):
       might contain "care of" information.
     regionCode: Required. CLDR region code of the country/region of the
       address. This is never inferred and it is up to the user to ensure the
-      value is correct. See http://cldr.unicode.org/ and http://www.unicode.or
-      g/cldr/charts/30/supplemental/territory_information.html for details.
+      value is correct. See https://cldr.unicode.org/ and https://www.unicode.
+      org/cldr/charts/30/supplemental/territory_information.html for details.
       Example: "CH" for Switzerland.
     revision: The schema revision of the `PostalAddress`. This must be set to
       0, which is the latest revision. All new revisions **must** be backward

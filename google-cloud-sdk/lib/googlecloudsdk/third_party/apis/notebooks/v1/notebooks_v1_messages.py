@@ -117,6 +117,13 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class BootImage(_messages.Message):
+  r"""Definition of the boot image used by the Runtime. Used to facilitate
+  runtime upgradeability.
+  """
+
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -284,11 +291,15 @@ class Event(_messages.Message):
         that instance / runtime underlying compute is operational.
       HEALTH: The instance / runtime health is available. This event indicates
         that instance / runtime health information.
+      MAINTENANCE: The instance / runtime is available. This event allows
+        instance / runtime to send Host maintenance information to Control
+        Plane. https://cloud.google.com/compute/docs/gpus/gpu-host-maintenance
     """
     EVENT_TYPE_UNSPECIFIED = 0
     IDLE = 1
     HEARTBEAT = 2
     HEALTH = 3
+    MAINTENANCE = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValue(_messages.Message):
@@ -695,6 +706,8 @@ class Instance(_messages.Message):
       recommended value is 100 GB. If not specified, this defaults to 100.
     bootDiskType: Input only. The type of the boot disk attached to this
       instance, defaults to standard persistent disk (`PD_STANDARD`).
+    canIpForward: Optional. Flag to enable ip forwarding or not, default
+      false/off. https://cloud.google.com/vpc/docs/using-routes#canipforward
     containerImage: Use a container image to start the notebook instance.
     createTime: Output only. Instance creation time.
     creator: Output only. Email address of entity that sent original
@@ -914,38 +927,39 @@ class Instance(_messages.Message):
   acceleratorConfig = _messages.MessageField('AcceleratorConfig', 1)
   bootDiskSizeGb = _messages.IntegerField(2)
   bootDiskType = _messages.EnumField('BootDiskTypeValueValuesEnum', 3)
-  containerImage = _messages.MessageField('ContainerImage', 4)
-  createTime = _messages.StringField(5)
-  creator = _messages.StringField(6)
-  customGpuDriverPath = _messages.StringField(7)
-  dataDiskSizeGb = _messages.IntegerField(8)
-  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 9)
-  diskEncryption = _messages.EnumField('DiskEncryptionValueValuesEnum', 10)
-  disks = _messages.MessageField('Disk', 11, repeated=True)
-  installGpuDriver = _messages.BooleanField(12)
-  instanceOwners = _messages.StringField(13, repeated=True)
-  kmsKey = _messages.StringField(14)
-  labels = _messages.MessageField('LabelsValue', 15)
-  machineType = _messages.StringField(16)
-  metadata = _messages.MessageField('MetadataValue', 17)
-  name = _messages.StringField(18)
-  network = _messages.StringField(19)
-  nicType = _messages.EnumField('NicTypeValueValuesEnum', 20)
-  noProxyAccess = _messages.BooleanField(21)
-  noPublicIp = _messages.BooleanField(22)
-  noRemoveDataDisk = _messages.BooleanField(23)
-  postStartupScript = _messages.StringField(24)
-  proxyUri = _messages.StringField(25)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 26)
-  serviceAccount = _messages.StringField(27)
-  serviceAccountScopes = _messages.StringField(28, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 29)
-  state = _messages.EnumField('StateValueValuesEnum', 30)
-  subnet = _messages.StringField(31)
-  tags = _messages.StringField(32, repeated=True)
-  updateTime = _messages.StringField(33)
-  upgradeHistory = _messages.MessageField('UpgradeHistoryEntry', 34, repeated=True)
-  vmImage = _messages.MessageField('VmImage', 35)
+  canIpForward = _messages.BooleanField(4)
+  containerImage = _messages.MessageField('ContainerImage', 5)
+  createTime = _messages.StringField(6)
+  creator = _messages.StringField(7)
+  customGpuDriverPath = _messages.StringField(8)
+  dataDiskSizeGb = _messages.IntegerField(9)
+  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 10)
+  diskEncryption = _messages.EnumField('DiskEncryptionValueValuesEnum', 11)
+  disks = _messages.MessageField('Disk', 12, repeated=True)
+  installGpuDriver = _messages.BooleanField(13)
+  instanceOwners = _messages.StringField(14, repeated=True)
+  kmsKey = _messages.StringField(15)
+  labels = _messages.MessageField('LabelsValue', 16)
+  machineType = _messages.StringField(17)
+  metadata = _messages.MessageField('MetadataValue', 18)
+  name = _messages.StringField(19)
+  network = _messages.StringField(20)
+  nicType = _messages.EnumField('NicTypeValueValuesEnum', 21)
+  noProxyAccess = _messages.BooleanField(22)
+  noPublicIp = _messages.BooleanField(23)
+  noRemoveDataDisk = _messages.BooleanField(24)
+  postStartupScript = _messages.StringField(25)
+  proxyUri = _messages.StringField(26)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 27)
+  serviceAccount = _messages.StringField(28)
+  serviceAccountScopes = _messages.StringField(29, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 30)
+  state = _messages.EnumField('StateValueValuesEnum', 31)
+  subnet = _messages.StringField(32)
+  tags = _messages.StringField(33, repeated=True)
+  updateTime = _messages.StringField(34)
+  upgradeHistory = _messages.MessageField('UpgradeHistoryEntry', 35, repeated=True)
+  vmImage = _messages.MessageField('VmImage', 36)
 
 
 class InstanceConfig(_messages.Message):
@@ -1867,13 +1881,15 @@ class NotebooksProjectsLocationsRuntimesCreateRequest(_messages.Message):
   Fields:
     parent: Required. Format:
       `parent=projects/{project_id}/locations/{location}`
+    requestId: Idempotent request UUID.
     runtime: A Runtime resource to be passed as the request body.
     runtimeId: Required. User-defined unique ID of this Runtime.
   """
 
   parent = _messages.StringField(1, required=True)
-  runtime = _messages.MessageField('Runtime', 2)
-  runtimeId = _messages.StringField(3)
+  requestId = _messages.StringField(2)
+  runtime = _messages.MessageField('Runtime', 3)
+  runtimeId = _messages.StringField(4)
 
 
 class NotebooksProjectsLocationsRuntimesDeleteRequest(_messages.Message):
@@ -1882,9 +1898,11 @@ class NotebooksProjectsLocationsRuntimesDeleteRequest(_messages.Message):
   Fields:
     name: Required. Format:
       `projects/{project_id}/locations/{location}/runtimes/{runtime_id}`
+    requestId: Idempotent request UUID.
   """
 
   name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
 
 
 class NotebooksProjectsLocationsRuntimesGetIamPolicyRequest(_messages.Message):
@@ -2430,7 +2448,13 @@ class ResetInstanceRequest(_messages.Message):
 
 
 class ResetRuntimeRequest(_messages.Message):
-  r"""Request for resetting a Managed Notebook Runtime."""
+  r"""Request for resetting a Managed Notebook Runtime.
+
+  Fields:
+    requestId: Idempotent request UUID.
+  """
+
+  requestId = _messages.StringField(1)
 
 
 class RollbackInstanceRequest(_messages.Message):
@@ -2710,7 +2734,7 @@ class RuntimeSoftwareConfig(_messages.Message):
       idle_shutdown_time. Default: True
     idleShutdownTimeout: Time in minutes to wait before shutting down runtime.
       Default: 180 minutes
-    installGpuDriver: Install Nvidia Driver automatically.
+    installGpuDriver: Install Nvidia Driver automatically. Default: True
     kernels: Optional. Use a list of container images to use as Kernels in the
       notebook instance.
     notebookUpgradeSchedule: Cron expression in UTC timezone, used to schedule
@@ -3052,7 +3076,13 @@ class StartInstanceRequest(_messages.Message):
 
 
 class StartRuntimeRequest(_messages.Message):
-  r"""Request for starting a Managed Notebook Runtime."""
+  r"""Request for starting a Managed Notebook Runtime.
+
+  Fields:
+    requestId: Idempotent request UUID.
+  """
+
+  requestId = _messages.StringField(1)
 
 
 class Status(_messages.Message):
@@ -3111,7 +3141,13 @@ class StopInstanceRequest(_messages.Message):
 
 
 class StopRuntimeRequest(_messages.Message):
-  r"""Request for stopping a Managed Notebook Runtime."""
+  r"""Request for stopping a Managed Notebook Runtime.
+
+  Fields:
+    requestId: Idempotent request UUID.
+  """
+
+  requestId = _messages.StringField(1)
 
 
 class SwitchRuntimeRequest(_messages.Message):
@@ -3120,10 +3156,12 @@ class SwitchRuntimeRequest(_messages.Message):
   Fields:
     acceleratorConfig: accelerator config.
     machineType: machine type.
+    requestId: Idempotent request UUID.
   """
 
   acceleratorConfig = _messages.MessageField('RuntimeAcceleratorConfig', 1)
   machineType = _messages.StringField(2)
+  requestId = _messages.StringField(3)
 
 
 class TestIamPermissionsRequest(_messages.Message):
@@ -3471,6 +3509,7 @@ class VirtualMachineConfig(_messages.Message):
   Fields:
     acceleratorConfig: Optional. The Compute Engine accelerator configuration
       for this runtime.
+    bootImage: Optional. Boot image metadata used for runtime upgradeability.
     containerImages: Optional. Use a list of container images to use as
       Kernels in the notebook instance.
     dataDisk: Required. Data disk option configuration settings.
@@ -3633,21 +3672,22 @@ class VirtualMachineConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   acceleratorConfig = _messages.MessageField('RuntimeAcceleratorConfig', 1)
-  containerImages = _messages.MessageField('ContainerImage', 2, repeated=True)
-  dataDisk = _messages.MessageField('LocalDisk', 3)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 4)
-  guestAttributes = _messages.MessageField('GuestAttributesValue', 5)
-  internalIpOnly = _messages.BooleanField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  machineType = _messages.StringField(8)
-  metadata = _messages.MessageField('MetadataValue', 9)
-  network = _messages.StringField(10)
-  nicType = _messages.EnumField('NicTypeValueValuesEnum', 11)
-  reservedIpRange = _messages.StringField(12)
-  shieldedInstanceConfig = _messages.MessageField('RuntimeShieldedInstanceConfig', 13)
-  subnet = _messages.StringField(14)
-  tags = _messages.StringField(15, repeated=True)
-  zone = _messages.StringField(16)
+  bootImage = _messages.MessageField('BootImage', 2)
+  containerImages = _messages.MessageField('ContainerImage', 3, repeated=True)
+  dataDisk = _messages.MessageField('LocalDisk', 4)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 5)
+  guestAttributes = _messages.MessageField('GuestAttributesValue', 6)
+  internalIpOnly = _messages.BooleanField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  machineType = _messages.StringField(9)
+  metadata = _messages.MessageField('MetadataValue', 10)
+  network = _messages.StringField(11)
+  nicType = _messages.EnumField('NicTypeValueValuesEnum', 12)
+  reservedIpRange = _messages.StringField(13)
+  shieldedInstanceConfig = _messages.MessageField('RuntimeShieldedInstanceConfig', 14)
+  subnet = _messages.StringField(15)
+  tags = _messages.StringField(16, repeated=True)
+  zone = _messages.StringField(17)
 
 
 class VmImage(_messages.Message):

@@ -629,6 +629,8 @@ class StreamInstance(_messages.Message):
     apiKey: Output only. The API key that an Stream client must use when
       requesting a streaming session.
     content: The content that this instance serves.
+    contentBuildVersion: The user-specified version tag and build ID of the
+      content served in this realm.
     createTime: Output only. [Output only] Create time stamp
     labels: Labels as key value pairs
     lifecycleState: Output only. Current status of the instance.
@@ -666,12 +668,13 @@ class StreamInstance(_messages.Message):
   apiEndpoint = _messages.StringField(1)
   apiKey = _messages.StringField(2)
   content = _messages.StringField(3)
-  createTime = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  lifecycleState = _messages.MessageField('LifecycleState', 6)
-  name = _messages.StringField(7)
-  realmConfigs = _messages.MessageField('RealmConfig', 8, repeated=True)
-  updateTime = _messages.StringField(9)
+  contentBuildVersion = _messages.MessageField('BuildVersion', 4)
+  createTime = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  lifecycleState = _messages.MessageField('LifecycleState', 7)
+  name = _messages.StringField(8)
+  realmConfigs = _messages.MessageField('RealmConfig', 9, repeated=True)
+  updateTime = _messages.StringField(10)
 
 
 class StreamProjectsLocationsGetRequest(_messages.Message):

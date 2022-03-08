@@ -16,15 +16,20 @@
 from collections import OrderedDict
 import functools
 import re
-from typing import Dict, AsyncIterable, Awaitable, AsyncIterator, Sequence, Tuple, Type, Union
+from typing import Dict, Optional, AsyncIterable, Awaitable, AsyncIterator, Sequence, Tuple, Type, Union
 import pkg_resources
 
-import google.api_core.client_options as ClientOptions # type: ignore
-from google.api_core import exceptions as core_exceptions  # type: ignore
-from google.api_core import gapic_v1                   # type: ignore
-from google.api_core import retry as retries           # type: ignore
+from google.api_core.client_options import ClientOptions
+from google.api_core import exceptions as core_exceptions
+from google.api_core import gapic_v1
+from google.api_core import retry as retries
 from google.auth import credentials as ga_credentials   # type: ignore
 from google.oauth2 import service_account              # type: ignore
+
+try:
+    OptionalRetry = Union[retries.Retry, gapic_v1.method._MethodDefault]
+except AttributeError:  # pragma: NO COVER
+    OptionalRetry = Union[retries.Retry, object]  # type: ignore
 
 from google.api import monitored_resource_pb2  # type: ignore
 from googlecloudsdk.third_party.gapic_clients.logging_v2.services.logging_service_v2 import pagers
@@ -89,6 +94,40 @@ class LoggingServiceV2AsyncClient:
 
     from_service_account_json = from_service_account_file
 
+    @classmethod
+    def get_mtls_endpoint_and_cert_source(cls, client_options: Optional[ClientOptions] = None):
+        """Return the API endpoint and client cert source for mutual TLS.
+
+        The client cert source is determined in the following order:
+        (1) if `GOOGLE_API_USE_CLIENT_CERTIFICATE` environment variable is not "true", the
+        client cert source is None.
+        (2) if `client_options.client_cert_source` is provided, use the provided one; if the
+        default client cert source exists, use the default one; otherwise the client cert
+        source is None.
+
+        The API endpoint is determined in the following order:
+        (1) if `client_options.api_endpoint` if provided, use the provided one.
+        (2) if `GOOGLE_API_USE_CLIENT_CERTIFICATE` environment variable is "always", use the
+        default mTLS endpoint; if the environment variabel is "never", use the default API
+        endpoint; otherwise if client cert source exists, use the default mTLS endpoint, otherwise
+        use the default API endpoint.
+
+        More details can be found at https://google.aip.dev/auth/4114.
+
+        Args:
+            client_options (google.api_core.client_options.ClientOptions): Custom options for the
+                client. Only the `api_endpoint` and `client_cert_source` properties may be used
+                in this method.
+
+        Returns:
+            Tuple[str, Callable[[], Tuple[bytes, bytes]]]: returns the API endpoint and the
+                client cert source to use.
+
+        Raises:
+            google.auth.exceptions.MutualTLSChannelError: If any errors happen.
+        """
+        return LoggingServiceV2Client.get_mtls_endpoint_and_cert_source(client_options)  # type: ignore
+
     @property
     def transport(self) -> LoggingServiceV2Transport:
         """Returns the transport used by the client instance.
@@ -147,10 +186,10 @@ class LoggingServiceV2AsyncClient:
         )
 
     async def delete_log(self,
-            request: logging.DeleteLogRequest = None,
+            request: Union[logging.DeleteLogRequest, dict] = None,
             *,
             log_name: str = None,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> None:
@@ -160,8 +199,25 @@ class LoggingServiceV2AsyncClient:
         deleted. Entries received after the delete operation with a
         timestamp before the operation will be deleted.
 
+
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_delete_log():
+                # Create a client
+                client = logging_v2.LoggingServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.DeleteLogRequest(
+                    log_name="log_name_value",
+                )
+
+                # Make the request
+                client.delete_log(request=request)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.DeleteLogRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.DeleteLogRequest, dict]):
                 The request object. The parameters to DeleteLog.
             log_name (:class:`str`):
                 Required. The resource name of the log to delete:
@@ -188,7 +244,7 @@ class LoggingServiceV2AsyncClient:
                 sent along with the request as metadata.
         """
         # Create or coerce a protobuf request object.
-        # Sanity check: If we got a request object, we should *not* have
+        # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
         has_flattened_params = any([log_name])
         if request is not None and has_flattened_params:
@@ -235,13 +291,13 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         )
 
     async def write_log_entries(self,
-            request: logging.WriteLogEntriesRequest = None,
+            request: Union[logging.WriteLogEntriesRequest, dict] = None,
             *,
             log_name: str = None,
             resource: monitored_resource_pb2.MonitoredResource = None,
             labels: Sequence[logging.WriteLogEntriesRequest.LabelsEntry] = None,
             entries: Sequence[log_entry.LogEntry] = None,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging.WriteLogEntriesResponse:
@@ -253,8 +309,31 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         maximum of 1000 different resources (projects,
         organizations, billing accounts or folders)
 
+
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_write_log_entries():
+                # Create a client
+                client = logging_v2.LoggingServiceV2Client()
+
+                # Initialize request argument(s)
+                entries = logging_v2.LogEntry()
+                entries.log_name = "log_name_value"
+
+                request = logging_v2.WriteLogEntriesRequest(
+                    entries=entries,
+                )
+
+                # Make the request
+                response = client.write_log_entries(request=request)
+
+                # Handle the response
+                print(response)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.WriteLogEntriesRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.WriteLogEntriesRequest, dict]):
                 The request object. The parameters to WriteLogEntries.
             log_name (:class:`str`):
                 Optional. A default log resource name that is assigned
@@ -353,7 +432,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 Result returned from WriteLogEntries.
         """
         # Create or coerce a protobuf request object.
-        # Sanity check: If we got a request object, we should *not* have
+        # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
         has_flattened_params = any([log_name, resource, labels, entries])
         if request is not None and has_flattened_params:
@@ -402,12 +481,12 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         return response
 
     async def list_log_entries(self,
-            request: logging.ListLogEntriesRequest = None,
+            request: Union[logging.ListLogEntriesRequest, dict] = None,
             *,
             resource_names: Sequence[str] = None,
             filter: str = None,
             order_by: str = None,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> pagers.ListLogEntriesAsyncPager:
@@ -416,8 +495,29 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         For ways to export log entries, see `Exporting
         Logs <https://cloud.google.com/logging/docs/export>`__.
 
+
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_list_log_entries():
+                # Create a client
+                client = logging_v2.LoggingServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.ListLogEntriesRequest(
+                    resource_names=['resource_names_value_1', 'resource_names_value_2'],
+                )
+
+                # Make the request
+                page_result = client.list_log_entries(request=request)
+
+                # Handle the response
+                for response in page_result:
+                    print(response)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.ListLogEntriesRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.ListLogEntriesRequest, dict]):
                 The request object. The parameters to `ListLogEntries`.
             resource_names (:class:`Sequence[str]`):
                 Required. Names of one or more parent resources from
@@ -483,7 +583,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Sanity check: If we got a request object, we should *not* have
+        # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
         has_flattened_params = any([resource_names, filter, order_by])
         if request is not None and has_flattened_params:
@@ -538,17 +638,37 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         return response
 
     async def list_monitored_resource_descriptors(self,
-            request: logging.ListMonitoredResourceDescriptorsRequest = None,
+            request: Union[logging.ListMonitoredResourceDescriptorsRequest, dict] = None,
             *,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> pagers.ListMonitoredResourceDescriptorsAsyncPager:
         r"""Lists the descriptors for monitored resource types
         used by Logging.
 
+
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_list_monitored_resource_descriptors():
+                # Create a client
+                client = logging_v2.LoggingServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.ListMonitoredResourceDescriptorsRequest(
+                )
+
+                # Make the request
+                page_result = client.list_monitored_resource_descriptors(request=request)
+
+                # Handle the response
+                for response in page_result:
+                    print(response)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.ListMonitoredResourceDescriptorsRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.ListMonitoredResourceDescriptorsRequest, dict]):
                 The request object. The parameters to
                 ListMonitoredResourceDescriptors
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
@@ -606,10 +726,10 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         return response
 
     async def list_logs(self,
-            request: logging.ListLogsRequest = None,
+            request: Union[logging.ListLogsRequest, dict] = None,
             *,
             parent: str = None,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> pagers.ListLogsAsyncPager:
@@ -617,8 +737,29 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         or billing accounts. Only logs that have entries are
         listed.
 
+
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_list_logs():
+                # Create a client
+                client = logging_v2.LoggingServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.ListLogsRequest(
+                    parent="parent_value",
+                )
+
+                # Make the request
+                page_result = client.list_logs(request=request)
+
+                # Handle the response
+                for response in page_result:
+                    print(response)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.ListLogsRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.ListLogsRequest, dict]):
                 The request object. The parameters to ListLogs.
             parent (:class:`str`):
                 Required. The resource name that owns the logs:
@@ -646,7 +787,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Sanity check: If we got a request object, we should *not* have
+        # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
         has_flattened_params = any([parent])
         if request is not None and has_flattened_params:
@@ -707,13 +848,44 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
     def tail_log_entries(self,
             requests: AsyncIterator[logging.TailLogEntriesRequest] = None,
             *,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> Awaitable[AsyncIterable[logging.TailLogEntriesResponse]]:
         r"""Streaming read of log entries as they are ingested.
         Until the stream is terminated, it will continue reading
         logs.
+
+
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_tail_log_entries():
+                # Create a client
+                client = logging_v2.LoggingServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.TailLogEntriesRequest(
+                    resource_names=['resource_names_value_1', 'resource_names_value_2'],
+                )
+
+                # This method expects an iterator which contains
+                # 'logging_v2.TailLogEntriesRequest' objects
+                # Here we create a generator that yields a single `request` for
+                # demonstrative purposes.
+                requests = [request]
+
+                def request_generator():
+                    for request in requests:
+                        yield request
+
+                # Make the request
+                stream = client.tail_log_entries(requests=request_generator())
+
+                # Handle the response
+                for response in stream:
+                    print(response)
 
         Args:
             requests (AsyncIterator[`googlecloudsdk.third_party.gapic_clients.logging_v2.types.TailLogEntriesRequest`]):
@@ -756,9 +928,11 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         # Done; return the response.
         return response
 
+    async def __aenter__(self):
+        return self
 
-
-
+    async def __aexit__(self, exc_type, exc, tb):
+        await self.transport.close()
 
 try:
     DEFAULT_CLIENT_INFO = gapic_v1.client_info.ClientInfo(

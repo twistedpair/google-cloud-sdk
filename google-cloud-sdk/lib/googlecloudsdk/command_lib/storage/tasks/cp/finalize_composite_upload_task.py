@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import os
+
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import compose_objects_task
@@ -33,16 +35,19 @@ class FinalizeCompositeUploadTask(task.Task):
                source_resource,
                destination_resource,
                random_prefix='',
+               delete_source=False,
                user_request_args=None):
     """Initializes task.
 
     Args:
       expected_component_count (int): Number of temporary components expected.
       source_resource (resource_reference.FileObjectResource): The local
-          uploaded file.
+        uploaded file.
       destination_resource (resource_reference.UnknownResource): Metadata for
-          the final composite object.
+        the final composite object.
       random_prefix (str): Random id added to component names.
+      delete_source (bool): If copy completes successfully, delete the source
+        object afterwards.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
     super(FinalizeCompositeUploadTask, self).__init__()
@@ -50,6 +55,7 @@ class FinalizeCompositeUploadTask(task.Task):
     self._source_resource = source_resource
     self._destination_resource = destination_resource
     self._random_prefix = random_prefix
+    self._delete_source = delete_source
     self._user_request_args = user_request_args
 
   def execute(self, task_status_queue=None):
@@ -83,6 +89,9 @@ class FinalizeCompositeUploadTask(task.Task):
         tracker_file_util.TrackerFileType.PARALLEL_UPLOAD,
         source_url=self._source_resource)
     tracker_file_util.delete_tracker_file(tracker_file_path)
+
+    if self._delete_source:
+      os.remove(self._source_resource.storage_url.object_name)
 
     return task.Output(
         additional_task_iterators=[[

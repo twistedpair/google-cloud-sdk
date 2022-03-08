@@ -51,6 +51,12 @@ def TagBindingsService():
   return client.tagBindings
 
 
+def EffectiveTagsService():
+  """Returns the effective tags service class."""
+  client = TagClient()
+  return client.effectiveTags
+
+
 def TagHoldsService():
   """Returns the tag holds service class."""
   client = TagClient()

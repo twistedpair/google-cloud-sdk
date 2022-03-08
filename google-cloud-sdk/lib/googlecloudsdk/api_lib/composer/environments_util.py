@@ -512,57 +512,54 @@ def RestartWebServer(environment_ref, release_track=base.ReleaseTrack.BETA):
       release_track=release_track).RestartWebServer(request_message)
 
 
-def StoreEnvironmentState(environment_ref,
-                          snapshot_location,
-                          release_track=base.ReleaseTrack.ALPHA):
-  """Calls the Composer Environments.StoreEnvironmentState method.
+def SaveSnapshot(environment_ref,
+                 snapshot_location,
+                 release_track=base.ReleaseTrack.ALPHA):
+  """Calls the Composer Environments.SaveSnapshot method.
 
   Args:
-    environment_ref: Resource, the Composer environment resource to store the
-      state for.
-    snapshot_location: location to store the state of the environment.
+    environment_ref: Resource, the Composer environment resource to save the
+      snapshot for.
+    snapshot_location: location to save the snapshot of the environment.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
       which Composer client library will be used.
 
   Returns:
-    Operation: the operation corresponding to the storing state.
+    Operation: the operation corresponding to saving the snapshot.
   """
   message_module = api_util.GetMessagesModule(release_track=release_track)
-  request_message = message_module.ComposerProjectsLocationsEnvironmentsStoreEnvironmentStateRequest(
+  request_message = message_module.ComposerProjectsLocationsEnvironmentsSaveSnapshotRequest(
       environment=environment_ref.RelativeName(),
-      storeEnvironmentStateRequest=message_module.StoreEnvironmentStateRequest(
+      saveSnapshotRequest=message_module.SaveSnapshotRequest(
           snapshotLocation=snapshot_location))
-  return GetService(
-      release_track=release_track).StoreEnvironmentState(request_message)
+  return GetService(release_track=release_track).SaveSnapshot(request_message)
 
 
-def LoadEnvironmentState(environment_ref,
-                         skip_pypi_packages_installation,
-                         snapshot_path,
-                         release_track=base.ReleaseTrack.ALPHA):
-  """Calls the Composer Environments.LoadEnvironmentState method.
+def LoadSnapshot(environment_ref,
+                 skip_pypi_packages_installation,
+                 snapshot_path,
+                 release_track=base.ReleaseTrack.ALPHA):
+  """Calls the Composer Environments.LoadSnapshot method.
 
   Args:
     environment_ref: Resource, the Composer environment resource to Load the
-      state for.
+      snapshot for.
     skip_pypi_packages_installation: skip installing the pypi packages during
-      the operation
-    snapshot_path: path of the specific snapshot to load the state of the
-      environment.
+      the operation.
+    snapshot_path: path of the specific snapshot to load the snapshot.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
       which Composer client library will be used.
 
   Returns:
-    Operation: the operation corresponding to the Loading state.
+    Operation: the operation corresponding to loading the snapshot.
   """
   message_module = api_util.GetMessagesModule(release_track=release_track)
-  request_message = message_module.ComposerProjectsLocationsEnvironmentsLoadEnvironmentStateRequest(
+  request_message = message_module.ComposerProjectsLocationsEnvironmentsLoadSnapshotRequest(
       environment=environment_ref.RelativeName(),
-      loadEnvironmentStateRequest=message_module.LoadEnvironmentStateRequest(
+      loadSnapshotRequest=message_module.LoadSnapshotRequest(
           skipPypiPackagesInstallation=skip_pypi_packages_installation,
           snapshotPath=snapshot_path))
-  return GetService(
-      release_track=release_track).LoadEnvironmentState(request_message)
+  return GetService(release_track=release_track).LoadSnapshot(request_message)
 
 
 def CheckUpgrade(environment_ref,

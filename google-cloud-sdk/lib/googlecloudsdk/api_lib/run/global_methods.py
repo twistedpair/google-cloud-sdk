@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2019 Google LLC. All Rights Reserved.
+# Copyright 2022 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import re
 
 from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib.container import api_adapter as container_api_adapter
-from googlecloudsdk.api_lib.container.hub import client as hub_client
-from googlecloudsdk.api_lib.container.hub import util as hub_util
+from googlecloudsdk.api_lib.container.fleet import client as hub_client
+from googlecloudsdk.api_lib.container.fleet import util as hub_util
 from googlecloudsdk.api_lib.resourcesettings import service as resourcesettings_service
 from googlecloudsdk.api_lib.run import job
 from googlecloudsdk.api_lib.run import service

@@ -2958,9 +2958,14 @@ class NodePoolAutoscaling(_messages.Message):
   r"""NodePoolAutoscaling contains information required by cluster autoscaler
   to adjust the size of the node pool to the current cluster usage.
 
+  Enums:
+    LocationPolicyValueValuesEnum: Location policy used when scaling up a
+      nodepool.
+
   Fields:
     autoprovisioned: Can this node pool be deleted automatically.
     enabled: Is autoscaling enabled for this node pool.
+    locationPolicy: Location policy used when scaling up a nodepool.
     maxNodeCount: Maximum number of nodes for one location in the NodePool.
       Must be >= min_node_count. There has to be enough quota to scale up the
       cluster.
@@ -2968,10 +2973,24 @@ class NodePoolAutoscaling(_messages.Message):
       Must be >= 1 and <= max_node_count.
   """
 
+  class LocationPolicyValueValuesEnum(_messages.Enum):
+    r"""Location policy used when scaling up a nodepool.
+
+    Values:
+      LOCATION_POLICY_UNSPECIFIED: Not set.
+      BALANCED: BALANCED is a best effort policy that aims to balance the
+        sizes of different zones.
+      ANY: ANY policy picks zones that have the highest capacity available.
+    """
+    LOCATION_POLICY_UNSPECIFIED = 0
+    BALANCED = 1
+    ANY = 2
+
   autoprovisioned = _messages.BooleanField(1)
   enabled = _messages.BooleanField(2)
-  maxNodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  minNodeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  locationPolicy = _messages.EnumField('LocationPolicyValueValuesEnum', 3)
+  maxNodeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  minNodeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class NodePoolDefaults(_messages.Message):

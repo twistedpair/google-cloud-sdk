@@ -984,6 +984,8 @@ class DeidentifyConfig(_messages.Message):
     fhir: Configures de-id of application/FHIR content.
     image: Configures de-identification of image pixels wherever they are
       found in the source_dataset.
+    operationMetadata: Details about the work the de-identify operation
+      performed.
     text: Configures de-identification of text wherever it is found in the
       source_dataset.
   """
@@ -992,7 +994,8 @@ class DeidentifyConfig(_messages.Message):
   dicom = _messages.MessageField('DicomConfig', 2)
   fhir = _messages.MessageField('FhirConfig', 3)
   image = _messages.MessageField('ImageConfig', 4)
-  text = _messages.MessageField('TextConfig', 5)
+  operationMetadata = _messages.MessageField('DeidentifyOperationMetadata', 5)
+  text = _messages.MessageField('TextConfig', 6)
 
 
 class DeidentifyDatasetRequest(_messages.Message):
@@ -1004,10 +1007,18 @@ class DeidentifyDatasetRequest(_messages.Message):
       the redacted data to. * The destination dataset must not exist. * The
       destination dataset must be in the same location as the source dataset.
       De-identifying data across multiple locations is not supported.
+    gcsConfigUri: Cloud Storage location to read the JSON
+      cloud.healthcare.deidentify.DeidentifyConfig from, overriding the
+      default config. Must be of the form `gs://{bucket_id}/path/to/object`.
+      The Cloud Storage location must grant the Cloud IAM role
+      `roles/storage.objectViewer` to the project's Cloud Healthcare Service
+      Agent service account. Only one of `config` and `gcs_config_uri` can be
+      specified.
   """
 
   config = _messages.MessageField('DeidentifyConfig', 1)
   destinationDataset = _messages.StringField(2)
+  gcsConfigUri = _messages.StringField(3)
 
 
 class DeidentifyDicomStoreRequest(_messages.Message):
@@ -1024,11 +1035,19 @@ class DeidentifyDicomStoreRequest(_messages.Message):
       store must not exist. * The caller must have the necessary permissions
       to create the destination DICOM store.
     filterConfig: Filter configuration.
+    gcsConfigUri: Cloud Storage location to read the JSON
+      cloud.healthcare.deidentify.DeidentifyConfig from, overriding the
+      default config. Must be of the form `gs://{bucket_id}/path/to/object`.
+      The Cloud Storage location must grant the Cloud IAM role
+      `roles/storage.objectViewer` to the project's Cloud Healthcare Service
+      Agent service account. Only one of `config` and `gcs_config_uri` can be
+      specified.
   """
 
   config = _messages.MessageField('DeidentifyConfig', 1)
   destinationStore = _messages.StringField(2)
   filterConfig = _messages.MessageField('DicomFilterConfig', 3)
+  gcsConfigUri = _messages.StringField(4)
 
 
 class DeidentifyFhirStoreRequest(_messages.Message):
@@ -1044,13 +1063,31 @@ class DeidentifyFhirStoreRequest(_messages.Message):
       across multiple locations is not supported. * The destination FHIR store
       must exist. * The caller must have the healthcare.fhirResources.update
       permission to write to the destination FHIR store.
+    gcsConfigUri: Cloud Storage location to read the JSON
+      cloud.healthcare.deidentify.DeidentifyConfig from, overriding the
+      default config. Must be of the form `gs://{bucket_id}/path/to/object`.
+      The Cloud Storage location must grant the Cloud IAM role
+      `roles/storage.objectViewer` to the project's Cloud Healthcare Service
+      Agent service account. Only one of `config` and `gcs_config_uri` can be
+      specified.
     resourceFilter: A filter specifying the resources to include in the
       output. If not specified, all resources are included in the output.
   """
 
   config = _messages.MessageField('DeidentifyConfig', 1)
   destinationStore = _messages.StringField(2)
-  resourceFilter = _messages.MessageField('FhirFilter', 3)
+  gcsConfigUri = _messages.StringField(3)
+  resourceFilter = _messages.MessageField('FhirFilter', 4)
+
+
+class DeidentifyOperationMetadata(_messages.Message):
+  r"""Details about the work the de-identify operation performed.
+
+  Fields:
+    fhirOutput: Details about the FHIR store to write the output to.
+  """
+
+  fhirOutput = _messages.MessageField('FhirOutput', 1)
 
 
 class DeidentifySummary(_messages.Message):
@@ -1740,6 +1777,25 @@ class FhirFilter(_messages.Message):
   """
 
   resources = _messages.MessageField('Resources', 1)
+
+
+class FhirOutput(_messages.Message):
+  r"""Details about the FHIR store to write the output to.
+
+  Fields:
+    fhirStore: Name of the output FHIR store, which must already exist. You
+      must grant the healthcare.fhirResources.update permission on the
+      destination store to your project's **Cloud Healthcare Service Agent**
+      [service account](https://cloud.google.com/healthcare/docs/how-
+      tos/permissions-healthcare-api-gcp-
+      products#the_cloud_healthcare_service_agent). The destination store must
+      set `enable_update_create` to true. The destination store must use FHIR
+      version R4. Writing these resources will consume FHIR operations quota
+      from the project containing the source data. De-identify operation
+      metadata is only generated for DICOM de-identification operations.
+  """
+
+  fhirStore = _messages.StringField(1)
 
 
 class FhirStore(_messages.Message):
@@ -6404,10 +6460,17 @@ class ParserConfig(_messages.Message):
         segment starts with the MSH-2 field and the field numbers are off-by-
         one with respect to the HL7 standard.
       V2: The `parsed_data` includes every given non-empty message field.
+      V3: This version is the same as V2, with the following change. The
+        `parsed_data` contains unescaped escaped field separators, component
+        separators, sub-component separators, repetition separators, escape
+        characters, and truncation characters. If `schema` is specified, the
+        schematized parser uses improved parsing heuristics compared to
+        previous versions.
     """
     PARSER_VERSION_UNSPECIFIED = 0
     V1 = 1
     V2 = 2
+    V3 = 3
 
   allowNullHeader = _messages.BooleanField(1)
   schema = _messages.MessageField('SchemaPackage', 2)
@@ -6926,7 +6989,6 @@ class SearchResourcesRequest(_messages.Message):
   r"""Request to search the resources in the specified FHIR store.
 
   Fields:
-    requestBody: Raw body of the request for POST searches.
     resourceType: The FHIR resource type to search, such as Patient or
       Observation. For a complete list, see the FHIR Resource Index ([DSTU2](h
       ttps://hl7.org/implement/standards/fhir/DSTU2/resourcelist.html),
@@ -6934,8 +6996,7 @@ class SearchResourcesRequest(_messages.Message):
       [R4](https://hl7.org/implement/standards/fhir/R4/resourcelist.html)).
   """
 
-  requestBody = _messages.MessageField('HttpBody', 1)
-  resourceType = _messages.StringField(2)
+  resourceType = _messages.StringField(1)
 
 
 class Segment(_messages.Message):

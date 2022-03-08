@@ -724,28 +724,17 @@
         }
       }
     },
-    "AddDnsPeeringRequest": {
-      "id": "AddDnsPeeringRequest",
-      "description": "Request message to create dns peering.",
-      "type": "object",
-      "properties": {
-        "dnsPeering": {
-          "description": "Dns peering config.",
-          "$ref": "DnsPeering"
-        }
-      }
-    },
     "DnsPeering": {
       "id": "DnsPeering",
       "description": "DNS peering configuration. These configurations are used to create DNS peering with the customer Cloud DNS.",
       "type": "object",
       "properties": {
-        "zone": {
-          "description": "Required. Name of the zone.",
+        "name": {
+          "description": "Required. The resource name of the dns peering zone. Format: projects\/{project}\/locations\/{location}\/instances\/{instance}\/dnsPeerings\/{dns_peering}",
           "type": "string"
         },
         "domain": {
-          "description": "Required. Name of the dns.",
+          "description": "Required. The dns name suffix of the zone.",
           "type": "string"
         },
         "description": {
@@ -762,45 +751,20 @@
         }
       }
     },
-    "AddDnsPeeringResponse": {
-      "id": "AddDnsPeeringResponse",
-      "description": "Response message for set dns peering method.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "RemoveDnsPeeringRequest": {
-      "id": "RemoveDnsPeeringRequest",
-      "description": "Request message to remove dns peering.",
-      "type": "object",
-      "properties": {
-        "zone": {
-          "description": "Required. The zone to be removed.",
-          "type": "string"
-        }
-      }
-    },
-    "RemoveDnsPeeringResponse": {
-      "id": "RemoveDnsPeeringResponse",
-      "description": "Response message for set dns peering method.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "ListDnsPeeringsResponse": {
       "id": "ListDnsPeeringsResponse",
-      "description": "List dns peering response.",
+      "description": "Response message for list DNS peerings.",
       "type": "object",
       "properties": {
         "dnsPeerings": {
-          "description": "List of dns peering configs.",
+          "description": "List of dns peering.",
           "type": "array",
           "items": {
             "$ref": "DnsPeering"
           }
         },
         "nextPageToken": {
-          "description": "Token to retrieve the next page of results or empty if there are no more results in the list.",
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
           "type": "string"
         }
       }
@@ -1669,10 +1633,10 @@
                 },
                 "dnsPeerings": {
                   "methods": {
-                    "add": {
-                      "id": "datafusion.projects.locations.instances.dnsPeerings.add",
-                      "path": "v1beta1/{+parent}/dnsPeerings:add",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/dnsPeerings:add",
+                    "create": {
+                      "id": "datafusion.projects.locations.instances.dnsPeerings.create",
+                      "path": "v1beta1/{+parent}/dnsPeerings",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/dnsPeerings",
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
@@ -1687,38 +1651,35 @@
                         "parent"
                       ],
                       "request": {
-                        "$ref": "AddDnsPeeringRequest"
+                        "$ref": "DnsPeering"
                       },
                       "response": {
-                        "$ref": "AddDnsPeeringResponse"
+                        "$ref": "DnsPeering"
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Add DNS peering on the given resource."
                     },
-                    "remove": {
-                      "id": "datafusion.projects.locations.instances.dnsPeerings.remove",
-                      "path": "v1beta1/{+parent}/dnsPeerings:remove",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/dnsPeerings:remove",
-                      "httpMethod": "POST",
+                    "delete": {
+                      "id": "datafusion.projects.locations.instances.dnsPeerings.delete",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/dnsPeerings/{dnsPeeringsId}",
+                      "httpMethod": "DELETE",
                       "parameters": {
-                        "parent": {
-                          "description": "Required. The resource on which DNS peering will be removed.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                        "name": {
+                          "description": "Required. The name of the DNS peering zone to delete. Format: projects\/{project}\/locations\/{location}\/instances\/{instance}\/dnsPeerings\/{dns_peering}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+\/dnsPeerings\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         }
                       },
                       "parameterOrder": [
-                        "parent"
+                        "name"
                       ],
-                      "request": {
-                        "$ref": "RemoveDnsPeeringRequest"
-                      },
                       "response": {
-                        "$ref": "RemoveDnsPeeringResponse"
+                        "$ref": "Empty"
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
@@ -1727,25 +1688,25 @@
                     },
                     "list": {
                       "id": "datafusion.projects.locations.instances.dnsPeerings.list",
-                      "path": "v1beta1/{+parent}/dnsPeerings:list",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/dnsPeerings:list",
+                      "path": "v1beta1/{+parent}/dnsPeerings",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/dnsPeerings",
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The resource on which dns peering will be listed.",
+                          "description": "Required. The parent, which owns this collection of dns peerings. Format: projects\/{project}\/locations\/{location}\/instances\/{instance}",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "The maximum number of items to return.",
+                          "description": "The maximum number of dns peerings to return. The service may return fewer than this value. If unspecified, at most 10 dns peerings will be returned. The maximum value is 50; values above 50 will be coerced to 50.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
                         },
                         "pageToken": {
-                          "description": "The next_page_token value to use if there are additional results to retrieve for this list request.",
+                          "description": "A page token, received from a previous `ListDnsPeerings` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListDnsPeerings` must match the call that provided the page token.",
                           "location": "query",
                           "type": "string"
                         }

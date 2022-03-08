@@ -34,6 +34,7 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import creds as c_creds
 from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import platforms
 
 from oauth2client import client
 from oauth2client import service_account
@@ -203,11 +204,33 @@ def _AdcHasGivenPermissionOnProjectHelper(project_ref, permissions):
     properties.VALUES.auth.credential_file_override.Set(cred_file_override_old)
 
 
+# Create this function to ease unit test mocks.
+def GetAdcRealPath(adc_path):
+  return os.path.realpath(adc_path)
+
+
 def LogADCIsWritten(adc_path):
-  log.status.Print('\nCredentials saved to file: [{}]'.format(adc_path))
+  """Prints the confirmation when ADC file was successfully written."""
+  real_path = adc_path
+  if platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS:
+    real_path = GetAdcRealPath(adc_path)
+  log.status.Print('\nCredentials saved to file: [{}]'.format(real_path))
   log.status.Print(
       '\nThese credentials will be used by any library that requests '
       'Application Default Credentials (ADC).')
+  # See https://bugs.python.org/issue40377 for the issue with python
+  # from Microsoft store. The ADC file is transparently redirected to a
+  # different path which client libraries do not expect, so cannot locate.
+  if real_path != adc_path:
+    log.warning('You may be running gcloud with a python interpreter installed '
+                'from Microsoft Store which is not supported by this command. '
+                'Run `gcloud topic startup` for instructions to select a '
+                'different python interpreter. Otherwise, you have to '
+                'set the environment variable `GOOGLE_APPLICATION_CREDENTIALS` '
+                'to the file path `{}`. See '
+                'https://cloud.google.com/docs/authentication/'
+                'getting-started#setting_the_environment_variable '
+                'for more information.'.format(real_path))
 
 
 def LogQuotaProjectAdded(quota_project):

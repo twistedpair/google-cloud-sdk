@@ -393,6 +393,53 @@ class ApigeeOrganizationsApisKeyvaluemapsDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class ApigeeOrganizationsApisKeyvaluemapsEntriesCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsApisKeyvaluemapsEntriesCreateRequest object.
+
+  Fields:
+    googleCloudApigeeV1KeyValueEntry: A GoogleCloudApigeeV1KeyValueEntry
+      resource to be passed as the request body.
+    parent: Required. Scope as indicated by the URI in which to create the key
+      value map entry. Use one of the following formats in your request:
+      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. `o
+      rganizations/{organization}/environments/{environment}/keyvaluemaps/{key
+      valuemap}` `organizations/{organization}/keyvaluemaps/{keyvaluemap}`.
+  """
+
+  googleCloudApigeeV1KeyValueEntry = _messages.MessageField('GoogleCloudApigeeV1KeyValueEntry', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsApisKeyvaluemapsEntriesDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsApisKeyvaluemapsEntriesDeleteRequest object.
+
+  Fields:
+    name: Required. Scope as indicated by the URI in which to delete the key
+      value map entry. Use one of the following formats in your request: `orga
+      nizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}/entries/{
+      entry}`. `organizations/{organization}/environments/{environment}/keyval
+      uemaps/{keyvaluemap}/entries/{entry}` `organizations/{organization}/keyv
+      aluemaps/{keyvaluemap}/entries/{entry}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsApisKeyvaluemapsEntriesGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsApisKeyvaluemapsEntriesGetRequest object.
+
+  Fields:
+    name: Required. Scope as indicated by the URI in which to fetch the key
+      value map entry/value. Use one of the following formats in your request:
+      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}/entr
+      ies/{entry}`. `organizations/{organization}/environments/{environment}/k
+      eyvaluemaps/{keyvaluemap}/entries/{entry}` `organizations/{organization}
+      /keyvaluemaps/{keyvaluemap}/entries/{entry}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ApigeeOrganizationsApisKeyvaluemapsEntriesListRequest(_messages.Message):
   r"""A ApigeeOrganizationsApisKeyvaluemapsEntriesListRequest object.
 
@@ -1247,14 +1294,13 @@ class ApigeeOrganizationsEndpointAttachmentsCreateRequest(_messages.Message):
   r"""A ApigeeOrganizationsEndpointAttachmentsCreateRequest object.
 
   Fields:
-    endpointAttachmentId: The ID to use for the endpoint attachment. ID must
-      be a 1-20 characters string with lowercase letters and numbers and must
-      start with a letter.
+    endpointAttachmentId: ID to use for the endpoint attachment. The ID can
+      contain lowercase letters and numbers, must start with a letter, and
+      must be 1-20 characters in length.
     googleCloudApigeeV1EndpointAttachment: A
       GoogleCloudApigeeV1EndpointAttachment resource to be passed as the
       request body.
-    parent: Required. The Organization this EndpointAttachment will be created
-      in.
+    parent: Required. Organization the endpoint attachment will be created in.
   """
 
   endpointAttachmentId = _messages.StringField(1)
@@ -1266,9 +1312,9 @@ class ApigeeOrganizationsEndpointAttachmentsDeleteRequest(_messages.Message):
   r"""A ApigeeOrganizationsEndpointAttachmentsDeleteRequest object.
 
   Fields:
-    name: Required. Name of the Endpoint Attachment in the following format:
-      `organizations/{organization}/endpointAttachments/{endpoint_attachment}`
-      .
+    name: Required. Name of the endpoint attachment. Use the following
+      structure in your request:
+      `organizations/{org}/endpointAttachments/{endpoint_attachment}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1278,9 +1324,9 @@ class ApigeeOrganizationsEndpointAttachmentsGetRequest(_messages.Message):
   r"""A ApigeeOrganizationsEndpointAttachmentsGetRequest object.
 
   Fields:
-    name: Required. Name of the Endpoint Attachment in the following format:
-      `organizations/{organization}/endpointAttachments/{endpoint_attachment}`
-      .
+    name: Required. Name of the endpoint attachment. Use the following
+      structure in your request:
+      `organizations/{org}/endpointAttachments/{endpoint_attachment}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1290,13 +1336,14 @@ class ApigeeOrganizationsEndpointAttachmentsListRequest(_messages.Message):
   r"""A ApigeeOrganizationsEndpointAttachmentsListRequest object.
 
   Fields:
-    pageSize: Optional. Maximum number of Endpoint Attachments to return. If
+    pageSize: Optional. Maximum number of endpoint attachments to return. If
       unspecified, at most 25 attachments will be returned.
     pageToken: Optional. Page token, returned from a previous
-      ListEndpointAttachments call, that you can use to retrieve the next
+      `ListEndpointAttachments` call, that you can use to retrieve the next
       page.
-    parent: Required. Name of the Organization for which to list Endpoint
-      Attachments in the format: `organizations/{organization}`.
+    parent: Required. Name of the organization for which to list endpoint
+      attachments. Use the following structure in your request:
+      `organizations/{org}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1593,18 +1640,18 @@ class ApigeeOrganizationsEnvironmentsApisRevisionsDeployRequest(_messages.Messag
       `false` and the deployment is rejected if other revisions of the API
       proxy are deployed in the environment.
     sequencedRollout: Flag that specifies whether to enable sequenced rollout.
-      If set to `true`, a best-effort attempt will be made to roll out the
-      routing rules corresponding to this deployment and the environment
-      changes to add this deployment in a safe order. This reduces the risk of
-      downtime that could be caused by changing the environment group's
-      routing before the new destination for the affected traffic is ready to
-      receive it. This should only be necessary if the new deployment will be
-      capturing traffic from another environment under a shared environment
-      group or if traffic will be rerouted to a different environment due to a
-      base path removal. The [GenerateDeployChangeReport
-      API](GenerateDeployChangeReport) may be used to examine routing changes
-      before issuing the deployment request, and its response will indicate if
-      a sequenced rollout is recommended for the deployment.
+      If set to `true`, the routing rules for this deployment and the
+      environment changes to add the deployment will be rolled out in a safe
+      order. This reduces the risk of downtime that could be caused by
+      changing the environment group's routing before the new destination for
+      the affected traffic is ready to receive it. This should only be
+      necessary if the new deployment will be capturing traffic from another
+      environment under a shared environment group or if traffic will be
+      rerouted to a different environment due to a base path removal. The
+      [GenerateDeployChangeReport API](GenerateDeployChangeReport) may be used
+      to examine routing changes before issuing the deployment request, and
+      its response will indicate if a sequenced rollout is recommended for the
+      deployment.
     serviceAccount: Google Cloud IAM service account. The service account
       represents the identity of the deployed proxy, and determines what
       permissions it has. The format must be
@@ -1666,16 +1713,15 @@ class ApigeeOrganizationsEnvironmentsApisRevisionsUndeployRequest(_messages.Mess
       format:
       `organizations/{org}/environments/{env}/apis/{api}/revisions/{rev}`
     sequencedRollout: Flag that specifies whether to enable sequenced rollout.
-      If set to `true`, a best-effort attempt will be made to remove the
-      environment group routing rules corresponding to this deployment before
-      removing the deployment from the runtime. This is likely to be a rare
-      use case; it is only needed when the intended effect of undeploying this
-      proxy is to cause the traffic it currently handles to be rerouted to
-      some other existing proxy in the environment group. The
-      [GenerateUndeployChangeReport API](GenerateUndeployChangeReport) may be
-      used to examine routing changes before issuing the undeployment request,
-      and its response will indicate if a sequenced rollout is recommended for
-      the undeployment.
+      If set to `true`, the environment group routing rules corresponding to
+      this deployment will be removed before removing the deployment from the
+      runtime. This is likely to be a rare use case; it is only needed when
+      the intended effect of undeploying this proxy is to cause the traffic it
+      currently handles to be rerouted to some other existing proxy in the
+      environment group. The [GenerateUndeployChangeReport
+      API](GenerateUndeployChangeReport) may be used to examine routing
+      changes before issuing the undeployment request, and its response will
+      indicate if a sequenced rollout is recommended for the undeployment.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2126,6 +2172,55 @@ class ApigeeOrganizationsEnvironmentsKeyvaluemapsDeleteRequest(_messages.Message
     name: Required. Name of the key value map. Use the following structure in
       your request:
       `organizations/{org}/environments/{env}/keyvaluemaps/{keyvaluemap}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesCreateRequest
+  object.
+
+  Fields:
+    googleCloudApigeeV1KeyValueEntry: A GoogleCloudApigeeV1KeyValueEntry
+      resource to be passed as the request body.
+    parent: Required. Scope as indicated by the URI in which to create the key
+      value map entry. Use one of the following formats in your request:
+      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. `o
+      rganizations/{organization}/environments/{environment}/keyvaluemaps/{key
+      valuemap}` `organizations/{organization}/keyvaluemaps/{keyvaluemap}`.
+  """
+
+  googleCloudApigeeV1KeyValueEntry = _messages.MessageField('GoogleCloudApigeeV1KeyValueEntry', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Scope as indicated by the URI in which to delete the key
+      value map entry. Use one of the following formats in your request: `orga
+      nizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}/entries/{
+      entry}`. `organizations/{organization}/environments/{environment}/keyval
+      uemaps/{keyvaluemap}/entries/{entry}` `organizations/{organization}/keyv
+      aluemaps/{keyvaluemap}/entries/{entry}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesGetRequest object.
+
+  Fields:
+    name: Required. Scope as indicated by the URI in which to fetch the key
+      value map entry/value. Use one of the following formats in your request:
+      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}/entr
+      ies/{entry}`. `organizations/{organization}/environments/{environment}/k
+      eyvaluemaps/{keyvaluemap}/entries/{entry}` `organizations/{organization}
+      /keyvaluemaps/{keyvaluemap}/entries/{entry}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3417,6 +3512,53 @@ class ApigeeOrganizationsKeyvaluemapsDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class ApigeeOrganizationsKeyvaluemapsEntriesCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsKeyvaluemapsEntriesCreateRequest object.
+
+  Fields:
+    googleCloudApigeeV1KeyValueEntry: A GoogleCloudApigeeV1KeyValueEntry
+      resource to be passed as the request body.
+    parent: Required. Scope as indicated by the URI in which to create the key
+      value map entry. Use one of the following formats in your request:
+      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. `o
+      rganizations/{organization}/environments/{environment}/keyvaluemaps/{key
+      valuemap}` `organizations/{organization}/keyvaluemaps/{keyvaluemap}`.
+  """
+
+  googleCloudApigeeV1KeyValueEntry = _messages.MessageField('GoogleCloudApigeeV1KeyValueEntry', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsKeyvaluemapsEntriesDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsKeyvaluemapsEntriesDeleteRequest object.
+
+  Fields:
+    name: Required. Scope as indicated by the URI in which to delete the key
+      value map entry. Use one of the following formats in your request: `orga
+      nizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}/entries/{
+      entry}`. `organizations/{organization}/environments/{environment}/keyval
+      uemaps/{keyvaluemap}/entries/{entry}` `organizations/{organization}/keyv
+      aluemaps/{keyvaluemap}/entries/{entry}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsKeyvaluemapsEntriesGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsKeyvaluemapsEntriesGetRequest object.
+
+  Fields:
+    name: Required. Scope as indicated by the URI in which to fetch the key
+      value map entry/value. Use one of the following formats in your request:
+      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}/entr
+      ies/{entry}`. `organizations/{organization}/environments/{environment}/k
+      eyvaluemaps/{keyvaluemap}/entries/{entry}` `organizations/{organization}
+      /keyvaluemaps/{keyvaluemap}/entries/{entry}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ApigeeOrganizationsKeyvaluemapsEntriesListRequest(_messages.Message):
   r"""A ApigeeOrganizationsKeyvaluemapsEntriesListRequest object.
 
@@ -4055,6 +4197,27 @@ class GoogleCloudApigeeV1AccessGet(_messages.Message):
 
   name = _messages.StringField(1)
   value = _messages.StringField(2)
+
+
+class GoogleCloudApigeeV1AccessLoggingConfig(_messages.Message):
+  r"""Access logging configuration enables customers to ship the access logs
+  from the tenant projects to their own project's cloud logging. The feature
+  is at the instance level ad disabled by default. It can be enabled during
+  CreateInstance or UpdateInstance.
+
+  Fields:
+    enabled: Optional. Boolean flag that specifies whether the customer access
+      log feature is enabled.
+    filter: Optional. Ship the access log entries that match the status_code
+      defined in the filter. The status_code is the only expected/supported
+      filter field. (Ex: status_code) The filter will parse it to the Common
+      Expression Language semantics for expression evaluation to build the
+      filter condition. (Ex: "filter": status_code >= 200 && status_code < 300
+      )
+  """
+
+  enabled = _messages.BooleanField(1)
+  filter = _messages.StringField(2)
 
 
 class GoogleCloudApigeeV1AccessRemove(_messages.Message):
@@ -5810,27 +5973,27 @@ class GoogleCloudApigeeV1DimensionMetric(_messages.Message):
 
 
 class GoogleCloudApigeeV1EndpointAttachment(_messages.Message):
-  r"""Apigee Endpoint Attachment.
+  r"""Apigee endpoint attachment. For more information, see Southbound
+  networking patterns.
 
   Enums:
     StateValueValuesEnum: Output only. State of the endpoint attachment.
-      Values other than ACTIVE means the resource is not ready to use.
+      Values other than `ACTIVE` mean the resource is not ready to use.
 
   Fields:
-    host: Output only. Host that can be used in either HTTP Target Endpoint
-      directly, or as the host in Target Server.
+    host: Output only. Host that can be used in either the HTTP target
+      endpoint directly or as the host in target server.
     location: Required. Location of the endpoint attachment.
-    name: Name of the Endpoint Attachment in the following format:
-      `organizations/{organization}/endpointAttachments/{endpoint_attachment}`
-      .
+    name: Name of the endpoint attachment. Use the following structure in your
+      request: `organizations/{org}/endpointAttachments/{endpoint_attachment}`
     serviceAttachment: Format: projects/*/regions/*/serviceAttachments/*
     state: Output only. State of the endpoint attachment. Values other than
-      ACTIVE means the resource is not ready to use.
+      `ACTIVE` mean the resource is not ready to use.
   """
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of the endpoint attachment. Values other than
-    ACTIVE means the resource is not ready to use.
+    `ACTIVE` mean the resource is not ready to use.
 
     Values:
       STATE_UNSPECIFIED: Resource is in an unspecified state.
@@ -6449,6 +6612,10 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
       than `ACTIVE` means the resource is not ready to use.
 
   Fields:
+    accessLoggingConfig: Optional. Access logging configuration enables the
+      access logging feature at the instance. Apigee customers can enable
+      access logging to ship the access logs to their own project's cloud
+      logging.
     consumerAcceptList: Optional. Customer accept list represents the list of
       projects (id/number) on customer side that can privately connect to the
       service attachment. It is an optional field which the customers can
@@ -6541,24 +6708,25 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
     DELETING = 3
     UPDATING = 4
 
-  consumerAcceptList = _messages.StringField(1, repeated=True)
-  createdAt = _messages.IntegerField(2)
-  description = _messages.StringField(3)
-  diskEncryptionKeyName = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  externalHost = _messages.StringField(6)
-  externalHostEnabled = _messages.BooleanField(7)
-  host = _messages.StringField(8)
-  ipRange = _messages.StringField(9)
-  lastModifiedAt = _messages.IntegerField(10)
-  location = _messages.StringField(11)
-  name = _messages.StringField(12)
-  nodeConfig = _messages.MessageField('GoogleCloudApigeeV1NodeConfig', 13)
-  peeringCidrRange = _messages.EnumField('PeeringCidrRangeValueValuesEnum', 14)
-  port = _messages.StringField(15)
-  runtimeVersion = _messages.StringField(16)
-  serviceAttachment = _messages.StringField(17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
+  accessLoggingConfig = _messages.MessageField('GoogleCloudApigeeV1AccessLoggingConfig', 1)
+  consumerAcceptList = _messages.StringField(2, repeated=True)
+  createdAt = _messages.IntegerField(3)
+  description = _messages.StringField(4)
+  diskEncryptionKeyName = _messages.StringField(5)
+  displayName = _messages.StringField(6)
+  externalHost = _messages.StringField(7)
+  externalHostEnabled = _messages.BooleanField(8)
+  host = _messages.StringField(9)
+  ipRange = _messages.StringField(10)
+  lastModifiedAt = _messages.IntegerField(11)
+  location = _messages.StringField(12)
+  name = _messages.StringField(13)
+  nodeConfig = _messages.MessageField('GoogleCloudApigeeV1NodeConfig', 14)
+  peeringCidrRange = _messages.EnumField('PeeringCidrRangeValueValuesEnum', 15)
+  port = _messages.StringField(16)
+  runtimeVersion = _messages.StringField(17)
+  serviceAttachment = _messages.StringField(18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
 
 
 class GoogleCloudApigeeV1InstanceAttachment(_messages.Message):
@@ -6888,9 +7056,9 @@ class GoogleCloudApigeeV1ListEndpointAttachmentsResponse(_messages.Message):
   r"""Response for ListEndpointAttachments method.
 
   Fields:
-    endpointAttachments: Endpoint Attachments in the specified organization.
-    nextPageToken: Page token that you can include in a
-      ListEndpointAttachments request to retrieve the next page. If omitted,
+    endpointAttachments: Endpoint attachments in the specified organization.
+    nextPageToken: Page token that you can include in an
+      `ListEndpointAttachments` request to retrieve the next page. If omitted,
       no subsequent pages exist.
   """
 
@@ -7473,6 +7641,12 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
       For valid values, see [Create an Apigee
       organization](https://cloud.google.com/apigee/docs/api-platform/get-
       started/create-org).
+    apiConsumerDataEncryptionKeyName: Cloud KMS key name used for encrypting
+      API consumer data. Required for US/EU regions when
+      [BillingType](#BillingType) is `SUBSCRIPTION`. When
+      [BillingType](#BillingType) is `EVALUATION` or the region is not US/EU,
+      a Google-Managed encryption key will be used. Format:
+      `projects/*/locations/*/keyRings/*/cryptoKeys/*`
     attributes: Not used by Apigee.
     authorizedNetwork: Compute Engine network used for Service Networking to
       be peered with Apigee runtime instances. See [Getting started with the
@@ -7493,6 +7667,12 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
     caCertificate: Output only. Base64-encoded public certificate for the root
       CA of the Apigee organization. Valid only when
       [RuntimeType](#RuntimeType) is `CLOUD`.
+    controlPlaneEncryptionKeyName: Cloud KMS key name used for encrypting
+      control plane data that is stored in a multi region. Required when
+      [BillingType](#BillingType) is `SUBSCRIPTION`. When
+      [BillingType](#BillingType) is `EVALUATION`, a Google-Managed encryption
+      key will be used. Format:
+      `projects/*/locations/*/keyRings/*/cryptoKeys/*`
     createdAt: Output only. Time that the Apigee organization was created in
       milliseconds since epoch.
     customerName: Not used by Apigee.
@@ -7642,27 +7822,29 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
 
   addonsConfig = _messages.MessageField('GoogleCloudApigeeV1AddonsConfig', 1)
   analyticsRegion = _messages.StringField(2)
-  attributes = _messages.StringField(3, repeated=True)
-  authorizedNetwork = _messages.StringField(4)
-  billingType = _messages.EnumField('BillingTypeValueValuesEnum', 5)
-  caCertificate = _messages.BytesField(6)
-  createdAt = _messages.IntegerField(7)
-  customerName = _messages.StringField(8)
-  description = _messages.StringField(9)
-  displayName = _messages.StringField(10)
-  environments = _messages.StringField(11, repeated=True)
-  expiresAt = _messages.IntegerField(12)
-  lastModifiedAt = _messages.IntegerField(13)
-  name = _messages.StringField(14)
-  portalDisabled = _messages.BooleanField(15)
-  projectId = _messages.StringField(16)
-  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 17)
-  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 18)
-  runtimeDatabaseEncryptionKeyName = _messages.StringField(19)
-  runtimeType = _messages.EnumField('RuntimeTypeValueValuesEnum', 20)
-  state = _messages.EnumField('StateValueValuesEnum', 21)
-  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 22)
-  type = _messages.EnumField('TypeValueValuesEnum', 23)
+  apiConsumerDataEncryptionKeyName = _messages.StringField(3)
+  attributes = _messages.StringField(4, repeated=True)
+  authorizedNetwork = _messages.StringField(5)
+  billingType = _messages.EnumField('BillingTypeValueValuesEnum', 6)
+  caCertificate = _messages.BytesField(7)
+  controlPlaneEncryptionKeyName = _messages.StringField(8)
+  createdAt = _messages.IntegerField(9)
+  customerName = _messages.StringField(10)
+  description = _messages.StringField(11)
+  displayName = _messages.StringField(12)
+  environments = _messages.StringField(13, repeated=True)
+  expiresAt = _messages.IntegerField(14)
+  lastModifiedAt = _messages.IntegerField(15)
+  name = _messages.StringField(16)
+  portalDisabled = _messages.BooleanField(17)
+  projectId = _messages.StringField(18)
+  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 19)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 20)
+  runtimeDatabaseEncryptionKeyName = _messages.StringField(21)
+  runtimeType = _messages.EnumField('RuntimeTypeValueValuesEnum', 22)
+  state = _messages.EnumField('StateValueValuesEnum', 23)
+  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 24)
+  type = _messages.EnumField('TypeValueValuesEnum', 25)
 
 
 class GoogleCloudApigeeV1OrganizationProjectMapping(_messages.Message):
@@ -8795,25 +8977,30 @@ class GoogleCloudApigeeV1SenseProfile(_messages.Message):
     configs: List of profile configs in this revision.
     displayName: Display name of the Sense profile.
     environments: List of environments attached to Sense profile.
-    maxScore: Maximum security score generated by this profile.
-    name: Immutable. Name of the Sense profile.
-    publishTime: Output only. The time when revision was published. Once
-      published, the Sense revision cannot be updated further and can be
-      attached to environments.
+    maxScore: Output only. Maximum security score that can be generated by
+      this profile.
+    minScore: Output only. Minimum security score that can be generated by
+      this profile.
+    name: Immutable. Name of the Sense profile resource. Format:
+      organizations/{org}/senseProfiles/{profile}
     revisionCreateTime: Output only. The time when revision was created.
     revisionId: Output only. Revision ID of the Sense profile.
-    updateTime: Output only. The time when revision was updated.
+    revisionPublishTime: Output only. The time when revision was published.
+      Once published, the Sense revision cannot be updated further and can be
+      attached to environments.
+    revisionUpdateTime: Output only. The time when revision was updated.
   """
 
   configs = _messages.MessageField('GoogleCloudApigeeV1SenseProfileConfig', 1, repeated=True)
   displayName = _messages.StringField(2)
   environments = _messages.MessageField('GoogleCloudApigeeV1SenseProfileEnvironment', 3, repeated=True)
   maxScore = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  name = _messages.StringField(5)
-  publishTime = _messages.StringField(6)
+  minScore = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  name = _messages.StringField(6)
   revisionCreateTime = _messages.StringField(7)
   revisionId = _messages.IntegerField(8)
-  updateTime = _messages.StringField(9)
+  revisionPublishTime = _messages.StringField(9)
+  revisionUpdateTime = _messages.StringField(10)
 
 
 class GoogleCloudApigeeV1SenseProfileConfig(_messages.Message):
@@ -8850,7 +9037,8 @@ class GoogleCloudApigeeV1SenseProfileEnvironmentAssociation(_messages.Message):
   Fields:
     attachTime: Output only. The time when environment was attached to the
       Sense profile.
-    name: Immutable. Name of the attached environment.
+    name: Immutable. Name of the profile-environment association resource.
+      Format: organizations/{org}/senseProfiles/{profile}/environments/{env}
     senseProfileRevisionId: Revision ID of the Sense profile.
   """
 

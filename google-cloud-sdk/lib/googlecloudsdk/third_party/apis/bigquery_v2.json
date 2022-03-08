@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20220211",
+ "revision": "20220228",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -322,6 +322,21 @@
        "type": "boolean"
       }
      }
+    }
+   }
+  },
+  "CloneDefinition": {
+   "id": "CloneDefinition",
+   "type": "object",
+   "properties": {
+    "baseTableReference": {
+     "$ref": "TableReference",
+     "description": "[Required] Reference describing the ID of the table that was cloned."
+    },
+    "cloneTime": {
+     "type": "string",
+     "description": "[Required] The time at which the base table was cloned. This value is reported in the JSON response using RFC3339 format.",
+     "format": "date-time"
     }
    }
   },
@@ -1326,6 +1341,10 @@
     "parquetOptions": {
      "$ref": "ParquetOptions",
      "description": "[Optional] Options to configure parquet support."
+    },
+    "preserveAsciiControlCharacters": {
+     "type": "boolean",
+     "description": "[Optional] Preserves the embedded ASCII control characters (the first 32 characters in the ASCII-table, from '\\x00' to '\\x1F') when loading from CSV. Only applicable to CSV, ignored for other formats."
     },
     "projectionFields": {
      "type": "array",
@@ -2623,6 +2642,10 @@
    "id": "Table",
    "type": "object",
    "properties": {
+    "cloneDefinition": {
+     "$ref": "CloneDefinition",
+     "description": "[Output-only] Clone definition."
+    },
     "clustering": {
      "$ref": "Clustering",
      "description": "[Beta] Clustering specification for the table. Must be specified with partitioning, data in the table will be first partitioned and subsequently clustered."

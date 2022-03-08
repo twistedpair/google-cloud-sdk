@@ -2862,6 +2862,11 @@
                           "description": "Optional. This field allows the CA to be deleted even if the CA has active certs. Active certs include both unrevoked and unexpired certs.",
                           "location": "query",
                           "type": "boolean"
+                        },
+                        "skipGracePeriod": {
+                          "description": "Optional. This field sets the CA to have a pending delete duration of 0.",
+                          "location": "query",
+                          "type": "boolean"
                         }
                       },
                       "parameterOrder": [

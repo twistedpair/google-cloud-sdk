@@ -601,6 +601,10 @@
         "vpcDetails": {
           "description": "Detail Status of VPC resource.",
           "$ref": "VPCStatus"
+        },
+        "consoleLink": {
+          "description": "Pantheon link for the resource. For example, the custom domain will link to the GCLB page.",
+          "type": "string"
         }
       }
     },
@@ -647,6 +651,10 @@
         },
         "selfLink": {
           "description": "Fully qualified URL to the GCP resource object.",
+          "type": "string"
+        },
+        "consoleLink": {
+          "description": "Pantheon link for the resource. This does not exist for every resource that makes up the SAF resource.",
           "type": "string"
         }
       }

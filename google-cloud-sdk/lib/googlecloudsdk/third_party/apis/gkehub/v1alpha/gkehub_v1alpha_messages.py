@@ -13,6 +13,17 @@ from apitools.base.py import extra_types
 package = 'gkehub'
 
 
+class AnthosObservabilityFeatureSpec(_messages.Message):
+  r"""**Anthos Observability**: Spec
+
+  Fields:
+    defaultMembershipSpec: default membership spec for unconfigured
+      memberships
+  """
+
+  defaultMembershipSpec = _messages.MessageField('AnthosObservabilityMembershipSpec', 1)
+
+
 class AnthosObservabilityMembershipSpec(_messages.Message):
   r"""**Anthosobservability**: Per-Membership Feature spec.
 
@@ -23,10 +34,12 @@ class AnthosObservabilityMembershipSpec(_messages.Message):
       monitoring#optimized_metrics_default_metrics
     enableStackdriverOnApplications: enable collecting and reporting metrics
       and logs from user apps See go/onyx-application-metrics-logs-user-guide
+    version: the version of stackdriver operator used by this feature
   """
 
   doNotOptimizeMetrics = _messages.BooleanField(1)
   enableStackdriverOnApplications = _messages.BooleanField(2)
+  version = _messages.StringField(3)
 
 
 class ApigeeMembershipSpec(_messages.Message):
@@ -263,6 +276,7 @@ class CommonFeatureSpec(_messages.Message):
   r"""CommonFeatureSpec contains Hub-wide configuration information
 
   Fields:
+    anthosobservability: Anthos Observability spec
     appdevexperience: Appdevexperience specific spec.
     cloudauditlogging: Cloud Audit Logging-specific spec.
     helloworld: Hello World-specific spec.
@@ -270,11 +284,12 @@ class CommonFeatureSpec(_messages.Message):
     workloadcertificate: Workload Certificate spec.
   """
 
-  appdevexperience = _messages.MessageField('AppDevExperienceFeatureSpec', 1)
-  cloudauditlogging = _messages.MessageField('CloudAuditLoggingFeatureSpec', 2)
-  helloworld = _messages.MessageField('HelloWorldFeatureSpec', 3)
-  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 4)
-  workloadcertificate = _messages.MessageField('FeatureSpec', 5)
+  anthosobservability = _messages.MessageField('AnthosObservabilityFeatureSpec', 1)
+  appdevexperience = _messages.MessageField('AppDevExperienceFeatureSpec', 2)
+  cloudauditlogging = _messages.MessageField('CloudAuditLoggingFeatureSpec', 3)
+  helloworld = _messages.MessageField('HelloWorldFeatureSpec', 4)
+  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 5)
+  workloadcertificate = _messages.MessageField('FeatureSpec', 6)
 
 
 class CommonFeatureState(_messages.Message):
@@ -3638,11 +3653,13 @@ class ServiceMeshMembershipSpec(_messages.Message):
 
   Enums:
     ControlPlaneValueValuesEnum: Enables automatic control plane management.
+    DataPlaneValueValuesEnum: Enables automatic data plane management.
     DefaultChannelValueValuesEnum: Determines which release channel to use for
       default injection and service mesh APIs.
 
   Fields:
     controlPlane: Enables automatic control plane management.
+    dataPlane: Enables automatic data plane management.
     defaultChannel: Determines which release channel to use for default
       injection and service mesh APIs.
   """
@@ -3663,6 +3680,21 @@ class ServiceMeshMembershipSpec(_messages.Message):
     AUTOMATIC = 1
     MANUAL = 2
 
+  class DataPlaneValueValuesEnum(_messages.Enum):
+    r"""Enables automatic data plane management.
+
+    Values:
+      DATA_PLANE_MANAGEMENT_UNSPECIFIED: Unspecified
+      DATA_PLANE_MANAGEMENT_AUTOMATIC: Enables Google-managed data plane that
+        provides L7 service mesh capabilities. Data plane management is
+        enabled at the cluster level. Users can exclude individual workloads
+        or namespaces.
+      DATA_PLANE_MANAGEMENT_MANUAL: User will manage their L7 data plane.
+    """
+    DATA_PLANE_MANAGEMENT_UNSPECIFIED = 0
+    DATA_PLANE_MANAGEMENT_AUTOMATIC = 1
+    DATA_PLANE_MANAGEMENT_MANUAL = 2
+
   class DefaultChannelValueValuesEnum(_messages.Enum):
     r"""Determines which release channel to use for default injection and
     service mesh APIs.
@@ -3682,7 +3714,8 @@ class ServiceMeshMembershipSpec(_messages.Message):
     STABLE = 3
 
   controlPlane = _messages.EnumField('ControlPlaneValueValuesEnum', 1)
-  defaultChannel = _messages.EnumField('DefaultChannelValueValuesEnum', 2)
+  dataPlane = _messages.EnumField('DataPlaneValueValuesEnum', 2)
+  defaultChannel = _messages.EnumField('DefaultChannelValueValuesEnum', 3)
 
 
 class ServiceMeshMembershipState(_messages.Message):

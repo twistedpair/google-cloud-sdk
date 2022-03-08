@@ -291,9 +291,9 @@ def VerifyKeyInAgent(identity_file):
     raise tpu_exceptions.SSHKeyNotInAgent(identity_file)
 
 
-def AttemptRunWithRetries(command_name, worker, cmd, env, output_file,
-                          multiple_workers, run_cmd):
-  """Attempts to connect to a worker using SSH."""
+def AttemptRunWithRetries(command_name, worker, exit_statuses, cmd, env,
+                          output_file, multiple_workers, run_cmd):
+  """Attempts to connect to a worker using SSH or SCP."""
   max_attempts = 10
   sleep_interval = 5
   # Since SSH keys may have recently been set in the instance's metadata by
@@ -305,15 +305,18 @@ def AttemptRunWithRetries(command_name, worker, cmd, env, output_file,
     try:
       log.status.Print('{}: Attempting to connect to worker {}...'.format(
           command_name, worker))
-      return_code = run_cmd(env, cmd, output_file)
-      if return_code:
-        # This is the return code of the remote command.  Problems with SSH
+      exit_status = run_cmd(env, cmd, output_file)
+      if exit_status:
+        # This is the exit status of the remote command.  Problems with SSH
         # itself will result in ssh.CommandError being raised above.
         if multiple_workers:
           log.status.Print('##### Command execution on worker {} failed '
-                           'with return code {}. Continuing.'
-                           ''.format(worker, return_code))
-        sys.exit(return_code)
+                           'with exit status {}. Continuing.'
+                           ''.format(worker, exit_status))
+          # Store the exit status in list so that we can check it in the main
+          # thread.
+          exit_statuses[worker] = exit_status
+        sys.exit(exit_status)
     except ssh.CommandError as e:
       if i == max_attempts - 1:
         raise e

@@ -934,8 +934,7 @@ def AddStorageLocationFlag(parser, resource):
 def AddGuestFlushFlag(parser, resource, custom_help=None):
   help_text = """
   Create an application-consistent {} by informing the OS
-  to prepare for the snapshot process. Currently only supported
-  on Windows instances using the Volume Shadow Copy Service (VSS).
+  to prepare for the snapshot process.
   """.format(resource)
   parser.add_argument(
       '--guest-flush',

@@ -137,12 +137,18 @@ def GkeClusterConfig():
   )
 
 
+def _DataprocRegionFallthrough():
+  return [
+      deps.ArgFallthrough('--region'),
+      deps.PropertyFallthrough(properties.VALUES.dataproc.region)
+  ]
+
+
 def _GkeLocationAttributeConfig():
-  fallthroughs = [deps.PropertyFallthrough(properties.VALUES.dataproc.region)]
   return concepts.ResourceParameterAttributeConfig(
       name='gke-cluster-location',
       help_text='GKE region for the {resource}.',
-      fallthroughs=fallthroughs)
+      fallthroughs=_DataprocRegionFallthrough())
 
 
 def _GetGkeClusterResourceSpec():
@@ -161,6 +167,71 @@ def AddGkeClusterResourceArg(parser):
       _GetGkeClusterResourceSpec(),
       'The GKE cluster to install Dataproc on.',
       required=True).AddToParser(parser)
+
+
+def MetastoreServiceConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='metastore-service',
+      help_text='Dataproc Metastore Service to be used as an external metastore.'
+  )
+
+
+def _MetastoreServiceLocationAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='metastore-service-location',
+      help_text='Dataproc Metastore location for the {resource}.',
+      fallthroughs=_DataprocRegionFallthrough())
+
+
+def _GetMetastoreServiceResourceSpec():
+  return concepts.ResourceSpec(
+      'metastore.projects.locations.services',
+      resource_name='metastore-service',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=_MetastoreServiceLocationAttributeConfig(),
+      servicesId=MetastoreServiceConfig(),
+  )
+
+
+def AddMetastoreServiceResourceArg(parser):
+  concept_parsers.ConceptParser.ForResource(
+      '--metastore-service',
+      _GetMetastoreServiceResourceSpec(),
+      'Dataproc Metastore Service to be used as an external metastore.',
+  ).AddToParser(parser)
+
+
+def HistoryServerClusterConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='history-server-cluster',
+      help_text='Spark History Server. '
+      'Resource name of an existing Dataproc cluster to act as a '
+      'Spark History Server for workloads run on the Cluster.')
+
+
+def _HistoryServerClusterRegionAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='history-server-cluster-region',
+      help_text='Dataproc region for the {resource}.',
+      fallthroughs=_DataprocRegionFallthrough())
+
+
+def _GetHistoryServerClusterResourceSpec():
+  return concepts.ResourceSpec(
+      'dataproc.projects.regions.clusters',
+      resource_name='history-server-cluster',
+      projectId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      region=_HistoryServerClusterRegionAttributeConfig(),
+      clusterName=HistoryServerClusterConfig(),
+  )
+
+
+def AddHistoryServerClusterResourceArg(parser):
+  concept_parsers.ConceptParser.ForResource(
+      '--history-server-cluster',
+      _GetHistoryServerClusterResourceSpec(),
+      'A Dataproc Cluster created as a History Server, see https://cloud.google.com/dataproc/docs/concepts/jobs/history-server',
+  ).AddToParser(parser)
 
 
 def AddZoneFlag(parser, short_flags=True):

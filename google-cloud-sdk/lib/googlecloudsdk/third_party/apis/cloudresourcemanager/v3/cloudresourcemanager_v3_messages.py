@@ -130,6 +130,26 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class CloudresourcemanagerEffectiveTagsListRequest(_messages.Message):
+  r"""A CloudresourcemanagerEffectiveTagsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of effective tags to return in the
+      response. The server allows a maximum of 300 effective tags to return in
+      a single page. If unspecified, the server will use 100 as the default.
+    pageToken: Optional. A pagination token returned from a previous call to
+      `ListEffectiveTags` that indicates from where this listing should
+      continue.
+    parent: Required. The full resource name of a resource for which you want
+      to list the effective tags. E.g.
+      "//cloudresourcemanager.googleapis.com/projects/123"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3)
+
+
 class CloudresourcemanagerFoldersDeleteRequest(_messages.Message):
   r"""A CloudresourcemanagerFoldersDeleteRequest object.
 
@@ -601,7 +621,7 @@ class CloudresourcemanagerProjectsSearchRequest(_messages.Message):
       ListProjects that indicates from where listing should continue.
     query: Optional. A query string for searching for projects that the caller
       has `resourcemanager.projects.get` permission to. If multiple fields are
-      included in the query, the it will return results that match any of the
+      included in the query, then it will return results that match any of the
       fields. Some eligible fields are: ``` | Field | Description | |---------
       ----------------|----------------------------------------------| |
       displayName, name | Filters by displayName. | | parent | Project's
@@ -704,10 +724,12 @@ class CloudresourcemanagerTagBindingsListRequest(_messages.Message):
   Fields:
     pageSize: Optional. The maximum number of TagBindings to return in the
       response. The server allows a maximum of 300 TagBindings to return. If
-      unspecified, the server will use 100 as the default.
+      unspecified, the server will use 100 as the default. Currently this api
+      returns unpaginated response and `page_size` is ignored.
     pageToken: Optional. A pagination token returned from a previous call to
       `ListTagBindings` that indicates where this listing should continue
-      from.
+      from. Currently this api returns unpaginated response and `page_token`
+      is ignored.
     parent: Required. The full resource name of a resource for which you want
       to list existing TagBindings. E.g.
       "//cloudresourcemanager.googleapis.com/projects/123"
@@ -1100,6 +1122,34 @@ class DeleteTagValueMetadata(_messages.Message):
   r"""Runtime operation information for deleting a TagValue."""
 
 
+class EffectiveTag(_messages.Message):
+  r"""An EffectiveTag represents a tag that applies to a resource during
+  policy evaluation. Tags can be either directly bound to a resource or
+  inherited from its ancestor. EffectiveTag contains the name and
+  namespaced_name of the tag value and tag key, with additional fields of
+  `inherited` to indicate the inheritance status of the effective tag.
+
+  Fields:
+    inherited: Indicates the inheritance status of a tag value attached to the
+      given resource. If the tag value is inherited from one of the resource's
+      ancestors, inherited will be true. If false, then the tag value is
+      directly attached to the resource, inherited will be false.
+    namespacedTagKey: The namespaced_name of the TagKey, in the format of
+      `{organization_id}/{tag_key_short_name}`
+    namespacedTagValue: Namespaced name of the TagValue. Must be in the format
+      `{organization_id}/{tag_key_short_name}/{tag_value_short_name}`.
+    tagKey: The name of the TagKey, in the format `tagKeys/{id}`, such as
+      `tagKeys/123`.
+    tagValue: Resource name for TagValue in the format `tagValues/456`.
+  """
+
+  inherited = _messages.BooleanField(1)
+  namespacedTagKey = _messages.StringField(2)
+  namespacedTagValue = _messages.StringField(3)
+  tagKey = _messages.StringField(4)
+  tagValue = _messages.StringField(5)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -1343,6 +1393,25 @@ class Lien(_messages.Message):
   parent = _messages.StringField(4)
   reason = _messages.StringField(5)
   restrictions = _messages.StringField(6, repeated=True)
+
+
+class ListEffectiveTagsResponse(_messages.Message):
+  r"""The response of ListEffectiveTags.
+
+  Fields:
+    effectiveTags: A possibly paginated list of effective tags for the
+      specified resource.
+    nextPageToken: Pagination token. If the result set is too large to fit in
+      a single response, this token is returned. It encodes the position of
+      the current result cursor. Feeding this value into a new list request
+      with the `page_token` parameter gives the next page of the results. When
+      `next_page_token` is not filled in, there is no next page and the list
+      returned is the last page in the result set. Pagination tokens have a
+      limited lifetime.
+  """
+
+  effectiveTags = _messages.MessageField('EffectiveTag', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListFoldersResponse(_messages.Message):

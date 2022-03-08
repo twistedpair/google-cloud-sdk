@@ -56,6 +56,9 @@ class DialogflowV2(base_api.BaseApiClient):
     self.projects_agent_versions = self.ProjectsAgentVersionsService(self)
     self.projects_agent = self.ProjectsAgentService(self)
     self.projects_answerRecords = self.ProjectsAnswerRecordsService(self)
+    self.projects_conversationDatasets = self.ProjectsConversationDatasetsService(self)
+    self.projects_conversationModels_evaluations = self.ProjectsConversationModelsEvaluationsService(self)
+    self.projects_conversationModels = self.ProjectsConversationModelsService(self)
     self.projects_conversationProfiles = self.ProjectsConversationProfilesService(self)
     self.projects_conversations_messages = self.ProjectsConversationsMessagesService(self)
     self.projects_conversations_participants_suggestions = self.ProjectsConversationsParticipantsSuggestionsService(self)
@@ -78,6 +81,9 @@ class DialogflowV2(base_api.BaseApiClient):
     self.projects_locations_agent_versions = self.ProjectsLocationsAgentVersionsService(self)
     self.projects_locations_agent = self.ProjectsLocationsAgentService(self)
     self.projects_locations_answerRecords = self.ProjectsLocationsAnswerRecordsService(self)
+    self.projects_locations_conversationDatasets = self.ProjectsLocationsConversationDatasetsService(self)
+    self.projects_locations_conversationModels_evaluations = self.ProjectsLocationsConversationModelsEvaluationsService(self)
+    self.projects_locations_conversationModels = self.ProjectsLocationsConversationModelsService(self)
     self.projects_locations_conversationProfiles = self.ProjectsLocationsConversationProfilesService(self)
     self.projects_locations_conversations_messages = self.ProjectsLocationsConversationsMessagesService(self)
     self.projects_locations_conversations_participants_suggestions = self.ProjectsLocationsConversationsParticipantsSuggestionsService(self)
@@ -2258,6 +2264,333 @@ class DialogflowV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsConversationDatasetsService(base_api.BaseApiService):
+    """Service class for the projects_conversationDatasets resource."""
+
+    _NAME = 'projects_conversationDatasets'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsConversationDatasetsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves the specified conversation dataset.
+
+      Args:
+        request: (DialogflowProjectsConversationDatasetsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ConversationDataset) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversationDatasets/{conversationDatasetsId}',
+        http_method='GET',
+        method_id='dialogflow.projects.conversationDatasets.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsConversationDatasetsGetRequest',
+        response_type_name='GoogleCloudDialogflowV2ConversationDataset',
+        supports_download=False,
+    )
+
+    def ImportConversationData(self, request, global_params=None):
+      r"""Import data into the specified conversation dataset. Note that it is not allowed to import data to a conversation dataset that already has data in it. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: ImportConversationDataOperationMetadata - `response`: ImportConversationDataOperationResponse.
+
+      Args:
+        request: (DialogflowProjectsConversationDatasetsImportConversationDataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('ImportConversationData')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ImportConversationData.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversationDatasets/{conversationDatasetsId}:importConversationData',
+        http_method='POST',
+        method_id='dialogflow.projects.conversationDatasets.importConversationData',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:importConversationData',
+        request_field='googleCloudDialogflowV2ImportConversationDataRequest',
+        request_type_name='DialogflowProjectsConversationDatasetsImportConversationDataRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of all conversation datasets in the specified project and location.
+
+      Args:
+        request: (DialogflowProjectsConversationDatasetsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListConversationDatasetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversationDatasets',
+        http_method='GET',
+        method_id='dialogflow.projects.conversationDatasets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/conversationDatasets',
+        request_field='',
+        request_type_name='DialogflowProjectsConversationDatasetsListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListConversationDatasetsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsConversationModelsEvaluationsService(base_api.BaseApiService):
+    """Service class for the projects_conversationModels_evaluations resource."""
+
+    _NAME = 'projects_conversationModels_evaluations'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsConversationModelsEvaluationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets an evaluation of conversation model.
+
+      Args:
+        request: (DialogflowProjectsConversationModelsEvaluationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ConversationModelEvaluation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversationModels/{conversationModelsId}/evaluations/{evaluationsId}',
+        http_method='GET',
+        method_id='dialogflow.projects.conversationModels.evaluations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsConversationModelsEvaluationsGetRequest',
+        response_type_name='GoogleCloudDialogflowV2ConversationModelEvaluation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists evaluations of a conversation model.
+
+      Args:
+        request: (DialogflowProjectsConversationModelsEvaluationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListConversationModelEvaluationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversationModels/{conversationModelsId}/evaluations',
+        http_method='GET',
+        method_id='dialogflow.projects.conversationModels.evaluations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/evaluations',
+        request_field='',
+        request_type_name='DialogflowProjectsConversationModelsEvaluationsListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListConversationModelEvaluationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsConversationModelsService(base_api.BaseApiService):
+    """Service class for the projects_conversationModels resource."""
+
+    _NAME = 'projects_conversationModels'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsConversationModelsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a model. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: CreateConversationModelOperationMetadata - `response`: ConversationModel.
+
+      Args:
+        request: (DialogflowProjectsConversationModelsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversationModels',
+        http_method='POST',
+        method_id='dialogflow.projects.conversationModels.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/conversationModels',
+        request_field='googleCloudDialogflowV2ConversationModel',
+        request_type_name='DialogflowProjectsConversationModelsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a model. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: DeleteConversationModelOperationMetadata - `response`: An [Empty message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty).
+
+      Args:
+        request: (DialogflowProjectsConversationModelsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversationModels/{conversationModelsId}',
+        http_method='DELETE',
+        method_id='dialogflow.projects.conversationModels.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsConversationModelsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Deploy(self, request, global_params=None):
+      r"""Deploys a model. If a model is already deployed, deploying it has no effect. A model can only serve prediction requests after it gets deployed. For article suggestion, custom model will not be used unless it is deployed. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: DeployConversationModelOperationMetadata - `response`: An [Empty message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty).
+
+      Args:
+        request: (DialogflowProjectsConversationModelsDeployRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Deploy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Deploy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversationModels/{conversationModelsId}:deploy',
+        http_method='POST',
+        method_id='dialogflow.projects.conversationModels.deploy',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:deploy',
+        request_field='googleCloudDialogflowV2DeployConversationModelRequest',
+        request_type_name='DialogflowProjectsConversationModelsDeployRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets conversation model.
+
+      Args:
+        request: (DialogflowProjectsConversationModelsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ConversationModel) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversationModels/{conversationModelsId}',
+        http_method='GET',
+        method_id='dialogflow.projects.conversationModels.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsConversationModelsGetRequest',
+        response_type_name='GoogleCloudDialogflowV2ConversationModel',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists conversation models.
+
+      Args:
+        request: (DialogflowProjectsConversationModelsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListConversationModelsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversationModels',
+        http_method='GET',
+        method_id='dialogflow.projects.conversationModels.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/conversationModels',
+        request_field='',
+        request_type_name='DialogflowProjectsConversationModelsListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListConversationModelsResponse',
+        supports_download=False,
+    )
+
+    def Undeploy(self, request, global_params=None):
+      r"""Undeploys a model. If the model is not deployed this method has no effect. If the model is currently being used: - For article suggestion, article suggestion will fallback to the default model if model is undeployed. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: UndeployConversationModelOperationMetadata - `response`: An [Empty message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty).
+
+      Args:
+        request: (DialogflowProjectsConversationModelsUndeployRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Undeploy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Undeploy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversationModels/{conversationModelsId}:undeploy',
+        http_method='POST',
+        method_id='dialogflow.projects.conversationModels.undeploy',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:undeploy',
+        request_field='googleCloudDialogflowV2UndeployConversationModelRequest',
+        request_type_name='DialogflowProjectsConversationModelsUndeployRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
   class ProjectsConversationProfilesService(base_api.BaseApiService):
     """Service class for the projects_conversationProfiles resource."""
 
@@ -2267,6 +2600,33 @@ class DialogflowV2(base_api.BaseApiClient):
       super(DialogflowV2.ProjectsConversationProfilesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def ClearSuggestionFeatureConfig(self, request, global_params=None):
+      r"""Clears a suggestion feature from a conversation profile for the given participant role. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: ClearSuggestionFeatureConfigOperationMetadata - `response`: ConversationProfile.
+
+      Args:
+        request: (DialogflowProjectsConversationProfilesClearSuggestionFeatureConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('ClearSuggestionFeatureConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ClearSuggestionFeatureConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversationProfiles/{conversationProfilesId}:clearSuggestionFeatureConfig',
+        http_method='POST',
+        method_id='dialogflow.projects.conversationProfiles.clearSuggestionFeatureConfig',
+        ordered_params=['conversationProfile'],
+        path_params=['conversationProfile'],
+        query_params=[],
+        relative_path='v2/{+conversationProfile}:clearSuggestionFeatureConfig',
+        request_field='googleCloudDialogflowV2ClearSuggestionFeatureConfigRequest',
+        request_type_name='DialogflowProjectsConversationProfilesClearSuggestionFeatureConfigRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
 
     def Create(self, request, global_params=None):
       r"""Creates a conversation profile in the specified project. ConversationProfile.CreateTime and ConversationProfile.UpdateTime aren't populated in the response. You can retrieve them via GetConversationProfile API.
@@ -2400,6 +2760,33 @@ class DialogflowV2(base_api.BaseApiClient):
         request_field='googleCloudDialogflowV2ConversationProfile',
         request_type_name='DialogflowProjectsConversationProfilesPatchRequest',
         response_type_name='GoogleCloudDialogflowV2ConversationProfile',
+        supports_download=False,
+    )
+
+    def SetSuggestionFeatureConfig(self, request, global_params=None):
+      r"""Adds or updates a suggestion feature in a conversation profile. If the conversation profile contains the type of suggestion feature for the participant role, it will update it. Otherwise it will insert the suggestion feature. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: SetSuggestionFeatureConfigOperationMetadata - `response`: ConversationProfile If a long running operation to add or update suggestion feature config for the same conversation profile, participant role and suggestion feature type exists, please cancel the existing long running operation before sending such request, otherwise the request will be rejected.
+
+      Args:
+        request: (DialogflowProjectsConversationProfilesSetSuggestionFeatureConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('SetSuggestionFeatureConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetSuggestionFeatureConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversationProfiles/{conversationProfilesId}:setSuggestionFeatureConfig',
+        http_method='POST',
+        method_id='dialogflow.projects.conversationProfiles.setSuggestionFeatureConfig',
+        ordered_params=['conversationProfile'],
+        path_params=['conversationProfile'],
+        query_params=[],
+        relative_path='v2/{+conversationProfile}:setSuggestionFeatureConfig',
+        request_field='googleCloudDialogflowV2SetSuggestionFeatureConfigRequest',
+        request_type_name='DialogflowProjectsConversationProfilesSetSuggestionFeatureConfigRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -5016,6 +5403,414 @@ class DialogflowV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsConversationDatasetsService(base_api.BaseApiService):
+    """Service class for the projects_locations_conversationDatasets resource."""
+
+    _NAME = 'projects_locations_conversationDatasets'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsConversationDatasetsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new conversation dataset. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: CreateConversationDatasetOperationMetadata - `response`: ConversationDataset.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationDatasetsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversationDatasets',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.conversationDatasets.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/conversationDatasets',
+        request_field='googleCloudDialogflowV2ConversationDataset',
+        request_type_name='DialogflowProjectsLocationsConversationDatasetsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified conversation dataset. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: DeleteConversationDatasetOperationMetadata - `response`: An [Empty message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty).
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationDatasetsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversationDatasets/{conversationDatasetsId}',
+        http_method='DELETE',
+        method_id='dialogflow.projects.locations.conversationDatasets.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsConversationDatasetsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves the specified conversation dataset.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationDatasetsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ConversationDataset) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversationDatasets/{conversationDatasetsId}',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.conversationDatasets.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsConversationDatasetsGetRequest',
+        response_type_name='GoogleCloudDialogflowV2ConversationDataset',
+        supports_download=False,
+    )
+
+    def ImportConversationData(self, request, global_params=None):
+      r"""Import data into the specified conversation dataset. Note that it is not allowed to import data to a conversation dataset that already has data in it. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: ImportConversationDataOperationMetadata - `response`: ImportConversationDataOperationResponse.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationDatasetsImportConversationDataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('ImportConversationData')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ImportConversationData.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversationDatasets/{conversationDatasetsId}:importConversationData',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.conversationDatasets.importConversationData',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:importConversationData',
+        request_field='googleCloudDialogflowV2ImportConversationDataRequest',
+        request_type_name='DialogflowProjectsLocationsConversationDatasetsImportConversationDataRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of all conversation datasets in the specified project and location.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationDatasetsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListConversationDatasetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversationDatasets',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.conversationDatasets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/conversationDatasets',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsConversationDatasetsListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListConversationDatasetsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsConversationModelsEvaluationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_conversationModels_evaluations resource."""
+
+    _NAME = 'projects_locations_conversationModels_evaluations'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsConversationModelsEvaluationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates evaluation of a conversation model.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationModelsEvaluationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversationModels/{conversationModelsId}/evaluations',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.conversationModels.evaluations.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/evaluations',
+        request_field='googleCloudDialogflowV2CreateConversationModelEvaluationRequest',
+        request_type_name='DialogflowProjectsLocationsConversationModelsEvaluationsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an evaluation of conversation model.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationModelsEvaluationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ConversationModelEvaluation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversationModels/{conversationModelsId}/evaluations/{evaluationsId}',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.conversationModels.evaluations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsConversationModelsEvaluationsGetRequest',
+        response_type_name='GoogleCloudDialogflowV2ConversationModelEvaluation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists evaluations of a conversation model.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationModelsEvaluationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListConversationModelEvaluationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversationModels/{conversationModelsId}/evaluations',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.conversationModels.evaluations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/evaluations',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsConversationModelsEvaluationsListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListConversationModelEvaluationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsConversationModelsService(base_api.BaseApiService):
+    """Service class for the projects_locations_conversationModels resource."""
+
+    _NAME = 'projects_locations_conversationModels'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsConversationModelsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a model. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: CreateConversationModelOperationMetadata - `response`: ConversationModel.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationModelsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversationModels',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.conversationModels.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/conversationModels',
+        request_field='googleCloudDialogflowV2ConversationModel',
+        request_type_name='DialogflowProjectsLocationsConversationModelsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a model. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: DeleteConversationModelOperationMetadata - `response`: An [Empty message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty).
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationModelsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversationModels/{conversationModelsId}',
+        http_method='DELETE',
+        method_id='dialogflow.projects.locations.conversationModels.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsConversationModelsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Deploy(self, request, global_params=None):
+      r"""Deploys a model. If a model is already deployed, deploying it has no effect. A model can only serve prediction requests after it gets deployed. For article suggestion, custom model will not be used unless it is deployed. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: DeployConversationModelOperationMetadata - `response`: An [Empty message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty).
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationModelsDeployRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Deploy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Deploy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversationModels/{conversationModelsId}:deploy',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.conversationModels.deploy',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:deploy',
+        request_field='googleCloudDialogflowV2DeployConversationModelRequest',
+        request_type_name='DialogflowProjectsLocationsConversationModelsDeployRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets conversation model.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationModelsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ConversationModel) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversationModels/{conversationModelsId}',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.conversationModels.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsConversationModelsGetRequest',
+        response_type_name='GoogleCloudDialogflowV2ConversationModel',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists conversation models.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationModelsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListConversationModelsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversationModels',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.conversationModels.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/conversationModels',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsConversationModelsListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListConversationModelsResponse',
+        supports_download=False,
+    )
+
+    def Undeploy(self, request, global_params=None):
+      r"""Undeploys a model. If the model is not deployed this method has no effect. If the model is currently being used: - For article suggestion, article suggestion will fallback to the default model if model is undeployed. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: UndeployConversationModelOperationMetadata - `response`: An [Empty message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty).
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationModelsUndeployRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Undeploy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Undeploy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversationModels/{conversationModelsId}:undeploy',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.conversationModels.undeploy',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:undeploy',
+        request_field='googleCloudDialogflowV2UndeployConversationModelRequest',
+        request_type_name='DialogflowProjectsLocationsConversationModelsUndeployRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsConversationProfilesService(base_api.BaseApiService):
     """Service class for the projects_locations_conversationProfiles resource."""
 
@@ -5025,6 +5820,33 @@ class DialogflowV2(base_api.BaseApiClient):
       super(DialogflowV2.ProjectsLocationsConversationProfilesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def ClearSuggestionFeatureConfig(self, request, global_params=None):
+      r"""Clears a suggestion feature from a conversation profile for the given participant role. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: ClearSuggestionFeatureConfigOperationMetadata - `response`: ConversationProfile.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationProfilesClearSuggestionFeatureConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('ClearSuggestionFeatureConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ClearSuggestionFeatureConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversationProfiles/{conversationProfilesId}:clearSuggestionFeatureConfig',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.conversationProfiles.clearSuggestionFeatureConfig',
+        ordered_params=['conversationProfile'],
+        path_params=['conversationProfile'],
+        query_params=[],
+        relative_path='v2/{+conversationProfile}:clearSuggestionFeatureConfig',
+        request_field='googleCloudDialogflowV2ClearSuggestionFeatureConfigRequest',
+        request_type_name='DialogflowProjectsLocationsConversationProfilesClearSuggestionFeatureConfigRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
 
     def Create(self, request, global_params=None):
       r"""Creates a conversation profile in the specified project. ConversationProfile.CreateTime and ConversationProfile.UpdateTime aren't populated in the response. You can retrieve them via GetConversationProfile API.
@@ -5158,6 +5980,33 @@ class DialogflowV2(base_api.BaseApiClient):
         request_field='googleCloudDialogflowV2ConversationProfile',
         request_type_name='DialogflowProjectsLocationsConversationProfilesPatchRequest',
         response_type_name='GoogleCloudDialogflowV2ConversationProfile',
+        supports_download=False,
+    )
+
+    def SetSuggestionFeatureConfig(self, request, global_params=None):
+      r"""Adds or updates a suggestion feature in a conversation profile. If the conversation profile contains the type of suggestion feature for the participant role, it will update it. Otherwise it will insert the suggestion feature. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: SetSuggestionFeatureConfigOperationMetadata - `response`: ConversationProfile If a long running operation to add or update suggestion feature config for the same conversation profile, participant role and suggestion feature type exists, please cancel the existing long running operation before sending such request, otherwise the request will be rejected.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationProfilesSetSuggestionFeatureConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('SetSuggestionFeatureConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetSuggestionFeatureConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversationProfiles/{conversationProfilesId}:setSuggestionFeatureConfig',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.conversationProfiles.setSuggestionFeatureConfig',
+        ordered_params=['conversationProfile'],
+        path_params=['conversationProfile'],
+        query_params=[],
+        relative_path='v2/{+conversationProfile}:setSuggestionFeatureConfig',
+        request_field='googleCloudDialogflowV2SetSuggestionFeatureConfigRequest',
+        request_type_name='DialogflowProjectsLocationsConversationProfilesSetSuggestionFeatureConfigRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

@@ -22,6 +22,7 @@ class AnthosObservabilityFeatureSpec(_messages.Message):
       Stackdriver CR
 
   Fields:
+    defaultMembershipSpec: default membership spec when nothing is specified
     membershipSpecs: Per-membership spec that determines the spec in
       Stackdriver CR
   """
@@ -51,7 +52,8 @@ class AnthosObservabilityFeatureSpec(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  membershipSpecs = _messages.MessageField('MembershipSpecsValue', 1)
+  defaultMembershipSpec = _messages.MessageField('AnthosObservabilityMembershipSpec', 1)
+  membershipSpecs = _messages.MessageField('MembershipSpecsValue', 2)
 
 
 class AnthosObservabilityFeatureState(_messages.Message):
@@ -71,10 +73,12 @@ class AnthosObservabilityMembershipSpec(_messages.Message):
       monitoring#optimized_metrics_default_metrics
     enableStackdriverOnApplications: enable collecting and reporting metrics
       and logs from user apps See go/onyx-application-metrics-logs-user-guide
+    version: the version of stackdriver operator used by this feature
   """
 
   doNotOptimizeMetrics = _messages.BooleanField(1)
   enableStackdriverOnApplications = _messages.BooleanField(2)
+  version = _messages.StringField(3)
 
 
 class ApigeeFeatureSpec(_messages.Message):
@@ -2426,8 +2430,8 @@ class PolicyControllerFeatureState(_messages.Message):
       Membership's membership_name, unless the user installed Policy
       Controller on the cluster manually prior to enabling the Policy
       Controller Hub Feature. Unique within a Policy Controller installation.
-    membershipConfig: Membership configuration in the cluster. This represents
-      the actual state in the cluster, while the MembershipConfig in the
+    membershipSpec: Membership configuration in the cluster. This represents
+      the actual state in the cluster, while the MembershipSpec in the
       FeatureSpec represents the intended state
     state: The lifecycle state observed by the Hub Feature controller.
   """
@@ -2486,7 +2490,7 @@ class PolicyControllerFeatureState(_messages.Message):
     HUB_ERROR = 7
 
   clusterName = _messages.StringField(1)
-  membershipConfig = _messages.MessageField('PolicyControllerMembershipConfig', 2)
+  membershipSpec = _messages.MessageField('PolicyControllerMembershipSpec', 2)
   state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
@@ -2547,7 +2551,7 @@ class PolicyControllerHubConfig(_messages.Message):
   templateLibraryConfig = _messages.MessageField('TemplateLibraryConfig', 7)
 
 
-class PolicyControllerMembershipConfig(_messages.Message):
+class PolicyControllerMembershipSpec(_messages.Message):
   r"""Configuration for a single cluster. Intended to parallel the
   PolicyController CR.
 
@@ -2780,11 +2784,13 @@ class ServiceMeshMembershipSpec(_messages.Message):
 
   Enums:
     ControlPlaneValueValuesEnum: Enables automatic control plane management.
+    DataPlaneValueValuesEnum: Enables automatic data plane management.
     DefaultChannelValueValuesEnum: Determines which release channel to use for
       default injection and service mesh APIs.
 
   Fields:
     controlPlane: Enables automatic control plane management.
+    dataPlane: Enables automatic data plane management.
     defaultChannel: Determines which release channel to use for default
       injection and service mesh APIs.
   """
@@ -2805,6 +2811,21 @@ class ServiceMeshMembershipSpec(_messages.Message):
     AUTOMATIC = 1
     MANUAL = 2
 
+  class DataPlaneValueValuesEnum(_messages.Enum):
+    r"""Enables automatic data plane management.
+
+    Values:
+      DATA_PLANE_MANAGEMENT_UNSPECIFIED: Unspecified
+      DATA_PLANE_MANAGEMENT_AUTOMATIC: Enables Google-managed data plane that
+        provides L7 service mesh capabilities. Data plane management is
+        enabled at the cluster level. Users can exclude individual workloads
+        or namespaces.
+      DATA_PLANE_MANAGEMENT_MANUAL: User will manage their L7 data plane.
+    """
+    DATA_PLANE_MANAGEMENT_UNSPECIFIED = 0
+    DATA_PLANE_MANAGEMENT_AUTOMATIC = 1
+    DATA_PLANE_MANAGEMENT_MANUAL = 2
+
   class DefaultChannelValueValuesEnum(_messages.Enum):
     r"""Determines which release channel to use for default injection and
     service mesh APIs.
@@ -2824,7 +2845,8 @@ class ServiceMeshMembershipSpec(_messages.Message):
     STABLE = 3
 
   controlPlane = _messages.EnumField('ControlPlaneValueValuesEnum', 1)
-  defaultChannel = _messages.EnumField('DefaultChannelValueValuesEnum', 2)
+  dataPlane = _messages.EnumField('DataPlaneValueValuesEnum', 2)
+  defaultChannel = _messages.EnumField('DefaultChannelValueValuesEnum', 3)
 
 
 class SetIamPolicyRequest(_messages.Message):

@@ -29,12 +29,21 @@ __protobuf__ = proto.module(
         'LogEntry',
         'LogEntryOperation',
         'LogEntrySourceLocation',
+        'LogSplit',
     },
 )
 
 
 class LogEntry(proto.Message):
     r"""An individual entry in a log.
+
+    This message has `oneof`_ fields (mutually exclusive fields).
+    For each oneof, at most one member field can be set at the same time.
+    Setting any member of the oneof automatically clears all other
+    members.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
     Attributes:
         log_name (str):
             Required. The resource name of the log to which this log
@@ -84,12 +93,18 @@ class LogEntry(proto.Message):
 
             "type.googleapis.com/google.cloud.audit.AuditLog"
             "type.googleapis.com/google.appengine.logging.v1.RequestLog".
+
+            This field is a member of `oneof`_ ``payload``.
         text_payload (str):
             The log entry payload, represented as a
             Unicode string (UTF-8).
+
+            This field is a member of `oneof`_ ``payload``.
         json_payload (google.protobuf.struct_pb2.Struct):
             The log entry payload, represented as a
             structure that is expressed as a JSON object.
+
+            This field is a member of `oneof`_ ``payload``.
         timestamp (google.protobuf.timestamp_pb2.Timestamp):
             Optional. The time the event described by the log entry
             occurred. This time is used to compute the log entry's age
@@ -179,6 +194,10 @@ class LogEntry(proto.Message):
         source_location (googlecloudsdk.third_party.gapic_clients.logging_v2.types.LogEntrySourceLocation):
             Optional. Source code location information
             associated with the log entry, if any.
+        split (googlecloudsdk.third_party.gapic_clients.logging_v2.types.LogSplit):
+            Optional. Information indicating this
+            LogEntry is part of a sequence of multiple log
+            entries split from a single LogEntry.
     """
 
     log_name = proto.Field(
@@ -263,6 +282,11 @@ class LogEntry(proto.Message):
         number=23,
         message='LogEntrySourceLocation',
     )
+    split = proto.Field(
+        proto.MESSAGE,
+        number=35,
+        message='LogSplit',
+    )
 
 
 class LogEntryOperation(proto.Message):
@@ -337,6 +361,41 @@ class LogEntrySourceLocation(proto.Message):
     )
     function = proto.Field(
         proto.STRING,
+        number=3,
+    )
+
+
+class LogSplit(proto.Message):
+    r"""Additional information used to correlate multiple log
+    entries. Used when a single LogEntry would exceed the Google
+    Cloud Logging size limit and is split across multiple log
+    entries.
+
+    Attributes:
+        uid (str):
+            A globally unique identifier for all log entries in a
+            sequence of split log entries. All log entries with the same
+            \|LogSplit.uid\| are assumed to be part of the same sequence
+            of split log entries.
+        index (int):
+            The index of this LogEntry in the sequence of split log
+            entries. Log entries are given \|index\| values 0, 1, ...,
+            n-1 for a sequence of n log entries.
+        total_splits (int):
+            The total number of log entries that the
+            original LogEntry was split into.
+    """
+
+    uid = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    index = proto.Field(
+        proto.INT32,
+        number=2,
+    )
+    total_splits = proto.Field(
+        proto.INT32,
         number=3,
     )
 

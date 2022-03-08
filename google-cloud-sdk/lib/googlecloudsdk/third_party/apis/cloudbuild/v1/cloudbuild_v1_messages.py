@@ -1331,7 +1331,7 @@ class CloudbuildProjectsBuildsListRequest(_messages.Message):
       be discarded, and pagination should be restarted from the first page of
       results. See https://google.aip.dev/158 for more.
     parent: The parent of the collection of `Builds`. Format:
-      `projects/{project}/locations/location`
+      `projects/{project}/locations/{location}`
     projectId: Required. ID of the project.
   """
 
@@ -1797,7 +1797,7 @@ class CloudbuildProjectsLocationsBuildsListRequest(_messages.Message):
       be discarded, and pagination should be restarted from the first page of
       results. See https://google.aip.dev/158 for more.
     parent: The parent of the collection of `Builds`. Format:
-      `projects/{project}/locations/location`
+      `projects/{project}/locations/{location}`
     projectId: Required. ID of the project.
   """
 
@@ -2657,6 +2657,13 @@ class GitFileSource(_messages.Message):
     RepoTypeValueValuesEnum: See RepoType above.
 
   Fields:
+    bitbucketServerConfig: The full resource name of the bitbucket server
+      config. Format:
+      `projects/{project}/locations/{location}/bitbucketServerConfigs/{id}`.
+    githubEnterpriseConfig: The full resource name of the github enterprise
+      config. Format:
+      `projects/{project}/locations/{location}/githubEnterpriseConfigs/{id}`.
+      `projects/{project}/githubEnterpriseConfigs/{id}`.
     path: The path of the file, with the repo root as the root of the path.
     repoType: See RepoType above.
     revision: The branch, tag, arbitrary ref, or SHA version of the repo to
@@ -2679,15 +2686,19 @@ class GitFileSource(_messages.Message):
         repo.
       GITHUB: A GitHub-hosted repo not necessarily on "github.com" (i.e.
         GitHub Enterprise).
+      BITBUCKET_SERVER: A Bitbucket Server-hosted repo.
     """
     UNKNOWN = 0
     CLOUD_SOURCE_REPOSITORIES = 1
     GITHUB = 2
+    BITBUCKET_SERVER = 3
 
-  path = _messages.StringField(1)
-  repoType = _messages.EnumField('RepoTypeValueValuesEnum', 2)
-  revision = _messages.StringField(3)
-  uri = _messages.StringField(4)
+  bitbucketServerConfig = _messages.StringField(1)
+  githubEnterpriseConfig = _messages.StringField(2)
+  path = _messages.StringField(3)
+  repoType = _messages.EnumField('RepoTypeValueValuesEnum', 4)
+  revision = _messages.StringField(5)
+  uri = _messages.StringField(6)
 
 
 class GitHubEnterpriseApp(_messages.Message):
@@ -2839,6 +2850,13 @@ class GitRepoSource(_messages.Message):
     RepoTypeValueValuesEnum: See RepoType below.
 
   Fields:
+    bitbucketServerConfig: The full resource name of the bitbucket server
+      config. Format:
+      `projects/{project}/locations/{location}/bitbucketServerConfigs/{id}`.
+    githubEnterpriseConfig: The full resource name of the github enterprise
+      config. Format:
+      `projects/{project}/locations/{location}/githubEnterpriseConfigs/{id}`.
+      `projects/{project}/githubEnterpriseConfigs/{id}`.
     ref: The branch or tag to use. Must start with "refs/" (required).
     repoType: See RepoType below.
     uri: The URI of the repo (required).
@@ -2853,14 +2871,18 @@ class GitRepoSource(_messages.Message):
         repo.
       GITHUB: A GitHub-hosted repo not necessarily on "github.com" (i.e.
         GitHub Enterprise).
+      BITBUCKET_SERVER: A Bitbucket Server-hosted repo.
     """
     UNKNOWN = 0
     CLOUD_SOURCE_REPOSITORIES = 1
     GITHUB = 2
+    BITBUCKET_SERVER = 3
 
-  ref = _messages.StringField(1)
-  repoType = _messages.EnumField('RepoTypeValueValuesEnum', 2)
-  uri = _messages.StringField(3)
+  bitbucketServerConfig = _messages.StringField(1)
+  githubEnterpriseConfig = _messages.StringField(2)
+  ref = _messages.StringField(3)
+  repoType = _messages.EnumField('RepoTypeValueValuesEnum', 4)
+  uri = _messages.StringField(5)
 
 
 class GitSource(_messages.Message):

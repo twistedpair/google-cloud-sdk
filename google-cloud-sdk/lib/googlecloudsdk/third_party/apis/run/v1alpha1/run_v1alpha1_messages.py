@@ -1084,14 +1084,16 @@ class Probe(_messages.Message):
       https://kubernetes.io/docs/concepts/workloads/pods/pod-
       lifecycle#container-probes
     periodSeconds: (Optional) How often (in seconds) to perform the probe.
-      Default to 10 seconds. Minimum value is 1.
+      Default to 10 seconds. Minimum value is 1. Maximum value is 3600. Must
+      be greater or equal than timeout_seconds.
     successThreshold: (Optional) Minimum consecutive successes for the probe
       to be considered successful after having failed. Defaults to 1. Must be
-      1 for liveness. Minimum value is 1.
+      1 for liveness and startup Probes.
     tcpSocket: (Optional) TCPSocket specifies an action involving a TCP port.
       TCP hooks not yet supported A field inlined from the Handler message.
     timeoutSeconds: (Optional) Number of seconds after which the probe times
-      out. Defaults to 1 second. Minimum value is 1. More info:
+      out. Defaults to 1 second. Minimum value is 1. Maximum value is 3600.
+      Must be smaller than period_seconds. More info:
       https://kubernetes.io/docs/concepts/workloads/pods/pod-
       lifecycle#container-probes
   """

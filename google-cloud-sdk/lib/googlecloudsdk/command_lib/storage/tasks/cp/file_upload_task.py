@@ -64,22 +64,27 @@ class FileUploadTask(task.Task):
   def __init__(self,
                source_resource,
                destination_resource,
+               delete_source=False,
                user_request_args=None):
     """Initializes task.
 
     Args:
       source_resource (resource_reference.FileObjectResource): Must contain
-          local filesystem path to upload object. Does not need to contain
-          metadata.
+        local filesystem path to upload object. Does not need to contain
+        metadata.
       destination_resource (resource_reference.ObjectResource|UnknownResource):
-          Must contain the full object path. Directories will not be accepted.
-          Existing objects at the this location will be overwritten.
+        Must contain the full object path. Directories will not be accepted.
+        Existing objects at the this location will be overwritten.
+      delete_source (bool): If copy completes successfully, delete the source
+        object afterwards.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
     super(FileUploadTask, self).__init__()
     self._source_resource = source_resource
     self._destination_resource = destination_resource
+    self._delete_source = delete_source
     self._user_request_args = user_request_args
+
     self.parallel_processing_key = (
         self._destination_resource.storage_url.url_string)
 
@@ -110,6 +115,8 @@ class FileUploadTask(task.Task):
           offset=0,
           length=size,
           user_request_args=self._user_request_args).execute(task_status_queue)
+      if self._delete_source:
+        os.remove(self._source_resource.storage_url.object_name)
     else:
       component_size_property = (
           properties.VALUES.storage.parallel_composite_upload_component_size)
@@ -158,7 +165,8 @@ class FileUploadTask(task.Task):
               expected_component_count=len(file_part_upload_tasks),
               source_resource=self._source_resource,
               destination_resource=self._destination_resource,
-              random_prefix=random_prefix))
+              random_prefix=random_prefix,
+              delete_source=self._delete_source))
 
       return task.Output(
           additional_task_iterators=[

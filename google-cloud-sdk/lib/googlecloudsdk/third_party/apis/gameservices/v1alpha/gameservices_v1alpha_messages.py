@@ -14,17 +14,6 @@ from apitools.base.py import extra_types
 package = 'gameservices'
 
 
-class AgonesOptions(_messages.Message):
-  r"""The options for installing Agones.
-
-  Fields:
-    install: Optional. If set to true, Google Cloud Game Servers attempts to
-      install Agones in the cluster.
-  """
-
-  install = _messages.BooleanField(1)
-
-
 class AllocationEndpoint(_messages.Message):
   r"""Allocation endpoint resource.
 
@@ -694,7 +683,6 @@ class GameServerCluster(_messages.Message):
       label is a key-value pair.
 
   Fields:
-    agonesOptions: Optional. Options for installing Agones.
     allocationWeight: Optional. The allocation weight assigned to the game
       server cluster. Allocation weight is used to control a cluster's
       allocation ratio relative to the others allocation qualified clusters.
@@ -764,17 +752,16 @@ class GameServerCluster(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  agonesOptions = _messages.MessageField('AgonesOptions', 1)
-  allocationWeight = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  clusterState = _messages.MessageField('KubernetesClusterState', 3)
-  connectionInfo = _messages.MessageField('GameServerClusterConnectionInfo', 4)
-  createTime = _messages.StringField(5)
-  description = _messages.StringField(6)
-  etag = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  updateTime = _messages.StringField(11)
+  allocationWeight = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  clusterState = _messages.MessageField('KubernetesClusterState', 2)
+  connectionInfo = _messages.MessageField('GameServerClusterConnectionInfo', 3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  etag = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
 
 
 class GameServerClusterConnectionInfo(_messages.Message):

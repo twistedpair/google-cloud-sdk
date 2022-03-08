@@ -260,8 +260,8 @@ class CertificateMapEntry(_messages.Message):
       Entry.
     description: One or more paragraphs of text description of a certificate
       map entry.
-    hostname: A Hostname (FQDN, e.g. example.com) or a wildcard hostname
-      expression (*.example.com) for a set of hostnames with common suffix.
+    hostname: A Hostname (FQDN, e.g. `example.com`) or a wildcard hostname
+      expression `*.example.com` for a set of hostnames with common suffix.
       Used as Server Name Indication (SNI) for selecting a proper certificate.
     labels: Set of labels associated with a Certificate Map Entry.
     matcher: A predefined matcher for particular cases, other than SNI

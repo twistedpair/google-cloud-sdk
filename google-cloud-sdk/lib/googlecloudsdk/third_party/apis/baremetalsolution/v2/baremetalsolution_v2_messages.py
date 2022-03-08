@@ -285,6 +285,48 @@ class BaremetalsolutionProjectsLocationsNfsSharesPatchRequest(_messages.Message)
   updateMask = _messages.StringField(3)
 
 
+class BaremetalsolutionProjectsLocationsProvisioningConfigsCreateRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsProvisioningConfigsCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The parent project and location containing the
+      ProvisioningConfig.
+    provisioningConfig: A ProvisioningConfig resource to be passed as the
+      request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  provisioningConfig = _messages.MessageField('ProvisioningConfig', 2)
+
+
+class BaremetalsolutionProjectsLocationsProvisioningConfigsGetRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsProvisioningConfigsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the ProvisioningConfig.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BaremetalsolutionProjectsLocationsProvisioningConfigsPatchRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsProvisioningConfigsPatchRequest
+  object.
+
+  Fields:
+    name: Output only. The name of the provisioning config.
+    provisioningConfig: A ProvisioningConfig resource to be passed as the
+      request body.
+    updateMask: Required. The list of fields to update.
+  """
+
+  name = _messages.StringField(1, required=True)
+  provisioningConfig = _messages.MessageField('ProvisioningConfig', 2)
+  updateMask = _messages.StringField(3)
+
+
 class BaremetalsolutionProjectsLocationsProvisioningConfigsSubmitRequest(_messages.Message):
   r"""A BaremetalsolutionProjectsLocationsProvisioningConfigsSubmitRequest
   object.
@@ -1174,6 +1216,8 @@ class NetworkConfig(_messages.Message):
       information for the BMS Ops team (b/194021617).
     vlanAttachments: List of VLAN attachments. As of now there are always 2
       attachments, but it is going to change in the future (multi vlan).
+    vlanSameProject: Whether the VLAN attachment pair is located in the same
+      project.
   """
 
   class BandwidthValueValuesEnum(_messages.Enum):
@@ -1229,6 +1273,7 @@ class NetworkConfig(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 7)
   userNote = _messages.StringField(8)
   vlanAttachments = _messages.MessageField('IntakeVlanAttachment', 9, repeated=True)
+  vlanSameProject = _messages.BooleanField(10)
 
 
 class NetworkUsage(_messages.Message):
@@ -1455,22 +1500,46 @@ class Operation(_messages.Message):
 class ProvisioningConfig(_messages.Message):
   r"""A provisioning configuration.
 
+  Enums:
+    StateValueValuesEnum: Output only. State of ProvisioningConfig.
+
   Fields:
+    email: Optional. Email provided to send a confirmation with provisioning
+      config to.
     handoverServiceAccount: A service account to enable customers to access
       instance credentials upon handover.
     instances: Instances to be created.
+    location: Optional. Location name of this ProvisioningConfig. It is
+      optional only for Intake UI transition period.
     name: Output only. The name of the provisioning config.
     networks: Networks to be created.
+    state: Output only. State of ProvisioningConfig.
     ticketId: A generated buganizer id to track provisioning request.
     volumes: Volumes to be created.
   """
 
-  handoverServiceAccount = _messages.StringField(1)
-  instances = _messages.MessageField('InstanceConfig', 2, repeated=True)
-  name = _messages.StringField(3)
-  networks = _messages.MessageField('NetworkConfig', 4, repeated=True)
-  ticketId = _messages.StringField(5)
-  volumes = _messages.MessageField('VolumeConfig', 6, repeated=True)
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of ProvisioningConfig.
+
+    Values:
+      STATE_UNSPECIFIED: State wasn't specified.
+      DRAFT: ProvisioningConfig is a draft and can be freely modified.
+      SUBMITTED: ProvisioningConfig was already submitted and cannot be
+        modified.
+    """
+    STATE_UNSPECIFIED = 0
+    DRAFT = 1
+    SUBMITTED = 2
+
+  email = _messages.StringField(1)
+  handoverServiceAccount = _messages.StringField(2)
+  instances = _messages.MessageField('InstanceConfig', 3, repeated=True)
+  location = _messages.StringField(4)
+  name = _messages.StringField(5)
+  networks = _messages.MessageField('NetworkConfig', 6, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  ticketId = _messages.StringField(8)
+  volumes = _messages.MessageField('VolumeConfig', 9, repeated=True)
 
 
 class ProvisioningQuota(_messages.Message):

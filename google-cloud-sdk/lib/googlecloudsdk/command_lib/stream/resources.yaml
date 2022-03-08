@@ -17,11 +17,10 @@ location:
     parameter_name: locationsId
     attribute_name: location
     help: Global location name.
+    fallthroughs:
+    - hook: googlecloudsdk.command_lib.stream.util:DefaultToGlobal
+      hint: "global is the only supported location"
   disable_auto_completers: false
-  fallthroughs:
-  - hook: googlecloudsdk.command_lib.stream.util:DefaultToGlobal
-    hint: "global is the only supported location."
-
 
 operation:
   name: operation

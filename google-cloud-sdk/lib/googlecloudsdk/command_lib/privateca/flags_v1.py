@@ -234,7 +234,20 @@ def AddIgnoreActiveCertificatesFlag(parser):
       required=False).AddToParser(parser)
 
 
-def AddInlineX509ParametersFlags(parser, is_ca_command,
+def AddSkipGracePeriodFlag(parser):
+  base.Argument(
+      '--skip-grace-period',
+      help='If this flag is set, the Certificate Authority will be '
+      'deleted as soon as possible without a 30-day grace period where '
+      'undeletion would have been allowed. If you proceed, there will be '
+      'no way to recover this CA.',
+      action='store_true',
+      default=False,
+      required=False).AddToParser(parser)
+
+
+def AddInlineX509ParametersFlags(parser,
+                                 is_ca_command,
                                  default_max_chain_length=None):
   """Adds flags for providing inline x509 parameters.
 
@@ -287,7 +300,7 @@ def AddIdentityConstraintsFlags(parser, require_passthrough_flags=True):
   Args:
     parser: The argparse object to add the flags to.
     require_passthrough_flags: Whether the boolean --copy-* flags should be
-    required.
+      required.
   """
 
   base.Argument(
@@ -597,8 +610,8 @@ def ValidateIdentityConstraints(args,
   Args:
     args: the parser for the flag. Expected to have copy_sans and copy_subject
       registered as flags
-    existing_copy_subj: A pre-existing value for the subject value,
-      if applicable.
+    existing_copy_subj: A pre-existing value for the subject value, if
+      applicable.
     existing_copy_sans: A pre-existing value for the san value, if applicable.
     for_update: Whether the validation is for an update to a template.
   """

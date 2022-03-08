@@ -598,6 +598,7 @@ class CreateClusterOptions(object):
       disable_pod_cidr_overprovision=None,
       stack_type=None,
       ipv6_access_type=None,
+      enable_workload_config_audit=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -755,6 +756,7 @@ class CreateClusterOptions(object):
     self.disable_pod_cidr_overprovision = disable_pod_cidr_overprovision
     self.stack_type = stack_type
     self.ipv6_access_type = ipv6_access_type
+    self.enable_workload_config_audit = enable_workload_config_audit
 
 
 class UpdateClusterOptions(object):
@@ -856,6 +858,7 @@ class UpdateClusterOptions(object):
       disable_managed_prometheus=None,
       maintenance_interval=None,
       dataplane_v2=None,
+      enable_workload_config_audit=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -952,6 +955,7 @@ class UpdateClusterOptions(object):
     self.disable_managed_prometheus = disable_managed_prometheus
     self.maintenance_interval = maintenance_interval
     self.dataplane_v2 = dataplane_v2
+    self.enable_workload_config_audit = enable_workload_config_audit
 
 
 class SetMasterAuthOptions(object):
@@ -1674,6 +1678,17 @@ class APIAdapter(object):
     if options.enable_identity_service:
       cluster.identityServiceConfig = self.messages.IdentityServiceConfig(
           enabled=options.enable_identity_service)
+
+    if options.enable_workload_config_audit is not None:
+      protect_config = self.messages.ProtectConfig(
+          workloadConfig=self.messages.WorkloadConfig())
+      if options.enable_workload_config_audit:
+        protect_config.workloadConfig.auditMode = (
+            self.messages.WorkloadConfig.AuditModeValueValuesEnum.BASIC)
+      else:
+        protect_config.workloadConfig.auditMode = (
+            self.messages.WorkloadConfig.AuditModeValueValuesEnum.DISABLED)
+      cluster.protectConfig = protect_config
 
     return cluster
 
@@ -2571,6 +2586,17 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredIdentityServiceConfig=self.messages.IdentityServiceConfig(
               enabled=options.enable_identity_service))
+
+    if options.enable_workload_config_audit is not None:
+      protect_config = self.messages.ProtectConfig(
+          workloadConfig=self.messages.WorkloadConfig())
+      if options.enable_workload_config_audit:
+        protect_config.workloadConfig.auditMode = (
+            self.messages.WorkloadConfig.AuditModeValueValuesEnum.BASIC)
+      else:
+        protect_config.workloadConfig.auditMode = (
+            self.messages.WorkloadConfig.AuditModeValueValuesEnum.DISABLED)
+      update = self.messages.ClusterUpdate(desiredProtectConfig=protect_config)
 
     return update
 
@@ -3936,7 +3962,6 @@ class V1Beta1Adapter(V1Adapter):
       cluster.ipAllocationPolicy.ipv6AccessType = util.GetIpv6AccessTypeMapper(
           self.messages, hidden=False).GetEnumForChoice(
               options.ipv6_access_type)
-
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)

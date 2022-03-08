@@ -332,13 +332,6 @@
           "items": {
             "type": "string"
           }
-        },
-        "serviceLoadBalancerSubnetIds": {
-          "description": "Required. When creating Kubernetes services of type 'Load Balancer', the load balancer will be created in these subnets. This field is unused. Users are responsible for tagging their own subnets manually.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         }
       }
     },
@@ -352,7 +345,7 @@
           "type": "string"
         },
         "instanceType": {
-          "description": "Optional. The AWS instance type. When unspecified, it defaults to `t3.medium`.",
+          "description": "Optional. The AWS instance type. When unspecified, it uses a default based on the cluster's version.",
           "type": "string"
         },
         "sshConfig": {
@@ -708,7 +701,7 @@
       "type": "object",
       "properties": {
         "instanceType": {
-          "description": "Optional. The AWS instance type. When unspecified, it defaults to `t3.medium`.",
+          "description": "Optional. The AWS instance type. When unspecified, it uses a default based on the node pool's version.",
           "type": "string"
         },
         "rootVolume": {
@@ -1968,7 +1961,7 @@
                       "type": "boolean"
                     },
                     "updateMask": {
-                      "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field can only include these fields from AwsCluster: * `description`. * `annotations`. * `control_plane.version`. * `authorization.admin_users`. * `control_plane.aws_services_authentication.role_arn`. * `control_plane.aws_services_authentication.role_session_name`. * `control_plane.config_encryption.kms_key_arn`. * `control_plane.instance_type`. * `control_plane.security_group_ids`. * `control_plane.proxy_config.secret_arn`. * `control_plane.proxy_config.secret_version`.",
+                      "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field can only include these fields from AwsCluster: * `description`. * `annotations`. * `control_plane.version`. * `authorization.admin_users`. * `control_plane.aws_services_authentication.role_arn`. * `control_plane.aws_services_authentication.role_session_name`. * `control_plane.config_encryption.kms_key_arn`. * `control_plane.instance_type`. * `control_plane.security_group_ids`. * `control_plane.proxy_config.secret_arn`. * `control_plane.proxy_config.secret_version`. * `control_plane.root_volume.iops`. * `control_plane.root_volume.kms_key_arn`. * `control_plane.root_volume.volume_type`. * `control_plane.root_volume.size_gib`.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -2176,7 +2169,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The AwsCluster resource where this node pool will be created. Location names are formatted as `projects\/\/locations\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
+                          "description": "Required. The AwsCluster resource where this node pool will be created. `AwsCluster` names are formatted as `projects\/\/locations\/\/awsClusters\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/awsClusters\/[^\/]+$",
                           "location": "path",
                           "required": true,

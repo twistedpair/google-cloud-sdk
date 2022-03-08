@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2021 Google LLC. All Rights Reserved.
+# Copyright 2022 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,16 +29,60 @@ VERSION_MAP = {
 }
 
 
-def GetMessagesModule(release_track=base.ReleaseTrack.ALPHA):
+def GetMessagesModule(release_track=base.ReleaseTrack.GA):
   return apis.GetMessagesModule('gkehub', VERSION_MAP[release_track])
 
 
-def GetClientInstance(release_track=base.ReleaseTrack.ALPHA):
+def GetClientInstance(release_track=base.ReleaseTrack.GA):
   return apis.GetClientInstance('gkehub', VERSION_MAP[release_track])
 
 
-def GetClientClass(release_track=base.ReleaseTrack.ALPHA):
+def GetClientClass(release_track=base.ReleaseTrack.GA):
   return apis.GetClientClass('gkehub', VERSION_MAP[release_track])
+
+
+def LocationResourceName(project, location='global'):
+  # See command_lib/container/fleet/resources.yaml
+  return resources.REGISTRY.Create(
+      'gkehub.projects.locations',
+      projectsId=project,
+      locationsId=location,
+  ).RelativeName()
+
+
+def MembershipResourceName(project, membership, location='global'):
+  # See command_lib/container/fleet/resources.yaml
+  return resources.REGISTRY.Create(
+      'gkehub.projects.locations.memberships',
+      projectsId=project,
+      locationsId=location,
+      membershipsId=membership,
+  ).RelativeName()
+
+
+def MembershipShortname(full_name):
+  return resources.REGISTRY.ParseRelativeName(
+      full_name, collection='gkehub.projects.locations.memberships').Name()
+
+
+def FeatureResourceName(project, feature, location='global'):
+  # See command_lib/container/fleet/resources.yaml
+  return resources.REGISTRY.Create(
+      'gkehub.projects.locations.features',
+      projectsId=project,
+      locationsId=location,
+      featuresId=feature,
+  ).RelativeName()
+
+
+def OperationResourceName(project, operation, location='global'):
+  # See command_lib/container/fleet/resources.yaml
+  return resources.REGISTRY.Create(
+      'gkehub.projects.locations.operations',
+      projectsId=project,
+      locationsId=location,
+      operationsId=operation,
+  ).RelativeName()
 
 
 def FleetResourceName(project,

@@ -667,6 +667,11 @@ def AddBootDiskArgs(parser, enable_kms=False):
         parser, 'disk', boot_disk_prefix=True)
 
 
+def AddInstanceKmsArgs(parser):
+  kms_resource_args.AddKmsKeyResourceArg(
+      parser, 'instance', instance_prefix=True)
+
+
 def AddCreateDiskArgs(parser,
                       enable_kms=False,
                       enable_snapshots=False,

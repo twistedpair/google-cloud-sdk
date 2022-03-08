@@ -829,20 +829,20 @@
         }
       }
     },
-    "StoreEnvironmentStateRequest": {
-      "id": "StoreEnvironmentStateRequest",
-      "description": "Store environment state request.",
+    "SaveSnapshotRequest": {
+      "id": "SaveSnapshotRequest",
+      "description": "Request to create a snapshot of a Cloud Composer environment.",
       "type": "object",
       "properties": {
         "snapshotLocation": {
-          "description": "Location in a Cloud Storage where the snapshot of the state is going to be stored, e.g.: \"gs:\/\/my-bucket\/snapshots\".",
+          "description": "Location in a Cloud Storage where the snapshot is going to be stored, e.g.: \"gs:\/\/my-bucket\/snapshots\".",
           "type": "string"
         }
       }
     },
-    "LoadEnvironmentStateRequest": {
-      "id": "LoadEnvironmentStateRequest",
-      "description": "Load environment state request.",
+    "LoadSnapshotRequest": {
+      "id": "LoadSnapshotRequest",
+      "description": "Request to load a snapshot into a Cloud Composer environment.",
       "type": "object",
       "properties": {
         "snapshotPath": {
@@ -909,7 +909,7 @@
     },
     "Date": {
       "id": "Date",
-      "description": "Represents a whole or partial calendar date, such as a birthday. The time of day and time zone are either specified elsewhere or are insignificant. The date is relative to the Gregorian Calendar. This can represent one of the following: * A full date, with non-zero year, month, and day values * A month and day, with a zero year (e.g., an anniversary) * A year on its own, with a zero month and a zero day * A year and month, with a zero day (e.g., a credit card expiration date) Related types: * google.type.TimeOfDay * google.type.DateTime * google.protobuf.Timestamp",
+      "description": "Represents a whole or partial calendar date, such as a birthday. The time of day and time zone are either specified elsewhere or are insignificant. The date is relative to the Gregorian Calendar. This can represent one of the following: * A full date, with non-zero year, month, and day values. * A month and day, with a zero year (for example, an anniversary). * A year on its own, with a zero month and a zero day. * A year and month, with a zero day (for example, a credit card expiration date). Related types: * google.type.TimeOfDay * google.type.DateTime * google.protobuf.Timestamp",
       "type": "object",
       "properties": {
         "year": {
@@ -961,8 +961,8 @@
             "A resource deletion operation.",
             "A resource update operation.",
             "A resource check operation.",
-            "Stores the state of the resource operation.",
-            "Loads the state of the resource operation."
+            "Saves snapshot of the resource operation.",
+            "Loads snapshot of the resource operation."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
@@ -970,8 +970,8 @@
             "DELETE",
             "UPDATE",
             "CHECK",
-            "STORE_STATE",
-            "LOAD_STATE"
+            "SAVE_SNAPSHOT",
+            "LOAD_SNAPSHOT"
           ]
         },
         "resource": {
@@ -1037,9 +1037,9 @@
         }
       }
     },
-    "StoreEnvironmentStateResponse": {
-      "id": "StoreEnvironmentStateResponse",
-      "description": "Store environment state response.",
+    "SaveSnapshotResponse": {
+      "id": "SaveSnapshotResponse",
+      "description": "Response to SaveSnapshotRequest.",
       "type": "object",
       "properties": {
         "snapshotPath": {
@@ -1048,9 +1048,9 @@
         }
       }
     },
-    "LoadEnvironmentStateResponse": {
-      "id": "LoadEnvironmentStateResponse",
-      "description": "Load environment state response.",
+    "LoadSnapshotResponse": {
+      "id": "LoadSnapshotResponse",
+      "description": "Response to LoadSnapshotRequest.",
       "type": "object",
       "properties": {
       }
@@ -1390,10 +1390,10 @@
                   ],
                   "description": "Check if an upgrade operation on the environment will succeed. In case of problems detailed info can be found in the returned Operation."
                 },
-                "storeEnvironmentState": {
-                  "id": "composer.projects.locations.environments.storeEnvironmentState",
-                  "path": "v1beta1/{+environment}:storeEnvironmentState",
-                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:storeEnvironmentState",
+                "saveSnapshot": {
+                  "id": "composer.projects.locations.environments.saveSnapshot",
+                  "path": "v1beta1/{+environment}:saveSnapshot",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:saveSnapshot",
                   "httpMethod": "POST",
                   "parameters": {
                     "environment": {
@@ -1408,7 +1408,7 @@
                     "environment"
                   ],
                   "request": {
-                    "$ref": "StoreEnvironmentStateRequest"
+                    "$ref": "SaveSnapshotRequest"
                   },
                   "response": {
                     "$ref": "Operation"
@@ -1416,12 +1416,12 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Stores Cloud Composer environment state. As a result of this operation, snapshot of environment's state is stored in a location specified in the StoreEnvironmentStateRequest."
+                  "description": "Creates a snapshots of a Cloud Composer environment. As a result of this operation, snapshot of environment's state is stored in a location specified in the SaveSnapshotRequest."
                 },
-                "loadEnvironmentState": {
-                  "id": "composer.projects.locations.environments.loadEnvironmentState",
-                  "path": "v1beta1/{+environment}:loadEnvironmentState",
-                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:loadEnvironmentState",
+                "loadSnapshot": {
+                  "id": "composer.projects.locations.environments.loadSnapshot",
+                  "path": "v1beta1/{+environment}:loadSnapshot",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:loadSnapshot",
                   "httpMethod": "POST",
                   "parameters": {
                     "environment": {
@@ -1436,7 +1436,7 @@
                     "environment"
                   ],
                   "request": {
-                    "$ref": "LoadEnvironmentStateRequest"
+                    "$ref": "LoadSnapshotRequest"
                   },
                   "response": {
                     "$ref": "Operation"
@@ -1444,7 +1444,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Loads Cloud Composer environment state. As a result of this operation, a snapshot of environment's specified in LoadEnvironmentStateRequest is loaded into the environment."
+                  "description": "Loads a snapshot of a Cloud Composer environment. As a result of this operation, a snapshot of environment's specified in LoadSnapshotRequest is loaded into the environment."
                 }
               }
             },

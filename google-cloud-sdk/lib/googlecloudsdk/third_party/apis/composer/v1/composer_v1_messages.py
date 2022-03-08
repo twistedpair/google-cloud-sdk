@@ -333,10 +333,11 @@ class Date(_messages.Message):
   time of day and time zone are either specified elsewhere or are
   insignificant. The date is relative to the Gregorian Calendar. This can
   represent one of the following: * A full date, with non-zero year, month,
-  and day values * A month and day, with a zero year (e.g., an anniversary) *
-  A year on its own, with a zero month and a zero day * A year and month, with
-  a zero day (e.g., a credit card expiration date) Related types: *
-  google.type.TimeOfDay * google.type.DateTime * google.protobuf.Timestamp
+  and day values. * A month and day, with a zero year (for example, an
+  anniversary). * A year on its own, with a zero month and a zero day. * A
+  year and month, with a zero day (for example, a credit card expiration
+  date). Related types: * google.type.TimeOfDay * google.type.DateTime *
+  google.protobuf.Timestamp
 
   Fields:
     day: Day of a month. Must be from 1 to 31 and valid for the year and
@@ -919,16 +920,16 @@ class OperationMetadata(_messages.Message):
       DELETE: A resource deletion operation.
       UPDATE: A resource update operation.
       CHECK: A resource check operation.
-      STORE_STATE: Stores the state of the resource operation.
-      LOAD_STATE: Loads the state of the resource operation.
+      SAVE_SNAPSHOT: Saves snapshot of the resource operation.
+      LOAD_SNAPSHOT: Loads snapshot of the resource operation.
     """
     TYPE_UNSPECIFIED = 0
     CREATE = 1
     DELETE = 2
     UPDATE = 3
     CHECK = 4
-    STORE_STATE = 5
-    LOAD_STATE = 6
+    SAVE_SNAPSHOT = 5
+    LOAD_SNAPSHOT = 6
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current operation state.

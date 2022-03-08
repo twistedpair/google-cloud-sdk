@@ -24,6 +24,7 @@ from .services.metrics_service_v2 import MetricsServiceV2AsyncClient
 from .types.log_entry import LogEntry
 from .types.log_entry import LogEntryOperation
 from .types.log_entry import LogEntrySourceLocation
+from .types.log_entry import LogSplit
 from .types.logging import DeleteLogRequest
 from .types.logging import ListLogEntriesRequest
 from .types.logging import ListLogEntriesResponse
@@ -52,6 +53,7 @@ from .types.logging_config import DeleteViewRequest
 from .types.logging_config import GetBucketRequest
 from .types.logging_config import GetCmekSettingsRequest
 from .types.logging_config import GetExclusionRequest
+from .types.logging_config import GetSettingsRequest
 from .types.logging_config import GetSinkRequest
 from .types.logging_config import GetViewRequest
 from .types.logging_config import ListBucketsRequest
@@ -66,10 +68,12 @@ from .types.logging_config import LogBucket
 from .types.logging_config import LogExclusion
 from .types.logging_config import LogSink
 from .types.logging_config import LogView
+from .types.logging_config import Settings
 from .types.logging_config import UndeleteBucketRequest
 from .types.logging_config import UpdateBucketRequest
 from .types.logging_config import UpdateCmekSettingsRequest
 from .types.logging_config import UpdateExclusionRequest
+from .types.logging_config import UpdateSettingsRequest
 from .types.logging_config import UpdateSinkRequest
 from .types.logging_config import UpdateViewRequest
 from .types.logging_config import LifecycleState
@@ -107,6 +111,7 @@ __all__ = (
 'GetCmekSettingsRequest',
 'GetExclusionRequest',
 'GetLogMetricRequest',
+'GetSettingsRequest',
 'GetSinkRequest',
 'GetViewRequest',
 'LifecycleState',
@@ -133,10 +138,12 @@ __all__ = (
 'LogExclusion',
 'LogMetric',
 'LogSink',
+'LogSplit',
 'LogView',
 'LoggingServiceV2Client',
 'MetricsServiceV2Client',
 'OperationState',
+'Settings',
 'TailLogEntriesRequest',
 'TailLogEntriesResponse',
 'UndeleteBucketRequest',
@@ -144,6 +151,7 @@ __all__ = (
 'UpdateCmekSettingsRequest',
 'UpdateExclusionRequest',
 'UpdateLogMetricRequest',
+'UpdateSettingsRequest',
 'UpdateSinkRequest',
 'UpdateViewRequest',
 'WriteLogEntriesPartialErrors',

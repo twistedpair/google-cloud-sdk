@@ -82,8 +82,8 @@ def FetchFeatureFlagsConfig():
     yaml_request = core_requests.GetSession()
     return yaml_request.get(_FEATURE_FLAG_YAML_URL).text
   except requests.exceptions.RequestException as e:
-    logging.warning('Unable to fetch feature flags config from [%s]: %s',
-                    _FEATURE_FLAG_YAML_URL, e)
+    logging.debug('Unable to fetch feature flags config from [%s]: %s',
+                  _FEATURE_FLAG_YAML_URL, e)
   return None
 
 

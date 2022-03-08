@@ -16,15 +16,20 @@
 from collections import OrderedDict
 import functools
 import re
-from typing import Dict, Sequence, Tuple, Type, Union
+from typing import Dict, Optional, Sequence, Tuple, Type, Union
 import pkg_resources
 
-import google.api_core.client_options as ClientOptions # type: ignore
-from google.api_core import exceptions as core_exceptions  # type: ignore
-from google.api_core import gapic_v1                   # type: ignore
-from google.api_core import retry as retries           # type: ignore
+from google.api_core.client_options import ClientOptions
+from google.api_core import exceptions as core_exceptions
+from google.api_core import gapic_v1
+from google.api_core import retry as retries
 from google.auth import credentials as ga_credentials   # type: ignore
 from google.oauth2 import service_account              # type: ignore
+
+try:
+    OptionalRetry = Union[retries.Retry, gapic_v1.method._MethodDefault]
+except AttributeError:  # pragma: NO COVER
+    OptionalRetry = Union[retries.Retry, object]  # type: ignore
 
 from google.api_core import operation  # type: ignore
 from google.api_core import operation_async  # type: ignore
@@ -55,6 +60,8 @@ class ConfigServiceV2AsyncClient:
     parse_log_sink_path = staticmethod(ConfigServiceV2Client.parse_log_sink_path)
     log_view_path = staticmethod(ConfigServiceV2Client.log_view_path)
     parse_log_view_path = staticmethod(ConfigServiceV2Client.parse_log_view_path)
+    settings_path = staticmethod(ConfigServiceV2Client.settings_path)
+    parse_settings_path = staticmethod(ConfigServiceV2Client.parse_settings_path)
     common_billing_account_path = staticmethod(ConfigServiceV2Client.common_billing_account_path)
     parse_common_billing_account_path = staticmethod(ConfigServiceV2Client.parse_common_billing_account_path)
     common_folder_path = staticmethod(ConfigServiceV2Client.common_folder_path)
@@ -98,6 +105,40 @@ class ConfigServiceV2AsyncClient:
         return ConfigServiceV2Client.from_service_account_file.__func__(ConfigServiceV2AsyncClient, filename, *args, **kwargs)  # type: ignore
 
     from_service_account_json = from_service_account_file
+
+    @classmethod
+    def get_mtls_endpoint_and_cert_source(cls, client_options: Optional[ClientOptions] = None):
+        """Return the API endpoint and client cert source for mutual TLS.
+
+        The client cert source is determined in the following order:
+        (1) if `GOOGLE_API_USE_CLIENT_CERTIFICATE` environment variable is not "true", the
+        client cert source is None.
+        (2) if `client_options.client_cert_source` is provided, use the provided one; if the
+        default client cert source exists, use the default one; otherwise the client cert
+        source is None.
+
+        The API endpoint is determined in the following order:
+        (1) if `client_options.api_endpoint` if provided, use the provided one.
+        (2) if `GOOGLE_API_USE_CLIENT_CERTIFICATE` environment variable is "always", use the
+        default mTLS endpoint; if the environment variabel is "never", use the default API
+        endpoint; otherwise if client cert source exists, use the default mTLS endpoint, otherwise
+        use the default API endpoint.
+
+        More details can be found at https://google.aip.dev/auth/4114.
+
+        Args:
+            client_options (google.api_core.client_options.ClientOptions): Custom options for the
+                client. Only the `api_endpoint` and `client_cert_source` properties may be used
+                in this method.
+
+        Returns:
+            Tuple[str, Callable[[], Tuple[bytes, bytes]]]: returns the API endpoint and the
+                client cert source to use.
+
+        Raises:
+            google.auth.exceptions.MutualTLSChannelError: If any errors happen.
+        """
+        return ConfigServiceV2Client.get_mtls_endpoint_and_cert_source(client_options)  # type: ignore
 
     @property
     def transport(self) -> ConfigServiceV2Transport:
@@ -157,17 +198,37 @@ class ConfigServiceV2AsyncClient:
         )
 
     async def list_buckets(self,
-            request: logging_config.ListBucketsRequest = None,
+            request: Union[logging_config.ListBucketsRequest, dict] = None,
             *,
             parent: str = None,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> pagers.ListBucketsAsyncPager:
         r"""Lists log buckets.
 
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_list_buckets():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.ListBucketsRequest(
+                    parent="parent_value",
+                )
+
+                # Make the request
+                page_result = client.list_buckets(request=request)
+
+                # Handle the response
+                for response in page_result:
+                    print(response)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.ListBucketsRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.ListBucketsRequest, dict]):
                 The request object. The parameters to `ListBuckets`.
             parent (:class:`str`):
                 Required. The parent resource whose buckets are to be
@@ -202,7 +263,7 @@ class ConfigServiceV2AsyncClient:
 
         """
         # Create or coerce a protobuf request object.
-        # Sanity check: If we got a request object, we should *not* have
+        # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
         has_flattened_params = any([parent])
         if request is not None and has_flattened_params:
@@ -253,16 +314,35 @@ class ConfigServiceV2AsyncClient:
         return response
 
     async def get_bucket(self,
-            request: logging_config.GetBucketRequest = None,
+            request: Union[logging_config.GetBucketRequest, dict] = None,
             *,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogBucket:
         r"""Gets a log bucket.
 
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_get_bucket():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.GetBucketRequest(
+                    name="name_value",
+                )
+
+                # Make the request
+                response = client.get_bucket(request=request)
+
+                # Handle the response
+                print(response)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.GetBucketRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.GetBucketRequest, dict]):
                 The request object. The parameters to `GetBucket`.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
@@ -307,9 +387,9 @@ class ConfigServiceV2AsyncClient:
         return response
 
     async def create_bucket(self,
-            request: logging_config.CreateBucketRequest = None,
+            request: Union[logging_config.CreateBucketRequest, dict] = None,
             *,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogBucket:
@@ -317,8 +397,29 @@ class ConfigServiceV2AsyncClient:
         entries. After a bucket has been created, the bucket's
         location cannot be changed.
 
+
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_create_bucket():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.CreateBucketRequest(
+                    parent="parent_value",
+                    bucket_id="bucket_id_value",
+                )
+
+                # Make the request
+                response = client.create_bucket(request=request)
+
+                # Handle the response
+                print(response)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.CreateBucketRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.CreateBucketRequest, dict]):
                 The request object. The parameters to `CreateBucket`.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
@@ -363,9 +464,9 @@ class ConfigServiceV2AsyncClient:
         return response
 
     async def update_bucket(self,
-            request: logging_config.UpdateBucketRequest = None,
+            request: Union[logging_config.UpdateBucketRequest, dict] = None,
             *,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogBucket:
@@ -382,8 +483,28 @@ class ConfigServiceV2AsyncClient:
         After a bucket has been created, the bucket's location cannot be
         changed.
 
+
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_update_bucket():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.UpdateBucketRequest(
+                    name="name_value",
+                )
+
+                # Make the request
+                response = client.update_bucket(request=request)
+
+                # Handle the response
+                print(response)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.UpdateBucketRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.UpdateBucketRequest, dict]):
                 The request object. The parameters to `UpdateBucket`.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
@@ -428,9 +549,9 @@ class ConfigServiceV2AsyncClient:
         return response
 
     async def delete_bucket(self,
-            request: logging_config.DeleteBucketRequest = None,
+            request: Union[logging_config.DeleteBucketRequest, dict] = None,
             *,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> None:
@@ -441,8 +562,25 @@ class ConfigServiceV2AsyncClient:
         purged and all log entries in the bucket will be permanently
         deleted.
 
+
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_delete_bucket():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.DeleteBucketRequest(
+                    name="name_value",
+                )
+
+                # Make the request
+                client.delete_bucket(request=request)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.DeleteBucketRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.DeleteBucketRequest, dict]):
                 The request object. The parameters to `DeleteBucket`.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
@@ -478,9 +616,9 @@ class ConfigServiceV2AsyncClient:
         )
 
     async def undelete_bucket(self,
-            request: logging_config.UndeleteBucketRequest = None,
+            request: Union[logging_config.UndeleteBucketRequest, dict] = None,
             *,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> None:
@@ -488,8 +626,25 @@ class ConfigServiceV2AsyncClient:
         deleted can be undeleted within the grace period of 7
         days.
 
+
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_undelete_bucket():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.UndeleteBucketRequest(
+                    name="name_value",
+                )
+
+                # Make the request
+                client.undelete_bucket(request=request)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.UndeleteBucketRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.UndeleteBucketRequest, dict]):
                 The request object. The parameters to `UndeleteBucket`.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
@@ -525,17 +680,37 @@ class ConfigServiceV2AsyncClient:
         )
 
     async def list_views(self,
-            request: logging_config.ListViewsRequest = None,
+            request: Union[logging_config.ListViewsRequest, dict] = None,
             *,
             parent: str = None,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> pagers.ListViewsAsyncPager:
         r"""Lists views on a log bucket.
 
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_list_views():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.ListViewsRequest(
+                    parent="parent_value",
+                )
+
+                # Make the request
+                page_result = client.list_views(request=request)
+
+                # Handle the response
+                for response in page_result:
+                    print(response)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.ListViewsRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.ListViewsRequest, dict]):
                 The request object. The parameters to `ListViews`.
             parent (:class:`str`):
                 Required. The bucket whose views are to be listed:
@@ -562,7 +737,7 @@ class ConfigServiceV2AsyncClient:
 
         """
         # Create or coerce a protobuf request object.
-        # Sanity check: If we got a request object, we should *not* have
+        # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
         has_flattened_params = any([parent])
         if request is not None and has_flattened_params:
@@ -613,16 +788,35 @@ class ConfigServiceV2AsyncClient:
         return response
 
     async def get_view(self,
-            request: logging_config.GetViewRequest = None,
+            request: Union[logging_config.GetViewRequest, dict] = None,
             *,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogView:
         r"""Gets a view on a log bucket..
 
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_get_view():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.GetViewRequest(
+                    name="name_value",
+                )
+
+                # Make the request
+                response = client.get_view(request=request)
+
+                # Handle the response
+                print(response)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.GetViewRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.GetViewRequest, dict]):
                 The request object. The parameters to `GetView`.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
@@ -667,17 +861,38 @@ class ConfigServiceV2AsyncClient:
         return response
 
     async def create_view(self,
-            request: logging_config.CreateViewRequest = None,
+            request: Union[logging_config.CreateViewRequest, dict] = None,
             *,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogView:
         r"""Creates a view over log entries in a log bucket. A
         bucket may contain a maximum of 30 views.
 
+
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_create_view():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.CreateViewRequest(
+                    parent="parent_value",
+                    view_id="view_id_value",
+                )
+
+                # Make the request
+                response = client.create_view(request=request)
+
+                # Handle the response
+                print(response)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.CreateViewRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.CreateViewRequest, dict]):
                 The request object. The parameters to `CreateView`.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
@@ -722,9 +937,9 @@ class ConfigServiceV2AsyncClient:
         return response
 
     async def update_view(self,
-            request: logging_config.UpdateViewRequest = None,
+            request: Union[logging_config.UpdateViewRequest, dict] = None,
             *,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogView:
@@ -734,8 +949,28 @@ class ConfigServiceV2AsyncClient:
         indicates that system is not in a state where it can update the
         view. If this occurs, please try again in a few minutes.
 
+
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_update_view():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.UpdateViewRequest(
+                    name="name_value",
+                )
+
+                # Make the request
+                response = client.update_view(request=request)
+
+                # Handle the response
+                print(response)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.UpdateViewRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.UpdateViewRequest, dict]):
                 The request object. The parameters to `UpdateView`.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
@@ -780,9 +1015,9 @@ class ConfigServiceV2AsyncClient:
         return response
 
     async def delete_view(self,
-            request: logging_config.DeleteViewRequest = None,
+            request: Union[logging_config.DeleteViewRequest, dict] = None,
             *,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> None:
@@ -791,8 +1026,25 @@ class ConfigServiceV2AsyncClient:
         can delete the view. If this occurs, please try again in a few
         minutes.
 
+
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_delete_view():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.DeleteViewRequest(
+                    name="name_value",
+                )
+
+                # Make the request
+                client.delete_view(request=request)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.DeleteViewRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.DeleteViewRequest, dict]):
                 The request object. The parameters to `DeleteView`.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
@@ -828,17 +1080,37 @@ class ConfigServiceV2AsyncClient:
         )
 
     async def list_sinks(self,
-            request: logging_config.ListSinksRequest = None,
+            request: Union[logging_config.ListSinksRequest, dict] = None,
             *,
             parent: str = None,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> pagers.ListSinksAsyncPager:
         r"""Lists sinks.
 
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_list_sinks():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.ListSinksRequest(
+                    parent="parent_value",
+                )
+
+                # Make the request
+                page_result = client.list_sinks(request=request)
+
+                # Handle the response
+                for response in page_result:
+                    print(response)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.ListSinksRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.ListSinksRequest, dict]):
                 The request object. The parameters to `ListSinks`.
             parent (:class:`str`):
                 Required. The parent resource whose sinks are to be
@@ -869,7 +1141,7 @@ class ConfigServiceV2AsyncClient:
 
         """
         # Create or coerce a protobuf request object.
-        # Sanity check: If we got a request object, we should *not* have
+        # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
         has_flattened_params = any([parent])
         if request is not None and has_flattened_params:
@@ -928,17 +1200,36 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         return response
 
     async def get_sink(self,
-            request: logging_config.GetSinkRequest = None,
+            request: Union[logging_config.GetSinkRequest, dict] = None,
             *,
             sink_name: str = None,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogSink:
         r"""Gets a sink.
 
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_get_sink():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.GetSinkRequest(
+                    sink_name="sink_name_value",
+                )
+
+                # Make the request
+                response = client.get_sink(request=request)
+
+                # Handle the response
+                print(response)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.GetSinkRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.GetSinkRequest, dict]):
                 The request object. The parameters to `GetSink`.
             sink_name (:class:`str`):
                 Required. The resource name of the sink:
@@ -977,7 +1268,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Sanity check: If we got a request object, we should *not* have
+        # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
         has_flattened_params = any([sink_name])
         if request is not None and has_flattened_params:
@@ -1027,11 +1318,11 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         return response
 
     async def create_sink(self,
-            request: logging_config.CreateSinkRequest = None,
+            request: Union[logging_config.CreateSinkRequest, dict] = None,
             *,
             parent: str = None,
             sink: logging_config.LogSink = None,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogSink:
@@ -1041,8 +1332,33 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         permitted to write to the destination. A sink can export log
         entries only from the resource owning the sink.
 
+
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_create_sink():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                sink = logging_v2.LogSink()
+                sink.name = "name_value"
+                sink.destination = "destination_value"
+
+                request = logging_v2.CreateSinkRequest(
+                    parent="parent_value",
+                    sink=sink,
+                )
+
+                # Make the request
+                response = client.create_sink(request=request)
+
+                # Handle the response
+                print(response)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.CreateSinkRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.CreateSinkRequest, dict]):
                 The request object. The parameters to `CreateSink`.
             parent (:class:`str`):
                 Required. The resource in which to create the sink:
@@ -1088,7 +1404,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Sanity check: If we got a request object, we should *not* have
+        # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
         has_flattened_params = any([parent, sink])
         if request is not None and has_flattened_params:
@@ -1132,12 +1448,12 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         return response
 
     async def update_sink(self,
-            request: logging_config.UpdateSinkRequest = None,
+            request: Union[logging_config.UpdateSinkRequest, dict] = None,
             *,
             sink_name: str = None,
             sink: logging_config.LogSink = None,
             update_mask: field_mask_pb2.FieldMask = None,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogSink:
@@ -1148,8 +1464,33 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         The updated sink might also have a new ``writer_identity``; see
         the ``unique_writer_identity`` field.
 
+
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_update_sink():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                sink = logging_v2.LogSink()
+                sink.name = "name_value"
+                sink.destination = "destination_value"
+
+                request = logging_v2.UpdateSinkRequest(
+                    sink_name="sink_name_value",
+                    sink=sink,
+                )
+
+                # Make the request
+                response = client.update_sink(request=request)
+
+                # Handle the response
+                print(response)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.UpdateSinkRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.UpdateSinkRequest, dict]):
                 The request object. The parameters to `UpdateSink`.
             sink_name (:class:`str`):
                 Required. The full resource name of the sink to update,
@@ -1218,7 +1559,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Sanity check: If we got a request object, we should *not* have
+        # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
         has_flattened_params = any([sink_name, sink, update_mask])
         if request is not None and has_flattened_params:
@@ -1272,18 +1613,35 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         return response
 
     async def delete_sink(self,
-            request: logging_config.DeleteSinkRequest = None,
+            request: Union[logging_config.DeleteSinkRequest, dict] = None,
             *,
             sink_name: str = None,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> None:
         r"""Deletes a sink. If the sink has a unique ``writer_identity``,
         then that service account is also deleted.
 
+
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_delete_sink():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.DeleteSinkRequest(
+                    sink_name="sink_name_value",
+                )
+
+                # Make the request
+                client.delete_sink(request=request)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.DeleteSinkRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.DeleteSinkRequest, dict]):
                 The request object. The parameters to `DeleteSink`.
             sink_name (:class:`str`):
                 Required. The full resource name of the sink to delete,
@@ -1310,7 +1668,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 sent along with the request as metadata.
         """
         # Create or coerce a protobuf request object.
-        # Sanity check: If we got a request object, we should *not* have
+        # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
         has_flattened_params = any([sink_name])
         if request is not None and has_flattened_params:
@@ -1357,18 +1715,39 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         )
 
     async def list_exclusions(self,
-            request: logging_config.ListExclusionsRequest = None,
+            request: Union[logging_config.ListExclusionsRequest, dict] = None,
             *,
             parent: str = None,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> pagers.ListExclusionsAsyncPager:
         r"""Lists all the exclusions on the \_Default sink in a parent
         resource.
 
+
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_list_exclusions():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.ListExclusionsRequest(
+                    parent="parent_value",
+                )
+
+                # Make the request
+                page_result = client.list_exclusions(request=request)
+
+                # Handle the response
+                for response in page_result:
+                    print(response)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.ListExclusionsRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.ListExclusionsRequest, dict]):
                 The request object. The parameters to `ListExclusions`.
             parent (:class:`str`):
                 Required. The parent resource whose exclusions are to be
@@ -1399,7 +1778,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Sanity check: If we got a request object, we should *not* have
+        # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
         has_flattened_params = any([parent])
         if request is not None and has_flattened_params:
@@ -1458,17 +1837,36 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         return response
 
     async def get_exclusion(self,
-            request: logging_config.GetExclusionRequest = None,
+            request: Union[logging_config.GetExclusionRequest, dict] = None,
             *,
             name: str = None,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogExclusion:
         r"""Gets the description of an exclusion in the \_Default sink.
 
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_get_exclusion():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.GetExclusionRequest(
+                    name="name_value",
+                )
+
+                # Make the request
+                response = client.get_exclusion(request=request)
+
+                # Handle the response
+                print(response)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.GetExclusionRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.GetExclusionRequest, dict]):
                 The request object. The parameters to `GetExclusion`.
             name (:class:`str`):
                 Required. The resource name of an existing exclusion:
@@ -1505,7 +1903,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Sanity check: If we got a request object, we should *not* have
+        # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
         has_flattened_params = any([name])
         if request is not None and has_flattened_params:
@@ -1555,11 +1953,11 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         return response
 
     async def create_exclusion(self,
-            request: logging_config.CreateExclusionRequest = None,
+            request: Union[logging_config.CreateExclusionRequest, dict] = None,
             *,
             parent: str = None,
             exclusion: logging_config.LogExclusion = None,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogExclusion:
@@ -1567,8 +1965,33 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         parent resource. Only log entries belonging to that resource can
         be excluded. You can have up to 10 exclusions in a resource.
 
+
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_create_exclusion():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                exclusion = logging_v2.LogExclusion()
+                exclusion.name = "name_value"
+                exclusion.filter = "filter_value"
+
+                request = logging_v2.CreateExclusionRequest(
+                    parent="parent_value",
+                    exclusion=exclusion,
+                )
+
+                # Make the request
+                response = client.create_exclusion(request=request)
+
+                # Handle the response
+                print(response)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.CreateExclusionRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.CreateExclusionRequest, dict]):
                 The request object. The parameters to `CreateExclusion`.
             parent (:class:`str`):
                 Required. The parent resource in which to create the
@@ -1615,7 +2038,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Sanity check: If we got a request object, we should *not* have
+        # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
         has_flattened_params = any([parent, exclusion])
         if request is not None and has_flattened_params:
@@ -1659,20 +2082,45 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         return response
 
     async def update_exclusion(self,
-            request: logging_config.UpdateExclusionRequest = None,
+            request: Union[logging_config.UpdateExclusionRequest, dict] = None,
             *,
             name: str = None,
             exclusion: logging_config.LogExclusion = None,
             update_mask: field_mask_pb2.FieldMask = None,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogExclusion:
         r"""Changes one or more properties of an existing exclusion in the
         \_Default sink.
 
+
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_update_exclusion():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                exclusion = logging_v2.LogExclusion()
+                exclusion.name = "name_value"
+                exclusion.filter = "filter_value"
+
+                request = logging_v2.UpdateExclusionRequest(
+                    name="name_value",
+                    exclusion=exclusion,
+                )
+
+                # Make the request
+                response = client.update_exclusion(request=request)
+
+                # Handle the response
+                print(response)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.UpdateExclusionRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.UpdateExclusionRequest, dict]):
                 The request object. The parameters to `UpdateExclusion`.
             name (:class:`str`):
                 Required. The resource name of the exclusion to update:
@@ -1731,7 +2179,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Sanity check: If we got a request object, we should *not* have
+        # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
         has_flattened_params = any([name, exclusion, update_mask])
         if request is not None and has_flattened_params:
@@ -1777,17 +2225,33 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         return response
 
     async def delete_exclusion(self,
-            request: logging_config.DeleteExclusionRequest = None,
+            request: Union[logging_config.DeleteExclusionRequest, dict] = None,
             *,
             name: str = None,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> None:
         r"""Deletes an exclusion in the \_Default sink.
 
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_delete_exclusion():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.DeleteExclusionRequest(
+                    name="name_value",
+                )
+
+                # Make the request
+                client.delete_exclusion(request=request)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.DeleteExclusionRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.DeleteExclusionRequest, dict]):
                 The request object. The parameters to `DeleteExclusion`.
             name (:class:`str`):
                 Required. The resource name of an existing exclusion to
@@ -1814,7 +2278,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 sent along with the request as metadata.
         """
         # Create or coerce a protobuf request object.
-        # Sanity check: If we got a request object, we should *not* have
+        # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
         has_flattened_params = any([name])
         if request is not None and has_flattened_params:
@@ -1861,9 +2325,9 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         )
 
     async def get_cmek_settings(self,
-            request: logging_config.GetCmekSettingsRequest = None,
+            request: Union[logging_config.GetCmekSettingsRequest, dict] = None,
             *,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.CmekSettings:
@@ -1878,13 +2342,33 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
         for more information.
 
+
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_get_cmek_settings():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.GetCmekSettingsRequest(
+                    name="name_value",
+                )
+
+                # Make the request
+                response = client.get_cmek_settings(request=request)
+
+                # Handle the response
+                print(response)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.GetCmekSettingsRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.GetCmekSettingsRequest, dict]):
                 The request object. The parameters to
                 [GetCmekSettings][google.logging.v2.ConfigServiceV2.GetCmekSettings].
                 See [Enabling CMEK for Log
-                Router](https://cloud.google.com/logging/docs/routing/managed-
-                encryption) for more information.
+                Router](https://cloud.google.com/logging/docs/routing/managed-encryption)
+                for more information.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
@@ -1938,9 +2422,9 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         return response
 
     async def update_cmek_settings(self,
-            request: logging_config.UpdateCmekSettingsRequest = None,
+            request: Union[logging_config.UpdateCmekSettingsRequest, dict] = None,
             *,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.CmekSettings:
@@ -1960,13 +2444,33 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
         for more information.
 
+
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_update_cmek_settings():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.UpdateCmekSettingsRequest(
+                    name="name_value",
+                )
+
+                # Make the request
+                response = client.update_cmek_settings(request=request)
+
+                # Handle the response
+                print(response)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.UpdateCmekSettingsRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.UpdateCmekSettingsRequest, dict]):
                 The request object. The parameters to
                 [UpdateCmekSettings][google.logging.v2.ConfigServiceV2.UpdateCmekSettings].
                 See [Enabling CMEK for Log
-                Router](https://cloud.google.com/logging/docs/routing/managed-
-                encryption) for more information.
+                Router](https://cloud.google.com/logging/docs/routing/managed-encryption)
+                for more information.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
@@ -2019,18 +2523,305 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         # Done; return the response.
         return response
 
-    async def copy_log_entries(self,
-            request: logging_config.CopyLogEntriesRequest = None,
+    async def get_settings(self,
+            request: Union[logging_config.GetSettingsRequest, dict] = None,
             *,
-            retry: retries.Retry = gapic_v1.method.DEFAULT,
+            name: str = None,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: float = None,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> logging_config.Settings:
+        r"""Gets the Log Router settings for the given resource.
+
+        Note: Settings for the Log Router can be get for Google Cloud
+        projects, folders, organizations and billing accounts. Currently
+        it can only be configured for organizations. Once configured for
+        an organization, it applies to all projects and folders in the
+        Google Cloud organization.
+
+        See `Enabling CMEK for Log
+        Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
+        for more information.
+
+
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_get_settings():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.GetSettingsRequest(
+                    name="name_value",
+                )
+
+                # Make the request
+                response = client.get_settings(request=request)
+
+                # Handle the response
+                print(response)
+
+        Args:
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.GetSettingsRequest, dict]):
+                The request object. The parameters to
+                [GetSettings][google.logging.v2.ConfigServiceV2.GetSettings].
+                See [Enabling CMEK for Log
+                Router](https://cloud.google.com/logging/docs/routing/managed-encryption)
+                for more information.
+            name (:class:`str`):
+                Required. The resource for which to retrieve settings.
+
+                ::
+
+                    "projects/[PROJECT_ID]/settings"
+                    "organizations/[ORGANIZATION_ID]/settings"
+                    "billingAccounts/[BILLING_ACCOUNT_ID]/settings"
+                    "folders/[FOLDER_ID]/settings"
+
+                For example:
+
+                ``"organizations/12345/settings"``
+
+                Note: Settings for the Log Router can be get for Google
+                Cloud projects, folders, organizations and billing
+                accounts. Currently it can only be configured for
+                organizations. Once configured for an organization, it
+                applies to all projects and folders in the Google Cloud
+                organization.
+
+                This corresponds to the ``name`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+
+        Returns:
+            googlecloudsdk.third_party.gapic_clients.logging_v2.types.Settings:
+                Describes the settings associated
+                with a project, folder, organization,
+                billing account, or flexible resource.
+
+        """
+        # Create or coerce a protobuf request object.
+        # Quick check: If we got a request object, we should *not* have
+        # gotten any keyword arguments that map to the request.
+        has_flattened_params = any([name])
+        if request is not None and has_flattened_params:
+            raise ValueError("If the `request` argument is set, then none of "
+                             "the individual field arguments should be set.")
+
+        request = logging_config.GetSettingsRequest(request)
+
+        # If we have keyword arguments corresponding to fields on the
+        # request, apply these.
+        if name is not None:
+            request.name = name
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = gapic_v1.method_async.wrap_method(
+            self._client._transport.get_settings,
+            default_timeout=None,
+            client_info=DEFAULT_CLIENT_INFO,
+        )
+
+        # Certain fields should be provided within the metadata header;
+        # add these here.
+        metadata = tuple(metadata) + (
+            gapic_v1.routing_header.to_grpc_metadata((
+                ("name", request.name),
+            )),
+        )
+
+        # Send the request.
+        response = await rpc(
+            request,
+            retry=retry,
+            timeout=timeout,
+            metadata=metadata,
+        )
+
+        # Done; return the response.
+        return response
+
+    async def update_settings(self,
+            request: Union[logging_config.UpdateSettingsRequest, dict] = None,
+            *,
+            settings: logging_config.Settings = None,
+            update_mask: field_mask_pb2.FieldMask = None,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: float = None,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> logging_config.Settings:
+        r"""Updates the Log Router settings for the given resource.
+
+        Note: Settings for the Log Router can currently only be
+        configured for Google Cloud organizations. Once configured, it
+        applies to all projects and folders in the Google Cloud
+        organization.
+
+        [UpdateSettings][google.logging.v2.ConfigServiceV2.UpdateSettings]
+        will fail if 1) ``kms_key_name`` is invalid, or 2) the
+        associated service account does not have the required
+        ``roles/cloudkms.cryptoKeyEncrypterDecrypter`` role assigned for
+        the key, or 3) access to the key is disabled. 4) ``location_id``
+        is not supported by Logging. 5) ``location_id`` violate
+        OrgPolicy.
+
+        See `Enabling CMEK for Log
+        Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
+        for more information.
+
+
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_update_settings():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.UpdateSettingsRequest(
+                    name="name_value",
+                )
+
+                # Make the request
+                response = client.update_settings(request=request)
+
+                # Handle the response
+                print(response)
+
+        Args:
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.UpdateSettingsRequest, dict]):
+                The request object. The parameters to
+                [UpdateSettings][google.logging.v2.ConfigServiceV2.UpdateSettings].
+                See [Enabling CMEK for Log
+                Router](https://cloud.google.com/logging/docs/routing/managed-encryption)
+                for more information.
+            settings (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.Settings`):
+                Required. The settings to update.
+
+                See `Enabling CMEK for Log
+                Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
+                for more information.
+
+                This corresponds to the ``settings`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            update_mask (:class:`google.protobuf.field_mask_pb2.FieldMask`):
+                Optional. Field mask identifying which fields from
+                ``settings`` should be updated. A field will be
+                overwritten if and only if it is in the update mask.
+                Output only fields cannot be updated.
+
+                See [FieldMask][google.protobuf.FieldMask] for more
+                information.
+
+                For example: ``"updateMask=kmsKeyName"``
+
+                This corresponds to the ``update_mask`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+
+        Returns:
+            googlecloudsdk.third_party.gapic_clients.logging_v2.types.Settings:
+                Describes the settings associated
+                with a project, folder, organization,
+                billing account, or flexible resource.
+
+        """
+        # Create or coerce a protobuf request object.
+        # Quick check: If we got a request object, we should *not* have
+        # gotten any keyword arguments that map to the request.
+        has_flattened_params = any([settings, update_mask])
+        if request is not None and has_flattened_params:
+            raise ValueError("If the `request` argument is set, then none of "
+                             "the individual field arguments should be set.")
+
+        request = logging_config.UpdateSettingsRequest(request)
+
+        # If we have keyword arguments corresponding to fields on the
+        # request, apply these.
+        if settings is not None:
+            request.settings = settings
+        if update_mask is not None:
+            request.update_mask = update_mask
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = gapic_v1.method_async.wrap_method(
+            self._client._transport.update_settings,
+            default_timeout=None,
+            client_info=DEFAULT_CLIENT_INFO,
+        )
+
+        # Certain fields should be provided within the metadata header;
+        # add these here.
+        metadata = tuple(metadata) + (
+            gapic_v1.routing_header.to_grpc_metadata((
+                ("name", request.name),
+            )),
+        )
+
+        # Send the request.
+        response = await rpc(
+            request,
+            retry=retry,
+            timeout=timeout,
+            metadata=metadata,
+        )
+
+        # Done; return the response.
+        return response
+
+    async def copy_log_entries(self,
+            request: Union[logging_config.CopyLogEntriesRequest, dict] = None,
+            *,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
             timeout: float = None,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> operation_async.AsyncOperation:
         r"""Copies a set of log entries from a log bucket to a
         Cloud Storage bucket.
 
+
+        .. code-block:: python
+
+            from googlecloudsdk.third_party.gapic_clients import logging_v2
+
+            def sample_copy_log_entries():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.CopyLogEntriesRequest(
+                    name="name_value",
+                    destination="destination_value",
+                )
+
+                # Make the request
+                operation = client.copy_log_entries(request=request)
+
+                print("Waiting for operation to complete...")
+
+                response = operation.result()
+
+                # Handle the response
+                print(response)
+
         Args:
-            request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.CopyLogEntriesRequest`):
+            request (Union[googlecloudsdk.third_party.gapic_clients.logging_v2.types.CopyLogEntriesRequest, dict]):
                 The request object. The parameters to CopyLogEntries.
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
@@ -2078,9 +2869,11 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         # Done; return the response.
         return response
 
+    async def __aenter__(self):
+        return self
 
-
-
+    async def __aexit__(self, exc_type, exc, tb):
+        await self.transport.close()
 
 try:
     DEFAULT_CLIENT_INFO = gapic_v1.client_info.ClientInfo(

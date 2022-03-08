@@ -20,10 +20,12 @@ from __future__ import unicode_literals
 
 import json
 
+
 from apitools.base.py import batch
 from apitools.base.py import exceptions
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import exceptions as api_exceptions
 from googlecloudsdk.core import properties
 
 # Upper bound on batch size
@@ -60,11 +62,14 @@ class BatchChecker(object):
     # If there is no exception, then there is not an api enablement error.
     # Also, if prompting to enable is disabled, then we let the batch module
     # fail the batch request.
-    if (exception is None
-        or not properties.VALUES.core.should_prompt_to_enable_api.GetBool()):
+    if (exception is None or
+        not properties.VALUES.core.should_prompt_to_enable_api.GetBool()):
       return
     enablement_info = apis.GetApiEnablementInfo(exception)
     if not enablement_info:  # Exception was not an api enablement error.
+      parsed_exception = api_exceptions.HttpException(exception)
+      if isinstance(parsed_exception.error, exceptions.HttpForbiddenError):
+        raise parsed_exception.error
       return
     project, service_token, exception = enablement_info
     if service_token not in self.prompted_service_tokens:  # Only prompt once.

@@ -176,3 +176,14 @@ def AddLocationArgToParser(parser, message):
   """
   parser.add_argument(
       "--location", metavar="LOCATION", required=False, help=message)
+
+
+def AddEffectiveArgToParser(parser, message):
+  """Adds argument for the effective option.
+
+  Args:
+    parser: ArgumentInterceptor, An argparse parser.
+    message: String, help text for flag.
+  """
+  parser.add_argument(
+      "--effective", action="store_true", required=False, help=message)

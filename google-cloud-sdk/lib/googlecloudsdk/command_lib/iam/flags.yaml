@@ -264,17 +264,17 @@ workload_identity_pool_provider:
 
 workload_identity_pool_provider_key:
   use:
-    api_field: workloadIdentityPoolProviderKey.keyData.keySpec
-    arg_name: spec
-    required: true
-    help_text: |-
-      The specifications for the key.
-  spec:
     api_field: workloadIdentityPoolProviderKey.use
     arg_name: use
     required: true
     help_text: |-
       The purpose of the key.
+  spec:
+    api_field: workloadIdentityPoolProviderKey.keyData.keySpec
+    arg_name: spec
+    required: true
+    help_text: |-
+      The specifications for the key.
 
 workforce_pool:
   parent:

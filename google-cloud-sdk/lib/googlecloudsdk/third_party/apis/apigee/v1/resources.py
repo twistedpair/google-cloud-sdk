@@ -87,6 +87,25 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_APIS_KEYVALUEMAPS = (
+      'organizations.apis.keyvaluemaps',
+      'organizations/{organizationsId}/apis/{apisId}/keyvaluemaps/'
+      '{keyvaluemapsId}',
+      {},
+      ['organizationsId', 'apisId', 'keyvaluemapsId'],
+      True
+  )
+  ORGANIZATIONS_APIS_KEYVALUEMAPS_ENTRIES = (
+      'organizations.apis.keyvaluemaps.entries',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/apis/{apisId}/keyvaluemaps/'
+              '{keyvaluemapsId}/entries/{entriesId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_APIS_REVISIONS = (
       'organizations.apis.revisions',
       '{+name}',
@@ -321,6 +340,25 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_ENVIRONMENTS_KEYVALUEMAPS = (
+      'organizations.environments.keyvaluemaps',
+      'organizations/{organizationsId}/environments/{environmentsId}/'
+      'keyvaluemaps/{keyvaluemapsId}',
+      {},
+      ['organizationsId', 'environmentsId', 'keyvaluemapsId'],
+      True
+  )
+  ORGANIZATIONS_ENVIRONMENTS_KEYVALUEMAPS_ENTRIES = (
+      'organizations.environments.keyvaluemaps.entries',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/environments/{environmentsId}/'
+              'keyvaluemaps/{keyvaluemapsId}/entries/{entriesId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_ENVIRONMENTS_OPTIMIZEDSTATS = (
       'organizations.environments.optimizedStats',
       '{+name}',
@@ -479,6 +517,24 @@ class Collections(enum.Enum):
           '':
               'organizations/{organizationsId}/instances/{instancesId}/'
               'natAddresses/{natAddressesId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_KEYVALUEMAPS = (
+      'organizations.keyvaluemaps',
+      'organizations/{organizationsId}/keyvaluemaps/{keyvaluemapsId}',
+      {},
+      ['organizationsId', 'keyvaluemapsId'],
+      True
+  )
+  ORGANIZATIONS_KEYVALUEMAPS_ENTRIES = (
+      'organizations.keyvaluemaps.entries',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/keyvaluemaps/{keyvaluemapsId}/'
+              'entries/{entriesId}',
       },
       ['name'],
       True

@@ -1065,8 +1065,8 @@ class DataplexProjectsLocationsLakesZonesEntitiesDeleteRequest(_messages.Message
   r"""A DataplexProjectsLocationsLakesZonesEntitiesDeleteRequest object.
 
   Fields:
-    etag: Required. The etag associated with the partition if it was
-      previously retrieved.
+    etag: Required. The etag associated with the entity, which can be
+      retrieved with a GetEntity request.
     name: Required. The resource name of the entity: projects/{project_number}
       /locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/entities/{entit
       y_id}.
@@ -1142,8 +1142,8 @@ class DataplexProjectsLocationsLakesZonesEntitiesListRequest(_messages.Message):
     r"""Required. Specify the entity view to make a partial list request.
 
     Values:
-      ENTITY_VIEW_UNSPECIFIED: The default unset value. The API will default
-        to the FULL view.
+      ENTITY_VIEW_UNSPECIFIED: The default unset value. Return both table and
+        fileset entities if unspecified.
       TABLES: Only list table entities.
       FILESETS: Only list fileset entities.
     """
@@ -1182,8 +1182,7 @@ class DataplexProjectsLocationsLakesZonesEntitiesPartitionsDeleteRequest(_messag
   object.
 
   Fields:
-    etag: Optional. The etag associated with the partition if it was
-      previously retrieved.
+    etag: Optional. The etag associated with the partition.
     name: Required. The resource name of the partition. format: projects/{proj
       ect_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/enti
       ties/{entity_id}/partitions/{partition_value_path}. The
@@ -1216,11 +1215,11 @@ class DataplexProjectsLocationsLakesZonesEntitiesPartitionsListRequest(_messages
 
   Fields:
     filter: Optional. Filter the partitions returned to the caller using a key
-      vslue pair expression. The filter expression supports: logical
-      operators: AND, OR comparison operators: <, >, >=, <= ,=, != LIKE
-      operators: The right hand of a LIKE operator supports "." and "*" for
-      wildcard searches, for example "value1 LIKE ".*oo.*" parenthetical
-      grouping: ( )Sample filter expression: `?filter="key1 < value1 OR key2 >
+      value pair expression. Supported operators and syntax: logic operators:
+      AND, OR comparison operators: <, >, >=, <= ,=, != LIKE operators: The
+      right hand of a LIKE operator supports "." and "*" for wildcard
+      searches, for example "value1 LIKE ".*oo.*" parenthetical grouping: (
+      )Sample filter expression: `?filter="key1 < value1 OR key2 >
       value2"Notes: Keys to the left of operators are case insensitive.
       Partition results are sorted first by creation time, then by
       lexicographic order. Up to 20 key value filter pairs are allowed, but
@@ -2287,17 +2286,18 @@ class GoogleCloudDataplexV1Entity(_messages.Message):
       Example: gs://bucket/path/to/data/**/*.csv.
     description: Optional. User friendly longer description text. Must be
       shorter than or equal to 1024 characters.
-    displayName: Optional. Display name must be shorter than or equal to 63
+    displayName: Optional. Display name must be shorter than or equal to 256
       characters.
-    etag: Optional. The etag for this entity. Required for update and delete
-      requests. Must match the server's etag.
+    etag: Optional. The etag associated with the entity, which can be
+      retrieved with a GetEntity request. Required for update and delete
+      requests.
     format: Required. Identifies the storage format of the entity data. It
       does not apply to entities with data stored in BigQuery.
     id: Required. A user-provided entity ID. It is mutable, and will be used
       as the published table name. Specifying a new ID in an update entity
       request will override the existing value. The ID must contain only
       letters (a-z, A-Z), numbers (0-9), and underscores. Must begin with a
-      letter.
+      letter and consist of 256 or fewer characters.
     name: Output only. The resource name of the entity, of the form: projects/
       {project_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}
       /entities/{id}.
@@ -3051,14 +3051,11 @@ class GoogleCloudDataplexV1Partition(_messages.Message):
       partition, for example,
       gs://bucket/path/to/entity/key1=value1/key2=value2. Or
       projects//datasets//tables/
-    name: Output only. The values must be HTML URL encoded two times before
-      constructing the path. For example, if you have a value of "US:CA",
-      encoded it two times and you get "US%253ACA". Then if you have the 2nd
-      value is "CA#Sunnyvale", encoded two times and you get
-      "CA%2523Sunnyvale". The partition values path is
-      "US%253ACA/CA%2523Sunnyvale". The final URL will be
-      "https://.../partitions/US%253ACA/CA%2523Sunnyvale". The name field in
-      the responses will always have the encoded format.
+    name: Output only. Partition values used in the HTTP URL must be double
+      encoded. For example, url_encode(url_encode(value)) can be used to
+      encode "US:CA/CA#Sunnyvale so that the request URL ends with
+      "/partitions/US%253ACA/CA%2523Sunnyvale". The name field in the response
+      retains the encoded format.
     values: Required. Immutable. The set of values representing the partition,
       which correspond to the partition schema defined in the parent entity.
   """
@@ -3078,29 +3075,21 @@ class GoogleCloudDataplexV1Schema(_messages.Message):
 
   Fields:
     fields: Optional. The sequence of fields describing data in table
-      entities.
+      entities. Note: BigQuery SchemaFields are immutable.
     partitionFields: Optional. The sequence of fields describing the partition
       structure in entities. If this field is empty, there are no partitions
       within the data.
     partitionStyle: Optional. The structure of paths containing partition data
       within the entity.
-    userManaged: Required. Whether the schema is user-managed or managed by
-      the service. - Set user_manage to false if you would like Dataplex to
-      help you manage the schema. You will get the full service provided by
-      Dataplex discovery, including new data discovery, schema inference and
-      schema evolution. You can still provide input the schema of the
-      entities, for example renaming a schema field, changing CSV or Json
-      options if you think the discovered values are not as accurate. Dataplex
-      will consider your input as the initial schema (as if they were produced
-      by the previous discovery run), and will evolve schema or flag actions
-      based on that. - Set user_manage to true if you would like to fully
-      manage the entity schema by yourself. This is useful when you would like
-      to manually specify the schema for a table. In this case, the schema
-      defined by the user is guaranteed to be kept unchanged and would not be
-      overwritten. But this also means Dataplex will not provide schema
-      evolution management for you. Dataplex will still be able to manage
-      partition registration (i.e., keeping the list of partitions up to date)
-      when Dataplex discovery is turned on and user_managed is set to true.
+    userManaged: Required. Set to true if user-managed or false if managed by
+      Dataplex. The default is false (managed by Dataplex). Set to falseto
+      enable Dataplex discovery to update the schema. including new data
+      discovery, schema inference, and schema evolution. Users retain the
+      ability to input and edit the schema. Dataplex treats schema input by
+      the user as though produced by a previous Dataplex discovery operation,
+      and it will evolve the schema and take action based on that treatment.
+      Set to true to fully manage the entity schema. This setting guarantees
+      that Dataplex will not change schema fields.
   """
 
   class PartitionStyleValueValuesEnum(_messages.Enum):
@@ -3125,14 +3114,16 @@ class GoogleCloudDataplexV1Schema(_messages.Message):
 class GoogleCloudDataplexV1SchemaPartitionField(_messages.Message):
   r"""Represents a key field within the entity's partition structure. You
   could have up to 20 partition fields, but only the first 10 partitions have
-  the filtering ability due to performance consideration.
+  the filtering ability due to performance consideration. Note: Partition
+  fields are immutable.
 
   Enums:
     TypeValueValuesEnum: Required. Immutable. The type of field.
 
   Fields:
-    name: Required. Partition name is editable if only the partition style is
-      not HIVE compatible. The maximum length allowed is 767 characters.
+    name: Required. Partition field name must consist of letters, numbers, and
+      underscores only, with a maximum of length of 256 characters, and must
+      begin with a letter or underscore..
     type: Required. Immutable. The type of field.
   """
 
@@ -3191,8 +3182,9 @@ class GoogleCloudDataplexV1SchemaSchemaField(_messages.Message):
       or equal to 1024 characters.
     fields: Optional. Any nested field for complex types.
     mode: Required. Additional field semantics.
-    name: Required. The name of the field. The maximum length is 767
-      characters. The name must begins with a letter and not contains : and ..
+    name: Required. The name of the field. Must contain only letters, numbers
+      and underscores, with a maximum length of 767 characters, and must begin
+      with a letter or underscore.
     type: Required. The type of field.
   """
 
@@ -3385,10 +3377,10 @@ class GoogleCloudDataplexV1StorageFormat(_messages.Message):
       type.
     json: Optional. Additional information about CSV formatted data.
     mimeType: Required. The mime type descriptor for the data. Must match the
-      pattern {type}/{subtype}. Supported values: - application/x-parquet -
-      application/x-avro - application/x-orc - application/x-tfrecord -
-      application/json - application/{subtypes} - text/csv - text/ -
-      image/{image subtype} - video/{video subtype} - audio/{audio subtype}
+      pattern {type}/{subtype}. Supported values: application/x-parquet
+      application/x-avro application/x-orc application/x-tfrecord
+      application/json application/{subtypes} text/csv text/ image/{image
+      subtype} video/{video subtype} audio/{audio subtype}
   """
 
   class CompressionFormatValueValuesEnum(_messages.Enum):
@@ -3456,7 +3448,8 @@ class GoogleCloudDataplexV1StorageFormatCsvOptions(_messages.Message):
     headerRows: Optional. The number of rows to interpret as header rows that
       should be skipped when reading data rows. Defaults to 0.
     quote: Optional. The character used to quote column values. Accepts '"'
-      and '''. Defaults to '"' if unspecified.
+      (double quotation mark) or ''' (single quotation mark). Defaults to '"'
+      (double quotation mark) if unspecified.
   """
 
   delimiter = _messages.StringField(1)

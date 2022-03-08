@@ -250,8 +250,10 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
     kajEnrollmentState: Output only. Represents the KAJ enrollment state of
       the given workload.
     kmsSettings: Input only. Settings used to create a CMEK crypto key. When
-      set a project with a KMS CMEK key is provisioned. This field is
-      mandatory for a subset of Compliance Regimes.
+      set, a project with a KMS CMEK key is provisioned. This field is
+      deprecated as of Feb 28, 2022. In order to create a Keyring, callers
+      should specify, ENCRYPTION_KEYS_PROJECT or KEYRING in
+      ResourceSettings.resource_type field.
     labels: Optional. Labels applied to the workload.
     name: Optional. The resource name of the workload. Format:
       organizations/{organization}/locations/{location}/workloads/{workload}
@@ -420,7 +422,9 @@ class GoogleCloudAssuredworkloadsV1WorkloadResourceSettings(_messages.Message):
     displayName: User-assigned resource display name. If not empty it will be
       used to create a resource with the specified name.
     resourceId: Resource identifier. For a project this represents project_id.
-      If the project is already taken, the workload creation will fail.
+      If the project is already taken, the workload creation will fail. For
+      KeyRing, this represents the keyring_id. For a folder, don't set this
+      value as folder_id is assigned by Google.
     resourceType: Indicates the type of resource. This field should be
       specified to correspond the id to the right project type
       (CONSUMER_PROJECT or ENCRYPTION_KEYS_PROJECT)
@@ -637,8 +641,8 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
       the assigned billing account. The resource name has the form
       `billingAccounts/{billing_account_id}`. For example,
       `billingAccounts/012345-567890-ABCDEF`.
-    cjisSettings: Required. Input only. Immutable. Settings specific to
-      resources needed for CJIS.
+    cjisSettings: Input only. Immutable. Settings specific to resources needed
+      for CJIS.
     complianceRegime: Required. Immutable. Compliance Regime associated with
       this workload.
     createTime: Output only. Immutable. The Workload creation timestamp.
@@ -650,17 +654,19 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
       given workload. Currently meant to be used by Europe/Canada customers.
     etag: Optional. ETag of the workload, it is calculated on the basis of the
       Workload contents. It will be used in Update & Delete operations.
-    fedrampHighSettings: Required. Input only. Immutable. Settings specific to
-      resources needed for FedRAMP High.
-    fedrampModerateSettings: Required. Input only. Immutable. Settings
-      specific to resources needed for FedRAMP Moderate.
-    il4Settings: Required. Input only. Immutable. Settings specific to
-      resources needed for IL4.
+    fedrampHighSettings: Input only. Immutable. Settings specific to resources
+      needed for FedRAMP High.
+    fedrampModerateSettings: Input only. Immutable. Settings specific to
+      resources needed for FedRAMP Moderate.
+    il4Settings: Input only. Immutable. Settings specific to resources needed
+      for IL4.
     kajEnrollmentState: Output only. Represents the KAJ enrollment state of
       the given workload.
     kmsSettings: Input only. Settings used to create a CMEK crypto key. When
-      set a project with a KMS CMEK key is provisioned. This field is
-      mandatory for a subset of Compliance Regimes.
+      set, a project with a KMS CMEK key is provisioned. This field is
+      deprecated as of Feb 28, 2022. In order to create a Keyring, callers
+      should specify, ENCRYPTION_KEYS_PROJECT or KEYRING in
+      ResourceSettings.resource_type field.
     labels: Optional. Labels applied to the workload.
     name: Optional. The resource name of the workload. Format:
       organizations/{organization}/locations/{location}/workloads/{workload}
@@ -774,8 +780,8 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadCJISSettings(_messages.Message):
   r"""Settings specific to resources needed for CJIS.
 
   Fields:
-    kmsSettings: Required. Input only. Immutable. Settings used to create a
-      CMEK crypto key.
+    kmsSettings: Input only. Immutable. Settings used to create a CMEK crypto
+      key.
   """
 
   kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadKMSSettings', 1)
@@ -785,8 +791,8 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampHighSettings(_messages.Me
   r"""Settings specific to resources needed for FedRAMP High.
 
   Fields:
-    kmsSettings: Required. Input only. Immutable. Settings used to create a
-      CMEK crypto key.
+    kmsSettings: Input only. Immutable. Settings used to create a CMEK crypto
+      key.
   """
 
   kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadKMSSettings', 1)
@@ -796,8 +802,8 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampModerateSettings(_message
   r"""Settings specific to resources needed for FedRAMP Moderate.
 
   Fields:
-    kmsSettings: Required. Input only. Immutable. Settings used to create a
-      CMEK crypto key.
+    kmsSettings: Input only. Immutable. Settings used to create a CMEK crypto
+      key.
   """
 
   kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadKMSSettings', 1)
@@ -807,8 +813,8 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadIL4Settings(_messages.Message):
   r"""Settings specific to resources needed for IL4.
 
   Fields:
-    kmsSettings: Required. Input only. Immutable. Settings used to create a
-      CMEK crypto key.
+    kmsSettings: Input only. Immutable. Settings used to create a CMEK crypto
+      key.
   """
 
   kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadKMSSettings', 1)
@@ -876,7 +882,9 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings(_messages.Messa
     displayName: User-assigned resource display name. If not empty it will be
       used to create a resource with the specified name.
     resourceId: Resource identifier. For a project this represents project_id.
-      If the project is already taken, the workload creation will fail.
+      If the project is already taken, the workload creation will fail. For
+      KeyRing, this represents the keyring_id. For a folder, don't set this
+      value as folder_id is assigned by Google.
     resourceType: Indicates the type of resource. This field should be
       specified to correspond the id to the right project type
       (CONSUMER_PROJECT or ENCRYPTION_KEYS_PROJECT)
@@ -1054,8 +1062,10 @@ class GoogleCloudAssuredworkloadsVersioningV1mainWorkload(_messages.Message):
     kajEnrollmentState: Output only. Represents the KAJ enrollment state of
       the given workload.
     kmsSettings: Input only. Settings used to create a CMEK crypto key. When
-      set a project with a KMS CMEK key is provisioned. This field is
-      mandatory for a subset of Compliance Regimes.
+      set, a project with a KMS CMEK key is provisioned. This field is
+      deprecated as of Feb 28, 2022. In order to create a Keyring, callers
+      should specify, ENCRYPTION_KEYS_PROJECT or KEYRING in
+      ResourceSettings.resource_type field.
     labels: Optional. Labels applied to the workload.
     name: Optional. The resource name of the workload. Format:
       organizations/{organization}/locations/{location}/workloads/{workload}
@@ -1169,8 +1179,8 @@ class GoogleCloudAssuredworkloadsVersioningV1mainWorkloadCJISSettings(_messages.
   r"""Settings specific to resources needed for CJIS.
 
   Fields:
-    kmsSettings: Required. Input only. Immutable. Settings used to create a
-      CMEK crypto key.
+    kmsSettings: Input only. Immutable. Settings used to create a CMEK crypto
+      key.
   """
 
   kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsVersioningV1mainWorkloadKMSSettings', 1)
@@ -1180,8 +1190,8 @@ class GoogleCloudAssuredworkloadsVersioningV1mainWorkloadFedrampHighSettings(_me
   r"""Settings specific to resources needed for FedRAMP High.
 
   Fields:
-    kmsSettings: Required. Input only. Immutable. Settings used to create a
-      CMEK crypto key.
+    kmsSettings: Input only. Immutable. Settings used to create a CMEK crypto
+      key.
   """
 
   kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsVersioningV1mainWorkloadKMSSettings', 1)
@@ -1191,8 +1201,8 @@ class GoogleCloudAssuredworkloadsVersioningV1mainWorkloadFedrampModerateSettings
   r"""Settings specific to resources needed for FedRAMP Moderate.
 
   Fields:
-    kmsSettings: Required. Input only. Immutable. Settings used to create a
-      CMEK crypto key.
+    kmsSettings: Input only. Immutable. Settings used to create a CMEK crypto
+      key.
   """
 
   kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsVersioningV1mainWorkloadKMSSettings', 1)
@@ -1202,8 +1212,8 @@ class GoogleCloudAssuredworkloadsVersioningV1mainWorkloadIL4Settings(_messages.M
   r"""Settings specific to resources needed for IL4.
 
   Fields:
-    kmsSettings: Required. Input only. Immutable. Settings used to create a
-      CMEK crypto key.
+    kmsSettings: Input only. Immutable. Settings used to create a CMEK crypto
+      key.
   """
 
   kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsVersioningV1mainWorkloadKMSSettings', 1)
@@ -1271,7 +1281,9 @@ class GoogleCloudAssuredworkloadsVersioningV1mainWorkloadResourceSettings(_messa
     displayName: User-assigned resource display name. If not empty it will be
       used to create a resource with the specified name.
     resourceId: Resource identifier. For a project this represents project_id.
-      If the project is already taken, the workload creation will fail.
+      If the project is already taken, the workload creation will fail. For
+      KeyRing, this represents the keyring_id. For a folder, don't set this
+      value as folder_id is assigned by Google.
     resourceType: Indicates the type of resource. This field should be
       specified to correspond the id to the right project type
       (CONSUMER_PROJECT or ENCRYPTION_KEYS_PROJECT)

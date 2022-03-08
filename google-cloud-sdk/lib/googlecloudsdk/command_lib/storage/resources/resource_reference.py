@@ -97,6 +97,9 @@ class CloudResource(Resource):
 class BucketResource(CloudResource):
   """Class representing a bucket.
 
+  Only add attributes to this class if they're useful for business logic
+  elsewhere in gcloud. Display-only fields are handled elsewhere.
+
   Attributes:
     TYPE_STRING (str): String representing the resource's content type.
     storage_url (StorageUrl): A StorageUrl object representing the bucket.

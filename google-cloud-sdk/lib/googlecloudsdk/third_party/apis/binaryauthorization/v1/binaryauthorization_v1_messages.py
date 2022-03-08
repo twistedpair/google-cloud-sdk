@@ -146,6 +146,8 @@ class Attestor(_messages.Message):
   Fields:
     description: Optional. A descriptive comment. This field may be updated.
       The field may be displayed in chooser dialogs.
+    etag: Optional. Used to prevent updating the attestor when another request
+      has updated it since it was retrieved.
     name: Required. The resource name, in the format:
       `projects/*/attestors/*`. This field may not be updated.
     updateTime: Output only. Time when the attestor was last updated.
@@ -154,9 +156,10 @@ class Attestor(_messages.Message):
   """
 
   description = _messages.StringField(1)
-  name = _messages.StringField(2)
-  updateTime = _messages.StringField(3)
-  userOwnedGrafeasNote = _messages.MessageField('UserOwnedGrafeasNote', 4)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
+  userOwnedGrafeasNote = _messages.MessageField('UserOwnedGrafeasNote', 5)
 
 
 class AttestorPublicKey(_messages.Message):
@@ -827,9 +830,13 @@ class PkixPublicKey(_messages.Message):
     Values:
       SIGNATURE_ALGORITHM_UNSPECIFIED: Not specified.
       RSA_PSS_2048_SHA256: RSASSA-PSS 2048 bit key with a SHA256 digest.
+      RSA_SIGN_PSS_2048_SHA256: RSASSA-PSS 2048 bit key with a SHA256 digest.
       RSA_PSS_3072_SHA256: RSASSA-PSS 3072 bit key with a SHA256 digest.
+      RSA_SIGN_PSS_3072_SHA256: RSASSA-PSS 3072 bit key with a SHA256 digest.
       RSA_PSS_4096_SHA256: RSASSA-PSS 4096 bit key with a SHA256 digest.
+      RSA_SIGN_PSS_4096_SHA256: RSASSA-PSS 4096 bit key with a SHA256 digest.
       RSA_PSS_4096_SHA512: RSASSA-PSS 4096 bit key with a SHA512 digest.
+      RSA_SIGN_PSS_4096_SHA512: RSASSA-PSS 4096 bit key with a SHA512 digest.
       RSA_SIGN_PKCS1_2048_SHA256: RSASSA-PKCS1-v1_5 with a 2048 bit key and a
         SHA256 digest.
       RSA_SIGN_PKCS1_3072_SHA256: RSASSA-PKCS1-v1_5 with a 3072 bit key and a
@@ -847,19 +854,23 @@ class PkixPublicKey(_messages.Message):
     """
     SIGNATURE_ALGORITHM_UNSPECIFIED = 0
     RSA_PSS_2048_SHA256 = 1
-    RSA_PSS_3072_SHA256 = 2
-    RSA_PSS_4096_SHA256 = 3
-    RSA_PSS_4096_SHA512 = 4
-    RSA_SIGN_PKCS1_2048_SHA256 = 5
-    RSA_SIGN_PKCS1_3072_SHA256 = 6
-    RSA_SIGN_PKCS1_4096_SHA256 = 7
-    RSA_SIGN_PKCS1_4096_SHA512 = 8
-    ECDSA_P256_SHA256 = 9
-    EC_SIGN_P256_SHA256 = 10
-    ECDSA_P384_SHA384 = 11
-    EC_SIGN_P384_SHA384 = 12
-    ECDSA_P521_SHA512 = 13
-    EC_SIGN_P521_SHA512 = 14
+    RSA_SIGN_PSS_2048_SHA256 = 2
+    RSA_PSS_3072_SHA256 = 3
+    RSA_SIGN_PSS_3072_SHA256 = 4
+    RSA_PSS_4096_SHA256 = 5
+    RSA_SIGN_PSS_4096_SHA256 = 6
+    RSA_PSS_4096_SHA512 = 7
+    RSA_SIGN_PSS_4096_SHA512 = 8
+    RSA_SIGN_PKCS1_2048_SHA256 = 9
+    RSA_SIGN_PKCS1_3072_SHA256 = 10
+    RSA_SIGN_PKCS1_4096_SHA256 = 11
+    RSA_SIGN_PKCS1_4096_SHA512 = 12
+    ECDSA_P256_SHA256 = 13
+    EC_SIGN_P256_SHA256 = 14
+    ECDSA_P384_SHA384 = 15
+    EC_SIGN_P384_SHA384 = 16
+    ECDSA_P521_SHA512 = 17
+    EC_SIGN_P521_SHA512 = 18
 
   publicKeyPem = _messages.StringField(1)
   signatureAlgorithm = _messages.EnumField('SignatureAlgorithmValueValuesEnum', 2)
@@ -938,6 +949,8 @@ class Policy(_messages.Message):
       without a per-cluster, per- kubernetes-service-account, or per-istio-
       service-identity admission rule.
     description: Optional. A descriptive comment.
+    etag: Optional. Used to prevent updating the policy when another request
+      has updated it since it was retrieved.
     globalPolicyEvaluationMode: Optional. Controls the evaluation of a Google-
       maintained global admission policy for common system-level images.
       Images not covered by the global policy will be subject to the project
@@ -1093,12 +1106,13 @@ class Policy(_messages.Message):
   clusterAdmissionRules = _messages.MessageField('ClusterAdmissionRulesValue', 2)
   defaultAdmissionRule = _messages.MessageField('AdmissionRule', 3)
   description = _messages.StringField(4)
-  globalPolicyEvaluationMode = _messages.EnumField('GlobalPolicyEvaluationModeValueValuesEnum', 5)
-  istioServiceIdentityAdmissionRules = _messages.MessageField('IstioServiceIdentityAdmissionRulesValue', 6)
-  kubernetesNamespaceAdmissionRules = _messages.MessageField('KubernetesNamespaceAdmissionRulesValue', 7)
-  kubernetesServiceAccountAdmissionRules = _messages.MessageField('KubernetesServiceAccountAdmissionRulesValue', 8)
-  name = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  etag = _messages.StringField(5)
+  globalPolicyEvaluationMode = _messages.EnumField('GlobalPolicyEvaluationModeValueValuesEnum', 6)
+  istioServiceIdentityAdmissionRules = _messages.MessageField('IstioServiceIdentityAdmissionRulesValue', 7)
+  kubernetesNamespaceAdmissionRules = _messages.MessageField('KubernetesNamespaceAdmissionRulesValue', 8)
+  kubernetesServiceAccountAdmissionRules = _messages.MessageField('KubernetesServiceAccountAdmissionRulesValue', 9)
+  name = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class SetIamPolicyRequest(_messages.Message):

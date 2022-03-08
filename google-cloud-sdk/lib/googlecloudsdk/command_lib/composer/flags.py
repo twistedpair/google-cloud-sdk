@@ -902,8 +902,8 @@ SKIP_PYPI_PACKAGES_INSTALLATION = base.Argument(
     default=None,
     action='store_true',
     help="""\
-    When enabled, skip installing Pypi packages while loading the environment
-    state.
+    When specified, skips the installation of custom PyPI packages from
+    the snapshot.
     """)
 
 

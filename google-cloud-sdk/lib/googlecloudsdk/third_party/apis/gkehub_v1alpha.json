@@ -728,6 +728,10 @@
         "appdevexperience": {
           "description": "Appdevexperience specific spec.",
           "$ref": "AppDevExperienceFeatureSpec"
+        },
+        "anthosobservability": {
+          "description": "Anthos Observability spec",
+          "$ref": "AnthosObservabilityFeatureSpec"
         }
       }
     },
@@ -912,6 +916,36 @@
       "description": "Spec for App Dev Experience Feature.",
       "type": "object",
       "properties": {
+      }
+    },
+    "AnthosObservabilityFeatureSpec": {
+      "id": "AnthosObservabilityFeatureSpec",
+      "description": "**Anthos Observability**: Spec",
+      "type": "object",
+      "properties": {
+        "defaultMembershipSpec": {
+          "description": "default membership spec for unconfigured memberships",
+          "$ref": "AnthosObservabilityMembershipSpec"
+        }
+      }
+    },
+    "AnthosObservabilityMembershipSpec": {
+      "id": "AnthosObservabilityMembershipSpec",
+      "description": "**Anthosobservability**: Per-Membership Feature spec.",
+      "type": "object",
+      "properties": {
+        "enableStackdriverOnApplications": {
+          "description": "enable collecting and reporting metrics and logs from user apps See go\/onyx-application-metrics-logs-user-guide",
+          "type": "boolean"
+        },
+        "doNotOptimizeMetrics": {
+          "description": "use full of metrics rather than optimized metrics. See https:\/\/cloud.google.com\/anthos\/clusters\/docs\/on-prem\/1.8\/concepts\/logging-and-monitoring#optimized_metrics_default_metrics",
+          "type": "boolean"
+        },
+        "version": {
+          "description": "the version of stackdriver operator used by this feature",
+          "type": "string"
+        }
       }
     },
     "MembershipFeatureSpec": {
@@ -1302,21 +1336,20 @@
             "REGULAR",
             "STABLE"
           ]
-        }
-      }
-    },
-    "AnthosObservabilityMembershipSpec": {
-      "id": "AnthosObservabilityMembershipSpec",
-      "description": "**Anthosobservability**: Per-Membership Feature spec.",
-      "type": "object",
-      "properties": {
-        "enableStackdriverOnApplications": {
-          "description": "enable collecting and reporting metrics and logs from user apps See go\/onyx-application-metrics-logs-user-guide",
-          "type": "boolean"
         },
-        "doNotOptimizeMetrics": {
-          "description": "use full of metrics rather than optimized metrics. See https:\/\/cloud.google.com\/anthos\/clusters\/docs\/on-prem\/1.8\/concepts\/logging-and-monitoring#optimized_metrics_default_metrics",
-          "type": "boolean"
+        "dataPlane": {
+          "description": "Enables automatic data plane management.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified",
+            "Enables Google-managed data plane that provides L7 service mesh capabilities. Data plane management is enabled at the cluster level. Users can exclude individual workloads or namespaces.",
+            "User will manage their L7 data plane."
+          ],
+          "enum": [
+            "DATA_PLANE_MANAGEMENT_UNSPECIFIED",
+            "DATA_PLANE_MANAGEMENT_AUTOMATIC",
+            "DATA_PLANE_MANAGEMENT_MANUAL"
+          ]
         }
       }
     },

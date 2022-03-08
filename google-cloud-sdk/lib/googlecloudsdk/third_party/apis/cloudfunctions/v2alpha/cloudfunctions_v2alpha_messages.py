@@ -1464,6 +1464,30 @@ class Runtime(_messages.Message):
   warnings = _messages.StringField(5, repeated=True)
 
 
+class SecretEnvVar(_messages.Message):
+  r"""Configuration for a secret environment variable. It has the information
+  necessary to fetch the secret value from secret manager and expose it as an
+  environment variable.
+
+  Fields:
+    key: Name of the environment variable.
+    projectId: Project identifier (preferrably project number but can also be
+      the project ID) of the project that contains the secret. If not set, it
+      will be populated with the function's project assuming that the secret
+      exists in the same project as of the function.
+    secret: Name of the secret in secret manager (not the full resource name).
+    version: Version of the secret (version number or the string 'latest'). It
+      is recommended to use a numeric version for secret environment variables
+      as any updates to the secret value is not reflected until new instances
+      start.
+  """
+
+  key = _messages.StringField(1)
+  projectId = _messages.StringField(2)
+  secret = _messages.StringField(3)
+  version = _messages.StringField(4)
+
+
 class ServiceConfig(_messages.Message):
   r"""Describes the Service being deployed. Currently Supported : Cloud Run
   (fully managed).
@@ -1510,6 +1534,7 @@ class ServiceConfig(_messages.Message):
       running in idle state always. This can help with cold start times when
       jump in incoming request count occurs after the idle instance would have
       been stopped in the default case.
+    secretEnvironmentVariables: Secret environment variables configuration.
     service: Output only. Name of the service associated with a Function. The
       format of this field is
       `projects/{project}/locations/{region}/services/{service}`
@@ -1590,12 +1615,13 @@ class ServiceConfig(_messages.Message):
   ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 4)
   maxInstanceCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   minInstanceCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  service = _messages.StringField(7)
-  serviceAccountEmail = _messages.StringField(8)
-  timeoutSeconds = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  uri = _messages.StringField(10)
-  vpcConnector = _messages.StringField(11)
-  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 12)
+  secretEnvironmentVariables = _messages.MessageField('SecretEnvVar', 7, repeated=True)
+  service = _messages.StringField(8)
+  serviceAccountEmail = _messages.StringField(9)
+  timeoutSeconds = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  uri = _messages.StringField(11)
+  vpcConnector = _messages.StringField(12)
+  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 13)
 
 
 class SetIamPolicyRequest(_messages.Message):

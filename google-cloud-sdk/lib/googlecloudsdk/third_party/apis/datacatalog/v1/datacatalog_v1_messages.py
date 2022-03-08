@@ -2682,7 +2682,8 @@ class GoogleCloudDatacatalogV1TagTemplate(_messages.Message):
     isPubliclyReadable: Indicates whether tags created with this template are
       public. Public tags do not require tag template access to appear in
       ListTags API response. Additionally, you can search for a public tag by
-      value with a simple search query instead of using a ``tag:`` predicate.
+      value with a simple search query in addition to using a ``tag:``
+      predicate.
     name: The resource name of the tag template in URL format. Note: The tag
       template itself and its child resources might not be stored in the
       location specified in its name.

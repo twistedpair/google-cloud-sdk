@@ -656,6 +656,8 @@ class ExecutionStatus(_messages.Message):
   r"""ExecutionStatus represents the current state of a Execution.
 
   Fields:
+    cancelledCount: Optional. The number of tasks which reached phase
+      Cancelled. +optional
     completionTime: Optional. Represents time when the execution was
       completed. It is not guaranteed to be set in happens-before order across
       separate operations. It is represented in RFC3339 form and is in UTC.
@@ -670,6 +672,8 @@ class ExecutionStatus(_messages.Message):
       Console.
     observedGeneration: Optional. The 'generation' of the execution that was
       last processed by the controller.
+    retriedCount: Optional. The number of tasks which have retried at least
+      once. +optional
     runningCount: Optional. The number of actively running tasks. +optional
     startTime: Optional. Represents time when the execution started to run. It
       is not guaranteed to be set in happens-before order across separate
@@ -678,14 +682,16 @@ class ExecutionStatus(_messages.Message):
       Succeeded. +optional
   """
 
-  completionTime = _messages.StringField(1)
-  conditions = _messages.MessageField('GoogleCloudRunV1Condition', 2, repeated=True)
-  failedCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  logUri = _messages.StringField(4)
-  observedGeneration = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  runningCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  startTime = _messages.StringField(7)
-  succeededCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  cancelledCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  completionTime = _messages.StringField(2)
+  conditions = _messages.MessageField('GoogleCloudRunV1Condition', 3, repeated=True)
+  failedCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  logUri = _messages.StringField(5)
+  observedGeneration = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  retriedCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  runningCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(9)
+  succeededCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
 
 
 class ExecutionTemplateSpec(_messages.Message):
@@ -1615,14 +1621,16 @@ class Probe(_messages.Message):
       https://kubernetes.io/docs/concepts/workloads/pods/pod-
       lifecycle#container-probes
     periodSeconds: (Optional) How often (in seconds) to perform the probe.
-      Default to 10 seconds. Minimum value is 1.
+      Default to 10 seconds. Minimum value is 1. Maximum value is 3600. Must
+      be greater or equal than timeout_seconds.
     successThreshold: (Optional) Minimum consecutive successes for the probe
       to be considered successful after having failed. Defaults to 1. Must be
-      1 for liveness. Minimum value is 1.
+      1 for liveness and startup Probes.
     tcpSocket: (Optional) TCPSocket specifies an action involving a TCP port.
       TCP hooks not yet supported A field inlined from the Handler message.
     timeoutSeconds: (Optional) Number of seconds after which the probe times
-      out. Defaults to 1 second. Minimum value is 1. More info:
+      out. Defaults to 1 second. Minimum value is 1. Maximum value is 3600.
+      Must be smaller than period_seconds. More info:
       https://kubernetes.io/docs/concepts/workloads/pods/pod-
       lifecycle#container-probes
   """

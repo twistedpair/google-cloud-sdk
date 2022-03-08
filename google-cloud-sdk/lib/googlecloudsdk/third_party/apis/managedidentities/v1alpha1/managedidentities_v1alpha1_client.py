@@ -312,6 +312,33 @@ class ManagedidentitiesV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single SchemaExtension.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalDomainsSchemaExtensionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SchemaExtension) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}/schemaExtensions/{schemaExtensionsId}',
+        http_method='GET',
+        method_id='managedidentities.projects.locations.global.domains.schemaExtensions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsSchemaExtensionsGetRequest',
+        response_type_name='SchemaExtension',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists Schema Extensions history for a given domain.
 

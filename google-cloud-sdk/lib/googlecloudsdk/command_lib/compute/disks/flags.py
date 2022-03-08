@@ -194,6 +194,22 @@ def AddLocationHintArg(parser):
       """)
 
 
+def MakeSecondaryDiskArg(required=False):
+  return compute_flags.ResourceArgument(
+      resource_name='async secondary disk',
+      name='--secondary-disk',
+      completer=compute_completers.DisksCompleter,
+      zonal_collection='compute.disks',
+      regional_collection='compute.regionDisks',
+      short_help='Secondary disk for asynchronous replication.',
+      detailed_help=_ASYNC_SECONDARY_DISK_HELP,
+      plural=False,
+      required=required,
+      use_existing_default_scope=False,
+      zone_help_text=_ASYNC_SECONDARY_DISK_ZONE_EXPLANATION,
+      region_help_text=_ASYNC_SECONDARY_DISK_REGION_EXPLANATION)
+
+
 SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     resource_name='snapshot',
     completer=SnapshotsCompleter,
@@ -243,17 +259,3 @@ ASYNC_PRIMARY_DISK_ARG = compute_flags.ResourceArgument(
     use_existing_default_scope=False,
     zone_help_text=_ASYNC_PRIMARY_DISK_ZONE_EXPLANATION,
     region_help_text=_ASYNC_PRIMARY_DISK_REGION_EXPLANATION)
-
-ASYNC_SECONDARY_DISK_ARG = compute_flags.ResourceArgument(
-    resource_name='async secondary disk',
-    name='--secondary-disk',
-    completer=compute_completers.DisksCompleter,
-    zonal_collection='compute.disks',
-    regional_collection='compute.regionDisks',
-    short_help='Secondary disk for asynchronous replication.',
-    detailed_help=_ASYNC_SECONDARY_DISK_HELP,
-    plural=False,
-    required=False,
-    use_existing_default_scope=False,
-    zone_help_text=_ASYNC_SECONDARY_DISK_ZONE_EXPLANATION,
-    region_help_text=_ASYNC_SECONDARY_DISK_REGION_EXPLANATION)

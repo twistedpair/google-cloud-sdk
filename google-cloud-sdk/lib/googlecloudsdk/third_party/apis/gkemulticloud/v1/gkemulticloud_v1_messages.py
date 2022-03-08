@@ -34,9 +34,10 @@ class GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsCreateRequest(_messag
       GoogleCloudGkemulticloudV1AwsNodePool resource to be passed as the
       request body.
     parent: Required. The AwsCluster resource where this node pool will be
-      created. Location names are formatted as `projects//locations/`. See
-      [Resource Names](https://cloud.google.com/apis/design/resource_names)
-      for more details on Google Cloud resource names.
+      created. `AwsCluster` names are formatted as
+      `projects//locations//awsClusters/`. See [Resource
+      Names](https://cloud.google.com/apis/design/resource_names) for more
+      details on Google Cloud resource names.
     validateOnly: If set, only validate the request, but do not actually
       create the node pool.
   """
@@ -287,7 +288,11 @@ class GkemulticloudProjectsLocationsAwsClustersPatchRequest(_messages.Message):
       `control_plane.config_encryption.kms_key_arn`. *
       `control_plane.instance_type`. * `control_plane.security_group_ids`. *
       `control_plane.proxy_config.secret_arn`. *
-      `control_plane.proxy_config.secret_version`.
+      `control_plane.proxy_config.secret_version`. *
+      `control_plane.root_volume.iops`. *
+      `control_plane.root_volume.kms_key_arn`. *
+      `control_plane.root_volume.volume_type`. *
+      `control_plane.root_volume.size_gib`.
     validateOnly: If set, only validate the request, but do not actually
       update the cluster.
   """
@@ -918,10 +923,6 @@ class GoogleCloudGkemulticloudV1AwsClusterNetworking(_messages.Message):
     serviceAddressCidrBlocks: Required. All services in the cluster are
       assigned an RFC1918 IPv4 address from these ranges. Only a single range
       is supported. This field cannot be changed after creation.
-    serviceLoadBalancerSubnetIds: Required. When creating Kubernetes services
-      of type 'Load Balancer', the load balancer will be created in these
-      subnets. This field is unused. Users are responsible for tagging their
-      own subnets manually.
     vpcId: Required. The VPC associated with the cluster. All component
       clusters (i.e. control plane and node pools) run on a single VPC. This
       field cannot be changed after creation.
@@ -929,8 +930,7 @@ class GoogleCloudGkemulticloudV1AwsClusterNetworking(_messages.Message):
 
   podAddressCidrBlocks = _messages.StringField(1, repeated=True)
   serviceAddressCidrBlocks = _messages.StringField(2, repeated=True)
-  serviceLoadBalancerSubnetIds = _messages.StringField(3, repeated=True)
-  vpcId = _messages.StringField(4)
+  vpcId = _messages.StringField(3)
 
 
 class GoogleCloudGkemulticloudV1AwsClusterUser(_messages.Message):
@@ -970,8 +970,8 @@ class GoogleCloudGkemulticloudV1AwsControlPlane(_messages.Message):
       cluster secrets.
     iamInstanceProfile: Required. The name or ARN of the AWS IAM instance
       profile to assign to each control plane replica.
-    instanceType: Optional. The AWS instance type. When unspecified, it
-      defaults to `t3.medium`.
+    instanceType: Optional. The AWS instance type. When unspecified, it uses a
+      default based on the cluster's version.
     mainVolume: Optional. Configuration related to the main volume provisioned
       for each control plane replica. The main volume is in charge of storing
       all of the cluster's etcd state. Volumes will be provisioned in the
@@ -1091,8 +1091,8 @@ class GoogleCloudGkemulticloudV1AwsNodeConfig(_messages.Message):
     configEncryption: Required. Config encryption for user data.
     iamInstanceProfile: Required. The name or ARN of the AWS IAM role assigned
       to nodes in the pool.
-    instanceType: Optional. The AWS instance type. When unspecified, it
-      defaults to `t3.medium`.
+    instanceType: Optional. The AWS instance type. When unspecified, it uses a
+      default based on the node pool's version.
     labels: Optional. The initial labels assigned to nodes of this node pool.
       An object containing a list of "key": value pairs. Example: { "name":
       "wrench", "mass": "1.3kg", "count": "3" }.

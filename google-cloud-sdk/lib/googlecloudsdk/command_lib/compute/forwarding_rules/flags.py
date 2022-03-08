@@ -530,6 +530,20 @@ def AddAllowGlobalAccess(parser):
       """)
 
 
+def AddAllowPscGlobalAccess(parser):
+  """Adds allow PSC global access flag to the argparse."""
+  parser.add_argument(
+      '--allow-psc-global-access',
+      action='store_true',
+      default=None,
+      help="""\
+      If specified, then clients from all regions can access this Private
+      Service Connect forwarding rule. This can only be specified if the
+      forwarding rule's target is a service attachment
+      (--target-service-attachment).
+      """)
+
+
 def AddIPProtocols(parser, support_all_protocol, support_l3_default):
   """Adds IP protocols flag, with values available in the given version.
 

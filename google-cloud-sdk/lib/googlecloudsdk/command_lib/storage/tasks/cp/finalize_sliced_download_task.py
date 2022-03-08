@@ -25,6 +25,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks.cp import download_util
+from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
 from googlecloudsdk.command_lib.util import crc32c
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -37,6 +38,7 @@ class FinalizeSlicedDownloadTask(task.Task):
                source_resource,
                temporary_destination_resource,
                final_destination_resource,
+               delete_source=False,
                do_not_decompress=False):
     """Initializes task.
 
@@ -48,6 +50,8 @@ class FinalizeSlicedDownloadTask(task.Task):
         transfers.
       final_destination_resource (resource_reference.FileObjectResource): Must
         contain local filesystem path to the final download destination.
+      delete_source (bool): If copy completes successfully, delete the source
+        object afterwards.
       do_not_decompress (bool): Prevents automatically decompressing
         downloaded gzips.
     """
@@ -55,6 +59,7 @@ class FinalizeSlicedDownloadTask(task.Task):
     self._source_resource = source_resource
     self._temporary_destination_resource = temporary_destination_resource
     self._final_destination_resource = final_destination_resource
+    self._delete_source = delete_source
     self._do_not_decompress = do_not_decompress
 
   def execute(self, task_status_queue=None):
@@ -108,3 +113,11 @@ class FinalizeSlicedDownloadTask(task.Task):
 
     tracker_file_util.delete_download_tracker_files(
         self._temporary_destination_resource.storage_url)
+
+    if self._delete_source:
+      return task.Output(
+          additional_task_iterators=[[
+              delete_object_task.DeleteObjectTask(
+                  self._source_resource.storage_url),
+          ]],
+          messages=None)

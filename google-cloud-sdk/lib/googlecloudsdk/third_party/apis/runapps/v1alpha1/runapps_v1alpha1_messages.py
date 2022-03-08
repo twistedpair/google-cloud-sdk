@@ -501,6 +501,8 @@ class GcpResourceStatus(_messages.Message):
     StateValueValuesEnum: The state of the GCP resource.
 
   Fields:
+    consoleLink: Pantheon link for the resource. This does not exist for every
+      resource that makes up the SAF resource.
     dirty: Indicates that this GCP resource has been altered and may not match
       the expected state.
     errorMessage: The error message associated with the GCP resource, if
@@ -534,12 +536,13 @@ class GcpResourceStatus(_messages.Message):
     GCP_RESOURCE_STATE_READY = 4
     GCP_RESOURCE_STATE_FAILED = 5
 
-  dirty = _messages.BooleanField(1)
-  errorMessage = _messages.StringField(2)
-  gcpResourceName = _messages.StringField(3)
-  selfLink = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  type = _messages.StringField(6)
+  consoleLink = _messages.StringField(1)
+  dirty = _messages.BooleanField(2)
+  errorMessage = _messages.StringField(3)
+  gcpResourceName = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  type = _messages.StringField(7)
 
 
 class JobDetails(_messages.Message):
@@ -960,6 +963,8 @@ class ResourceStatus(_messages.Message):
   Fields:
     bindingStatus: The binding status related to this resource.
     cloudSqlDetails: Detail Status of CloudSQL resource.
+    consoleLink: Pantheon link for the resource. For example, the custom
+      domain will link to the GCLB page.
     dirty: Indicates that a child GCP resource has been altered and may not
       match the expected state.
     errorMessage: The error message associated with the resource, if
@@ -996,15 +1001,16 @@ class ResourceStatus(_messages.Message):
 
   bindingStatus = _messages.MessageField('BindingStatus', 1, repeated=True)
   cloudSqlDetails = _messages.MessageField('CloudSqlStatus', 2)
-  dirty = _messages.BooleanField(3)
-  errorMessage = _messages.StringField(4)
-  gcpResource = _messages.MessageField('GcpResourceStatus', 5, repeated=True)
-  redisDetails = _messages.MessageField('RedisStatus', 6)
-  resourceName = _messages.StringField(7)
-  routerDetails = _messages.MessageField('RouterStatus', 8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  type = _messages.StringField(10)
-  vpcDetails = _messages.MessageField('VPCStatus', 11)
+  consoleLink = _messages.StringField(3)
+  dirty = _messages.BooleanField(4)
+  errorMessage = _messages.StringField(5)
+  gcpResource = _messages.MessageField('GcpResourceStatus', 6, repeated=True)
+  redisDetails = _messages.MessageField('RedisStatus', 7)
+  resourceName = _messages.StringField(8)
+  routerDetails = _messages.MessageField('RouterStatus', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  type = _messages.StringField(11)
+  vpcDetails = _messages.MessageField('VPCStatus', 12)
 
 
 class Route(_messages.Message):

@@ -33,7 +33,7 @@ class BigQueryConfig(_messages.Message):
       whether or not the subscription can receive messages.
 
   Fields:
-    dropUnknownFields: When true and use_topic_shema is true, any fields that
+    dropUnknownFields: When true and use_topic_schema is true, any fields that
       are a part of the topic schema that are not part of the BigQuery table
       schema are dropped when writing to BigQuery. Otherwise, the schemas must
       be kept in sync and any messages with extra fields are not written and
@@ -418,9 +418,9 @@ class OidcToken(_messages.Message):
       specified, the Push endpoint URL will be used.
     serviceAccountEmail: [Service account
       email](https://cloud.google.com/iam/docs/service-accounts) to be used
-      for generating the OIDC token. The caller (for CreateSubscription,
-      UpdateSubscription, and ModifyPushConfig RPCs) must have the
-      iam.serviceAccounts.actAs permission for the service account.
+      for generating the OIDC token. See [Setting up push
+      authentication](/pubsub/docs/push#setting_up_for_push_authentication)
+      for more details.
   """
 
   audience = _messages.StringField(1)
@@ -1435,6 +1435,9 @@ class Schema(_messages.Message):
       definition of the type specified in `type`.
     name: Required. Name of the schema. Format is
       `projects/{project}/schemas/{schema}`.
+    revisionCreateTime: Output only. The timestamp that the revision was
+      created.
+    revisionId: Output only. Immutable. The revision ID of the schema.
     type: The type of the schema definition.
   """
 
@@ -1452,7 +1455,9 @@ class Schema(_messages.Message):
 
   definition = _messages.StringField(1)
   name = _messages.StringField(2)
-  type = _messages.EnumField('TypeValueValuesEnum', 3)
+  revisionCreateTime = _messages.StringField(3)
+  revisionId = _messages.StringField(4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
 
 
 class SchemaSettings(_messages.Message):

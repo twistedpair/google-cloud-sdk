@@ -238,6 +238,8 @@ class Instance(_messages.Message):
       recommended value is 100 GB. If not specified, this defaults to 100.
     bootDiskType: Input only. The type of the boot disk attached to this
       instance, defaults to standard persistent disk (`PD_STANDARD`).
+    canIpForward: Optional. Flag to enable ip forwarding or not, default
+      false/off. https://cloud.google.com/vpc/docs/using-routes#canipforward
     containerImage: Use a container image to start the notebook instance.
     createTime: Output only. Instance creation time.
     customGpuDriverPath: Specify a custom Cloud Storage path where the GPU
@@ -441,32 +443,33 @@ class Instance(_messages.Message):
   acceleratorConfig = _messages.MessageField('AcceleratorConfig', 1)
   bootDiskSizeGb = _messages.IntegerField(2)
   bootDiskType = _messages.EnumField('BootDiskTypeValueValuesEnum', 3)
-  containerImage = _messages.MessageField('ContainerImage', 4)
-  createTime = _messages.StringField(5)
-  customGpuDriverPath = _messages.StringField(6)
-  dataDiskSizeGb = _messages.IntegerField(7)
-  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 8)
-  diskEncryption = _messages.EnumField('DiskEncryptionValueValuesEnum', 9)
-  installGpuDriver = _messages.BooleanField(10)
-  instanceOwners = _messages.StringField(11, repeated=True)
-  kmsKey = _messages.StringField(12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  machineType = _messages.StringField(14)
-  metadata = _messages.MessageField('MetadataValue', 15)
-  name = _messages.StringField(16)
-  network = _messages.StringField(17)
-  nicType = _messages.EnumField('NicTypeValueValuesEnum', 18)
-  noProxyAccess = _messages.BooleanField(19)
-  noPublicIp = _messages.BooleanField(20)
-  noRemoveDataDisk = _messages.BooleanField(21)
-  postStartupScript = _messages.StringField(22)
-  proxyUri = _messages.StringField(23)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 24)
-  serviceAccount = _messages.StringField(25)
-  state = _messages.EnumField('StateValueValuesEnum', 26)
-  subnet = _messages.StringField(27)
-  updateTime = _messages.StringField(28)
-  vmImage = _messages.MessageField('VmImage', 29)
+  canIpForward = _messages.BooleanField(4)
+  containerImage = _messages.MessageField('ContainerImage', 5)
+  createTime = _messages.StringField(6)
+  customGpuDriverPath = _messages.StringField(7)
+  dataDiskSizeGb = _messages.IntegerField(8)
+  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 9)
+  diskEncryption = _messages.EnumField('DiskEncryptionValueValuesEnum', 10)
+  installGpuDriver = _messages.BooleanField(11)
+  instanceOwners = _messages.StringField(12, repeated=True)
+  kmsKey = _messages.StringField(13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  machineType = _messages.StringField(15)
+  metadata = _messages.MessageField('MetadataValue', 16)
+  name = _messages.StringField(17)
+  network = _messages.StringField(18)
+  nicType = _messages.EnumField('NicTypeValueValuesEnum', 19)
+  noProxyAccess = _messages.BooleanField(20)
+  noPublicIp = _messages.BooleanField(21)
+  noRemoveDataDisk = _messages.BooleanField(22)
+  postStartupScript = _messages.StringField(23)
+  proxyUri = _messages.StringField(24)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 25)
+  serviceAccount = _messages.StringField(26)
+  state = _messages.EnumField('StateValueValuesEnum', 27)
+  subnet = _messages.StringField(28)
+  updateTime = _messages.StringField(29)
+  vmImage = _messages.MessageField('VmImage', 30)
 
 
 class IsInstanceUpgradeableResponse(_messages.Message):

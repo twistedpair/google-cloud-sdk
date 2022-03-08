@@ -379,10 +379,6 @@
           "readOnly": true,
           "$ref": "KubernetesClusterState"
         },
-        "agonesOptions": {
-          "description": "Optional. Options for installing Agones.",
-          "$ref": "AgonesOptions"
-        },
         "state": {
           "description": "Output only. The state of the Game Server Cluster.",
           "readOnly": true,
@@ -480,17 +476,6 @@
           "description": "Output only. The version of Agones that is targeted to be installed in the cluster.",
           "readOnly": true,
           "type": "string"
-        }
-      }
-    },
-    "AgonesOptions": {
-      "id": "AgonesOptions",
-      "description": "The options for installing Agones.",
-      "type": "object",
-      "properties": {
-        "install": {
-          "description": "Optional. If set to true, Google Cloud Game Servers attempts to install Agones in the cluster.",
-          "type": "boolean"
         }
       }
     },

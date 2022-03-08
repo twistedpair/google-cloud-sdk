@@ -95,7 +95,12 @@ def AddActivationPolicylag(parser):
 def AddEnableIpv4Flag(parser):
   """Adds a --enable-ip-v4 flag to the given parser."""
   help_text = 'Whether the instance should be assigned an IPv4 address or not.'
-  parser.add_argument('--enable-ip-v4', type=bool, help=help_text)
+  parser.add_argument(
+      '--enable-ip-v4',
+      help=help_text,
+      action='store_true',
+      dest='enable_ip_v4',
+      default=True)
 
 
 def AddPrivateNetworkFlag(parser):
@@ -112,7 +117,12 @@ def AddPrivateNetworkFlag(parser):
 def AddRequireSslFlag(parser):
   """Adds a --require-ssl flag to the given parser."""
   help_text = 'Whether SSL connections over IP should be enforced or not.'
-  parser.add_argument('--require-ssl', type=bool, help=help_text)
+  parser.add_argument(
+      '--require-ssl',
+      help=help_text,
+      action='store_true',
+      dest='require_ssl',
+      default=False)
 
 
 def AddAuthorizedNetworksFlag(parser):
@@ -142,7 +152,12 @@ def AddAutoStorageIncreaseFlag(parser):
     storage repeatedly falls below the threshold size, Cloud SQL continues to
     add storage until it reaches the maximum of 30 TB. Default: ON.
     """
-  parser.add_argument('--auto-storage-increase', type=bool, help=help_text)
+  parser.add_argument(
+      '--auto-storage-increase',
+      help=help_text,
+      action='store_true',
+      dest='auto_storage_increase',
+      default=True)
 
 
 def AddDatabaseFlagsFlag(parser):

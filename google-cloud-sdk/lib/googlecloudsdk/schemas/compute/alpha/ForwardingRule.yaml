@@ -85,6 +85,11 @@ properties:
       only allows access from clients in the same region as the internal load
       balancer.
     type: boolean
+  allowPscGlobalAccess:
+    description: |-
+      This is used in PSC consumer ForwardingRule to control whether the PSC
+      endpoint can be accessed from another region.
+    type: boolean
   backendService:
     description: |-
       Identifies the backend service to which the forwarding rule sends traffic.
@@ -98,6 +103,15 @@ properties:
     description: |-
       An optional description of this resource. Provide this property when you
       create the resource.
+    type: string
+  fingerprint:
+    description: |-
+      Fingerprint of this resource. A hash of the contents stored in this
+      object. This field is used in optimistic locking. This field will be
+      ignored when inserting a ForwardingRule. Include the fingerprint in patch
+      request to ensure that you do not overwrite changes that were applied from
+      another concurrent request. To see the latest fingerprint, make a get()
+      request to retrieve a ForwardingRule.
     type: string
   ipVersion:
     description: |-
