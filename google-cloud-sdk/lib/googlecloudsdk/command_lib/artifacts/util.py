@@ -158,9 +158,16 @@ def CheckServiceAccountPermission(unused_repo_ref, repo_args, request):
     Create repository request.
   """
   if repo_args.kms_key:
-    project_num = project_util.GetProjectNumber(GetProject(repo_args))
+    # TODO(b/212736659): We try to check if the service account has permission
+    # to the kms key but if the user does not have permission to check IAM,
+    # we ignore it and continue with the repo creation. The eventual error,
+    # if any, should be descriptive enough.
+    try:
+      project_num = project_util.GetProjectNumber(GetProject(repo_args))
+      policy = ar_requests.GetCryptoKeyPolicy(repo_args.kms_key)
+    except apitools_exceptions.HttpForbiddenError:
+      return request
     service_account = _AR_SERVICE_ACCOUNT.format(project_num=project_num)
-    policy = ar_requests.GetCryptoKeyPolicy(repo_args.kms_key)
     has_permission = False
     for binding in policy.bindings:
       if "serviceAccount:" + service_account in binding.members and (

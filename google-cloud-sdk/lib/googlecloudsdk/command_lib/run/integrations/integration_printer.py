@@ -78,8 +78,15 @@ class IntegrationPrinter(cp.CustomPrinterBase):
       The printed output.
     """
     con = console_attr.GetConsoleAttr()
-    return con.Emphasize('{} integration {} in region {}'.format(
-        record.get('type'), record.get('name'), record.get('region')))
+    status = record.get('status', {})
+    if status is None:
+      status = {}
+
+    formatter = GetFormatter(record['type'])
+    resource_state = formatter.GetResourceState(status)
+    symbol = formatter.StatusSymbolAndColor(resource_state)
+    return con.Emphasize('{} {} integration {} in region {}'.format(
+        symbol, record.get('type'), record.get('name'), record.get('region')))
 
 
 def GetFormatter(integration_type):

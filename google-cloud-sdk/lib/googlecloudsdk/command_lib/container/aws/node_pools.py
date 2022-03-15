@@ -201,6 +201,11 @@ class NodePoolsClient(object):
       autoscaling.maxNodeCount = args.max_nodes
       update_mask.append('autoscaling.maxNodeCount')
 
+    config = self._AddAwsNodeConfig(nodepool)
+    if args.security_group_ids is not None:
+      config.securityGroupIds.extend(args.security_group_ids)
+      update_mask.append('config.security_group_ids')
+
     req.updateMask = ','.join(update_mask)
 
     return self.service.Patch(req)

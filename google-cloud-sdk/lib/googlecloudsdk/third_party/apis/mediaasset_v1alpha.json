@@ -615,6 +615,10 @@
             "MEDIA_TYPE_UNSPECIFIED",
             "VIDEO"
           ]
+        },
+        "assetTypeStats": {
+          "description": "asset_type_stats stores stats on this asset type.",
+          "$ref": "AssetTypeStats"
         }
       }
     },
@@ -742,6 +746,37 @@
           "additionalProperties": {
             "$ref": "IndexedFieldConfig"
           }
+        }
+      }
+    },
+    "AssetTypeStats": {
+      "id": "AssetTypeStats",
+      "description": "AssetTypeStats stores stats on this asset type.",
+      "type": "object",
+      "properties": {
+        "ruleStats": {
+          "description": "A map from rule_id to RuleStats.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "RuleStats"
+          }
+        }
+      }
+    },
+    "RuleStats": {
+      "id": "RuleStats",
+      "description": "RuleStats stores information on actions related to a certain rule.",
+      "type": "object",
+      "properties": {
+        "active": {
+          "description": "The number of actions that already have the same version as the current rule.",
+          "type": "string",
+          "format": "int64"
+        },
+        "updating": {
+          "description": "The number of actions with version < `version of the current rule`.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },

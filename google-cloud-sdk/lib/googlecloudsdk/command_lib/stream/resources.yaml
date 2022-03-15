@@ -35,7 +35,7 @@ operation:
 
 
 content:
-  name: streamContent
+  name: content
   collection: stream.projects.locations.streamContents
   request_id_field: name
   attributes:
@@ -48,7 +48,7 @@ content:
   disable_auto_completers: false
 
 instance:
-  name: streamInstance
+  name: instance
   collection: stream.projects.locations.streamInstances
   request_id_field: name
   attributes:

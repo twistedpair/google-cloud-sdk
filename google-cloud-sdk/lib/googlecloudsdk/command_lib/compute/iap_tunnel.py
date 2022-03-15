@@ -92,6 +92,7 @@ def AddSshTunnelArgs(parser, tunnel_through_iap_scope):
 
 
 def AddHostBasedTunnelArgs(parser):
+  """Add the arguments for supporting IP/FQDN-based tunnels."""
   group = parser.add_argument_group()
   group.add_argument(
       '--network',
@@ -106,6 +107,13 @@ def AddHostBasedTunnelArgs(parser):
       required=True,
       help=('Configures the region to use when connecting via IP address or '
             'FQDN.'))
+  # TODO(b/196572980): Make dest-group required in beta/GA.
+  group.add_argument(
+      '--dest-group',
+      default=None,
+      required=False,
+      help=('Configures the destination group to use when connecting via IP '
+            'address or FQDN.'))
 
 
 def AddProxyServerHelperArgs(parser):
@@ -195,6 +203,8 @@ def _AddPassThroughArgs(args, ssh_tunnel_args):
   if args.iap_tunnel_insecure_disable_websocket_cert_check:
     ssh_tunnel_args.pass_through_args.append(
         '--iap-tunnel-insecure-disable-websocket-cert-check')
+  if args.IsKnownAndSpecified('dest_group'):
+    ssh_tunnel_args.pass_through_args.append('--dest-group=' + args.dest_group)
 
 
 class SshTunnelArgs(object):
@@ -581,6 +591,7 @@ class _BaseIapTunnelHelper(object):
     self._region = None
     self._network = None
     self._host = None
+    self._dest_group = None
     self._port = None
 
     # Means that a ctrl-c was seen in server mode (never true in Stdin mode).
@@ -592,10 +603,11 @@ class _BaseIapTunnelHelper(object):
     self._interface = interface
     self._port = port
 
-  def ConfigureForHost(self, region, network, host, port):
+  def ConfigureForHost(self, region, network, host, port, dest_group):
     self._region = region
     self._network = network
     self._host = host
+    self._dest_group = dest_group
     self._port = port
 
   def _InitiateWebSocketConnection(self, local_conn, get_access_token_callback,
@@ -622,7 +634,8 @@ class _BaseIapTunnelHelper(object):
                                      proxy_info=proxy_info,
                                      region=self._region,
                                      network=self._network,
-                                     host=self._host)
+                                     host=self._host,
+                                     dest_group=self._dest_group)
 
   def _RunReceiveLocalData(self, conn, socket_address, user_agent):
     """Receive data from provided local connection and send over WebSocket.

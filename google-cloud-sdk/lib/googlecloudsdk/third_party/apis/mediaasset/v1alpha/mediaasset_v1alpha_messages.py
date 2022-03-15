@@ -604,6 +604,7 @@ class AssetType(_messages.Message):
       character minimum, 63 characters maximum 2. only contains letters,
       digits, underscore and hyphen 3. starts with a letter if length == 1,
       starts with a letter or underscore if length > 1
+    assetTypeStats: asset_type_stats stores stats on this asset type.
     createTime: Output only. The creation time.
     indexedFieldConfigs: List of indexed fields (e.g. "metadata.file.url") to
       make available in searches with their corresponding properties.
@@ -799,16 +800,17 @@ class AssetType(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotationSetConfigs = _messages.MessageField('AnnotationSetConfigsValue', 1)
-  createTime = _messages.StringField(2)
-  indexedFieldConfigs = _messages.MessageField('IndexedFieldConfigsValue', 3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  linkConfigs = _messages.MessageField('LinkConfigsValue', 5)
-  linkSetConfigs = _messages.MessageField('LinkSetConfigsValue', 6)
-  mediaType = _messages.EnumField('MediaTypeValueValuesEnum', 7)
-  metadataConfigs = _messages.MessageField('MetadataConfigsValue', 8)
-  name = _messages.StringField(9)
-  sortOrder = _messages.MessageField('SortOrderConfig', 10)
-  updateTime = _messages.StringField(11)
+  assetTypeStats = _messages.MessageField('AssetTypeStats', 2)
+  createTime = _messages.StringField(3)
+  indexedFieldConfigs = _messages.MessageField('IndexedFieldConfigsValue', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  linkConfigs = _messages.MessageField('LinkConfigsValue', 6)
+  linkSetConfigs = _messages.MessageField('LinkSetConfigsValue', 7)
+  mediaType = _messages.EnumField('MediaTypeValueValuesEnum', 8)
+  metadataConfigs = _messages.MessageField('MetadataConfigsValue', 9)
+  name = _messages.StringField(10)
+  sortOrder = _messages.MessageField('SortOrderConfig', 11)
+  updateTime = _messages.StringField(12)
 
 
 class AssetTypeConfig(_messages.Message):
@@ -862,6 +864,43 @@ class AssetTypeConfig(_messages.Message):
 
   assetType = _messages.StringField(1)
   indexedFieldConfigs = _messages.MessageField('IndexedFieldConfigsValue', 2)
+
+
+class AssetTypeStats(_messages.Message):
+  r"""AssetTypeStats stores stats on this asset type.
+
+  Messages:
+    RuleStatsValue: A map from rule_id to RuleStats.
+
+  Fields:
+    ruleStats: A map from rule_id to RuleStats.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RuleStatsValue(_messages.Message):
+    r"""A map from rule_id to RuleStats.
+
+    Messages:
+      AdditionalProperty: An additional property for a RuleStatsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type RuleStatsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RuleStatsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A RuleStats attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('RuleStats', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  ruleStats = _messages.MessageField('RuleStatsValue', 1)
 
 
 class AuthorizationLoggingOptions(_messages.Message):
@@ -4010,6 +4049,20 @@ class Rule(_messages.Message):
   notification = _messages.MessageField('NotificationConfig', 6)
   transformation = _messages.MessageField('TransformationConfig', 7)
   updateTime = _messages.StringField(8)
+
+
+class RuleStats(_messages.Message):
+  r"""RuleStats stores information on actions related to a certain rule.
+
+  Fields:
+    active: The number of actions that already have the same version as the
+      current rule.
+    updating: The number of actions with version < `version of the current
+      rule`.
+  """
+
+  active = _messages.IntegerField(1)
+  updating = _messages.IntegerField(2)
 
 
 class SearchAssetTypeRequest(_messages.Message):

@@ -1825,8 +1825,10 @@ class PrivatecaProjectsLocationsCaPoolsCertificateAuthoritiesDeleteRequest(_mess
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
-    skipGracePeriod: Optional. This field sets the CA to have a pending delete
-      duration of 0.
+    skipGracePeriod: Optional. If this flag is set, the Certificate Authority
+      will be deleted as soon as possible without a 30-day grace period where
+      undeletion would have been allowed. If you proceed, there will be no way
+      to recover this CA.
   """
 
   ignoreActiveCertificates = _messages.BooleanField(1)

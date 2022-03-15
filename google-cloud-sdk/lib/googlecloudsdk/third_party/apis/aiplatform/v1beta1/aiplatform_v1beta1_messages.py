@@ -3637,6 +3637,22 @@ class AiplatformProjectsLocationsModelsListVersionsRequest(_messages.Message):
   readMask = _messages.StringField(5)
 
 
+class AiplatformProjectsLocationsModelsMergeVersionAliasesRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelsMergeVersionAliasesRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1MergeVersionAliasesRequest: A
+      GoogleCloudAiplatformV1beta1MergeVersionAliasesRequest resource to be
+      passed as the request body.
+    name: Required. The name of the model version to merge aliases, with a
+      version ID explicitly included. Example:
+      `projects/{project}/locations/{location}/models/{model}@1234`
+  """
+
+  googleCloudAiplatformV1beta1MergeVersionAliasesRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1MergeVersionAliasesRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsModelsOperationsCancelRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsModelsOperationsCancelRequest object.
 
@@ -3712,22 +3728,6 @@ class AiplatformProjectsLocationsModelsPatchRequest(_messages.Message):
   googleCloudAiplatformV1beta1Model = _messages.MessageField('GoogleCloudAiplatformV1beta1Model', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
-
-
-class AiplatformProjectsLocationsModelsSetVersionAliasRequest(_messages.Message):
-  r"""A AiplatformProjectsLocationsModelsSetVersionAliasRequest object.
-
-  Fields:
-    googleCloudAiplatformV1beta1SetVersionAliasRequest: A
-      GoogleCloudAiplatformV1beta1SetVersionAliasRequest resource to be passed
-      as the request body.
-    name: Required. The name of the model version to set alias, with a version
-      ID explicitly included. Example:
-      `projects/{project}/locations/{location}/models/{model}@1234`
-  """
-
-  googleCloudAiplatformV1beta1SetVersionAliasRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1SetVersionAliasRequest', 1)
-  name = _messages.StringField(2, required=True)
 
 
 class AiplatformProjectsLocationsModelsUploadRequest(_messages.Message):
@@ -5853,7 +5853,11 @@ class GoogleCloudAiplatformInternalDedicatedResources(_messages.Message):
       replicas is guaranteed (barring service outages). If traffic against the
       DeployedModel increases beyond what its replicas at maximum may handle,
       a portion of the traffic will be dropped. If this value is not provided,
-      will use min_replica_count as the default value.
+      will use min_replica_count as the default value. The value of this field
+      impacts the charge against Vertex CPU and GPU quotas. Specifically, you
+      will be charged for max_replica_count * number of cores in the selected
+      machine type) and (max_replica_count * number of GPUs per replica in the
+      selected machine type).
     minReplicaCount: Required. Immutable. The minimum number of machine
       replicas this DeployedModel will be always deployed on. This value must
       be greater than or equal to 1. If traffic against the DeployedModel
@@ -8333,7 +8337,11 @@ class GoogleCloudAiplatformUiDedicatedResources(_messages.Message):
       replicas is guaranteed (barring service outages). If traffic against the
       DeployedModel increases beyond what its replicas at maximum may handle,
       a portion of the traffic will be dropped. If this value is not provided,
-      will use min_replica_count as the default value.
+      will use min_replica_count as the default value. The value of this field
+      impacts the charge against Vertex CPU and GPU quotas. Specifically, you
+      will be charged for max_replica_count * number of cores in the selected
+      machine type) and (max_replica_count * number of GPUs per replica in the
+      selected machine type).
     minReplicaCount: Required. Immutable. The minimum number of machine
       replicas this DeployedModel will be always deployed on. This value must
       be greater than or equal to 1. If traffic against the DeployedModel
@@ -10108,7 +10116,7 @@ class GoogleCloudAiplatformUiMigrateResourceResponse(_messages.Message):
 
 
 class GoogleCloudAiplatformUiModelMonitoringObjectiveConfig(_messages.Message):
-  r"""Next ID: 6
+  r"""Next ID: 7
 
   Fields:
     explanationConfig: The config for integrating with Vertex Explainable AI.
@@ -12188,7 +12196,11 @@ class GoogleCloudAiplatformV1DedicatedResources(_messages.Message):
       replicas is guaranteed (barring service outages). If traffic against the
       DeployedModel increases beyond what its replicas at maximum may handle,
       a portion of the traffic will be dropped. If this value is not provided,
-      will use min_replica_count as the default value.
+      will use min_replica_count as the default value. The value of this field
+      impacts the charge against Vertex CPU and GPU quotas. Specifically, you
+      will be charged for max_replica_count * number of cores in the selected
+      machine type) and (max_replica_count * number of GPUs per replica in the
+      selected machine type).
     minReplicaCount: Required. Immutable. The minimum number of machine
       replicas this DeployedModel will be always deployed on. This value must
       be greater than or equal to 1. If traffic against the DeployedModel
@@ -21101,7 +21113,11 @@ class GoogleCloudAiplatformV1beta1DedicatedResources(_messages.Message):
       replicas is guaranteed (barring service outages). If traffic against the
       DeployedModel increases beyond what its replicas at maximum may handle,
       a portion of the traffic will be dropped. If this value is not provided,
-      will use min_replica_count as the default value.
+      will use min_replica_count as the default value. The value of this field
+      impacts the charge against Vertex CPU and GPU quotas. Specifically, you
+      will be charged for max_replica_count * number of cores in the selected
+      machine type) and (max_replica_count * number of GPUs per replica in the
+      selected machine type).
     minReplicaCount: Required. Immutable. The minimum number of machine
       replicas this DeployedModel will be always deployed on. This value must
       be greater than or equal to 1. If traffic against the DeployedModel
@@ -23286,9 +23302,7 @@ class GoogleCloudAiplatformV1beta1FeaturestoreOnlineServingConfig(_messages.Mess
     fixedNodeCount: The number of nodes for the online store. The number of
       nodes doesn't scale automatically, but you can manually update the
       number of nodes. If set to 0, the featurestore will not have an online
-      store and cannot be used for online serving. Only one of
-      `fixed_node_count` and `scaling` can be set. Setting one will reset the
-      other.
+      store and cannot be used for online serving.
     scaling: Online serving scaling configuration. Only one of
       `fixed_node_count` and `scaling` can be set. Setting one will reset the
       other.
@@ -24639,6 +24653,19 @@ class GoogleCloudAiplatformV1beta1MeasurementMetric(_messages.Message):
   value = _messages.FloatField(2)
 
 
+class GoogleCloudAiplatformV1beta1MergeVersionAliasesRequest(_messages.Message):
+  r"""Request message for ModelService.MergeVersionAliases.
+
+  Fields:
+    versionAliases: Required. The set of version aliases to merge. The alias
+      should be at most 128 characters, and match `a-z{0,126}[a-z-0-9]`. Add
+      the `-` prefix to an alias means removing that alias from the version.
+      Example: `-golden` means removing the `golden` alias from the version.
+  """
+
+  versionAliases = _messages.StringField(1, repeated=True)
+
+
 class GoogleCloudAiplatformV1beta1MetadataSchema(_messages.Message):
   r"""Instance of a general MetadataSchema.
 
@@ -25760,7 +25787,7 @@ class GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfigEmailAlertConfig(_me
 
 
 class GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfig(_messages.Message):
-  r"""Next ID: 6
+  r"""Next ID: 7
 
   Fields:
     explanationConfig: The config for integrating with Vertex Explainable AI.
@@ -29764,17 +29791,6 @@ class GoogleCloudAiplatformV1beta1SearchModelDeploymentMonitoringStatsAnomaliesR
 
   monitoringStats = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringStatsAnomalies', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
-
-
-class GoogleCloudAiplatformV1beta1SetVersionAliasRequest(_messages.Message):
-  r"""Request message for ModelService.SetVersionAlias.
-
-  Fields:
-    versionAliases: Required. The version aliases to merge. The alias should
-      be at most 128 characters, and match `a-z{0,126}[a-z-0-9]`.
-  """
-
-  versionAliases = _messages.StringField(1, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1Similarity(_messages.Message):

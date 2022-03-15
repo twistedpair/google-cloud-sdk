@@ -95,7 +95,15 @@ class JobBase(six.with_metaclass(abc.ABCMeta, object)):
       return None
     if bucket is None:
       # If bucket is not provided, fall back to cluster's staging bucket.
-      bucket = cluster.config.configBucket
+      if cluster.config:
+        bucket = cluster.config.configBucket
+      elif cluster.virtualClusterConfig:
+        bucket = cluster.virtualClusterConfig.stagingBucket
+      else:
+        # This is only needed if the request needs to stage files. If it doesn't
+        # everything will work. If it does need to stage files, then it will
+        # fail with a message saying --bucket should be specified.
+        return None
     cluster_id = 'unresolved'
     if cluster is not None:
       cluster_id = cluster.clusterUuid

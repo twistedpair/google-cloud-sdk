@@ -4044,12 +4044,12 @@ class BackendService(_messages.Message):
     subsetting: A Subsetting attribute.
     timeoutSec: The backend service timeout has a different meaning depending
       on the type of load balancer. For more information see, Backend service
-      settings The default is 30 seconds. The full range of timeout values
-      allowed is 1 - 2,147,483,647 seconds. This value can be overridden in
-      the PathMatcher configuration of the UrlMap that references this backend
-      service. Not supported when the backend service is referenced by a URL
-      map that is bound to target gRPC proxy that has validateForProxyless
-      field set to true. Instead, use maxStreamDuration.
+      settings. The default is 30 seconds. The full range of timeout values
+      allowed goes from 1 through 2,147,483,647 seconds. This value can be
+      overridden in the PathMatcher configuration of the UrlMap that
+      references this backend service. Not supported when the backend service
+      is referenced by a URL map that is bound to target gRPC proxy that has
+      validateForProxyless field set to true. Instead, use maxStreamDuration.
   """
 
   class CompressionModeValueValuesEnum(_messages.Enum):
@@ -5976,14 +5976,16 @@ class Commitment(_messages.Message):
 
     Values:
       ACTIVE: <no description>
+      CANCELLED: <no description>
       CREATING: <no description>
       EXPIRED: <no description>
       NOT_YET_ACTIVE: <no description>
     """
     ACTIVE = 0
-    CREATING = 1
-    EXPIRED = 2
-    NOT_YET_ACTIVE = 3
+    CANCELLED = 1
+    CREATING = 2
+    EXPIRED = 3
+    NOT_YET_ACTIVE = 4
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of commitment, which affects the discount rate and the
@@ -18776,6 +18778,30 @@ class ComputeProjectsSetUsageExportBucketRequest(_messages.Message):
   usageExportLocation = _messages.MessageField('UsageExportLocation', 3)
 
 
+class ComputePublicAdvertisedPrefixesAnnounceRequest(_messages.Message):
+  r"""A ComputePublicAdvertisedPrefixesAnnounceRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    publicAdvertisedPrefix: The name of the public advertised prefix. It
+      should comply with RFC1035.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  project = _messages.StringField(1, required=True)
+  publicAdvertisedPrefix = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
 class ComputePublicAdvertisedPrefixesDeleteRequest(_messages.Message):
   r"""A ComputePublicAdvertisedPrefixesDeleteRequest object.
 
@@ -18918,6 +18944,30 @@ class ComputePublicAdvertisedPrefixesPatchRequest(_messages.Message):
   requestId = _messages.StringField(4)
 
 
+class ComputePublicAdvertisedPrefixesWithdrawRequest(_messages.Message):
+  r"""A ComputePublicAdvertisedPrefixesWithdrawRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    publicAdvertisedPrefix: The name of the public advertised prefix. It
+      should comply with RFC1035.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  project = _messages.StringField(1, required=True)
+  publicAdvertisedPrefix = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
 class ComputePublicDelegatedPrefixesAggregatedListRequest(_messages.Message):
   r"""A ComputePublicDelegatedPrefixesAggregatedListRequest object.
 
@@ -18978,6 +19028,33 @@ class ComputePublicDelegatedPrefixesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+
+
+class ComputePublicDelegatedPrefixesAnnounceRequest(_messages.Message):
+  r"""A ComputePublicDelegatedPrefixesAnnounceRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    publicDelegatedPrefix: The name of the public delegated prefix. It should
+      comply with RFC1035.
+    region: The name of the region where the public delegated prefix is
+      located. It should comply with RFC1035.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  project = _messages.StringField(1, required=True)
+  publicDelegatedPrefix = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputePublicDelegatedPrefixesDeleteRequest(_messages.Message):
@@ -19130,6 +19207,33 @@ class ComputePublicDelegatedPrefixesPatchRequest(_messages.Message):
   publicDelegatedPrefixResource = _messages.MessageField('PublicDelegatedPrefix', 3)
   region = _messages.StringField(4, required=True)
   requestId = _messages.StringField(5)
+
+
+class ComputePublicDelegatedPrefixesWithdrawRequest(_messages.Message):
+  r"""A ComputePublicDelegatedPrefixesWithdrawRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    publicDelegatedPrefix: The name of the public delegated prefix. It should
+      comply with RFC1035.
+    region: The name of the region where the public delegated prefix is
+      located. It should comply with RFC1035.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  project = _messages.StringField(1, required=True)
+  publicDelegatedPrefix = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeRegionAutoscalersDeleteRequest(_messages.Message):
@@ -34276,7 +34380,8 @@ class FutureReservation(_messages.Message):
       property when you create the future reservation.
     id: [Output Only] A unique identifier for this future reservation. The
       server defines this identifier.
-    kind: A string attribute.
+    kind: [Output Only] Type of the resource. Always compute#futureReservation
+      for future reservations.
     name: The name of the resource, provided by the client when initially
       creating the resource. The resource name must be 1-63 characters long,
       and comply with RFC1035. Specifically, the name must be 1-63 characters
@@ -34417,7 +34522,9 @@ class FutureReservationsAggregatedListResponse(_messages.Message):
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
     items: A list of Future reservation resources.
-    kind: A string attribute.
+    kind: [Output Only] Type of resource. Always
+      compute#futureReservationsAggregatedListResponse for future resevation
+      aggregated list response.
     nextPageToken: [Output Only] This token allows you to get the next page of
       results for list requests. If the number of results is larger than
       maxResults, use the nextPageToken as a value for the query parameter
@@ -34596,7 +34703,8 @@ class FutureReservationsListResponse(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     items: [Output Only] A list of future reservation resources.
-    kind: A string attribute.
+    kind: [Output Only] Type of resource.Always
+      compute#FutureReservationsListResponse for lists of reservations
     nextPageToken: [Output Only] This token allows you to get the next page of
       results for list requests. If the number of results is larger than
       maxResults, use the nextPageToken as a value for the query parameter
@@ -47876,7 +47984,8 @@ class NetworkEdgeSecurityService(_messages.Message):
       to retrieve a NetworkEdgeSecurityService.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
-    kind: A string attribute.
+    kind: [Output only] Type of the resource. Always
+      compute#networkEdgeSecurityService for NetworkEdgeSecurityServices
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -47918,7 +48027,9 @@ class NetworkEdgeSecurityServiceAggregatedList(_messages.Message):
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
     items: A list of NetworkEdgeSecurityServicesScopedList resources.
-    kind: A string attribute.
+    kind: [Output Only] Type of resource. Always
+      compute#networkEdgeSecurityServiceAggregatedList for lists of Network
+      Edge Security Services.
     nextPageToken: [Output Only] This token allows you to get the next page of
       results for list requests. If the number of results is larger than
       maxResults, use the nextPageToken as a value for the query parameter
@@ -64400,6 +64511,10 @@ class Snapshot(_messages.Message):
       that was later deleted and recreated under the same name, the source
       instant snapshot ID would identify the exact instant snapshot that was
       used.
+    sourceSnapshotSchedulePolicy: [Output Only] URL of the resource policy
+      which created this scheduled snapshot.
+    sourceSnapshotSchedulePolicyId: [Output Only] ID of the resource policy
+      which created this scheduled snapshot.
     status: [Output Only] The status of the snapshot. This can be CREATING,
       DELETING, FAILED, READY, or UPLOADING.
     storageBytes: [Output Only] A size of the storage used by the snapshot. As
@@ -64522,11 +64637,13 @@ class Snapshot(_messages.Message):
   sourceDiskId = _messages.StringField(25)
   sourceInstantSnapshot = _messages.StringField(26)
   sourceInstantSnapshotId = _messages.StringField(27)
-  status = _messages.EnumField('StatusValueValuesEnum', 28)
-  storageBytes = _messages.IntegerField(29)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 30)
-  storageLocations = _messages.StringField(31, repeated=True)
-  userLicenses = _messages.StringField(32, repeated=True)
+  sourceSnapshotSchedulePolicy = _messages.StringField(28)
+  sourceSnapshotSchedulePolicyId = _messages.StringField(29)
+  status = _messages.EnumField('StatusValueValuesEnum', 30)
+  storageBytes = _messages.IntegerField(31)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 32)
+  storageLocations = _messages.StringField(33, repeated=True)
+  userLicenses = _messages.StringField(34, repeated=True)
 
 
 class SnapshotList(_messages.Message):

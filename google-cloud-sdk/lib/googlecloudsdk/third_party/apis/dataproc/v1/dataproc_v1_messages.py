@@ -1179,6 +1179,20 @@ class DataprocProjectsLocationsSessionsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class DataprocProjectsLocationsSessionsInjectCredentialsRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsInjectCredentialsRequest object.
+
+  Fields:
+    injectSessionCredentialsRequest: A InjectSessionCredentialsRequest
+      resource to be passed as the request body.
+    session: Required. The name of the session resource to inject credentials
+      to.
+  """
+
+  injectSessionCredentialsRequest = _messages.MessageField('InjectSessionCredentialsRequest', 1)
+  session = _messages.StringField(2, required=True)
+
+
 class DataprocProjectsLocationsSessionsListRequest(_messages.Message):
   r"""A DataprocProjectsLocationsSessionsListRequest object.
 
@@ -2788,6 +2802,8 @@ class GkeNodeConfig(_messages.Message):
       platforms, such as "Intel Haswell"` or Intel Sandy Bridge".
     preemptible: Optional. Whether the nodes are created as preemptible VM
       instances (https://cloud.google.com/compute/docs/instances/preemptible).
+    spot: Optional. Spot flag for enabling Spot VM, which is a rebrand of the
+      existing preemptible flag.
   """
 
   accelerators = _messages.MessageField('GkeNodePoolAcceleratorConfig', 1, repeated=True)
@@ -2795,6 +2811,7 @@ class GkeNodeConfig(_messages.Message):
   machineType = _messages.StringField(3)
   minCpuPlatform = _messages.StringField(4)
   preemptible = _messages.BooleanField(5)
+  spot = _messages.BooleanField(6)
 
 
 class GkeNodePoolAcceleratorConfig(_messages.Message):
@@ -2805,10 +2822,14 @@ class GkeNodePoolAcceleratorConfig(_messages.Message):
     acceleratorCount: The number of accelerator cards exposed to an instance.
     acceleratorType: The accelerator type resource namename (see GPUs on
       Compute Engine).
+    gpuPartitionSize: Size of partitions to create on the GPU. Valid values
+      are described in the NVIDIA mig user guide
+      (https://docs.nvidia.com/datacenter/tesla/mig-user-guide/#partitioning).
   """
 
   acceleratorCount = _messages.IntegerField(1)
   acceleratorType = _messages.StringField(2)
+  gpuPartitionSize = _messages.StringField(3)
 
 
 class GkeNodePoolAutoscalingConfig(_messages.Message):
@@ -3111,6 +3132,30 @@ class InjectCredentialsRequest(_messages.Message):
 
   clusterUuid = _messages.StringField(1)
   credentialsCiphertext = _messages.StringField(2)
+
+
+class InjectSessionCredentialsRequest(_messages.Message):
+  r"""A request to inject credentials to a session.
+
+  Fields:
+    credentialsCiphertext: Required. The encrypted credentials being injected
+      in to the session.The client is responsible for encrypting the
+      credentials in a way that is supported by the session.A wrapped value is
+      used here so that the actual contents of the encrypted credentials are
+      not written to audit logs.
+    requestId: Optional. A unique ID used to identify the request. If the
+      service receives two TerminateSessionRequest (https://cloud.google.com/d
+      ataproc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.datapro
+      c.v1.TerminateSessionRequest)s with the same ID, the first request is
+      ignored to ensure the most recent credentials are
+      injected.Recommendation: Set this value to a UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The value
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
+  """
+
+  credentialsCiphertext = _messages.StringField(1)
+  requestId = _messages.StringField(2)
 
 
 class InstanceGroupAutoscalingPolicyConfig(_messages.Message):

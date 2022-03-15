@@ -144,17 +144,43 @@ def _destination_is_pipe(destination):
           destination.storage_url.is_pipe)
 
 
-def _has_valid_parent_dir(url_object):
-  """Returns true if FileUrl with relative path symbol as parent directory."""
-  if not isinstance(url_object, storage_url.FileUrl):
+def _is_expanded_url_valid_parent_dir(expanded_url):
+  """Returns True if not FileUrl ending in  relative path symbols.
+
+  A URL is invalid if it is a FileUrl and the parent directory of the file is a
+  relative path symbol. Unix will not allow a file itself to be named with a
+  relative path symbol, but one can be the parent. Notably, "../obj" can lead
+  to unexpected behavior at the copy destination. We examine the pre-recursion
+  expanded_url, which might point to "..", to see if the parent is valid.
+
+  If the user does a recursive copy from an expanded URL, it may not end up
+  the final parent of the copied object. For example, see: "dir/nested_dir/obj".
+
+  If you ran "cp -r d* gs://bucket" from the parent of "dir", then the
+  expanded_url would be "dir", but "nested_dir" would be the parent of "obj".
+  This actually doesn't matter since recursion won't add relative path symbols
+  to the path. However, we still return if expanded_url is valid because
+  there are cases where we need to copy every parent directory up to
+  expanded_url "dir" to prevent file name conflicts.
+
+  Args:
+    expanded_url (StorageUrl): NameExpansionResult.expanded_url value. Should
+      contain wildcard-expanded URL before recursion. For example, if "d*"
+      expands to the object "dir/obj", we would get the "dir" value.
+
+  Returns:
+    Boolean indicating if the expanded_url is valid as a parent
+      directory.
+  """
+  if not isinstance(expanded_url, storage_url.FileUrl):
     return True
 
   _, _, after_last_delimiter = (
-      url_object.versionless_url_string.rpartition(url_object.delimiter))
+      expanded_url.versionless_url_string.rpartition(expanded_url.delimiter))
 
   return after_last_delimiter not in _RELATIVE_PATH_SYMBOLS and (
       after_last_delimiter not in [
-          url_object.scheme.value + '://' + symbol
+          expanded_url.scheme.value + '://' + symbol
           for symbol in _RELATIVE_PATH_SYMBOLS
       ])
 
@@ -185,10 +211,13 @@ class CopyTaskIterator:
         workload from this iterator.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
+    self._has_multiple_top_level_sources = (
+        source_name_iterator.has_multiple_top_level_resources)
     self._source_name_iterator = (
         plurality_checkable_iterator.PluralityCheckableIterator(
             source_name_iterator))
     self._multiple_sources = self._source_name_iterator.is_plural()
+
     self._do_not_decompress = do_not_decompress
     self._custom_md5_digest = custom_md5_digest
     self._shared_stream = shared_stream
@@ -383,13 +412,26 @@ class CopyTaskIterator:
         source.expanded_url.versionless_url_string,
         source.expanded_url.delimiter)
 
-    if (not isinstance(destination_container,
-                       resource_reference.UnknownResource) and
-        _has_valid_parent_dir(source.expanded_url) and
-        destination_container.is_container()):
-      # Destination container exists. This means we need to preserve the
-      # top-level source directory.
-      # Remove the leaf name so that it gets added to the destination.
+    expanded_url_is_valid_parent = _is_expanded_url_valid_parent_dir(
+        source.expanded_url)
+    if not expanded_url_is_valid_parent and self._has_multiple_top_level_sources:
+      # To avoid top-level name conflicts, we need to copy the parent dir.
+      # However, that cannot be done because the parent dir has an invalid name.
+      raise errors.InvalidUrlError(
+          'Presence of multiple top-level sources and invalid expanded URL'
+          ' make file name conflicts possible for URL: {}'.format(
+              source.resource))
+
+    is_top_level_source_object_name_conflict_possible = (
+        isinstance(destination_container, resource_reference.UnknownResource)
+        and self._has_multiple_top_level_sources)
+    destination_is_existing_dir = (not isinstance(
+        destination_container, resource_reference.UnknownResource) and
+                                   destination_container.is_container())
+    if is_top_level_source_object_name_conflict_possible or (
+        expanded_url_is_valid_parent and destination_is_existing_dir):
+      # Preserve the top-level source directory, and remove the leaf name
+      # so that it gets added to the destination.
       source_prefix_to_ignore, _, _ = source_prefix_to_ignore.rpartition(
           source.expanded_url.delimiter)
       if not source_prefix_to_ignore:

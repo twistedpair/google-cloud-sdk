@@ -973,11 +973,11 @@ class NetworkConfig(_messages.Message):
 
 
 class NetworkPolicy(_messages.Message):
-  r"""Represents a network policy resource. You can use a network policy to
-  enable or disable internet access and external IP access. Network policies
-  are associated with a VPC network, which span across regions. For a given
-  region, a network policy applies to all private clouds in the VPC network
-  associated with the policy.
+  r"""Represents a network policy resource. Network policies are regional
+  resources. You can use a network policy to enable or disable internet access
+  and external IP access. Network policies are associated with a VPC network,
+  which span across regions. For a given region, a network policy applies to
+  all private clouds in the VPC network associated with the policy.
 
   Messages:
     LabelsValue: Labels are a way to attach lightweight metadata to resources
@@ -1401,7 +1401,7 @@ class Policy(_messages.Message):
 
 
 class PrivateCloud(_messages.Message):
-  r"""Private cloud resource.
+  r"""Represents a private cloud resource. Private clouds are zonal resources.
 
   Enums:
     StateValueValuesEnum: Output only. State of the resource. New values may

@@ -28,7 +28,11 @@ from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib.run.integrations import api_utils
 from googlecloudsdk.api_lib.run.integrations import types_utils
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.command_lib.run import connection_context
 from googlecloudsdk.command_lib.run import exceptions
+from googlecloudsdk.command_lib.run import flags as run_flags
+from googlecloudsdk.command_lib.run import serverless_operations
+from googlecloudsdk.command_lib.run.integrations import flags
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
@@ -102,6 +106,22 @@ class RunAppsOperations(object):
       match_type_names: array of type/name pairs used for create selector.
       etag: the etag of the application if it's an incremental patch.
     """
+    self._UpdateApplication(appname, appconfig, message, etag)
+    if match_type_names is None:
+      match_type_names = [{'type': '*', 'name': '*'}]
+    create_selector = {'matchTypeNames': match_type_names}
+    self._CreateDeployment(appname, create_selector=create_selector)
+
+  def _UpdateApplication(self, appname, appconfig, message, etag):
+    """Update Application config, waits for operation to finish.
+
+    Args:
+      appname:  name of the application.
+      appconfig: config of the application.
+      message: the message to display when waiting for API call to finish.
+        If not given, default messages will be used.
+      etag: the etag of the application if it's an incremental patch.
+    """
     app_ref = self.GetAppRef(appname)
     application = self.messages.Application(
         name=appname, config=appconfig, etag=etag)
@@ -116,17 +136,36 @@ class RunAppsOperations(object):
       if message is None:
         message = 'Creating Application [{}]'.format(appname)
     api_utils.WaitForApplicationOperation(self._client, operation, message)
-    deployment_name = self._GetDeploymentName(appname)
-    if match_type_names is None:
-      match_type_names = [{'type': '*', 'name': '*'}]
+
+  def _CreateDeployment(self,
+                        appname,
+                        create_selector=None,
+                        delete_selector=None,
+                        message='Configuring Integration'):
+    """Create a deployment, waits for operation to finish.
+
+    Args:
+      appname:  name of the application.
+      create_selector: create selector for the deployment.
+      delete_selector: delete selector for the deployment.
+      message: the message to display when waiting for API call to finish.
+        If not given, default messages will be used.
+    """
+    app_ref = self.GetAppRef(appname)
+    deployment_name = self._GetDeploymentName(app_ref.Name())
+    # TODO(b/217573594): remove this when oneof constraint is removed.
+    if create_selector and delete_selector:
+      raise exceptions.ArgumentError('create_selector and delete_selector '
+                                     'cannot be specified at the same time.')
     deployment = self.messages.Deployment(
         name=deployment_name,
-        createSelector={'matchTypeNames': match_type_names})
+        createSelector=create_selector,
+        deleteSelector=delete_selector)
     deployment_ops = api_utils.CreateDeployment(self._client, app_ref,
                                                 deployment)
 
     dep_response = api_utils.WaitForDeploymentOperation(
-        self._client, deployment_ops, 'Configuring Integration')
+        self._client, deployment_ops, message)
     self.CheckDeploymentState(dep_response)
 
   def _GetDeploymentName(self, appname):
@@ -225,6 +264,8 @@ class RunAppsOperations(object):
       self._AddServiceToIntegrationRef(name, resource_type,
                                        resources_map[service])
 
+    self.CheckCloudRunServices([service])
+
     application = encoding.DictToMessage(app_dict, self.messages.Application)
     self.ApplyAppConfig(
         appname=_DEFAULT_APP_NAME,
@@ -261,6 +302,7 @@ class RunAppsOperations(object):
           'Integration [{}] cannot be found'.format(name))
 
     resource_type = self.GetIntegrationTypeFromConfig(existing_resource)
+    flags.ValidateUpdateParameters(resource_type, parameters)
     resource_config = self._GetResourceConfig(resource_type, parameters,
                                               add_service, remove_service,
                                               existing_resource)
@@ -276,6 +318,20 @@ class RunAppsOperations(object):
       self._RemoveServiceToIntegrationRef(name, resource_type,
                                           resources_map[remove_service])
 
+    services = []
+    if self._IsIngressResource(resource_type):
+      # For ingress resource, expand the check list and selector to include all
+      # binded services.
+      services = self._GetRefServices(name, resource_type, resource_config,
+                                      resources_map)
+      for service in services:
+        if service != add_service:
+          match_type_names.append({'type': 'service', 'name': service})
+    elif add_service:
+      services.append(add_service)
+    if services:
+      self.CheckCloudRunServices(services)
+
     application = encoding.DictToMessage(app_dict, self.messages.Application)
     return self.ApplyAppConfig(
         appname=_DEFAULT_APP_NAME,
@@ -283,6 +339,87 @@ class RunAppsOperations(object):
         message='Updating Integration [{}]'.format(name),
         match_type_names=match_type_names,
         etag=application.etag)
+
+  def DeleteIntegration(self, name):
+    """Delete an integration.
+
+    Args:
+      name:  str, the name of the resource to update.
+
+    Raises:
+      IntegrationNotFoundError: If the integration is not found.
+
+    Returns:
+      str, the type of the integration that is deleted.
+    """
+    app_dict = self._GetDefaultAppDict()
+    resources_map = app_dict[_CONFIG_KEY][_RESOURCES_KEY]
+    resource = resources_map.get(name)
+    if resource is None:
+      raise exceptions.IntegrationNotFoundError(
+          'Integration [{}] cannot be found'.format(name))
+    resource_type = self.GetIntegrationTypeFromConfig(resource)
+
+    # TODO(b/222748706): revisit whether this apply to future ingress services.
+    if not self._IsIngressResource(resource_type):
+      # Unbind services
+      services = self._GetRefServices(name, resource_type, resource,
+                                      resources_map)
+      if services:
+        match_type_names = []
+        for service in services:
+          self._RemoveServiceToIntegrationRef(name, resource_type,
+                                              resources_map[service])
+          match_type_names.append({'type': 'service', 'name': service})
+        application = encoding.DictToMessage(app_dict,
+                                             self.messages.Application)
+        # TODO(b/222748706): refine message on failure.
+        self.ApplyAppConfig(
+            appname=_DEFAULT_APP_NAME,
+            appconfig=application.config,
+            message='Removing services from integration [{}]'.format(name),
+            match_type_names=match_type_names,
+            etag=application.etag)
+
+    # TODO(b/222748706): refine message on failure.
+    # Undeploy integration resource
+    self._UndeployResource(resource_type, name)
+
+    integration_type = self.GetIntegrationType(resource_type)
+    return integration_type
+
+  def _UndeployResource(self, resource_type, name):
+    """Undeploy a resource.
+
+    Args:
+      resource_type: type of the resource
+      name: name of the resource
+    """
+    # TODO(b/222358905): Add delete VPC selector once control plane have
+    # safeguard against deleting in use VPC connector
+    delete_selector = {
+        'matchTypeNames': [{
+            'type': resource_type,
+            'name': name
+        }]
+    }
+    self._CreateDeployment(
+        appname=_DEFAULT_APP_NAME,
+        delete_selector=delete_selector,
+        message='Deleting Integration resources')
+
+    # Get application again to refresh etag before update
+    app_dict = self._GetDefaultAppDict()
+    del app_dict[_CONFIG_KEY][_RESOURCES_KEY][name]
+    application = encoding.DictToMessage(app_dict, self.messages.Application)
+    self._UpdateApplication(
+        appname=_DEFAULT_APP_NAME,
+        appconfig=application.config,
+        message='Saving Integration Configurations',
+        etag=application.etag)
+
+  def _IsIngressResource(self, resource_type):
+    return resource_type == 'router'
 
   def ListIntegrationTypes(self):
     """Returns the list of integration type definitions.
@@ -330,19 +467,18 @@ class RunAppsOperations(object):
       service_name_filter: str, if populated service name to filter by.
 
     Returns:
-      Dict of str[str] with keys name, type, and services.
+      List of Dicts containing name, type, and services.
 
     """
-
     app = api_utils.GetApplication(self._client,
                                    self.GetAppRef(_DEFAULT_APP_NAME))
     if not app:
-      raise exceptions.IntegrationNotFoundError('No Integrations Found.')
+      return []
 
     app_dict = encoding.MessageToDict(app)
     app_resources = app_dict.get('config', {}).get('resources')
     if not app_resources:
-      raise exceptions.IntegrationNotFoundError('No Integrations Found.')
+      return []
 
     # Filter by type and/or service.
     output = []
@@ -405,7 +541,7 @@ class RunAppsOperations(object):
     elif resource_type != 'router' and service_name:
       selectors.append({'type': 'service', 'name': service_name})
 
-    # TODO(b/217744403): Remove redis specific logic after default VPC logic
+    # TODO(b/222753640): Remove redis specific logic after default VPC logic
     # is handled in CP.
     if resource_type == 'redis':
       # For now redis integration has a shadow VPC resource. This will hopefully
@@ -624,6 +760,44 @@ class RunAppsOperations(object):
         },
         collection='runapps.projects.locations.applications')
     return app_ref
+
+  def GetServiceRef(self, name):
+    """Returns the Cloud Run service reference.
+
+    Args:
+      name:  name of the Cloud Run service.
+
+    Returns:
+      Cloud Run service reference
+    """
+    project = properties.VALUES.core.project.Get(required=True)
+    service_ref = resources.REGISTRY.Parse(
+        name,
+        params={
+            'namespacesId': project,
+            'servicesId': name,
+        },
+        collection='run.namespaces.services')
+    return service_ref
+
+  def CheckCloudRunServices(self, service_names):
+    """Check for existence of Cloud Run services.
+
+    Args:
+      service_names: array, list of service to check.
+
+    Raises:
+      exceptions.ServiceNotFoundError: when a Cloud Run service doesn't exist.
+    """
+    conn_context = connection_context.GetConnectionContext(
+        {'region', self._region}, run_flags.Product.RUN)
+    with serverless_operations.Connect(conn_context) as client:
+      for name in service_names:
+        service_ref = self.GetServiceRef(name)
+        service = client.GetService(service_ref)
+        if not service:
+          raise exceptions.ServiceNotFoundError(
+              'Service [{}] could not be found.'.format(name))
 
   def CheckDeploymentState(self, response):
     """Throws any unexpected states contained within deployment reponse.

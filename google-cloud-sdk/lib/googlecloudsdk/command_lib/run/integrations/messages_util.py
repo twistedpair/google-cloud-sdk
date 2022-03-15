@@ -22,16 +22,17 @@ from __future__ import unicode_literals
 from googlecloudsdk.command_lib.run.integrations import integration_printer
 
 
-def GetSuccessMessageDeploy(integration_type, integration_name):
+def GetSuccessMessage(integration_type, integration_name, action='deployed'):
   """Returns a user message for a successful integration deploy.
 
   Args:
     integration_type: str, type of the integration
     integration_name: str, name of the integration
+    action: str, the action that succeeded
   """
   return ('[{{bold}}{}{{reset}}] integration [{{bold}}{}{{reset}}] '
-          'has been deployed successfully.').format(integration_type,
-                                                    integration_name)
+          'has been {} successfully.').format(integration_type,
+                                              integration_name, action)
 
 
 def GetCallToAction(integration_type, resource_config, resource_status):

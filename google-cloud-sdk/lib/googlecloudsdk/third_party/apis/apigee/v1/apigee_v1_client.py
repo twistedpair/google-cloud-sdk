@@ -4478,6 +4478,33 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetResulturl(self, request, global_params=None):
+      r"""After the query is completed, use this API to retrieve the results. If the request succeeds, and there is a non-zero result set, the result is sent to the client as a list of urls to JSON files.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsQueriesGetResulturlRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1GetAsyncQueryResultUrlResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetResulturl')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetResulturl.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/queries/{queriesId}/resulturl',
+        http_method='GET',
+        method_id='apigee.organizations.environments.queries.getResulturl',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsQueriesGetResulturlRequest',
+        response_type_name='GoogleCloudApigeeV1GetAsyncQueryResultUrlResponse',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Return a list of Asynchronous Queries.
 

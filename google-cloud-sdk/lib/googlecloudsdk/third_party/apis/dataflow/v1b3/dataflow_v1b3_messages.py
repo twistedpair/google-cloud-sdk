@@ -1137,6 +1137,9 @@ class DataflowProjectsLocationsDeploymentsCreateRequest(_messages.Message):
 
   Fields:
     deployment: A Deployment resource to be passed as the request body.
+    deploymentId: The ID to use for the Cloud Dataflow job deployment, which
+      will become the final component of the deployment's resource name. This
+      value should be 4-63 characters, and valid characters are /a-z-/.
     parent: Required. The parent resource where this deployment will be
       created. Format: projects/{project}/locations/{location}
     requestId: A unique identifier for this request. Restricted to 36 ASCII
@@ -1147,9 +1150,10 @@ class DataflowProjectsLocationsDeploymentsCreateRequest(_messages.Message):
   """
 
   deployment = _messages.MessageField('Deployment', 1)
-  parent = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  validateOnly = _messages.BooleanField(4)
+  deploymentId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
 
 
 class DataflowProjectsLocationsDeploymentsDeleteRequest(_messages.Message):
@@ -5411,22 +5415,45 @@ class SdkVersion(_messages.Message):
 
 
 class SendDebugCaptureRequest(_messages.Message):
-  r"""Request to send encoded debug information.
+  r"""Request to send encoded debug information. Next ID: 8
+
+  Enums:
+    DataFormatValueValuesEnum: Format for the data field above (id=5).
 
   Fields:
     componentId: The internal component id for which debug information is
       sent.
     data: The encoded debug information.
+    dataFormat: Format for the data field above (id=5).
     location: The [regional endpoint]
       (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)
       that contains the job specified by job_id.
     workerId: The worker id, i.e., VM hostname.
   """
 
+  class DataFormatValueValuesEnum(_messages.Enum):
+    r"""Format for the data field above (id=5).
+
+    Values:
+      DATA_FORMAT_UNSPECIFIED: Format unspecified, parsing is determined based
+        upon page type and legacy encoding. (go/protodosdonts#do-include-an-
+        unspecified-value-in-an-enum)
+      RAW: Raw HTML string.
+      JSON: JSON-encoded string.
+      ZLIB: Websafe encoded zlib-compressed string.
+      BROTLI: Websafe encoded brotli-compressed string.
+    """
+    DATA_FORMAT_UNSPECIFIED = 0
+    RAW = 1
+    JSON = 2
+    ZLIB = 3
+    BROTLI = 4
+
   componentId = _messages.StringField(1)
   data = _messages.StringField(2)
-  location = _messages.StringField(3)
-  workerId = _messages.StringField(4)
+  dataFormat = _messages.EnumField('DataFormatValueValuesEnum', 3)
+  location = _messages.StringField(4)
+  workerId = _messages.StringField(5)
 
 
 class SendDebugCaptureResponse(_messages.Message):

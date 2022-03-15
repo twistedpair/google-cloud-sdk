@@ -491,6 +491,11 @@
           "items": {
             "$ref": "SecretEnvVar"
           }
+        },
+        "revision": {
+          "description": "Output only. The name of service revision.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -577,6 +582,10 @@
         },
         "value": {
           "description": "Required. The value for the attribute.",
+          "type": "string"
+        },
+        "operator": {
+          "description": "Optional. The operator used for matching the events with the value of the filter. If not specified, only events that have an exact key-value pair specified in the filter are matched. The only allowed value is `match-path-pattern`.",
           "type": "string"
         }
       }

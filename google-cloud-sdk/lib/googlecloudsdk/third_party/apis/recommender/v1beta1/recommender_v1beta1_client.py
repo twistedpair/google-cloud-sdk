@@ -717,33 +717,6 @@ class RecommenderV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Config(self, request, global_params=None):
-      r"""Updates an InsightTypeConfig change. This will create a new revision of the config.
-
-      Args:
-        request: (RecommenderOrganizationsLocationsInsightTypesConfigRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudRecommenderV1beta1InsightTypeConfig) The response message.
-      """
-      config = self.GetMethodConfig('Config')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Config.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/organizations/{organizationsId}/locations/{locationsId}/insightTypes/{insightTypesId}/config',
-        http_method='POST',
-        method_id='recommender.organizations.locations.insightTypes.config',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['updateMask', 'validateOnly'],
-        relative_path='v1beta1/{+name}',
-        request_field='googleCloudRecommenderV1beta1InsightTypeConfig',
-        request_type_name='RecommenderOrganizationsLocationsInsightTypesConfigRequest',
-        response_type_name='GoogleCloudRecommenderV1beta1InsightTypeConfig',
-        supports_download=False,
-    )
-
     def GetConfig(self, request, global_params=None):
       r"""Gets the requested InsightTypeConfig. There is only one instance of the config for each InsightType.
 
@@ -767,6 +740,33 @@ class RecommenderV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+name}',
         request_field='',
         request_type_name='RecommenderOrganizationsLocationsInsightTypesGetConfigRequest',
+        response_type_name='GoogleCloudRecommenderV1beta1InsightTypeConfig',
+        supports_download=False,
+    )
+
+    def UpdateConfig(self, request, global_params=None):
+      r"""Updates an InsightTypeConfig change. This will create a new revision of the config.
+
+      Args:
+        request: (RecommenderOrganizationsLocationsInsightTypesUpdateConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1beta1InsightTypeConfig) The response message.
+      """
+      config = self.GetMethodConfig('UpdateConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/organizations/{organizationsId}/locations/{locationsId}/insightTypes/{insightTypesId}/config',
+        http_method='PATCH',
+        method_id='recommender.organizations.locations.insightTypes.updateConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask', 'validateOnly'],
+        relative_path='v1beta1/{+name}',
+        request_field='googleCloudRecommenderV1beta1InsightTypeConfig',
+        request_type_name='RecommenderOrganizationsLocationsInsightTypesUpdateConfigRequest',
         response_type_name='GoogleCloudRecommenderV1beta1InsightTypeConfig',
         supports_download=False,
     )
@@ -926,33 +926,6 @@ class RecommenderV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Config(self, request, global_params=None):
-      r"""Updates a Recommender Config. This will create a new revision of the config.
-
-      Args:
-        request: (RecommenderOrganizationsLocationsRecommendersConfigRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudRecommenderV1beta1RecommenderConfig) The response message.
-      """
-      config = self.GetMethodConfig('Config')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Config.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/organizations/{organizationsId}/locations/{locationsId}/recommenders/{recommendersId}/config',
-        http_method='POST',
-        method_id='recommender.organizations.locations.recommenders.config',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['updateMask', 'validateOnly'],
-        relative_path='v1beta1/{+name}',
-        request_field='googleCloudRecommenderV1beta1RecommenderConfig',
-        request_type_name='RecommenderOrganizationsLocationsRecommendersConfigRequest',
-        response_type_name='GoogleCloudRecommenderV1beta1RecommenderConfig',
-        supports_download=False,
-    )
-
     def GetConfig(self, request, global_params=None):
       r"""Gets the requested Recommender Config. There is only one instance of the config for each Recommender.
 
@@ -976,6 +949,33 @@ class RecommenderV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+name}',
         request_field='',
         request_type_name='RecommenderOrganizationsLocationsRecommendersGetConfigRequest',
+        response_type_name='GoogleCloudRecommenderV1beta1RecommenderConfig',
+        supports_download=False,
+    )
+
+    def UpdateConfig(self, request, global_params=None):
+      r"""Updates a Recommender Config. This will create a new revision of the config.
+
+      Args:
+        request: (RecommenderOrganizationsLocationsRecommendersUpdateConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1beta1RecommenderConfig) The response message.
+      """
+      config = self.GetMethodConfig('UpdateConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/organizations/{organizationsId}/locations/{locationsId}/recommenders/{recommendersId}/config',
+        http_method='PATCH',
+        method_id='recommender.organizations.locations.recommenders.updateConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask', 'validateOnly'],
+        relative_path='v1beta1/{+name}',
+        request_field='googleCloudRecommenderV1beta1RecommenderConfig',
+        request_type_name='RecommenderOrganizationsLocationsRecommendersUpdateConfigRequest',
         response_type_name='GoogleCloudRecommenderV1beta1RecommenderConfig',
         supports_download=False,
     )

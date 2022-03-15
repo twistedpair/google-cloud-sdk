@@ -2122,6 +2122,7 @@ class JobStatistics(_messages.Message):
   Fields:
     completionRatio: [TrustedTester] [Output-only] Job progress (0.0 -> 1.0)
       for LOAD and EXTRACT jobs.
+    copy: [Output-only] Statistics for a copy job.
     creationTime: [Output-only] Creation time of this job, in milliseconds
       since the epoch. This field will be present on all jobs.
     endTime: [Output-only] End time of this job, in milliseconds since the
@@ -2167,23 +2168,24 @@ class JobStatistics(_messages.Message):
     slotMs = _messages.IntegerField(2)
 
   completionRatio = _messages.FloatField(1)
-  creationTime = _messages.IntegerField(2)
-  endTime = _messages.IntegerField(3)
-  extract = _messages.MessageField('JobStatistics4', 4)
-  load = _messages.MessageField('JobStatistics3', 5)
-  numChildJobs = _messages.IntegerField(6)
-  parentJobId = _messages.StringField(7)
-  query = _messages.MessageField('JobStatistics2', 8)
-  quotaDeferments = _messages.StringField(9, repeated=True)
-  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 10, repeated=True)
-  reservation_id = _messages.StringField(11)
-  rowLevelSecurityStatistics = _messages.MessageField('RowLevelSecurityStatistics', 12)
-  scriptStatistics = _messages.MessageField('ScriptStatistics', 13)
-  sessionInfo = _messages.MessageField('SessionInfo', 14)
-  startTime = _messages.IntegerField(15)
-  totalBytesProcessed = _messages.IntegerField(16)
-  totalSlotMs = _messages.IntegerField(17)
-  transactionInfo = _messages.MessageField('TransactionInfo', 18)
+  copy = _messages.MessageField('JobStatistics5', 2)
+  creationTime = _messages.IntegerField(3)
+  endTime = _messages.IntegerField(4)
+  extract = _messages.MessageField('JobStatistics4', 5)
+  load = _messages.MessageField('JobStatistics3', 6)
+  numChildJobs = _messages.IntegerField(7)
+  parentJobId = _messages.StringField(8)
+  query = _messages.MessageField('JobStatistics2', 9)
+  quotaDeferments = _messages.StringField(10, repeated=True)
+  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 11, repeated=True)
+  reservation_id = _messages.StringField(12)
+  rowLevelSecurityStatistics = _messages.MessageField('RowLevelSecurityStatistics', 13)
+  scriptStatistics = _messages.MessageField('ScriptStatistics', 14)
+  sessionInfo = _messages.MessageField('SessionInfo', 15)
+  startTime = _messages.IntegerField(16)
+  totalBytesProcessed = _messages.IntegerField(17)
+  totalSlotMs = _messages.IntegerField(18)
+  transactionInfo = _messages.MessageField('TransactionInfo', 19)
 
 
 class JobStatistics2(_messages.Message):
@@ -2359,6 +2361,19 @@ class JobStatistics4(_messages.Message):
 
   destinationUriFileCounts = _messages.IntegerField(1, repeated=True)
   inputBytes = _messages.IntegerField(2)
+
+
+class JobStatistics5(_messages.Message):
+  r"""A JobStatistics5 object.
+
+  Fields:
+    copied_logical_bytes: [Output-only] Number of logical bytes copied to the
+      destination table.
+    copied_rows: [Output-only] Number of rows copied to the destination table.
+  """
+
+  copied_logical_bytes = _messages.IntegerField(1)
+  copied_rows = _messages.IntegerField(2)
 
 
 class JobStatus(_messages.Message):

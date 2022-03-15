@@ -224,7 +224,7 @@
     },
     "PrivateCloud": {
       "id": "PrivateCloud",
-      "description": "Private cloud resource.",
+      "description": "Represents a private cloud resource. Private clouds are zonal resources.",
       "type": "object",
       "properties": {
         "name": {
@@ -1045,7 +1045,7 @@
     },
     "NetworkPolicy": {
       "id": "NetworkPolicy",
-      "description": "Represents a network policy resource. You can use a network policy to enable or disable internet access and external IP access. Network policies are associated with a VPC network, which span across regions. For a given region, a network policy applies to all private clouds in the VPC network associated with the policy.",
+      "description": "Represents a network policy resource. Network policies are regional resources. You can use a network policy to enable or disable internet access and external IP access. Network policies are associated with a VPC network, which span across regions. For a given region, a network policy applies to all private clouds in the VPC network associated with the policy.",
       "type": "object",
       "properties": {
         "name": {
@@ -1843,7 +1843,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new `PrivateCloud` resource in a given project and location. Creating a private cloud also creates a [management cluster](https:\/\/cloud.google.com\/vmware-engine\/docs\/concepts-vmware-components) for that private cloud. For the first private cloud created in the given VPC (`networkConfig.network`), VMware Engine creates a VPC peering with a service network."
+                  "description": "Creates a new `PrivateCloud` resource in a given project and location. Private clouds can only be created in zones, regional private clouds are not supported. Creating a private cloud also creates a [management cluster](https:\/\/cloud.google.com\/vmware-engine\/docs\/concepts-vmware-components) for that private cloud. For the first private cloud created in the given VPC network (`networkConfig.network`), VMware Engine creates a VPC peering with a service network."
                 },
                 "patch": {
                   "id": "vmwareengine.projects.locations.privateClouds.patch",

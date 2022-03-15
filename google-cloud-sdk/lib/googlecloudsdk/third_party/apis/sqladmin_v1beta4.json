@@ -1975,6 +1975,16 @@
         "bucket": {
           "description": "The name of the destination bucket (e.g., gs:\/\/mybucket).",
           "type": "string"
+        },
+        "retentionInterval": {
+          "description": "How long to keep generated audit files.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "uploadInterval": {
+          "description": "How often to upload generated audit files.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },
@@ -2654,7 +2664,8 @@
             "SQL Server @@SERVERNAME does not match actual host name",
             "The primary instance has been setup and will fail the setup.",
             "The primary instance has unsupported binary log format.",
-            "The primary instance's binary log retention setting."
+            "The primary instance's binary log retention setting.",
+            "The primary instance has tables with unsupported storage engine."
           ],
           "enum": [
             "SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED",
@@ -2682,7 +2693,8 @@
             "SQLSERVER_SERVERNAME_MISMATCH",
             "PRIMARY_ALREADY_SETUP",
             "UNSUPPORTED_BINLOG_FORMAT",
-            "BINLOG_RETENTION_SETTING"
+            "BINLOG_RETENTION_SETTING",
+            "UNSUPPORTED_STORAGE_ENGINE"
           ]
         },
         "detail": {

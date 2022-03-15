@@ -214,14 +214,6 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       field. Supported for Cloud Composer environments in versions
       composer-1.*.*-airflow-*.*.*. * `config.webServerNetworkAccessControl` *
       Replace the environment's current `WebServerNetworkAccessControl`. *
-      `config.databaseConfig.machineType` * Cloud SQL machine type used by
-      Airflow database. It has to be one of: db-n1-standard-2,
-      db-n1-standard-4, db-n1-standard-8 or db-n1-standard-16. Supported for
-      Cloud Composer environments in versions composer-1.*.*-airflow-*.*.*. *
-      `config.webServerConfig.machineType` * Machine type on which Airflow web
-      server is running. It has to be one of: composer-n1-webserver-2,
-      composer-n1-webserver-4 or composer-n1-webserver-8. Supported for Cloud
-      Composer environments in versions composer-1.*.*-airflow-*.*.*. *
       `config.softwareConfig.airflowConfigOverrides` * Replace all Apache
       Airflow config overrides. If a replacement config overrides map is not
       included in `environment`, all config overrides are cleared. It is an
@@ -316,13 +308,14 @@ class ComposerProjectsLocationsOperationsListRequest(_messages.Message):
 
 class DatabaseConfig(_messages.Message):
   r"""The configuration of Cloud SQL instance that is used by the Apache
-  Airflow software. Supported for Cloud Composer environments in versions
-  composer-1.*.*-airflow-*.*.*.
+  Airflow software.
 
   Fields:
     machineType: Optional. Cloud SQL machine type used by Airflow database. It
       has to be one of: db-n1-standard-2, db-n1-standard-4, db-n1-standard-8
       or db-n1-standard-16. If not specified, db-n1-standard-2 will be used.
+      Supported for Cloud Composer environments in versions
+      composer-1.*.*-airflow-*.*.*.
   """
 
   machineType = _messages.StringField(1)
@@ -489,9 +482,7 @@ class EnvironmentConfig(_messages.Message):
       name prefixes. DAG objects for this environment reside in a simulated
       directory with the given prefix.
     databaseConfig: Optional. The configuration settings for Cloud SQL
-      instance used internally by Apache Airflow software. This field is
-      supported for Cloud Composer environments in versions
-      composer-1.*.*-airflow-*.*.*.
+      instance used internally by Apache Airflow software.
     encryptionConfig: Optional. The encryption options for the Cloud Composer
       environment and its dependencies. Cannot be updated.
     environmentSize: Optional. The size of the Cloud Composer environment.
@@ -616,7 +607,7 @@ class ImageVersion(_messages.Message):
     creationDisabled: Whether it is impossible to create an environment with
       the image version.
     imageVersionId: The string identifier of the ImageVersion, in the form:
-      "composer-x.y.z-airflow-a.b(.c)"
+      "composer-x.y.z-airflow-a.b.c"
     isDefault: Whether this is the default ImageVersion used by Composer
       during environment creation if no input ImageVersion is specified.
     releaseDate: The date of the version release.
@@ -1107,19 +1098,23 @@ class SoftwareConfig(_messages.Message):
     imageVersion: The version of the software running in the environment. This
       encapsulates both the version of Cloud Composer functionality and the
       version of Apache Airflow. It must match the regular expression `compose
-      r-([0-9]+\.[0-9]+\.[0-9]+|latest)-airflow-[0-9]+\.[0-9]+(\.[0-9]+.*)?`.
-      When used as input, the server also checks if the provided version is
-      supported and denies the request for an unsupported version. The Cloud
-      Composer portion of the version is a [semantic
-      version](https://semver.org) or `latest`. When the patch version is
-      omitted, the current Cloud Composer patch version is selected. When
-      `latest` is provided instead of an explicit version number, the server
-      replaces `latest` with the current Cloud Composer version and stores
-      that version number in the same field. The portion of the image version
-      that follows *airflow-* is an official Apache Airflow repository
-      [release name](https://github.com/apache/incubator-airflow/releases).
-      See also [Version List](/composer/docs/concepts/versioning/composer-
-      versions).
+      r-([0-9]+(\.[0-9]+\.[0-9]+(-preview\.[0-9]+)?)?|latest)-airflow-([0-9]+\
+      .[0-9]+(\.[0-9]+)?)`. When used as input, the server also checks if the
+      provided version is supported and denies the request for an unsupported
+      version. The Cloud Composer portion of the image version is a full
+      [semantic version](https://semver.org), or an alias in the form of major
+      version number or `latest`. When an alias is provided, the server
+      replaces it with the current Cloud Composer version that satisfies the
+      alias. The Apache Airflow portion of the image version is a full
+      semantic version that points to one of the supported Apache Airflow
+      versions, or an alias in the form of only major and minor versions
+      specified. When an alias is provided, the server replaces it with the
+      latest Apache Airflow version that satisfies the alias and is supported
+      in the given Cloud Composer version. In all cases, the resolved image
+      version is stored in the same field. See also [version
+      list](/composer/docs/concepts/versioning/composer-versions) and
+      [versioning overview](/composer/docs/concepts/versioning/composer-
+      versioning-overview).
     pypiPackages: Optional. Custom Python Package Index (PyPI) packages to be
       installed in the environment. Keys refer to the lowercase package name
       such as "numpy" and values are the lowercase extras and version

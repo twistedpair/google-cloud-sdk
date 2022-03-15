@@ -353,17 +353,21 @@ class ExecStepConfig(_messages.Message):
     (https://en.wikipedia.org/wiki/Shebang_\(Unix\)).
 
     Values:
-      INTERPRETER_UNSPECIFIED: Invalid for a Windows ExecStepConfig. For a
-        Linux ExecStepConfig, the interpreter will be parsed from the shebang
-        line of the script if unspecified.
-      SHELL: Indicates that the script is run with `/bin/sh` on Linux and
-        `cmd` on Windows.
-      POWERSHELL: Indicates that the file is run with PowerShell flags
-        `-NonInteractive`, `-NoProfile`, and `-ExecutionPolicy Bypass`.
+      INTERPRETER_UNSPECIFIED: If the interpreter is not specified, the value
+        defaults to `NONE`.
+      NONE: Indicates that the file is run as follows on each operating
+        system: + For Linux VMs, the file is ran as an executable and the
+        interpreter might be parsed from the [shebang
+        line](https://wikipedia.org/wiki/Shebang_(Unix)) of the file. + For
+        Windows VM, this value is not supported.
+      SHELL: Indicates that the file is run with `/bin/sh` on Linux and `cmd`
+        on Windows.
+      POWERSHELL: Indicates that the file is run with PowerShell.
     """
     INTERPRETER_UNSPECIFIED = 0
-    SHELL = 1
-    POWERSHELL = 2
+    NONE = 1
+    SHELL = 2
+    POWERSHELL = 3
 
   allowedSuccessCodes = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
   gcsObject = _messages.MessageField('GcsObject', 2)

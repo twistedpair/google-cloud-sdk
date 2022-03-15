@@ -67,3 +67,17 @@ SOURCE_DISK_ARG = compute_flags.ResourceArgument(
     zonal_collection='compute.disks',
     regional_collection='compute.regionDisks',
     required=False)
+
+SOURCE_INSTANT_SNAPSHOT_ARG = compute_flags.ResourceArgument(
+    resource_name='source instant snapshot',
+    name='--source-instant-snapshot',
+    completer=compute_completers.InstantSnapshotsCompleter,
+    short_help="""
+    Source instant snapshot used to create the snapshot. To create a snapshot from a source
+    instant snapshot in a different project, specify the full path to the source instant snapshot.
+    For example:
+    https://www.googleapis.com/compute/v1/projects/MY-PROJECT/zones/MY-ZONE/instantSnapshots/MY-INSTANT-SNAPSHOT
+    """,
+    zonal_collection='compute.instantSnapshots',
+    regional_collection='compute.regionInstantSnapshots',
+    required=False)

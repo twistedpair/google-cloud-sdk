@@ -380,7 +380,7 @@ class RealmConfig(_messages.Message):
     capacity: The maximum number of concurrent streaming sessions that the
       instance can support in this realm.
     contentBuildVersion: The user-specified version tag and build ID of the
-      content served in this realm.
+      content served by this instance.
     realm: A realm in which the instance is deployed.
   """
 

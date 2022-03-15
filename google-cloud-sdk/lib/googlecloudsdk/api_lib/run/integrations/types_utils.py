@@ -20,6 +20,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from frozendict import frozendict
+from googlecloudsdk.command_lib.run import exceptions
 
 _INTEGRATION_TYPES = frozenset([
     frozendict({
@@ -30,6 +31,9 @@ _INTEGRATION_TYPES = frozenset([
         'description':
             'Configure a custom domain for Cloud Run services with Google Cloud '
             'Load Balancer.',
+        'example_command':
+            '$ gcloud run integration types create --type=custom-domain '
+            '--parameters=domain=example.com',
         'parameters':
             frozenset([
                 frozendict({
@@ -62,7 +66,9 @@ _INTEGRATION_TYPES = frozenset([
         'name':
             'redis',
         'description':
-            'Configure a GCP Managed Redis instance for Cloud Run Services.',
+            'Configure a Memorystore-Redis instance for Cloud Run Services.',
+        'example_command':
+            '$ gcloud run integration types create --type=redis',
         'parameters':
             frozenset([
                 frozendict({
@@ -108,3 +114,17 @@ def IntegrationTypes(client):
   """
   del client
   return _INTEGRATION_TYPES
+
+
+def CheckValidIntegrationType(int_type):
+  """Checks if IntegrationType is supported.
+
+  Args:
+    int_type: str, integration type to validate.
+  Rasies: ArgumentError
+  """
+  if int_type not in [
+      integration['name'] for integration in _INTEGRATION_TYPES
+  ]:
+    raise exceptions.ArgumentError(
+        'Integration type {} is not supported.'.format(int_type))

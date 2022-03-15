@@ -258,6 +258,14 @@ class Collections(enum.Enum):
       ['project', 'zone', 'machineType'],
       True
   )
+  NETWORKEDGESECURITYSERVICES = (
+      'networkEdgeSecurityServices',
+      'projects/{project}/regions/{region}/networkEdgeSecurityServices/'
+      '{networkEdgeSecurityService}',
+      {},
+      ['project', 'region', 'networkEdgeSecurityService'],
+      True
+  )
   NETWORKENDPOINTGROUPS = (
       'networkEndpointGroups',
       'projects/{project}/zones/{zone}/networkEndpointGroups/'
@@ -445,6 +453,13 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}/operations/{operation}',
       {},
       ['project', 'region', 'operation'],
+      True
+  )
+  REGIONSECURITYPOLICIES = (
+      'regionSecurityPolicies',
+      'projects/{project}/regions/{region}/securityPolicies/{securityPolicy}',
+      {},
+      ['project', 'region', 'securityPolicy'],
       True
   )
   REGIONSSLCERTIFICATES = (

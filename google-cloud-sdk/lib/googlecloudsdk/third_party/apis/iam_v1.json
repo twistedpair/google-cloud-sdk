@@ -4121,6 +4121,38 @@
                       "description": "Undeletes a WorkforcePoolProviderKey, as long as it was deleted fewer than 30 days ago."
                     }
                   }
+                  ,
+                  "resources": {
+                    "operations": {
+                      "methods": {
+                        "get": {
+                          "id": "iam.locations.workforcePools.providers.keys.operations.get",
+                          "path": "v1/{+name}",
+                          "flatPath": "v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/providers/{providersId}/keys/{keysId}/operations/{operationsId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "The name of the operation resource.",
+                              "pattern": "^locations\/[^\/]+\/workforcePools\/[^\/]+\/providers\/[^\/]+\/keys\/[^\/]+\/operations\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "Operation"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                        }
+                      }
+                    }
+                  }
                 }
               }
             },

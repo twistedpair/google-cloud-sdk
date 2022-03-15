@@ -60,14 +60,15 @@ class CustomDomainFormatter(base_formatter.BaseFormatter):
     Returns:
       The printed output.
     """
-    gcp_resources = record.get('status', {}).get('gcpResource', {})
-    details = record.get('status', {}).get('routerDetails', {})
-
+    resource_status = record.get('status', {})
+    gcp_resources = resource_status.get('gcpResource', {})
+    details = resource_status.get('routerDetails', {})
     return cp.Labeled([
         cp.Lines([
             ('Google Cloud Load Balancer ({})'.format(
                 self._GetGCLBName(gcp_resources))),
             cp.Labeled([
+                ('Console link', resource_status.get('consoleLink', 'n/a')),
                 ('Frontend', details.get('ipAddress', 'n/a')),
                 ('SSL Certificate',
                  self.PrintStatus(self._GetSSLStatus(gcp_resources))),
@@ -117,7 +118,7 @@ class CustomDomainFormatter(base_formatter.BaseFormatter):
     ssl_cert = self._FindResourceByType(
         gcp_resources, 'google_compute_managed_ssl_certificate')
     if ssl_cert:
-      return self.GetResourceState(ssl_cert)
+      return self.GetGCPResourceState(ssl_cert)
     return 'UNKNOWN'
 
   def _FindResourceByType(self, resources, rtype):

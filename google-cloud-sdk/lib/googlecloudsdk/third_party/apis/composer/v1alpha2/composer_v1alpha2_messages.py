@@ -43,19 +43,23 @@ class CheckUpgradeRequest(_messages.Message):
     imageVersion: The version of the software running in the environment. This
       encapsulates both the version of Cloud Composer functionality and the
       version of Apache Airflow. It must match the regular expression `compose
-      r-([0-9]+\.[0-9]+\.[0-9]+|latest)-airflow-[0-9]+\.[0-9]+(\.[0-9]+.*)?`.
-      When used as input, the server also checks if the provided version is
-      supported and denies the request for an unsupported version. The Cloud
-      Composer portion of the version is a [semantic
-      version](https://semver.org) or `latest`. When the patch version is
-      omitted, the current Cloud Composer patch version is selected. When
-      `latest` is provided instead of an explicit version number, the server
-      replaces `latest` with the current Cloud Composer version and stores
-      that version number in the same field. The portion of the image version
-      that follows `airflow-` is an official Apache Airflow repository
-      [release name](https://github.com/apache/incubator-airflow/releases).
-      See also [Version List] (/composer/docs/concepts/versioning/composer-
-      versions).
+      r-([0-9]+(\.[0-9]+\.[0-9]+(-preview\.[0-9]+)?)?|latest)-airflow-([0-9]+\
+      .[0-9]+(\.[0-9]+)?)`. When used as input, the server also checks if the
+      provided version is supported and denies the request for an unsupported
+      version. The Cloud Composer portion of the image version is a full
+      [semantic version](https://semver.org), or an alias in the form of major
+      version number or `latest`. When an alias is provided, the server
+      replaces it with the current Cloud Composer version that satisfies the
+      alias. The Apache Airflow portion of the image version is a full
+      semantic version that points to one of the supported Apache Airflow
+      versions, or an alias in the form of only major and minor versions
+      specified. When an alias is provided, the server replaces it with the
+      latest Apache Airflow version that satisfies the alias and is supported
+      in the given Cloud Composer version. In all cases, the resolved image
+      version is stored in the same field. See also [version
+      list](/composer/docs/concepts/versioning/composer-versions) and
+      [versioning overview](/composer/docs/concepts/versioning/composer-
+      versioning-overview).
   """
 
   imageVersion = _messages.StringField(1)
@@ -456,30 +460,30 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       * Upgrade the version of the environment in-place. Refer to
       `SoftwareConfig.image_version` for information on how to format the new
       image version. Additionally, the new image version cannot effect a
-      version downgrade and must match the current image version's Composer
-      major version and Airflow major and minor versions. Consult the [Cloud
-      Composer Version List](https://cloud.google.com/composer/docs/concepts/v
-      ersioning/composer-versions) for valid values. *
-      `config.softwareConfig.schedulerCount` * Horizontally scale the number
-      of schedulers in Airflow. A positive integer not greater than the number
-      of nodes must be provided in the `config.softwareConfig.schedulerCount`
-      field. Supported for Cloud Composer environments in versions
-      composer-1.*.*-airflow-2.*.*. * `config.databaseConfig.machineType` *
-      Cloud SQL machine type used by Airflow database. It has to be one of:
-      db-n1-standard-2, db-n1-standard-4, db-n1-standard-8 or
-      db-n1-standard-16. Supported for Cloud Composer environments in versions
-      composer-1.*.*-airflow-*.*.*. * `config.webServerConfig.machineType` *
-      Machine type on which Airflow web server is running. It has to be one
-      of: composer-n1-webserver-2, composer-n1-webserver-4 or
-      composer-n1-webserver-8. Supported for Cloud Composer environments in
-      versions composer-1.*.*-airflow-*.*.*. * `config.maintenanceWindow` *
-      Maintenance window during which Cloud Composer components may be under
-      maintenance. * `config.workloadsConfig` * The workloads configuration
-      settings for the GKE cluster associated with the Cloud Composer
-      environment. Supported for Cloud Composer environments in versions
-      composer-2.*.*-airflow-*.*.* and newer. * `config.environmentSize` * The
-      size of the Cloud Composer environment. Supported for Cloud Composer
-      environments in versions composer-2.*.*-airflow-*.*.* and newer.
+      version downgrade, and must match the current image version's Composer
+      and Airflow major versions. Consult the [Cloud Composer version
+      list](/composer/docs/concepts/versioning/composer-versions) for valid
+      values. * `config.softwareConfig.schedulerCount` * Horizontally scale
+      the number of schedulers in Airflow. A positive integer not greater than
+      the number of nodes must be provided in the
+      `config.softwareConfig.schedulerCount` field. Supported for Cloud
+      Composer environments in versions composer-1.*.*-airflow-2.*.*. *
+      `config.databaseConfig.machineType` * Cloud SQL machine type used by
+      Airflow database. It has to be one of: db-n1-standard-2,
+      db-n1-standard-4, db-n1-standard-8 or db-n1-standard-16. Supported for
+      Cloud Composer environments in versions composer-1.*.*-airflow-*.*.*. *
+      `config.webServerConfig.machineType` * Machine type on which Airflow web
+      server is running. It has to be one of: composer-n1-webserver-2,
+      composer-n1-webserver-4 or composer-n1-webserver-8. Supported for Cloud
+      Composer environments in versions composer-1.*.*-airflow-*.*.*. *
+      `config.maintenanceWindow` * Maintenance window during which Cloud
+      Composer components may be under maintenance. * `config.workloadsConfig`
+      * The workloads configuration settings for the GKE cluster associated
+      with the Cloud Composer environment. Supported for Cloud Composer
+      environments in versions composer-2.*.*-airflow-*.*.* and newer. *
+      `config.environmentSize` * The size of the Cloud Composer environment.
+      Supported for Cloud Composer environments in versions
+      composer-2.*.*-airflow-*.*.* and newer.
   """
 
   environment = _messages.MessageField('Environment', 1)
@@ -691,16 +695,27 @@ class DagStats(_messages.Message):
 
 class DatabaseConfig(_messages.Message):
   r"""The configuration of Cloud SQL instance that is used by the Apache
-  Airflow software. Supported for Cloud Composer environments in versions
-  composer-1.*.*-airflow-*.*.*.
+  Airflow software.
 
   Fields:
+    highAvailability: Optional. Creates the Airflow Database in High
+      Availability mode. This option can only be set during environment
+      creation.
     machineType: Optional. Cloud SQL machine type used by Airflow database. It
       has to be one of: db-n1-standard-2, db-n1-standard-4, db-n1-standard-8
       or db-n1-standard-16. If not specified, db-n1-standard-2 will be used.
+      Supported for Cloud Composer environments in versions
+      composer-1.*.*-airflow-*.*.*.
+    zone: Optional. The Compute Engine zone where the Airflow database is
+      created. If zone is provided, it must be in the region selected for the
+      environment. If zone is not provided, a zone is automatically selected.
+      The zone can only be set during environment creation. Supported for
+      Cloud Composer environments in versions composer-2.*.*-airflow-*.*.*.
   """
 
-  machineType = _messages.StringField(1)
+  highAvailability = _messages.BooleanField(1)
+  machineType = _messages.StringField(2)
+  zone = _messages.StringField(3)
 
 
 class DatabaseDataRetentionConfig(_messages.Message):
@@ -795,6 +810,7 @@ class Environment(_messages.Message):
       "projects/{projectId}/locations/{locationId}/environments/{environmentId
       }" EnvironmentId must start with a lowercase letter followed by up to 63
       lowercase letters, numbers, or hyphens, and cannot end with a hyphen.
+    satisfiesPzs: Output only. Reserved for future use.
     state: The current state of the environment.
     updateTime: Output only. The time at which this environment was last
       modified.
@@ -856,9 +872,10 @@ class Environment(_messages.Message):
   createTime = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  updateTime = _messages.StringField(6)
-  uuid = _messages.StringField(7)
+  satisfiesPzs = _messages.BooleanField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
+  uuid = _messages.StringField(8)
 
 
 class EnvironmentConfig(_messages.Message):
@@ -879,9 +896,7 @@ class EnvironmentConfig(_messages.Message):
       name prefixes. DAG objects for this environment reside in a simulated
       directory with the given prefix.
     databaseConfig: Optional. The configuration settings for Cloud SQL
-      instance used internally by Apache Airflow software. This field is
-      supported for Cloud Composer environments in versions
-      composer-1.*.*-airflow-*.*.*.
+      instance used internally by Apache Airflow software.
     databaseDataRetentionConfig: Optional. The configuration setting for
       Airflow database data retention mechanism.
     encryptionConfig: Optional. The encryption options for the Cloud Composer
@@ -1019,7 +1034,7 @@ class ImageVersion(_messages.Message):
     creationDisabled: Whether it is impossible to create an environment with
       the image version.
     imageVersionId: The string identifier of the ImageVersion, in the form:
-      "composer-x.y.z-airflow-a.b(.c)"
+      "composer-x.y.z-airflow-a.b.c"
     isDefault: Whether this is the default ImageVersion used by Composer
       during environment creation if no input ImageVersion is specified.
     releaseDate: The date of the version release.
@@ -1732,19 +1747,23 @@ class SoftwareConfig(_messages.Message):
     imageVersion: The version of the software running in the environment. This
       encapsulates both the version of Cloud Composer functionality and the
       version of Apache Airflow. It must match the regular expression `compose
-      r-([0-9]+\.[0-9]+\.[0-9]+|latest)-airflow-[0-9]+\.[0-9]+(\.[0-9]+.*)?`.
-      When used as input, the server also checks if the provided version is
-      supported and denies the request for an unsupported version. The Cloud
-      Composer portion of the version is a [semantic
-      version](https://semver.org) or `latest`. When the patch version is
-      omitted, the current Cloud Composer patch version is selected. When
-      `latest` is provided instead of an explicit version number, the server
-      replaces `latest` with the current Cloud Composer version and stores
-      that version number in the same field. The portion of the image version
-      that follows *airflow-* is an official Apache Airflow repository
-      [release name](https://github.com/apache/incubator-airflow/releases).
-      See also [Version List](/composer/docs/concepts/versioning/composer-
-      versions).
+      r-([0-9]+(\.[0-9]+\.[0-9]+(-preview\.[0-9]+)?)?|latest)-airflow-([0-9]+\
+      .[0-9]+(\.[0-9]+)?)`. When used as input, the server also checks if the
+      provided version is supported and denies the request for an unsupported
+      version. The Cloud Composer portion of the image version is a full
+      [semantic version](https://semver.org), or an alias in the form of major
+      version number or `latest`. When an alias is provided, the server
+      replaces it with the current Cloud Composer version that satisfies the
+      alias. The Apache Airflow portion of the image version is a full
+      semantic version that points to one of the supported Apache Airflow
+      versions, or an alias in the form of only major and minor versions
+      specified. When an alias is provided, the server replaces it with the
+      latest Apache Airflow version that satisfies the alias and is supported
+      in the given Cloud Composer version. In all cases, the resolved image
+      version is stored in the same field. See also [version
+      list](/composer/docs/concepts/versioning/composer-versions) and
+      [versioning overview](/composer/docs/concepts/versioning/composer-
+      versioning-overview).
     pypiPackages: Optional. Custom Python Package Index (PyPI) packages to be
       installed in the environment. Keys refer to the lowercase package name
       such as "numpy" and values are the lowercase extras and version

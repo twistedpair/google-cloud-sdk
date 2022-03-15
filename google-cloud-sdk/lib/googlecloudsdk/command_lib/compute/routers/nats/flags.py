@@ -91,10 +91,11 @@ def AddTypeArg(parser):
       help=help_text)
 
 
-def AddCommonNatArgs(parser, for_create=False, with_private_nat=False):
+def AddCommonNatArgs(parser, for_create=False, with_private_nat=False,
+                     with_subnet_all=False):
   """Adds common arguments for creating and updating NATs."""
   _AddIpAllocationArgs(parser, for_create, with_private_nat)
-  _AddSubnetworkArgs(parser, for_create)
+  _AddSubnetworkArgs(parser, for_create, with_subnet_all)
   _AddTimeoutsArgs(parser, for_create)
   _AddMinPortsPerVmArg(parser, for_create)
   _AddLoggingArgs(parser)
@@ -140,7 +141,7 @@ def _AddIpAllocationArgs(parser, for_create, with_private_nat):
       parser, mutex_group=ip_allocation, cust_metavar='IP_ADDRESS')
 
 
-def _AddSubnetworkArgs(parser, for_create=False):
+def _AddSubnetworkArgs(parser, for_create, with_subnet_all):
   """Adds a mutually exclusive group to specify subnet options."""
   subnetwork = parser.add_mutually_exclusive_group(required=for_create)
   subnetwork.add_argument(
@@ -161,19 +162,34 @@ def _AddSubnetworkArgs(parser, for_create=False):
       dest='subnet_option',
       const=SubnetOption.PRIMARY_RANGES,
       default=SubnetOption.CUSTOM_RANGES)
+  custom_subnet_help_text = """\
+    List of subnetwork primary and secondary IP ranges to be allowed to
+    use NAT.
+
+    * `SUBNETWORK` - including a subnetwork name includes only the primary
+    subnet range of the subnetwork.
+    * `SUBNETWORK:RANGE_NAME` - specifying a subnetwork and secondary range
+    name includes only that secondary range. It does not include the
+    primary range of the subnet.
+    """
+  if with_subnet_all:
+    custom_subnet_help_text = """\
+    List of subnetwork primary and secondary IP ranges to be allowed to
+    use NAT.
+
+    * `SUBNETWORK:ALL` - specifying a subnetwork name with ALL includes the
+    primary range and all secondary ranges of the subnet.
+    * `SUBNETWORK` - including a subnetwork name includes only the primary
+    subnet range of the subnetwork.
+    * `SUBNETWORK:RANGE_NAME` - specifying a subnetwork and secondary range
+    name includes only that secondary range. It does not include the
+    primary range of the subnet.
+    """
   subnetwork.add_argument(
       '--nat-custom-subnet-ip-ranges',
-      metavar='SUBNETWORK[:RANGE_NAME]',
-      help=textwrap.dedent("""\
-          List of subnetwork primary and secondary IP ranges to be allowed to
-          use NAT.
-          [SUBNETWORK]:
-          including a subnetwork name includes only the primary
-          subnet range of the subnetwork.
-          [SUBNETWORK]:[RANGE_NAME]:
-          specifying a subnetwork and secondary range
-          name includes only that secondary range.It does not include the
-          primary range of the subnet."""),
+      metavar='SUBNETWORK[:RANGE_NAME|ALL]'
+      if with_subnet_all else 'SUBNETWORK[:RANGE_NAME]',
+      help=custom_subnet_help_text,
       type=arg_parsers.ArgList(min_length=1))
 
 

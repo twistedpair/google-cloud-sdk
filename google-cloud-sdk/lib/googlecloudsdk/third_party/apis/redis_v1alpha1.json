@@ -224,7 +224,7 @@
     },
     "Instance": {
       "id": "Instance",
-      "description": "A Memorystore for Redis instance. next id = 41",
+      "description": "A Memorystore for Redis instance. next id = 42",
       "type": "object",
       "properties": {
         "name": {
@@ -445,6 +445,21 @@
         "customerManagedKey": {
           "description": "Optional. The KMS key reference that the customer provides when trying to create the instance.",
           "type": "string"
+        },
+        "suspensionReasons": {
+          "description": "Optional. reasons that causes instance in \"SUSPENDED\" state.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Not set.",
+              "Something wrong with the CMEK key provided by customer."
+            ],
+            "enum": [
+              "SUSPENSION_REASON_UNSPECIFIED",
+              "CUSTOMER_MANAGED_KEY_ISSUE"
+            ]
+          }
         }
       }
     },

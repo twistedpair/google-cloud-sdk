@@ -3579,12 +3579,12 @@ class ServiceMeshControlPlaneRevision(_messages.Message):
       MANAGED_SERVICE: Google-managed service running outside the cluster.
         Note: Google-managed control planes are independent per-cluster,
         regardless of whether the revision name is the same or not.
-      MANAGED_INSTALL: Google-managed in-cluster control plane revision.
+      MANAGED_LOCAL: Google-managed local control plane revision.
     """
     CONTROL_PLANE_REVISION_TYPE_UNSPECIFIED = 0
     UNMANAGED = 1
     MANAGED_SERVICE = 2
-    MANAGED_INSTALL = 3
+    MANAGED_LOCAL = 3
 
   channel = _messages.EnumField('ChannelValueValuesEnum', 1)
   details = _messages.MessageField('ServiceMeshStatusDetails', 2, repeated=True)

@@ -56,6 +56,7 @@ def ValidateComposerVersionExclusiveOptionFactory(composer_v1_option,
 
       def IsImageVersionStringComposerV1(image_version):
         return (image_version.startswith('composer-1.') or
+                image_version.startswith('composer-1-') or
                 image_version.startswith('composer-latest'))
 
       try:
@@ -91,8 +92,8 @@ _AIRFLOW_VERSION_TYPE = arg_parsers.RegexpValidator(
     r'^(\d+\.\d+(?:\.\d+)?)', 'must be in the form X.Y[.Z].')
 
 _IMAGE_VERSION_TYPE = arg_parsers.RegexpValidator(
-    r'^composer-(\d+\.\d+\.\d+(?:-[a-z]+\.\d+)?|latest)-airflow-(\d+\.\d+(?:\.\d+)?)',
-    'must be in the form \'composer-A.B.C[-D.E]-airflow-X.Y[.Z]\' or '
+    r'^composer-(\d+(?:\.\d+\.\d+(?:-[a-z]+\.\d+)?)?|latest)-airflow-(\d+\.\d+(?:\.\d+)?)',
+    'must be in the form \'composer-A[.B.C[-D.E]]-airflow-X.Y[.Z]\' or '
     '\'latest\' can be provided in place of the Cloud Composer version '
     'string. For example: \'composer-latest-airflow-1.10.0\'.')
 
@@ -243,7 +244,8 @@ UPDATE_IMAGE_VERSION_FLAG = base.Argument(
     Upgrade the environment to a later version in-place.
 
     The image version encapsulates the versions of both Cloud Composer and
-    Apache Airflow. Must be of the form `composer-A.B.C[-D.E]-airflow-X.Y[.Z]`.
+    Apache Airflow. Must be of the form
+    `composer-A[.B.C[-D.E]]-airflow-X.Y[.Z]`.
 
     The Cloud Composer and Airflow versions are semantic versions.
     `latest` can be provided instead of an explicit Cloud Composer

@@ -6550,6 +6550,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def MergeVersionAliases(self, request, global_params=None):
+      r"""Merges a set of aliases for a Model version.
+
+      Args:
+        request: (AiplatformProjectsLocationsModelsMergeVersionAliasesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1Model) The response message.
+      """
+      config = self.GetMethodConfig('MergeVersionAliases')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MergeVersionAliases.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:mergeVersionAliases',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.models.mergeVersionAliases',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:mergeVersionAliases',
+        request_field='googleCloudAiplatformV1beta1MergeVersionAliasesRequest',
+        request_type_name='AiplatformProjectsLocationsModelsMergeVersionAliasesRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1Model',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates a Model.
 
@@ -6573,33 +6600,6 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+name}',
         request_field='googleCloudAiplatformV1beta1Model',
         request_type_name='AiplatformProjectsLocationsModelsPatchRequest',
-        response_type_name='GoogleCloudAiplatformV1beta1Model',
-        supports_download=False,
-    )
-
-    def SetVersionAlias(self, request, global_params=None):
-      r"""Sets an alias for a Model version.
-
-      Args:
-        request: (AiplatformProjectsLocationsModelsSetVersionAliasRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudAiplatformV1beta1Model) The response message.
-      """
-      config = self.GetMethodConfig('SetVersionAlias')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetVersionAlias.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:setVersionAlias',
-        http_method='POST',
-        method_id='aiplatform.projects.locations.models.setVersionAlias',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1beta1/{+name}:setVersionAlias',
-        request_field='googleCloudAiplatformV1beta1SetVersionAliasRequest',
-        request_type_name='AiplatformProjectsLocationsModelsSetVersionAliasRequest',
         response_type_name='GoogleCloudAiplatformV1beta1Model',
         supports_download=False,
     )

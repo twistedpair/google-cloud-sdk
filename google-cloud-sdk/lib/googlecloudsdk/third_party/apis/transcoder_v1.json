@@ -120,11 +120,11 @@
           "type": "string"
         },
         "inputUri": {
-          "description": "Input only. Specify the `input_uri` to populate empty `uri` fields in each element of `Job.config.inputs` or `JobTemplate.config.inputs` when using template. URI of the media. Input files must be at least 5 seconds in duration and stored in Cloud Storage (for example, `gs:\/\/bucket\/inputs\/file.mp4`).",
+          "description": "Input only. Specify the `input_uri` to populate empty `uri` fields in each element of `Job.config.inputs` or `JobTemplate.config.inputs` when using template. URI of the media. Input files must be at least 5 seconds in duration and stored in Cloud Storage (for example, `gs:\/\/bucket\/inputs\/file.mp4`). See [Supported input and output formats](https:\/\/cloud.google.com\/transcoder\/docs\/concepts\/supported-input-and-output-formats).",
           "type": "string"
         },
         "outputUri": {
-          "description": "Input only. Specify the `output_uri` to populate an empty `Job.config.output.uri` or `JobTemplate.config.output.uri` when using template. URI for the output file(s). For example, `gs:\/\/my-bucket\/outputs\/`.",
+          "description": "Input only. Specify the `output_uri` to populate an empty `Job.config.output.uri` or `JobTemplate.config.output.uri` when using template. URI for the output file(s). For example, `gs:\/\/my-bucket\/outputs\/`. See [Supported input and output formats](https:\/\/cloud.google.com\/transcoder\/docs\/concepts\/supported-input-and-output-formats).",
           "type": "string"
         },
         "templateId": {
@@ -265,7 +265,7 @@
           "type": "string"
         },
         "uri": {
-          "description": "URI of the media. Input files must be at least 5 seconds in duration and stored in Cloud Storage (for example, `gs:\/\/bucket\/inputs\/file.mp4`). If empty, the value will be populated from `Job.input_uri`.",
+          "description": "URI of the media. Input files must be at least 5 seconds in duration and stored in Cloud Storage (for example, `gs:\/\/bucket\/inputs\/file.mp4`). If empty, the value is populated from `Job.input_uri`. See [Supported input and output formats](https:\/\/cloud.google.com\/transcoder\/docs\/concepts\/supported-input-and-output-formats).",
           "type": "string"
         },
         "preprocessingConfig": {
@@ -307,7 +307,7 @@
     },
     "Color": {
       "id": "Color",
-      "description": "Color preprocessing configuration.",
+      "description": "Color preprocessing configuration. **Note:** This configuration is not supported.",
       "type": "object",
       "properties": {
         "saturation": {
@@ -329,7 +329,7 @@
     },
     "Denoise": {
       "id": "Denoise",
-      "description": "Denoise preprocessing configuration.",
+      "description": "Denoise preprocessing configuration. **Note:** This configuration is not supported.",
       "type": "object",
       "properties": {
         "strength": {
@@ -345,7 +345,7 @@
     },
     "Deblock": {
       "id": "Deblock",
-      "description": "Deblock preprocessing configuration.",
+      "description": "Deblock preprocessing configuration. **Note:** This configuration is not supported.",
       "type": "object",
       "properties": {
         "strength": {
@@ -370,11 +370,11 @@
           "format": "double"
         },
         "highBoost": {
-          "description": "Enable boosting high frequency components. The default is `false`.",
+          "description": "Enable boosting high frequency components. The default is `false`. **Note:** This field is not supported.",
           "type": "boolean"
         },
         "lowBoost": {
-          "description": "Enable boosting low frequency components. The default is `false`.",
+          "description": "Enable boosting low frequency components. The default is `false`. **Note:** This field is not supported.",
           "type": "boolean"
         }
       }
@@ -729,7 +729,7 @@
           "type": "string"
         },
         "crfLevel": {
-          "description": "Target CRF level. Must be between 10 and 36, where 10 is the highest quality and 36 is the most efficient compression. The default is 21. *Note*: This field is not supported. ",
+          "description": "Target CRF level. Must be between 10 and 36, where 10 is the highest quality and 36 is the most efficient compression. The default is 21. **Note:** This field is not supported.",
           "type": "integer",
           "format": "int32"
         },
@@ -876,7 +876,7 @@
           "type": "string"
         },
         "container": {
-          "description": "The container format. The default is `mp4` Supported container formats: - `ts` - `fmp4`- the corresponding file extension is `.m4s` - `mp4` - `vtt`",
+          "description": "The container format. The default is `mp4` Supported container formats: - `ts` - `fmp4`- the corresponding file extension is `.m4s` - `mp4` - `vtt` See also: [Supported input and output formats](https:\/\/cloud.google.com\/transcoder\/docs\/concepts\/supported-input-and-output-formats)",
           "type": "string"
         },
         "elementaryStreams": {
@@ -946,7 +946,7 @@
       "type": "object",
       "properties": {
         "uri": {
-          "description": "URI for the output file(s). For example, `gs:\/\/my-bucket\/outputs\/`. If empty the value is populated from `Job.output_uri`.",
+          "description": "URI for the output file(s). For example, `gs:\/\/my-bucket\/outputs\/`. If empty, the value is populated from `Job.output_uri`. See [Supported input and output formats](https:\/\/cloud.google.com\/transcoder\/docs\/concepts\/supported-input-and-output-formats).",
           "type": "string"
         }
       }

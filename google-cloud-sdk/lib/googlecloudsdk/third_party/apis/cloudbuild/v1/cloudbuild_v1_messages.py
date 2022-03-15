@@ -2208,7 +2208,7 @@ class CloudbuildProjectsLocationsWorkerPoolsDeleteRequest(_messages.Message):
     etag: Optional. If provided, it must match the server's etag on the
       workerpool for the request to be processed.
     name: Required. The name of the `WorkerPool` to delete. Format:
-      `projects/{project}/locations/{workerPool}/workerPools/{workerPool}`.
+      `projects/{project}/locations/{location}/workerPools/{workerPool}`.
     validateOnly: If set, validate the request and preview the response, but
       do not actually post it.
   """

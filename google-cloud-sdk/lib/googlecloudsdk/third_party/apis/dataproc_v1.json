@@ -1609,14 +1609,14 @@
           "description": "Optional. The name of a Compute Engine machine type (https:\/\/cloud.google.com\/compute\/docs\/machine-types).",
           "type": "string"
         },
-        "preemptible": {
-          "description": "Optional. Whether the nodes are created as preemptible VM instances (https:\/\/cloud.google.com\/compute\/docs\/instances\/preemptible).",
-          "type": "boolean"
-        },
         "localSsdCount": {
           "description": "Optional. The number of local SSD disks to attach to the node, which is limited by the maximum number of disks allowable per zone (see Adding Local SSDs (https:\/\/cloud.google.com\/compute\/docs\/disks\/local-ssd)).",
           "type": "integer",
           "format": "int32"
+        },
+        "preemptible": {
+          "description": "Optional. Whether the nodes are created as preemptible VM instances (https:\/\/cloud.google.com\/compute\/docs\/instances\/preemptible).",
+          "type": "boolean"
         },
         "accelerators": {
           "description": "Optional. A list of hardware accelerators (https:\/\/cloud.google.com\/compute\/docs\/gpus) to attach to each node.",
@@ -1628,6 +1628,10 @@
         "minCpuPlatform": {
           "description": "Optional. Minimum CPU platform (https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform) to be used by this instance. The instance may be scheduled on the specified or a newer CPU platform. Specify the friendly names of CPU platforms, such as \"Intel Haswell\"` or Intel Sandy Bridge\".",
           "type": "string"
+        },
+        "spot": {
+          "description": "Optional. Spot flag for enabling Spot VM, which is a rebrand of the existing preemptible flag.",
+          "type": "boolean"
         }
       }
     },
@@ -1643,6 +1647,10 @@
         },
         "acceleratorType": {
           "description": "The accelerator type resource namename (see GPUs on Compute Engine).",
+          "type": "string"
+        },
+        "gpuPartitionSize": {
+          "description": "Size of partitions to create on the GPU. Valid values are described in the NVIDIA mig user guide (https:\/\/docs.nvidia.com\/datacenter\/tesla\/mig-user-guide\/#partitioning).",
           "type": "string"
         }
       }
@@ -2950,6 +2958,21 @@
         },
         "nextPageToken": {
           "description": "A token, which can be sent as page_token to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "InjectSessionCredentialsRequest": {
+      "id": "InjectSessionCredentialsRequest",
+      "description": "A request to inject credentials to a session.",
+      "type": "object",
+      "properties": {
+        "credentialsCiphertext": {
+          "description": "Required. The encrypted credentials being injected in to the session.The client is responsible for encrypting the credentials in a way that is supported by the session.A wrapped value is used here so that the actual contents of the encrypted credentials are not written to audit logs.",
+          "type": "string"
+        },
+        "requestId": {
+          "description": "Optional. A unique ID used to identify the request. If the service receives two TerminateSessionRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#google.cloud.dataproc.v1.TerminateSessionRequest)s with the same ID, the first request is ignored to ensure the most recent credentials are injected.Recommendation: Set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The value must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
           "type": "string"
         }
       }
@@ -4295,6 +4318,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Lists interactive sessions."
+                },
+                "injectCredentials": {
+                  "id": "dataproc.projects.locations.sessions.injectCredentials",
+                  "path": "v1/{+session}:injectCredentials",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}:injectCredentials",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "session": {
+                      "description": "Required. The name of the session resource to inject credentials to.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/sessions\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "session"
+                  ],
+                  "request": {
+                    "$ref": "InjectSessionCredentialsRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Inject Credentials in the interactive session."
                 },
                 "terminate": {
                   "id": "dataproc.projects.locations.sessions.terminate",

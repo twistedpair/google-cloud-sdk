@@ -29,7 +29,7 @@ from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.core import resources
 
 ARTIFACTREGISTRY_API_NAME = "artifactregistry"
-ARTIFACTREGISTRY_API_VERSION = "v1beta2"
+ARTIFACTREGISTRY_API_VERSION = "v1"
 
 STORAGE_API_NAME = "storage"
 STORAGE_API_VERSION = "v1"
@@ -57,6 +57,16 @@ def GetClient():
 def GetMessages():
   return apis.GetMessagesModule(ARTIFACTREGISTRY_API_NAME,
                                 ARTIFACTREGISTRY_API_VERSION)
+
+
+def GetClientV1beta2():
+  return apis.GetClientInstance(ARTIFACTREGISTRY_API_NAME,
+                                "v1beta2")
+
+
+def GetMessagesV1beta2():
+  return apis.GetMessagesModule(ARTIFACTREGISTRY_API_NAME,
+                                "v1beta2")
 
 
 def DeleteTag(client, messages, tag):
@@ -252,8 +262,8 @@ def GetPackage(package):
 
 def ListLocations(project_id, page_size=None):
   """Lists all locations for a given project."""
-  client = GetClient()
-  messages = GetMessages()
+  client = GetClientV1beta2()
+  messages = GetMessagesV1beta2()
   list_locs_req = messages.ArtifactregistryProjectsLocationsListRequest(
       name="projects/" + project_id)
   locations = list_pager.YieldFromList(

@@ -617,7 +617,8 @@ def ApplyFailoverPolicyArgs(messages, args, backend_service, support_failover):
     backend_service.failoverPolicy = failover_policy
 
 
-def ApplyLogConfigArgs(messages, args, backend_service, support_logging):
+def ApplyLogConfigArgs(messages, args, backend_service, support_logging,
+                       support_tcp_ssl_logging):
   """Applies the LogConfig arguments to the specified backend service.
 
   If there are no arguments related to LogConfig, the backend service
@@ -628,20 +629,33 @@ def ApplyLogConfigArgs(messages, args, backend_service, support_logging):
     args: The arguments passed to the gcloud command.
     backend_service: The backend service proto message object.
     support_logging: Support logging functionality.
+    support_tcp_ssl_logging: Support logging for TCL and SSL protocols.
   """
   logging_specified = (
       support_logging and (args.IsSpecified('enable_logging') or
                            args.IsSpecified('logging_sample_rate')))
-  if (logging_specified and backend_service.protocol !=
-      messages.BackendService.ProtocolValueValuesEnum.HTTP and
-      backend_service.protocol !=
-      messages.BackendService.ProtocolValueValuesEnum.HTTPS and
-      backend_service.protocol !=
-      messages.BackendService.ProtocolValueValuesEnum.HTTP2):
-    raise exceptions.InvalidArgumentException(
-        '--protocol',
-        'can only specify --enable-logging or --logging-sample-rate if the '
-        'protocol is HTTP/HTTPS/HTTP2.')
+  valid_protocols = [
+      messages.BackendService.ProtocolValueValuesEnum.HTTP,
+      messages.BackendService.ProtocolValueValuesEnum.HTTPS,
+      messages.BackendService.ProtocolValueValuesEnum.HTTP2
+  ]
+  tcp_ssl_protocols = [
+      messages.BackendService.ProtocolValueValuesEnum.TCP,
+      messages.BackendService.ProtocolValueValuesEnum.SSL
+  ]
+  if support_tcp_ssl_logging:
+    if (logging_specified and
+        backend_service.protocol not in valid_protocols + tcp_ssl_protocols):
+      raise exceptions.InvalidArgumentException(
+          '--protocol',
+          'can only specify --enable-logging or --logging-sample-rate if the '
+          'protocol is HTTP/HTTPS/HTTP2/TCP/SSL.')
+  else:
+    if (logging_specified and backend_service.protocol not in valid_protocols):
+      raise exceptions.InvalidArgumentException(
+          '--protocol',
+          'can only specify --enable-logging or --logging-sample-rate if the '
+          'protocol is HTTP/HTTPS/HTTP2.')
 
   if logging_specified:
     if backend_service.logConfig:

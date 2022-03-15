@@ -81,6 +81,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  LOCATIONS_WORKFORCEPOOLS_PROVIDERS_KEYS_OPERATIONS = (
+      'locations.workforcePools.providers.keys.operations',
+      '{+name}',
+      {
+          '':
+              'locations/{locationsId}/workforcePools/{workforcePoolsId}/'
+              'providers/{providersId}/keys/{keysId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
   LOCATIONS_WORKFORCEPOOLS_PROVIDERS_OPERATIONS = (
       'locations.workforcePools.providers.operations',
       '{+name}',

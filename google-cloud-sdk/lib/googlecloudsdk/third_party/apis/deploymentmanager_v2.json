@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager",
  "version": "v2",
- "revision": "20220228",
+ "revision": "20220307",
  "title": "Google Cloud Deployment Manager API",
  "description": "Declares, configures, and deploys complex solutions on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -630,8 +630,7 @@
     },
     "kind": {
      "type": "string",
-     "description": "[Output Only] Type of the resource. Always `compute#operation` for Operation resources.",
-     "default": "deploymentmanager#operation"
+     "description": "[Output Only] Type of the resource. Always `compute#operation` for Operation resources."
     },
     "name": {
      "type": "string",

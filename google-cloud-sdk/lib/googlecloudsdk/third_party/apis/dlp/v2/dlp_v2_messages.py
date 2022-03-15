@@ -2584,6 +2584,8 @@ class GooglePrivacyDlpV2ByteContentItem(_messages.Message):
       TEXT_UTF8: plain text
       WORD_DOCUMENT: docx, docm, dotx, dotm
       PDF: pdf
+      POWERPOINT_DOCUMENT: powerpoint
+      EXCEL_DOCUMENT: excel
       AVRO: avro
       CSV: csv
       TSV: tsv
@@ -2597,9 +2599,11 @@ class GooglePrivacyDlpV2ByteContentItem(_messages.Message):
     TEXT_UTF8 = 6
     WORD_DOCUMENT = 7
     PDF = 8
-    AVRO = 9
-    CSV = 10
-    TSV = 11
+    POWERPOINT_DOCUMENT = 9
+    EXCEL_DOCUMENT = 10
+    AVRO = 11
+    CSV = 12
+    TSV = 13
 
   data = _messages.BytesField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -2796,6 +2800,10 @@ class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
       AVRO: Included file extensions: avro
       CSV: Included file extensions: csv
       TSV: Included file extensions: tsv
+      POWERPOINT: Powerpoint files >30 MB will be scanned as binary files.
+        Included file extensions: pptx, pptm, potx, potm, pot
+      EXCEL: Excel files >30 MB will be scanned as binary files. Included file
+        extensions: xlsx, xlsm, xltx, xltm
     """
     FILE_TYPE_UNSPECIFIED = 0
     BINARY_FILE = 1
@@ -2806,6 +2814,8 @@ class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
     AVRO = 6
     CSV = 7
     TSV = 8
+    POWERPOINT = 9
+    EXCEL = 10
 
   class SampleMethodValueValuesEnum(_messages.Enum):
     r"""SampleMethodValueValuesEnum enum type.

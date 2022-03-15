@@ -11904,6 +11904,32 @@ class ComputeAlpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Announce(self, request, global_params=None):
+      r"""Announces the specified PublicAdvertisedPrefix.
+
+      Args:
+        request: (ComputePublicAdvertisedPrefixesAnnounceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Announce')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Announce.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.publicAdvertisedPrefixes.announce',
+        ordered_params=['project', 'publicAdvertisedPrefix'],
+        path_params=['project', 'publicAdvertisedPrefix'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/publicAdvertisedPrefixes/{publicAdvertisedPrefix}/announce',
+        request_field='',
+        request_type_name='ComputePublicAdvertisedPrefixesAnnounceRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes the specified PublicAdvertisedPrefix.
 
@@ -12034,6 +12060,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Withdraw(self, request, global_params=None):
+      r"""Withdraws the specified PublicAdvertisedPrefix.
+
+      Args:
+        request: (ComputePublicAdvertisedPrefixesWithdrawRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Withdraw')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Withdraw.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.publicAdvertisedPrefixes.withdraw',
+        ordered_params=['project', 'publicAdvertisedPrefix'],
+        path_params=['project', 'publicAdvertisedPrefix'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/publicAdvertisedPrefixes/{publicAdvertisedPrefix}/withdraw',
+        request_field='',
+        request_type_name='ComputePublicAdvertisedPrefixesWithdrawRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class PublicDelegatedPrefixesService(base_api.BaseApiService):
     """Service class for the publicDelegatedPrefixes resource."""
 
@@ -12067,6 +12119,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputePublicDelegatedPrefixesAggregatedListRequest',
         response_type_name='PublicDelegatedPrefixAggregatedList',
+        supports_download=False,
+    )
+
+    def Announce(self, request, global_params=None):
+      r"""Announces the specified PublicDelegatedPrefix in the given region.
+
+      Args:
+        request: (ComputePublicDelegatedPrefixesAnnounceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Announce')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Announce.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.publicDelegatedPrefixes.announce',
+        ordered_params=['project', 'region', 'publicDelegatedPrefix'],
+        path_params=['project', 'publicDelegatedPrefix', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/publicDelegatedPrefixes/{publicDelegatedPrefix}/announce',
+        request_field='',
+        request_type_name='ComputePublicDelegatedPrefixesAnnounceRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -12196,6 +12274,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         relative_path='projects/{project}/regions/{region}/publicDelegatedPrefixes/{publicDelegatedPrefix}',
         request_field='publicDelegatedPrefixResource',
         request_type_name='ComputePublicDelegatedPrefixesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Withdraw(self, request, global_params=None):
+      r"""Withdraws the specified PublicDelegatedPrefix in the given region.
+
+      Args:
+        request: (ComputePublicDelegatedPrefixesWithdrawRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Withdraw')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Withdraw.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.publicDelegatedPrefixes.withdraw',
+        ordered_params=['project', 'region', 'publicDelegatedPrefix'],
+        path_params=['project', 'publicDelegatedPrefix', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/publicDelegatedPrefixes/{publicDelegatedPrefix}/withdraw',
+        request_field='',
+        request_type_name='ComputePublicDelegatedPrefixesWithdrawRequest',
         response_type_name='Operation',
         supports_download=False,
     )

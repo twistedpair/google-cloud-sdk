@@ -13,10 +13,36 @@ from apitools.base.py import encoding
 package = 'accessapproval'
 
 
+class AccessApprovalServiceAccount(_messages.Message):
+  r"""Access Approval service account related to a
+  project/folder/organization.
+
+  Fields:
+    accountEmail: Email address of the service account.
+    name: The resource name of the Access Approval service account. Format is
+      one of: * "projects/{project}/serviceAccount" *
+      "folders/{folder}/serviceAccount" *
+      "organizations/{organization}/serviceAccount"
+  """
+
+  accountEmail = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
 class AccessApprovalSettings(_messages.Message):
   r"""Settings on a Project/Folder/Organization related to Access Approval.
 
   Fields:
+    activeKeyVersion: The asymmetric crypto key version to use for signing
+      approval requests. Empty active_key_version indicates that a Google-
+      managed key should be used for signing. This property will be ignored if
+      set by an ancestor of this resource, and new non-empty values may not be
+      set.
+    ancestorHasActiveKeyVersion: Output only. This field is read only (not
+      settable via UpdateAccessApprovalSettings method). If the field is true,
+      that indicates that an ancestor of this Project or Folder has set
+      active_key_version (this field will always be unset for the organization
+      since organizations do not have ancestors).
     enrolledAncestor: Output only. This field is read only (not settable via
       UpdateAccessApprovalSettings method). If the field is true, that
       indicates that at least one service is enrolled for Access Approval in
@@ -33,6 +59,14 @@ class AccessApprovalSettings(_messages.Message):
       be honored and all following entries will be discarded. A maximum of 10
       enrolled services will be enforced, to be expanded as the set of
       supported services is expanded.
+    invalidKeyVersion: Output only. This field is read only (not settable via
+      UpdateAccessApprovalSettings method). If the field is true, that
+      indicates that there is some configuration issue with the
+      active_key_version configured at this level in the resource hierarchy
+      (e.g. it doesn't exist or the Access Approval service account doesn't
+      have the correct permissions on it, etc.) This key version is not
+      necessarily the effective key version at this level, as key versions are
+      inherited top-down.
     name: The resource name of the settings. Format is one of: *
       "projects/{project}/accessApprovalSettings" *
       "folders/{folder}/accessApprovalSettings" *
@@ -43,10 +77,13 @@ class AccessApprovalSettings(_messages.Message):
       resources of that resource. A maximum of 50 email addresses are allowed.
   """
 
-  enrolledAncestor = _messages.BooleanField(1)
-  enrolledServices = _messages.MessageField('EnrolledService', 2, repeated=True)
-  name = _messages.StringField(3)
-  notificationEmails = _messages.StringField(4, repeated=True)
+  activeKeyVersion = _messages.StringField(1)
+  ancestorHasActiveKeyVersion = _messages.BooleanField(2)
+  enrolledAncestor = _messages.BooleanField(3)
+  enrolledServices = _messages.MessageField('EnrolledService', 4, repeated=True)
+  invalidKeyVersion = _messages.BooleanField(5)
+  name = _messages.StringField(6)
+  notificationEmails = _messages.StringField(7, repeated=True)
 
 
 class AccessLocations(_messages.Message):
@@ -95,17 +132,24 @@ class AccessReason(_messages.Message):
         Number: #####" * "Case ID: #####" * "E-PIN Reference: #####" *
         "Google-#####" * "T-#####"
       GOOGLE_INITIATED_SERVICE: The principal accessed customer data in order
-        to diagnose or resolve a suspected issue in services or a known
-        outage. Often this access is used to confirm that customers are not
-        affected by a suspected service issue or to remediate a reversible
-        system issue.
+        to diagnose or resolve a suspected issue in services. Often this
+        access is used to confirm that customers are not affected by a
+        suspected service issue or to remediate a reversible system issue.
       GOOGLE_INITIATED_REVIEW: Google initiated service for security, fraud,
         abuse, or compliance purposes.
+      THIRD_PARTY_DATA_REQUEST: The principal was compelled to access customer
+        data in order to respond to a legal third party data request or
+        process, including legal processes from customers themselves.
+      GOOGLE_RESPONSE_TO_PRODUCTION_ALERT: The principal accessed customer
+        data in order to diagnose or resolve a suspected issue in services or
+        a known outage.
     """
     TYPE_UNSPECIFIED = 0
     CUSTOMER_INITIATED_SUPPORT = 1
     GOOGLE_INITIATED_SERVICE = 2
     GOOGLE_INITIATED_REVIEW = 3
+    THIRD_PARTY_DATA_REQUEST = 4
+    GOOGLE_RESPONSE_TO_PRODUCTION_ALERT = 5
 
   detail = _messages.StringField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -188,6 +232,16 @@ class AccessapprovalFoldersGetAccessApprovalSettingsRequest(_messages.Message):
   Fields:
     name: The name of the AccessApprovalSettings to retrieve. Format:
       "{projects|folders|organizations}/{id}/accessApprovalSettings"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AccessapprovalFoldersGetServiceAccountRequest(_messages.Message):
+  r"""A AccessapprovalFoldersGetServiceAccountRequest object.
+
+  Fields:
+    name: Name of the AccessApprovalServiceAccount to retrieve.
   """
 
   name = _messages.StringField(1, required=True)
@@ -300,6 +354,16 @@ class AccessapprovalOrganizationsGetAccessApprovalSettingsRequest(_messages.Mess
   name = _messages.StringField(1, required=True)
 
 
+class AccessapprovalOrganizationsGetServiceAccountRequest(_messages.Message):
+  r"""A AccessapprovalOrganizationsGetServiceAccountRequest object.
+
+  Fields:
+    name: Name of the AccessApprovalServiceAccount to retrieve.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class AccessapprovalOrganizationsUpdateAccessApprovalSettingsRequest(_messages.Message):
   r"""A AccessapprovalOrganizationsUpdateAccessApprovalSettingsRequest object.
 
@@ -407,6 +471,16 @@ class AccessapprovalProjectsGetAccessApprovalSettingsRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class AccessapprovalProjectsGetServiceAccountRequest(_messages.Message):
+  r"""A AccessapprovalProjectsGetServiceAccountRequest object.
+
+  Fields:
+    name: Name of the AccessApprovalServiceAccount to retrieve.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class AccessapprovalProjectsUpdateAccessApprovalSettingsRequest(_messages.Message):
   r"""A AccessapprovalProjectsUpdateAccessApprovalSettingsRequest object.
 
@@ -483,11 +557,16 @@ class ApproveDecision(_messages.Message):
 
   Fields:
     approveTime: The time at which approval was granted.
+    autoApproved: True when the request has been auto-approved.
     expireTime: The time at which the approval expires.
+    signatureInfo: The signature for the ApprovalRequest and details on how it
+      was signed.
   """
 
   approveTime = _messages.StringField(1)
-  expireTime = _messages.StringField(2)
+  autoApproved = _messages.BooleanField(2)
+  expireTime = _messages.StringField(3)
+  signatureInfo = _messages.MessageField('SignatureInfo', 4)
 
 
 class DismissApprovalRequestMessage(_messages.Message):
@@ -588,6 +667,23 @@ class ResourceProperties(_messages.Message):
   """
 
   excludesDescendants = _messages.BooleanField(1)
+
+
+class SignatureInfo(_messages.Message):
+  r"""Information about the digital signature of the resource.
+
+  Fields:
+    customerKmsKeyVersion: The resource name of the customer CryptoKeyVersion
+      used for signing.
+    googlePublicKeyPem: The public key for the Google default signing, encoded
+      in PEM format. The signature was created using a private key which may
+      be verified using this public key.
+    signature: The digital signature.
+  """
+
+  customerKmsKeyVersion = _messages.StringField(1)
+  googlePublicKeyPem = _messages.StringField(2)
+  signature = _messages.BytesField(3)
 
 
 class StandardQueryParameters(_messages.Message):

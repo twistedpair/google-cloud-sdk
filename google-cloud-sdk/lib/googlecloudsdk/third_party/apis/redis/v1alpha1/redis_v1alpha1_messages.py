@@ -171,7 +171,7 @@ class InputConfig(_messages.Message):
 
 
 class Instance(_messages.Message):
-  r"""A Memorystore for Redis instance. next id = 41
+  r"""A Memorystore for Redis instance. next id = 42
 
   Enums:
     ConnectModeValueValuesEnum: Optional. The network connect mode of the
@@ -180,6 +180,7 @@ class Instance(_messages.Message):
     ReadReplicasModeValueValuesEnum: Optional. Read replicas mode for the
       instance. Defaults to READ_REPLICAS_DISABLED.
     StateValueValuesEnum: Output only. The current state of this instance.
+    SuspensionReasonsValueListEntryValuesEnum:
     TierValueValuesEnum: Required. The service tier of the instance.
     TransitEncryptionModeValueValuesEnum: Optional. The TLS mode of the Redis
       instance. If not provided, TLS is disabled for the instance.
@@ -287,6 +288,8 @@ class Instance(_messages.Message):
     state: Output only. The current state of this instance.
     statusMessage: Output only. Additional information about the current
       status of this instance, if available.
+    suspensionReasons: Optional. reasons that causes instance in "SUSPENDED"
+      state.
     tier: Required. The service tier of the instance.
     transitEncryptionMode: Optional. The TLS mode of the Redis instance. If
       not provided, TLS is disabled for the instance.
@@ -354,6 +357,17 @@ class Instance(_messages.Message):
     PERFORMING_MAINTENANCE = 6
     IMPORTING = 7
     FAILING_OVER = 8
+
+  class SuspensionReasonsValueListEntryValuesEnum(_messages.Enum):
+    r"""SuspensionReasonsValueListEntryValuesEnum enum type.
+
+    Values:
+      SUSPENSION_REASON_UNSPECIFIED: Not set.
+      CUSTOMER_MANAGED_KEY_ISSUE: Something wrong with the CMEK key provided
+        by customer.
+    """
+    SUSPENSION_REASON_UNSPECIFIED = 0
+    CUSTOMER_MANAGED_KEY_ISSUE = 1
 
   class TierValueValuesEnum(_messages.Enum):
     r"""Required. The service tier of the instance.
@@ -466,8 +480,9 @@ class Instance(_messages.Message):
   serverCaCerts = _messages.MessageField('TlsCertificate', 28, repeated=True)
   state = _messages.EnumField('StateValueValuesEnum', 29)
   statusMessage = _messages.StringField(30)
-  tier = _messages.EnumField('TierValueValuesEnum', 31)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 32)
+  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 31, repeated=True)
+  tier = _messages.EnumField('TierValueValuesEnum', 32)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 33)
 
 
 class InstanceAuthString(_messages.Message):

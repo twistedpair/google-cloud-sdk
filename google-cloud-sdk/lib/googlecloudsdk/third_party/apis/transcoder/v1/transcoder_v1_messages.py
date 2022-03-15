@@ -111,9 +111,9 @@ class Audio(_messages.Message):
 
   Fields:
     highBoost: Enable boosting high frequency components. The default is
-      `false`.
+      `false`. **Note:** This field is not supported.
     lowBoost: Enable boosting low frequency components. The default is
-      `false`.
+      `false`. **Note:** This field is not supported.
     lufs: Specify audio loudness normalization in loudness units relative to
       full scale (LUFS). Enter a value between -24 and 0 (the default), where:
       * -24 is the Advanced Television Systems Committee (ATSC A/85) standard
@@ -184,7 +184,8 @@ class AudioStream(_messages.Message):
 
 
 class Color(_messages.Message):
-  r"""Color preprocessing configuration.
+  r"""Color preprocessing configuration. **Note:** This configuration is not
+  supported.
 
   Fields:
     brightness: Control brightness of the video. Enter a value between -1 and
@@ -223,7 +224,8 @@ class Crop(_messages.Message):
 
 
 class Deblock(_messages.Message):
-  r"""Deblock preprocessing configuration.
+  r"""Deblock preprocessing configuration. **Note:** This configuration is not
+  supported.
 
   Fields:
     enabled: Enable deblocker. The default is `false`.
@@ -237,7 +239,8 @@ class Deblock(_messages.Message):
 
 
 class Denoise(_messages.Message):
-  r"""Denoise preprocessing configuration.
+  r"""Denoise preprocessing configuration. **Note:** This configuration is not
+  supported.
 
   Fields:
     strength: Set strength of the denoise. Enter a value between 0 and 1. The
@@ -529,8 +532,10 @@ class Input(_messages.Message):
     preprocessingConfig: Preprocessing configurations.
     uri: URI of the media. Input files must be at least 5 seconds in duration
       and stored in Cloud Storage (for example,
-      `gs://bucket/inputs/file.mp4`). If empty, the value will be populated
-      from `Job.input_uri`.
+      `gs://bucket/inputs/file.mp4`). If empty, the value is populated from
+      `Job.input_uri`. See [Supported input and output
+      formats](https://cloud.google.com/transcoder/docs/concepts/supported-
+      input-and-output-formats).
   """
 
   key = _messages.StringField(1)
@@ -554,13 +559,18 @@ class Job(_messages.Message):
       fields in each element of `Job.config.inputs` or
       `JobTemplate.config.inputs` when using template. URI of the media. Input
       files must be at least 5 seconds in duration and stored in Cloud Storage
-      (for example, `gs://bucket/inputs/file.mp4`).
+      (for example, `gs://bucket/inputs/file.mp4`). See [Supported input and
+      output
+      formats](https://cloud.google.com/transcoder/docs/concepts/supported-
+      input-and-output-formats).
     name: The resource name of the job. Format:
       `projects/{project_number}/locations/{location}/jobs/{job}`
     outputUri: Input only. Specify the `output_uri` to populate an empty
       `Job.config.output.uri` or `JobTemplate.config.output.uri` when using
       template. URI for the output file(s). For example, `gs://my-
-      bucket/outputs/`.
+      bucket/outputs/`. See [Supported input and output
+      formats](https://cloud.google.com/transcoder/docs/concepts/supported-
+      input-and-output-formats).
     startTime: Output only. The time the transcoding started.
     state: Output only. The current state of the job.
     templateId: Input only. Specify the `template_id` to use for populating
@@ -714,7 +724,9 @@ class MuxStream(_messages.Message):
   Fields:
     container: The container format. The default is `mp4` Supported container
       formats: - `ts` - `fmp4`- the corresponding file extension is `.m4s` -
-      `mp4` - `vtt`
+      `mp4` - `vtt` See also: [Supported input and output
+      formats](https://cloud.google.com/transcoder/docs/concepts/supported-
+      input-and-output-formats)
     elementaryStreams: List of `ElementaryStream.key`s multiplexed in this
       stream.
     fileName: The name of the generated file. The default is `MuxStream.key`
@@ -750,7 +762,10 @@ class Output(_messages.Message):
 
   Fields:
     uri: URI for the output file(s). For example, `gs://my-bucket/outputs/`.
-      If empty the value is populated from `Job.output_uri`.
+      If empty, the value is populated from `Job.output_uri`. See [Supported
+      input and output
+      formats](https://cloud.google.com/transcoder/docs/concepts/supported-
+      input-and-output-formats).
   """
 
   uri = _messages.StringField(1)
@@ -1176,7 +1191,7 @@ class Vp9CodecSettings(_messages.Message):
       value is 1,000. The maximum value is 480,000,000.
     crfLevel: Target CRF level. Must be between 10 and 36, where 10 is the
       highest quality and 36 is the most efficient compression. The default is
-      21. *Note*: This field is not supported.
+      21. **Note:** This field is not supported.
     frameRate: Required. The target video frame rate in frames per second
       (FPS). Must be less than or equal to 120. Will default to the input
       frame rate if larger than the input frame rate. The API will generate an

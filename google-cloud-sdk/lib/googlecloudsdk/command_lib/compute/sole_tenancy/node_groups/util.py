@@ -56,8 +56,10 @@ def BuildShareSettings(messages, args):
   if (args.share_setting == 'projects') and (not args.share_with):
     msg = '[--share-setting=projects] must be specified with [--share-with]'
     raise exceptions.RequiredArgumentException('--share-with', msg)
-  if (args.share_setting == 'organization') and args.share_with:
-    msg = 'List of shared projects must be empty for organization share type'
+  if (args.share_setting == 'organization' or
+      args.share_setting == 'local') and args.share_with:
+    msg = 'List of shared projects must be empty for {} share type'.format(
+        args.share_setting)
     raise exceptions.InvalidArgumentException('--share-with', msg)
   if args.share_setting == 'projects':
     return messages.ShareSettings(
@@ -68,3 +70,4 @@ def BuildShareSettings(messages, args):
     return messages.ShareSettings(
         shareType=(
             messages.ShareSettings.ShareTypeValueValuesEnum.ORGANIZATION))
+  return None

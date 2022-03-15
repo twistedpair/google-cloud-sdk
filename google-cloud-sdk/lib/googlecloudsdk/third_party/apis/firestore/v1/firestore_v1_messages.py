@@ -866,6 +866,45 @@ class FirestoreProjectsDatabasesDocumentsListCollectionIdsRequest(_messages.Mess
   parent = _messages.StringField(2, required=True)
 
 
+class FirestoreProjectsDatabasesDocumentsListDocumentsRequest(_messages.Message):
+  r"""A FirestoreProjectsDatabasesDocumentsListDocumentsRequest object.
+
+  Fields:
+    collectionId: Required. The collection ID, relative to `parent`, to list.
+      For example: `chatrooms` or `messages`.
+    mask_fieldPaths: The list of field paths in the mask. See Document.fields
+      for a field path syntax reference.
+    orderBy: The order to sort results by. For example: `priority desc, name`.
+    pageSize: The maximum number of documents to return.
+    pageToken: The `next_page_token` value returned from a previous List
+      request, if any.
+    parent: Required. The parent resource name. In the format:
+      `projects/{project_id}/databases/{database_id}/documents` or `projects/{
+      project_id}/databases/{database_id}/documents/{document_path}`. For
+      example: `projects/my-project/databases/my-database/documents` or
+      `projects/my-project/databases/my-database/documents/chatrooms/my-
+      chatroom`
+    readTime: Reads documents as they were at the given time. This may not be
+      older than 270 seconds.
+    showMissing: If the list should show missing documents. A missing document
+      is a document that does not exist but has sub-documents. These documents
+      will be returned with a key but will not have fields,
+      Document.create_time, or Document.update_time set. Requests with
+      `show_missing` may not specify `where` or `order_by`.
+    transaction: Reads documents in a transaction.
+  """
+
+  collectionId = _messages.StringField(1, required=True)
+  mask_fieldPaths = _messages.StringField(2, repeated=True)
+  orderBy = _messages.StringField(3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  parent = _messages.StringField(6, required=True)
+  readTime = _messages.StringField(7)
+  showMissing = _messages.BooleanField(8)
+  transaction = _messages.BytesField(9)
+
+
 class FirestoreProjectsDatabasesDocumentsListRequest(_messages.Message):
   r"""A FirestoreProjectsDatabasesDocumentsListRequest object.
 
@@ -1159,6 +1198,8 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
   cloud project; this database must have a `database_id` of '(default)'.
 
   Enums:
+    AppEngineIntegrationModeValueValuesEnum: The App Engine integration mode
+      to use for this database.
     ConcurrencyModeValueValuesEnum: The concurrency control mode to use for
       this database.
     TypeValueValuesEnum: The type of the database. See
@@ -1166,10 +1207,18 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
       information about how to choose.
 
   Fields:
+    appEngineIntegrationMode: The App Engine integration mode to use for this
+      database.
     concurrencyMode: The concurrency control mode to use for this database.
     etag: This checksum is computed by the server based on the value of other
       fields, and may be sent on update and delete requests to ensure the
       client has an up-to-date value before proceeding.
+    keyPrefix: Output only. The key_prefix for this database. This key_prefix
+      is used, in combination with the project id ("~") to construct the
+      application id that is returned from the Cloud Datastore APIs in Google
+      App Engine first generation runtimes. This value may be empty in which
+      case the appid to use for URL-encoded keys is the project_id (eg: foo
+      instead of v~foo).
     locationId: The location of the database. Available databases are listed
       at https://cloud.google.com/firestore/docs/locations.
     name: The resource name of the Database. Format:
@@ -1179,19 +1228,36 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
       information about how to choose.
   """
 
+  class AppEngineIntegrationModeValueValuesEnum(_messages.Enum):
+    r"""The App Engine integration mode to use for this database.
+
+    Values:
+      APP_ENGINE_INTEGRATION_MODE_UNSPECIFIED: Not used.
+      ENABLED: If an App Engine application exists in the same region as this
+        database, App Engine configuration will impact this database. This
+        includes disabling of the application & database, as well as disabling
+        writes to the database.
+      DISABLED: Appengine has no affect on the ability of this database to
+        serve requests.
+    """
+    APP_ENGINE_INTEGRATION_MODE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
   class ConcurrencyModeValueValuesEnum(_messages.Enum):
     r"""The concurrency control mode to use for this database.
 
     Values:
       CONCURRENCY_MODE_UNSPECIFIED: Not used.
-      OPTIMISTIC: Use optimistic concurrency control by default. This setting
-        is available for Cloud Firestore customers.
-      PESSIMISTIC: Use pessimistic concurrency control by default. This
-        setting is available for Cloud Firestore customers. This is the
-        default setting for Cloud Firestore.
+      OPTIMISTIC: Use optimistic concurrency control by default. This mode is
+        available for Cloud Firestore databases.
+      PESSIMISTIC: Use pessimistic concurrency control by default. This mode
+        is available for Cloud Firestore databases. This is the default
+        setting for Cloud Firestore.
       OPTIMISTIC_WITH_ENTITY_GROUPS: Use optimistic concurrency control with
-        entity groups by default. This is the only available setting for Cloud
-        Datastore customers. This is the default setting for Cloud Datastore.
+        entity groups by default. This is the only available mode for Cloud
+        Datastore. This mode is also available for Cloud Firestore with
+        Datastore Mode but is not recommended.
     """
     CONCURRENCY_MODE_UNSPECIFIED = 0
     OPTIMISTIC = 1
@@ -1213,11 +1279,13 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
     FIRESTORE_NATIVE = 1
     DATASTORE_MODE = 2
 
-  concurrencyMode = _messages.EnumField('ConcurrencyModeValueValuesEnum', 1)
-  etag = _messages.StringField(2)
-  locationId = _messages.StringField(3)
-  name = _messages.StringField(4)
-  type = _messages.EnumField('TypeValueValuesEnum', 5)
+  appEngineIntegrationMode = _messages.EnumField('AppEngineIntegrationModeValueValuesEnum', 1)
+  concurrencyMode = _messages.EnumField('ConcurrencyModeValueValuesEnum', 2)
+  etag = _messages.StringField(3)
+  keyPrefix = _messages.StringField(4)
+  locationId = _messages.StringField(5)
+  name = _messages.StringField(6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
 
 
 class GoogleFirestoreAdminV1ExportDocumentsMetadata(_messages.Message):
@@ -2319,6 +2387,8 @@ class RunQueryResponse(_messages.Message):
 
   Fields:
     document: A query result, not set when reporting partial progress.
+    done: If present, Firestore has completely finished the request and no
+      more documents will be returned.
     readTime: The time at which the document was read. This may be
       monotonically increasing; in this case, the previous documents in the
       result stream are guaranteed not to have changed between their
@@ -2334,9 +2404,10 @@ class RunQueryResponse(_messages.Message):
   """
 
   document = _messages.MessageField('Document', 1)
-  readTime = _messages.StringField(2)
-  skippedResults = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  transaction = _messages.BytesField(4)
+  done = _messages.BooleanField(2)
+  readTime = _messages.StringField(3)
+  skippedResults = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  transaction = _messages.BytesField(5)
 
 
 class StandardQueryParameters(_messages.Message):

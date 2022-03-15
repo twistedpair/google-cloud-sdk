@@ -1239,7 +1239,7 @@ class VmwareengineV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new `PrivateCloud` resource in a given project and location. Creating a private cloud also creates a [management cluster](https://cloud.google.com/vmware-engine/docs/concepts-vmware-components) for that private cloud. For the first private cloud created in the given VPC (`networkConfig.network`), VMware Engine creates a VPC peering with a service network.
+      r"""Creates a new `PrivateCloud` resource in a given project and location. Private clouds can only be created in zones, regional private clouds are not supported. Creating a private cloud also creates a [management cluster](https://cloud.google.com/vmware-engine/docs/concepts-vmware-components) for that private cloud. For the first private cloud created in the given VPC network (`networkConfig.network`), VMware Engine creates a VPC peering with a service network.
 
       Args:
         request: (VmwareengineProjectsLocationsPrivateCloudsCreateRequest) input message

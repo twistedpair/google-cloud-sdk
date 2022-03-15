@@ -54,7 +54,7 @@ SUBPROTOCOL_TAG_ACK = 0x0007
 IapTunnelTargetInfo = collections.namedtuple(
     'IapTunnelTarget',
     ['project', 'zone', 'instance', 'interface', 'port', 'url_override',
-     'proxy_info', 'network', 'region', 'host'])
+     'proxy_info', 'network', 'region', 'host', 'dest_group'])
 
 
 class CACertsFileUnavailable(exceptions.Error):
@@ -104,8 +104,10 @@ def ValidateParameters(tunnel_target):
       raise MissingTunnelParameter('Missing required tunnel argument: ' +
                                    field_name)
 
-  if tunnel_target.region or tunnel_target.network or tunnel_target.host:
+  if (tunnel_target.region or tunnel_target.network or tunnel_target.host or
+      tunnel_target.dest_group):
     for field_name, field_value in tunnel_target._asdict().items():
+      # TODO(b/196572980): Make dest_group required in beta/GA.
       if not field_value and field_name in ('region', 'network', 'host'):
         raise MissingTunnelParameter('Missing required tunnel argument: ' +
                                      field_name)
@@ -156,22 +158,24 @@ def CheckPythonVersion(ignore_certs):
 
 def CreateWebSocketConnectUrl(tunnel_target):
   """Create Connect URL for WebSocket connection."""
+  url_query_pieces = {
+      'project': tunnel_target.project,
+      'port': tunnel_target.port
+  }
   if tunnel_target.host:
-    return _CreateWebSocketUrl(CONNECT_ENDPOINT,
-                               {'project': tunnel_target.project,
-                                'region': tunnel_target.region,
-                                'network': tunnel_target.network,
-                                'host': tunnel_target.host,
-                                'port': tunnel_target.port},
-                               tunnel_target.url_override)
+    url_query_pieces['region'] = tunnel_target.region
+    url_query_pieces['network'] = tunnel_target.network
+    url_query_pieces['host'] = tunnel_target.host
+    # TODO(b/196572980): Make dest_group required in beta/GA.
+    if tunnel_target.dest_group:
+      url_query_pieces['group'] = tunnel_target.dest_group
   else:
-    return _CreateWebSocketUrl(CONNECT_ENDPOINT,
-                               {'project': tunnel_target.project,
-                                'zone': tunnel_target.zone,
-                                'instance': tunnel_target.instance,
-                                'interface': tunnel_target.interface,
-                                'port': tunnel_target.port},
-                               tunnel_target.url_override)
+    url_query_pieces['zone'] = tunnel_target.zone
+    url_query_pieces['instance'] = tunnel_target.instance
+    url_query_pieces['interface'] = tunnel_target.interface
+
+  return _CreateWebSocketUrl(CONNECT_ENDPOINT, url_query_pieces,
+                             tunnel_target.url_override)
 
 
 def CreateWebSocketReconnectUrl(tunnel_target, sid, ack_bytes):

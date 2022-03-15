@@ -647,14 +647,32 @@ def AddMaintenanceVersion(parser):
       help=('The desired maintenance version of the instance.'))
 
 
-def AddSqlServerAuditBucketPath(parser):
-  """Adds the `--audit-bucket-path` flag to the parser."""
+def AddSqlServerAudit(parser):
+  """Adds SQL Server audit related flags to the parser."""
   parser.add_argument(
       '--audit-bucket-path',
       required=False,
       hidden=True,
       help=('Path in Google Cloud Storage to upload generated audit files. '
             'The URI is in the form gs://bucketName/folderName. '
+            'Only available for SQL Server instances.'))
+
+  parser.add_argument(
+      '--audit-retention-interval',
+      default=None,
+      type=arg_parsers.Duration(),
+      required=False,
+      hidden=True,
+      help=('How long to keep generated audit files. '
+            'Only available for SQL Server instances.'))
+
+  parser.add_argument(
+      '--audit-upload-interval',
+      default=None,
+      type=arg_parsers.Duration(),
+      required=False,
+      hidden=True,
+      help=('How often to upload generated audit files. '
             'Only available for SQL Server instances.'))
 
 

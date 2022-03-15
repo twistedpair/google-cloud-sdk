@@ -1236,6 +1236,17 @@
         "location": {
           "description": "Optional. Location name of this ProvisioningConfig. It is optional only for Intake UI transition period.",
           "type": "string"
+        },
+        "updateTime": {
+          "description": "Output only. Last update timestamp.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "cloudConsoleUri": {
+          "description": "Output only. URI to Cloud Console UI view of this provisioning config.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },

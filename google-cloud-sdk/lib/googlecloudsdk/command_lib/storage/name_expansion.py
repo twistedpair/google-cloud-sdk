@@ -18,10 +18,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
+
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import wildcard_iterator
+from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import debug_output
 
@@ -58,6 +61,50 @@ class NameExpansionIterator:
     self._include_buckets = include_buckets
     self._recursion_requested = recursion_requested
 
+    self._top_level_iterator = (
+        plurality_checkable_iterator.PluralityCheckableIterator(
+            self._get_top_level_iterator()))
+    self._has_multiple_top_level_resources = None
+
+  @property
+  def has_multiple_top_level_resources(self):
+    """Returns if the iterator yields plural items without recursing.
+
+    Also returns True if the iterator was created with multiple URLs.
+    This may not be true if one URL doesn't return anything, but it's
+    consistent with gsutil and the user's probable intentions.
+
+    Returns:
+      Boolean indicating if iterator contains multiple top-level sources.
+    """
+    if self._has_multiple_top_level_resources is None:
+      self._has_multiple_top_level_resources = (
+          len(self._urls) > 1 or self._top_level_iterator.is_plural())
+    return self._has_multiple_top_level_resources
+
+  def _get_top_level_iterator(self):
+    for url in self._urls:
+      for resource in wildcard_iterator.get_wildcard_iterator(
+          url,
+          all_versions=self._all_versions,
+          ignore_symlinks=self._ignore_symlinks):
+        original_storage_url = storage_url.storage_url_from_string(url)
+        yield url, self._get_name_expansion_result(resource,
+                                                   resource.storage_url,
+                                                   original_storage_url)
+
+  def _get_nested_objects_iterator(self, parent_name_expansion_result):
+    new_storage_url = parent_name_expansion_result.resource.storage_url.join(
+        '**')
+    child_resources = wildcard_iterator.get_wildcard_iterator(
+        new_storage_url.url_string,
+        all_versions=self._all_versions,
+        ignore_symlinks=self._ignore_symlinks)
+    for child_resource in child_resources:
+      yield self._get_name_expansion_result(
+          child_resource, parent_name_expansion_result.resource.storage_url,
+          parent_name_expansion_result.original_url)
+
   def _get_name_expansion_result(self, resource, expanded_url, original_url):
     """Returns a NameExpansionResult, removing generations when appropriate."""
     keep_generation_in_url = (
@@ -70,6 +117,16 @@ class NameExpansionIterator:
       resource.storage_url = new_storage_url
     return NameExpansionResult(resource, expanded_url, original_url)
 
+  def _raise_no_url_match_error_if_necessary(self, url_found_match_dict):
+    non_matching_urls = [
+        url for url, found_match in url_found_match_dict.items()
+        if not found_match
+    ]
+    if non_matching_urls:
+      raise errors.InvalidUrlError(
+          'The following URLs matched no objects or files:\n-{}'.format(
+              '\n-'.join(non_matching_urls)))
+
   def __iter__(self):
     """Iterates over each URL in self._urls and yield the expanded result.
 
@@ -79,61 +136,33 @@ class NameExpansionIterator:
     Raises:
       InvalidUrlError: No matching objects found.
     """
-    found_match = False
-    one_url_had_no_match = False
+    self._has_multiple_top_level_resources = self._top_level_iterator.is_plural(
+    )
+    url_found_match_dict = collections.OrderedDict([
+        (url, False) for url in self._urls
+    ])
+    for input_url, name_expansion_result in self._top_level_iterator:
+      should_return_bucket = self._include_buckets and isinstance(
+          name_expansion_result.resource, resource_reference.BucketResource)
+      if not name_expansion_result.resource.is_container() or (
+          should_return_bucket):
+        url_found_match_dict[input_url] = True
+        yield name_expansion_result
 
-    for url in self._urls:
-      resources = plurality_checkable_iterator.PluralityCheckableIterator(
-          wildcard_iterator.get_wildcard_iterator(
-              url,
-              all_versions=self._all_versions,
-              ignore_symlinks=self._ignore_symlinks))
-      is_name_expansion_iterator_empty = True
-      original_storage_url = storage_url.storage_url_from_string(url)
+      if name_expansion_result.resource.is_container():
+        if self._recursion_requested:
+          for nested_name_expansion_result in self._get_nested_objects_iterator(
+              name_expansion_result):
+            url_found_match_dict[input_url] = True
+            yield nested_name_expansion_result
 
-      # Iterate over all the resource_reference.Resource objects.
-      for resource in resources:
-        # TODO(b/191479587): Explore refactoring these branches.
-        if not resource.is_container():
-          yield self._get_name_expansion_result(
-              resource, resource.storage_url, original_storage_url)
-          is_name_expansion_iterator_empty = False
-          continue
-
-        if self._include_buckets and resource.storage_url.is_bucket():
-          yield self._get_name_expansion_result(
-              resource, resource.storage_url, original_storage_url)
-          is_name_expansion_iterator_empty = False
-          if not self._recursion_requested:
-            continue
-
-        if not self._recursion_requested:
+        elif not should_return_bucket:
+          # Does not warn about buckets processed above because it's confusing
+          # to warn about something that was successfully processed.
           log.warning('Omitting {} because it is a container, and recursion'
-                      ' is not enabled.'.format(resource))
-          continue
+                      ' is not enabled.'.format(name_expansion_result.resource))
 
-        # Append '**' to fetch all objects under this container.
-        new_storage_url = resource.storage_url.join('**')
-        child_resources = wildcard_iterator.get_wildcard_iterator(
-            new_storage_url.url_string,
-            all_versions=self._all_versions,
-            ignore_symlinks=self._ignore_symlinks)
-        for child_resource in child_resources:
-          yield self._get_name_expansion_result(
-              child_resource, resource.storage_url, original_storage_url)
-          is_name_expansion_iterator_empty = False
-
-      if is_name_expansion_iterator_empty:
-        log.warning('URL matched no objects or files: {}'.format(url))
-        one_url_had_no_match = True
-      else:
-        found_match = True
-
-    if not found_match:
-      raise errors.InvalidUrlError('Source URLs matched no objects or files.')
-    if one_url_had_no_match:
-      raise errors.InvalidUrlError(
-          'At least one source URL matched no objects or files.')
+    self._raise_no_url_match_error_if_necessary(url_found_match_dict)
 
 
 class NameExpansionResult:

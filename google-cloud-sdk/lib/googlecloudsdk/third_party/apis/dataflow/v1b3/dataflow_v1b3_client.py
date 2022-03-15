@@ -625,7 +625,7 @@ class DataflowV1b3(base_api.BaseApiClient):
         method_id='dataflow.projects.locations.deployments.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['requestId', 'validateOnly'],
+        query_params=['deploymentId', 'requestId', 'validateOnly'],
         relative_path='v1b3/{+parent}/deployments',
         request_field='deployment',
         request_type_name='DataflowProjectsLocationsDeploymentsCreateRequest',

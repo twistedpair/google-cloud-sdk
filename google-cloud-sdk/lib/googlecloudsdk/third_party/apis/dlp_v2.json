@@ -771,6 +771,8 @@
             "plain text",
             "docx, docm, dotx, dotm",
             "pdf",
+            "powerpoint",
+            "excel",
             "avro",
             "csv",
             "tsv"
@@ -785,6 +787,8 @@
             "TEXT_UTF8",
             "WORD_DOCUMENT",
             "PDF",
+            "POWERPOINT_DOCUMENT",
+            "EXCEL_DOCUMENT",
             "AVRO",
             "CSV",
             "TSV"
@@ -2649,7 +2653,9 @@
               "PDF files >30 MB will be scanned as binary files. Included file extensions: pdf",
               "Included file extensions: avro",
               "Included file extensions: csv",
-              "Included file extensions: tsv"
+              "Included file extensions: tsv",
+              "Powerpoint files >30 MB will be scanned as binary files. Included file extensions: pptx, pptm, potx, potm, pot",
+              "Excel files >30 MB will be scanned as binary files. Included file extensions: xlsx, xlsm, xltx, xltm"
             ],
             "enum": [
               "FILE_TYPE_UNSPECIFIED",
@@ -2660,7 +2666,9 @@
               "PDF",
               "AVRO",
               "CSV",
-              "TSV"
+              "TSV",
+              "POWERPOINT",
+              "EXCEL"
             ]
           }
         },

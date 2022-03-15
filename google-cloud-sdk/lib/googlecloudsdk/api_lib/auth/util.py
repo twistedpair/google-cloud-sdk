@@ -294,16 +294,10 @@ def DoInstalledAppBrowserFlowGoogleAuth(scopes,
   elif no_launch_browser:
     user_creds = OobFlowRunner(scopes, client_config).Run()
   elif not can_launch_browser:
-    if _IsGoogleOwnedClientID(client_config):
-      user_creds = OobFlowRunner(scopes, client_config).Run()
-    else:
-      user_creds = NoBrowserFlowRunner(scopes, client_config).Run()
+    user_creds = NoBrowserFlowRunner(scopes, client_config).Run()
   else:
-    if _IsGoogleOwnedClientID(client_config):
-      user_creds = BrowserFlowWithOobFallbackRunner(scopes, client_config).Run()
-    else:
-      user_creds = BrowserFlowWithNoBrowserFallbackRunner(
-          scopes, client_config).Run()
+    user_creds = BrowserFlowWithNoBrowserFallbackRunner(
+        scopes, client_config).Run()
   if user_creds:
     return c_google_auth.Credentials.FromGoogleAuthUserCredentials(user_creds)
 

@@ -68,12 +68,15 @@ def FindNatOrRaise(router, nat_name):
   raise NatNotFoundError(nat_name)
 
 
-def CreateNatMessage(args, compute_holder, with_private_nat=False):
+def CreateNatMessage(args,
+                     compute_holder,
+                     with_private_nat=False,
+                     with_subnet_all=False):
   """Creates a NAT message from the specified arguments."""
   params = {'name': args.name}
 
   params['sourceSubnetworkIpRangesToNat'], params['subnetworks'] = (
-      _ParseSubnetFields)(args, compute_holder)
+      _ParseSubnetFields(args, compute_holder, with_subnet_all))
 
   if with_private_nat and args.type is not None:
     params['type'] = (
@@ -121,12 +124,17 @@ def CreateNatMessage(args, compute_holder, with_private_nat=False):
   return compute_holder.client.messages.RouterNat(**params)
 
 
-def UpdateNatMessage(nat, args, compute_holder, with_private_nat=False):
+def UpdateNatMessage(nat,
+                     args,
+                     compute_holder,
+                     with_private_nat=False,
+                     with_subnet_all=False):
   """Updates a NAT message with the specified arguments."""
   if (args.subnet_option in [
       nat_flags.SubnetOption.ALL_RANGES, nat_flags.SubnetOption.PRIMARY_RANGES
   ] or args.nat_custom_subnet_ip_ranges):
-    ranges_to_nat, subnetworks = _ParseSubnetFields(args, compute_holder)
+    ranges_to_nat, subnetworks = _ParseSubnetFields(args, compute_holder,
+                                                    with_subnet_all)
     nat.sourceSubnetworkIpRangesToNat = ranges_to_nat
     nat.subnetworks = subnetworks
 
@@ -210,10 +218,11 @@ class SubnetUsage(object):
 
   def __init__(self):
     self.using_primary = False
+    self.using_all = False
     self.secondary_ranges = list()
 
 
-def _ParseSubnetFields(args, compute_holder):
+def _ParseSubnetFields(args, compute_holder, with_subnet_all):
   """Parses arguments related to subnets to use for NAT."""
   subnetworks = list()
   messages = compute_holder.client.messages
@@ -235,22 +244,25 @@ def _ParseSubnetFields(args, compute_holder):
 
     for custom_subnet_arg in args.nat_custom_subnet_ip_ranges:
       colons = custom_subnet_arg.count(':')
-      secondary_range = None
+      range_option = None
       if colons > 1:
         raise calliope_exceptions.InvalidArgumentException(
             '--nat-custom-subnet-ip-ranges',
             ('Each specified subnet must be of the form SUBNETWORK '
              'or SUBNETWORK:RANGE_NAME'))
       elif colons == 1:
-        subnet_name, secondary_range = custom_subnet_arg.split(':')
+        subnet_name, range_option = custom_subnet_arg.split(':')
       else:
         subnet_name = custom_subnet_arg
 
       if subnet_name not in subnet_usages:
         subnet_usages[subnet_name] = SubnetUsage()
 
-      if secondary_range is not None:
-        subnet_usages[subnet_name].secondary_ranges.append(secondary_range)
+      if range_option is not None:
+        if with_subnet_all and range_option == 'ALL':
+          subnet_usages[subnet_name].using_all = True
+        else:
+          subnet_usages[subnet_name].secondary_ranges.append(range_option)
       else:
         subnet_usages[subnet_name].using_primary = True
 
@@ -266,6 +278,10 @@ def _ParseSubnetFields(args, compute_holder):
       subnet_usage = subnet_usages[subnet_name]
 
       options = []
+      if subnet_usage.using_all:
+        options.append(
+            messages.RouterNatSubnetworkToNat
+            .SourceIpRangesToNatValueListEntryValuesEnum.ALL_IP_RANGES)
       if subnet_usage.using_primary:
         options.append(
             messages.RouterNatSubnetworkToNat.

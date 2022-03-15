@@ -765,7 +765,7 @@
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value.",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value. The value of this field impacts the charge against Vertex CPU and GPU quotas. Specifically, you will be charged for max_replica_count * number of cores in the selected machine type) and (max_replica_count * number of GPUs per replica in the selected machine type).",
           "type": "integer",
           "format": "int32"
         },
@@ -1689,7 +1689,7 @@
       "type": "object",
       "properties": {
         "fixedNodeCount": {
-          "description": "The number of nodes for the online store. The number of nodes doesn't scale automatically, but you can manually update the number of nodes. If set to 0, the featurestore will not have an online store and cannot be used for online serving. Only one of `fixed_node_count` and `scaling` can be set. Setting one will reset the other.",
+          "description": "The number of nodes for the online store. The number of nodes doesn't scale automatically, but you can manually update the number of nodes. If set to 0, the featurestore will not have an online store and cannot be used for online serving.",
           "type": "integer",
           "format": "int32"
         },
@@ -4423,7 +4423,7 @@
     },
     "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfig": {
       "id": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfig",
-      "description": "Next ID: 6",
+      "description": "Next ID: 7",
       "type": "object",
       "properties": {
         "trainingDataset": {
@@ -6007,13 +6007,13 @@
         }
       }
     },
-    "GoogleCloudAiplatformV1beta1SetVersionAliasRequest": {
-      "id": "GoogleCloudAiplatformV1beta1SetVersionAliasRequest",
-      "description": "Request message for ModelService.SetVersionAlias.",
+    "GoogleCloudAiplatformV1beta1MergeVersionAliasesRequest": {
+      "id": "GoogleCloudAiplatformV1beta1MergeVersionAliasesRequest",
+      "description": "Request message for ModelService.MergeVersionAliases.",
       "type": "object",
       "properties": {
         "versionAliases": {
-          "description": "Required. The version aliases to merge. The alias should be at most 128 characters, and match `a-z{0,126}[a-z-0-9]`.",
+          "description": "Required. The set of version aliases to merge. The alias should be at most 128 characters, and match `a-z{0,126}[a-z-0-9]`. Add the `-` prefix to an alias means removing that alias from the version. Example: `-golden` means removing the `golden` alias from the version.",
           "type": "array",
           "items": {
             "type": "string"
@@ -8666,7 +8666,7 @@
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value.",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value. The value of this field impacts the charge against Vertex CPU and GPU quotas. Specifically, you will be charged for max_replica_count * number of cores in the selected machine type) and (max_replica_count * number of GPUs per replica in the selected machine type).",
           "type": "integer",
           "format": "int32"
         },
@@ -11592,7 +11592,7 @@
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value.",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value. The value of this field impacts the charge against Vertex CPU and GPU quotas. Specifically, you will be charged for max_replica_count * number of cores in the selected machine type) and (max_replica_count * number of GPUs per replica in the selected machine type).",
           "type": "integer",
           "format": "int32"
         },
@@ -12161,7 +12161,7 @@
     },
     "GoogleCloudAiplatformUiModelMonitoringObjectiveConfig": {
       "id": "GoogleCloudAiplatformUiModelMonitoringObjectiveConfig",
-      "description": "Next ID: 6",
+      "description": "Next ID: 7",
       "type": "object",
       "properties": {
         "trainingDataset": {
@@ -19906,7 +19906,7 @@
           "format": "int32"
         },
         "maxReplicaCount": {
-          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value.",
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value. The value of this field impacts the charge against Vertex CPU and GPU quotas. Specifically, you will be charged for max_replica_count * number of cores in the selected machine type) and (max_replica_count * number of GPUs per replica in the selected machine type).",
           "type": "integer",
           "format": "int32"
         },
@@ -30862,14 +30862,14 @@
                   ],
                   "description": "Deletes a Model version. Model version can only be deleted if there are no DeployedModels created from it. Deleting the only version in the Model is not allowed. Use DeleteModel for deleting the Model instead."
                 },
-                "setVersionAlias": {
-                  "id": "aiplatform.projects.locations.models.setVersionAlias",
-                  "path": "v1beta1/{+name}:setVersionAlias",
-                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:setVersionAlias",
+                "mergeVersionAliases": {
+                  "id": "aiplatform.projects.locations.models.mergeVersionAliases",
+                  "path": "v1beta1/{+name}:mergeVersionAliases",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:mergeVersionAliases",
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the model version to set alias, with a version ID explicitly included. Example: `projects\/{project}\/locations\/{location}\/models\/{model}@1234`",
+                      "description": "Required. The name of the model version to merge aliases, with a version ID explicitly included. Example: `projects\/{project}\/locations\/{location}\/models\/{model}@1234`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/models\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -30880,7 +30880,7 @@
                     "name"
                   ],
                   "request": {
-                    "$ref": "GoogleCloudAiplatformV1beta1SetVersionAliasRequest"
+                    "$ref": "GoogleCloudAiplatformV1beta1MergeVersionAliasesRequest"
                   },
                   "response": {
                     "$ref": "GoogleCloudAiplatformV1beta1Model"
@@ -30888,7 +30888,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets an alias for a Model version."
+                  "description": "Merges a set of aliases for a Model version."
                 },
                 "export": {
                   "id": "aiplatform.projects.locations.models.export",

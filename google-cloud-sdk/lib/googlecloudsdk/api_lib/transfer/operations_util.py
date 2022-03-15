@@ -170,8 +170,6 @@ def display_monitoring_view(name):
     log.status.Print('\nEnd time: ' + final_metadata['endTime'])
 
   if 'errorBreakdowns' in final_metadata:
-    # TODO(b/217184716) Remove "alpha" on GA release.
-    describe_command = ('gcloud alpha transfer operations describe ' +
-                        operation_name)
+    describe_command = ('gcloud transfer operations describe ' + operation_name)
     log.status.Print(
         '\nTo investigate errors, run: \n{}\n'.format(describe_command))

@@ -169,14 +169,31 @@ class ArtifactregistryProjectsLocationsRepositoriesGooGetArtifactsImportRequest(
   object.
 
   Fields:
-    googleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsRequest: A
-      GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsRequest
+    googleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsRequest: A
+      GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsRequest
       resource to be passed as the request body.
     parent: The name of the parent resource where the artifacts will be
       imported.
   """
 
-  googleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsRequest = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsRequest', 1)
+  googleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsRequest = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesGoogetArtifactsImportRequest(_messages.Message):
+  r"""A
+  ArtifactregistryProjectsLocationsRepositoriesGoogetArtifactsImportRequest
+  object.
+
+  Fields:
+    googleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsRequest: A
+      GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsRequest
+      resource to be passed as the request body.
+    parent: The name of the parent resource where the artifacts will be
+      imported.
+  """
+
+  googleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsRequest = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsRequest', 1)
   parent = _messages.StringField(2, required=True)
 
 
@@ -186,14 +203,14 @@ class ArtifactregistryProjectsLocationsRepositoriesGoogetArtifactsUploadRequest(
   object.
 
   Fields:
-    googleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactRequest: A
-      GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactRequest
+    googleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactRequest: A
+      GoogleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactRequest
       resource to be passed as the request body.
     parent: The name of the parent resource where the artifacts will be
       uploaded.
   """
 
-  googleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactRequest = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactRequest', 1)
+  googleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactRequest = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactRequest', 1)
   parent = _messages.StringField(2, required=True)
 
 
@@ -344,13 +361,13 @@ class GoogleDevtoolsArtifactregistryV1alpha1AptArtifact(_messages.Message):
   packageType = _messages.EnumField('PackageTypeValueValuesEnum', 6)
 
 
-class GoogleDevtoolsArtifactregistryV1alpha1GooGetArtifact(_messages.Message):
+class GoogleDevtoolsArtifactregistryV1alpha1GoogetArtifact(_messages.Message):
   r"""A detailed representation of a GooGet artifact.
 
   Fields:
     architecture: Output only. Operating system architecture of the artifact.
     name: Output only. The Artifact Registry resource name of the artifact.
-    packageName: Output only. The googet package name of the artifact.
+    packageName: Output only. The GooGet package name of the artifact.
   """
 
   architecture = _messages.StringField(1)
@@ -405,7 +422,7 @@ class GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsResponse(_messages
   errors = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsErrorInfo', 2, repeated=True)
 
 
-class GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsErrorInfo(_messages.Message):
+class GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsErrorInfo(_messages.Message):
   r"""Error information explaining why a package was not imported.
 
   Fields:
@@ -414,10 +431,10 @@ class GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsErrorInfo(_mess
   """
 
   error = _messages.MessageField('Status', 1)
-  gcsSource = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsGcsSource', 2)
+  gcsSource = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsGcsSource', 2)
 
 
-class GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsGcsSource(_messages.Message):
+class GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsGcsSource(_messages.Message):
   r"""Google Cloud Storage location where the artifacts currently reside.
 
   Fields:
@@ -430,26 +447,26 @@ class GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsGcsSource(_mess
   useWildcards = _messages.BooleanField(2)
 
 
-class GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsRequest(_messages.Message):
+class GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsRequest(_messages.Message):
   r"""The request to import new googet artifacts.
 
   Fields:
     gcsSource: Google Cloud Storage location where input content is located.
   """
 
-  gcsSource = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsGcsSource', 1)
+  gcsSource = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsGcsSource', 1)
 
 
-class GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsResponse(_messages.Message):
+class GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsResponse(_messages.Message):
   r"""The response message from importing artifacts.
 
   Fields:
     errors: Detailed error info for packages that were not imported.
-    googetArtifacts: The googet artifacts updated.
+    googetArtifacts: The GooGet artifacts updated.
   """
 
-  errors = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsErrorInfo', 1, repeated=True)
-  googetArtifacts = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1GooGetArtifact', 2, repeated=True)
+  errors = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsErrorInfo', 1, repeated=True)
+  googetArtifacts = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1GoogetArtifact', 2, repeated=True)
 
 
 class GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsErrorInfo(_messages.Message):
@@ -553,6 +570,7 @@ class GoogleDevtoolsArtifactregistryV1alpha1Repository(_messages.Message):
       NPM: NPM package format.
       APT: APT package format.
       YUM: YUM package format.
+      GOOGET: GooGet package format.
       PYTHON: Python package format.
     """
     FORMAT_UNSPECIFIED = 0
@@ -561,7 +579,8 @@ class GoogleDevtoolsArtifactregistryV1alpha1Repository(_messages.Message):
     NPM = 3
     APT = 4
     YUM = 5
-    PYTHON = 6
+    GOOGET = 6
+    PYTHON = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -624,7 +643,7 @@ class GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactResponse(_messages.
   aptArtifacts = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1AptArtifact', 1, repeated=True)
 
 
-class GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactMediaResponse(_messages.Message):
+class GoogleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactMediaResponse(_messages.Message):
   r"""The response to upload an artifact.
 
   Fields:
@@ -634,11 +653,11 @@ class GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactMediaResponse(_m
   operation = _messages.MessageField('Operation', 1)
 
 
-class GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactRequest(_messages.Message):
+class GoogleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactRequest(_messages.Message):
   r"""The request to upload an artifact."""
 
 
-class GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactResponse(_messages.Message):
+class GoogleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactResponse(_messages.Message):
   r"""The response of the completed artifact upload operation. This response
   is contained in the Operation and available to users.
 
@@ -646,7 +665,7 @@ class GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactResponse(_messag
     googetArtifacts: The Apt artifacts updated.
   """
 
-  googetArtifacts = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1GooGetArtifact', 1, repeated=True)
+  googetArtifacts = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1GoogetArtifact', 1, repeated=True)
 
 
 class GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactMediaResponse(_messages.Message):

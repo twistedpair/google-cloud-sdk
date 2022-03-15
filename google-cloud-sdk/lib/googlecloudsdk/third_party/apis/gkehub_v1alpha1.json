@@ -1332,13 +1332,13 @@
             "Unspecified.",
             "User-installed in-cluster control plane revision.",
             "Google-managed service running outside the cluster. Note: Google-managed control planes are independent per-cluster, regardless of whether the revision name is the same or not.",
-            "Google-managed in-cluster control plane revision."
+            "Google-managed local control plane revision."
           ],
           "enum": [
             "CONTROL_PLANE_REVISION_TYPE_UNSPECIFIED",
             "UNMANAGED",
             "MANAGED_SERVICE",
-            "MANAGED_INSTALL"
+            "MANAGED_LOCAL"
           ]
         },
         "channel": {

@@ -1504,6 +1504,8 @@ class ProvisioningConfig(_messages.Message):
     StateValueValuesEnum: Output only. State of ProvisioningConfig.
 
   Fields:
+    cloudConsoleUri: Output only. URI to Cloud Console UI view of this
+      provisioning config.
     email: Optional. Email provided to send a confirmation with provisioning
       config to.
     handoverServiceAccount: A service account to enable customers to access
@@ -1515,6 +1517,7 @@ class ProvisioningConfig(_messages.Message):
     networks: Networks to be created.
     state: Output only. State of ProvisioningConfig.
     ticketId: A generated buganizer id to track provisioning request.
+    updateTime: Output only. Last update timestamp.
     volumes: Volumes to be created.
   """
 
@@ -1531,15 +1534,17 @@ class ProvisioningConfig(_messages.Message):
     DRAFT = 1
     SUBMITTED = 2
 
-  email = _messages.StringField(1)
-  handoverServiceAccount = _messages.StringField(2)
-  instances = _messages.MessageField('InstanceConfig', 3, repeated=True)
-  location = _messages.StringField(4)
-  name = _messages.StringField(5)
-  networks = _messages.MessageField('NetworkConfig', 6, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  ticketId = _messages.StringField(8)
-  volumes = _messages.MessageField('VolumeConfig', 9, repeated=True)
+  cloudConsoleUri = _messages.StringField(1)
+  email = _messages.StringField(2)
+  handoverServiceAccount = _messages.StringField(3)
+  instances = _messages.MessageField('InstanceConfig', 4, repeated=True)
+  location = _messages.StringField(5)
+  name = _messages.StringField(6)
+  networks = _messages.MessageField('NetworkConfig', 7, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  ticketId = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+  volumes = _messages.MessageField('VolumeConfig', 11, repeated=True)
 
 
 class ProvisioningQuota(_messages.Message):

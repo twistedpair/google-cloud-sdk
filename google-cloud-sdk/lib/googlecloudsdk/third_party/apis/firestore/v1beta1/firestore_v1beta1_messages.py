@@ -744,6 +744,45 @@ class FirestoreProjectsDatabasesDocumentsListCollectionIdsRequest(_messages.Mess
   parent = _messages.StringField(2, required=True)
 
 
+class FirestoreProjectsDatabasesDocumentsListDocumentsRequest(_messages.Message):
+  r"""A FirestoreProjectsDatabasesDocumentsListDocumentsRequest object.
+
+  Fields:
+    collectionId: Required. The collection ID, relative to `parent`, to list.
+      For example: `chatrooms` or `messages`.
+    mask_fieldPaths: The list of field paths in the mask. See Document.fields
+      for a field path syntax reference.
+    orderBy: The order to sort results by. For example: `priority desc, name`.
+    pageSize: The maximum number of documents to return.
+    pageToken: The `next_page_token` value returned from a previous List
+      request, if any.
+    parent: Required. The parent resource name. In the format:
+      `projects/{project_id}/databases/{database_id}/documents` or `projects/{
+      project_id}/databases/{database_id}/documents/{document_path}`. For
+      example: `projects/my-project/databases/my-database/documents` or
+      `projects/my-project/databases/my-database/documents/chatrooms/my-
+      chatroom`
+    readTime: Reads documents as they were at the given time. This may not be
+      older than 270 seconds.
+    showMissing: If the list should show missing documents. A missing document
+      is a document that does not exist but has sub-documents. These documents
+      will be returned with a key but will not have fields,
+      Document.create_time, or Document.update_time set. Requests with
+      `show_missing` may not specify `where` or `order_by`.
+    transaction: Reads documents in a transaction.
+  """
+
+  collectionId = _messages.StringField(1, required=True)
+  mask_fieldPaths = _messages.StringField(2, repeated=True)
+  orderBy = _messages.StringField(3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  parent = _messages.StringField(6, required=True)
+  readTime = _messages.StringField(7)
+  showMissing = _messages.BooleanField(8)
+  transaction = _messages.BytesField(9)
+
+
 class FirestoreProjectsDatabasesDocumentsListRequest(_messages.Message):
   r"""A FirestoreProjectsDatabasesDocumentsListRequest object.
 
@@ -1719,6 +1758,8 @@ class RunQueryResponse(_messages.Message):
 
   Fields:
     document: A query result, not set when reporting partial progress.
+    done: If present, Firestore has completely finished the request and no
+      more documents will be returned.
     readTime: The time at which the document was read. This may be
       monotonically increasing; in this case, the previous documents in the
       result stream are guaranteed not to have changed between their
@@ -1734,9 +1775,10 @@ class RunQueryResponse(_messages.Message):
   """
 
   document = _messages.MessageField('Document', 1)
-  readTime = _messages.StringField(2)
-  skippedResults = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  transaction = _messages.BytesField(4)
+  done = _messages.BooleanField(2)
+  readTime = _messages.StringField(3)
+  skippedResults = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  transaction = _messages.BytesField(5)
 
 
 class StandardQueryParameters(_messages.Message):

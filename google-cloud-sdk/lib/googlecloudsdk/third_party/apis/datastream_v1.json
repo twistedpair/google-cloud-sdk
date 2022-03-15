@@ -520,7 +520,7 @@
           "type": "string"
         },
         "oracleColumns": {
-          "description": "Oracle columns in the schema. When unspecified as part of inclue\/exclude lists, includes\/excludes everything.",
+          "description": "Oracle columns in the schema. When unspecified as part of include\/exclude objects, includes\/excludes everything.",
           "type": "array",
           "items": {
             "$ref": "OracleColumn"
@@ -617,7 +617,7 @@
           "type": "string"
         },
         "mysqlColumns": {
-          "description": "MySQL columns in the database. When unspecified as part of include\/exclude lists, includes\/excludes everything.",
+          "description": "MySQL columns in the database. When unspecified as part of include\/exclude objects, includes\/excludes everything.",
           "type": "array",
           "items": {
             "$ref": "MysqlColumn"
@@ -801,11 +801,11 @@
           "type": "string"
         },
         "oracleSourceConfig": {
-          "description": "Oracle data source configuration",
+          "description": "Oracle data source configuration.",
           "$ref": "OracleSourceConfig"
         },
         "mysqlSourceConfig": {
-          "description": "MySQL data source configuration",
+          "description": "MySQL data source configuration.",
           "$ref": "MysqlSourceConfig"
         }
       }
@@ -822,7 +822,18 @@
         "excludeObjects": {
           "description": "Oracle objects to exclude from the stream.",
           "$ref": "OracleRdbms"
+        },
+        "dropLargeObjects": {
+          "description": "Drop large object values.",
+          "$ref": "OracleDropLargeObjects"
         }
+      }
+    },
+    "OracleDropLargeObjects": {
+      "id": "OracleDropLargeObjects",
+      "description": "Configuration to drop large object values.",
+      "type": "object",
+      "properties": {
       }
     },
     "MysqlSourceConfig": {

@@ -184,7 +184,8 @@ class ArtifactregistryProjectsLocationsRepositoriesFilesListRequest(_messages.Me
     pageSize: The maximum number of files to return.
     pageToken: The next_page_token value returned from a previous list
       request, if any.
-    parent: The name of the parent resource whose files will be listed.
+    parent: The name of the repository whose files will be listed. For
+      example: "projects/p1/locations/us-central1/repositories/repo1
   """
 
   filter = _messages.StringField(1)

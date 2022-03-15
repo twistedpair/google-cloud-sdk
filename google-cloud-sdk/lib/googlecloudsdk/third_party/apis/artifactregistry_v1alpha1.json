@@ -233,19 +233,19 @@
         }
       }
     },
-    "GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsRequest": {
-      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsRequest",
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsRequest": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsRequest",
       "description": "The request to import new googet artifacts.",
       "type": "object",
       "properties": {
         "gcsSource": {
           "description": "Google Cloud Storage location where input content is located.",
-          "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsGcsSource"
+          "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsGcsSource"
         }
       }
     },
-    "GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsGcsSource": {
-      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsGcsSource",
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsGcsSource": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsGcsSource",
       "description": "Google Cloud Storage location where the artifacts currently reside.",
       "type": "object",
       "properties": {
@@ -298,15 +298,15 @@
         }
       }
     },
-    "GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactRequest": {
-      "id": "GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactRequest",
+    "GoogleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactRequest": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactRequest",
       "description": "The request to upload an artifact.",
       "type": "object",
       "properties": {
       }
     },
-    "GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactMediaResponse": {
-      "id": "GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactMediaResponse",
+    "GoogleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactMediaResponse": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactMediaResponse",
       "description": "The response to upload an artifact.",
       "type": "object",
       "properties": {
@@ -353,6 +353,7 @@
             "NPM package format.",
             "APT package format.",
             "YUM package format.",
+            "GooGet package format.",
             "Python package format."
           ],
           "enum": [
@@ -362,6 +363,7 @@
             "NPM",
             "APT",
             "YUM",
+            "GOOGET",
             "PYTHON"
           ]
         },
@@ -528,29 +530,29 @@
         }
       }
     },
-    "GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsResponse": {
-      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsResponse",
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsResponse": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsResponse",
       "description": "The response message from importing artifacts.",
       "type": "object",
       "properties": {
         "googetArtifacts": {
-          "description": "The googet artifacts updated.",
+          "description": "The GooGet artifacts updated.",
           "type": "array",
           "items": {
-            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1GooGetArtifact"
+            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1GoogetArtifact"
           }
         },
         "errors": {
           "description": "Detailed error info for packages that were not imported.",
           "type": "array",
           "items": {
-            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsErrorInfo"
+            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsErrorInfo"
           }
         }
       }
     },
-    "GoogleDevtoolsArtifactregistryV1alpha1GooGetArtifact": {
-      "id": "GoogleDevtoolsArtifactregistryV1alpha1GooGetArtifact",
+    "GoogleDevtoolsArtifactregistryV1alpha1GoogetArtifact": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1GoogetArtifact",
       "description": "A detailed representation of a GooGet artifact.",
       "type": "object",
       "properties": {
@@ -560,7 +562,7 @@
           "type": "string"
         },
         "packageName": {
-          "description": "Output only. The googet package name of the artifact.",
+          "description": "Output only. The GooGet package name of the artifact.",
           "readOnly": true,
           "type": "string"
         },
@@ -571,14 +573,14 @@
         }
       }
     },
-    "GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsErrorInfo": {
-      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsErrorInfo",
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsErrorInfo": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsErrorInfo",
       "description": "Error information explaining why a package was not imported.",
       "type": "object",
       "properties": {
         "gcsSource": {
           "description": "Google Cloud Storage location requested.",
-          "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsGcsSource"
+          "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsGcsSource"
         },
         "error": {
           "description": "The detailed error status.",
@@ -673,8 +675,8 @@
         }
       }
     },
-    "GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactResponse": {
-      "id": "GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactResponse",
+    "GoogleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactResponse": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactResponse",
       "description": "The response of the completed artifact upload operation. This response is contained in the Operation and available to users.",
       "type": "object",
       "properties": {
@@ -682,7 +684,7 @@
           "description": "The Apt artifacts updated.",
           "type": "array",
           "items": {
-            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1GooGetArtifact"
+            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1GoogetArtifact"
           }
         }
       }
@@ -1403,12 +1405,12 @@
                     }
                   }
                 },
-                "gooGetArtifacts": {
+                "googetArtifacts": {
                   "methods": {
                     "import": {
-                      "id": "artifactregistry.projects.locations.repositories.gooGetArtifacts.import",
-                      "path": "v1alpha1/{+parent}/gooGetArtifacts:import",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/gooGetArtifacts:import",
+                      "id": "artifactregistry.projects.locations.repositories.googetArtifacts.import",
+                      "path": "v1alpha1/{+parent}/googetArtifacts:import",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/googetArtifacts:import",
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
@@ -1423,7 +1425,7 @@
                         "parent"
                       ],
                       "request": {
-                        "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsRequest"
+                        "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsRequest"
                       },
                       "response": {
                         "$ref": "Operation"
@@ -1432,11 +1434,7 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Imports GooGet artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored."
-                    }
-                  }
-                },
-                "googetArtifacts": {
-                  "methods": {
+                    },
                     "upload": {
                       "id": "artifactregistry.projects.locations.repositories.googetArtifacts.upload",
                       "path": "v1alpha1/{+parent}/googetArtifacts:create",
@@ -1467,15 +1465,47 @@
                         }
                       },
                       "request": {
-                        "$ref": "GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactRequest"
+                        "$ref": "GoogleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactRequest"
                       },
                       "response": {
-                        "$ref": "GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactMediaResponse"
+                        "$ref": "GoogleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactMediaResponse"
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Directly uploads a GooGet artifact. The returned Operation will complete once the resources are uploaded. Package, Version, and File resources are created based on the imported artifact. Imported artifacts that conflict with existing resources are ignored."
+                    }
+                  }
+                },
+                "gooGetArtifacts": {
+                  "methods": {
+                    "import": {
+                      "id": "artifactregistry.projects.locations.repositories.gooGetArtifacts.import",
+                      "path": "v1alpha1/{+parent}/gooGetArtifacts:import",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/gooGetArtifacts:import",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the parent resource where the artifacts will be imported.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Imports GooGet artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored."
                     }
                   }
                 }

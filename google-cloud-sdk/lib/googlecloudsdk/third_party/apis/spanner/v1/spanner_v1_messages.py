@@ -1221,6 +1221,7 @@ class Instance(_messages.Message):
     config: Required. The name of the instance's configuration. Values are of
       the form `projects//instanceConfigs/`. See also InstanceConfig and
       ListInstanceConfigs.
+    createTime: Output only. The time at which the instance was created.
     displayName: Required. The descriptive name for this instance as it
       appears in UIs. Must be unique per project and between 4 and 30
       characters in length.
@@ -1262,6 +1263,8 @@ class Instance(_messages.Message):
     state: Output only. The current instance state. For CreateInstance, the
       state must be either omitted or set to `CREATING`. For UpdateInstance,
       the state must be either omitted or set to `READY`.
+    updateTime: Output only. The time at which the instance was most recently
+      updated.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1321,13 +1324,15 @@ class Instance(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   config = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  endpointUris = _messages.StringField(3, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  nodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  processingUnits = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
+  createTime = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  endpointUris = _messages.StringField(4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  nodeCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  processingUnits = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
 
 
 class InstanceConfig(_messages.Message):
@@ -3321,7 +3326,7 @@ class SpannerProjectsInstanceConfigOperationsListRequest(_messages.Message):
       False if the operation is in progress, else true. * `metadata.@type` -
       the type of metadata. For example, the type string for
       CreateInstanceConfigMetadata is `type.googleapis.com/google.spanner.admi
-      n.database.v1.CreateInstanceConfigMetadata`. * `metadata.` - any field
+      n.instance.v1.CreateInstanceConfigMetadata`. * `metadata.` - any field
       in metadata.value. `metadata.@type` must be specified first, if
       filtering on metadata fields. * `error` - Error associated with the
       long-running operation. * `response.@type` - the type of response. *
@@ -3480,7 +3485,24 @@ class SpannerProjectsInstancesBackupOperationsListRequest(_messages.Message):
       \"2018-03-28T14:50:00Z\") AND` \ `(error:*)` - Returns operations where:
       * The operation's metadata type is CreateBackupMetadata. * The backup
       name contains the string "howl". * The operation started before
-      2018-03-28T14:50:00Z. * The operation resulted in an error.
+      2018-03-28T14:50:00Z. * The operation resulted in an error. * `(metadata
+      .@type=type.googleapis.com/google.spanner.admin.database.v1.CopyBackupMe
+      tadata) AND` \ `(metadata.source_backup:test) AND` \
+      `(metadata.progress.start_time < \"2022-01-18T14:50:00Z\") AND` \
+      `(error:*)` - Returns operations where: * The operation's metadata type
+      is CopyBackupMetadata. * The source backup of the copied backup name
+      contains the string "test". * The operation started before
+      2022-01-18T14:50:00Z. * The operation resulted in an error. * `((metadat
+      a.@type=type.googleapis.com/google.spanner.admin.database.v1.CreateBacku
+      pMetadata) AND` \ `(metadata.database:test_db)) OR` \ `((metadata.@type=
+      type.googleapis.com/google.spanner.admin.database.v1.CopyBackupMetadata)
+      AND` \ `(metadata.source_backup:test_bkp)) AND` \ `(error:*)` - Returns
+      operations where: * The operation's metadata matches either of criteria:
+      * The operation's metadata type is CreateBackupMetadata AND the database
+      the backup was taken from has name containing string "test_db" * The
+      operation's metadata type is CopyBackupMetadata AND the backup the
+      backup was copied from has name containing string "test_bkp" * The
+      operation resulted in an error.
     pageSize: Number of operations to be returned in the response. If 0 or
       less, defaults to the server's maximum allowed page size.
     pageToken: If non-empty, `page_token` should contain a next_page_token

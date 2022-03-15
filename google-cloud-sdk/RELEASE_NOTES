@@ -5,6 +5,96 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 377.0.0 (2022-03-15)
+
+### Google Cloud CLI
+
+* Promoted `--no-browser` in `gcloud auth login` and `gcloud auth
+  application-default login` to be the default flow if gcloud cannot
+  launch a web browser. You can still use `--no-launch-browser` flow
+  by explicitly specifying it. Note that `--no-launch-browser` will be
+  removed in version 383.0.0 on April 26, 2022.
+
+### Anthos Multi-Cloud
+
+*   Added `--security-group-ids` flag to `gcloud container aws node-pools update`
+to update the IDs of additional security groups to add to node pool nodes.
+
+### Artifact Registry
+
+*   Fixed issue where `gcloud artifacts repositories create` requires exessive
+     permission when a kms key is supplied.
+
+### Bare Metal Solution
+
+*   Promoted `gcloud bms instances start` to GA.
+*   Promoted `gcloud bms instances update` to GA.
+*   Promoted `gcloud bms networks update` to GA.
+*   Promoted `gcloud bms nfs-shares describe` to GA.
+*   Promoted `gcloud bms nfs-shares list` to GA.
+*   Promoted `gcloud bms nfs-shares update` to GA.
+*   Promoted `gcloud bms volumes update` to GA.
+*   Added `--filter` flag to `gcloud bms instances list`.
+*   Added `--filter` flag to `gcloud bms volumes list`.
+
+### Certificate Manager
+
+*   Improved output of `gcloud beta certificate-manager dns-authorizations create` command. The output does not contain details of a created resource anymore.
+
+### Cloud Composer
+
+* Added support for `composer-1` and `composer-2` aliases in Composer part of `--image-version` flag in `gcloud beta composer environments create`, `gcloud beta composer environments update`, `gcloud beta composer environments check-upgrade`.
+* Fixed support for `X.Y` aliases in `--airflow-version` flag and `airflow-X.Y` aliases in Airflow part of `--image-version` flag in `gcloud beta composer environments update` and `gcloud beta composer environments check-upgrade`.
+
+### Cloud DNS
+
+* Add setIampolicy and getIamPolicy Alpha commands.
+
+### Cloud Dataproc
+
+* Added support for Clusters without `cluster.config` to `gcloud dataproc jobs
+  submit`.
+
+### Cloud Domains
+
+* Allow specifying Project numbers in `gcloud domains` methods.
+
+### Cloud IAM
+
+* Service Accounts Undelete promoted to GA command.
+
+### Cloud Memorystore
+
+* Promoted `--read-replicas-mode` and `--replica-count` flags of `gcloud redis
+  instances create` to GA.
+* Promoted `--read-replicas-mode`, `--replica-count`, and `--secondary-ip-range`
+  flags of `gcloud redis instances update` to GA.
+
+### Cloud Storage
+
+* Updated gsutil component to 5.8.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.75.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Kubernetes Engine
+
+* Added `--disable-pod-cidr-overprovision` flag to `gcloud beta container
+clusters/node-pools create` to allow disabling overprovisioning of pod IPs
+during clusters and node-pools create.
+
+### Network Connectivity
+
+*   Added `gcloud network-connectivity locations describe` and `gcloud
+    network-connectivity locations list`. These commands return information
+    about locations that support site-to-site data transfer.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 376.0.0 (2022-03-08)
 
 ### Certificate Authority Service

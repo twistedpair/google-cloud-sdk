@@ -412,6 +412,10 @@
           "description": "Script runnable.",
           "$ref": "Script"
         },
+        "barrier": {
+          "description": "Barrier runnable.",
+          "$ref": "Barrier"
+        },
         "ignoreExitStatus": {
           "description": "Normally, a non-zero exit status causes the Task to fail. This flag allows execution of other Runnables to continue instead.",
           "type": "boolean"
@@ -470,6 +474,17 @@
         },
         "text": {
           "description": "Shell script text.",
+          "type": "string"
+        }
+      }
+    },
+    "Barrier": {
+      "id": "Barrier",
+      "description": "Barrier runnable blocks until all tasks in a taskgroup reach it.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Barriers are identified by their index in runnable list. Names are not required, but if present should be an identifier.",
           "type": "string"
         }
       }

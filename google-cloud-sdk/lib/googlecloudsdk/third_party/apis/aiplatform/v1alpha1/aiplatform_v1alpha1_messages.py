@@ -5016,7 +5016,11 @@ class GoogleCloudAiplatformInternalDedicatedResources(_messages.Message):
       replicas is guaranteed (barring service outages). If traffic against the
       DeployedModel increases beyond what its replicas at maximum may handle,
       a portion of the traffic will be dropped. If this value is not provided,
-      will use min_replica_count as the default value.
+      will use min_replica_count as the default value. The value of this field
+      impacts the charge against Vertex CPU and GPU quotas. Specifically, you
+      will be charged for max_replica_count * number of cores in the selected
+      machine type) and (max_replica_count * number of GPUs per replica in the
+      selected machine type).
     minReplicaCount: Required. Immutable. The minimum number of machine
       replicas this DeployedModel will be always deployed on. This value must
       be greater than or equal to 1. If traffic against the DeployedModel
@@ -7496,7 +7500,11 @@ class GoogleCloudAiplatformUiDedicatedResources(_messages.Message):
       replicas is guaranteed (barring service outages). If traffic against the
       DeployedModel increases beyond what its replicas at maximum may handle,
       a portion of the traffic will be dropped. If this value is not provided,
-      will use min_replica_count as the default value.
+      will use min_replica_count as the default value. The value of this field
+      impacts the charge against Vertex CPU and GPU quotas. Specifically, you
+      will be charged for max_replica_count * number of cores in the selected
+      machine type) and (max_replica_count * number of GPUs per replica in the
+      selected machine type).
     minReplicaCount: Required. Immutable. The minimum number of machine
       replicas this DeployedModel will be always deployed on. This value must
       be greater than or equal to 1. If traffic against the DeployedModel
@@ -9271,7 +9279,7 @@ class GoogleCloudAiplatformUiMigrateResourceResponse(_messages.Message):
 
 
 class GoogleCloudAiplatformUiModelMonitoringObjectiveConfig(_messages.Message):
-  r"""Next ID: 6
+  r"""Next ID: 7
 
   Fields:
     explanationConfig: The config for integrating with Vertex Explainable AI.
@@ -11351,7 +11359,11 @@ class GoogleCloudAiplatformV1DedicatedResources(_messages.Message):
       replicas is guaranteed (barring service outages). If traffic against the
       DeployedModel increases beyond what its replicas at maximum may handle,
       a portion of the traffic will be dropped. If this value is not provided,
-      will use min_replica_count as the default value.
+      will use min_replica_count as the default value. The value of this field
+      impacts the charge against Vertex CPU and GPU quotas. Specifically, you
+      will be charged for max_replica_count * number of cores in the selected
+      machine type) and (max_replica_count * number of GPUs per replica in the
+      selected machine type).
     minReplicaCount: Required. Immutable. The minimum number of machine
       replicas this DeployedModel will be always deployed on. This value must
       be greater than or equal to 1. If traffic against the DeployedModel
@@ -21588,7 +21600,7 @@ class GoogleCloudAiplatformV1alpha1ModelMonitoringAlertConfigEmailAlertConfig(_m
 
 
 class GoogleCloudAiplatformV1alpha1ModelMonitoringObjectiveConfig(_messages.Message):
-  r"""Next ID: 6
+  r"""Next ID: 7
 
   Fields:
     explanationConfig: The config for integrating with Vertex Explainable AI.
@@ -25445,7 +25457,11 @@ class GoogleCloudAiplatformV1beta1DedicatedResources(_messages.Message):
       replicas is guaranteed (barring service outages). If traffic against the
       DeployedModel increases beyond what its replicas at maximum may handle,
       a portion of the traffic will be dropped. If this value is not provided,
-      will use min_replica_count as the default value.
+      will use min_replica_count as the default value. The value of this field
+      impacts the charge against Vertex CPU and GPU quotas. Specifically, you
+      will be charged for max_replica_count * number of cores in the selected
+      machine type) and (max_replica_count * number of GPUs per replica in the
+      selected machine type).
     minReplicaCount: Required. Immutable. The minimum number of machine
       replicas this DeployedModel will be always deployed on. This value must
       be greater than or equal to 1. If traffic against the DeployedModel

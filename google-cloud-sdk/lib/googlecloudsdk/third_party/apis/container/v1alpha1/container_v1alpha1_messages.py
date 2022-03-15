@@ -27,6 +27,7 @@ class AcceleratorConfig(_messages.Message):
       are described in the NVIDIA [mig user
       guide](https://docs.nvidia.com/datacenter/tesla/mig-user-
       guide/#partitioning).
+    gpuSharingConfig: The configuration for GPU sharing options.
     maxTimeSharedClientsPerGpu: The number of time-shared GPU resources to
       expose for each physical GPU.
   """
@@ -34,7 +35,8 @@ class AcceleratorConfig(_messages.Message):
   acceleratorCount = _messages.IntegerField(1)
   acceleratorType = _messages.StringField(2)
   gpuPartitionSize = _messages.StringField(3)
-  maxTimeSharedClientsPerGpu = _messages.IntegerField(4)
+  gpuSharingConfig = _messages.MessageField('GPUSharingConfig', 4)
+  maxTimeSharedClientsPerGpu = _messages.IntegerField(5)
 
 
 class AddonsConfig(_messages.Message):
@@ -1966,6 +1968,37 @@ class Filter(_messages.Message):
   eventType = _messages.EnumField('EventTypeValueListEntryValuesEnum', 1, repeated=True)
 
 
+class GPUSharingConfig(_messages.Message):
+  r"""GPUSharingConfig represents the GPU sharing configuration for Hardware
+  Accelerators.
+
+  Enums:
+    GpuSharingStrategyValueValuesEnum: The type of GPU sharing strategy to
+      enable on the GPU node.
+
+  Fields:
+    gpuSharingStrategy: The type of GPU sharing strategy to enable on the GPU
+      node.
+    maxSharedClientsPerGpu: The max number of containers that can share a
+      physical GPU.
+  """
+
+  class GpuSharingStrategyValueValuesEnum(_messages.Enum):
+    r"""The type of GPU sharing strategy to enable on the GPU node.
+
+    Values:
+      GPU_SHARING_STRATEGY_UNSPECIFIED: Default value.
+      TIME_SHARING: GPUs are time-shared between containers.
+      MPS: GPUs are shared between containers with NVIDIA MPS.
+    """
+    GPU_SHARING_STRATEGY_UNSPECIFIED = 0
+    TIME_SHARING = 1
+    MPS = 2
+
+  gpuSharingStrategy = _messages.EnumField('GpuSharingStrategyValueValuesEnum', 1)
+  maxSharedClientsPerGpu = _messages.IntegerField(2)
+
+
 class GcePersistentDiskCsiDriverConfig(_messages.Message):
   r"""Configuration for the Compute Engine PD CSI driver.
 
@@ -3160,7 +3193,9 @@ class NetworkTags(_messages.Message):
 
 
 class NodeConfig(_messages.Message):
-  r"""Parameters that describe the nodes in a cluster.
+  r"""Parameters that describe the nodes in a cluster. *Note:* GKE Autopilot
+  clusters do not recognize parameters in `NodeConfig`. Use
+  AutoprovisioningNodePoolDefaults instead.
 
   Messages:
     LabelsValue: The map of Kubernetes labels (key/value pairs) to be applied

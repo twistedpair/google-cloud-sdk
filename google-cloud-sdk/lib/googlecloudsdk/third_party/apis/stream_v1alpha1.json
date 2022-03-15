@@ -521,7 +521,7 @@
           "format": "int32"
         },
         "contentBuildVersion": {
-          "description": "The user-specified version tag and build ID of the content served in this realm.",
+          "description": "The user-specified version tag and build ID of the content served by this instance.",
           "$ref": "BuildVersion"
         }
       }

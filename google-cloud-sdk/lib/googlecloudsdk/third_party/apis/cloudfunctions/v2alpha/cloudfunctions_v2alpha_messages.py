@@ -452,11 +452,16 @@ class EventFilter(_messages.Message):
 
   Fields:
     attribute: Required. The name of a CloudEvents attribute.
+    operator: Optional. The operator used for matching the events with the
+      value of the filter. If not specified, only events that have an exact
+      key-value pair specified in the filter are matched. The only allowed
+      value is `match-path-pattern`.
     value: Required. The value for the attribute.
   """
 
   attribute = _messages.StringField(1)
-  value = _messages.StringField(2)
+  operator = _messages.StringField(2)
+  value = _messages.StringField(3)
 
 
 class EventTrigger(_messages.Message):
@@ -1534,6 +1539,7 @@ class ServiceConfig(_messages.Message):
       running in idle state always. This can help with cold start times when
       jump in incoming request count occurs after the idle instance would have
       been stopped in the default case.
+    revision: Output only. The name of service revision.
     secretEnvironmentVariables: Secret environment variables configuration.
     service: Output only. Name of the service associated with a Function. The
       format of this field is
@@ -1615,13 +1621,14 @@ class ServiceConfig(_messages.Message):
   ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 4)
   maxInstanceCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   minInstanceCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  secretEnvironmentVariables = _messages.MessageField('SecretEnvVar', 7, repeated=True)
-  service = _messages.StringField(8)
-  serviceAccountEmail = _messages.StringField(9)
-  timeoutSeconds = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  uri = _messages.StringField(11)
-  vpcConnector = _messages.StringField(12)
-  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 13)
+  revision = _messages.StringField(7)
+  secretEnvironmentVariables = _messages.MessageField('SecretEnvVar', 8, repeated=True)
+  service = _messages.StringField(9)
+  serviceAccountEmail = _messages.StringField(10)
+  timeoutSeconds = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  uri = _messages.StringField(12)
+  vpcConnector = _messages.StringField(13)
+  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 14)
 
 
 class SetIamPolicyRequest(_messages.Message):

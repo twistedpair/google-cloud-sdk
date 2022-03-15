@@ -420,7 +420,7 @@
     },
     "NodeConfig": {
       "id": "NodeConfig",
-      "description": "Parameters that describe the nodes in a cluster.",
+      "description": "Parameters that describe the nodes in a cluster. *Note: *GKE Autopilot clusters do not recognize parameters in `NodeConfig`. Use AutoprovisioningNodePoolDefaults instead.",
       "type": "object",
       "properties": {
         "machineType": {

@@ -26,12 +26,6 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.composer import util as command_util
 from googlecloudsdk.core.util import semver
 
-# Names of possible aliases that can be used within image version strings.
-LATEST = 'latest'
-
-# Set of possible image version aliases
-ALIASES = {LATEST}
-
 # Envs must be running at least this version of Composer to be upgradeable.
 MIN_UPGRADEABLE_COMPOSER_VER = '1.0.0'
 
@@ -44,7 +38,9 @@ class _ImageVersionItem(object):
   """Class used to dissect and analyze image version components and strings."""
 
   def __init__(self, image_ver=None, composer_ver=None, airflow_ver=None):
-    image_version_regex = r'^composer-(\d+\.\d+\.\d+(?:-[a-z]+\.\d+)?|latest)-airflow-(\d+\.\d+(?:\.\d+)?)'
+    image_version_regex = r'^composer-(\d+(?:\.\d+\.\d+(?:-[a-z]+\.\d+)?)?|latest)-airflow-(\d+\.\d+(?:\.\d+)?)'
+    composer_version_alias_regex = r'^(\d+|latest)$'
+    airflow_version_alias_regex = r'^(\d+\.\d+)$'
 
     if image_ver is not None:
       iv_parts = re.findall(image_version_regex, image_ver)[0]
@@ -58,12 +54,10 @@ class _ImageVersionItem(object):
       self.airflow_ver = airflow_ver
 
     # Determines the state of aliases
-    self.composer_contains_alias = self.composer_ver in ALIASES
-
-    self.airflow_contains_alias = self.airflow_ver in ALIASES
-
-    self.contains_alias = (
-        self.composer_contains_alias or self.airflow_contains_alias)
+    self.composer_contains_alias = re.match(composer_version_alias_regex,
+                                            self.composer_ver)
+    self.airflow_contains_alias = re.match(airflow_version_alias_regex,
+                                           self.airflow_ver)
 
   def GetImageVersionString(self):
     return 'composer-{}-airflow-{}'.format(self.composer_ver, self.airflow_ver)
@@ -95,16 +89,9 @@ def IsValidImageVersionUpgrade(env_ref,
                           cur_image_ver.composer_ver) <= 0):
     raise InvalidImageVersionError(
         'This environment does not support upgrades.')
-  if cand_image_ver.composer_contains_alias:
-    if _IsAirflowVersionUpgradeCompatible(cur_image_ver.airflow_ver,
-                                          cand_image_ver.airflow_ver):
-      return True
-  else:
-    # Leaves the validity check to the Composer backend request validation.
-    if _ValidateCandidateImageVersionId(cur_image_ver.GetImageVersionString(),
-                                        cand_image_ver.GetImageVersionString()):
-      return True
-  return False
+  return _ValidateCandidateImageVersionId(
+      cur_image_ver.GetImageVersionString(),
+      cand_image_ver.GetImageVersionString())
 
 
 def ImageVersionFromAirflowVersion(airflow_version):
@@ -117,6 +104,7 @@ def ImageVersionFromAirflowVersion(airflow_version):
 def IsImageVersionStringComposerV1(image_version):
   """Checks if string composer-X.Y.Z-airflow-A.B.C is Composer v1 version."""
   return (not image_version or image_version.startswith('composer-1.') or
+          image_version.startswith('composer-1-') or
           image_version.startswith('composer-latest'))
 
 
@@ -201,6 +189,7 @@ def _ValidateCandidateImageVersionId(current_image_version_id,
                                              parsed_cand.airflow_ver)):
     return False
 
+  # Leaves the validity check to the Composer backend request validation.
   return True
 
 

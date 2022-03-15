@@ -144,7 +144,8 @@ class ArtifactregistryProjectsLocationsRepositoriesFilesListRequest(_messages.Me
     pageSize: The maximum number of files to return.
     pageToken: The next_page_token value returned from a previous list
       request, if any.
-    parent: The name of the parent resource whose files will be listed.
+    parent: The name of the repository whose files will be listed. For
+      example: "projects/p1/locations/us-central1/repositories/repo1
   """
 
   filter = _messages.StringField(1)
@@ -188,38 +189,6 @@ class ArtifactregistryProjectsLocationsRepositoriesGetRequest(_messages.Message)
   """
 
   name = _messages.StringField(1, required=True)
-
-
-class ArtifactregistryProjectsLocationsRepositoriesGooGetArtifactsImportRequest(_messages.Message):
-  r"""A
-  ArtifactregistryProjectsLocationsRepositoriesGooGetArtifactsImportRequest
-  object.
-
-  Fields:
-    importGooGetArtifactsRequest: A ImportGooGetArtifactsRequest resource to
-      be passed as the request body.
-    parent: The name of the parent resource where the artifacts will be
-      imported.
-  """
-
-  importGooGetArtifactsRequest = _messages.MessageField('ImportGooGetArtifactsRequest', 1)
-  parent = _messages.StringField(2, required=True)
-
-
-class ArtifactregistryProjectsLocationsRepositoriesGoogetArtifactsUploadRequest(_messages.Message):
-  r"""A
-  ArtifactregistryProjectsLocationsRepositoriesGoogetArtifactsUploadRequest
-  object.
-
-  Fields:
-    parent: The name of the parent resource where the artifacts will be
-      uploaded.
-    uploadGooGetArtifactRequest: A UploadGooGetArtifactRequest resource to be
-      passed as the request body.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  uploadGooGetArtifactRequest = _messages.MessageField('UploadGooGetArtifactRequest', 2)
 
 
 class ArtifactregistryProjectsLocationsRepositoriesListRequest(_messages.Message):
@@ -752,29 +721,6 @@ class ImportAptArtifactsRequest(_messages.Message):
   """
 
   gcsSource = _messages.MessageField('ImportAptArtifactsGcsSource', 1)
-
-
-class ImportGooGetArtifactsGcsSource(_messages.Message):
-  r"""Google Cloud Storage location where the artifacts currently reside.
-
-  Fields:
-    uris: Cloud Storage paths URI (e.g., gs://my_bucket/my_object).
-    useWildcards: Supports URI wildcards for matching multiple objects from a
-      single URI.
-  """
-
-  uris = _messages.StringField(1, repeated=True)
-  useWildcards = _messages.BooleanField(2)
-
-
-class ImportGooGetArtifactsRequest(_messages.Message):
-  r"""The request to import new googet artifacts.
-
-  Fields:
-    gcsSource: Google Cloud Storage location where input content is located.
-  """
-
-  gcsSource = _messages.MessageField('ImportGooGetArtifactsGcsSource', 1)
 
 
 class ImportYumArtifactsGcsSource(_messages.Message):
@@ -1421,20 +1367,6 @@ class UploadAptArtifactMediaResponse(_messages.Message):
 
 
 class UploadAptArtifactRequest(_messages.Message):
-  r"""The request to upload an artifact."""
-
-
-class UploadGooGetArtifactMediaResponse(_messages.Message):
-  r"""The response to upload an artifact.
-
-  Fields:
-    operation: Operation to be returned to the user.
-  """
-
-  operation = _messages.MessageField('Operation', 1)
-
-
-class UploadGooGetArtifactRequest(_messages.Message):
   r"""The request to upload an artifact."""
 
 

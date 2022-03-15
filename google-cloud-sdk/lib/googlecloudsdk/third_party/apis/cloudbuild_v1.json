@@ -4581,7 +4581,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the `WorkerPool` to delete. Format: `projects\/{project}\/locations\/{workerPool}\/workerPools\/{workerPool}`.",
+                      "description": "Required. The name of the `WorkerPool` to delete. Format: `projects\/{project}\/locations\/{location}\/workerPools\/{workerPool}`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workerPools\/[^\/]+$",
                       "location": "path",
                       "required": true,

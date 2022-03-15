@@ -27,6 +27,8 @@ MISSING_BINARY = ('Could not locate Cloud Run executable cloud-run-proxy'
                   'installed. '
                   'See https://cloud.google.com/sdk/docs/components for '
                   'more details.')
+# Logs from the binary to be ignored.
+IGNORED_LOGS = [' shutting down.', ' proxies to ']
 
 
 class ProxyWrapper(binary_operations.StreamingBinaryBackedOperation):
@@ -42,13 +44,20 @@ class ProxyWrapper(binary_operations.StreamingBinaryBackedOperation):
 
   # Function required by StreamingBinaryBackedOperation to map command line args
   # from gcloud to the underlying component.
-  def _ParseArgsForCommand(self, host, token=None, bind=None, **kwargs):
+  def _ParseArgsForCommand(self,
+                           host,
+                           token=None,
+                           bind=None,
+                           duration=None,
+                           **kwargs):
     del kwargs  # Not used here
     exec_args = ['-host', host]
     if token:
       exec_args.extend(['-token', token])
     if bind:
       exec_args.extend(['-bind', bind])
+    if duration:
+      exec_args.extend(['-server-up-time', duration])
 
     return exec_args
 
@@ -60,6 +69,9 @@ def StreamErrHandler(result_holder, capture_output=False):
 
   def HandleStdErr(line):
     if line:
+      for to_be_ignored in IGNORED_LOGS:
+        if to_be_ignored in line:
+          return
       log.status.Print(line)
       # Check if it is bind used error
       if 'server error:' in line and 'bind: address already in use' in line:

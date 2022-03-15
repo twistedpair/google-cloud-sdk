@@ -228,6 +228,33 @@ class AccessapprovalV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetServiceAccount(self, request, global_params=None):
+      r"""Retrieves the service account that is used by Access Approval to access KMS keys for signing approved approval requests.
+
+      Args:
+        request: (AccessapprovalFoldersGetServiceAccountRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AccessApprovalServiceAccount) The response message.
+      """
+      config = self.GetMethodConfig('GetServiceAccount')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetServiceAccount.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/serviceAccount',
+        http_method='GET',
+        method_id='accessapproval.folders.getServiceAccount',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AccessapprovalFoldersGetServiceAccountRequest',
+        response_type_name='AccessApprovalServiceAccount',
+        supports_download=False,
+    )
+
     def UpdateAccessApprovalSettings(self, request, global_params=None):
       r"""Updates the settings associated with a project, folder, or organization. Settings to update are determined by the value of field_mask.
 
@@ -437,6 +464,33 @@ class AccessapprovalV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetServiceAccount(self, request, global_params=None):
+      r"""Retrieves the service account that is used by Access Approval to access KMS keys for signing approved approval requests.
+
+      Args:
+        request: (AccessapprovalOrganizationsGetServiceAccountRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AccessApprovalServiceAccount) The response message.
+      """
+      config = self.GetMethodConfig('GetServiceAccount')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetServiceAccount.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/serviceAccount',
+        http_method='GET',
+        method_id='accessapproval.organizations.getServiceAccount',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AccessapprovalOrganizationsGetServiceAccountRequest',
+        response_type_name='AccessApprovalServiceAccount',
+        supports_download=False,
+    )
+
     def UpdateAccessApprovalSettings(self, request, global_params=None):
       r"""Updates the settings associated with a project, folder, or organization. Settings to update are determined by the value of field_mask.
 
@@ -643,6 +697,33 @@ class AccessapprovalV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AccessapprovalProjectsGetAccessApprovalSettingsRequest',
         response_type_name='AccessApprovalSettings',
+        supports_download=False,
+    )
+
+    def GetServiceAccount(self, request, global_params=None):
+      r"""Retrieves the service account that is used by Access Approval to access KMS keys for signing approved approval requests.
+
+      Args:
+        request: (AccessapprovalProjectsGetServiceAccountRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AccessApprovalServiceAccount) The response message.
+      """
+      config = self.GetMethodConfig('GetServiceAccount')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetServiceAccount.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/serviceAccount',
+        http_method='GET',
+        method_id='accessapproval.projects.getServiceAccount',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AccessapprovalProjectsGetServiceAccountRequest',
+        response_type_name='AccessApprovalServiceAccount',
         supports_download=False,
     )
 

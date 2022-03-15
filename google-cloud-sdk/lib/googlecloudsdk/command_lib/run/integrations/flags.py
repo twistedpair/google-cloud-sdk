@@ -95,17 +95,15 @@ def AddParametersArg(parser):
 
 
 # TODO(b/219101793): Replace with validator that references INTEGRATION_TYPES.
-def ValidateParameters(integration_type, parameters, is_create=True):
+def ValidateCreateParameters(integration_type, parameters):
   """Validates given params conform to what's expected from the integration."""
   requires = []
   if integration_type == 'custom-domain':
-    if is_create:
-      requires = ['domain']
+    requires = ['domain']
   elif integration_type == 'redis':
-    if is_create:
-      # Set default
-      if 'memory-size-gb' not in parameters:
-        parameters['memory-size-gb'] = 1
+    # Set default
+    if 'memory-size-gb' not in parameters:
+      parameters['memory-size-gb'] = 1
 
   else:
     raise exceptions.ArgumentError(
@@ -116,6 +114,14 @@ def ValidateParameters(integration_type, parameters, is_create=True):
       raise exceptions.ArgumentError(
           '[{}] is required to create integration of type [{}]'.format(
               key, integration_type))
+
+
+def ValidateUpdateParameters(integration_type, parameters):
+  """Validate params for update commands for a given integration."""
+  if integration_type == 'custom-domain' or integration_type == 'router':
+    if 'domain' in parameters:
+      raise exceptions.ArgumentError(
+          'Cannot change domain after it has been set')
 
 
 def ListIntegrationsOfService(parser):

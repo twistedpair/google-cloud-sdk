@@ -253,7 +253,7 @@ class Client(object):
       cp.configEncryption = self._CreateAwsConfigEncryption(
           args.config_encryption_kms_key_arn)
       update_mask.append('control_plane.config_encryption.kms_key_arn')
-    if args.security_group_ids:
+    if args.security_group_ids is not None:
       cp.securityGroupIds.extend(args.security_group_ids)
       update_mask.append('control_plane.security_group_ids')
 

@@ -941,6 +941,20 @@ def AddEnableLogging(parser):
       """)
 
 
+def AddEnableLoggingProtocols(parser):
+  """Adds the enable logging argument to the argparse."""
+  parser.add_argument(
+      '--enable-logging',
+      action=arg_parsers.StoreTrueFalseAction,
+      help="""\
+      The logging options for the load balancer traffic served by this backend
+      service. If logging is enabled, logs will be exported to Cloud Logging.
+      This can only be specified if the protocol is HTTP, HTTPS, HTTP2, TCP, or
+      SSL.
+      Disabled by default.
+      """)
+
+
 def AddLoggingSampleRate(parser):
   """Adds the logging sample rate argument to the argparse."""
   parser.add_argument(
@@ -952,6 +966,21 @@ def AddLoggingSampleRate(parser):
       configures the sampling rate of requests to the load balancer where 1.0
       means all logged requests are reported and 0.0 means no logged requests
       are reported. The default value is 1.0.
+      """)
+
+
+def AddLoggingSampleRateProtocols(parser):
+  """Adds the logging sample rate argument to the argparse."""
+  parser.add_argument(
+      '--logging-sample-rate',
+      type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=1.0),
+      help="""\
+      This field can only be specified if logging is enabled for the backend
+      service. The value of the field must be a float in the range [0, 1]. This
+      configures the sampling rate of requests to the load balancer where 1.0
+      means all logged requests are reported and 0.0 means no logged requests
+      are reported.  This can only be specified if the protocol is HTTP, HTTPS,
+      HTTP2, TCP, or SSL. The default value is 1.0.
       """)
 
 

@@ -505,7 +505,7 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
     MaintenanceSchedulesValue: The MaintenanceSchedule contains the scheduling
       information of published maintenance schedule with same key as
       software_versions.
-    NotificationParametersValue: Optional. notification_parameters are
+    NotificationParametersValue: Optional. notification_parameter are
       information that service producers may like to include that is not
       relevant to Rollout. This parameter will only be passed to Gamma and
       Cloud Logging for notification/logging purpose.
@@ -545,7 +545,7 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
       |project_number}/locations/{location_id}/instances/{instance_id}` Note:
       Either project_id or project_number can be used, but keep it consistent
       with other APIs (e.g. RescheduleUpdate)
-    notificationParameters: Optional. notification_parameters are information
+    notificationParameters: Optional. notification_parameter are information
       that service producers may like to include that is not relevant to
       Rollout. This parameter will only be passed to Gamma and Cloud Logging
       for notification/logging purpose.
@@ -679,7 +679,7 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class NotificationParametersValue(_messages.Message):
-    r"""Optional. notification_parameters are information that service
+    r"""Optional. notification_parameter are information that service
     producers may like to include that is not relevant to Rollout. This
     parameter will only be passed to Gamma and Cloud Logging for
     notification/logging purpose.
@@ -698,11 +698,13 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
 
       Fields:
         key: Name of the additional property.
-        value: A string attribute.
+        value: A
+          GoogleCloudSaasacceleratorManagementProvidersV1NotificationParameter
+          attribute.
       """
 
       key = _messages.StringField(1)
-      value = _messages.StringField(2)
+      value = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1NotificationParameter', 2)
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
@@ -889,6 +891,17 @@ class GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata(_messages.M
   location = _messages.StringField(1)
   nodeId = _messages.StringField(2)
   perSliEligibility = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility', 3)
+
+
+class GoogleCloudSaasacceleratorManagementProvidersV1NotificationParameter(_messages.Message):
+  r"""Contains notification related data.
+
+  Fields:
+    values: Optional. Array of string values. e.g. instance's replica
+      information.
+  """
+
+  values = _messages.StringField(1, repeated=True)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility(_messages.Message):

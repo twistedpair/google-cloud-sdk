@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1",
-  "revision": "20220228",
+  "revision": "20220307",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development. ",
   "ownerDomain": "google.com",
@@ -489,9 +489,9 @@
           "type": "string",
           "enumDescriptions": [
             "Not used.",
-            "Use optimistic concurrency control by default. This setting is available for Cloud Firestore customers.",
-            "Use pessimistic concurrency control by default. This setting is available for Cloud Firestore customers. This is the default setting for Cloud Firestore.",
-            "Use optimistic concurrency control with entity groups by default. This is the only available setting for Cloud Datastore customers. This is the default setting for Cloud Datastore."
+            "Use optimistic concurrency control by default. This mode is available for Cloud Firestore databases.",
+            "Use pessimistic concurrency control by default. This mode is available for Cloud Firestore databases. This is the default setting for Cloud Firestore.",
+            "Use optimistic concurrency control with entity groups by default. This is the only available mode for Cloud Datastore. This mode is also available for Cloud Firestore with Datastore Mode but is not recommended."
           ],
           "enum": [
             "CONCURRENCY_MODE_UNSPECIFIED",
@@ -499,6 +499,25 @@
             "PESSIMISTIC",
             "OPTIMISTIC_WITH_ENTITY_GROUPS"
           ]
+        },
+        "appEngineIntegrationMode": {
+          "description": "The App Engine integration mode to use for this database.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not used.",
+            "If an App Engine application exists in the same region as this database, App Engine configuration will impact this database. This includes disabling of the application & database, as well as disabling writes to the database.",
+            "Appengine has no affect on the ability of this database to serve requests."
+          ],
+          "enum": [
+            "APP_ENGINE_INTEGRATION_MODE_UNSPECIFIED",
+            "ENABLED",
+            "DISABLED"
+          ]
+        },
+        "keyPrefix": {
+          "description": "Output only. The key_prefix for this database. This key_prefix is used, in combination with the project id (\"~\") to construct the application id that is returned from the Cloud Datastore APIs in Google App Engine first generation runtimes. This value may be empty in which case the appid to use for URL-encoded keys is the project_id (eg: foo instead of v~foo).",
+          "readOnly": true,
+          "type": "string"
         },
         "etag": {
           "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
@@ -1281,6 +1300,10 @@
           "description": "The number of results that have been skipped due to an offset between the last response and the current response.",
           "type": "integer",
           "format": "int32"
+        },
+        "done": {
+          "description": "If present, Firestore has completely finished the request and no more documents will be returned.",
+          "type": "boolean"
         }
       }
     },
@@ -2659,6 +2682,78 @@
                     "parent": {
                       "description": "Required. The parent resource name. In the format: `projects\/{project_id}\/databases\/{database_id}\/documents` or `projects\/{project_id}\/databases\/{database_id}\/documents\/{document_path}`. For example: `projects\/my-project\/databases\/my-database\/documents` or `projects\/my-project\/databases\/my-database\/documents\/chatrooms\/my-chatroom`",
                       "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.*$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "collectionId": {
+                      "description": "Required. The collection ID, relative to `parent`, to list. For example: `chatrooms` or `messages`.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of documents to return.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The `next_page_token` value returned from a previous List request, if any.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "The order to sort results by. For example: `priority desc, name`.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "mask.fieldPaths": {
+                      "description": "The list of field paths in the mask. See Document.fields for a field path syntax reference.",
+                      "location": "query",
+                      "repeated": true,
+                      "type": "string"
+                    },
+                    "transaction": {
+                      "description": "Reads documents in a transaction.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "byte"
+                    },
+                    "readTime": {
+                      "description": "Reads documents as they were at the given time. This may not be older than 270 seconds.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-datetime"
+                    },
+                    "showMissing": {
+                      "description": "If the list should show missing documents. A missing document is a document that does not exist but has sub-documents. These documents will be returned with a key but will not have fields, Document.create_time, or Document.update_time set. Requests with `show_missing` may not specify `where` or `order_by`.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent",
+                    "collectionId"
+                  ],
+                  "response": {
+                    "$ref": "ListDocumentsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/datastore"
+                  ],
+                  "description": "Lists documents."
+                },
+                "listDocuments": {
+                  "id": "firestore.projects.databases.documents.listDocuments",
+                  "path": "v1/{+parent}/{collectionId}",
+                  "flatPath": "v1/projects/{projectsId}/databases/{databasesId}/documents/{collectionId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource name. In the format: `projects\/{project_id}\/databases\/{database_id}\/documents` or `projects\/{project_id}\/databases\/{database_id}\/documents\/{document_path}`. For example: `projects\/my-project\/databases\/my-database\/documents` or `projects\/my-project\/databases\/my-database\/documents\/chatrooms\/my-chatroom`",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents$",
                       "location": "path",
                       "required": true,
                       "type": "string"

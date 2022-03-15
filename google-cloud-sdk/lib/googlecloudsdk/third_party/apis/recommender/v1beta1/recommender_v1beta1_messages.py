@@ -1457,26 +1457,6 @@ class RecommenderFoldersLocationsRecommendersRecommendationsMarkSucceededRequest
   name = _messages.StringField(2, required=True)
 
 
-class RecommenderOrganizationsLocationsInsightTypesConfigRequest(_messages.Message):
-  r"""A RecommenderOrganizationsLocationsInsightTypesConfigRequest object.
-
-  Fields:
-    googleCloudRecommenderV1beta1InsightTypeConfig: A
-      GoogleCloudRecommenderV1beta1InsightTypeConfig resource to be passed as
-      the request body.
-    name: Name of insight type config. Eg, projects/[PROJECT_NUMBER]/locations
-      /[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]/config
-    updateMask: The list of fields to be updated.
-    validateOnly: If true, validate the request and preview the change, but do
-      not actually update it.
-  """
-
-  googleCloudRecommenderV1beta1InsightTypeConfig = _messages.MessageField('GoogleCloudRecommenderV1beta1InsightTypeConfig', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
-  validateOnly = _messages.BooleanField(4)
-
-
 class RecommenderOrganizationsLocationsInsightTypesGetConfigRequest(_messages.Message):
   r"""A RecommenderOrganizationsLocationsInsightTypesGetConfigRequest object.
 
@@ -1556,21 +1536,22 @@ class RecommenderOrganizationsLocationsInsightTypesInsightsMarkAcceptedRequest(_
   name = _messages.StringField(2, required=True)
 
 
-class RecommenderOrganizationsLocationsRecommendersConfigRequest(_messages.Message):
-  r"""A RecommenderOrganizationsLocationsRecommendersConfigRequest object.
+class RecommenderOrganizationsLocationsInsightTypesUpdateConfigRequest(_messages.Message):
+  r"""A RecommenderOrganizationsLocationsInsightTypesUpdateConfigRequest
+  object.
 
   Fields:
-    googleCloudRecommenderV1beta1RecommenderConfig: A
-      GoogleCloudRecommenderV1beta1RecommenderConfig resource to be passed as
+    googleCloudRecommenderV1beta1InsightTypeConfig: A
+      GoogleCloudRecommenderV1beta1InsightTypeConfig resource to be passed as
       the request body.
-    name: Name of recommender config. Eg, projects/[PROJECT_NUMBER]/locations/
-      [LOCATION]/recommenders/[RECOMMENDER_ID]/config
+    name: Name of insight type config. Eg, projects/[PROJECT_NUMBER]/locations
+      /[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]/config
     updateMask: The list of fields to be updated.
     validateOnly: If true, validate the request and preview the change, but do
       not actually update it.
   """
 
-  googleCloudRecommenderV1beta1RecommenderConfig = _messages.MessageField('GoogleCloudRecommenderV1beta1RecommenderConfig', 1)
+  googleCloudRecommenderV1beta1InsightTypeConfig = _messages.MessageField('GoogleCloudRecommenderV1beta1InsightTypeConfig', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
   validateOnly = _messages.BooleanField(4)
@@ -1683,6 +1664,27 @@ class RecommenderOrganizationsLocationsRecommendersRecommendationsMarkSucceededR
 
   googleCloudRecommenderV1beta1MarkRecommendationSucceededRequest = _messages.MessageField('GoogleCloudRecommenderV1beta1MarkRecommendationSucceededRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class RecommenderOrganizationsLocationsRecommendersUpdateConfigRequest(_messages.Message):
+  r"""A RecommenderOrganizationsLocationsRecommendersUpdateConfigRequest
+  object.
+
+  Fields:
+    googleCloudRecommenderV1beta1RecommenderConfig: A
+      GoogleCloudRecommenderV1beta1RecommenderConfig resource to be passed as
+      the request body.
+    name: Name of recommender config. Eg, projects/[PROJECT_NUMBER]/locations/
+      [LOCATION]/recommenders/[RECOMMENDER_ID]/config
+    updateMask: The list of fields to be updated.
+    validateOnly: If true, validate the request and preview the change, but do
+      not actually update it.
+  """
+
+  googleCloudRecommenderV1beta1RecommenderConfig = _messages.MessageField('GoogleCloudRecommenderV1beta1RecommenderConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
 
 
 class RecommenderProjectsLocationsInsightTypesGetConfigRequest(_messages.Message):

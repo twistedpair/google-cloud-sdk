@@ -481,7 +481,7 @@
     },
     "NodeConfig": {
       "id": "NodeConfig",
-      "description": "Parameters that describe the nodes in a cluster.",
+      "description": "Parameters that describe the nodes in a cluster. *Note:* GKE Autopilot clusters do not recognize parameters in `NodeConfig`. Use AutoprovisioningNodePoolDefaults instead.",
       "type": "object",
       "properties": {
         "machineType": {
@@ -667,6 +667,36 @@
           "description": "The number of time-shared GPU resources to expose for each physical GPU.",
           "type": "string",
           "format": "int64"
+        },
+        "gpuSharingConfig": {
+          "description": "The configuration for GPU sharing options.",
+          "$ref": "GPUSharingConfig"
+        }
+      }
+    },
+    "GPUSharingConfig": {
+      "id": "GPUSharingConfig",
+      "description": "GPUSharingConfig represents the GPU sharing configuration for Hardware Accelerators.",
+      "type": "object",
+      "properties": {
+        "maxSharedClientsPerGpu": {
+          "description": "The max number of containers that can share a physical GPU.",
+          "type": "string",
+          "format": "int64"
+        },
+        "gpuSharingStrategy": {
+          "description": "The type of GPU sharing strategy to enable on the GPU node.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value.",
+            "GPUs are time-shared between containers.",
+            "GPUs are shared between containers with NVIDIA MPS."
+          ],
+          "enum": [
+            "GPU_SHARING_STRATEGY_UNSPECIFIED",
+            "TIME_SHARING",
+            "MPS"
+          ]
         }
       }
     },

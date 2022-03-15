@@ -43,9 +43,6 @@ def CheckFieldsSpecifiedBeta(unused_instance_ref, args, patch_request):
       'persistence_mode',
       'rdb_snapshot_period',
       'rdb_snapshot_start_time',
-      'read_replicas_mode',
-      'secondary_ip_range',
-      'replica_count',
   ]
   return CheckFieldsSpecifiedCommon(args, patch_request, additional_update_args)
 
@@ -59,9 +56,6 @@ def CheckFieldsSpecifiedAlpha(unused_instance_ref, args, patch_request):
       'persistence_mode',
       'rdb_snapshot_period',
       'rdb_snapshot_start_time',
-      'read_replicas_mode',
-      'secondary_ip_range',
-      'replica_count',
   ]
   return CheckFieldsSpecifiedCommon(args, patch_request, additional_update_args)
 
@@ -77,6 +71,9 @@ def CheckFieldsSpecifiedCommon(args, patch_request, additional_update_args):
       'size',
       'update_labels',
       'update_redis_config',
+      'read_replicas_mode',
+      'secondary_ip_range',
+      'replica_count',
   ] + additional_update_args
   if list(filter(args.IsSpecified, update_args)):
     return patch_request

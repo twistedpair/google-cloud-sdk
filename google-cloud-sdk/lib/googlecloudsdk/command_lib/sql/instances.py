@@ -398,9 +398,9 @@ class _BaseInstances(object):
 
     # ALPHA args.
     if _IsAlpha(release_track):
-      if args.audit_bucket_path is not None:
-        settings.sqlServerAuditConfig = (
-            reducers.SqlServerAuditConfig(sql_messages, args.audit_bucket_path))
+      settings.sqlServerAuditConfig = reducers.SqlServerAuditConfig(
+          sql_messages, args.audit_bucket_path, args.audit_retention_interval,
+          args.audit_upload_interval)
 
     return settings
 
@@ -527,9 +527,11 @@ class _BaseInstances(object):
 
     # ALPHA args.
     if _IsAlpha(release_track):
-      if args.audit_bucket_path is not None:
-        settings.sqlServerAuditConfig = (
-            reducers.SqlServerAuditConfig(sql_messages, args.audit_bucket_path))
+      settings.sqlServerAuditConfig = reducers.SqlServerAuditConfig(
+          sql_messages,
+          bucket=args.audit_bucket_path,
+          retention_interval=args.audit_retention_interval,
+          upload_interval=args.audit_upload_interval)
 
     return settings
 

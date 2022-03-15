@@ -181,6 +181,17 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class Barrier(_messages.Message):
+  r"""Barrier runnable blocks until all tasks in a taskgroup reach it.
+
+  Fields:
+    name: Barriers are identified by their index in runnable list. Names are
+      not required, but if present should be an identifier.
+  """
+
+  name = _messages.StringField(1)
+
+
 class BatchProjectsLocationsGetRequest(_messages.Message):
   r"""A BatchProjectsLocationsGetRequest object.
 
@@ -1521,6 +1532,7 @@ class Runnable(_messages.Message):
       background while the Task executes subsequent Runnables. This is useful
       to provide services to other Runnables (or to provide debugging support
       tools like SSH servers).
+    barrier: Barrier runnable.
     container: Container runnable.
     ignoreExitStatus: Normally, a non-zero exit status causes the Task to
       fail. This flag allows execution of other Runnables to continue instead.
@@ -1529,9 +1541,10 @@ class Runnable(_messages.Message):
 
   alwaysRun = _messages.BooleanField(1)
   background = _messages.BooleanField(2)
-  container = _messages.MessageField('Container', 3)
-  ignoreExitStatus = _messages.BooleanField(4)
-  script = _messages.MessageField('Script', 5)
+  barrier = _messages.MessageField('Barrier', 3)
+  container = _messages.MessageField('Container', 4)
+  ignoreExitStatus = _messages.BooleanField(5)
+  script = _messages.MessageField('Script', 6)
 
 
 class Script(_messages.Message):

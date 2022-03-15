@@ -467,6 +467,10 @@
         "cvssv3": {
           "description": "Describe Common Vulnerability Scoring System specified at https:\/\/www.first.org\/cvss\/v3.1\/specification-document",
           "$ref": "Cvssv3"
+        },
+        "upstreamFixAvailable": {
+          "description": "Whether upstream fix is available for the CVE.",
+          "type": "boolean"
         }
       }
     },
@@ -627,7 +631,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "External System Name e.g. jira, demisto, etc. e.g.: organizations\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira folders\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira projects\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira",
+          "description": "External System Name e.g. jira, demisto, etc. e.g.: `organizations\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira` `folders\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira` `projects\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira`",
           "type": "string"
         },
         "assignees": {
@@ -696,7 +700,7 @@
           ]
         },
         "primaryTechniques": {
-          "description": "The MITRE ATT&CK technique most closely represented by this finding, if any. primary_techniques is a repeated field because there are multiple levels of MITRE ATT&CK techniques. If the technique most closely represented by this finding is a sub-technique (e.g. SCANNING_IP_BLOCKS), both the sub-technique and its parent technique(s) will be listed (e.g. SCANNING_IP_BLOCKS, ACTIVE_SCANNING).",
+          "description": "The MITRE ATT&CK technique most closely represented by this finding, if any. primary_techniques is a repeated field because there are multiple levels of MITRE ATT&CK techniques. If the technique most closely represented by this finding is a sub-technique (e.g. `SCANNING_IP_BLOCKS`), both the sub-technique and its parent technique(s) will be listed (e.g. `SCANNING_IP_BLOCKS`, `ACTIVE_SCANNING`).",
           "type": "array",
           "items": {
             "type": "string",
@@ -728,7 +732,8 @@
               "T1543",
               "T1539",
               "T1578",
-              "T1190"
+              "T1190",
+              "T1556"
             ],
             "enum": [
               "TECHNIQUE_UNSPECIFIED",
@@ -758,7 +763,8 @@
               "CREATE_OR_MODIFY_SYSTEM_PROCESS",
               "STEAL_WEB_SESSION_COOKIE",
               "MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE",
-              "EXPLOIT_PUBLIC_FACING_APPLICATION"
+              "EXPLOIT_PUBLIC_FACING_APPLICATION",
+              "MODIFY_AUTHENTICATION_PROCESS"
             ]
           }
         },
@@ -836,7 +842,8 @@
               "T1543",
               "T1539",
               "T1578",
-              "T1190"
+              "T1190",
+              "T1556"
             ],
             "enum": [
               "TECHNIQUE_UNSPECIFIED",
@@ -866,7 +873,8 @@
               "CREATE_OR_MODIFY_SYSTEM_PROCESS",
               "STEAL_WEB_SESSION_COOKIE",
               "MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE",
-              "EXPLOIT_PUBLIC_FACING_APPLICATION"
+              "EXPLOIT_PUBLIC_FACING_APPLICATION",
+              "MODIFY_AUTHENTICATION_PROCESS"
             ]
           }
         },
@@ -1636,7 +1644,7 @@
           "type": "string"
         },
         "projectDisplayName": {
-          "description": "The human readable name of project that the resource belongs to.",
+          "description": "The project id that the resource belongs to.",
           "type": "string"
         },
         "parentName": {
@@ -1904,7 +1912,7 @@
           "type": "string"
         },
         "projectDisplayName": {
-          "description": "The human readable name of project that the resource belongs to.",
+          "description": "The project id that the resource belongs to.",
           "type": "string"
         },
         "parent": {
@@ -2101,7 +2109,7 @@
           "type": "string"
         },
         "projectDisplayName": {
-          "description": "The human readable name of project that the resource belongs to.",
+          "description": "The project id that the resource belongs to.",
           "type": "string"
         },
         "parent": {
@@ -2928,7 +2936,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "External System Name e.g. jira, demisto, etc. e.g.: organizations\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira folders\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira projects\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira",
+                          "description": "External System Name e.g. jira, demisto, etc. e.g.: `organizations\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira` `folders\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira` `projects\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira`",
                           "pattern": "^folders\/[^\/]+\/sources\/[^\/]+\/findings\/[^\/]+\/externalSystems\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3724,7 +3732,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "External System Name e.g. jira, demisto, etc. e.g.: organizations\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira folders\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira projects\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira",
+                          "description": "External System Name e.g. jira, demisto, etc. e.g.: `organizations\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira` `folders\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira` `projects\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira`",
                           "pattern": "^projects\/[^\/]+\/sources\/[^\/]+\/findings\/[^\/]+\/externalSystems\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -4456,7 +4464,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "External System Name e.g. jira, demisto, etc. e.g.: organizations\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira folders\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira projects\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira",
+                          "description": "External System Name e.g. jira, demisto, etc. e.g.: `organizations\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira` `folders\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira` `projects\/1234\/sources\/5678\/findings\/123456\/externalSystems\/jira`",
                           "pattern": "^organizations\/[^\/]+\/sources\/[^\/]+\/findings\/[^\/]+\/externalSystems\/[^\/]+$",
                           "location": "path",
                           "required": true,

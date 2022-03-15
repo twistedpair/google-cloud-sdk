@@ -1222,7 +1222,7 @@ class Operation(_messages.Message):
   httpErrorStatusCode = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
   insertTime = _messages.StringField(9)
-  kind = _messages.StringField(10, default='deploymentmanager#operation')
+  kind = _messages.StringField(10)
   name = _messages.StringField(11)
   operationGroupId = _messages.StringField(12)
   operationType = _messages.StringField(13)

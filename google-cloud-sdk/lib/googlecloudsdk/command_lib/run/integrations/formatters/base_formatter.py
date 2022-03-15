@@ -63,8 +63,8 @@ class BaseFormatter:
             .replace('_', ' ')
             .title())
 
-  def GetResourceState(self, resource):
-    """Return the state of the resource.
+  def GetGCPResourceState(self, resource):
+    """Return the state of the GCP resource that makes up the intergration.
 
     Args:
       resource: dict, the resource object.
@@ -79,6 +79,26 @@ class BaseFormatter:
         'GCP_RESOURCE_STATE_PROVISIONING': 'PROVISIONING',
         'GCP_RESOURCE_STATE_READY': 'READY',
         'GCP_RESOURCE_STATE_FAILED': 'FAILED',
+    }.get(state, 'UNKNOWN')
+
+  def GetResourceState(self, resource):
+    """Return the state of the top level resource in the integration.
+
+    Args:
+      resource: dict, resource status of the integration resource.
+
+    Returns:
+      The state string.
+    """
+    state = resource.get('state', '')
+
+    return {
+        'RESOURCE_STATE_UNKNOWN': 'UNKNOWN',
+        'RESOURCE_STATE_READY': 'READY',
+        'RESOURCE_STATE_ERROR': 'ERROR',
+        'RESOURCE_STATE_MISSING': 'MISSING',
+        'RESOURCE_STATE_UPDATING': 'UPDATING',
+        'RESOURCE_STATE_NOT_READY': 'NOT READY',
     }.get(state, 'UNKNOWN')
 
   def PrintStatus(self, status):
@@ -106,12 +126,12 @@ class BaseFormatter:
     if status == 'DEPLOYED' or status == 'READY':
       return con.Colorize(
           self._PickSymbol('\N{HEAVY CHECK MARK}', '+', encoding), 'green')
-    if status == 'PROVISIONING':
+    if status in ('PROVISIONING', 'UPDATING', 'NOT READY'):
       return con.Colorize(self._PickSymbol(
           '\N{HORIZONTAL ELLIPSIS}', '.', encoding), 'yellow')
     if status == 'MISSING':
       return con.Colorize('?', 'yellow')
-    if status == 'FAILED':
+    if status == 'FAILED' or status == 'ERROR':
       return con.Colorize('X', 'red')
     return con.Colorize('~', 'blue')
 

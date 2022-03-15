@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from concurrent import futures
 import time
 from typing import Optional
 
@@ -74,7 +75,14 @@ class SubscriberClient(object):
 
   def __exit__(self, exc_type, exc_value, traceback):
     time.sleep(1)  # Wait 1 second to ensure all acks have been processed
-    # TODO(b/205019790): Cancel the streaming pull future if not already done.
+    if not self._pull_future.done():
+      try:
+        # Cancel the streaming pull future and get the result to prevent
+        # logging an abandoned future.
+        self._pull_future.cancel()
+        self._pull_future.result()
+      except futures.CancelledError:
+        pass
     self._client.__exit__(exc_type, exc_value, traceback)
 
   def _SubscriptionResourceToPath(self, resource):

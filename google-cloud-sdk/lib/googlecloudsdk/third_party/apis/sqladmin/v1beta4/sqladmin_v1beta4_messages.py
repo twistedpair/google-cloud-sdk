@@ -2656,6 +2656,8 @@ class SqlExternalSyncSettingError(_messages.Message):
         log format.
       BINLOG_RETENTION_SETTING: The primary instance's binary log retention
         setting.
+      UNSUPPORTED_STORAGE_ENGINE: The primary instance has tables with
+        unsupported storage engine.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -2683,6 +2685,7 @@ class SqlExternalSyncSettingError(_messages.Message):
     PRIMARY_ALREADY_SETUP = 23
     UNSUPPORTED_BINLOG_FORMAT = 24
     BINLOG_RETENTION_SETTING = 25
+    UNSUPPORTED_STORAGE_ENGINE = 26
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)
@@ -3233,10 +3236,14 @@ class SqlServerAuditConfig(_messages.Message):
   Fields:
     bucket: The name of the destination bucket (e.g., gs://mybucket).
     kind: This is always sql#sqlServerAuditConfig
+    retentionInterval: How long to keep generated audit files.
+    uploadInterval: How often to upload generated audit files.
   """
 
   bucket = _messages.StringField(1)
   kind = _messages.StringField(2)
+  retentionInterval = _messages.StringField(3)
+  uploadInterval = _messages.StringField(4)
 
 
 class SqlServerDatabaseDetails(_messages.Message):

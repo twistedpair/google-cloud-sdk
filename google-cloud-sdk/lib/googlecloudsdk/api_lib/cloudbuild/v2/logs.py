@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 
 import time
 
-from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util as v1_client_util
 from googlecloudsdk.api_lib.cloudbuild import logs as v1_logs_util
 from googlecloudsdk.api_lib.cloudbuild.v2 import client_util as v2_client_util
 from googlecloudsdk.api_lib.logging import common
@@ -95,27 +94,16 @@ class CloudBuildLogClient(object):
   def __init__(self):
     self.v2_client = v2_client_util.GetClientInstance()
 
-  def _GetLogFilter(self, create_time, run_id, run_type, region, cluster_name):
+  def _GetLogFilter(self, create_time, run_id, run_type, region):
     run_label = 'taskRun' if run_type == 'taskrun' else 'pipelineRun'
-    return (
-        '(labels."k8s-pod/tekton.dev/{run_label}"="{run_id}" OR '
-        'labels."k8s-pod/tekton_dev/{run_label}"="{run_id}") AND '
-        'timestamp>="{timestamp}" AND resource.labels.location="{region}" AND '
-        'resource.labels.cluster_name="{cluster_name}"').format(
-            run_label=run_label,
-            run_id=run_id,
-            timestamp=create_time,
-            region=region,
-            cluster_name=cluster_name)
-
-  def _GetWorkerpoolClusterName(self, pool_name):
-    """Get Cluster Name for a Worker Pool."""
-    client = v1_client_util.GetClientInstance()
-    messages = v1_client_util.GetMessagesModule()
-    wp = client.projects_locations_workerPools.Get(
-        messages.CloudbuildProjectsLocationsWorkerPoolsGetRequest(
-            name=pool_name))
-    return v2_client_util.ClusterShortName(wp.hybridPoolConfig.membership)
+    return ('(labels."k8s-pod/tekton.dev/{run_label}"="{run_id}" OR '
+            'labels."k8s-pod/tekton_dev/{run_label}"="{run_id}") AND '
+            'timestamp>="{timestamp}" AND resource.labels.location="{region}"'
+           ).format(
+               run_label=run_label,
+               run_id=run_id,
+               timestamp=create_time,
+               region=region)
 
   def ShouldStopTailer(self, log_tailer, run, project, region, run_id,
                        run_type):
@@ -132,9 +120,7 @@ class CloudBuildLogClient(object):
   def Stream(self, project, region, run_id, run_type, out=log.out):
     """Streams the logs for a run if available."""
     run = v2_client_util.GetRun(project, region, run_id, run_type)
-    cluster_name = self._GetWorkerpoolClusterName(run.workerPool)
-    log_filter = self._GetLogFilter(run.createTime, run_id, run_type, region,
-                                    cluster_name)
+    log_filter = self._GetLogFilter(run.createTime, run_id, run_type, region)
     log_tailer = GCLLogTailer.FromFilter(project, log_filter, out=out)
 
     t = None
@@ -159,9 +145,7 @@ class CloudBuildLogClient(object):
   ):
     """Print the logs for a run."""
     run = v2_client_util.GetRun(project, region, run_id, run_type)
-    cluster_name = self._GetWorkerpoolClusterName(run.workerPool)
-    log_filter = self._GetLogFilter(run.createTime, run_id, run_type, region,
-                                    cluster_name)
+    log_filter = self._GetLogFilter(run.createTime, run_id, run_type, region)
     log_tailer = GCLLogTailer.FromFilter(project, log_filter)
 
     if log_tailer:

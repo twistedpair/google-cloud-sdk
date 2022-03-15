@@ -748,6 +748,16 @@ class IamLocationsWorkforcePoolsProvidersKeysListRequest(_messages.Message):
   showDeleted = _messages.BooleanField(4)
 
 
+class IamLocationsWorkforcePoolsProvidersKeysOperationsGetRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsProvidersKeysOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class IamLocationsWorkforcePoolsProvidersKeysUndeleteRequest(_messages.Message):
   r"""A IamLocationsWorkforcePoolsProvidersKeysUndeleteRequest object.
 

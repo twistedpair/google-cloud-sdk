@@ -297,6 +297,33 @@ class FirestoreV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListDocuments(self, request, global_params=None):
+      r"""Lists documents.
+
+      Args:
+        request: (FirestoreProjectsDatabasesDocumentsListDocumentsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDocumentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListDocuments')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListDocuments.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/databases/{databasesId}/documents/{collectionId}',
+        http_method='GET',
+        method_id='firestore.projects.databases.documents.listDocuments',
+        ordered_params=['parent', 'collectionId'],
+        path_params=['collectionId', 'parent'],
+        query_params=['mask_fieldPaths', 'orderBy', 'pageSize', 'pageToken', 'readTime', 'showMissing', 'transaction'],
+        relative_path='v1beta1/{+parent}/{collectionId}',
+        request_field='',
+        request_type_name='FirestoreProjectsDatabasesDocumentsListDocumentsRequest',
+        response_type_name='ListDocumentsResponse',
+        supports_download=False,
+    )
+
     def Listen(self, request, global_params=None):
       r"""Listens to changes.
 

@@ -1278,7 +1278,7 @@ class MysqlTable(_messages.Message):
 
   Fields:
     mysqlColumns: MySQL columns in the database. When unspecified as part of
-      include/exclude lists, includes/excludes everything.
+      include/exclude objects, includes/excludes everything.
     table: Table name.
   """
 
@@ -1450,6 +1450,10 @@ class OracleColumn(_messages.Message):
   scale = _messages.IntegerField(9, variant=_messages.Variant.INT32)
 
 
+class OracleDropLargeObjects(_messages.Message):
+  r"""Configuration to drop large object values."""
+
+
 class OracleObjectIdentifier(_messages.Message):
   r"""Oracle data source object identifier.
 
@@ -1537,12 +1541,14 @@ class OracleSourceConfig(_messages.Message):
   r"""Oracle data source configuration
 
   Fields:
+    dropLargeObjects: Drop large object values.
     excludeObjects: Oracle objects to exclude from the stream.
     includeObjects: Oracle objects to include in the stream.
   """
 
-  excludeObjects = _messages.MessageField('OracleRdbms', 1)
-  includeObjects = _messages.MessageField('OracleRdbms', 2)
+  dropLargeObjects = _messages.MessageField('OracleDropLargeObjects', 1)
+  excludeObjects = _messages.MessageField('OracleRdbms', 2)
+  includeObjects = _messages.MessageField('OracleRdbms', 3)
 
 
 class OracleTable(_messages.Message):
@@ -1550,7 +1556,7 @@ class OracleTable(_messages.Message):
 
   Fields:
     oracleColumns: Oracle columns in the schema. When unspecified as part of
-      inclue/exclude lists, includes/excludes everything.
+      include/exclude objects, includes/excludes everything.
     table: Table name.
   """
 
@@ -1701,8 +1707,8 @@ class SourceConfig(_messages.Message):
   r"""The configuration of the stream source.
 
   Fields:
-    mysqlSourceConfig: MySQL data source configuration
-    oracleSourceConfig: Oracle data source configuration
+    mysqlSourceConfig: MySQL data source configuration.
+    oracleSourceConfig: Oracle data source configuration.
     sourceConnectionProfile: Required. Source connection profile resoource.
       Format:
       `projects/{project}/locations/{location}/connectionProfiles/{name}`

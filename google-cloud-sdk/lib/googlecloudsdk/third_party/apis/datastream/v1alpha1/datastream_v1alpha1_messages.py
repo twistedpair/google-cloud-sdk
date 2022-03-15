@@ -1461,6 +1461,10 @@ class OracleColumn(_messages.Message):
   scale = _messages.IntegerField(9, variant=_messages.Variant.INT32)
 
 
+class OracleDropLargeObjects(_messages.Message):
+  r"""Configuration to drop large object values."""
+
+
 class OracleObjectIdentifier(_messages.Message):
   r"""Oracle data source object identifier.
 
@@ -1549,11 +1553,13 @@ class OracleSourceConfig(_messages.Message):
 
   Fields:
     allowlist: Oracle objects to include in the stream.
+    dropLargeObjects: Drop large object values.
     rejectlist: Oracle objects to exclude from the stream.
   """
 
   allowlist = _messages.MessageField('OracleRdbms', 1)
-  rejectlist = _messages.MessageField('OracleRdbms', 2)
+  dropLargeObjects = _messages.MessageField('OracleDropLargeObjects', 2)
+  rejectlist = _messages.MessageField('OracleRdbms', 3)
 
 
 class OracleTable(_messages.Message):

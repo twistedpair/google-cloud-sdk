@@ -4359,7 +4359,7 @@ Enables use of services with externalIPs field.
       hidden=False)
 
 
-def AddDisablePodCIDROverprovisionFlag(parser, hidden=True):
+def AddDisablePodCIDROverprovisionFlag(parser):
   """Adds a --disable-pod-cidr-overprovision flag to the given parser."""
   help_text = """\
 Disables pod cidr overprovision on nodes.
@@ -4370,7 +4370,7 @@ Pod cidr overprovisioning is enabled by default.
       action='store_true',
       default=None,
       help=help_text,
-      hidden=hidden)
+      hidden=False)
 
 
 def AddNodePoolEnablePrivateNodes(parser, for_update=False, hidden=True):  # pylint: disable=unused-argument

@@ -192,7 +192,7 @@ class ArtifactregistryV1alpha1(base_api.BaseApiClient):
         path_params=['parent'],
         query_params=[],
         relative_path='v1alpha1/{+parent}/gooGetArtifacts:import',
-        request_field='googleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsRequest',
+        request_field='googleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsRequest',
         request_type_name='ArtifactregistryProjectsLocationsRepositoriesGooGetArtifactsImportRequest',
         response_type_name='Operation',
         supports_download=False,
@@ -216,6 +216,33 @@ class ArtifactregistryV1alpha1(base_api.BaseApiClient):
           ),
           }
 
+    def Import(self, request, global_params=None):
+      r"""Imports GooGet artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesGoogetArtifactsImportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Import')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Import.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/googetArtifacts:import',
+        http_method='POST',
+        method_id='artifactregistry.projects.locations.repositories.googetArtifacts.import',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha1/{+parent}/googetArtifacts:import',
+        request_field='googleDevtoolsArtifactregistryV1alpha1ImportGoogetArtifactsRequest',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesGoogetArtifactsImportRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Upload(self, request, global_params=None, upload=None):
       r"""Directly uploads a GooGet artifact. The returned Operation will complete once the resources are uploaded. Package, Version, and File resources are created based on the imported artifact. Imported artifacts that conflict with existing resources are ignored.
 
@@ -225,7 +252,7 @@ class ArtifactregistryV1alpha1(base_api.BaseApiClient):
         upload: (Upload, default: None) If present, upload
             this stream with the request.
       Returns:
-        (GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactMediaResponse) The response message.
+        (GoogleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactMediaResponse) The response message.
       """
       config = self.GetMethodConfig('Upload')
       upload_config = self.GetUploadConfig('Upload')
@@ -241,9 +268,9 @@ class ArtifactregistryV1alpha1(base_api.BaseApiClient):
         path_params=['parent'],
         query_params=[],
         relative_path='v1alpha1/{+parent}/googetArtifacts:create',
-        request_field='googleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactRequest',
+        request_field='googleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactRequest',
         request_type_name='ArtifactregistryProjectsLocationsRepositoriesGoogetArtifactsUploadRequest',
-        response_type_name='GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactMediaResponse',
+        response_type_name='GoogleDevtoolsArtifactregistryV1alpha1UploadGoogetArtifactMediaResponse',
         supports_download=False,
     )
 

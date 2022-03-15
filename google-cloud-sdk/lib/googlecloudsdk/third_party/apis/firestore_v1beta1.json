@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1beta1",
-  "revision": "20220228",
+  "revision": "20220307",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development. ",
   "ownerDomain": "google.com",
@@ -1062,6 +1062,10 @@
           "description": "The number of results that have been skipped due to an offset between the last response and the current response.",
           "type": "integer",
           "format": "int32"
+        },
+        "done": {
+          "description": "If present, Firestore has completely finished the request and no more documents will be returned.",
+          "type": "boolean"
         }
       }
     },
@@ -1945,6 +1949,78 @@
                     "parent": {
                       "description": "Required. The parent resource name. In the format: `projects\/{project_id}\/databases\/{database_id}\/documents` or `projects\/{project_id}\/databases\/{database_id}\/documents\/{document_path}`. For example: `projects\/my-project\/databases\/my-database\/documents` or `projects\/my-project\/databases\/my-database\/documents\/chatrooms\/my-chatroom`",
                       "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.*$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "collectionId": {
+                      "description": "Required. The collection ID, relative to `parent`, to list. For example: `chatrooms` or `messages`.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of documents to return.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The `next_page_token` value returned from a previous List request, if any.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "The order to sort results by. For example: `priority desc, name`.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "mask.fieldPaths": {
+                      "description": "The list of field paths in the mask. See Document.fields for a field path syntax reference.",
+                      "location": "query",
+                      "repeated": true,
+                      "type": "string"
+                    },
+                    "transaction": {
+                      "description": "Reads documents in a transaction.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "byte"
+                    },
+                    "readTime": {
+                      "description": "Reads documents as they were at the given time. This may not be older than 270 seconds.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-datetime"
+                    },
+                    "showMissing": {
+                      "description": "If the list should show missing documents. A missing document is a document that does not exist but has sub-documents. These documents will be returned with a key but will not have fields, Document.create_time, or Document.update_time set. Requests with `show_missing` may not specify `where` or `order_by`.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent",
+                    "collectionId"
+                  ],
+                  "response": {
+                    "$ref": "ListDocumentsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/datastore"
+                  ],
+                  "description": "Lists documents."
+                },
+                "listDocuments": {
+                  "id": "firestore.projects.databases.documents.listDocuments",
+                  "path": "v1beta1/{+parent}/{collectionId}",
+                  "flatPath": "v1beta1/projects/{projectsId}/databases/{databasesId}/documents/{collectionId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource name. In the format: `projects\/{project_id}\/databases\/{database_id}\/documents` or `projects\/{project_id}\/databases\/{database_id}\/documents\/{document_path}`. For example: `projects\/my-project\/databases\/my-database\/documents` or `projects\/my-project\/databases\/my-database\/documents\/chatrooms\/my-chatroom`",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents$",
                       "location": "path",
                       "required": true,
                       "type": "string"

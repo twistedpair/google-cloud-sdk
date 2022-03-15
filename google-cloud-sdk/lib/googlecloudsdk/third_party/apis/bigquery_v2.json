@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20220228",
+ "revision": "20220307",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -1679,6 +1679,10 @@
      "description": "[TrustedTester] [Output-only] Job progress (0.0 -\u003e 1.0) for LOAD and EXTRACT jobs.",
      "format": "double"
     },
+    "copy": {
+     "$ref": "JobStatistics5",
+     "description": "[Output-only] Statistics for a copy job."
+    },
     "creationTime": {
      "type": "string",
      "description": "[Output-only] Creation time of this job, in milliseconds since the epoch. This field will be present on all jobs.",
@@ -1983,6 +1987,22 @@
     "inputBytes": {
      "type": "string",
      "description": "[Output-only] Number of user bytes extracted into the result. This is the byte count as computed by BigQuery for billing purposes.",
+     "format": "int64"
+    }
+   }
+  },
+  "JobStatistics5": {
+   "id": "JobStatistics5",
+   "type": "object",
+   "properties": {
+    "copied_logical_bytes": {
+     "type": "string",
+     "description": "[Output-only] Number of logical bytes copied to the destination table.",
+     "format": "int64"
+    },
+    "copied_rows": {
+     "type": "string",
+     "description": "[Output-only] Number of rows copied to the destination table.",
      "format": "int64"
     }
    }

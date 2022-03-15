@@ -827,7 +827,18 @@
         "rejectlist": {
           "description": "Oracle objects to exclude from the stream.",
           "$ref": "OracleRdbms"
+        },
+        "dropLargeObjects": {
+          "description": "Drop large object values.",
+          "$ref": "OracleDropLargeObjects"
         }
+      }
+    },
+    "OracleDropLargeObjects": {
+      "id": "OracleDropLargeObjects",
+      "description": "Configuration to drop large object values.",
+      "type": "object",
+      "properties": {
       }
     },
     "MysqlSourceConfig": {
