@@ -235,6 +235,10 @@ Provided sandbox type '{type}' not supported.
 TPU_SERVING_MODE_ERROR = """\
 Cannot specify --tpu-ipv4-cidr with --enable-tpu-service-networking."""
 
+GPU_SHARING_STRATEGY_ERROR_MSG = """\
+Invalid gpu sharing strategy [{gpu-sharing-strategy}] for argument --accelerator. Valid values are time-sharing, mps'
+"""
+
 MAINTENANCE_INTERVAL_TYPE_NOT_SUPPORTED = """\
 Provided maintenance interval type '{type}' not supported.
 """
@@ -1835,6 +1839,33 @@ class APIAdapter(object):
           options.accelerators.get('max-time-shared-clients-per-gpu', 0))
       if max_time_shared_clients_per_gpu:
         accelerator_config.maxTimeSharedClientsPerGpu = max_time_shared_clients_per_gpu
+
+      gpu_sharing_strategy = options.accelerators.get('gpu-sharing-strategy',
+                                                      None)
+      max_shared_clients_per_gpu = options.accelerators.get(
+          'max-shared-clients-per-gpu', None)
+      if max_shared_clients_per_gpu or gpu_sharing_strategy:
+        if max_shared_clients_per_gpu is None:
+          # The validation for this field is handled in the server.
+          max_shared_clients_per_gpu = 2
+        else:
+          max_shared_clients_per_gpu = int(max_shared_clients_per_gpu)
+
+        strategy_enum = self.messages.GPUSharingConfig.GpuSharingStrategyValueValuesEnum
+        if gpu_sharing_strategy is None:
+          # The GPU sharing strategy will be time-sharing by default.
+          gpu_sharing_strategy = strategy_enum.TIME_SHARING
+        elif gpu_sharing_strategy == 'time-sharing':
+          gpu_sharing_strategy = strategy_enum.TIME_SHARING
+        elif gpu_sharing_strategy == 'mps':
+          gpu_sharing_strategy = strategy_enum.MPS
+        else:
+          raise util.Error(GPU_SHARING_STRATEGY_ERROR_MSG)
+
+        gpu_sharing_config = self.messages.GPUSharingConfig(
+            maxSharedClientsPerGpu=max_shared_clients_per_gpu,
+            gpuSharingStrategy=gpu_sharing_strategy)
+        accelerator_config.gpuSharingConfig = gpu_sharing_config
 
       node_config.accelerators = [
           accelerator_config,
@@ -3960,8 +3991,8 @@ class V1Beta1Adapter(V1Adapter):
           self.messages, hidden=False).GetEnumForChoice(options.stack_type)
     if options.ipv6_access_type is not None:
       cluster.ipAllocationPolicy.ipv6AccessType = util.GetIpv6AccessTypeMapper(
-          self.messages, hidden=False).GetEnumForChoice(
-              options.ipv6_access_type)
+          self.messages,
+          hidden=False).GetEnumForChoice(options.ipv6_access_type)
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)
@@ -4066,8 +4097,7 @@ class V1Beta1Adapter(V1Adapter):
     if options.dataplane_v2:
       update = self.messages.ClusterUpdate(
           desiredDatapathProvider=(
-              self.messages.ClusterUpdate
-              .DesiredDatapathProviderValueValuesEnum
+              self.messages.ClusterUpdate.DesiredDatapathProviderValueValuesEnum
               .ADVANCED_DATAPATH))
 
     if not update:
@@ -4480,8 +4510,8 @@ class V1Alpha1Adapter(V1Beta1Adapter):
 
     if options.ipv6_access_type is not None:
       cluster.ipAllocationPolicy.ipv6AccessType = util.GetIpv6AccessTypeMapper(
-          self.messages, hidden=False).GetEnumForChoice(
-              options.ipv6_access_type)
+          self.messages,
+          hidden=False).GetEnumForChoice(options.ipv6_access_type)
 
     cluster.master = _GetMasterForClusterCreate(options, self.messages)
 
@@ -4591,8 +4621,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     if options.dataplane_v2:
       update = self.messages.ClusterUpdate(
           desiredDatapathProvider=(
-              self.messages.ClusterUpdate
-              .DesiredDatapathProviderValueValuesEnum
+              self.messages.ClusterUpdate.DesiredDatapathProviderValueValuesEnum
               .ADVANCED_DATAPATH))
 
     if not update:

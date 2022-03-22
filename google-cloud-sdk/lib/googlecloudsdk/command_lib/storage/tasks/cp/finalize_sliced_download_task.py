@@ -39,7 +39,8 @@ class FinalizeSlicedDownloadTask(task.Task):
                temporary_destination_resource,
                final_destination_resource,
                delete_source=False,
-               do_not_decompress=False):
+               do_not_decompress=False,
+               print_created_message=False):
     """Initializes task.
 
     Args:
@@ -54,6 +55,8 @@ class FinalizeSlicedDownloadTask(task.Task):
         object afterwards.
       do_not_decompress (bool): Prevents automatically decompressing
         downloaded gzips.
+      print_created_message (bool): Print a message containing the versioned
+        URL of the copy result.
     """
     super(FinalizeSlicedDownloadTask, self).__init__()
     self._source_resource = source_resource
@@ -61,6 +64,7 @@ class FinalizeSlicedDownloadTask(task.Task):
     self._final_destination_resource = final_destination_resource
     self._delete_source = delete_source
     self._do_not_decompress = do_not_decompress
+    self._print_created_message = print_created_message
 
   def execute(self, task_status_queue=None):
     """Validates and clean ups after sliced download."""
@@ -113,6 +117,9 @@ class FinalizeSlicedDownloadTask(task.Task):
 
     tracker_file_util.delete_download_tracker_files(
         self._temporary_destination_resource.storage_url)
+
+    if self._print_created_message:
+      log.status.Print('Created: {}'.format(final_destination_object_path))
 
     if self._delete_source:
       return task.Output(

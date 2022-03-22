@@ -72,6 +72,35 @@ def AddSecurityGroupIds(parser, noun):
       help='IDs of additional security groups to add to {}.'.format(noun))
 
 
+def AddClearSecurityGroupIds(parser, noun):
+  """Adds flag for clearing the security groups.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+    noun: The resource type to which the flag is applicable.
+  """
+
+  parser.add_argument(
+      '--clear-security-group-ids',
+      action='store_true',
+      default=None,
+      help='Clear any additional security groups associated with the '
+      '{}. This does not remove the default security groups.'.format(noun))
+
+
+def AddSecurityGroupFlagsForUpdate(parser, noun):
+  """Adds security group related flags for update.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+    noun: The resource type to which the flags are applicable.
+  """
+
+  group = parser.add_group('Security groups', mutex=True)
+  AddSecurityGroupIds(group, noun)
+  AddClearSecurityGroupIds(group, noun)
+
+
 def _VolumeTypeEnumMapper(prefix):
   return arg_utils.ChoiceEnumMapper(
       '--{}-volume-type'.format(prefix),
@@ -124,7 +153,7 @@ def _AddKmsKeyArn(parser, prefix, target, required=False):
 
 
 def AddRootVolumeKmsKeyArn(parser):
-  _AddKmsKeyArn(parser, 'root-volume', 'root control plane volume')
+  _AddKmsKeyArn(parser, 'root-volume', 'root volume')
 
 
 def AddMainVolumeKmsKeyArn(parser):
@@ -137,6 +166,15 @@ def AddDatabaseEncryptionKmsKeyArn(parser):
 
 def AddConfigEncryptionKmsKeyArn(parser, required=True):
   _AddKmsKeyArn(parser, 'config-encryption', 'user data', required=required)
+
+
+def AddClearProxyConfig(parser):
+  parser.add_argument(
+      '--clear-proxy-config',
+      action='store_true',
+      default=None,
+      help=('Clear the proxy configuration, if any, associated with the '
+            'cluster.'))
 
 
 def AddProxySecretArn(parser, required=False):
@@ -156,7 +194,7 @@ def AddProxySecretVersionId(parser, required=False):
 
 
 def AddProxyConfig(parser):
-  """Add proxy configuration flags.
+  """Adds proxy configuration flags.
 
   Args:
     parser: The argparse.parser to add the arguments to.
@@ -165,3 +203,18 @@ def AddProxyConfig(parser):
   group = parser.add_argument_group('Proxy config')
   AddProxySecretArn(group, required=True)
   AddProxySecretVersionId(group, required=True)
+
+
+def AddProxyConfigForUpdate(parser):
+  """Adds proxy configuration flags for update.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+  """
+
+  group = parser.add_group('Proxy config', mutex=True)
+  update_proxy_group = group.add_group('Update existing proxy config '
+                                       'parameters')
+  AddProxySecretArn(update_proxy_group)
+  AddProxySecretVersionId(update_proxy_group)
+  AddClearProxyConfig(group)

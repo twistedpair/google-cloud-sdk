@@ -1957,6 +1957,21 @@ class NotebooksProjectsLocationsRuntimesListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class NotebooksProjectsLocationsRuntimesRefreshRuntimeTokenInternalRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsRuntimesRefreshRuntimeTokenInternalRequest
+  object.
+
+  Fields:
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/runtimes/{runtime_id}`
+    refreshRuntimeTokenInternalRequest: A RefreshRuntimeTokenInternalRequest
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  refreshRuntimeTokenInternalRequest = _messages.MessageField('RefreshRuntimeTokenInternalRequest', 2)
+
+
 class NotebooksProjectsLocationsRuntimesReportEventRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsRuntimesReportEventRequest object.
 
@@ -2337,6 +2352,30 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 1, repeated=True)
   etag = _messages.BytesField(2)
   version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class RefreshRuntimeTokenInternalRequest(_messages.Message):
+  r"""Request for getting a new access token.
+
+  Fields:
+    vmId: Required. The VM hardware token for authenticating the VM.
+      https://cloud.google.com/compute/docs/instances/verifying-instance-
+      identity
+  """
+
+  vmId = _messages.StringField(1)
+
+
+class RefreshRuntimeTokenInternalResponse(_messages.Message):
+  r"""Response with a new access token.
+
+  Fields:
+    accessToken: The OAuth 2.0 access token.
+    expireTime: Output only. Token expiration time.
+  """
+
+  accessToken = _messages.StringField(1)
+  expireTime = _messages.StringField(2)
 
 
 class RegisterInstanceRequest(_messages.Message):

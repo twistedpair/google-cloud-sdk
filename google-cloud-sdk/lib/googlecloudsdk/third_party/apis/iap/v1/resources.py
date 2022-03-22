@@ -52,18 +52,22 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_IAP_TCP_DEST_GROUPS = (
-      'projects.iap_tcp.dest_groups',
-      'projects/{project}/iap_tunnel/locations/{region}/destGroups/{groupId}',
+  PROJECTS_IAP_TUNNEL_LOCATIONS = (
+      'projects.iap_tunnel.locations',
+      'projects/{projectsId}/iap_tunnel/locations/{locationsId}',
       {},
-      ['project', 'region', 'groupId'],
+      ['projectsId', 'locationsId'],
       True
   )
-  PROJECTS_IAP_TCP_LOCATIONS = (
-      'projects.iap_tcp.locations',
-      'projects/{project}/iap_tunnel/locations/{region}',
-      {},
-      ['project', 'region'],
+  PROJECTS_IAP_TUNNEL_LOCATIONS_DESTGROUPS = (
+      'projects.iap_tunnel.locations.destGroups',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/iap_tunnel/locations/{locationsId}/'
+              'destGroups/{destGroupsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_IAP_WEB = (

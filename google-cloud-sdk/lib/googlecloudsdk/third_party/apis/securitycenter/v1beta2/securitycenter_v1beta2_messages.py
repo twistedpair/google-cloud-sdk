@@ -193,11 +193,13 @@ class Cve(_messages.Message):
     id: The unique identifier for the vulnerability. e.g. CVE-2021-34527
     references: Additional information about the CVE. e.g.
       https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-34527
+    upstreamFixAvailable: Whether upstream fix is available for the CVE.
   """
 
   cvssv3 = _messages.MessageField('Cvssv3', 1)
   id = _messages.StringField(2)
   references = _messages.MessageField('Reference', 3, repeated=True)
+  upstreamFixAvailable = _messages.BooleanField(4)
 
 
 class Cvssv3(_messages.Message):
@@ -821,6 +823,56 @@ class Geolocation(_messages.Message):
   regionCode = _messages.StringField(1)
 
 
+class GoogleCloudSecuritycenterV1BigQueryExport(_messages.Message):
+  r"""Configures how to deliver Findings to BigQuery Instance.
+
+  Fields:
+    createTime: Output only. The time at which the big query export was
+      created. This field is set by the server and will be ignored if provided
+      on export on creation.
+    dataset: The dataset to write findings' updates to. Its format is
+      "projects/[project_id]/datasets/[bigquery_dataset_id]". BigQuery Dataset
+      unique ID must contain only letters (a-z, A-Z), numbers (0-9), or
+      underscores (_).
+    description: The description of the export (max of 1024 characters).
+    filter: Expression that defines the filter to apply across create/update
+      events of findings. The expression is a list of zero or more
+      restrictions combined via logical operators `AND` and `OR`. Parentheses
+      are supported, and `OR` has higher precedence than `AND`. Restrictions
+      have the form ` ` and may have a `-` character in front of them to
+      indicate negation. The fields map to those defined in the corresponding
+      resource. The supported operators are: * `=` for all value types. * `>`,
+      `<`, `>=`, `<=` for integer values. * `:`, meaning substring matching,
+      for strings. The supported value types are: * string literals in quotes.
+      * integer literals without quotes. * boolean literals `true` and `false`
+      without quotes.
+    mostRecentEditor: Output only. Email address of the user who last edited
+      the big query export. This field is set by the server and will be
+      ignored if provided on export creation or update.
+    name: The relative resource name of this export. See: https://cloud.google
+      .com/apis/design/resource_names#relative_resource_name. Example format:
+      "organizations/{organization_id}/bigQueryExports/{export_id}" Example
+      format: "folders/{folder_id}/bigQueryExports/{export_id}" Example
+      format: "projects/{project_id}/bigQueryExports/{export_id}" This field
+      is provided in responses, and is ignored when provided in create
+      requests.
+    principal: Output only. The service account that needs permission to
+      create table, upload data to the big query dataset.
+    updateTime: Output only. The most recent time at which the big export was
+      updated. This field is set by the server and will be ignored if provided
+      on export creation or update.
+  """
+
+  createTime = _messages.StringField(1)
+  dataset = _messages.StringField(2)
+  description = _messages.StringField(3)
+  filter = _messages.StringField(4)
+  mostRecentEditor = _messages.StringField(5)
+  name = _messages.StringField(6)
+  principal = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
 class GoogleCloudSecuritycenterV1BulkMuteFindingsResponse(_messages.Message):
   r"""The response to a BulkMute request. Contains the LRO information."""
 
@@ -836,9 +888,9 @@ class GoogleCloudSecuritycenterV1ExternalSystem(_messages.Message):
     externalUid: Identifier that's used to track the given finding in the
       external system.
     name: External System Name e.g. jira, demisto, etc. e.g.:
-      organizations/1234/sources/5678/findings/123456/externalSystems/jira
-      folders/1234/sources/5678/findings/123456/externalSystems/jira
-      projects/1234/sources/5678/findings/123456/externalSystems/jira
+      `organizations/1234/sources/5678/findings/123456/externalSystems/jira`
+      `folders/1234/sources/5678/findings/123456/externalSystems/jira`
+      `projects/1234/sources/5678/findings/123456/externalSystems/jira`
     status: Most recent status of the corresponding finding's ticket/tracker
       in the external system.
   """
@@ -922,8 +974,7 @@ class GoogleCloudSecuritycenterV1Resource(_messages.Message):
     parent: The full resource name of resource's parent.
     parentDisplayName: The human readable name of resource's parent.
     project: The full resource name of project that the resource belongs to.
-    projectDisplayName: The human readable name of project that the resource
-      belongs to.
+    projectDisplayName: The project id that the resource belongs to.
     type: The full resource type of the resource.
   """
 
@@ -1183,8 +1234,7 @@ class GoogleCloudSecuritycenterV1p1beta1Resource(_messages.Message):
     parent: The full resource name of resource's parent.
     parentDisplayName: The human readable name of resource's parent.
     project: The full resource name of project that the resource belongs to.
-    projectDisplayName: The human readable name of project that the resource
-      belongs to.
+    projectDisplayName: The project id that the resource belongs to.
   """
 
   folders = _messages.MessageField('GoogleCloudSecuritycenterV1p1beta1Folder', 1, repeated=True)
@@ -1334,8 +1384,9 @@ class MitreAttack(_messages.Message):
       this finding, if any. primary_techniques is a repeated field because
       there are multiple levels of MITRE ATT&CK techniques. If the technique
       most closely represented by this finding is a sub-technique (e.g.
-      SCANNING_IP_BLOCKS), both the sub-technique and its parent technique(s)
-      will be listed (e.g. SCANNING_IP_BLOCKS, ACTIVE_SCANNING).
+      `SCANNING_IP_BLOCKS`), both the sub-technique and its parent
+      technique(s) will be listed (e.g. `SCANNING_IP_BLOCKS`,
+      `ACTIVE_SCANNING`).
     version: The MITRE ATT&CK version referenced by the above fields. E.g.
       "8".
   """
@@ -1408,6 +1459,7 @@ class MitreAttack(_messages.Message):
       STEAL_WEB_SESSION_COOKIE: T1539
       MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE: T1578
       EXPLOIT_PUBLIC_FACING_APPLICATION: T1190
+      MODIFY_AUTHENTICATION_PROCESS: T1556
     """
     TECHNIQUE_UNSPECIFIED = 0
     ACTIVE_SCANNING = 1
@@ -1437,6 +1489,7 @@ class MitreAttack(_messages.Message):
     STEAL_WEB_SESSION_COOKIE = 25
     MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 26
     EXPLOIT_PUBLIC_FACING_APPLICATION = 27
+    MODIFY_AUTHENTICATION_PROCESS = 28
 
   class PrimaryTacticValueValuesEnum(_messages.Enum):
     r"""The MITRE ATT&CK tactic most closely represented by this finding, if
@@ -1507,6 +1560,7 @@ class MitreAttack(_messages.Message):
       STEAL_WEB_SESSION_COOKIE: T1539
       MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE: T1578
       EXPLOIT_PUBLIC_FACING_APPLICATION: T1190
+      MODIFY_AUTHENTICATION_PROCESS: T1556
     """
     TECHNIQUE_UNSPECIFIED = 0
     ACTIVE_SCANNING = 1
@@ -1536,6 +1590,7 @@ class MitreAttack(_messages.Message):
     STEAL_WEB_SESSION_COOKIE = 25
     MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 26
     EXPLOIT_PUBLIC_FACING_APPLICATION = 27
+    MODIFY_AUTHENTICATION_PROCESS = 28
 
   additionalTactics = _messages.EnumField('AdditionalTacticsValueListEntryValuesEnum', 1, repeated=True)
   additionalTechniques = _messages.EnumField('AdditionalTechniquesValueListEntryValuesEnum', 2, repeated=True)

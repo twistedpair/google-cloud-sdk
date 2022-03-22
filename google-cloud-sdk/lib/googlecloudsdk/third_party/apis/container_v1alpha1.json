@@ -2344,6 +2344,10 @@
         "serviceExternalIpsConfig": {
           "description": "ServiceExternalIPsConfig specifies if services with externalIPs field are blocked or not.",
           "$ref": "ServiceExternalIPsConfig"
+        },
+        "gatewayApiConfig": {
+          "description": "GatewayAPIConfig contains the desired config of Gateway API on this cluster.",
+          "$ref": "GatewayAPIConfig"
         }
       }
     },
@@ -2416,6 +2420,29 @@
         "enabled": {
           "description": "Whether Services with ExternalIPs field are allowed or not.",
           "type": "boolean"
+        }
+      }
+    },
+    "GatewayAPIConfig": {
+      "id": "GatewayAPIConfig",
+      "description": "GatewayAPIConfig contains the desired config of Gateway API on this cluster.",
+      "type": "object",
+      "properties": {
+        "channel": {
+          "description": "The Gateway API release channel to use for Gateway API.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value.",
+            "Gateway API support is disabled",
+            "Gateway API support is enabled, stable CRDs are installed",
+            "Gateway API support is enabled, experimental CRDs are installed"
+          ],
+          "enum": [
+            "CHANNEL_UNSPECIFIED",
+            "CHANNEL_DISABLED",
+            "CHANNEL_STABLE",
+            "CHANNEL_EXPERIMENTAL"
+          ]
         }
       }
     },
@@ -3081,6 +3108,24 @@
             "BASELINE",
             "RESTRICTED"
           ]
+        },
+        "vulnerabilityScanningMode": {
+          "description": "Sets which mode of vulnerability scanning should be used for cluster's workloads.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value meaning that no mode has been specified.",
+            "This disables Workload Configuration auditing on the cluster, meaning that nothing is surfaced.",
+            "Applies the default set of policy auditing to a cluster's workloads.",
+            "Surfaces configurations that are not in line with the Pod Security Standard Baseline policy.",
+            "Surfaces configurations that are not in line with the Pod Security Standard Restricted policy."
+          ],
+          "enum": [
+            "MODE_UNSPECIFIED",
+            "DISABLED",
+            "BASIC",
+            "BASELINE",
+            "RESTRICTED"
+          ]
         }
       }
     },
@@ -3668,6 +3713,10 @@
         "desiredProtectConfig": {
           "description": "Enable\/Disable Protect API features for the cluster.",
           "$ref": "ProtectConfig"
+        },
+        "desiredGatewayApiConfig": {
+          "description": "The desired config of Gateway API on this cluster.",
+          "$ref": "GatewayAPIConfig"
         }
       }
     },

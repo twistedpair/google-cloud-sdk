@@ -890,6 +890,76 @@ class AiplatformProjectsLocationsDatasetsSavedQueriesOperationsWaitRequest(_mess
   timeout = _messages.StringField(2)
 
 
+class AiplatformProjectsLocationsDeploymentResourcePoolsOperationsCancelRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsDeploymentResourcePoolsOperationsCancelRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDeploymentResourcePoolsOperationsDeleteRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsDeploymentResourcePoolsOperationsDeleteRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDeploymentResourcePoolsOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDeploymentResourcePoolsOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDeploymentResourcePoolsOperationsListRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsDeploymentResourcePoolsOperationsListRequest
+  object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsDeploymentResourcePoolsOperationsWaitRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsDeploymentResourcePoolsOperationsWaitRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
+
+
 class AiplatformProjectsLocationsEdgeDevicesOperationsCancelRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsEdgeDevicesOperationsCancelRequest object.
 
@@ -1906,6 +1976,91 @@ class AiplatformProjectsLocationsFeaturestoresSearchFeaturesRequest(_messages.Me
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   query = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsFederatedLearningJobsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFederatedLearningJobsCancelRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1CancelFederatedLearningJobRequest: A
+      GoogleCloudAiplatformV1beta1CancelFederatedLearningJobRequest resource
+      to be passed as the request body.
+    name: Required. The name of the FederatedLearningJob. Format: `projects/{p
+      roject}/locations/{location}/federatedLearningJobs/{federated_learning_j
+      ob}`
+  """
+
+  googleCloudAiplatformV1beta1CancelFederatedLearningJobRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1CancelFederatedLearningJobRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsFederatedLearningJobsCreateRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFederatedLearningJobsCreateRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1FederatedLearningJob: A
+      GoogleCloudAiplatformV1beta1FederatedLearningJob resource to be passed
+      as the request body.
+    parent: Required. The parent of the FederatedLearningJob. Format:
+      `projects/{project}/locations/{location}`
+  """
+
+  googleCloudAiplatformV1beta1FederatedLearningJob = _messages.MessageField('GoogleCloudAiplatformV1beta1FederatedLearningJob', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsFederatedLearningJobsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFederatedLearningJobsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the FederatedLearningJob to be deleted.
+      Format: `projects/{project}/locations/{location}/federatedLearningJobs/{
+      federated_learning_job}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsFederatedLearningJobsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFederatedLearningJobsGetRequest object.
+
+  Fields:
+    name: Required. The name of the FederatedLearningJob. Format: `projects/{p
+      roject}/locations/{location}/federatedLearningJobs/{federated_learning_j
+      ob}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsFederatedLearningJobsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFederatedLearningJobsListRequest object.
+
+  Fields:
+    filter: The standard list filter. Supported fields: * `display_name`
+      supports = and !=. * `state` supports = and !=. Some examples of using
+      the filter are: * `state="JOB_STATE_SUCCEEDED" AND
+      display_name="my_job"` * `state="JOB_STATE_RUNNING" OR
+      display_name="my_job"` * `NOT display_name="my_job"` *
+      `state="JOB_STATE_FAILED"`
+    orderBy: A comma-separated list of fields to order by, sorted in ascending
+      order by default. Use `desc` after a field name for descending.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+    parent: Required. The parent of the FederatedLearningJob. Format:
+      `projects/{project}/locations/{location}`
+    readMask: Mask specifying which fields to read. FieldMask represents a set
+      of symbolic field paths. For example, the mask can be `paths: "name"`.
+      The "name" here is a field in FederatedLearningJob. If this field is not
+      set, all fields of the FederatedLearningJob are returned.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  readMask = _messages.StringField(6)
 
 
 class AiplatformProjectsLocationsGetRequest(_messages.Message):
@@ -20062,6 +20217,10 @@ class GoogleCloudAiplatformV1beta1CancelDataLabelingJobRequest(_messages.Message
   r"""Request message for JobService.CancelDataLabelingJob."""
 
 
+class GoogleCloudAiplatformV1beta1CancelFederatedLearningJobRequest(_messages.Message):
+  r"""Request message for JobService.CancelFederatedLearningJob."""
+
+
 class GoogleCloudAiplatformV1beta1CancelHyperparameterTuningJobRequest(_messages.Message):
   r"""Request message for JobService.CancelHyperparameterTuningJob."""
 
@@ -23328,6 +23487,126 @@ class GoogleCloudAiplatformV1beta1FeaturestoreOnlineServingConfigScaling(_messag
   minNodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudAiplatformV1beta1FederatedLearningJob(_messages.Message):
+  r"""FederatedLearningJob is used to train a federated learning model through
+  Federated Learning Service.
+
+  Enums:
+    StateValueValuesEnum: Output only. The detailed state of the job.
+
+  Messages:
+    LabelsValue: The labels with user-defined metadata to organize your
+      FederatedLearningJobs. Label keys and values can be no longer than 64
+      characters (Unicode codepoints), can only contain lowercase letters,
+      numeric characters, underscores and dashes. International characters are
+      allowed. See https://goo.gl/xmQnxf for more information and examples of
+      labels. System reserved label keys are prefixed with
+      "aiplatform.googleapis.com/" and are immutable. Following system labels
+      exist for each FederatedLearningJob: *
+      "aiplatform.googleapis.com/schema": output only, its value is the
+      inputs_schema's title.
+
+  Fields:
+    createTime: Output only. Timestamp when this FederatedLearningJob was
+      created.
+    displayName: Required. The user-defined name of the FederatedLearningJob.
+      The name can be up to 128 characters long and can be consist of any
+      UTF-8 characters. Display name of a FederatedLearningJob.
+    error: Output only. FederatedLearningJob errors. It is only populated when
+      job's state is `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.
+    labels: The labels with user-defined metadata to organize your
+      FederatedLearningJobs. Label keys and values can be no longer than 64
+      characters (Unicode codepoints), can only contain lowercase letters,
+      numeric characters, underscores and dashes. International characters are
+      allowed. See https://goo.gl/xmQnxf for more information and examples of
+      labels. System reserved label keys are prefixed with
+      "aiplatform.googleapis.com/" and are immutable. Following system labels
+      exist for each FederatedLearningJob: *
+      "aiplatform.googleapis.com/schema": output only, its value is the
+      inputs_schema's title.
+    name: Output only. Resource name of the FederatedLearningJob.
+    state: Output only. The detailed state of the job.
+    updateTime: Output only. Timestamp when this FederatedLearningJob was
+      updated most recently.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The detailed state of the job.
+
+    Values:
+      JOB_STATE_UNSPECIFIED: The job state is unspecified.
+      JOB_STATE_QUEUED: The job has been just created or resumed and
+        processing has not yet begun.
+      JOB_STATE_PENDING: The service is preparing to run the job.
+      JOB_STATE_RUNNING: The job is in progress.
+      JOB_STATE_SUCCEEDED: The job completed successfully.
+      JOB_STATE_FAILED: The job failed.
+      JOB_STATE_CANCELLING: The job is being cancelled. From this state the
+        job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or
+        `JOB_STATE_CANCELLED`.
+      JOB_STATE_CANCELLED: The job has been cancelled.
+      JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
+      JOB_STATE_EXPIRED: The job has expired.
+      JOB_STATE_UPDATING: The job is being updated. The job is only able to be
+        updated at RUNNING state; if the update operation succeeds, job goes
+        back to RUNNING state; if the update operation fails, the job goes
+        back to RUNNING state with error messages written to
+        ModelDeploymentMonitoringJob.partial_errors field if it is a
+        ModelDeploymentMonitoringJob.
+    """
+    JOB_STATE_UNSPECIFIED = 0
+    JOB_STATE_QUEUED = 1
+    JOB_STATE_PENDING = 2
+    JOB_STATE_RUNNING = 3
+    JOB_STATE_SUCCEEDED = 4
+    JOB_STATE_FAILED = 5
+    JOB_STATE_CANCELLING = 6
+    JOB_STATE_CANCELLED = 7
+    JOB_STATE_PAUSED = 8
+    JOB_STATE_EXPIRED = 9
+    JOB_STATE_UPDATING = 10
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels with user-defined metadata to organize your
+    FederatedLearningJobs. Label keys and values can be no longer than 64
+    characters (Unicode codepoints), can only contain lowercase letters,
+    numeric characters, underscores and dashes. International characters are
+    allowed. See https://goo.gl/xmQnxf for more information and examples of
+    labels. System reserved label keys are prefixed with
+    "aiplatform.googleapis.com/" and are immutable. Following system labels
+    exist for each FederatedLearningJob: * "aiplatform.googleapis.com/schema":
+    output only, its value is the inputs_schema's title.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  error = _messages.MessageField('GoogleRpcStatus', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
+
+
 class GoogleCloudAiplatformV1beta1FilterSplit(_messages.Message):
   r"""Assigns input data to training, validation, and test sets based on the
   given filters, data pieces not matched by any filter are ignored. Currently
@@ -24270,6 +24549,19 @@ class GoogleCloudAiplatformV1beta1ListFeaturestoresResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformV1beta1ListFederatedLearningJobsResponse(_messages.Message):
+  r"""Response message for JobService.ListFederatedLearningJobs.
+
+  Fields:
+    federatedLearningJobs: A list of FederatedLearningJobs that matches the
+      specified filter in the request.
+    nextPageToken: The standard List next-page token.
+  """
+
+  federatedLearningJobs = _messages.MessageField('GoogleCloudAiplatformV1beta1FederatedLearningJob', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class GoogleCloudAiplatformV1beta1ListHyperparameterTuningJobsResponse(_messages.Message):
   r"""Response message for JobService.ListHyperparameterTuningJobs
 
@@ -24661,6 +24953,10 @@ class GoogleCloudAiplatformV1beta1MergeVersionAliasesRequest(_messages.Message):
       should be at most 128 characters, and match `a-z{0,126}[a-z-0-9]`. Add
       the `-` prefix to an alias means removing that alias from the version.
       Example: `-golden` means removing the `golden` alias from the version.
+      There is NO ordering in aliases, which means 1) The aliases returned
+      from GetModel API might not have the exactly same order from this
+      MergeVersionAliases API. 2) Adding and deleting the same alias in the
+      request is not recommended, and the 2 operations will be cancelled out.
   """
 
   versionAliases = _messages.StringField(1, repeated=True)
@@ -26262,7 +26558,7 @@ class GoogleCloudAiplatformV1beta1PipelineJob(_messages.Message):
       characters, underscores and dashes. International characters are
       allowed. See https://goo.gl/xmQnxf for more information and examples of
       labels.
-    PipelineSpecValue: Required. The spec of the pipeline.
+    PipelineSpecValue: The spec of the pipeline.
 
   Fields:
     createTime: Output only. Pipeline creation time.
@@ -26293,7 +26589,7 @@ class GoogleCloudAiplatformV1beta1PipelineJob(_messages.Message):
       will apply the network configuration to the GCP resources being
       launched, if applied, such as Vertex AI Training or Dataflow job. If
       left unspecified, the workload is not peered with any network.
-    pipelineSpec: Required. The spec of the pipeline.
+    pipelineSpec: The spec of the pipeline.
     runtimeConfig: Runtime config of the pipeline.
     serviceAccount: The service account that the pipeline workload runs as. If
       not specified, the Compute Engine default service account in the project
@@ -26364,7 +26660,7 @@ class GoogleCloudAiplatformV1beta1PipelineJob(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PipelineSpecValue(_messages.Message):
-    r"""Required. The spec of the pipeline.
+    r"""The spec of the pipeline.
 
     Messages:
       AdditionalProperty: An additional property for a PipelineSpecValue

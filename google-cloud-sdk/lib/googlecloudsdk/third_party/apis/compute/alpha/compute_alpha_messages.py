@@ -33649,6 +33649,9 @@ class ForwardingRule(_messages.Message):
       For GlobalForwardingRule, the valid value is PREMIUM. If this field is
       not specified, it is assumed to be PREMIUM. If IPAddress is specified,
       this value must be equal to the networkTier of the Address.
+    noAutomateDnsZone: This is used in PSC consumer ForwardingRule to control
+      whether it should try to auto-generate a DNS zone or not. Non-PSC
+      forwarding rules do not use this field.
     portRange: This field can be used only if: - Load balancing scheme is one
       of EXTERNAL, INTERNAL_SELF_MANAGED or INTERNAL_MANAGED - IPProtocol is
       one of TCP, UDP, or SCTP. Packets addressed to ports in the specified
@@ -33856,19 +33859,20 @@ class ForwardingRule(_messages.Message):
   name = _messages.StringField(18)
   network = _messages.StringField(19)
   networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 20)
-  portRange = _messages.StringField(21)
-  ports = _messages.StringField(22, repeated=True)
-  pscConnectionId = _messages.IntegerField(23, variant=_messages.Variant.UINT64)
-  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 24)
-  region = _messages.StringField(25)
-  selfLink = _messages.StringField(26)
-  selfLinkWithId = _messages.StringField(27)
-  serviceDirectoryRegistrations = _messages.MessageField('ForwardingRuleServiceDirectoryRegistration', 28, repeated=True)
-  serviceLabel = _messages.StringField(29)
-  serviceName = _messages.StringField(30)
-  sourceIpRanges = _messages.StringField(31, repeated=True)
-  subnetwork = _messages.StringField(32)
-  target = _messages.StringField(33)
+  noAutomateDnsZone = _messages.BooleanField(21)
+  portRange = _messages.StringField(22)
+  ports = _messages.StringField(23, repeated=True)
+  pscConnectionId = _messages.IntegerField(24, variant=_messages.Variant.UINT64)
+  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 25)
+  region = _messages.StringField(26)
+  selfLink = _messages.StringField(27)
+  selfLinkWithId = _messages.StringField(28)
+  serviceDirectoryRegistrations = _messages.MessageField('ForwardingRuleServiceDirectoryRegistration', 29, repeated=True)
+  serviceLabel = _messages.StringField(30)
+  serviceName = _messages.StringField(31)
+  sourceIpRanges = _messages.StringField(32, repeated=True)
+  subnetwork = _messages.StringField(33)
+  target = _messages.StringField(34)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -49436,7 +49440,9 @@ class NetworkInterface(_messages.Message):
     kind: [Output Only] Type of the resource. Always compute#networkInterface
       for network interfaces.
     name: [Output Only] The name of the network interface, which is generated
-      by the server. For network devices, these are eth0, eth1, etc.
+      by the server. For a VM, the network interface uses the nicN naming
+      format. Where N is a value between 0 and 7. The default interface value
+      is nic0.
     network: URL of the VPC network resource for this instance. When creating
       an instance, if neither the network nor the subnetwork is specified, the
       default network global/networks/default is used. If the selected project
@@ -59782,13 +59788,11 @@ class Route(_messages.Message):
         backend. The backend may have rejected the route
       PENDING: This route is being processed internally. The status will
         change once processed.
-      UNKNOWN_ROUTE_STATUS: <no description>
     """
     ACTIVE = 0
     DROPPED = 1
     INACTIVE = 2
     PENDING = 3
-    UNKNOWN_ROUTE_STATUS = 4
 
   class RouteTypeValueValuesEnum(_messages.Enum):
     r"""[Output Only] The type of this route, which can be one of the

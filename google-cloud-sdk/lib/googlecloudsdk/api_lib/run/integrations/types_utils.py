@@ -35,32 +35,30 @@ _INTEGRATION_TYPES = frozenset([
             '$ gcloud run integration types create --type=custom-domain '
             '--parameters=domain=example.com',
         'parameters':
-            frozenset([
-                frozendict({
-                    'name': 'domain',
+            frozendict({
+                'domain': frozendict({
                     'description':
                         'The domain to configure for your Cloud Run service. This '
                         'must be a domain you can configure DNS for.',
                     'type': 'domain',
                     'required': True,
+                    'update_allowed': False,
                 }),
-                frozendict({
-                    'name': 'dns-zone',
+                'dns-zone': frozendict({
                     'description':
                         'The ID of the Cloud DNS Zone already configured for this '
                         'domain. If not specified, manual DNS configuration is '
                         'expected.',
                     'type': 'string',
                 }),
-                frozendict({
-                    'name': 'paths',
+                'paths': frozendict({
                     'description':
                         'The paths at the domain for your Cloud Run service. '
                         'Defaults to "/" if not specified. (e.g. "/foo/*" for '
                         '"example.com/foo/*")',
                     'type': 'path_matcher',
                 }),
-            ]),
+            })
     }),
     frozendict({
         'name':
@@ -70,15 +68,13 @@ _INTEGRATION_TYPES = frozenset([
         'example_command':
             '$ gcloud run integration types create --type=redis',
         'parameters':
-            frozenset([
-                frozendict({
-                    'name': 'memory-size-gb',
+            frozendict({
+                'memory-size-gb': frozendict({
                     'description': 'Memory capacity of Redis instance.',
                     'type': 'int',
                     'default': 1,
                 }),
-                frozendict({
-                    'name': 'tier',
+                'tier': frozendict({
                     'description':
                         'The service tier of the instance. '
                         'Supported options include BASIC for standalone '
@@ -86,8 +82,7 @@ _INTEGRATION_TYPES = frozenset([
                         'primary/replica instances.',
                     'type': 'string',
                 }),
-                frozendict({
-                    'name': 'version',
+                'version': frozendict({
                     'description':
                         'The version of Redis software. If not '
                         'provided, latest supported version will be used. '
@@ -95,7 +90,7 @@ _INTEGRATION_TYPES = frozenset([
                         'REDIS_4_0 and REDIS_3_2.',
                     'type': 'string',
                 }),
-            ]),
+            }),
     }),
 ])
 
@@ -116,15 +111,46 @@ def IntegrationTypes(client):
   return _INTEGRATION_TYPES
 
 
-def CheckValidIntegrationType(int_type):
+def GetIntegration(integration_type):
+  """Returns values associated to an integration type.
+
+  Args:
+    integration_type: str
+
+  Returns:
+    frozendict() of values associated to the integration type.
+    If the integration does not exist, then None is returned.
+  """
+  for integration in _INTEGRATION_TYPES:
+    if integration['name'] == integration_type:
+      return integration
+  return None
+
+
+def GetIntegrationType(resource_type):
+  """Returns the integration type associated to the given resource type.
+
+  Args:
+    resource_type: string, the resource type.
+
+  Returns:
+    The integration type.
+  """
+  for t in _INTEGRATION_TYPES:
+    if t.get('resource_name', None) == resource_type:
+      return t['name']
+  return resource_type
+
+
+def CheckValidIntegrationType(integration_type):
   """Checks if IntegrationType is supported.
 
   Args:
-    int_type: str, integration type to validate.
+    integration_type: str, integration type to validate.
   Rasies: ArgumentError
   """
-  if int_type not in [
+  if integration_type not in [
       integration['name'] for integration in _INTEGRATION_TYPES
   ]:
     raise exceptions.ArgumentError(
-        'Integration type {} is not supported.'.format(int_type))
+        'Integration of type {} is not supported'.format(integration_type))

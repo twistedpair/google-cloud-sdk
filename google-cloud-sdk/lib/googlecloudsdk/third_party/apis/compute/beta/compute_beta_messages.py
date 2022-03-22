@@ -43476,7 +43476,9 @@ class NetworkInterface(_messages.Message):
     kind: [Output Only] Type of the resource. Always compute#networkInterface
       for network interfaces.
     name: [Output Only] The name of the network interface, which is generated
-      by the server. For network devices, these are eth0, eth1, etc.
+      by the server. For a VM, the network interface uses the nicN naming
+      format. Where N is a value between 0 and 7. The default interface value
+      is nic0.
     network: URL of the VPC network resource for this instance. When creating
       an instance, if neither the network nor the subnetwork is specified, the
       default network global/networks/default is used. If the selected project
@@ -52733,6 +52735,7 @@ class Route(_messages.Message):
   outside the VPC network. For more information, read the Routes overview.
 
   Enums:
+    RouteStatusValueValuesEnum: [Output only] The status of the route.
     RouteTypeValueValuesEnum: [Output Only] The type of this route, which can
       be one of the following values: - 'TRANSIT' for a transit route that
       this router learned from another Cloud Router and will readvertise to
@@ -52794,6 +52797,7 @@ class Route(_messages.Message):
       length. In cases where multiple routes have equal prefix length, the one
       with the lowest-numbered priority value wins. The default value is
       `1000`. The priority value must be from `0` to `65535`, inclusive.
+    routeStatus: [Output only] The status of the route.
     routeType: [Output Only] The type of this route, which can be one of the
       following values: - 'TRANSIT' for a transit route that this router
       learned from another Cloud Router and will readvertise to one of its BGP
@@ -52806,6 +52810,24 @@ class Route(_messages.Message):
     warnings: [Output Only] If potential misconfigurations are detected for
       this route, this field will be populated with warning messages.
   """
+
+  class RouteStatusValueValuesEnum(_messages.Enum):
+    r"""[Output only] The status of the route.
+
+    Values:
+      ACTIVE: This route is processed and active.
+      DROPPED: The route is dropped due to the VPC exceeding the dynamic route
+        limit. For dynamic route limit, please refer to the Learned route
+        example
+      INACTIVE: This route is processed but inactive due to failure from the
+        backend. The backend may have rejected the route
+      PENDING: This route is being processed internally. The status will
+        change once processed.
+    """
+    ACTIVE = 0
+    DROPPED = 1
+    INACTIVE = 2
+    PENDING = 3
 
   class RouteTypeValueValuesEnum(_messages.Enum):
     r"""[Output Only] The type of this route, which can be one of the
@@ -52964,10 +52986,11 @@ class Route(_messages.Message):
   nextHopPeering = _messages.StringField(15)
   nextHopVpnTunnel = _messages.StringField(16)
   priority = _messages.IntegerField(17, variant=_messages.Variant.UINT32)
-  routeType = _messages.EnumField('RouteTypeValueValuesEnum', 18)
-  selfLink = _messages.StringField(19)
-  tags = _messages.StringField(20, repeated=True)
-  warnings = _messages.MessageField('WarningsValueListEntry', 21, repeated=True)
+  routeStatus = _messages.EnumField('RouteStatusValueValuesEnum', 18)
+  routeType = _messages.EnumField('RouteTypeValueValuesEnum', 19)
+  selfLink = _messages.StringField(20)
+  tags = _messages.StringField(21, repeated=True)
+  warnings = _messages.MessageField('WarningsValueListEntry', 22, repeated=True)
 
 
 class RouteAsPath(_messages.Message):

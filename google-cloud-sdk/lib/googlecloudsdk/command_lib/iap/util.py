@@ -43,21 +43,45 @@ SETTING_RESOURCE_TYPE_ENUM = (APP_ENGINE_RESOURCE_TYPE, WEB_RESOURCE_TYPE,
 
 
 def AddIamDestGroupArgs(parser):
-  """Adds OAuth client args.
+  """Adds DestGroup args for managing IAM policies.
 
   Args:
     parser: An argparse.ArgumentParser-like object. It is mocked out in order to
       capture some information, but behaves like an ArgumentParser.
   """
-  group = parser.add_group()
-  group.add_argument(
+  parser.add_argument(
       '--group-name',
       required=True,
       help='Name of the Destination Group.')
-  group.add_argument(
+  parser.add_argument(
       '--region',
       required=True,
       help='Region of the Destination Group.')
+
+
+def AddDestGroupArgs(parser):
+  """Adds DestGroup args for managing the resource.
+
+  Args:
+    parser: An argparse.ArgumentParser-like object. It is mocked out in order to
+      capture some information, but behaves like an ArgumentParser.
+  """
+  parser.add_argument(
+      'group_name',
+      help='Name of the Destination Group.')
+  parser.add_argument(
+      '--region',
+      required=True,
+      help='Region of the Destination Group.')
+
+
+def AddDestGroupIpAndFqdnArgs(parser):
+  parser.add_argument(
+      '--ip-range-list',
+      help='List of ip-ranges in the Destination Group.')
+  parser.add_argument(
+      '--fqdn-list',
+      help='List of fqdn-list in the Destination Group.')
 
 
 def AddIapIamResourceArgs(parser, use_region_arg=False, use_iap_gateway=False):

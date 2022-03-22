@@ -411,6 +411,7 @@ class DaisyChainCopyTask(task.Task):
                source_resource,
                destination_resource,
                delete_source=False,
+               print_created_message=False,
                user_request_args=None):
     """Initializes task.
 
@@ -424,6 +425,8 @@ class DaisyChainCopyTask(task.Task):
         Directories will not be accepted.
       delete_source (bool): If copy completes successfully, delete the source
         object afterwards.
+      print_created_message (bool): Print a message containing the versioned
+        URL of the copy result.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
     super(DaisyChainCopyTask, self).__init__()
@@ -436,6 +439,7 @@ class DaisyChainCopyTask(task.Task):
     self._source_resource = source_resource
     self._destination_resource = destination_resource
     self._delete_source = delete_source
+    self._print_created_message = print_created_message
     self._user_request_args = user_request_args
     self.parallel_processing_key = (
         self._destination_resource.storage_url.url_string)
@@ -496,10 +500,11 @@ class DaisyChainCopyTask(task.Task):
       upload_strategy = upload_util.get_upload_strategy(
           api=destination_client,
           object_length=self._source_resource.size)
-      destination_client.upload_object(
+      result_resource = destination_client.upload_object(
           buffer_controller.readable_stream,
           self._destination_resource,
           request_config,
+          source_resource=self._source_resource,
           upload_strategy=upload_strategy)
     except _AbruptShutdownError:
       # Not raising daisy_chain_stream.exception_raised here because we want
@@ -515,6 +520,9 @@ class DaisyChainCopyTask(task.Task):
     buffer_controller.readable_stream.close()
     if buffer_controller.exception_raised:
       raise buffer_controller.exception_raised
+
+    if self._print_created_message:
+      log.status.Print('Created: {}'.format(result_resource.storage_url))
 
     if self._delete_source:
       return task.Output(

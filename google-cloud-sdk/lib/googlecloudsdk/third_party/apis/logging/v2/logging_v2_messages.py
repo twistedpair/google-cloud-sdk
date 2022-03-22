@@ -14,6 +14,20 @@ from apitools.base.py import extra_types
 package = 'logging'
 
 
+class BigQueryDataset(_messages.Message):
+  r"""Describes a BigQuery dataset that was created by a link.
+
+  Fields:
+    datasetId: The full resource name of the BigQuery dataset. The DATASET_ID
+      will match the ID of the link, so the link must match the naming
+      restrictions of BigQuery datasets (alphanumeric characters and
+      underscores only).The dataset will have a resource path of
+      "bigquery.googleapis.com/projects/PROJECT_ID/datasets/DATASET_ID"
+  """
+
+  datasetId = _messages.StringField(1)
+
+
 class BigQueryOptions(_messages.Message):
   r"""Options that change functionality of a sink exporting data to BigQuery.
 
@@ -250,6 +264,42 @@ class CreateBucketRequest(_messages.Message):
   parent = _messages.StringField(3)
 
 
+class CreateLinkRequest(_messages.Message):
+  r"""The parameters to CreateLink.
+
+  Fields:
+    link: Required. The new link.
+    linkId: Required. The ID to use for the link. The link_id can have up to
+      1,024 characters. A valid link_id must only have alphanumeric characters
+      and underscores within it.
+    parent: Required. The full resource name of the bucket to create a link
+      for. "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET
+      _ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buck
+      ets/[BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+  """
+
+  link = _messages.MessageField('Link', 1)
+  linkId = _messages.StringField(2)
+  parent = _messages.StringField(3)
+
+
+class DeleteLinkRequest(_messages.Message):
+  r"""The parameters to DeleteLink.
+
+  Fields:
+    name: Required. The full resource name of the link to delete."projects/PRO
+      JECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "organiza
+      tions/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK
+      _ID" "billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/B
+      UCKET_ID/links/LINK_ID" "folders/FOLDER_ID/locations/LOCATION_ID/buckets
+      /BUCKET_ID/links/LINK_ID"
+  """
+
+  name = _messages.StringField(1)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -436,6 +486,103 @@ class Linear(_messages.Message):
   width = _messages.FloatField(3)
 
 
+class Link(_messages.Message):
+  r"""Describes a link connected to an analytics enabled bucket.
+
+  Enums:
+    LifecycleStateValueValuesEnum: Output only. The resource lifecycle state.
+
+  Fields:
+    bigqueryDataset: The information of a BigQuery Dataset. When a link is
+      created, a BigQuery dataset is created along with it, in the same
+      project as the LogBucket it's linked to. This dataset will also have
+      BigQuery Views corresponding to the LogViews in the bucket.
+    createTime: Output only. The creation timestamp of the link.
+    description: Describes this link.
+    lifecycleState: Output only. The resource lifecycle state.
+    name: The resource name of the link. The name can have up to 1,024
+      characters. A valid name must only have alphanumeric characters and
+      underscores within it. "projects/[PROJECT_ID]/locations/[LOCATION_ID]/bu
+      ckets/[BUCKET_ID]/links/[LINK_ID]" "organizations/[ORGANIZATION_ID]/loca
+      tions/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]" "billingAccount
+      s/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links
+      /[LINK_ID]" "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET
+      _ID]/links/[LINK_ID]" For example:`projects/my-
+      project/locations/global/buckets/my-bucket/links/my_link
+  """
+
+  class LifecycleStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The resource lifecycle state.
+
+    Values:
+      LIFECYCLE_STATE_UNSPECIFIED: Unspecified state. This is only used/useful
+        for distinguishing unset values.
+      ACTIVE: The normal and active state.
+      DELETE_REQUESTED: The resource has been marked for deletion by the user.
+        For some resources (e.g. buckets), this can be reversed by an un-
+        delete operation.
+      UPDATING: The resource has been marked for an update by the user. It
+        will remain in this state until the update is complete.
+      CREATING: The resource has been marked for creation by the user. It will
+        remain in this state until the creation is complete.
+      FAILED: The resource is in an INTERNAL error state.
+    """
+    LIFECYCLE_STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    DELETE_REQUESTED = 2
+    UPDATING = 3
+    CREATING = 4
+    FAILED = 5
+
+  bigqueryDataset = _messages.MessageField('BigQueryDataset', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 4)
+  name = _messages.StringField(5)
+
+
+class LinkMetadata(_messages.Message):
+  r"""Metadata for long running Link operations.
+
+  Enums:
+    StateValueValuesEnum: State of an operation.
+
+  Fields:
+    createLinkRequest: CreateLink RPC request.
+    deleteLinkRequest: DeleteLink RPC request.
+    endTime: The end time of an operation.
+    startTime: The start time of an operation.
+    state: State of an operation.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of an operation.
+
+    Values:
+      OPERATION_STATE_UNSPECIFIED: Should not be used.
+      OPERATION_STATE_SCHEDULED: The operation is scheduled.
+      OPERATION_STATE_WAITING_FOR_PERMISSIONS: Waiting for necessary
+        permissions.
+      OPERATION_STATE_RUNNING: The operation is running.
+      OPERATION_STATE_SUCCEEDED: The operation was completed successfully.
+      OPERATION_STATE_FAILED: The operation failed.
+      OPERATION_STATE_CANCELLED: The operation was cancelled by the user.
+    """
+    OPERATION_STATE_UNSPECIFIED = 0
+    OPERATION_STATE_SCHEDULED = 1
+    OPERATION_STATE_WAITING_FOR_PERMISSIONS = 2
+    OPERATION_STATE_RUNNING = 3
+    OPERATION_STATE_SUCCEEDED = 4
+    OPERATION_STATE_FAILED = 5
+    OPERATION_STATE_CANCELLED = 6
+
+  createLinkRequest = _messages.MessageField('CreateLinkRequest', 1)
+  deleteLinkRequest = _messages.MessageField('DeleteLinkRequest', 2)
+  endTime = _messages.StringField(3)
+  startTime = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+
+
 class ListBucketsResponse(_messages.Message):
   r"""The response from ListBuckets.
 
@@ -463,6 +610,21 @@ class ListExclusionsResponse(_messages.Message):
   """
 
   exclusions = _messages.MessageField('LogExclusion', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListLinksResponse(_messages.Message):
+  r"""The response from ListLinks.
+
+  Fields:
+    links: A list of links.
+    nextPageToken: If there might be more results than those appearing in this
+      response, then nextPageToken is included. To get the next set of
+      results, call the same method again using the value of nextPageToken as
+      pageToken.
+  """
+
+  links = _messages.MessageField('Link', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -1524,6 +1686,21 @@ class LoggingBillingAccountsBucketsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class LoggingBillingAccountsBucketsLinksGetRequest(_messages.Message):
+  r"""A LoggingBillingAccountsBucketsLinksGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the link:"projects/PROJECT_ID/locatio
+      ns/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "organizations/ORGANIZAT
+      ION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "billingAc
+      counts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/
+      LINK_ID"
+      "folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class LoggingBillingAccountsBucketsViewsGetRequest(_messages.Message):
   r"""A LoggingBillingAccountsBucketsViewsGetRequest object.
 
@@ -1696,6 +1873,63 @@ class LoggingBillingAccountsLocationsBucketsDeleteRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class LoggingBillingAccountsLocationsBucketsLinksCreateRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsBucketsLinksCreateRequest object.
+
+  Fields:
+    link: A Link resource to be passed as the request body.
+    linkId: Required. The ID to use for the link. The link_id can have up to
+      1,024 characters. A valid link_id must only have alphanumeric characters
+      and underscores within it.
+    parent: Required. The full resource name of the bucket to create a link
+      for. "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET
+      _ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buck
+      ets/[BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+  """
+
+  link = _messages.MessageField('Link', 1)
+  linkId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingBillingAccountsLocationsBucketsLinksDeleteRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsBucketsLinksDeleteRequest object.
+
+  Fields:
+    name: Required. The full resource name of the link to delete."projects/PRO
+      JECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "organiza
+      tions/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK
+      _ID" "billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/B
+      UCKET_ID/links/LINK_ID" "folders/FOLDER_ID/locations/LOCATION_ID/buckets
+      /BUCKET_ID/links/LINK_ID"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingBillingAccountsLocationsBucketsLinksListRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsBucketsLinksListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response.
+    parent: Required. The parent resource whose links are to be listed:"projec
+      ts/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/"
+      "organizations/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/"
+      "billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET
+      _ID/" "folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class LoggingBillingAccountsLocationsBucketsListRequest(_messages.Message):
@@ -2380,6 +2614,78 @@ class LoggingFoldersLocationsBucketsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class LoggingFoldersLocationsBucketsLinksCreateRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsBucketsLinksCreateRequest object.
+
+  Fields:
+    link: A Link resource to be passed as the request body.
+    linkId: Required. The ID to use for the link. The link_id can have up to
+      1,024 characters. A valid link_id must only have alphanumeric characters
+      and underscores within it.
+    parent: Required. The full resource name of the bucket to create a link
+      for. "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET
+      _ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buck
+      ets/[BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+  """
+
+  link = _messages.MessageField('Link', 1)
+  linkId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingFoldersLocationsBucketsLinksDeleteRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsBucketsLinksDeleteRequest object.
+
+  Fields:
+    name: Required. The full resource name of the link to delete."projects/PRO
+      JECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "organiza
+      tions/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK
+      _ID" "billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/B
+      UCKET_ID/links/LINK_ID" "folders/FOLDER_ID/locations/LOCATION_ID/buckets
+      /BUCKET_ID/links/LINK_ID"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingFoldersLocationsBucketsLinksGetRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsBucketsLinksGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the link:"projects/PROJECT_ID/locatio
+      ns/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "organizations/ORGANIZAT
+      ION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "billingAc
+      counts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/
+      LINK_ID"
+      "folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingFoldersLocationsBucketsLinksListRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsBucketsLinksListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response.
+    parent: Required. The parent resource whose links are to be listed:"projec
+      ts/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/"
+      "organizations/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/"
+      "billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET
+      _ID/" "folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class LoggingFoldersLocationsBucketsListRequest(_messages.Message):
   r"""A LoggingFoldersLocationsBucketsListRequest object.
 
@@ -2917,6 +3223,78 @@ class LoggingLocationsBucketsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class LoggingLocationsBucketsLinksCreateRequest(_messages.Message):
+  r"""A LoggingLocationsBucketsLinksCreateRequest object.
+
+  Fields:
+    link: A Link resource to be passed as the request body.
+    linkId: Required. The ID to use for the link. The link_id can have up to
+      1,024 characters. A valid link_id must only have alphanumeric characters
+      and underscores within it.
+    parent: Required. The full resource name of the bucket to create a link
+      for. "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET
+      _ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buck
+      ets/[BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+  """
+
+  link = _messages.MessageField('Link', 1)
+  linkId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingLocationsBucketsLinksDeleteRequest(_messages.Message):
+  r"""A LoggingLocationsBucketsLinksDeleteRequest object.
+
+  Fields:
+    name: Required. The full resource name of the link to delete."projects/PRO
+      JECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "organiza
+      tions/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK
+      _ID" "billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/B
+      UCKET_ID/links/LINK_ID" "folders/FOLDER_ID/locations/LOCATION_ID/buckets
+      /BUCKET_ID/links/LINK_ID"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingLocationsBucketsLinksGetRequest(_messages.Message):
+  r"""A LoggingLocationsBucketsLinksGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the link:"projects/PROJECT_ID/locatio
+      ns/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "organizations/ORGANIZAT
+      ION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "billingAc
+      counts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/
+      LINK_ID"
+      "folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingLocationsBucketsLinksListRequest(_messages.Message):
+  r"""A LoggingLocationsBucketsLinksListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response.
+    parent: Required. The parent resource whose links are to be listed:"projec
+      ts/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/"
+      "organizations/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/"
+      "billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET
+      _ID/" "folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class LoggingLocationsBucketsListRequest(_messages.Message):
   r"""A LoggingLocationsBucketsListRequest object.
 
@@ -3381,6 +3759,78 @@ class LoggingOrganizationsLocationsBucketsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class LoggingOrganizationsLocationsBucketsLinksCreateRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsBucketsLinksCreateRequest object.
+
+  Fields:
+    link: A Link resource to be passed as the request body.
+    linkId: Required. The ID to use for the link. The link_id can have up to
+      1,024 characters. A valid link_id must only have alphanumeric characters
+      and underscores within it.
+    parent: Required. The full resource name of the bucket to create a link
+      for. "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET
+      _ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buck
+      ets/[BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+  """
+
+  link = _messages.MessageField('Link', 1)
+  linkId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingOrganizationsLocationsBucketsLinksDeleteRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsBucketsLinksDeleteRequest object.
+
+  Fields:
+    name: Required. The full resource name of the link to delete."projects/PRO
+      JECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "organiza
+      tions/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK
+      _ID" "billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/B
+      UCKET_ID/links/LINK_ID" "folders/FOLDER_ID/locations/LOCATION_ID/buckets
+      /BUCKET_ID/links/LINK_ID"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingOrganizationsLocationsBucketsLinksGetRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsBucketsLinksGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the link:"projects/PROJECT_ID/locatio
+      ns/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "organizations/ORGANIZAT
+      ION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "billingAc
+      counts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/
+      LINK_ID"
+      "folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingOrganizationsLocationsBucketsLinksListRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsBucketsLinksListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response.
+    parent: Required. The parent resource whose links are to be listed:"projec
+      ts/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/"
+      "organizations/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/"
+      "billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET
+      _ID/" "folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class LoggingOrganizationsLocationsBucketsListRequest(_messages.Message):
@@ -4033,6 +4483,78 @@ class LoggingProjectsLocationsBucketsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class LoggingProjectsLocationsBucketsLinksCreateRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsBucketsLinksCreateRequest object.
+
+  Fields:
+    link: A Link resource to be passed as the request body.
+    linkId: Required. The ID to use for the link. The link_id can have up to
+      1,024 characters. A valid link_id must only have alphanumeric characters
+      and underscores within it.
+    parent: Required. The full resource name of the bucket to create a link
+      for. "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET
+      _ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buck
+      ets/[BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+  """
+
+  link = _messages.MessageField('Link', 1)
+  linkId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingProjectsLocationsBucketsLinksDeleteRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsBucketsLinksDeleteRequest object.
+
+  Fields:
+    name: Required. The full resource name of the link to delete."projects/PRO
+      JECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "organiza
+      tions/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK
+      _ID" "billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/B
+      UCKET_ID/links/LINK_ID" "folders/FOLDER_ID/locations/LOCATION_ID/buckets
+      /BUCKET_ID/links/LINK_ID"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingProjectsLocationsBucketsLinksGetRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsBucketsLinksGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the link:"projects/PROJECT_ID/locatio
+      ns/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "organizations/ORGANIZAT
+      ION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID" "billingAc
+      counts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/
+      LINK_ID"
+      "folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/LINK_ID
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingProjectsLocationsBucketsLinksListRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsBucketsLinksListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response.
+    parent: Required. The parent resource whose links are to be listed:"projec
+      ts/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/links/"
+      "organizations/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/"
+      "billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET
+      _ID/" "folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class LoggingProjectsLocationsBucketsListRequest(_messages.Message):

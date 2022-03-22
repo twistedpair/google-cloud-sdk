@@ -1,0 +1,20 @@
+region:
+  name: region
+  collection: workstations.projects.locations
+  attributes:
+  - &region
+    parameter_name: locationsId
+    attribute_name: region
+    help: |
+      The name of the region of the {resource}.
+
+cluster:
+  name: cluster
+  collection: workstations.projects.locations.workstationClusters
+  attributes:
+  - *region
+  - &cluster
+    parameter_name: workstationClustersId
+    attribute_name: cluster
+    help: |
+      The name of the cluster containing the {resource}.

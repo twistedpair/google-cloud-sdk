@@ -977,8 +977,6 @@ class Gateway(_messages.Message):
     serverTlsPolicy: Optional. A fully-qualified ServerTLSPolicy URL
       reference. Specifies how TLS traffic is terminated. If empty, TLS
       termination is disabled.
-    swgConfig: Optional. This should be set when configuring a gateway of type
-      'Secure_Web_Gateway'
     type: Immutable. The type of the customer managed gateway.
     updateTime: Output only. The timestamp when the resource was updated.
   """
@@ -1031,34 +1029,8 @@ class Gateway(_messages.Message):
   scope = _messages.StringField(7)
   selfLink = _messages.StringField(8)
   serverTlsPolicy = _messages.StringField(9)
-  swgConfig = _messages.MessageField('GatewaySecureWebGatewayConfig', 10)
-  type = _messages.EnumField('TypeValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
-
-
-class GatewaySecureWebGatewayConfig(_messages.Message):
-  r"""Contains fields necessary for gateways of type 'Secure_Web_Gateway'
-
-  Fields:
-    certificateUrls: A fully-qualified Certificates URL reference. The proxy
-      presents a Certificate (selected based on SNI) when establishing a TLS
-      connection. This feature only applies to gateways of type
-      'SECURE_WEB_GATEWAY'.
-    network: The relative resource name identifying the VPC network that is
-      using this configuration. For example:
-      `projects/*/global/networks/network-1`
-    securityPolicy: A fully-qualified SecurityPolicy URL reference. Defines
-      how a server should apply security policy to inbound (VM to Proxy)
-      initiated connections.
-    subnetwork: The relative resource name identifying the subnetwork in which
-      this SWG is allocated. For example: `projects/*/regions/us-
-      central1/subnetworks/network-1`
-  """
-
-  certificateUrls = _messages.StringField(1, repeated=True)
-  network = _messages.StringField(2)
-  securityPolicy = _messages.StringField(3)
-  subnetwork = _messages.StringField(4)
+  type = _messages.EnumField('TypeValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
 
 
 class GrpcRoute(_messages.Message):
@@ -1089,15 +1061,15 @@ class GrpcRoute(_messages.Message):
       that as per RFC1035 and RFC1123, a label must consist of lower case
       alphanumeric characters or '-', and must start and end with an
       alphanumeric character. No other punctuation is allowed. The routes
-      associated with a Router must have unique hostnames. If you attempt to
-      attach multiple routes with conflicting hostnames, the configuration
-      will be rejected. For example, while it is acceptable for routes for the
-      hostnames "*.foo.bar.com" and "*.bar.com" to be associated with the same
-      route, it is not possible to associate two routes both with "*.bar.com"
-      or both with "bar.com". If a port is specified, then gRPC clients must
-      use the channel URI with the port to match this rule (i.e.
-      "xds:///service:123"), otherwise they must supply the URI without a port
-      (i.e. "xds:///service").
+      associated with a Mesh or Gateway must have unique hostnames. If you
+      attempt to attach multiple routes with conflicting hostnames, the
+      configuration will be rejected. For example, while it is acceptable for
+      routes for the hostnames "*.foo.bar.com" and "*.bar.com" to be
+      associated with the same route, it is not possible to associate two
+      routes both with "*.bar.com" or both with "bar.com". If a port is
+      specified, then gRPC clients must use the channel URI with the port to
+      match this rule (i.e. "xds:///service:123"), otherwise they must supply
+      the URI without a port (i.e. "xds:///service").
     labels: Optional. Set of label tags associated with the GrpcRoute
       resource.
     meshes: Optional. Meshes defines a list of meshes this GrpcRoute is
@@ -1599,13 +1571,13 @@ class HttpRoute(_messages.Message):
       that as per RFC1035 and RFC1123, a label must consist of lower case
       alphanumeric characters or '-', and must start and end with an
       alphanumeric character. No other punctuation is allowed. The routes
-      associated with a Mesh (or Gateways under the same scope) must have
-      unique hostnames. If you attempt to attach multiple routes with
-      conflicting hostnames, the configuration will be rejected. For example,
-      while it is acceptable for routes for the hostnames "*.foo.bar.com" and
-      "*.bar.com" to be associated with the same Mesh (or Gateways under the
-      same scope), it is not possible to associate two routes both with
-      "*.bar.com" or both with "bar.com".
+      associated with a Mesh or Gateways must have unique hostnames. If you
+      attempt to attach multiple routes with conflicting hostnames, the
+      configuration will be rejected. For example, while it is acceptable for
+      routes for the hostnames "*.foo.bar.com" and "*.bar.com" to be
+      associated with the same Mesh (or Gateways under the same scope), it is
+      not possible to associate two routes both with "*.bar.com" or both with
+      "bar.com".
     labels: Optional. Set of label tags associated with the HttpRoute
       resource.
     meshes: Optional. Meshes defines a list of meshes this HttpRoute is
@@ -2321,21 +2293,6 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
-
-
-class ListRoutersResponse(_messages.Message):
-  r"""Response returned by the ListRouters method.
-
-  Fields:
-    nextPageToken: If there might be more results than those appearing in this
-      response, then `next_page_token` is included. To get the next set of
-      results, call this method again using the value of `next_page_token` as
-      `page_token`.
-    routers: List of Router resources.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  routers = _messages.MessageField('Router', 2, repeated=True)
 
 
 class ListServiceBindingsResponse(_messages.Message):
@@ -4174,135 +4131,6 @@ class NetworkservicesProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class NetworkservicesProjectsLocationsRoutersCreateRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsRoutersCreateRequest object.
-
-  Fields:
-    parent: Required. The parent resource of the Router. Must be in the format
-      `projects/*/locations/global`.
-    router: A Router resource to be passed as the request body.
-    routerId: Required. Short name of the Router resource to be created.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  router = _messages.MessageField('Router', 2)
-  routerId = _messages.StringField(3)
-
-
-class NetworkservicesProjectsLocationsRoutersDeleteRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsRoutersDeleteRequest object.
-
-  Fields:
-    name: Required. A name of the Router to delete. Must be in the format
-      `projects/*/locations/global/routers/*`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class NetworkservicesProjectsLocationsRoutersGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsRoutersGetIamPolicyRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The maximum policy version that
-      will be used to format the policy. Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected. Requests for
-      policies with any conditional role bindings must specify version 3.
-      Policies with no conditional role bindings may specify any valid value
-      or leave the field unset. The policy in the response might use the
-      policy version that you specified, or it might use a lower policy
-      version. For example, if you specify version 3, but the policy has no
-      conditional role bindings, the response uses version 1. To learn which
-      resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
-class NetworkservicesProjectsLocationsRoutersGetRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsRoutersGetRequest object.
-
-  Fields:
-    name: Required. A name of the Router to get. Must be in the format
-      `projects/*/locations/global/routers/*`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class NetworkservicesProjectsLocationsRoutersListRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsRoutersListRequest object.
-
-  Fields:
-    pageSize: Maximum number of Routers to return per call.
-    pageToken: The value returned by the last `ListRoutersResponse` Indicates
-      that this is a continuation of a prior `ListRouters` call, and that the
-      system should return the next page of data.
-    parent: Required. The project and location from which the Routers should
-      be listed, specified in the format `projects/*/locations/global`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class NetworkservicesProjectsLocationsRoutersPatchRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsRoutersPatchRequest object.
-
-  Fields:
-    name: Required. Name of the Router resource. It matches pattern
-      `projects/*/locations/global/routers/`.
-    router: A Router resource to be passed as the request body.
-    updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the Router resource by the update. The fields specified
-      in the update_mask are relative to the resource, not the full request. A
-      field will be overwritten if it is in the mask. If the user does not
-      provide a mask then all fields will be overwritten.
-  """
-
-  name = _messages.StringField(1, required=True)
-  router = _messages.MessageField('Router', 2)
-  updateMask = _messages.StringField(3)
-
-
-class NetworkservicesProjectsLocationsRoutersSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsRoutersSetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkservicesProjectsLocationsRoutersTestIamPermissionsRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsRoutersTestIamPermissionsRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
 class NetworkservicesProjectsLocationsServiceBindingsCreateRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsServiceBindingsCreateRequest object.
 
@@ -5149,137 +4977,6 @@ class RouteRule(_messages.Message):
   urlRedirect = _messages.MessageField('UrlRedirect', 7)
 
 
-class Router(_messages.Message):
-  r"""Router is the resource representing infrastructure component that is
-  responsible for forwarding traffic and applying policies. For example, it
-  could be a load balancer, sidecar proxy or a GRPC client.
-
-  Enums:
-    TypeValueValuesEnum: Required. The type of the Router resource.
-
-  Messages:
-    LabelsValue: Optional. Set of label tags associated with the Router
-      resource.
-
-  Fields:
-    createTime: Output only. The timestamp when the resource was created.
-    description: Optional. A free-text description of the resource. Max length
-      1024 characters.
-    labels: Optional. Set of label tags associated with the Router resource.
-    name: Required. Name of the Router resource. It matches pattern
-      `projects/*/locations/global/routers/`.
-    network: Optional. The reference to the VPC network that is using this
-      configuration. Currently only the short name (network name) is
-      supported, for example "default", and we assume it is under the same
-      project as the resource by default.
-    proxySettings: Optional. Settings specific to proxies. This field is only
-      applicable if the Router type is "PROXY".
-    routes: Optional. [Deprecated] Specify target routers from routes to route
-      traffic List of references to routes that this Router must be able to
-      route traffic for. Example:
-      projects/12345/locations/global/grpcRoutes/myGrpcRoute Must refer to
-      GrpcRoute if Router type is PROXYLESS_GRPC. Must refer to HttpRoute if
-      Router type is PROXY.
-    scope: Optional. Scope is used to identify Routers of the same type
-      configuration of which should apply to the same infrastructure
-      component(s). For example: if there are multiple Routers of type PROXY
-      with the same value of the scope, proxies requesting the configuration
-      using this value will receive a joint configuration of all Routers in
-      the scope. Clients can request configuration for a particular scope by
-      specifying its value in their request. Refer to the product
-      documentation for the product-specific way of specifying request
-      parameters. Max length 64 characters. Scope should start with a letter
-      and can only have letters, numbers, hyphens.
-    selector: Optional. Defines additional parameters to match data plane
-      clients (envoy proxy or grpc client) with the configuration provided by
-      this Router. If selector matches - all configuration associated with
-      this Router is sent to a client, otherwise it is ignored for the
-      particular data plane clients. For the detailed description and examples
-      of selector usage, check documentation for Selector.
-    type: Required. The type of the Router resource.
-    updateTime: Output only. The timestamp when the resource was updated.
-  """
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""Required. The type of the Router resource.
-
-    Values:
-      TYPE_UNSPECIFIED: The type of Router is unspecified.
-      PROXYLESS_GRPC: The Router is used in Proxyless gRPC model. Routes being
-        referenced must be gRPC routes for this type.
-      PROXY: The Router is used in customer-managed proxy model.
-      SIDECAR: The Router is used in customer-managed sidecar proxy model.
-    """
-    TYPE_UNSPECIFIED = 0
-    PROXYLESS_GRPC = 1
-    PROXY = 2
-    SIDECAR = 3
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Optional. Set of label tags associated with the Router resource.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  network = _messages.StringField(5)
-  proxySettings = _messages.MessageField('RouterProxySettings', 6)
-  routes = _messages.StringField(7, repeated=True)
-  scope = _messages.StringField(8)
-  selector = _messages.MessageField('Selector', 9)
-  type = _messages.EnumField('TypeValueValuesEnum', 10)
-  updateTime = _messages.StringField(11)
-
-
-class RouterProxySettings(_messages.Message):
-  r"""Settings that are applicable to Router, of which the type is PROXY.
-
-  Fields:
-    addresses: Zero or more addresses with ports in format of ":" that the
-      Router must receive traffic on. The proxy binds to the ports specified.
-      IP address can be anything that is allowed by the underlying
-      infrastructure (auto-allocation, static IP, BYOIP). Must be unset if the
-      interceptionPort is set as interceptionPort configures the Router to
-      listen on the localhost address instead.
-    authorizationPolicy: Optional. A fully-qualified AuthorizationPolicy URL
-      reference. Specifies how traffic is authorized. If empty, authorization
-      checks are disabled.
-    interceptionPort: If set to a valid TCP port (1-65535), instructs Router
-      to listen on the specified port of localhost (127.0.0.1) address. Router
-      will expect all traffic to be redirected to this port regardless of its
-      actual ip:port destination.
-    serverTlsPolicy: Optional. A fully-qualified ServerTLSPolicy URL
-      reference. Specifies how TLS traffic is terminated. If empty, TLS
-      termination is disabled.
-  """
-
-  addresses = _messages.StringField(1, repeated=True)
-  authorizationPolicy = _messages.StringField(2)
-  interceptionPort = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  serverTlsPolicy = _messages.StringField(4)
-
-
 class Routing(_messages.Message):
   r"""Defines how requests are routed, modified, cached and/or which origin
   content is filled from.
@@ -5296,85 +4993,6 @@ class Routing(_messages.Message):
 
   hostRules = _messages.MessageField('HostRule', 1, repeated=True)
   pathMatchers = _messages.MessageField('PathMatcher', 2, repeated=True)
-
-
-class Selector(_messages.Message):
-  r"""A general Selector that defines how to select the entities based on the
-  metadata provided by these entities. For example, xDS API clients (such as
-  Envoy proxy) present key=value label pairs to the control plane upon
-  connection. The Selector could be used to select a subset of clients based
-  on the labels they presented. Selector is used in a context of other
-  resources, so that configuration of these resources is applied only to the
-  entities that were matched by the Selector. For example, one may set a
-  Selector of a resource as follows: labels_matchers: - type: MATCH_ANY
-  labels: - key: env value: dev - key: user-group value: qa negated: true -
-  type: MATCH_ANY labels: - key: version value: v1 The resource will/can be
-  delivered to entities that present labels such as: "env": "dev", "version":
-  "v1" but NOT delivered to those that have labels as: "env": "dev", "user-
-  group": "qa", "version", "v1"
-
-  Fields:
-    labelsMatchers: A list of LabelsMatcheres to match against presented
-      labels. When multiple LabelsMatcheres are provided, they are combined
-      with a logical AND, i.e. all LabelMatchers must match in order for the
-      Selector to match.
-  """
-
-  labelsMatchers = _messages.MessageField('SelectorLabelsMatcher', 1, repeated=True)
-
-
-class SelectorLabel(_messages.Message):
-  r"""Defines match criteria for an individual label.
-
-  Fields:
-    key: Key of the label.
-    negated: If set to true - the match condition of the label is reversed.
-      I.e. by default label {name="exampleName", value="exampleValue"} will
-      match if "exampleName = exampleValue" is present. With negated set to
-      true the same configuration will match if "exampleName = exampleValue"
-      is NOT present in the list of evaluated labels.
-    value: Value of the label.
-  """
-
-  key = _messages.StringField(1)
-  negated = _messages.BooleanField(2)
-  value = _messages.StringField(3)
-
-
-class SelectorLabelsMatcher(_messages.Message):
-  r"""LabelsMatcher defines criteria to match by a list of labels.
-
-  Enums:
-    TypeValueValuesEnum: Specify how are labels evaluated together. MATCH_ANY:
-      LabelsMatcher is considered a match if ANY one of the labels provided is
-      a match. MATCH_ALL: LabelsMatcher is considered a match if ALL of the
-      labels are matched.
-
-  Fields:
-    labels: Defines labels to match against.
-    type: Specify how are labels evaluated together. MATCH_ANY: LabelsMatcher
-      is considered a match if ANY one of the labels provided is a match.
-      MATCH_ALL: LabelsMatcher is considered a match if ALL of the labels are
-      matched.
-  """
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""Specify how are labels evaluated together. MATCH_ANY: LabelsMatcher is
-    considered a match if ANY one of the labels provided is a match.
-    MATCH_ALL: LabelsMatcher is considered a match if ALL of the labels are
-    matched.
-
-    Values:
-      MATCH_TYPE_UNSPECIFIED: Default Value.
-      MATCH_ANY: Logical OR labels provided in LabelsMatcher.
-      MATCH_ALL: Logical AND labels provided in LabelsMatcher.
-    """
-    MATCH_TYPE_UNSPECIFIED = 0
-    MATCH_ANY = 1
-    MATCH_ALL = 2
-
-  labels = _messages.MessageField('SelectorLabel', 1, repeated=True)
-  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class ServiceBinding(_messages.Message):
@@ -5936,13 +5554,9 @@ class TlsRouteRouteAction(_messages.Message):
   Fields:
     destinations: Required. The destination services to which traffic should
       be forwarded. At least one destination service is required.
-    originalDestination: Optional. If true, Router will use the destination IP
-      and port of the original connection as the destination of the request.
-      Default is false.
   """
 
   destinations = _messages.MessageField('TlsRouteRouteDestination', 1, repeated=True)
-  originalDestination = _messages.BooleanField(2)
 
 
 class TlsRouteRouteDestination(_messages.Message):
@@ -5987,10 +5601,8 @@ class TlsRouteRouteRule(_messages.Message):
 
   Fields:
     action: Required. The detailed rule defining how to route matched traffic.
-    matches: Optional. RouteMatch defines the predicate used to match requests
-      to a given action. Multiple match types are "OR"ed for evaluation. If no
-      routeMatch field is specified, this rule will unconditionally match
-      traffic.
+    matches: Required. RouteMatch defines the predicate used to match requests
+      to a given action. Multiple match types are "OR"ed for evaluation.
   """
 
   action = _messages.MessageField('TlsRouteRouteAction', 1)

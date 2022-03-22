@@ -288,7 +288,9 @@ def AddConnectionTrackingPolicy(parser):
       default=None,
       help="""\
       Specifies how long to keep a connection tracking table entry while there
-      is no matching traffic (in seconds).
+      is no matching traffic (in seconds). Applicable only for backend
+      service-based network load balancers and internal TCP/UDP load balancers
+      as part of a connection tracking policy.
       """)
 
 

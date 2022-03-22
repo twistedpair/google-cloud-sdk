@@ -1269,30 +1269,7 @@ class DerivedAssetConfig(_messages.Message):
 
 
 class DerivedAssetStatus(_messages.Message):
-  r"""Status of derived asset action.
-
-  Enums:
-    StateValueValuesEnum: State of the derived asset action.
-
-  Fields:
-    state: State of the derived asset action.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""State of the derived asset action.
-
-    Values:
-      STATE_UNSPECIFIED: State of the derived asset action is unspecified.
-      QUEUED: Derived asset action is queued.
-      RUNNING: Derived asset action is in running state.
-      COMPLETED: Derived asset action has been completed.
-    """
-    STATE_UNSPECIFIED = 0
-    QUEUED = 1
-    RUNNING = 2
-    COMPLETED = 3
-
-  state = _messages.EnumField('StateValueValuesEnum', 1)
+  r"""Status of derived asset action."""
 
 
 class Empty(_messages.Message):
@@ -4369,9 +4346,6 @@ class TransformationConfig(_messages.Message):
 class TransformationStatus(_messages.Message):
   r"""Status of Asset transformation.
 
-  Enums:
-    StateValueValuesEnum: State of the asset transformation.
-
   Messages:
     ProgressReportValue: Output only. A struct that was provided by the
       Transformer as progress report.
@@ -4384,26 +4358,7 @@ class TransformationStatus(_messages.Message):
       asset transformation occurred.
     progressReport: Output only. A struct that was provided by the Transformer
       as progress report.
-    state: State of the asset transformation.
   """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""State of the asset transformation.
-
-    Values:
-      STATE_UNSPECIFIED: Transformation state is unspecified.
-      QUEUED: Transformation is queued.
-      RUNNING: Transformation is in running state.
-      COMPLETED: Transformation has been completed.
-      CANCELLED: Transformation has been cancelled.
-      CANCELLING: Transformation is in cancelling state.
-    """
-    STATE_UNSPECIFIED = 0
-    QUEUED = 1
-    RUNNING = 2
-    COMPLETED = 3
-    CANCELLED = 4
-    CANCELLING = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ProgressReportValue(_messages.Message):
@@ -4435,7 +4390,6 @@ class TransformationStatus(_messages.Message):
   lastInvocationStatus = _messages.MessageField('Status', 2)
   lastInvocationTime = _messages.StringField(3)
   progressReport = _messages.MessageField('ProgressReportValue', 4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class Transformer(_messages.Message):

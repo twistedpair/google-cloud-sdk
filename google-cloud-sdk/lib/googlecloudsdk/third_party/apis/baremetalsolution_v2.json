@@ -1215,7 +1215,7 @@
           "type": "string"
         },
         "email": {
-          "description": "Optional. Email provided to send a confirmation with provisioning config to.",
+          "description": "Email provided to send a confirmation with provisioning config to. Deprecated in favour of email field in request messages.",
           "type": "string"
         },
         "state": {
@@ -1287,6 +1287,10 @@
         "userNote": {
           "description": "User note field, it can be used by customers to add additional information for the BMS Ops team .",
           "type": "string"
+        },
+        "accountNetworksEnabled": {
+          "description": "If true networks can be from different projects of the same vendor account.",
+          "type": "boolean"
         }
       }
     },
@@ -2829,6 +2833,11 @@
                       "location": "path",
                       "required": true,
                       "type": "string"
+                    },
+                    "email": {
+                      "description": "Optional. Email provided to send a confirmation with provisioning config to.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -2863,6 +2872,11 @@
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
+                    },
+                    "email": {
+                      "description": "Optional. Email provided to send a confirmation with provisioning config to.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [

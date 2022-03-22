@@ -400,6 +400,89 @@ class IapProjectsBrandsListRequest(_messages.Message):
   parent = _messages.StringField(1, required=True)
 
 
+class IapProjectsIapTunnelLocationsDestGroupsCreateRequest(_messages.Message):
+  r"""A IapProjectsIapTunnelLocationsDestGroupsCreateRequest object.
+
+  Fields:
+    parent: Required. GCP Project number/id and location. In the following
+      format: projects/{project_number/id}/iap_tunnel/locations/{location}.
+    tunnelDestGroup: A TunnelDestGroup resource to be passed as the request
+      body.
+    tunnelDestGroupId: Required. The ID to use for the TunnelDestGroup, which
+      will become the final component of the resource name. This value should
+      be 4-63 characters, and valid characters are /a-z-/.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  tunnelDestGroup = _messages.MessageField('TunnelDestGroup', 2)
+  tunnelDestGroupId = _messages.StringField(3)
+
+
+class IapProjectsIapTunnelLocationsDestGroupsDeleteRequest(_messages.Message):
+  r"""A IapProjectsIapTunnelLocationsDestGroupsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the TunnelDestGroup to be deleted. In the
+      following format: projects/{project_number/id}/iap_tunnel/locations/{loc
+      ation}/destGroups/{dest_group}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IapProjectsIapTunnelLocationsDestGroupsGetRequest(_messages.Message):
+  r"""A IapProjectsIapTunnelLocationsDestGroupsGetRequest object.
+
+  Fields:
+    name: Required. Name of the TunnelDestGroup to be fetched. In the
+      following format: projects/{project_number/id}/iap_tunnel/locations/{loc
+      ation}/destGroups/{dest_group}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IapProjectsIapTunnelLocationsDestGroupsListRequest(_messages.Message):
+  r"""A IapProjectsIapTunnelLocationsDestGroupsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of groups to return. The service may return
+      fewer than this value. If unspecified, at most 100 groups will be
+      returned. The maximum value is 1000; values above 1000 will be coerced
+      to 1000.
+    pageToken: A page token, received from a previous `ListTunnelDestGroups`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListTunnelDestGroups` must match the call
+      that provided the page token.
+    parent: Required. GCP Project number/id and location. In the following
+      format: projects/{project_number/id}/iap_tunnel/locations/{location}. A
+      `-` can be used for the location to group across all locations.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class IapProjectsIapTunnelLocationsDestGroupsPatchRequest(_messages.Message):
+  r"""A IapProjectsIapTunnelLocationsDestGroupsPatchRequest object.
+
+  Fields:
+    name: Required. Immutable. Identifier for the TunnelDestGroup. Must be
+      unique within the project.
+    tunnelDestGroup: A TunnelDestGroup resource to be passed as the request
+      body.
+    updateMask: The field mask specifying which IAP settings should be
+      updated. If omitted, then all of the settings are updated. See
+      https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask
+  """
+
+  name = _messages.StringField(1, required=True)
+  tunnelDestGroup = _messages.MessageField('TunnelDestGroup', 2)
+  updateMask = _messages.StringField(3)
+
+
 class IapSetIamPolicyRequest(_messages.Message):
   r"""A IapSetIamPolicyRequest object.
 
@@ -497,6 +580,19 @@ class ListIdentityAwareProxyClientsResponse(_messages.Message):
 
   identityAwareProxyClients = _messages.MessageField('IdentityAwareProxyClient', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListTunnelDestGroupsResponse(_messages.Message):
+  r"""The response from ListTunnelDestGroups.
+
+  Fields:
+    nextPageToken: A token, which can be send as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    tunnelDestGroups: TunnelDestGroup existing in the project.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  tunnelDestGroups = _messages.MessageField('TunnelDestGroup', 2, repeated=True)
 
 
 class OAuthSettings(_messages.Message):
@@ -893,6 +989,21 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class TunnelDestGroup(_messages.Message):
+  r"""A TunnelDestGroup.
+
+  Fields:
+    cidrs: null List of CIDRs that this group applies to.
+    fqdns: null List of FQDNs that this group applies to.
+    name: Required. Immutable. Identifier for the TunnelDestGroup. Must be
+      unique within the project.
+  """
+
+  cidrs = _messages.StringField(1, repeated=True)
+  fqdns = _messages.StringField(2, repeated=True)
+  name = _messages.StringField(3)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -201,6 +201,26 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_DEPLOYMENTRESOURCEPOOLS = (
+      'projects.locations.deploymentResourcePools',
+      'projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/'
+      '{deploymentResourcePoolsId}',
+      {},
+      ['projectsId', 'locationsId', 'deploymentResourcePoolsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_DEPLOYMENTRESOURCEPOOLS_OPERATIONS = (
+      'projects.locations.deploymentResourcePools.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'deploymentResourcePools/{deploymentResourcePoolsId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_EDGEDEVICES = (
       'projects.locations.edgeDevices',
       'projects/{projectsId}/locations/{locationsId}/edgeDevices/'
@@ -307,6 +327,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/featurestores/'
               '{featurestoresId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_FEDERATEDLEARNINGJOBS = (
+      'projects.locations.federatedLearningJobs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'federatedLearningJobs/{federatedLearningJobsId}',
       },
       ['name'],
       True

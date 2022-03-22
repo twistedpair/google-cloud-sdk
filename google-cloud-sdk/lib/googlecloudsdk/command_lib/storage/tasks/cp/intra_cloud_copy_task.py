@@ -33,6 +33,7 @@ from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
+from googlecloudsdk.core import log
 
 
 class IntraCloudCopyTask(task.Task):
@@ -42,6 +43,7 @@ class IntraCloudCopyTask(task.Task):
                source_resource,
                destination_resource,
                delete_source=False,
+               print_created_message=False,
                user_request_args=None):
     """Initializes task.
 
@@ -53,6 +55,8 @@ class IntraCloudCopyTask(task.Task):
         Existing objects at the this location will be overwritten.
       delete_source (bool): If copy completes successfully, delete the source
         object afterwards.
+      print_created_message (bool): Print a message containing the versioned
+        URL of the copy result.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
     super(IntraCloudCopyTask, self).__init__()
@@ -67,6 +71,7 @@ class IntraCloudCopyTask(task.Task):
     self._source_resource = source_resource
     self._destination_resource = destination_resource
     self._delete_source = delete_source
+    self._print_created_message = print_created_message
     self._user_request_args = user_request_args
     self.parallel_processing_key = (
         self._destination_resource.storage_url.url_string)
@@ -89,11 +94,14 @@ class IntraCloudCopyTask(task.Task):
         user_request_args=self._user_request_args)
     # TODO(b/161900052): Support all of copy_object's parameters
     provider = self._source_resource.storage_url.scheme
-    api_factory.get_api(provider).copy_object(
+    result_resource = api_factory.get_api(provider).copy_object(
         self._source_resource,
         self._destination_resource,
         request_config,
         progress_callback=progress_callback)
+
+    if self._print_created_message:
+      log.status.Print('Created: {}'.format(result_resource.storage_url))
 
     if self._delete_source:
       return task.Output(

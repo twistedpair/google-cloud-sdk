@@ -633,6 +633,39 @@
         }
       }
     },
+    "GenerateAccessTokenRequest": {
+      "id": "GenerateAccessTokenRequest",
+      "description": "Request message for GenerateAccessToken.",
+      "type": "object",
+      "properties": {
+        "expireTime": {
+          "description": "Desired expiration time of the access token. This value must be at most 24 hours in the future. If a value is not specified, the token's expiration time will be set to a default value of 1 hour in the future.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "ttl": {
+          "description": "Desired lifetime duration of the access token. This value must be at most 24 hours. If a value is not specified, the token's lifetime will be set to a default value of 1 hour.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "GenerateAccessTokenResponse": {
+      "id": "GenerateAccessTokenResponse",
+      "description": "Response message for GenerateAccessToken.",
+      "type": "object",
+      "properties": {
+        "accessToken": {
+          "description": "The generated bearer access token. To use this token, include it in an Authorization header of an HTTP request sent to the associated workstation's hostname, e.g. \"Authorization: Bearer \".",
+          "type": "string"
+        },
+        "expireTime": {
+          "description": "Time at which the generated token will expire.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
     "SetIamPolicyRequest": {
       "id": "SetIamPolicyRequest",
       "description": "Request message for `SetIamPolicy` method.",
@@ -1944,6 +1977,34 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Stops running a workstation, reducing costs."
+                    },
+                    "generateAccessToken": {
+                      "id": "workstations.projects.locations.workstationClusters.workstations.generateAccessToken",
+                      "path": "v1alpha1/{+workstation}:generateAccessToken",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/workstationClusters/{workstationClustersId}/workstations/{workstationsId}:generateAccessToken",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "workstation": {
+                          "description": "Required. Name of the workstation for which the access token should be generated.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workstationClusters\/[^\/]+\/workstations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "workstation"
+                      ],
+                      "request": {
+                        "$ref": "GenerateAccessTokenRequest"
+                      },
+                      "response": {
+                        "$ref": "GenerateAccessTokenResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Returns a short-lived credential that can be used to send authenticated and authorized traffic to a workstation."
                     },
                     "setIamPolicy": {
                       "id": "workstations.projects.locations.workstationClusters.workstations.setIamPolicy",

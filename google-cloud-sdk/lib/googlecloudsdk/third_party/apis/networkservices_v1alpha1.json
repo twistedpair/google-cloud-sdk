@@ -1368,185 +1368,6 @@
       "properties": {
       }
     },
-    "ListRoutersResponse": {
-      "id": "ListRoutersResponse",
-      "description": "Response returned by the ListRouters method.",
-      "type": "object",
-      "properties": {
-        "routers": {
-          "description": "List of Router resources.",
-          "type": "array",
-          "items": {
-            "$ref": "Router"
-          }
-        },
-        "nextPageToken": {
-          "description": "If there might be more results than those appearing in this response, then `next_page_token` is included. To get the next set of results, call this method again using the value of `next_page_token` as `page_token`.",
-          "type": "string"
-        }
-      }
-    },
-    "Router": {
-      "id": "Router",
-      "description": "Router is the resource representing infrastructure component that is responsible for forwarding traffic and applying policies. For example, it could be a load balancer, sidecar proxy or a GRPC client.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Required. Name of the Router resource. It matches pattern `projects\/*\/locations\/global\/routers\/`.",
-          "type": "string"
-        },
-        "createTime": {
-          "description": "Output only. The timestamp when the resource was created.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. The timestamp when the resource was updated.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "labels": {
-          "description": "Optional. Set of label tags associated with the Router resource.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "description": {
-          "description": "Optional. A free-text description of the resource. Max length 1024 characters.",
-          "type": "string"
-        },
-        "type": {
-          "description": "Required. The type of the Router resource.",
-          "type": "string",
-          "enumDescriptions": [
-            "The type of Router is unspecified.",
-            "The Router is used in Proxyless gRPC model. Routes being referenced must be gRPC routes for this type.",
-            "The Router is used in customer-managed proxy model.",
-            "The Router is used in customer-managed sidecar proxy model."
-          ],
-          "enum": [
-            "TYPE_UNSPECIFIED",
-            "PROXYLESS_GRPC",
-            "PROXY",
-            "SIDECAR"
-          ]
-        },
-        "network": {
-          "description": "Optional. The reference to the VPC network that is using this configuration. Currently only the short name (network name) is supported, for example \"default\", and we assume it is under the same project as the resource by default.",
-          "type": "string"
-        },
-        "routes": {
-          "description": "Optional. [Deprecated] Specify target routers from routes to route traffic List of references to routes that this Router must be able to route traffic for. Example: projects\/12345\/locations\/global\/grpcRoutes\/myGrpcRoute Must refer to GrpcRoute if Router type is PROXYLESS_GRPC. Must refer to HttpRoute if Router type is PROXY.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "selector": {
-          "description": "Optional. Defines additional parameters to match data plane clients (envoy proxy or grpc client) with the configuration provided by this Router. If selector matches - all configuration associated with this Router is sent to a client, otherwise it is ignored for the particular data plane clients. For the detailed description and examples of selector usage, check documentation for Selector.",
-          "$ref": "Selector"
-        },
-        "proxySettings": {
-          "description": "Optional. Settings specific to proxies. This field is only applicable if the Router type is \"PROXY\".",
-          "$ref": "RouterProxySettings"
-        },
-        "scope": {
-          "description": "Optional. Scope is used to identify Routers of the same type configuration of which should apply to the same infrastructure component(s). For example: if there are multiple Routers of type PROXY with the same value of the scope, proxies requesting the configuration using this value will receive a joint configuration of all Routers in the scope. Clients can request configuration for a particular scope by specifying its value in their request. Refer to the product documentation for the product-specific way of specifying request parameters. Max length 64 characters. Scope should start with a letter and can only have letters, numbers, hyphens.",
-          "type": "string"
-        }
-      }
-    },
-    "Selector": {
-      "id": "Selector",
-      "description": "A general Selector that defines how to select the entities based on the metadata provided by these entities. For example, xDS API clients (such as Envoy proxy) present key=value label pairs to the control plane upon connection. The Selector could be used to select a subset of clients based on the labels they presented. Selector is used in a context of other resources, so that configuration of these resources is applied only to the entities that were matched by the Selector. For example, one may set a Selector of a resource as follows: labels_matchers: - type: MATCH_ANY labels: - key: env value: dev - key: user-group value: qa negated: true - type: MATCH_ANY labels: - key: version value: v1 The resource will\/can be delivered to entities that present labels such as: \"env\": \"dev\", \"version\": \"v1\" but NOT delivered to those that have labels as: \"env\": \"dev\", \"user-group\": \"qa\", \"version\", \"v1\"",
-      "type": "object",
-      "properties": {
-        "labelsMatchers": {
-          "description": "A list of LabelsMatcheres to match against presented labels. When multiple LabelsMatcheres are provided, they are combined with a logical AND, i.e. all LabelMatchers must match in order for the Selector to match.",
-          "type": "array",
-          "items": {
-            "$ref": "SelectorLabelsMatcher"
-          }
-        }
-      }
-    },
-    "SelectorLabelsMatcher": {
-      "id": "SelectorLabelsMatcher",
-      "description": "LabelsMatcher defines criteria to match by a list of labels.",
-      "type": "object",
-      "properties": {
-        "labels": {
-          "description": "Defines labels to match against.",
-          "type": "array",
-          "items": {
-            "$ref": "SelectorLabel"
-          }
-        },
-        "type": {
-          "description": "Specify how are labels evaluated together. MATCH_ANY: LabelsMatcher is considered a match if ANY one of the labels provided is a match. MATCH_ALL: LabelsMatcher is considered a match if ALL of the labels are matched.",
-          "type": "string",
-          "enumDescriptions": [
-            "Default Value.",
-            "Logical OR labels provided in LabelsMatcher.",
-            "Logical AND labels provided in LabelsMatcher."
-          ],
-          "enum": [
-            "MATCH_TYPE_UNSPECIFIED",
-            "MATCH_ANY",
-            "MATCH_ALL"
-          ]
-        }
-      }
-    },
-    "SelectorLabel": {
-      "id": "SelectorLabel",
-      "description": "Defines match criteria for an individual label.",
-      "type": "object",
-      "properties": {
-        "key": {
-          "description": "Key of the label.",
-          "type": "string"
-        },
-        "value": {
-          "description": "Value of the label.",
-          "type": "string"
-        },
-        "negated": {
-          "description": "If set to true - the match condition of the label is reversed. I.e. by default label {name=\"exampleName\", value=\"exampleValue\"} will match if \"exampleName = exampleValue\" is present. With negated set to true the same configuration will match if \"exampleName = exampleValue\" is NOT present in the list of evaluated labels.",
-          "type": "boolean"
-        }
-      }
-    },
-    "RouterProxySettings": {
-      "id": "RouterProxySettings",
-      "description": "Settings that are applicable to Router, of which the type is PROXY.",
-      "type": "object",
-      "properties": {
-        "addresses": {
-          "description": "Zero or more addresses with ports in format of \":\" that the Router must receive traffic on. The proxy binds to the ports specified. IP address can be anything that is allowed by the underlying infrastructure (auto-allocation, static IP, BYOIP). Must be unset if the interceptionPort is set as interceptionPort configures the Router to listen on the localhost address instead.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "interceptionPort": {
-          "description": "If set to a valid TCP port (1-65535), instructs Router to listen on the specified port of localhost (127.0.0.1) address. Router will expect all traffic to be redirected to this port regardless of its actual ip:port destination.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "serverTlsPolicy": {
-          "description": "Optional. A fully-qualified ServerTLSPolicy URL reference. Specifies how TLS traffic is terminated. If empty, TLS termination is disabled.",
-          "type": "string"
-        },
-        "authorizationPolicy": {
-          "description": "Optional. A fully-qualified AuthorizationPolicy URL reference. Specifies how traffic is authorized. If empty, authorization checks are disabled.",
-          "type": "string"
-        }
-      }
-    },
     "ListGatewaysResponse": {
       "id": "ListGatewaysResponse",
       "description": "Response returned by the ListGateways method.",
@@ -1635,36 +1456,6 @@
         "authorizationPolicy": {
           "description": "Optional. A fully-qualified AuthorizationPolicy URL reference. Specifies how traffic is authorized. If empty, authorization checks are disabled.",
           "type": "string"
-        },
-        "swgConfig": {
-          "description": "Optional. This should be set when configuring a gateway of type \u2018Secure_Web_Gateway\u2019",
-          "$ref": "GatewaySecureWebGatewayConfig"
-        }
-      }
-    },
-    "GatewaySecureWebGatewayConfig": {
-      "id": "GatewaySecureWebGatewayConfig",
-      "description": "Contains fields necessary for gateways of type \u2018Secure_Web_Gateway\u2019",
-      "type": "object",
-      "properties": {
-        "certificateUrls": {
-          "description": "A fully-qualified Certificates URL reference. The proxy presents a Certificate (selected based on SNI) when establishing a TLS connection. This feature only applies to gateways of type 'SECURE_WEB_GATEWAY'.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "securityPolicy": {
-          "description": "A fully-qualified SecurityPolicy URL reference. Defines how a server should apply security policy to inbound (VM to Proxy) initiated connections.",
-          "type": "string"
-        },
-        "network": {
-          "description": "The relative resource name identifying the VPC network that is using this configuration. For example: `projects\/*\/global\/networks\/network-1`",
-          "type": "string"
-        },
-        "subnetwork": {
-          "description": "The relative resource name identifying the subnetwork in which this SWG is allocated. For example: `projects\/*\/regions\/us-central1\/subnetworks\/network-1`",
-          "type": "string"
         }
       }
     },
@@ -1724,7 +1515,7 @@
           "type": "string"
         },
         "hostnames": {
-          "description": "Required. Service hostnames with an optional port for which this route describes traffic. Format: [:] Hostname is the fully qualified domain name of a network host. This matches the RFC 1123 definition of a hostname with 2 notable exceptions: - IPs are not allowed. - A hostname may be prefixed with a wildcard label (*.). The wildcard label must appear by itself as the first label. Hostname can be \"precise\" which is a domain name without the terminating dot of a network host (e.g. \"foo.example.com\") or \"wildcard\", which is a domain name prefixed with a single wildcard label (e.g. *.example.com). Note that as per RFC1035 and RFC1123, a label must consist of lower case alphanumeric characters or '-', and must start and end with an alphanumeric character. No other punctuation is allowed. The routes associated with a Router must have unique hostnames. If you attempt to attach multiple routes with conflicting hostnames, the configuration will be rejected. For example, while it is acceptable for routes for the hostnames \"*.foo.bar.com\" and \"*.bar.com\" to be associated with the same route, it is not possible to associate two routes both with \"*.bar.com\" or both with \"bar.com\". If a port is specified, then gRPC clients must use the channel URI with the port to match this rule (i.e. \"xds:\/\/\/service:123\"), otherwise they must supply the URI without a port (i.e. \"xds:\/\/\/service\").",
+          "description": "Required. Service hostnames with an optional port for which this route describes traffic. Format: [:] Hostname is the fully qualified domain name of a network host. This matches the RFC 1123 definition of a hostname with 2 notable exceptions: - IPs are not allowed. - A hostname may be prefixed with a wildcard label (*.). The wildcard label must appear by itself as the first label. Hostname can be \"precise\" which is a domain name without the terminating dot of a network host (e.g. \"foo.example.com\") or \"wildcard\", which is a domain name prefixed with a single wildcard label (e.g. *.example.com). Note that as per RFC1035 and RFC1123, a label must consist of lower case alphanumeric characters or '-', and must start and end with an alphanumeric character. No other punctuation is allowed. The routes associated with a Mesh or Gateway must have unique hostnames. If you attempt to attach multiple routes with conflicting hostnames, the configuration will be rejected. For example, while it is acceptable for routes for the hostnames \"*.foo.bar.com\" and \"*.bar.com\" to be associated with the same route, it is not possible to associate two routes both with \"*.bar.com\" or both with \"bar.com\". If a port is specified, then gRPC clients must use the channel URI with the port to match this rule (i.e. \"xds:\/\/\/service:123\"), otherwise they must supply the URI without a port (i.e. \"xds:\/\/\/service\").",
           "type": "array",
           "items": {
             "type": "string"
@@ -2090,7 +1881,7 @@
           "format": "google-datetime"
         },
         "hostnames": {
-          "description": "Required. Hostnames define a set of hosts that should match against the HTTP host header to select a HttpRoute to process the request. Hostname is the fully qualified domain name of a network host, as defined by RFC 1123 with the exception that: - IPs are not allowed. - A hostname may be prefixed with a wildcard label (*.). The wildcard label must appear by itself as the first label. Hostname can be \"precise\" which is a domain name without the terminating dot of a network host (e.g. \"foo.example.com\") or \"wildcard\", which is a domain name prefixed with a single wildcard label (e.g. *.example.com). Note that as per RFC1035 and RFC1123, a label must consist of lower case alphanumeric characters or '-', and must start and end with an alphanumeric character. No other punctuation is allowed. The routes associated with a Mesh (or Gateways under the same scope) must have unique hostnames. If you attempt to attach multiple routes with conflicting hostnames, the configuration will be rejected. For example, while it is acceptable for routes for the hostnames \"*.foo.bar.com\" and \"*.bar.com\" to be associated with the same Mesh (or Gateways under the same scope), it is not possible to associate two routes both with \"*.bar.com\" or both with \"bar.com\".",
+          "description": "Required. Hostnames define a set of hosts that should match against the HTTP host header to select a HttpRoute to process the request. Hostname is the fully qualified domain name of a network host, as defined by RFC 1123 with the exception that: - IPs are not allowed. - A hostname may be prefixed with a wildcard label (*.). The wildcard label must appear by itself as the first label. Hostname can be \"precise\" which is a domain name without the terminating dot of a network host (e.g. \"foo.example.com\") or \"wildcard\", which is a domain name prefixed with a single wildcard label (e.g. *.example.com). Note that as per RFC1035 and RFC1123, a label must consist of lower case alphanumeric characters or '-', and must start and end with an alphanumeric character. No other punctuation is allowed. The routes associated with a Mesh or Gateways must have unique hostnames. If you attempt to attach multiple routes with conflicting hostnames, the configuration will be rejected. For example, while it is acceptable for routes for the hostnames \"*.foo.bar.com\" and \"*.bar.com\" to be associated with the same Mesh (or Gateways under the same scope), it is not possible to associate two routes both with \"*.bar.com\" or both with \"bar.com\".",
           "type": "array",
           "items": {
             "type": "string"
@@ -2782,7 +2573,7 @@
       "type": "object",
       "properties": {
         "matches": {
-          "description": "Optional. RouteMatch defines the predicate used to match requests to a given action. Multiple match types are \u201COR\u201Ded for evaluation. If no routeMatch field is specified, this rule will unconditionally match traffic.",
+          "description": "Required. RouteMatch defines the predicate used to match requests to a given action. Multiple match types are \u201COR\u201Ded for evaluation.",
           "type": "array",
           "items": {
             "$ref": "TlsRouteRouteMatch"
@@ -2826,10 +2617,6 @@
           "items": {
             "$ref": "TlsRouteRouteDestination"
           }
-        },
-        "originalDestination": {
-          "description": "Optional. If true, Router will use the destination IP and port of the original connection as the destination of the request. Default is false.",
-          "type": "boolean"
         }
       }
     },
@@ -4700,250 +4487,6 @@
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/edgeCacheServices\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "request": {
-                    "$ref": "TestIamPermissionsRequest"
-                  },
-                  "response": {
-                    "$ref": "TestIamPermissionsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
-                }
-              }
-            },
-            "routers": {
-              "methods": {
-                "list": {
-                  "id": "networkservices.projects.locations.routers.list",
-                  "path": "v1alpha1/{+parent}/routers",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/routers",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The project and location from which the Routers should be listed, specified in the format `projects\/*\/locations\/global`.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "pageSize": {
-                      "description": "Maximum number of Routers to return per call.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "pageToken": {
-                      "description": "The value returned by the last `ListRoutersResponse` Indicates that this is a continuation of a prior `ListRouters` call, and that the system should return the next page of data.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "response": {
-                    "$ref": "ListRoutersResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Lists Routers in a given project and location."
-                },
-                "get": {
-                  "id": "networkservices.projects.locations.routers.get",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/routers/{routersId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. A name of the Router to get. Must be in the format `projects\/*\/locations\/global\/routers\/*`.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/routers\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Router"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Gets details of a single Router."
-                },
-                "create": {
-                  "id": "networkservices.projects.locations.routers.create",
-                  "path": "v1alpha1/{+parent}/routers",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/routers",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The parent resource of the Router. Must be in the format `projects\/*\/locations\/global`.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "routerId": {
-                      "description": "Required. Short name of the Router resource to be created.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "request": {
-                    "$ref": "Router"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Creates a new Router in a given project and location."
-                },
-                "patch": {
-                  "id": "networkservices.projects.locations.routers.patch",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/routers/{routersId}",
-                  "httpMethod": "PATCH",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. Name of the Router resource. It matches pattern `projects\/*\/locations\/global\/routers\/`.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/routers\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "updateMask": {
-                      "description": "Optional. Field mask is used to specify the fields to be overwritten in the Router resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
-                      "location": "query",
-                      "type": "string",
-                      "format": "google-fieldmask"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "Router"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Updates the parameters of a single Router."
-                },
-                "delete": {
-                  "id": "networkservices.projects.locations.routers.delete",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/routers/{routersId}",
-                  "httpMethod": "DELETE",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. A name of the Router to delete. Must be in the format `projects\/*\/locations\/global\/routers\/*`.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/routers\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Deletes a single Router."
-                },
-                "setIamPolicy": {
-                  "id": "networkservices.projects.locations.routers.setIamPolicy",
-                  "path": "v1alpha1/{+resource}:setIamPolicy",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/routers/{routersId}:setIamPolicy",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/routers\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "request": {
-                    "$ref": "SetIamPolicyRequest"
-                  },
-                  "response": {
-                    "$ref": "Policy"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
-                },
-                "getIamPolicy": {
-                  "id": "networkservices.projects.locations.routers.getIamPolicy",
-                  "path": "v1alpha1/{+resource}:getIamPolicy",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/routers/{routersId}:getIamPolicy",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/routers\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "options.requestedPolicyVersion": {
-                      "description": "Optional. The maximum policy version that will be used to format the policy. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional role bindings must specify version 3. Policies with no conditional role bindings may specify any valid value or leave the field unset. The policy in the response might use the policy version that you specified, or it might use a lower policy version. For example, if you specify version 3, but the policy has no conditional role bindings, the response uses version 1. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "response": {
-                    "$ref": "Policy"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
-                },
-                "testIamPermissions": {
-                  "id": "networkservices.projects.locations.routers.testIamPermissions",
-                  "path": "v1alpha1/{+resource}:testIamPermissions",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/routers/{routersId}:testIamPermissions",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/routers\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"

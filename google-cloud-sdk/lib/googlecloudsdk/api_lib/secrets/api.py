@@ -199,6 +199,7 @@ class Secrets(Client):
              expire_time=None,
              ttl=None,
              topics=None,
+             version_aliases=None,
              next_rotation_time=None,
              rotation_period=None):
     """Update a secret."""
@@ -209,14 +210,21 @@ class Secrets(Client):
           nextRotationTime=next_rotation_time, rotationPeriod=rotation_period)
 
     topics_message_list = []
+
     if topics:
       for topic in topics:
         topics_message_list.append(self.messages.Topic(name=topic))
+    new_version_aliases = self.messages.Secret.VersionAliasesValue(
+        additionalProperties=[])
+    if version_aliases:
+      for version_alias_pair in version_aliases:
+        new_version_aliases.additionalProperties.append(version_alias_pair)
     return self.service.Patch(
         self.messages.SecretmanagerProjectsSecretsPatchRequest(
             name=secret_ref.RelativeName(),
             secret=self.messages.Secret(
                 labels=labels,
+                versionAliases=new_version_aliases,
                 etag=etag,
                 expireTime=expire_time,
                 ttl=ttl,

@@ -53,9 +53,14 @@ class ComposeObjectsTask(task.Task):
         user_request_args=self._user_request_args)
 
     provider = self._destination_resource.storage_url.scheme
-    api_factory.get_api(provider).compose_objects(self._source_resources,
-                                                  self._destination_resource,
-                                                  request_config)
+    created_resource = api_factory.get_api(provider).compose_objects(
+        self._source_resources, self._destination_resource, request_config)
+    return task.Output(
+        messages=[
+            task.Message(
+                topic=task.Topic.CREATED_RESOURCE, payload=created_resource),
+        ],
+        additional_task_iterators=[])
 
   def __eq__(self, other):
     if not isinstance(other, ComposeObjectsTask):

@@ -89,6 +89,14 @@ class NodePoolsClient(object):
     msg = 'GoogleCloudGkemulticloud{}AwsConfigEncryption'.format(self.version)
     return getattr(self.messages, msg)(kmsKeyArn=kms_key_arn)
 
+  def _CreateAwsVolumeTemplate(self, size_gib, volume_type, iops, kms_key_arn):
+    msg = 'GoogleCloudGkemulticloud{}AwsVolumeTemplate'.format(self.version)
+    return getattr(self.messages, msg)(
+        sizeGib=size_gib,
+        volumeType=volume_type,
+        iops=iops,
+        kmsKeyArn=kms_key_arn)
+
   def Create(self, node_pool_ref, args):
     """Create an AWS node pool."""
     validate_only = getattr(args, 'validate_only', False)
@@ -202,9 +210,29 @@ class NodePoolsClient(object):
       update_mask.append('autoscaling.maxNodeCount')
 
     config = self._AddAwsNodeConfig(nodepool)
-    if args.security_group_ids is not None:
+    if args.clear_security_group_ids is not None:
+      update_mask.append('config.security_group_ids')
+    elif args.security_group_ids:
       config.securityGroupIds.extend(args.security_group_ids)
       update_mask.append('config.security_group_ids')
+
+    if args.config_encryption_kms_key_arn:
+      config.configEncryption = self._CreateAwsConfigEncryption(
+          args.config_encryption_kms_key_arn)
+      update_mask.append('config.config_encryption.kms_key_arn')
+    config.rootVolume = self._CreateAwsVolumeTemplate(
+        args.root_volume_size, args.root_volume_type, args.root_volume_iops,
+        args.root_volume_kms_key_arn)
+    if args.root_volume_size:
+      update_mask.append('config.root_volume.size_gib')
+    if args.root_volume_type:
+      update_mask.append('config.root_volume.volume_type')
+    # Check None explicitly because iops and kms_key_arn can take values that
+    # evaluates to False e.g. 0, "".
+    if args.root_volume_iops is not None:
+      update_mask.append('config.root_volume.iops')
+    if args.root_volume_kms_key_arn is not None:
+      update_mask.append('config.root_volume.kms_key_arn')
 
     req.updateMask = ','.join(update_mask)
 

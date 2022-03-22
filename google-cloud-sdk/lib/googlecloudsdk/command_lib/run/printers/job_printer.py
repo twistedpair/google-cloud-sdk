@@ -59,7 +59,8 @@ class JobPrinter(cp.CustomPrinterBase):
         ('Task Timeout', '{}s'.format(record.template.spec.timeoutSeconds)
          if record.template.spec.timeoutSeconds else None),
         ('Max Retries', record.max_retries),
-        ('Parallelism', record.parallelism),
+        ('Parallelism',
+         'No limit' if record.parallelism == -1 else record.parallelism),
         ('Service account', record.template.service_account),
         ('Env vars',
          container_util.GetUserEnvironmentVariables(record.template)),

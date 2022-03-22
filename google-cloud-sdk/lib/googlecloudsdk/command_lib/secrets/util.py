@@ -204,3 +204,42 @@ def ApplyTopicsUpdate(args, original_topics):
       if topic_name not in topics_set:
         new_topics.append(topic_name)
     return new_topics
+
+
+def ApplyAliasUpdate(args, original_version_aliases):
+  """Applies updates to the list of version-aliases on a secret.
+
+  Makes no alterations to the original version aliases
+
+  Args:
+    args (argparse.Namespace): The collection of user-provided arguments.
+    original_version_aliases (list): version-aliases configured on the secret
+      prior to update.
+
+  Returns:
+      result (dict): dict of version_aliases pairs after update.
+  """
+  if args.IsSpecified('clear_version_aliases'):
+    return {}
+
+  version_aliases_dict = dict()
+  version_aliases_dict.update(
+      {pair.key: pair.value for pair in original_version_aliases})
+  if args.IsSpecified('remove_version_aliases'):
+    for alias in args.remove_version_aliases:
+      del version_aliases_dict[alias]
+    new_version_aliases = dict()
+    for version_alias_pair in original_version_aliases:
+      if version_alias_pair.key in version_aliases_dict:
+        new_version_aliases[version_alias_pair.key] = version_alias_pair.value
+    return new_version_aliases
+
+  elif args.IsSpecified('update_version_aliases'):
+    new_version_aliases = dict()
+    version_aliases_dict.update(
+        {pair.key: pair.value for pair in original_version_aliases})
+    new_version_aliases.update({
+        alias: version
+        for (alias, version) in args.update_version_aliases.items()
+    })
+    return new_version_aliases

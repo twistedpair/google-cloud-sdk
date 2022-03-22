@@ -19,8 +19,9 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.run.integrations import types_utils
+from googlecloudsdk.api_lib.run.integrations import validator
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.command_lib.run import exceptions
 
 
 def AddFileArg(parser):
@@ -94,34 +95,18 @@ def AddParametersArg(parser):
       'integration type. Only simple values can be specified with this flag.')
 
 
-# TODO(b/219101793): Replace with validator that references INTEGRATION_TYPES.
 def ValidateCreateParameters(integration_type, parameters):
   """Validates given params conform to what's expected from the integration."""
-  requires = []
-  if integration_type == 'custom-domain':
-    requires = ['domain']
-  elif integration_type == 'redis':
-    # Set default
-    if 'memory-size-gb' not in parameters:
-      parameters['memory-size-gb'] = 1
-
-  else:
-    raise exceptions.ArgumentError(
-        'Integration of type {} is not supported'.format(integration_type))
-
-  for key in requires:
-    if key not in parameters:
-      raise exceptions.ArgumentError(
-          '[{}] is required to create integration of type [{}]'.format(
-              key, integration_type))
+  types_utils.CheckValidIntegrationType(integration_type)
+  validate = validator.GetIntegrationValidator(integration_type, parameters)
+  validate.ValidateCreateParameters()
 
 
 def ValidateUpdateParameters(integration_type, parameters):
   """Validate params for update commands for a given integration."""
-  if integration_type == 'custom-domain' or integration_type == 'router':
-    if 'domain' in parameters:
-      raise exceptions.ArgumentError(
-          'Cannot change domain after it has been set')
+  types_utils.CheckValidIntegrationType(integration_type)
+  validate = validator.GetIntegrationValidator(integration_type, parameters)
+  validate.ValidateUpdateParameters()
 
 
 def ListIntegrationsOfService(parser):

@@ -69,6 +69,19 @@ def _catch_client_error_raise_s3_api_error(format_str=None):
       format_str=format_str)
 
 
+def _create_client(resource_location=None):
+  disable_ssl_validation = (
+      properties.VALUES.auth.disable_ssl_validation.GetBool())
+  # Using a lock since the boto3.client creation is not thread-safe.
+  with BOTO3_CLIENT_LOCK:
+    return boto3.client(
+        storage_url.ProviderPrefix.S3.value,
+        region_name=resource_location,
+        endpoint_url=properties.VALUES.storage.s3_endpoint_url.Get(),
+        verify=not disable_ssl_validation
+        if disable_ssl_validation is not None else True)
+
+
 # pylint:disable=abstract-method
 class S3Api(cloud_api.CloudApi):
   """S3 Api client."""
@@ -79,11 +92,7 @@ class S3Api(cloud_api.CloudApi):
   }
 
   def __init__(self):
-    # Using a lock since the boto3.client creation is not thread-safe.
-    with BOTO3_CLIENT_LOCK:
-      self.client = boto3.client(
-          storage_url.ProviderPrefix.S3.value,
-          endpoint_url=properties.VALUES.storage.s3_endpoint_url.Get())
+    self.client = _create_client()
 
   @_catch_client_error_raise_s3_api_error()
   def create_bucket(self, bucket_resource, request_config, fields_scope=None):
@@ -91,27 +100,15 @@ class S3Api(cloud_api.CloudApi):
     del fields_scope  # Unused in S3 client.
 
     resource_args = request_config.resource_args
-
     if resource_args.location:
-      with BOTO3_CLIENT_LOCK:
-        # Create client with appropriate endpoint for creating regional bucket.
-        client = boto3.client(
-            storage_url.ProviderPrefix.S3.value,
-            region_name=resource_args.location,
-            endpoint_url=properties.VALUES.storage.s3_endpoint_url.Get())
-      create_bucket_configuration = {
-          'LocationConstraint': resource_args.location
-      }
+      client = _create_client(resource_args.location)
+      location_constraint = resource_args.location
     else:
       client = self.client
-      # Must match client's default regional endpoint.
-      create_bucket_configuration = {
-          'LocationConstraint': boto3.session.Session().region_name
-      }
-
+      location_constraint = boto3.session.Session().region_name
     metadata = client.create_bucket(
         Bucket=bucket_resource.storage_url.bucket_name,
-        CreateBucketConfiguration=create_bucket_configuration)
+        CreateBucketConfiguration={'LocationConstraint': location_constraint})
 
     if (resource_args.cors_file_path or resource_args.labels_file_path or
         resource_args.lifecycle_file_path or resource_args.log_bucket or
@@ -543,11 +540,12 @@ class S3Api(cloud_api.CloudApi):
                     source_stream,
                     destination_resource,
                     request_config,
+                    source_resource=None,
                     serialization_data=None,
                     tracker_callback=None,
                     upload_strategy=cloud_api.UploadStrategy.SIMPLE):
     """See super class."""
-    del serialization_data, tracker_callback
+    del serialization_data, source_resource, tracker_callback  # Unused.
 
     if upload_strategy != cloud_api.UploadStrategy.SIMPLE:
       raise command_errors.Error(

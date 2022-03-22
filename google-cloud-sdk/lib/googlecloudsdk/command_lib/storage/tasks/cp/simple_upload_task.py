@@ -55,7 +55,8 @@ class SimpleUploadTask(upload_task.UploadTask):
       uploaded_object_resource = api.upload_object(
           source_stream,
           self._destination_resource,
-          request_config=request_config,
+          request_config,
+          source_resource=self._source_resource,
           upload_strategy=cloud_api.UploadStrategy.SIMPLE)
 
     upload_util.validate_uploaded_object(

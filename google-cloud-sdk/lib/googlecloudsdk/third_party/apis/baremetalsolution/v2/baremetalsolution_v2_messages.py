@@ -290,14 +290,17 @@ class BaremetalsolutionProjectsLocationsProvisioningConfigsCreateRequest(_messag
   object.
 
   Fields:
+    email: Optional. Email provided to send a confirmation with provisioning
+      config to.
     parent: Required. The parent project and location containing the
       ProvisioningConfig.
     provisioningConfig: A ProvisioningConfig resource to be passed as the
       request body.
   """
 
-  parent = _messages.StringField(1, required=True)
-  provisioningConfig = _messages.MessageField('ProvisioningConfig', 2)
+  email = _messages.StringField(1)
+  parent = _messages.StringField(2, required=True)
+  provisioningConfig = _messages.MessageField('ProvisioningConfig', 3)
 
 
 class BaremetalsolutionProjectsLocationsProvisioningConfigsGetRequest(_messages.Message):
@@ -316,15 +319,18 @@ class BaremetalsolutionProjectsLocationsProvisioningConfigsPatchRequest(_message
   object.
 
   Fields:
+    email: Optional. Email provided to send a confirmation with provisioning
+      config to.
     name: Output only. The name of the provisioning config.
     provisioningConfig: A ProvisioningConfig resource to be passed as the
       request body.
     updateMask: Required. The list of fields to update.
   """
 
-  name = _messages.StringField(1, required=True)
-  provisioningConfig = _messages.MessageField('ProvisioningConfig', 2)
-  updateMask = _messages.StringField(3)
+  email = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  provisioningConfig = _messages.MessageField('ProvisioningConfig', 3)
+  updateMask = _messages.StringField(4)
 
 
 class BaremetalsolutionProjectsLocationsProvisioningConfigsSubmitRequest(_messages.Message):
@@ -719,6 +725,8 @@ class InstanceConfig(_messages.Message):
   r"""Configuration parameters for a new instance.
 
   Fields:
+    accountNetworksEnabled: If true networks can be from different projects of
+      the same vendor account.
     clientNetwork: Client network address.
     hyperthreading: Whether the instance should be provisioned with
       Hyperthreading enabled.
@@ -736,14 +744,15 @@ class InstanceConfig(_messages.Message):
       information for the BMS Ops team .
   """
 
-  clientNetwork = _messages.MessageField('NetworkAddress', 1)
-  hyperthreading = _messages.BooleanField(2)
-  id = _messages.StringField(3)
-  instanceType = _messages.StringField(4)
-  name = _messages.StringField(5)
-  osImage = _messages.StringField(6)
-  privateNetwork = _messages.MessageField('NetworkAddress', 7)
-  userNote = _messages.StringField(8)
+  accountNetworksEnabled = _messages.BooleanField(1)
+  clientNetwork = _messages.MessageField('NetworkAddress', 2)
+  hyperthreading = _messages.BooleanField(3)
+  id = _messages.StringField(4)
+  instanceType = _messages.StringField(5)
+  name = _messages.StringField(6)
+  osImage = _messages.StringField(7)
+  privateNetwork = _messages.MessageField('NetworkAddress', 8)
+  userNote = _messages.StringField(9)
 
 
 class InstanceQuota(_messages.Message):
@@ -1506,8 +1515,8 @@ class ProvisioningConfig(_messages.Message):
   Fields:
     cloudConsoleUri: Output only. URI to Cloud Console UI view of this
       provisioning config.
-    email: Optional. Email provided to send a confirmation with provisioning
-      config to.
+    email: Email provided to send a confirmation with provisioning config to.
+      Deprecated in favour of email field in request messages.
     handoverServiceAccount: A service account to enable customers to access
       instance credentials upon handover.
     instances: Instances to be created.

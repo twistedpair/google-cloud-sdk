@@ -62,13 +62,17 @@ class NetworkEndpointGroupsClient(object):
     is_regional = hasattr(neg_ref, 'region')
 
     network_uri = None
-    if network and is_zonal:
+    # Zonal and PSC NEG will pass the network parameter to Arcus
+    if network and (is_zonal or psc_target_service):
       network_ref = self.resources.Parse(network, {'project': neg_ref.project},
                                          collection='compute.networks')
       network_uri = network_ref.SelfLink()
     subnet_uri = None
-    if subnet and is_zonal:
-      region = api_utils.ZoneNameToRegionName(neg_ref.zone)
+    if subnet and (is_zonal or psc_target_service):
+      if is_regional:
+        region = neg_ref.region
+      else:
+        region = api_utils.ZoneNameToRegionName(neg_ref.zone)
       subnet_ref = self.resources.Parse(
           subnet,
           {'project': neg_ref.project, 'region': region},

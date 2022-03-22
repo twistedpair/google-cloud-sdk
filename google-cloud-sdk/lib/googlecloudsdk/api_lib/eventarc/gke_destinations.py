@@ -39,7 +39,7 @@ _MAX_WAIT_TIME_IN_MS = 20 * 1000
 
 
 class GKEDestinationInitializationError(exceptions.InternalError):
-  """Error when failing to initialize project for GKE destinations."""
+  """Error when failing to initialize project for Cloud Run for Anthos/GKE destinations."""
 
 
 def _ShouldRetryHttpError(exc_type, exc_value, exc_traceback, state):
@@ -79,7 +79,7 @@ def _GetOrCreateP4SA(service_name):
 
 
 class GKEDestinationsClient(object):
-  """Wrapper client for setting up Eventarc GKE destinations."""
+  """Wrapper client for setting up Eventarc Cloud Run for Anthos/GKE destinations."""
 
   def __init__(self, release_track):
     self._api_version = common.GetApiVersion(release_track)
@@ -107,7 +107,8 @@ class GKEDestinationsClient(object):
     p4sa_email = _GetOrCreateP4SA(service_name)
     if not p4sa_email:
       raise GKEDestinationInitializationError(
-          'Failed to initialize project for Cloud Run for Anthos destinations.')
+          'Failed to initialize project for Cloud Run for Anthos/GKE destinations.'
+      )
 
     self._BindRolesToServiceAccount(p4sa_email, _ROLES)
 
@@ -135,9 +136,9 @@ class GKEDestinationsClient(object):
     """
     formatted_roles = '\n'.join(['- {}'.format(role) for role in sorted(roles)])
     log.status.Print(
-        'To use Eventarc with Cloud Run for Anthos destinations, Eventarc '
-        'Service Agent [{}] needs to be bound to the following required '
-        'roles:\n{}'.format(sa_email, formatted_roles))
+        'To use Eventarc with Cloud Run for Anthos/GKE destinations, Eventarc Service Agent [{}] '
+        'needs to be bound to the following required roles:\n{}'.format(
+            sa_email, formatted_roles))
 
     console_io.PromptContinue(
         default=False,

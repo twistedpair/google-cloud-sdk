@@ -1178,6 +1178,33 @@ class NotebooksV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RefreshRuntimeTokenInternal(self, request, global_params=None):
+      r"""Gets an access token for the consumer service account that the customer attached to the runtime. Only accessible from the tenant instance.
+
+      Args:
+        request: (NotebooksProjectsLocationsRuntimesRefreshRuntimeTokenInternalRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RefreshRuntimeTokenInternalResponse) The response message.
+      """
+      config = self.GetMethodConfig('RefreshRuntimeTokenInternal')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RefreshRuntimeTokenInternal.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/runtimes/{runtimesId}:refreshRuntimeTokenInternal',
+        http_method='POST',
+        method_id='notebooks.projects.locations.runtimes.refreshRuntimeTokenInternal',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:refreshRuntimeTokenInternal',
+        request_field='refreshRuntimeTokenInternalRequest',
+        request_type_name='NotebooksProjectsLocationsRuntimesRefreshRuntimeTokenInternalRequest',
+        response_type_name='RefreshRuntimeTokenInternalResponse',
+        supports_download=False,
+    )
+
     def ReportEvent(self, request, global_params=None):
       r"""Report and process a runtime event.
 

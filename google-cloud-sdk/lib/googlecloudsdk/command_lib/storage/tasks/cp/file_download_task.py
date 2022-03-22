@@ -126,6 +126,7 @@ class FileDownloadTask(task.Task):
                destination_resource,
                delete_source=False,
                do_not_decompress=False,
+               print_created_message=False,
                user_request_args=None):
     """Initializes task.
 
@@ -140,6 +141,8 @@ class FileDownloadTask(task.Task):
         object afterwards.
       do_not_decompress (bool): Prevents automatically decompressing
         downloaded gzips.
+      print_created_message (bool): Print a message containing the versioned
+        URL of the copy result.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
     super(FileDownloadTask, self).__init__()
@@ -147,6 +150,7 @@ class FileDownloadTask(task.Task):
     self._destination_resource = destination_resource
     self._delete_source = delete_source
     self._do_not_decompress = do_not_decompress
+    self._print_created_message = print_created_message
     self._user_request_args = user_request_args
 
     self._temporary_destination_resource = (
@@ -279,6 +283,9 @@ class FileDownloadTask(task.Task):
     # We perform cleanup here for all other types in case some corrupt files
     # were left behind.
     tracker_file_util.delete_download_tracker_files(temporary_file_url)
+
+    if self._print_created_message:
+      log.status.Print('Created: {}'.format(destination_url))
 
     if self._delete_source:
       return task.Output(

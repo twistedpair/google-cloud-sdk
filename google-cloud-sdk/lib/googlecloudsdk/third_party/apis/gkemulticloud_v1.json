@@ -307,6 +307,10 @@
         "fleet": {
           "description": "Optional. Fleet configuration.",
           "$ref": "GoogleCloudGkemulticloudV1Fleet"
+        },
+        "loggingConfig": {
+          "description": "Optional. Logging configuration for this cluster.",
+          "$ref": "GoogleCloudGkemulticloudV1LoggingConfig"
         }
       }
     },
@@ -400,6 +404,10 @@
         "configEncryption": {
           "description": "Required. Config encryption for user data.",
           "$ref": "GoogleCloudGkemulticloudV1AwsConfigEncryption"
+        },
+        "instancePlacement": {
+          "description": "Optional. The placement to use on control plane instances. When unspecified, the VPC's default tenancy will be used.",
+          "$ref": "GoogleCloudGkemulticloudV1AwsInstancePlacement"
         }
       }
     },
@@ -501,6 +509,29 @@
         }
       }
     },
+    "GoogleCloudGkemulticloudV1AwsInstancePlacement": {
+      "id": "GoogleCloudGkemulticloudV1AwsInstancePlacement",
+      "description": "Details of placement information for an instance. Limitation for using the `host` tenancy. * T3 instances that use the unlimited CPU credit option do not support host tenancy.",
+      "type": "object",
+      "properties": {
+        "tenancy": {
+          "description": "Required. The tenancy for instance.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not set.",
+            "Use default VPC tenancy.",
+            "Run a dedicated instance.",
+            "Launch this instance to a dedicated Host."
+          ],
+          "enum": [
+            "TENANCY_UNSPECIFIED",
+            "DEFAULT",
+            "DEDICATED",
+            "HOST"
+          ]
+        }
+      }
+    },
     "GoogleCloudGkemulticloudV1AwsAuthorization": {
       "id": "GoogleCloudGkemulticloudV1AwsAuthorization",
       "description": "Configuration related to the cluster RBAC settings.",
@@ -561,6 +592,41 @@
         }
       }
     },
+    "GoogleCloudGkemulticloudV1LoggingConfig": {
+      "id": "GoogleCloudGkemulticloudV1LoggingConfig",
+      "description": "Parameters that describe the Logging configuration in a cluster.",
+      "type": "object",
+      "properties": {
+        "componentConfig": {
+          "description": "The configuration of the logging components;",
+          "$ref": "GoogleCloudGkemulticloudV1LoggingComponentConfig"
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1LoggingComponentConfig": {
+      "id": "GoogleCloudGkemulticloudV1LoggingComponentConfig",
+      "description": "Parameters that describe the Logging component configuration in a cluster.",
+      "type": "object",
+      "properties": {
+        "enableComponents": {
+          "description": "The components to be enabled.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "No component is specified",
+              "This indicates that system logging components is enabled.",
+              "This indicates that user workload logging component is enabled."
+            ],
+            "enum": [
+              "COMPONENT_UNSPECIFIED",
+              "SYSTEM_COMPONENTS",
+              "WORKLOADS"
+            ]
+          }
+        }
+      }
+    },
     "GoogleCloudGkemulticloudV1ListAwsClustersResponse": {
       "id": "GoogleCloudGkemulticloudV1ListAwsClustersResponse",
       "description": "Response message for `AwsClusters.ListAwsClusters` method.",
@@ -594,17 +660,6 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
-        }
-      }
-    },
-    "GoogleCloudGkemulticloudV1GetAwsClusterAdminKubeconfigResponse": {
-      "id": "GoogleCloudGkemulticloudV1GetAwsClusterAdminKubeconfigResponse",
-      "description": "Response message for `AwsClusters.GetAwsClusterAdminKubeconfig` method.",
-      "type": "object",
-      "properties": {
-        "kubeconfig": {
-          "description": "The admin kubeconfig. The generated client credentials expire after 20 hours.",
-          "type": "string"
         }
       }
     },
@@ -733,6 +788,10 @@
           "description": "Required. The name or ARN of the AWS IAM role assigned to nodes in the pool.",
           "type": "string"
         },
+        "imageType": {
+          "description": "Optional. The OS image type to use on node pool instances. Can have a value of `ubuntu`, or `windows` if the cluster enables the Windows node pool preview feature. When unspecified, it defaults to `ubuntu`.",
+          "type": "string"
+        },
         "sshConfig": {
           "description": "Optional. The SSH configuration.",
           "$ref": "GoogleCloudGkemulticloudV1AwsSshConfig"
@@ -751,6 +810,10 @@
         "configEncryption": {
           "description": "Required. Config encryption for user data.",
           "$ref": "GoogleCloudGkemulticloudV1AwsConfigEncryption"
+        },
+        "instancePlacement": {
+          "description": "Optional. Placement related info for this node. When unspecified, the VPC's default tenancy will be used.",
+          "$ref": "GoogleCloudGkemulticloudV1AwsInstancePlacement"
         }
       }
     },
@@ -1151,6 +1214,10 @@
           "description": "Output only. Mananged Azure resources for this cluster.",
           "readOnly": true,
           "$ref": "GoogleCloudGkemulticloudV1AzureClusterResources"
+        },
+        "loggingConfig": {
+          "description": "Optional. Logging configuration for this cluster.",
+          "$ref": "GoogleCloudGkemulticloudV1LoggingConfig"
         }
       }
     },
@@ -1383,17 +1450,6 @@
         }
       }
     },
-    "GoogleCloudGkemulticloudV1GetAzureClusterAdminKubeconfigResponse": {
-      "id": "GoogleCloudGkemulticloudV1GetAzureClusterAdminKubeconfigResponse",
-      "description": "Response message for `AzureClusters.GetAzureClusterAdminKubeconfig` method.",
-      "type": "object",
-      "properties": {
-        "kubeconfig": {
-          "description": "The generated kubeconfig file.",
-          "type": "string"
-        }
-      }
-    },
     "GoogleCloudGkemulticloudV1GenerateAzureAccessTokenResponse": {
       "id": "GoogleCloudGkemulticloudV1GenerateAzureAccessTokenResponse",
       "description": "Response message for `AzureClusters.GenerateAzureAccessToken` method.",
@@ -1522,6 +1578,10 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "imageType": {
+          "description": "Optional. The OS image type to use on node pool instances. Can have a value of `ubuntu`, or `windows` if the cluster enables the Windows node pool preview feature. When unspecified, it defaults to `ubuntu`.",
+          "type": "string"
         },
         "sshConfig": {
           "description": "Required. SSH configuration for how to access the node pool machines.",
@@ -2107,31 +2167,6 @@
                   ],
                   "description": "Generates a short-lived access token to authenticate to a given AwsCluster resource."
                 },
-                "getAwsClusterAdminKubeconfig": {
-                  "id": "gkemulticloud.projects.locations.awsClusters.getAwsClusterAdminKubeconfig",
-                  "path": "v1/{+awsCluster}:getAwsClusterAdminKubeconfig",
-                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/awsClusters/{awsClustersId}:getAwsClusterAdminKubeconfig",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "awsCluster": {
-                      "description": "Required. The name of the cluster. Format: projects\/{project}\/locations\/{location}\/awsClusters\/{cluster}",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/awsClusters\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "awsCluster"
-                  ],
-                  "response": {
-                    "$ref": "GoogleCloudGkemulticloudV1GetAwsClusterAdminKubeconfigResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Generates a kubeconfig file to connect to a given AwsCluster. The returned kubeconfig authenticates to k8s api-server as a generic admin user with username `kubernetes-admin` (as a member of the `system:masters` group) and is valid for 20 hours."
-                },
                 "getJwks": {
                   "id": "gkemulticloud.projects.locations.awsClusters.getJwks",
                   "path": "v1/{+awsCluster}/jwks",
@@ -2651,31 +2686,6 @@
                   ],
                   "description": "Lists all AzureCluster resources on a given Google Cloud project and region."
                 },
-                "getAzureClusterAdminKubeconfig": {
-                  "id": "gkemulticloud.projects.locations.azureClusters.getAzureClusterAdminKubeconfig",
-                  "path": "v1/{+azureCluster}:getAzureClusterAdminKubeconfig",
-                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/azureClusters/{azureClustersId}:getAzureClusterAdminKubeconfig",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "azureCluster": {
-                      "description": "Required. The name of the AzureCluster. AzureCluster names are formatted as `projects\/\/locations\/\/azureClusters\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on GCP resource names.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/azureClusters\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "azureCluster"
-                  ],
-                  "response": {
-                    "$ref": "GoogleCloudGkemulticloudV1GetAzureClusterAdminKubeconfigResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Generates a kubeconfig file to connect to a given AzureCluster. The returned kubeconfig authenticates to k8s api-server as a generic admin user with username `kubernetes-admin` (as a member of the `system:masters` group) and is valid for 20 hours."
-                },
                 "delete": {
                   "id": "gkemulticloud.projects.locations.azureClusters.delete",
                   "path": "v1/{+name}",
@@ -2828,7 +2838,7 @@
                           "type": "boolean"
                         },
                         "updateMask": {
-                          "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field can only include these fields from AzureNodePool: *. `annotations`. * `version`. * `autoscaling.min_node_count`. * `autoscaling.max_node_count`.",
+                          "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field can only include these fields from AzureNodePool: *. `annotations`. * `version`. * `autoscaling.min_node_count`. * `autoscaling.max_node_count`. * `config.vm_size`.",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"

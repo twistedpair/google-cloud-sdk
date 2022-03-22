@@ -162,17 +162,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_ROUTERS = (
-      'projects.locations.routers',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/routers/'
-              '{routersId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_SERVICEBINDINGS = (
       'projects.locations.serviceBindings',
       '{+name}',

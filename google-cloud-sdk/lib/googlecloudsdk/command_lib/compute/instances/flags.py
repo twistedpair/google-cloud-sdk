@@ -1642,6 +1642,48 @@ def AddProvisioningModelVmArgs(parser):
       """)
 
 
+def AddMaxRunDurationVmArgs(parser):
+  """Set arguments for specifing max-run-duration and termination-time flags."""
+  parser.add_argument(
+      '--max-run-duration',
+      type=arg_parsers.Duration(),
+      help="""\
+      Limits how long this VM instance can run, specified as a duration
+      relative to the VM instance's most-recent start time. Format the duration,
+      MAX_RUN_DURATION, similar to "T1h2m3s" where you can specify
+      the number of hours, minutes, and seconds
+      using "h", "m", and "s" respectively.
+      Alternatively, to specify a timestamp, use --termination-time instead.
+
+      If neither --max-run-duration nor --termination-time is specified
+      (default), the VM instance runs until prompted by a user action
+      or system event.
+      If either is specified, the VM instance will be terminated
+      using the action specified by --instance-termination-action.
+      For --max-run-duration, the VM instance is terminated
+      whenever the VM's current runtime reaches MAX_RUN_DURATION;
+      the current runtime is reset to zero
+      any time the VM instance is stopped and started again.
+      """)
+
+  parser.add_argument(
+      '--termination-time',
+      type=arg_parsers.Datetime.Parse,
+      help="""
+      Limits how long this VM instance can run, specified as a time.
+      Format the time, TERMINATION_TIME, as a RFC 3339 timestamp.
+      Alternatively, to specify a duration, use --max-run-duration instead.
+
+     If neither --termination-time nor --max-run-duration
+     is specified (default)
+     the VM instance runs until prompted by a user action or system event.
+     If either is specified, the VM instance will be terminated using the action
+     specified by --instance-termination-action.
+     For --termination-time,
+     the VM instance is terminated only during the specified time.
+     """)
+
+
 def AddHostErrorTimeoutSecondsArgs(parser):
   parser.add_argument(
       '--host-error-timeout-seconds',
@@ -1668,7 +1710,7 @@ def AddInstanceTerminationActionVmArgs(parser):
       """)
 
 
-def ValidateInstanceScheduling(args):
+def ValidateInstanceScheduling(args, support_max_run_duration=False):
   """Validates instance scheduling related flags."""
 
   if args.IsSpecified('instance_termination_action'):
@@ -1676,6 +1718,12 @@ def ValidateInstanceScheduling(args):
       raise exceptions.RequiredArgumentException(
           '--provisioning-model',
           'required with argument `--instance-termination-action`.')
+
+  if support_max_run_duration and args.IsSpecified(
+      'termination_time') and args.IsSpecified('max_run_duration'):
+    raise compute_exceptions.ArgumentError(
+        'Must specify exactly one of --max-run-duration or --termination-time '
+        'as these fields are mutually exclusive.')
 
 
 def AddNetworkArgs(parser):
@@ -3356,3 +3404,20 @@ def AddNodeProjectArgs(parser):
       help="""\
       The name of the project with shared sole tenant node groups to create
       an instance in.""")
+
+
+def AddKeyRevocationActionTypeArgs(parser):
+  """Helper to add --key-revocation-action-type flag."""
+  help_text = ('Specifies the behavior of the instance when the KMS key of one '
+               'of its attached disks is revoked. The default is none.')
+  choices_text = {
+      'none': 'No operation is performed.',
+      'stop': 'The instance is stopped when the KMS key of one of its attached '
+              'disks is revoked.'
+  }
+  parser.add_argument(
+      '--key-revocation-action-type',
+      choices=choices_text,
+      metavar='POLICY',
+      required=False,
+      help=help_text)

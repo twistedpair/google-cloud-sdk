@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 import abc
 
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
 
 
@@ -123,6 +124,8 @@ class BaseFormatter:
     """
     con = console_attr.GetConsoleAttr()
     encoding = console_attr.GetConsoleAttr().GetEncoding()
+    if properties.VALUES.core.disable_color.GetBool():
+      encoding = 'ascii'
     if status == 'DEPLOYED' or status == 'READY':
       return con.Colorize(
           self._PickSymbol('\N{HEAVY CHECK MARK}', '+', encoding), 'green')

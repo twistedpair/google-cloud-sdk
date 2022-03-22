@@ -201,6 +201,8 @@ class _ObjectConfig(object):
       to encrypt information in GCS.
     md5_hash (str|None): MD5 digest to use for validation.
     size (int|None): Object size in bytes.
+    storage_class (str|None): Storage class for cloud object. If None, will use
+      bucket's default.
   """
 
   def __init__(self,
@@ -213,7 +215,8 @@ class _ObjectConfig(object):
                decryption_key=None,
                encryption_key=None,
                md5_hash=None,
-               size=None):
+               size=None,
+               storage_class=None):
     self.cache_control = cache_control
     self.content_disposition = content_disposition
     self.content_encoding = content_encoding
@@ -224,6 +227,7 @@ class _ObjectConfig(object):
     self.encryption_key = encryption_key
     self.md5_hash = md5_hash
     self.size = size
+    self.storage_class = storage_class
 
   def __eq__(self, other):
     if not isinstance(other, type(self)):
@@ -236,7 +240,8 @@ class _ObjectConfig(object):
             self.custom_metadata == other.custom_metadata and
             self.decryption_key == other.decryption_key and
             self.encryption_key == other.encryption_key and
-            self.md5_hash == other.md5_hash and self.size == other.size)
+            self.md5_hash == other.md5_hash and self.size == other.size and
+            self.storage_class == other.storage_class)
 
   def __repr__(self):
     return debug_output.generic_repr(self)
@@ -479,6 +484,10 @@ def _get_request_config_resource_args(url,
       new_resource_args.content_encoding = user_resource_args.content_encoding
       new_resource_args.content_language = user_resource_args.content_language
       new_resource_args.custom_metadata = user_resource_args.custom_metadata
+      if user_resource_args.storage_class:
+        # Currently, all providers require all caps storage classes.
+        new_resource_args.storage_class = (
+            user_resource_args.storage_class.upper())
 
   return new_resource_args
 

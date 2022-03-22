@@ -302,7 +302,8 @@ class RunAppsOperations(object):
           'Integration [{}] cannot be found'.format(name))
 
     resource_type = self.GetIntegrationTypeFromConfig(existing_resource)
-    flags.ValidateUpdateParameters(resource_type, parameters)
+    integration_type = types_utils.GetIntegrationType(resource_type)
+    flags.ValidateUpdateParameters(integration_type, parameters)
     resource_config = self._GetResourceConfig(resource_type, parameters,
                                               add_service, remove_service,
                                               existing_resource)
@@ -385,7 +386,7 @@ class RunAppsOperations(object):
     # Undeploy integration resource
     self._UndeployResource(resource_type, name)
 
-    integration_type = self.GetIntegrationType(resource_type)
+    integration_type = types_utils.GetIntegrationType(resource_type)
     return integration_type
 
   def _UndeployResource(self, resource_type, name):
@@ -395,14 +396,8 @@ class RunAppsOperations(object):
       resource_type: type of the resource
       name: name of the resource
     """
-    # TODO(b/222358905): Add delete VPC selector once control plane have
-    # safeguard against deleting in use VPC connector
-    delete_selector = {
-        'matchTypeNames': [{
-            'type': resource_type,
-            'name': name
-        }]
-    }
+    delete_selector = self._GetDeleteSelectors(name, resource_type)
+
     self._CreateDeployment(
         appname=_DEFAULT_APP_NAME,
         delete_selector=delete_selector,
@@ -444,21 +439,6 @@ class RunAppsOperations(object):
         return t
     return None
 
-  def GetIntegrationType(self, resource_type):
-    """Returns the integration type associated to the given resource type.
-
-    Args:
-      resource_type: string, the resource type.
-
-    Returns:
-      The integration type.
-    """
-    int_types = types_utils.IntegrationTypes(self._client)
-    for t in int_types:
-      if t.get('resource_name', None) == resource_type:
-        return t['name']
-    return resource_type
-
   def ListIntegrations(self, integration_type_filter, service_name_filter):
     """Returns the list of integrations.
 
@@ -484,7 +464,7 @@ class RunAppsOperations(object):
     output = []
     for name, resource in app_resources.items():
       resource_type = self.GetIntegrationTypeFromConfig(resource)
-      integration_type = self.GetIntegrationType(resource_type)
+      integration_type = types_utils.GetIntegrationType(resource_type)
 
       # Remove invalid integrations.
       if integration_type is None:
@@ -549,6 +529,24 @@ class RunAppsOperations(object):
       selectors.append({'type': 'vpc', 'name': '*'})
 
     return selectors
+
+  def _GetDeleteSelectors(self, name, resource_type):
+    """Returns delete selectors for undeploying an integration.
+
+    Args:
+      name: str, name of integration.
+      resource_type: str, type of resource.
+
+    Returns:
+      the selector object
+    """
+    selectors = [{'type': resource_type, 'name': name}]
+
+    if resource_type == 'redis':
+      # TODO(b/222753640): remove this all destroying vpc selector
+      selectors.append({'type': 'vpc', 'name': '*'})
+
+    return {'matchTypeNames': selectors}
 
   def _AddServiceToIntegrationRef(self, name, resource_type, service):
     """Add service to integration ref.

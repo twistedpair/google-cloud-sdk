@@ -22075,7 +22075,7 @@ class GoogleCloudAiplatformV1alpha1PipelineJob(_messages.Message):
       characters, underscores and dashes. International characters are
       allowed. See https://goo.gl/xmQnxf for more information and examples of
       labels.
-    PipelineSpecValue: Required. The spec of the pipeline.
+    PipelineSpecValue: The spec of the pipeline.
 
   Fields:
     createTime: Output only. Pipeline creation time.
@@ -22092,7 +22092,7 @@ class GoogleCloudAiplatformV1alpha1PipelineJob(_messages.Message):
       underscores and dashes. International characters are allowed. See
       https://goo.gl/xmQnxf for more information and examples of labels.
     name: Output only. The resource name of the PipelineJob.
-    pipelineSpec: Required. The spec of the pipeline.
+    pipelineSpec: The spec of the pipeline.
     runtimeConfig: Runtime config of the pipeline.
     startTime: Output only. Pipeline start time.
     state: Output only. The detailed state of the job.
@@ -22158,7 +22158,7 @@ class GoogleCloudAiplatformV1alpha1PipelineJob(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PipelineSpecValue(_messages.Message):
-    r"""Required. The spec of the pipeline.
+    r"""The spec of the pipeline.
 
     Messages:
       AdditionalProperty: An additional property for a PipelineSpecValue

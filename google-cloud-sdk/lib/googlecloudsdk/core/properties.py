@@ -1353,6 +1353,7 @@ class _SectionAuth(_Section):
   """Contains the properties for the 'auth' section."""
   DEFAULT_AUTH_HOST = 'https://accounts.google.com/o/oauth2/auth'
   DEFAULT_TOKEN_HOST = 'https://oauth2.googleapis.com/token'
+  DEFAULT_MTLS_TOKEN_HOST = 'https://oauth2.mtls.googleapis.com/token'
 
   def __init__(self):
     super(_SectionAuth, self).__init__('auth')
@@ -1369,6 +1370,12 @@ class _SectionAuth(_Section):
         default=self.DEFAULT_TOKEN_HOST,
         help_text='Overrides the token endpoint to provision access tokens. '
                   'It can be used with Private Service Connect.')
+    self.mtls_token_host = self._Add(
+        'mtls_token_host',
+        default=self.DEFAULT_MTLS_TOKEN_HOST,
+        help_text='Overrides the mtls token endpoint to provision access tokens.',
+        hidden=True
+    )
     self.disable_ssl_validation = self._AddBool(
         'disable_ssl_validation', hidden=True)
     self.client_id = self._Add(
@@ -1741,13 +1748,14 @@ class _SectionContextAware(_Section):
     super(_SectionContextAware, self).__init__('context_aware')
     self.use_client_certificate = self._AddBool(
         'use_client_certificate',
-        help_text=('If True, use client certificate to authorize user '
-                   'device using Context-aware access. Some services may not '
-                   'support client certificate authorization. If a command '
-                   'sends requests to such services, the client certificate '
-                   'will not be validated. '
-                   'Run `gcloud topic client-certificate` for list of services '
-                   'supporting this feature.'),
+        help_text=(
+            'If True, use client certificate to authorize user '
+            'device using Context-aware access. This includes user login '
+            'as well. Some services may not support client certificate '
+            'authorization. If a command sends requests to such services, the '
+            'client certificate will not be validated. '
+            'Run `gcloud topic client-certificate` for list of services '
+            'supporting this feature.'),
         default=False)
     # Only for tests. It is valuable to test that the mTLS endpoints are serving
     # without involving the policy enforcement. The mTLS endpoints are expected

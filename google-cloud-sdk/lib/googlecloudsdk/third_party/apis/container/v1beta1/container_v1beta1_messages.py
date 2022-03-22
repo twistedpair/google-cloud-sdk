@@ -844,6 +844,8 @@ class ClusterUpdate(_messages.Message):
       UpdateNodePoolRequest.Gvnic = 29
     desiredEnablePrivateEndpoint: Enable/Disable private endpoint for the
       cluster.
+    desiredGatewayApiConfig: The desired config of Gateway API on this
+      cluster.
     desiredGcfsConfig: The desired GCFS config for the cluster.
     desiredGkeOidcConfig: Security message for security related configuration
     desiredIdentityServiceConfig: The desired Identity Service component
@@ -999,46 +1001,47 @@ class ClusterUpdate(_messages.Message):
   desiredDnsConfig = _messages.MessageField('DNSConfig', 11)
   desiredEnableGvnic = _messages.BooleanField(12)
   desiredEnablePrivateEndpoint = _messages.BooleanField(13)
-  desiredGcfsConfig = _messages.MessageField('GcfsConfig', 14)
-  desiredGkeOidcConfig = _messages.MessageField('GkeOidcConfig', 15)
-  desiredIdentityServiceConfig = _messages.MessageField('IdentityServiceConfig', 16)
-  desiredImage = _messages.StringField(17)
-  desiredImageProject = _messages.StringField(18)
-  desiredImageType = _messages.StringField(19)
-  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 20)
-  desiredKubernetesObjectsExportConfig = _messages.MessageField('KubernetesObjectsExportConfig', 21)
-  desiredL4ilbSubsettingConfig = _messages.MessageField('ILBSubsettingConfig', 22)
-  desiredLocations = _messages.StringField(23, repeated=True)
-  desiredLoggingConfig = _messages.MessageField('LoggingConfig', 24)
-  desiredLoggingService = _messages.StringField(25)
-  desiredMaster = _messages.MessageField('Master', 26)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 27)
-  desiredMasterVersion = _messages.StringField(28)
-  desiredMeshCertificates = _messages.MessageField('MeshCertificates', 29)
-  desiredMonitoringConfig = _messages.MessageField('MonitoringConfig', 30)
-  desiredMonitoringService = _messages.StringField(31)
-  desiredNodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 32)
-  desiredNodePoolAutoConfigNetworkTags = _messages.MessageField('NetworkTags', 33)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 34)
-  desiredNodePoolId = _messages.StringField(35)
-  desiredNodeVersion = _messages.StringField(36)
-  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 37)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 38)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 39)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 40)
-  desiredProtectConfig = _messages.MessageField('ProtectConfig', 41)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 42)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 43)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 44)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 45)
-  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 46)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 47)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 48)
-  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 49)
-  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 50)
-  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 51)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 52)
-  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 53)
+  desiredGatewayApiConfig = _messages.MessageField('GatewayAPIConfig', 14)
+  desiredGcfsConfig = _messages.MessageField('GcfsConfig', 15)
+  desiredGkeOidcConfig = _messages.MessageField('GkeOidcConfig', 16)
+  desiredIdentityServiceConfig = _messages.MessageField('IdentityServiceConfig', 17)
+  desiredImage = _messages.StringField(18)
+  desiredImageProject = _messages.StringField(19)
+  desiredImageType = _messages.StringField(20)
+  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 21)
+  desiredKubernetesObjectsExportConfig = _messages.MessageField('KubernetesObjectsExportConfig', 22)
+  desiredL4ilbSubsettingConfig = _messages.MessageField('ILBSubsettingConfig', 23)
+  desiredLocations = _messages.StringField(24, repeated=True)
+  desiredLoggingConfig = _messages.MessageField('LoggingConfig', 25)
+  desiredLoggingService = _messages.StringField(26)
+  desiredMaster = _messages.MessageField('Master', 27)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 28)
+  desiredMasterVersion = _messages.StringField(29)
+  desiredMeshCertificates = _messages.MessageField('MeshCertificates', 30)
+  desiredMonitoringConfig = _messages.MessageField('MonitoringConfig', 31)
+  desiredMonitoringService = _messages.StringField(32)
+  desiredNodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 33)
+  desiredNodePoolAutoConfigNetworkTags = _messages.MessageField('NetworkTags', 34)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 35)
+  desiredNodePoolId = _messages.StringField(36)
+  desiredNodeVersion = _messages.StringField(37)
+  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 38)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 39)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 40)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 41)
+  desiredProtectConfig = _messages.MessageField('ProtectConfig', 42)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 43)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 44)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 45)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 46)
+  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 47)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 48)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 49)
+  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 50)
+  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 51)
+  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 52)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 53)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 54)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1935,6 +1938,37 @@ class GPUSharingConfig(_messages.Message):
 
   gpuSharingStrategy = _messages.EnumField('GpuSharingStrategyValueValuesEnum', 1)
   maxSharedClientsPerGpu = _messages.IntegerField(2)
+
+
+class GatewayAPIConfig(_messages.Message):
+  r"""GatewayAPIConfig contains the desired config of Gateway API on this
+  cluster.
+
+  Enums:
+    ChannelValueValuesEnum: The Gateway API release channel to use for Gateway
+      API.
+
+  Fields:
+    channel: The Gateway API release channel to use for Gateway API.
+  """
+
+  class ChannelValueValuesEnum(_messages.Enum):
+    r"""The Gateway API release channel to use for Gateway API.
+
+    Values:
+      CHANNEL_UNSPECIFIED: Default value.
+      CHANNEL_DISABLED: Gateway API support is disabled
+      CHANNEL_STABLE: Gateway API support is enabled, stable CRDs are
+        installed
+      CHANNEL_EXPERIMENTAL: Gateway API support is enabled, experimental CRDs
+        are installed
+    """
+    CHANNEL_UNSPECIFIED = 0
+    CHANNEL_DISABLED = 1
+    CHANNEL_STABLE = 2
+    CHANNEL_EXPERIMENTAL = 3
+
+  channel = _messages.EnumField('ChannelValueValuesEnum', 1)
 
 
 class GcePersistentDiskCsiDriverConfig(_messages.Message):
@@ -2908,6 +2942,8 @@ class NetworkConfig(_messages.Message):
       network.
     enableL4ilbSubsetting: Whether L4ILB Subsetting is enabled for this
       cluster.
+    gatewayApiConfig: GatewayAPIConfig contains the desired config of Gateway
+      API on this cluster.
     network: Output only. The relative name of the Google Compute Engine
       network(https://cloud.google.com/compute/docs/networks-and-
       firewalls#networks) to which the cluster is connected. Example:
@@ -2972,11 +3008,12 @@ class NetworkConfig(_messages.Message):
   dnsConfig = _messages.MessageField('DNSConfig', 3)
   enableIntraNodeVisibility = _messages.BooleanField(4)
   enableL4ilbSubsetting = _messages.BooleanField(5)
-  network = _messages.StringField(6)
-  nodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 7)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 8)
-  serviceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 9)
-  subnetwork = _messages.StringField(10)
+  gatewayApiConfig = _messages.MessageField('GatewayAPIConfig', 6)
+  network = _messages.StringField(7)
+  nodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 8)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 9)
+  serviceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 10)
+  subnetwork = _messages.StringField(11)
 
 
 class NetworkPerformanceConfig(_messages.Message):
@@ -5566,10 +5603,14 @@ class WorkloadConfig(_messages.Message):
   Enums:
     AuditModeValueValuesEnum: Sets which mode of auditing should be used for
       the cluster's workloads.
+    VulnerabilityScanningModeValueValuesEnum: Sets which mode of vulnerability
+      scanning should be used for cluster's workloads.
 
   Fields:
     auditMode: Sets which mode of auditing should be used for the cluster's
       workloads.
+    vulnerabilityScanningMode: Sets which mode of vulnerability scanning
+      should be used for cluster's workloads.
   """
 
   class AuditModeValueValuesEnum(_messages.Enum):
@@ -5593,7 +5634,29 @@ class WorkloadConfig(_messages.Message):
     BASELINE = 3
     RESTRICTED = 4
 
+  class VulnerabilityScanningModeValueValuesEnum(_messages.Enum):
+    r"""Sets which mode of vulnerability scanning should be used for cluster's
+    workloads.
+
+    Values:
+      MODE_UNSPECIFIED: Default value meaning that no mode has been specified.
+      DISABLED: This disables Workload Configuration auditing on the cluster,
+        meaning that nothing is surfaced.
+      BASIC: Applies the default set of policy auditing to a cluster's
+        workloads.
+      BASELINE: Surfaces configurations that are not in line with the Pod
+        Security Standard Baseline policy.
+      RESTRICTED: Surfaces configurations that are not in line with the Pod
+        Security Standard Restricted policy.
+    """
+    MODE_UNSPECIFIED = 0
+    DISABLED = 1
+    BASIC = 2
+    BASELINE = 3
+    RESTRICTED = 4
+
   auditMode = _messages.EnumField('AuditModeValueValuesEnum', 1)
+  vulnerabilityScanningMode = _messages.EnumField('VulnerabilityScanningModeValueValuesEnum', 2)
 
 
 class WorkloadIdentityConfig(_messages.Message):

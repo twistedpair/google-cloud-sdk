@@ -160,8 +160,7 @@ def _AddNetworkEndpointType(parser, support_global_scope, support_hybrid_neg,
 
       *private-service-connect*:::
       The network endpoint corresponds to a service outside the VPC, accessed
-      via Private Service Connect. The network, subnet, and default port must
-      not be set.
+      via Private Service Connect.
     """
 
   base.ChoiceArgument(
@@ -187,7 +186,9 @@ def _AddNetwork(parser, support_global_scope, support_hybrid_neg,
     network_applicable_ne_types.append('`gce-vm-primary-ip`')
   if support_vm_ip_neg:
     network_applicable_ne_types.append('`gce-vm-ip`')
-  if support_global_scope or support_regional_scope or support_l7psc_neg:
+  if support_l7psc_neg:
+    network_applicable_ne_types.append('`private-service-connect`')
+  if support_global_scope or support_regional_scope:
     help_text += """\
 
       This is only supported for NEGs with endpoint type {0}.

@@ -46,7 +46,8 @@ IAP_WEB_COLLECTION = 'iap.projects.iap_web'
 IAP_WEB_SERVICES_COLLECTION = 'iap.projects.iap_web.services'
 IAP_WEB_SERVICES_VERSIONS_COLLECTION = 'iap.projects.iap_web.services.versions'
 IAP_GATEWAY_COLLECTION = 'iap.projects.iap_gateway'
-IAP_TCP_DESTGROUP_COLLECTION = 'iap.projects.iap_tcp.dest_groups'
+IAP_TCP_DESTGROUP_COLLECTION = 'iap.projects.iap_tunnel.locations.destGroups'
+IAP_TCP_LOCATIONS_COLLECTION = 'iap.projects.iap_tunnel.locations'
 
 
 def _ApiVersion(release_track):
@@ -524,16 +525,49 @@ class IapTunnelDestGroupResource(IapIamResource):
     self.region = region
     self.group_name = group_name
 
+  def ResourceService(self):
+    return getattr(self.client, 'projects_iap_tunnel_locations_destGroups')
+
   def _Name(self):
     return 'iap_tunneldestgroups'
 
   def _Parse(self):
-    project = _GetProject(self.project)
+    project_number = _GetProject(self.project).projectNumber
     return self.registry.Parse(
         None,
         params={
-            'project': project.projectNumber,
-            'region': self.region,
-            'groupId': self.group_name,
+            'projectsId': project_number,
+            'locationsId': self.region,
+            'destGroupsId': self.group_name,
         },
         collection=IAP_TCP_DESTGROUP_COLLECTION)
+
+  def _ParseWithoutGroupId(self):
+    self.project_number = _GetProject(self.project).projectNumber
+    return self.registry.Parse(
+        None,
+        params={
+            'projectsId': self.project_number,
+            'locationsId': self.region,
+        },
+        collection=IAP_TCP_LOCATIONS_COLLECTION)
+
+  def Create(self, cidr_list, fqdn_list):
+    """Creates a TunnelDestGroup."""
+
+    tunnel_dest_group = {
+        'name': self.group_name,
+        'cidrs': cidr_list.split(',') if cidr_list else [],
+        'fqdns': fqdn_list.split(',') if fqdn_list else [],
+    }
+    request = self.messages.IapProjectsIapTunnelLocationsDestGroupsCreateRequest(
+        parent=self._ParseWithoutGroupId().RelativeName(),
+        tunnelDestGroup=tunnel_dest_group,
+        tunnelDestGroupId=self.group_name)
+    return self.ResourceService().Create(request)
+
+  def Delete(self):
+    """Deletes the TunnelDestGroup."""
+    request = self.messages.IapProjectsIapTunnelLocationsDestGroupsDeleteRequest(
+        name=self._Parse().RelativeName())
+    return self.ResourceService().Delete(request)

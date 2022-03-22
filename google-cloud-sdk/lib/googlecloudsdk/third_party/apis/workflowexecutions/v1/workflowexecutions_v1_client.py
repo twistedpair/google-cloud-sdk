@@ -172,6 +172,33 @@ class WorkflowexecutionsV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def TriggerPubsubExecution(self, request, global_params=None):
+      r"""Triggers a new execution using the latest revision of the given workflow by a Pub/Sub push notification.
+
+      Args:
+        request: (WorkflowexecutionsProjectsLocationsWorkflowsTriggerPubsubExecutionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Execution) The response message.
+      """
+      config = self.GetMethodConfig('TriggerPubsubExecution')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TriggerPubsubExecution.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}:triggerPubsubExecution',
+        http_method='POST',
+        method_id='workflowexecutions.projects.locations.workflows.triggerPubsubExecution',
+        ordered_params=['workflow'],
+        path_params=['workflow'],
+        query_params=[],
+        relative_path='v1/{+workflow}:triggerPubsubExecution',
+        request_field='triggerPubsubExecutionRequest',
+        request_type_name='WorkflowexecutionsProjectsLocationsWorkflowsTriggerPubsubExecutionRequest',
+        response_type_name='Execution',
+        supports_download=False,
+    )
+
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 

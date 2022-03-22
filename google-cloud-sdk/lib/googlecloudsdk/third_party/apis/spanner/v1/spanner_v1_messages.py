@@ -513,6 +513,41 @@ class CreateDatabaseRequest(_messages.Message):
   extraStatements = _messages.StringField(4, repeated=True)
 
 
+class CreateInstanceConfigMetadata(_messages.Message):
+  r"""Metadata type for the operation returned by CreateInstanceConfig.
+
+  Fields:
+    cancelTime: The time at which this operation was cancelled.
+    instanceConfig: The target instance config end state.
+    progress: The progress of the CreateInstanceConfig operation.
+  """
+
+  cancelTime = _messages.StringField(1)
+  instanceConfig = _messages.MessageField('InstanceConfig', 2)
+  progress = _messages.MessageField('OperationProgress', 3)
+
+
+class CreateInstanceConfigRequest(_messages.Message):
+  r"""The request for CreateInstanceConfigRequest.
+
+  Fields:
+    instanceConfig: Required. The InstanceConfig proto of the configuration to
+      create. instance_config.name must be `/instanceConfigs/`.
+      instance_config.base_config must be a Google managed configuration id,
+      e.g. us-east1, nam3.
+    instanceConfigId: Required. The ID of the instance config to create. Valid
+      identifiers are of the form `custom-[-a-z0-9]*[a-z0-9]` and must be
+      between 2 and 64 characters in length. The `custom-` prefix is required
+      to avoid name conflicts with Google managed configurations.
+    validateOnly: An option to validate, but not actually execute, a request,
+      and provide the same response.
+  """
+
+  instanceConfig = _messages.MessageField('InstanceConfig', 1)
+  instanceConfigId = _messages.StringField(2)
+  validateOnly = _messages.BooleanField(3)
+
+
 class CreateInstanceMetadata(_messages.Message):
   r"""Metadata type for the operation returned by CreateInstance.
 
@@ -3361,22 +3396,14 @@ class SpannerProjectsInstanceConfigsCreateRequest(_messages.Message):
   r"""A SpannerProjectsInstanceConfigsCreateRequest object.
 
   Fields:
-    instanceConfig: A InstanceConfig resource to be passed as the request
-      body.
-    instanceConfigId: Required. The ID of the instance config to create. Valid
-      identifiers are of the form `custom-[-a-z0-9]*[a-z0-9]` and must be
-      between 2 and 64 characters in length. The `custom-` prefix is required
-      to avoid name conflicts with Google managed configurations.
+    createInstanceConfigRequest: A CreateInstanceConfigRequest resource to be
+      passed as the request body.
     parent: Required. The name of the project in which to create the instance
       config. Values are of the form `projects/`.
-    validateOnly: An option to validate, but not actually execute, a request,
-      and provide the same response.
   """
 
-  instanceConfig = _messages.MessageField('InstanceConfig', 1)
-  instanceConfigId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  validateOnly = _messages.BooleanField(4)
+  createInstanceConfigRequest = _messages.MessageField('CreateInstanceConfigRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class SpannerProjectsInstanceConfigsDeleteRequest(_messages.Message):
@@ -3434,23 +3461,14 @@ class SpannerProjectsInstanceConfigsPatchRequest(_messages.Message):
   r"""A SpannerProjectsInstanceConfigsPatchRequest object.
 
   Fields:
-    instanceConfig: A InstanceConfig resource to be passed as the request
-      body.
     name: A unique identifier for the instance configuration. Values are of
       the form `projects//instanceConfigs/a-z*`.
-    updateMask: Required. A mask specifying which fields in InstanceConfig
-      should be updated. The field mask must always be specified; this
-      prevents any future fields in InstanceConfig from being erased
-      accidentally by clients that do not know about them. Only display_name
-      and labels can be updated.
-    validateOnly: An option to validate, but not actually execute, a request,
-      and provide the same response.
+    updateInstanceConfigRequest: A UpdateInstanceConfigRequest resource to be
+      passed as the request body.
   """
 
-  instanceConfig = _messages.MessageField('InstanceConfig', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
-  validateOnly = _messages.BooleanField(4)
+  name = _messages.StringField(1, required=True)
+  updateInstanceConfigRequest = _messages.MessageField('UpdateInstanceConfigRequest', 2)
 
 
 class SpannerProjectsInstancesBackupOperationsListRequest(_messages.Message):
@@ -5106,6 +5124,42 @@ class UpdateDatabaseDdlRequest(_messages.Message):
 
   operationId = _messages.StringField(1)
   statements = _messages.StringField(2, repeated=True)
+
+
+class UpdateInstanceConfigMetadata(_messages.Message):
+  r"""Metadata type for the operation returned by UpdateInstanceConfig.
+
+  Fields:
+    cancelTime: The time at which this operation was cancelled.
+    instanceConfig: The desired instance config after updating.
+    progress: The progress of the UpdateInstanceConfig operation.
+  """
+
+  cancelTime = _messages.StringField(1)
+  instanceConfig = _messages.MessageField('InstanceConfig', 2)
+  progress = _messages.MessageField('OperationProgress', 3)
+
+
+class UpdateInstanceConfigRequest(_messages.Message):
+  r"""The request for UpdateInstanceConfigRequest.
+
+  Fields:
+    instanceConfig: Required. The user instance config to update, which must
+      always include the instance config name. Otherwise, only fields
+      mentioned in update_mask need be included. To prevent conflicts of
+      concurrent updates, etag can be used.
+    updateMask: Required. A mask specifying which fields in InstanceConfig
+      should be updated. The field mask must always be specified; this
+      prevents any future fields in InstanceConfig from being erased
+      accidentally by clients that do not know about them. Only display_name
+      and labels can be updated.
+    validateOnly: An option to validate, but not actually execute, a request,
+      and provide the same response.
+  """
+
+  instanceConfig = _messages.MessageField('InstanceConfig', 1)
+  updateMask = _messages.StringField(2)
+  validateOnly = _messages.BooleanField(3)
 
 
 class UpdateInstanceMetadata(_messages.Message):

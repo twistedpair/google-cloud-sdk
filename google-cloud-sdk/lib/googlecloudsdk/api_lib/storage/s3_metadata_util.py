@@ -225,5 +225,7 @@ def get_object_metadata_dict_from_request_config(request_config):
     _process_value_or_clear_flag(metadata, 'ContentMD5', resource_args.md5_hash)
     _process_value_or_clear_flag(metadata, 'Metadata',
                                  resource_args.custom_metadata)
+    _process_value_or_clear_flag(metadata, 'StorageClass',
+                                 resource_args.storage_class)
 
   return metadata

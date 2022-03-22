@@ -151,9 +151,10 @@ def _Create(msgs,
 
   req = msgs.SpannerProjectsInstanceConfigsCreateRequest(
       parent=project_ref.RelativeName(),
-      instanceConfigId=config,
-      instanceConfig=instance_config,
-      validateOnly=validate_only)
+      createInstanceConfigRequest=msgs.CreateInstanceConfigRequest(
+          instanceConfigId=config,
+          instanceConfig=instance_config,
+          validateOnly=validate_only))
   return client.projects_instanceConfigs.Create(req)
 
 
@@ -219,7 +220,8 @@ def Patch(args):
 
   req = msgs.SpannerProjectsInstanceConfigsPatchRequest(
       name=ref.RelativeName(),
-      instanceConfig=instance_config,
-      updateMask=','.join(update_mask),
-      validateOnly=args.validate_only)
+      updateInstanceConfigRequest=msgs.UpdateInstanceConfigRequest(
+          instanceConfig=instance_config,
+          updateMask=','.join(update_mask),
+          validateOnly=args.validate_only))
   return client.projects_instanceConfigs.Patch(req)

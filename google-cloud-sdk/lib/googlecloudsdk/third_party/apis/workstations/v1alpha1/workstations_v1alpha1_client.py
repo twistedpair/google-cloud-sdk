@@ -454,6 +454,33 @@ class WorkstationsV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GenerateAccessToken(self, request, global_params=None):
+      r"""Returns a short-lived credential that can be used to send authenticated and authorized traffic to a workstation.
+
+      Args:
+        request: (WorkstationsProjectsLocationsWorkstationClustersWorkstationsGenerateAccessTokenRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GenerateAccessTokenResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateAccessToken')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateAccessToken.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/workstationClusters/{workstationClustersId}/workstations/{workstationsId}:generateAccessToken',
+        http_method='POST',
+        method_id='workstations.projects.locations.workstationClusters.workstations.generateAccessToken',
+        ordered_params=['workstation'],
+        path_params=['workstation'],
+        query_params=[],
+        relative_path='v1alpha1/{+workstation}:generateAccessToken',
+        request_field='generateAccessTokenRequest',
+        request_type_name='WorkstationsProjectsLocationsWorkstationClustersWorkstationsGenerateAccessTokenRequest',
+        response_type_name='GenerateAccessTokenResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Returns the requested Workstation.
 

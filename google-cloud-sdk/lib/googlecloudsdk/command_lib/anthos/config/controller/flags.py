@@ -115,3 +115,11 @@ def AddFullManagement(parser):
       const=True,
       help=("Enable full cluster management type. The project must be "
             "allowlisted to use this flag."))
+
+
+def AddUsePrivateEndpoint(parser):
+  """Adds --use-private-endpoint flag."""
+  parser.add_argument(
+      "--use-private-endpoint",
+      action="store_true",
+      help=("Only allow access to the master's private endpoint IP."))

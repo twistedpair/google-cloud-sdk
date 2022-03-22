@@ -222,6 +222,29 @@ def _ApplyCMEKArgsToFunction(function_ref, function, args, release_track):
   return updated_fields
 
 
+def _GetActiveKMSKey(function, args, release_track):
+  """Retrieves the KMS key for the function.
+
+  This is either the KMS key provided via the kms-key flag or the KMS key
+  configured for the existing function if any.
+
+  Args:
+    function: existing cloud function if any.
+    args: CLI arguments.
+    release_track: gcloud release track.
+
+  Returns:
+    kms_key: KMS key if any.
+  """
+  kms_key = None
+  if (release_track == calliope_base.ReleaseTrack.ALPHA or
+      release_track == calliope_base.ReleaseTrack.BETA):
+    kms_key = function.kmsKeyName
+    if args.IsSpecified('kms_key') or args.IsSpecified('clear_kms_key'):
+      kms_key = (None if args.clear_kms_key else args.kms_key)
+  return kms_key
+
+
 def _CreateBindPolicyCommand(function_ref):
   template = ('gcloud alpha functions add-iam-policy-binding %s --region=%s '
               '--member=allUsers --role=roles/cloudfunctions.invoker')
@@ -401,6 +424,8 @@ def Run(args, track=None, enable_runtime=True):
     function.httpsTrigger.securityLevel = security_level_enum
     updated_fields.append('httpsTrigger.securityLevel')
 
+  kms_key = _GetActiveKMSKey(function, args, track)
+
   # Populate source properties of function based on source args.
   # Only Add source to function if its explicitly provided, a new function,
   # using a stage bucket or deploy of an existing function that previously
@@ -409,7 +434,8 @@ def Run(args, track=None, enable_runtime=True):
       function.sourceUploadUrl):
     updated_fields.extend(
         source_util.SetFunctionSourceProps(function, function_ref, args.source,
-                                           args.stage_bucket, args.ignore_file))
+                                           args.stage_bucket, args.ignore_file,
+                                           kms_key))
 
   # Apply label args to function
   if labels_util.SetFunctionLabels(function, args.update_labels,

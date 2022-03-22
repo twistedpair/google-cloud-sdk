@@ -242,6 +242,8 @@ def update_object_metadata_from_request_config(object_metadata, request_config):
                                resource_args.content_type)
   _process_value_or_clear_flag(object_metadata, 'md5Hash',
                                resource_args.md5_hash)
+  _process_value_or_clear_flag(object_metadata, 'storageClass',
+                               resource_args.storage_class)
 
   if (resource_args.encryption_key and
       resource_args.encryption_key.type == encryption_util.KeyType.CMEK):

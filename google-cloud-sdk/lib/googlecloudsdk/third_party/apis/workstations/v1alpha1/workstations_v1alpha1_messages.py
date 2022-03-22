@@ -500,6 +500,37 @@ class GceRegionalPersistentDisk(_messages.Message):
   sizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class GenerateAccessTokenRequest(_messages.Message):
+  r"""Request message for GenerateAccessToken.
+
+  Fields:
+    expireTime: Desired expiration time of the access token. This value must
+      be at most 24 hours in the future. If a value is not specified, the
+      token's expiration time will be set to a default value of 1 hour in the
+      future.
+    ttl: Desired lifetime duration of the access token. This value must be at
+      most 24 hours. If a value is not specified, the token's lifetime will be
+      set to a default value of 1 hour.
+  """
+
+  expireTime = _messages.StringField(1)
+  ttl = _messages.StringField(2)
+
+
+class GenerateAccessTokenResponse(_messages.Message):
+  r"""Response message for GenerateAccessToken.
+
+  Fields:
+    accessToken: The generated bearer access token. To use this token, include
+      it in an Authorization header of an HTTP request sent to the associated
+      workstation's hostname, e.g. "Authorization: Bearer ".
+    expireTime: Time at which the generated token will expire.
+  """
+
+  accessToken = _messages.StringField(1)
+  expireTime = _messages.StringField(2)
+
+
 class ListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 
@@ -1609,6 +1640,21 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationsDeleteRequest(
   etag = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   validateOnly = _messages.BooleanField(3)
+
+
+class WorkstationsProjectsLocationsWorkstationClustersWorkstationsGenerateAccessTokenRequest(_messages.Message):
+  r"""A WorkstationsProjectsLocationsWorkstationClustersWorkstationsGenerateAc
+  cessTokenRequest object.
+
+  Fields:
+    generateAccessTokenRequest: A GenerateAccessTokenRequest resource to be
+      passed as the request body.
+    workstation: Required. Name of the workstation for which the access token
+      should be generated.
+  """
+
+  generateAccessTokenRequest = _messages.MessageField('GenerateAccessTokenRequest', 1)
+  workstation = _messages.StringField(2, required=True)
 
 
 class WorkstationsProjectsLocationsWorkstationClustersWorkstationsGetIamPolicyRequest(_messages.Message):

@@ -350,33 +350,6 @@ class GkemulticloudV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def GetAwsClusterAdminKubeconfig(self, request, global_params=None):
-      r"""Generates a kubeconfig file to connect to a given AwsCluster. The returned kubeconfig authenticates to k8s api-server as a generic admin user with username `kubernetes-admin` (as a member of the `system:masters` group) and is valid for 20 hours.
-
-      Args:
-        request: (GkemulticloudProjectsLocationsAwsClustersGetAwsClusterAdminKubeconfigRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudGkemulticloudV1GetAwsClusterAdminKubeconfigResponse) The response message.
-      """
-      config = self.GetMethodConfig('GetAwsClusterAdminKubeconfig')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetAwsClusterAdminKubeconfig.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/awsClusters/{awsClustersId}:getAwsClusterAdminKubeconfig',
-        http_method='GET',
-        method_id='gkemulticloud.projects.locations.awsClusters.getAwsClusterAdminKubeconfig',
-        ordered_params=['awsCluster'],
-        path_params=['awsCluster'],
-        query_params=[],
-        relative_path='v1/{+awsCluster}:getAwsClusterAdminKubeconfig',
-        request_field='',
-        request_type_name='GkemulticloudProjectsLocationsAwsClustersGetAwsClusterAdminKubeconfigRequest',
-        response_type_name='GoogleCloudGkemulticloudV1GetAwsClusterAdminKubeconfigResponse',
-        supports_download=False,
-    )
-
     def GetJwks(self, request, global_params=None):
       r"""Gets the public component of the cluster signing keys in JSON Web Key format.
 
@@ -873,33 +846,6 @@ class GkemulticloudV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='GkemulticloudProjectsLocationsAzureClustersGetRequest',
         response_type_name='GoogleCloudGkemulticloudV1AzureCluster',
-        supports_download=False,
-    )
-
-    def GetAzureClusterAdminKubeconfig(self, request, global_params=None):
-      r"""Generates a kubeconfig file to connect to a given AzureCluster. The returned kubeconfig authenticates to k8s api-server as a generic admin user with username `kubernetes-admin` (as a member of the `system:masters` group) and is valid for 20 hours.
-
-      Args:
-        request: (GkemulticloudProjectsLocationsAzureClustersGetAzureClusterAdminKubeconfigRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudGkemulticloudV1GetAzureClusterAdminKubeconfigResponse) The response message.
-      """
-      config = self.GetMethodConfig('GetAzureClusterAdminKubeconfig')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetAzureClusterAdminKubeconfig.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/azureClusters/{azureClustersId}:getAzureClusterAdminKubeconfig',
-        http_method='GET',
-        method_id='gkemulticloud.projects.locations.azureClusters.getAzureClusterAdminKubeconfig',
-        ordered_params=['azureCluster'],
-        path_params=['azureCluster'],
-        query_params=[],
-        relative_path='v1/{+azureCluster}:getAzureClusterAdminKubeconfig',
-        request_field='',
-        request_type_name='GkemulticloudProjectsLocationsAzureClustersGetAzureClusterAdminKubeconfigRequest',
-        response_type_name='GoogleCloudGkemulticloudV1GetAzureClusterAdminKubeconfigResponse',
         supports_download=False,
     )
 

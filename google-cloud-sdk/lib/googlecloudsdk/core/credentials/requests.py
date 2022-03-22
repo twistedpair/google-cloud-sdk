@@ -26,6 +26,9 @@ from googlecloudsdk.core import requests
 from googlecloudsdk.core import transport as core_transport
 from googlecloudsdk.core.credentials import transport
 
+REFRESH_STATUS_CODES = [401]
+MAX_REFRESH_ATTEMPTS = 1
+
 
 class Error(exceptions.Error):
   """Exceptions for this module."""
@@ -90,6 +93,7 @@ class RequestWrapper(transport.CredentialWrappingMixin,
   def AuthorizeClient(self, http_client, creds):
     """Returns an http_client authorized with the given credentials."""
     orig_request = http_client.request
+    credential_refresh_state = {'attempt': 0}
 
     def WrappedRequest(method, url, data=None, headers=None, **kwargs):
       wrapped_request = http_client.request
@@ -99,8 +103,17 @@ class RequestWrapper(transport.CredentialWrappingMixin,
       creds.before_request(auth_request, method, url, headers)
 
       http_client.request = wrapped_request
-      return orig_request(method, url, data=data, headers=headers or {},
-                          **kwargs)
+      response = orig_request(
+          method, url, data=data, headers=headers or {}, **kwargs)
+
+      if (response.status_code in REFRESH_STATUS_CODES and
+          credential_refresh_state['attempt'] < MAX_REFRESH_ATTEMPTS):
+        credential_refresh_state['attempt'] += 1
+        creds.refresh(auth_request)
+        response = orig_request(
+            method, url, data=data, headers=headers or {}, **kwargs)
+
+      return response
 
     http_client.request = WrappedRequest
     return http_client

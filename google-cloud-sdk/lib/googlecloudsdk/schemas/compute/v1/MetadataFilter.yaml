@@ -28,17 +28,17 @@ properties:
   filterLabels:
     description: |-
       The list of label value pairs that must match labels in the provided
-      metadata based on filterMatchCriteria  This list must not be empty and can
+      metadata based on filterMatchCriteria This list must not be empty and can
       have at the most 64 entries.
     type: array
     items:
       $ref: MetadataFilterLabelMatch.yaml
   filterMatchCriteria:
     description: |-
-      Specifies how individual filterLabel matches within the list of
-      filterLabels contribute towards the overall metadataFilter match.
-      Supported values are:   - MATCH_ANY: At least one of the filterLabels
-      must have a matching label in the provided metadata.  -
+      Specifies how individual filter label matches within the list of
+      filterLabels and contributes toward the overall metadataFilter match.
+      Supported values are: - MATCH_ANY: at least one of the filterLabels
+      must have a matching label in the provided metadata. -
     type: string
     enum:
     - MATCH_ALL

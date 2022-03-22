@@ -1146,7 +1146,7 @@ To revert your CLI to the previously installed version, you may run:
     if self._EnableFallback() and 'kubectl' in set(update_seed) | to_install:
       if not os.path.isfile(self.__sdk_root + '/bin/kubectl'):
         # Change to kubectl-darwin-arm when the component is available.
-        to_install.add('kubectl-darwin-x86_64')
+        to_install.add('kubectl-darwin-arm')
 
   def _HandleInvalidUpdateSeeds(self, diff, version, update_seed):
     """Checks that the update seeds are valid components.

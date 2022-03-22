@@ -210,19 +210,6 @@ class GkemulticloudProjectsLocationsAwsClustersGenerateAwsAccessTokenRequest(_me
   awsCluster = _messages.StringField(1, required=True)
 
 
-class GkemulticloudProjectsLocationsAwsClustersGetAwsClusterAdminKubeconfigRequest(_messages.Message):
-  r"""A
-  GkemulticloudProjectsLocationsAwsClustersGetAwsClusterAdminKubeconfigRequest
-  object.
-
-  Fields:
-    awsCluster: Required. The name of the cluster. Format:
-      projects/{project}/locations/{location}/awsClusters/{cluster}
-  """
-
-  awsCluster = _messages.StringField(1, required=True)
-
-
 class GkemulticloudProjectsLocationsAwsClustersGetJwksRequest(_messages.Message):
   r"""A GkemulticloudProjectsLocationsAwsClustersGetJwksRequest object.
 
@@ -511,7 +498,7 @@ class GkemulticloudProjectsLocationsAzureClustersAzureNodePoolsPatchRequest(_mes
       supplied in this field. The elements of the repeated paths field can
       only include these fields from AzureNodePool: *. `annotations`. *
       `version`. * `autoscaling.min_node_count`. *
-      `autoscaling.max_node_count`.
+      `autoscaling.max_node_count`. * `config.vm_size`.
     validateOnly: If set, only validate the request, but don't actually update
       the node pool.
   """
@@ -586,20 +573,6 @@ class GkemulticloudProjectsLocationsAzureClustersGenerateAzureAccessTokenRequest
       `projects//locations//AzureClusters/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
       details on Google Cloud resource names.
-  """
-
-  azureCluster = _messages.StringField(1, required=True)
-
-
-class GkemulticloudProjectsLocationsAzureClustersGetAzureClusterAdminKubeconfigRequest(_messages.Message):
-  r"""A GkemulticloudProjectsLocationsAzureClustersGetAzureClusterAdminKubecon
-  figRequest object.
-
-  Fields:
-    azureCluster: Required. The name of the AzureCluster. AzureCluster names
-      are formatted as `projects//locations//azureClusters/`. See [Resource
-      Names](https://cloud.google.com/apis/design/resource_names) for more
-      details on GCP resource names.
   """
 
   azureCluster = _messages.StringField(1, required=True)
@@ -826,6 +799,7 @@ class GoogleCloudGkemulticloudV1AwsCluster(_messages.Message):
       optimistic concurrency control. Can be sent on update and delete
       requests to ensure the client has an up-to-date value before proceeding.
     fleet: Optional. Fleet configuration.
+    loggingConfig: Optional. Logging configuration for this cluster.
     name: The name of this resource. Cluster names are formatted as
       `projects//locations//awsClusters/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
@@ -906,13 +880,14 @@ class GoogleCloudGkemulticloudV1AwsCluster(_messages.Message):
   endpoint = _messages.StringField(8)
   etag = _messages.StringField(9)
   fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 10)
-  name = _messages.StringField(11)
-  networking = _messages.MessageField('GoogleCloudGkemulticloudV1AwsClusterNetworking', 12)
-  reconciling = _messages.BooleanField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  uid = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
-  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 17)
+  loggingConfig = _messages.MessageField('GoogleCloudGkemulticloudV1LoggingConfig', 11)
+  name = _messages.StringField(12)
+  networking = _messages.MessageField('GoogleCloudGkemulticloudV1AwsClusterNetworking', 13)
+  reconciling = _messages.BooleanField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  uid = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
+  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 18)
 
 
 class GoogleCloudGkemulticloudV1AwsClusterNetworking(_messages.Message):
@@ -974,6 +949,8 @@ class GoogleCloudGkemulticloudV1AwsControlPlane(_messages.Message):
       cluster secrets.
     iamInstanceProfile: Required. The name or ARN of the AWS IAM instance
       profile to assign to each control plane replica.
+    instancePlacement: Optional. The placement to use on control plane
+      instances. When unspecified, the VPC's default tenancy will be used.
     instanceType: Optional. The AWS instance type. When unspecified, it uses a
       default based on the cluster's version.
     mainVolume: Optional. Configuration related to the main volume provisioned
@@ -1036,15 +1013,16 @@ class GoogleCloudGkemulticloudV1AwsControlPlane(_messages.Message):
   configEncryption = _messages.MessageField('GoogleCloudGkemulticloudV1AwsConfigEncryption', 2)
   databaseEncryption = _messages.MessageField('GoogleCloudGkemulticloudV1AwsDatabaseEncryption', 3)
   iamInstanceProfile = _messages.StringField(4)
-  instanceType = _messages.StringField(5)
-  mainVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 6)
-  proxyConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsProxyConfig', 7)
-  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 8)
-  securityGroupIds = _messages.StringField(9, repeated=True)
-  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsSshConfig', 10)
-  subnetIds = _messages.StringField(11, repeated=True)
-  tags = _messages.MessageField('TagsValue', 12)
-  version = _messages.StringField(13)
+  instancePlacement = _messages.MessageField('GoogleCloudGkemulticloudV1AwsInstancePlacement', 5)
+  instanceType = _messages.StringField(6)
+  mainVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 7)
+  proxyConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsProxyConfig', 8)
+  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 9)
+  securityGroupIds = _messages.StringField(10, repeated=True)
+  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsSshConfig', 11)
+  subnetIds = _messages.StringField(12, repeated=True)
+  tags = _messages.MessageField('TagsValue', 13)
+  version = _messages.StringField(14)
 
 
 class GoogleCloudGkemulticloudV1AwsDatabaseEncryption(_messages.Message):
@@ -1056,6 +1034,35 @@ class GoogleCloudGkemulticloudV1AwsDatabaseEncryption(_messages.Message):
   """
 
   kmsKeyArn = _messages.StringField(1)
+
+
+class GoogleCloudGkemulticloudV1AwsInstancePlacement(_messages.Message):
+  r"""Details of placement information for an instance. Limitation for using
+  the `host` tenancy. * T3 instances that use the unlimited CPU credit option
+  do not support host tenancy.
+
+  Enums:
+    TenancyValueValuesEnum: Required. The tenancy for instance.
+
+  Fields:
+    tenancy: Required. The tenancy for instance.
+  """
+
+  class TenancyValueValuesEnum(_messages.Enum):
+    r"""Required. The tenancy for instance.
+
+    Values:
+      TENANCY_UNSPECIFIED: Not set.
+      DEFAULT: Use default VPC tenancy.
+      DEDICATED: Run a dedicated instance.
+      HOST: Launch this instance to a dedicated Host.
+    """
+    TENANCY_UNSPECIFIED = 0
+    DEFAULT = 1
+    DEDICATED = 2
+    HOST = 3
+
+  tenancy = _messages.EnumField('TenancyValueValuesEnum', 1)
 
 
 class GoogleCloudGkemulticloudV1AwsJsonWebKeys(_messages.Message):
@@ -1095,6 +1102,12 @@ class GoogleCloudGkemulticloudV1AwsNodeConfig(_messages.Message):
     configEncryption: Required. Config encryption for user data.
     iamInstanceProfile: Required. The name or ARN of the AWS IAM role assigned
       to nodes in the pool.
+    imageType: Optional. The OS image type to use on node pool instances. Can
+      have a value of `ubuntu`, or `windows` if the cluster enables the
+      Windows node pool preview feature. When unspecified, it defaults to
+      `ubuntu`.
+    instancePlacement: Optional. Placement related info for this node. When
+      unspecified, the VPC's default tenancy will be used.
     instanceType: Optional. The AWS instance type. When unspecified, it uses a
       default based on the node pool's version.
     labels: Optional. The initial labels assigned to nodes of this node pool.
@@ -1171,14 +1184,16 @@ class GoogleCloudGkemulticloudV1AwsNodeConfig(_messages.Message):
 
   configEncryption = _messages.MessageField('GoogleCloudGkemulticloudV1AwsConfigEncryption', 1)
   iamInstanceProfile = _messages.StringField(2)
-  instanceType = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  proxyConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsProxyConfig', 5)
-  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 6)
-  securityGroupIds = _messages.StringField(7, repeated=True)
-  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsSshConfig', 8)
-  tags = _messages.MessageField('TagsValue', 9)
-  taints = _messages.MessageField('GoogleCloudGkemulticloudV1NodeTaint', 10, repeated=True)
+  imageType = _messages.StringField(3)
+  instancePlacement = _messages.MessageField('GoogleCloudGkemulticloudV1AwsInstancePlacement', 4)
+  instanceType = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  proxyConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsProxyConfig', 7)
+  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 8)
+  securityGroupIds = _messages.StringField(9, repeated=True)
+  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsSshConfig', 10)
+  tags = _messages.MessageField('TagsValue', 11)
+  taints = _messages.MessageField('GoogleCloudGkemulticloudV1NodeTaint', 12, repeated=True)
 
 
 class GoogleCloudGkemulticloudV1AwsNodePool(_messages.Message):
@@ -1573,6 +1588,7 @@ class GoogleCloudGkemulticloudV1AzureCluster(_messages.Message):
       optimistic concurrency control. Can be sent on update and delete
       requests to ensure the client has an up-to-date value before proceeding.
     fleet: Optional. Fleet configuration.
+    loggingConfig: Optional. Logging configuration for this cluster.
     managedResources: Output only. Mananged Azure resources for this cluster.
     name: The name of this resource. Cluster names are formatted as
       `projects//locations//azureClusters/`. See [Resource
@@ -1658,15 +1674,16 @@ class GoogleCloudGkemulticloudV1AzureCluster(_messages.Message):
   endpoint = _messages.StringField(9)
   etag = _messages.StringField(10)
   fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 11)
-  managedResources = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterResources', 12)
-  name = _messages.StringField(13)
-  networking = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterNetworking', 14)
-  reconciling = _messages.BooleanField(15)
-  resourceGroupId = _messages.StringField(16)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  uid = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
-  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 20)
+  loggingConfig = _messages.MessageField('GoogleCloudGkemulticloudV1LoggingConfig', 12)
+  managedResources = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterResources', 13)
+  name = _messages.StringField(14)
+  networking = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterNetworking', 15)
+  reconciling = _messages.BooleanField(16)
+  resourceGroupId = _messages.StringField(17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  uid = _messages.StringField(19)
+  updateTime = _messages.StringField(20)
+  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 21)
 
 
 class GoogleCloudGkemulticloudV1AzureClusterNetworking(_messages.Message):
@@ -1898,6 +1915,10 @@ class GoogleCloudGkemulticloudV1AzureNodeConfig(_messages.Message):
 
   Fields:
     configEncryption: Optional. Configuration related to vm config encryption.
+    imageType: Optional. The OS image type to use on node pool instances. Can
+      have a value of `ubuntu`, or `windows` if the cluster enables the
+      Windows node pool preview feature. When unspecified, it defaults to
+      `ubuntu`.
     labels: Optional. The initial labels assigned to nodes of this node pool.
       An object containing a list of "key": value pairs. Example: { "name":
       "wrench", "mass": "1.3kg", "count": "3" }.
@@ -1973,13 +1994,14 @@ class GoogleCloudGkemulticloudV1AzureNodeConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   configEncryption = _messages.MessageField('GoogleCloudGkemulticloudV1AzureConfigEncryption', 1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  proxyConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureProxyConfig', 3)
-  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDiskTemplate', 4)
-  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureSshConfig', 5)
-  tags = _messages.MessageField('TagsValue', 6)
-  taints = _messages.MessageField('GoogleCloudGkemulticloudV1NodeTaint', 7, repeated=True)
-  vmSize = _messages.StringField(8)
+  imageType = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  proxyConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureProxyConfig', 4)
+  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDiskTemplate', 5)
+  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureSshConfig', 6)
+  tags = _messages.MessageField('TagsValue', 7)
+  taints = _messages.MessageField('GoogleCloudGkemulticloudV1NodeTaint', 8, repeated=True)
+  vmSize = _messages.StringField(9)
 
 
 class GoogleCloudGkemulticloudV1AzureNodePool(_messages.Message):
@@ -2232,28 +2254,6 @@ class GoogleCloudGkemulticloudV1GenerateAzureAccessTokenResponse(_messages.Messa
   expirationTime = _messages.StringField(2)
 
 
-class GoogleCloudGkemulticloudV1GetAwsClusterAdminKubeconfigResponse(_messages.Message):
-  r"""Response message for `AwsClusters.GetAwsClusterAdminKubeconfig` method.
-
-  Fields:
-    kubeconfig: The admin kubeconfig. The generated client credentials expire
-      after 20 hours.
-  """
-
-  kubeconfig = _messages.StringField(1)
-
-
-class GoogleCloudGkemulticloudV1GetAzureClusterAdminKubeconfigResponse(_messages.Message):
-  r"""Response message for `AzureClusters.GetAzureClusterAdminKubeconfig`
-  method.
-
-  Fields:
-    kubeconfig: The generated kubeconfig file.
-  """
-
-  kubeconfig = _messages.StringField(1)
-
-
 class GoogleCloudGkemulticloudV1Jwk(_messages.Message):
   r"""Jwk is a JSON Web Key as specified in RFC 7517.
 
@@ -2348,6 +2348,44 @@ class GoogleCloudGkemulticloudV1ListAzureNodePoolsResponse(_messages.Message):
 
   azureNodePools = _messages.MessageField('GoogleCloudGkemulticloudV1AzureNodePool', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudGkemulticloudV1LoggingComponentConfig(_messages.Message):
+  r"""Parameters that describe the Logging component configuration in a
+  cluster.
+
+  Enums:
+    EnableComponentsValueListEntryValuesEnum:
+
+  Fields:
+    enableComponents: The components to be enabled.
+  """
+
+  class EnableComponentsValueListEntryValuesEnum(_messages.Enum):
+    r"""EnableComponentsValueListEntryValuesEnum enum type.
+
+    Values:
+      COMPONENT_UNSPECIFIED: No component is specified
+      SYSTEM_COMPONENTS: This indicates that system logging components is
+        enabled.
+      WORKLOADS: This indicates that user workload logging component is
+        enabled.
+    """
+    COMPONENT_UNSPECIFIED = 0
+    SYSTEM_COMPONENTS = 1
+    WORKLOADS = 2
+
+  enableComponents = _messages.EnumField('EnableComponentsValueListEntryValuesEnum', 1, repeated=True)
+
+
+class GoogleCloudGkemulticloudV1LoggingConfig(_messages.Message):
+  r"""Parameters that describe the Logging configuration in a cluster.
+
+  Fields:
+    componentConfig: The configuration of the logging components;
+  """
+
+  componentConfig = _messages.MessageField('GoogleCloudGkemulticloudV1LoggingComponentConfig', 1)
 
 
 class GoogleCloudGkemulticloudV1MaxPodsConstraint(_messages.Message):

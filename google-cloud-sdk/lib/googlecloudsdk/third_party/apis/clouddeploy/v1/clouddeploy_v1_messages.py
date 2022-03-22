@@ -283,8 +283,8 @@ class ClouddeployProjectsLocationsDeliveryPipelinesListRequest(_messages.Message
   r"""A ClouddeployProjectsLocationsDeliveryPipelinesListRequest object.
 
   Fields:
-    filter: Filter builds to be returned. See https://google.aip.dev/160 for
-      more details.
+    filter: Filter pipelines to be returned. See https://google.aip.dev/160
+      for more details.
     orderBy: Field to sort by. See https://google.aip.dev/132#ordering for
       more details.
     pageSize: The maximum number of pipelines to return. The service may
@@ -393,7 +393,7 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesListRequest(_messages
   object.
 
   Fields:
-    filter: Optional. Filter builds to be returned. See
+    filter: Optional. Filter releases to be returned. See
       https://google.aip.dev/160 for more details.
     orderBy: Optional. Field to sort by. See
       https://google.aip.dev/132#ordering for more details.
@@ -485,7 +485,7 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsListRequest(_
   object.
 
   Fields:
-    filter: Optional. Filter builds to be returned. See
+    filter: Optional. Filter rollouts to be returned. See
       https://google.aip.dev/160 for more details.
     orderBy: Optional. Field to sort by. See
       https://google.aip.dev/132#ordering for more details.
@@ -732,7 +732,7 @@ class ClouddeployProjectsLocationsTargetsListRequest(_messages.Message):
   r"""A ClouddeployProjectsLocationsTargetsListRequest object.
 
   Fields:
-    filter: Optional. Filter builds to be returned. See
+    filter: Optional. Filter targets to be returned. See
       https://google.aip.dev/160 for more details.
     orderBy: Optional. Field to sort by. See
       https://google.aip.dev/132#ordering for more details.

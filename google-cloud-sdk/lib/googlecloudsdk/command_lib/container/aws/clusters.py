@@ -253,9 +253,24 @@ class Client(object):
       cp.configEncryption = self._CreateAwsConfigEncryption(
           args.config_encryption_kms_key_arn)
       update_mask.append('control_plane.config_encryption.kms_key_arn')
-    if args.security_group_ids is not None:
+    if args.clear_security_group_ids is not None:
+      update_mask.append('control_plane.security_group_ids')
+    elif args.security_group_ids:
       cp.securityGroupIds.extend(args.security_group_ids)
       update_mask.append('control_plane.security_group_ids')
+
+    cp.rootVolume = self._CreateAwsVolumeTemplate(args.root_volume_size,
+                                                  args.root_volume_type,
+                                                  args.root_volume_iops,
+                                                  args.root_volume_kms_key_arn)
+    if args.root_volume_size:
+      update_mask.append('control_plane.root_volume.size_gib')
+    if args.root_volume_type:
+      update_mask.append('control_plane.root_volume.volume_type')
+    if args.root_volume_iops is not None:
+      update_mask.append('control_plane.root_volume.iops')
+    if args.root_volume_kms_key_arn is not None:
+      update_mask.append('control_plane.root_volume.kms_key_arn')
 
     services_auth = self._AddAwsServicesAuthentication(cp)
     if args.role_arn:
@@ -270,13 +285,16 @@ class Client(object):
         a.adminUsers.append(self._CreateAwsClusterUser(username))
       update_mask.append('authorization.admin_users')
 
-    proxy_config = self._AddAwsProxyConfig(cp)
-    if args.proxy_secret_arn:
-      proxy_config.secretArn = args.proxy_secret_arn
-      update_mask.append('control_plane.proxy_config.secret_arn')
-    if args.proxy_secret_version_id:
-      proxy_config.secretVersion = args.proxy_secret_version_id
-      update_mask.append('control_plane.proxy_config.secret_version')
+    if args.clear_proxy_config is not None:
+      update_mask.append('control_plane.proxy_config')
+    else:
+      proxy_config = self._AddAwsProxyConfig(cp)
+      if args.proxy_secret_arn:
+        proxy_config.secretArn = args.proxy_secret_arn
+        update_mask.append('control_plane.proxy_config.secret_arn')
+      if args.proxy_secret_version_id:
+        proxy_config.secretVersion = args.proxy_secret_version_id
+        update_mask.append('control_plane.proxy_config.secret_version')
 
     req.updateMask = ','.join(update_mask)
 

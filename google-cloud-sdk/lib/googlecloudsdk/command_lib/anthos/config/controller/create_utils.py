@@ -49,6 +49,10 @@ def CreateUpdateRequest(release_track, ref, args):
   krm_api_host = messages.KrmApiHost(
       bundlesConfig=bundles_config)
 
+  if args.use_private_endpoint:
+    # Omit on False to make wired format cleaner.
+    krm_api_host.usePrivateEndpoint = args.use_private_endpoint
+
   # The full-management flag is only available on the alpha command.
   if release_track == base.ReleaseTrack.ALPHA and args.full_management:
     full_mgmt_config = messages.FullManagementConfig(

@@ -287,26 +287,6 @@
           "type": "string",
           "format": "google-datetime"
         },
-        "state": {
-          "description": "State of the asset transformation.",
-          "type": "string",
-          "enumDescriptions": [
-            "Transformation state is unspecified.",
-            "Transformation is queued.",
-            "Transformation is in running state.",
-            "Transformation has been completed.",
-            "Transformation has been cancelled.",
-            "Transformation is in cancelling state."
-          ],
-          "enum": [
-            "STATE_UNSPECIFIED",
-            "QUEUED",
-            "RUNNING",
-            "COMPLETED",
-            "CANCELLED",
-            "CANCELLING"
-          ]
-        },
         "invocationId": {
           "description": "A UUID of the asset transformation run.",
           "type": "string"
@@ -327,22 +307,6 @@
       "description": "Status of derived asset action.",
       "type": "object",
       "properties": {
-        "state": {
-          "description": "State of the derived asset action.",
-          "type": "string",
-          "enumDescriptions": [
-            "State of the derived asset action is unspecified.",
-            "Derived asset action is queued.",
-            "Derived asset action is in running state.",
-            "Derived asset action has been completed."
-          ],
-          "enum": [
-            "STATE_UNSPECIFIED",
-            "QUEUED",
-            "RUNNING",
-            "COMPLETED"
-          ]
-        }
       }
     },
     "NotificationStatus": {

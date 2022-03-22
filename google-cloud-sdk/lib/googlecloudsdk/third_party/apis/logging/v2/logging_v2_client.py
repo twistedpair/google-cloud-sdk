@@ -39,9 +39,11 @@ class LoggingV2(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.billingAccounts_buckets_links = self.BillingAccountsBucketsLinksService(self)
     self.billingAccounts_buckets_views = self.BillingAccountsBucketsViewsService(self)
     self.billingAccounts_buckets = self.BillingAccountsBucketsService(self)
     self.billingAccounts_exclusions = self.BillingAccountsExclusionsService(self)
+    self.billingAccounts_locations_buckets_links = self.BillingAccountsLocationsBucketsLinksService(self)
     self.billingAccounts_locations_buckets_views = self.BillingAccountsLocationsBucketsViewsService(self)
     self.billingAccounts_locations_buckets = self.BillingAccountsLocationsBucketsService(self)
     self.billingAccounts_locations_operations = self.BillingAccountsLocationsOperationsService(self)
@@ -53,6 +55,7 @@ class LoggingV2(base_api.BaseApiClient):
     self.entries = self.EntriesService(self)
     self.exclusions = self.ExclusionsService(self)
     self.folders_exclusions = self.FoldersExclusionsService(self)
+    self.folders_locations_buckets_links = self.FoldersLocationsBucketsLinksService(self)
     self.folders_locations_buckets_views = self.FoldersLocationsBucketsViewsService(self)
     self.folders_locations_buckets = self.FoldersLocationsBucketsService(self)
     self.folders_locations_operations = self.FoldersLocationsOperationsService(self)
@@ -60,6 +63,7 @@ class LoggingV2(base_api.BaseApiClient):
     self.folders_logs = self.FoldersLogsService(self)
     self.folders_sinks = self.FoldersSinksService(self)
     self.folders = self.FoldersService(self)
+    self.locations_buckets_links = self.LocationsBucketsLinksService(self)
     self.locations_buckets_views = self.LocationsBucketsViewsService(self)
     self.locations_buckets = self.LocationsBucketsService(self)
     self.locations_operations = self.LocationsOperationsService(self)
@@ -67,6 +71,7 @@ class LoggingV2(base_api.BaseApiClient):
     self.logs = self.LogsService(self)
     self.monitoredResourceDescriptors = self.MonitoredResourceDescriptorsService(self)
     self.organizations_exclusions = self.OrganizationsExclusionsService(self)
+    self.organizations_locations_buckets_links = self.OrganizationsLocationsBucketsLinksService(self)
     self.organizations_locations_buckets_views = self.OrganizationsLocationsBucketsViewsService(self)
     self.organizations_locations_buckets = self.OrganizationsLocationsBucketsService(self)
     self.organizations_locations_operations = self.OrganizationsLocationsOperationsService(self)
@@ -75,6 +80,7 @@ class LoggingV2(base_api.BaseApiClient):
     self.organizations_sinks = self.OrganizationsSinksService(self)
     self.organizations = self.OrganizationsService(self)
     self.projects_exclusions = self.ProjectsExclusionsService(self)
+    self.projects_locations_buckets_links = self.ProjectsLocationsBucketsLinksService(self)
     self.projects_locations_buckets_views = self.ProjectsLocationsBucketsViewsService(self)
     self.projects_locations_buckets = self.ProjectsLocationsBucketsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
@@ -85,6 +91,43 @@ class LoggingV2(base_api.BaseApiClient):
     self.projects = self.ProjectsService(self)
     self.sinks = self.SinksService(self)
     self.v2 = self.V2Service(self)
+
+  class BillingAccountsBucketsLinksService(base_api.BaseApiService):
+    """Service class for the billingAccounts_buckets_links resource."""
+
+    _NAME = 'billingAccounts_buckets_links'
+
+    def __init__(self, client):
+      super(LoggingV2.BillingAccountsBucketsLinksService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets a link.
+
+      Args:
+        request: (LoggingBillingAccountsBucketsLinksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Link) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/billingAccounts/{billingAccountsId}/buckets/{bucketsId}/links/{linksId}',
+        http_method='GET',
+        method_id='logging.billingAccounts.buckets.links.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingBillingAccountsBucketsLinksGetRequest',
+        response_type_name='Link',
+        supports_download=False,
+    )
 
   class BillingAccountsBucketsViewsService(base_api.BaseApiService):
     """Service class for the billingAccounts_buckets_views resource."""
@@ -302,6 +345,97 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='logExclusion',
         request_type_name='LoggingBillingAccountsExclusionsPatchRequest',
         response_type_name='LogExclusion',
+        supports_download=False,
+    )
+
+  class BillingAccountsLocationsBucketsLinksService(base_api.BaseApiService):
+    """Service class for the billingAccounts_locations_buckets_links resource."""
+
+    _NAME = 'billingAccounts_locations_buckets_links'
+
+    def __init__(self, client):
+      super(LoggingV2.BillingAccountsLocationsBucketsLinksService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Asynchronously creates a link from a bucket to a BigQuery linked dataset. A bucket may currently only contain one link. Starts a Long Running Operation.
+
+      Args:
+        request: (LoggingBillingAccountsLocationsBucketsLinksCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/links',
+        http_method='POST',
+        method_id='logging.billingAccounts.locations.buckets.links.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['linkId'],
+        relative_path='v2/{+parent}/links',
+        request_field='link',
+        request_type_name='LoggingBillingAccountsLocationsBucketsLinksCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a link. This will also delete the corresponding BigQuery linked dataset.
+
+      Args:
+        request: (LoggingBillingAccountsLocationsBucketsLinksDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/links/{linksId}',
+        http_method='DELETE',
+        method_id='logging.billingAccounts.locations.buckets.links.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingBillingAccountsLocationsBucketsLinksDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists links.
+
+      Args:
+        request: (LoggingBillingAccountsLocationsBucketsLinksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLinksResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/links',
+        http_method='GET',
+        method_id='logging.billingAccounts.locations.buckets.links.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/links',
+        request_field='',
+        request_type_name='LoggingBillingAccountsLocationsBucketsLinksListRequest',
+        response_type_name='ListLinksResponse',
         supports_download=False,
     )
 
@@ -1463,6 +1597,124 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class FoldersLocationsBucketsLinksService(base_api.BaseApiService):
+    """Service class for the folders_locations_buckets_links resource."""
+
+    _NAME = 'folders_locations_buckets_links'
+
+    def __init__(self, client):
+      super(LoggingV2.FoldersLocationsBucketsLinksService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Asynchronously creates a link from a bucket to a BigQuery linked dataset. A bucket may currently only contain one link. Starts a Long Running Operation.
+
+      Args:
+        request: (LoggingFoldersLocationsBucketsLinksCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/links',
+        http_method='POST',
+        method_id='logging.folders.locations.buckets.links.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['linkId'],
+        relative_path='v2/{+parent}/links',
+        request_field='link',
+        request_type_name='LoggingFoldersLocationsBucketsLinksCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a link. This will also delete the corresponding BigQuery linked dataset.
+
+      Args:
+        request: (LoggingFoldersLocationsBucketsLinksDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/links/{linksId}',
+        http_method='DELETE',
+        method_id='logging.folders.locations.buckets.links.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingFoldersLocationsBucketsLinksDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a link.
+
+      Args:
+        request: (LoggingFoldersLocationsBucketsLinksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Link) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/links/{linksId}',
+        http_method='GET',
+        method_id='logging.folders.locations.buckets.links.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingFoldersLocationsBucketsLinksGetRequest',
+        response_type_name='Link',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists links.
+
+      Args:
+        request: (LoggingFoldersLocationsBucketsLinksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLinksResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/links',
+        http_method='GET',
+        method_id='logging.folders.locations.buckets.links.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/links',
+        request_field='',
+        request_type_name='LoggingFoldersLocationsBucketsLinksListRequest',
+        response_type_name='ListLinksResponse',
+        supports_download=False,
+    )
+
   class FoldersLocationsBucketsViewsService(base_api.BaseApiService):
     """Service class for the folders_locations_buckets_views resource."""
 
@@ -2262,6 +2514,124 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class LocationsBucketsLinksService(base_api.BaseApiService):
+    """Service class for the locations_buckets_links resource."""
+
+    _NAME = 'locations_buckets_links'
+
+    def __init__(self, client):
+      super(LoggingV2.LocationsBucketsLinksService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Asynchronously creates a link from a bucket to a BigQuery linked dataset. A bucket may currently only contain one link. Starts a Long Running Operation.
+
+      Args:
+        request: (LoggingLocationsBucketsLinksCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/links',
+        http_method='POST',
+        method_id='logging.locations.buckets.links.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['linkId'],
+        relative_path='v2/{+parent}/links',
+        request_field='link',
+        request_type_name='LoggingLocationsBucketsLinksCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a link. This will also delete the corresponding BigQuery linked dataset.
+
+      Args:
+        request: (LoggingLocationsBucketsLinksDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/links/{linksId}',
+        http_method='DELETE',
+        method_id='logging.locations.buckets.links.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingLocationsBucketsLinksDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a link.
+
+      Args:
+        request: (LoggingLocationsBucketsLinksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Link) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/links/{linksId}',
+        http_method='GET',
+        method_id='logging.locations.buckets.links.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingLocationsBucketsLinksGetRequest',
+        response_type_name='Link',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists links.
+
+      Args:
+        request: (LoggingLocationsBucketsLinksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLinksResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/links',
+        http_method='GET',
+        method_id='logging.locations.buckets.links.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/links',
+        request_field='',
+        request_type_name='LoggingLocationsBucketsLinksListRequest',
+        response_type_name='ListLinksResponse',
+        supports_download=False,
+    )
+
   class LocationsBucketsViewsService(base_api.BaseApiService):
     """Service class for the locations_buckets_views resource."""
 
@@ -2976,6 +3346,124 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='logExclusion',
         request_type_name='LoggingOrganizationsExclusionsPatchRequest',
         response_type_name='LogExclusion',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsBucketsLinksService(base_api.BaseApiService):
+    """Service class for the organizations_locations_buckets_links resource."""
+
+    _NAME = 'organizations_locations_buckets_links'
+
+    def __init__(self, client):
+      super(LoggingV2.OrganizationsLocationsBucketsLinksService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Asynchronously creates a link from a bucket to a BigQuery linked dataset. A bucket may currently only contain one link. Starts a Long Running Operation.
+
+      Args:
+        request: (LoggingOrganizationsLocationsBucketsLinksCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/links',
+        http_method='POST',
+        method_id='logging.organizations.locations.buckets.links.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['linkId'],
+        relative_path='v2/{+parent}/links',
+        request_field='link',
+        request_type_name='LoggingOrganizationsLocationsBucketsLinksCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a link. This will also delete the corresponding BigQuery linked dataset.
+
+      Args:
+        request: (LoggingOrganizationsLocationsBucketsLinksDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/links/{linksId}',
+        http_method='DELETE',
+        method_id='logging.organizations.locations.buckets.links.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingOrganizationsLocationsBucketsLinksDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a link.
+
+      Args:
+        request: (LoggingOrganizationsLocationsBucketsLinksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Link) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/links/{linksId}',
+        http_method='GET',
+        method_id='logging.organizations.locations.buckets.links.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingOrganizationsLocationsBucketsLinksGetRequest',
+        response_type_name='Link',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists links.
+
+      Args:
+        request: (LoggingOrganizationsLocationsBucketsLinksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLinksResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/links',
+        http_method='GET',
+        method_id='logging.organizations.locations.buckets.links.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/links',
+        request_field='',
+        request_type_name='LoggingOrganizationsLocationsBucketsLinksListRequest',
+        response_type_name='ListLinksResponse',
         supports_download=False,
     )
 
@@ -3947,6 +4435,124 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='logExclusion',
         request_type_name='LoggingProjectsExclusionsPatchRequest',
         response_type_name='LogExclusion',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsBucketsLinksService(base_api.BaseApiService):
+    """Service class for the projects_locations_buckets_links resource."""
+
+    _NAME = 'projects_locations_buckets_links'
+
+    def __init__(self, client):
+      super(LoggingV2.ProjectsLocationsBucketsLinksService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Asynchronously creates a link from a bucket to a BigQuery linked dataset. A bucket may currently only contain one link. Starts a Long Running Operation.
+
+      Args:
+        request: (LoggingProjectsLocationsBucketsLinksCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/links',
+        http_method='POST',
+        method_id='logging.projects.locations.buckets.links.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['linkId'],
+        relative_path='v2/{+parent}/links',
+        request_field='link',
+        request_type_name='LoggingProjectsLocationsBucketsLinksCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a link. This will also delete the corresponding BigQuery linked dataset.
+
+      Args:
+        request: (LoggingProjectsLocationsBucketsLinksDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/links/{linksId}',
+        http_method='DELETE',
+        method_id='logging.projects.locations.buckets.links.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingProjectsLocationsBucketsLinksDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a link.
+
+      Args:
+        request: (LoggingProjectsLocationsBucketsLinksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Link) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/links/{linksId}',
+        http_method='GET',
+        method_id='logging.projects.locations.buckets.links.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingProjectsLocationsBucketsLinksGetRequest',
+        response_type_name='Link',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists links.
+
+      Args:
+        request: (LoggingProjectsLocationsBucketsLinksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLinksResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/links',
+        http_method='GET',
+        method_id='logging.projects.locations.buckets.links.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/links',
+        request_field='',
+        request_type_name='LoggingProjectsLocationsBucketsLinksListRequest',
+        response_type_name='ListLinksResponse',
         supports_download=False,
     )
 

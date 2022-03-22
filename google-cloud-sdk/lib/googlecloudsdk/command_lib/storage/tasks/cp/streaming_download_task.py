@@ -31,12 +31,17 @@ from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_status
+from googlecloudsdk.core import log
 
 
 class StreamingDownloadTask(task.Task):
   """Represents a command operation triggering a streaming download."""
 
-  def __init__(self, source_resource, download_stream, user_request_args=None):
+  def __init__(self,
+               source_resource,
+               download_stream,
+               print_created_message=False,
+               user_request_args=None):
     """Initializes task.
 
     Args:
@@ -44,11 +49,14 @@ class StreamingDownloadTask(task.Task):
         download, including bucket. Directories will not be accepted. Does not
         need to contain metadata.
       download_stream (stream): Reusable stream to write download to.
+      print_created_message (bool): Print a message containing the versioned
+        URL of the copy result.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
     super(StreamingDownloadTask, self).__init__()
     self._source_resource = source_resource
     self._download_stream = download_stream
+    self._print_created_message = print_created_message
     self._user_request_args = user_request_args
 
   def execute(self, task_status_queue=None):
@@ -77,3 +85,6 @@ class StreamingDownloadTask(task.Task):
         request_config,
         download_strategy=cloud_api.DownloadStrategy.ONE_SHOT,
         progress_callback=progress_callback)
+
+    if self._print_created_message:
+      log.status.Print('Created: {}'.format(self._download_stream.name))

@@ -481,6 +481,56 @@
         }
       }
     },
+    "ListTunnelDestGroupsResponse": {
+      "id": "ListTunnelDestGroupsResponse",
+      "description": "The response from ListTunnelDestGroups.",
+      "type": "object",
+      "properties": {
+        "tunnelDestGroups": {
+          "description": "TunnelDestGroup existing in the project.",
+          "type": "array",
+          "items": {
+            "$ref": "TunnelDestGroup"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be send as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "TunnelDestGroup": {
+      "id": "TunnelDestGroup",
+      "description": "A TunnelDestGroup.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Immutable. Identifier for the TunnelDestGroup. Must be unique within the project.",
+          "type": "string"
+        },
+        "cidrs": {
+          "description": "null List of CIDRs that this group applies to.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fqdns": {
+          "description": "null List of FQDNs that this group applies to.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "ListBrandsResponse": {
       "id": "ListBrandsResponse",
       "description": "Response message for ListBrands.",
@@ -562,13 +612,6 @@
     "ResetIdentityAwareProxyClientSecretRequest": {
       "id": "ResetIdentityAwareProxyClientSecretRequest",
       "description": "The request sent to ResetIdentityAwareProxyClientSecret.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "Empty": {
-      "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
       "type": "object",
       "properties": {
       }
@@ -724,6 +767,171 @@
     },
     "projects": {
       "resources": {
+        "iap_tunnel": {
+          "resources": {
+            "locations": {
+              "resources": {
+                "destGroups": {
+                  "methods": {
+                    "list": {
+                      "id": "iap.projects.iap_tunnel.locations.destGroups.list",
+                      "path": "v1/{+parent}/destGroups",
+                      "flatPath": "v1/projects/{projectsId}/iap_tunnel/locations/{locationsId}/destGroups",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. GCP Project number\/id and location. In the following format: projects\/{project_number\/id}\/iap_tunnel\/locations\/{location}. A `-` can be used for the location to group across all locations.",
+                          "pattern": "^projects\/[^\/]+\/iap_tunnel\/locations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of groups to return. The service may return fewer than this value. If unspecified, at most 100 groups will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A page token, received from a previous `ListTunnelDestGroups` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListTunnelDestGroups` must match the call that provided the page token.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListTunnelDestGroupsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists the existing TunnelDestGroups. To group across all locations, use a `-` as the location ID. For example: \/v1\/projects\/123\/iap_tunnel\/locations\/-\/destGroups"
+                    },
+                    "create": {
+                      "id": "iap.projects.iap_tunnel.locations.destGroups.create",
+                      "path": "v1/{+parent}/destGroups",
+                      "flatPath": "v1/projects/{projectsId}/iap_tunnel/locations/{locationsId}/destGroups",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. GCP Project number\/id and location. In the following format: projects\/{project_number\/id}\/iap_tunnel\/locations\/{location}.",
+                          "pattern": "^projects\/[^\/]+\/iap_tunnel\/locations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "tunnelDestGroupId": {
+                          "description": "Required. The ID to use for the TunnelDestGroup, which will become the final component of the resource name. This value should be 4-63 characters, and valid characters are \/a-z-\/.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "TunnelDestGroup"
+                      },
+                      "response": {
+                        "$ref": "TunnelDestGroup"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new TunnelDestGroup."
+                    },
+                    "get": {
+                      "id": "iap.projects.iap_tunnel.locations.destGroups.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/iap_tunnel/locations/{locationsId}/destGroups/{destGroupsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. Name of the TunnelDestGroup to be fetched. In the following format: projects\/{project_number\/id}\/iap_tunnel\/locations\/{location}\/destGroups\/{dest_group}.",
+                          "pattern": "^projects\/[^\/]+\/iap_tunnel\/locations\/[^\/]+\/destGroups\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "TunnelDestGroup"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Retrieves an existing TunnelDestGroup."
+                    },
+                    "delete": {
+                      "id": "iap.projects.iap_tunnel.locations.destGroups.delete",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/iap_tunnel/locations/{locationsId}/destGroups/{destGroupsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. Name of the TunnelDestGroup to be deleted. In the following format: projects\/{project_number\/id}\/iap_tunnel\/locations\/{location}\/destGroups\/{dest_group}.",
+                          "pattern": "^projects\/[^\/]+\/iap_tunnel\/locations\/[^\/]+\/destGroups\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Empty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a TunnelDestGroup."
+                    },
+                    "patch": {
+                      "id": "iap.projects.iap_tunnel.locations.destGroups.patch",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/iap_tunnel/locations/{locationsId}/destGroups/{destGroupsId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. Immutable. Identifier for the TunnelDestGroup. Must be unique within the project.",
+                          "pattern": "^projects\/[^\/]+\/iap_tunnel\/locations\/[^\/]+\/destGroups\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "The field mask specifying which IAP settings should be updated. If omitted, then all of the settings are updated. See https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "TunnelDestGroup"
+                      },
+                      "response": {
+                        "$ref": "TunnelDestGroup"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Updates a TunnelDestGroup."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
         "brands": {
           "methods": {
             "list": {

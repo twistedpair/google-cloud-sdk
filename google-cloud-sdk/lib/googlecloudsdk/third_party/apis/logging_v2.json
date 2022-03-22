@@ -717,6 +717,81 @@
         }
       }
     },
+    "Link": {
+      "id": "Link",
+      "description": "Describes a link connected to an analytics enabled bucket.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the link. The name can have up to 1,024 characters. A valid name must only have alphanumeric characters and underscores within it. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/links\/[LINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/links\/[LINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/links\/[LINK_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/links\/[LINK_ID]\" For example:`projects\/my-project\/locations\/global\/buckets\/my-bucket\/links\/my_link",
+          "type": "string"
+        },
+        "description": {
+          "description": "Describes this link.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The creation timestamp of the link.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "lifecycleState": {
+          "description": "Output only. The resource lifecycle state.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified state. This is only used\/useful for distinguishing unset values.",
+            "The normal and active state.",
+            "The resource has been marked for deletion by the user. For some resources (e.g. buckets), this can be reversed by an un-delete operation.",
+            "The resource has been marked for an update by the user. It will remain in this state until the update is complete.",
+            "The resource has been marked for creation by the user. It will remain in this state until the creation is complete.",
+            "The resource is in an INTERNAL error state."
+          ],
+          "enum": [
+            "LIFECYCLE_STATE_UNSPECIFIED",
+            "ACTIVE",
+            "DELETE_REQUESTED",
+            "UPDATING",
+            "CREATING",
+            "FAILED"
+          ]
+        },
+        "bigqueryDataset": {
+          "description": "The information of a BigQuery Dataset. When a link is created, a BigQuery dataset is created along with it, in the same project as the LogBucket it's linked to. This dataset will also have BigQuery Views corresponding to the LogViews in the bucket.",
+          "$ref": "BigQueryDataset"
+        }
+      }
+    },
+    "BigQueryDataset": {
+      "id": "BigQueryDataset",
+      "description": "Describes a BigQuery dataset that was created by a link.",
+      "type": "object",
+      "properties": {
+        "datasetId": {
+          "description": "The full resource name of the BigQuery dataset. The DATASET_ID will match the ID of the link, so the link must match the naming restrictions of BigQuery datasets (alphanumeric characters and underscores only).The dataset will have a resource path of \"bigquery.googleapis.com\/projects\/PROJECT_ID\/datasets\/DATASET_ID\"",
+          "type": "string"
+        }
+      }
+    },
+    "ListLinksResponse": {
+      "id": "ListLinksResponse",
+      "description": "The response from ListLinks.",
+      "type": "object",
+      "properties": {
+        "links": {
+          "description": "A list of links.",
+          "type": "array",
+          "items": {
+            "$ref": "Link"
+          }
+        },
+        "nextPageToken": {
+          "description": "If there might be more results than those appearing in this response, then nextPageToken is included. To get the next set of results, call the same method again using the value of nextPageToken as pageToken.",
+          "type": "string"
+        }
+      }
+    },
     "ListExclusionsResponse": {
       "id": "ListExclusionsResponse",
       "description": "Result returned from ListExclusions.",
@@ -2112,6 +2187,83 @@
           "description": "Required. Field mask that specifies the fields in bucket that need an update. A bucket field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see: https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskFor example: updateMask=retention_days",
           "type": "string",
           "format": "google-fieldmask"
+        }
+      }
+    },
+    "LinkMetadata": {
+      "id": "LinkMetadata",
+      "description": "Metadata for long running Link operations.",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "The start time of an operation.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "The end time of an operation.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "State of an operation.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be used.",
+            "The operation is scheduled.",
+            "Waiting for necessary permissions.",
+            "The operation is running.",
+            "The operation was completed successfully.",
+            "The operation failed.",
+            "The operation was cancelled by the user."
+          ],
+          "enum": [
+            "OPERATION_STATE_UNSPECIFIED",
+            "OPERATION_STATE_SCHEDULED",
+            "OPERATION_STATE_WAITING_FOR_PERMISSIONS",
+            "OPERATION_STATE_RUNNING",
+            "OPERATION_STATE_SUCCEEDED",
+            "OPERATION_STATE_FAILED",
+            "OPERATION_STATE_CANCELLED"
+          ]
+        },
+        "createLinkRequest": {
+          "description": "CreateLink RPC request.",
+          "$ref": "CreateLinkRequest"
+        },
+        "deleteLinkRequest": {
+          "description": "DeleteLink RPC request.",
+          "$ref": "DeleteLinkRequest"
+        }
+      }
+    },
+    "CreateLinkRequest": {
+      "id": "CreateLinkRequest",
+      "description": "The parameters to CreateLink.",
+      "type": "object",
+      "properties": {
+        "parent": {
+          "description": "Required. The full resource name of the bucket to create a link for. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" ",
+          "type": "string"
+        },
+        "link": {
+          "description": "Required. The new link.",
+          "$ref": "Link"
+        },
+        "linkId": {
+          "description": "Required. The ID to use for the link. The link_id can have up to 1,024 characters. A valid link_id must only have alphanumeric characters and underscores within it.",
+          "type": "string"
+        }
+      }
+    },
+    "DeleteLinkRequest": {
+      "id": "DeleteLinkRequest",
+      "description": "The parameters to DeleteLink.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The full resource name of the link to delete.\"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"organizations\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\"",
+          "type": "string"
         }
       }
     }
@@ -3671,6 +3823,117 @@
                       "description": "Deletes a view on a log bucket. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can delete the view. If this occurs, please try again in a few minutes."
                     }
                   }
+                },
+                "links": {
+                  "methods": {
+                    "create": {
+                      "id": "logging.projects.locations.buckets.links.create",
+                      "path": "v2/{+parent}/links",
+                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/links",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The full resource name of the bucket to create a link for. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" ",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "linkId": {
+                          "description": "Required. The ID to use for the link. The link_id can have up to 1,024 characters. A valid link_id must only have alphanumeric characters and underscores within it.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "Link"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "description": "Asynchronously creates a link from a bucket to a BigQuery linked dataset. A bucket may currently only contain one link. Starts a Long Running Operation."
+                    },
+                    "delete": {
+                      "id": "logging.projects.locations.buckets.links.delete",
+                      "path": "v2/{+name}",
+                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/links/{linksId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The full resource name of the link to delete.\"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"organizations\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\"",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/links\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "description": "Deletes a link. This will also delete the corresponding BigQuery linked dataset."
+                    },
+                    "list": {
+                      "id": "logging.projects.locations.buckets.links.list",
+                      "path": "v2/{+parent}/links",
+                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/links",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent resource whose links are to be listed:\"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/\" \"organizations\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/\" \"billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/\" \"folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageToken": {
+                          "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. The maximum number of results to return from this request.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListLinksResponse"
+                      },
+                      "description": "Lists links."
+                    },
+                    "get": {
+                      "id": "logging.projects.locations.buckets.links.get",
+                      "path": "v2/{+name}",
+                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/links/{linksId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the link:\"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"organizations\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/links\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Link"
+                      },
+                      "description": "Gets a link."
+                    }
+                  }
                 }
               }
             }
@@ -4957,6 +5220,117 @@
                       "description": "Deletes a view on a log bucket. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can delete the view. If this occurs, please try again in a few minutes."
                     }
                   }
+                },
+                "links": {
+                  "methods": {
+                    "create": {
+                      "id": "logging.organizations.locations.buckets.links.create",
+                      "path": "v2/{+parent}/links",
+                      "flatPath": "v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/links",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The full resource name of the bucket to create a link for. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" ",
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "linkId": {
+                          "description": "Required. The ID to use for the link. The link_id can have up to 1,024 characters. A valid link_id must only have alphanumeric characters and underscores within it.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "Link"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "description": "Asynchronously creates a link from a bucket to a BigQuery linked dataset. A bucket may currently only contain one link. Starts a Long Running Operation."
+                    },
+                    "delete": {
+                      "id": "logging.organizations.locations.buckets.links.delete",
+                      "path": "v2/{+name}",
+                      "flatPath": "v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/links/{linksId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The full resource name of the link to delete.\"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"organizations\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\"",
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/links\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "description": "Deletes a link. This will also delete the corresponding BigQuery linked dataset."
+                    },
+                    "list": {
+                      "id": "logging.organizations.locations.buckets.links.list",
+                      "path": "v2/{+parent}/links",
+                      "flatPath": "v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/links",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent resource whose links are to be listed:\"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/\" \"organizations\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/\" \"billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/\" \"folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/",
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageToken": {
+                          "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. The maximum number of results to return from this request.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListLinksResponse"
+                      },
+                      "description": "Lists links."
+                    },
+                    "get": {
+                      "id": "logging.organizations.locations.buckets.links.get",
+                      "path": "v2/{+name}",
+                      "flatPath": "v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/links/{linksId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the link:\"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"organizations\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID",
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/links\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Link"
+                      },
+                      "description": "Gets a link."
+                    }
+                  }
                 }
               }
             }
@@ -6050,6 +6424,117 @@
                       "description": "Deletes a view on a log bucket. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can delete the view. If this occurs, please try again in a few minutes."
                     }
                   }
+                },
+                "links": {
+                  "methods": {
+                    "create": {
+                      "id": "logging.folders.locations.buckets.links.create",
+                      "path": "v2/{+parent}/links",
+                      "flatPath": "v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/links",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The full resource name of the bucket to create a link for. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" ",
+                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "linkId": {
+                          "description": "Required. The ID to use for the link. The link_id can have up to 1,024 characters. A valid link_id must only have alphanumeric characters and underscores within it.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "Link"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "description": "Asynchronously creates a link from a bucket to a BigQuery linked dataset. A bucket may currently only contain one link. Starts a Long Running Operation."
+                    },
+                    "delete": {
+                      "id": "logging.folders.locations.buckets.links.delete",
+                      "path": "v2/{+name}",
+                      "flatPath": "v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/links/{linksId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The full resource name of the link to delete.\"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"organizations\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\"",
+                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/links\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "description": "Deletes a link. This will also delete the corresponding BigQuery linked dataset."
+                    },
+                    "list": {
+                      "id": "logging.folders.locations.buckets.links.list",
+                      "path": "v2/{+parent}/links",
+                      "flatPath": "v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/links",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent resource whose links are to be listed:\"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/\" \"organizations\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/\" \"billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/\" \"folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/",
+                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageToken": {
+                          "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. The maximum number of results to return from this request.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListLinksResponse"
+                      },
+                      "description": "Lists links."
+                    },
+                    "get": {
+                      "id": "logging.folders.locations.buckets.links.get",
+                      "path": "v2/{+name}",
+                      "flatPath": "v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/links/{linksId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the link:\"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"organizations\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID",
+                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/links\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Link"
+                      },
+                      "description": "Gets a link."
+                    }
+                  }
                 }
               }
             }
@@ -6287,6 +6772,32 @@
                     "https://www.googleapis.com/auth/logging.read"
                   ],
                   "description": "Gets a view on a log bucket.."
+                }
+              }
+            },
+            "links": {
+              "methods": {
+                "get": {
+                  "id": "logging.billingAccounts.buckets.links.get",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/billingAccounts/{billingAccountsId}/buckets/{bucketsId}/links/{linksId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the link:\"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"organizations\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID",
+                      "pattern": "^billingAccounts\/[^\/]+\/buckets\/[^\/]+\/links\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Link"
+                  },
+                  "description": "Gets a link."
                 }
               }
             }
@@ -7123,6 +7634,95 @@
                       "description": "Deletes a view on a log bucket. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can delete the view. If this occurs, please try again in a few minutes."
                     }
                   }
+                },
+                "links": {
+                  "methods": {
+                    "create": {
+                      "id": "logging.billingAccounts.locations.buckets.links.create",
+                      "path": "v2/{+parent}/links",
+                      "flatPath": "v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/links",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The full resource name of the bucket to create a link for. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" ",
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "linkId": {
+                          "description": "Required. The ID to use for the link. The link_id can have up to 1,024 characters. A valid link_id must only have alphanumeric characters and underscores within it.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "Link"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "description": "Asynchronously creates a link from a bucket to a BigQuery linked dataset. A bucket may currently only contain one link. Starts a Long Running Operation."
+                    },
+                    "delete": {
+                      "id": "logging.billingAccounts.locations.buckets.links.delete",
+                      "path": "v2/{+name}",
+                      "flatPath": "v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/links/{linksId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The full resource name of the link to delete.\"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"organizations\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\"",
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/links\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "description": "Deletes a link. This will also delete the corresponding BigQuery linked dataset."
+                    },
+                    "list": {
+                      "id": "logging.billingAccounts.locations.buckets.links.list",
+                      "path": "v2/{+parent}/links",
+                      "flatPath": "v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/links",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent resource whose links are to be listed:\"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/\" \"organizations\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/\" \"billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/\" \"folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/",
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageToken": {
+                          "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. The maximum number of results to return from this request.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListLinksResponse"
+                      },
+                      "description": "Lists links."
+                    }
+                  }
                 }
               }
             }
@@ -7746,6 +8346,117 @@
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
                   "description": "Deletes a view on a log bucket. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can delete the view. If this occurs, please try again in a few minutes."
+                }
+              }
+            },
+            "links": {
+              "methods": {
+                "create": {
+                  "id": "logging.locations.buckets.links.create",
+                  "path": "v2/{+parent}/links",
+                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/links",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The full resource name of the bucket to create a link for. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" ",
+                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "linkId": {
+                      "description": "Required. The ID to use for the link. The link_id can have up to 1,024 characters. A valid link_id must only have alphanumeric characters and underscores within it.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Link"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "description": "Asynchronously creates a link from a bucket to a BigQuery linked dataset. A bucket may currently only contain one link. Starts a Long Running Operation."
+                },
+                "delete": {
+                  "id": "logging.locations.buckets.links.delete",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/links/{linksId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The full resource name of the link to delete.\"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"organizations\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\"",
+                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/links\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "description": "Deletes a link. This will also delete the corresponding BigQuery linked dataset."
+                },
+                "list": {
+                  "id": "logging.locations.buckets.links.list",
+                  "path": "v2/{+parent}/links",
+                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/links",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource whose links are to be listed:\"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/\" \"organizations\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/\" \"billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/\" \"folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/",
+                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageToken": {
+                      "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. The maximum number of results to return from this request.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListLinksResponse"
+                  },
+                  "description": "Lists links."
+                },
+                "get": {
+                  "id": "logging.locations.buckets.links.get",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/links/{linksId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the link:\"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"organizations\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID\" \"folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/links\/LINK_ID",
+                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/links\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Link"
+                  },
+                  "description": "Gets a link."
                 }
               }
             }

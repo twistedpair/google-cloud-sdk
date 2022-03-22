@@ -32,6 +32,7 @@ from googlecloudsdk.core.resource import resource_printer
 import six
 
 _DEFAULT_API_VERSION = 'v2'
+_V1_API_VERSION = 'v1'
 _GLOBAL_REGION = 'global'
 _REGIONAL_IAM_REGEX = re.compile(
     "PERMISSION_DENIED: Permission (.+) denied on 'projects/(.+?)/.*")
@@ -65,6 +66,8 @@ class BmsClient(object):
 
   def __init__(self, api_version=_DEFAULT_API_VERSION):
     self._client = apis.GetClientInstance('baremetalsolution', api_version)
+    self._v1_client = apis.GetClientInstance('baremetalsolution',
+                                             _V1_API_VERSION)
     self._messages = apis.GetMessagesModule('baremetalsolution', api_version)
     self.instances_service = self._client.projects_locations_instances
     self.volumes_service = self._client.projects_locations_volumes
@@ -75,6 +78,7 @@ class BmsClient(object):
     self.luns_service = self._client.projects_locations_volumes_luns
     self.nfs_shares_service = self._client.projects_locations_nfsShares
     self.ssh_keys_service = self._client.projects_locations_sshKeys
+    self.operation_service = self._v1_client.operations
 
   @property
   def client(self):

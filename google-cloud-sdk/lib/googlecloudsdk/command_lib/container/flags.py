@@ -401,7 +401,7 @@ https://cloud.google.com/compute/docs/disks/customer-managed-encryption"""
 
 def AddAcceleratorArgs(parser,
                        enable_gpu_partition=False,
-                       enable_gpu_time_sharing=False):
+                       enable_gpu_sharing=False):
   """Adds Accelerator-related args."""
 
   spec = {
@@ -412,7 +412,9 @@ def AddAcceleratorArgs(parser,
   if enable_gpu_partition:
     spec['gpu-partition-size'] = str
 
-  if enable_gpu_time_sharing:
+  if enable_gpu_sharing:
+    spec['max-shared-clients-per-gpu'] = int
+    spec['gpu-sharing-strategy'] = str
     spec['max-time-shared-clients-per-gpu'] = int
 
   parser.add_argument(
@@ -4041,7 +4043,9 @@ either a node-pool upgrade or node-pool creation.
       '--enable-gvnic', help=help_text, default=None, action='store_true')
 
 
-def AddEnableConfidentialNodesFlag(parser, for_node_pool=False, hidden=False,
+def AddEnableConfidentialNodesFlag(parser,
+                                   for_node_pool=False,
+                                   hidden=False,
                                    is_update=False):
   """Adds a --enable-confidential-nodes flag to the given parser."""
   target = 'node pool' if for_node_pool else 'cluster'

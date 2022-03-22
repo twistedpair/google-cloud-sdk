@@ -45,6 +45,7 @@ class Topic(enum.Enum):
   ERROR = 'error'
   FATAL_ERROR = 'fatal_error'  # Error that should be reported to the user.
   UPLOADED_COMPONENT = 'uploaded_component'
+  CREATED_RESOURCE = 'created_resource'
 
 
 # Holds information to be passed between tasks.

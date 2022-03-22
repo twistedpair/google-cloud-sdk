@@ -272,6 +272,10 @@ class AndroidRoboTest(_messages.Message):
       app.
     appPackageId: The java package for the application under test. The default
       value is determined by examining the application's manifest.
+    maxDepth: The max depth of the traversal stack Robo can explore. Needs to
+      be at least 2 to make Robo explore the app beyond the first activity.
+      Default is 50.
+    maxSteps: The max number of steps Robo can execute. Default is no limit.
     roboDirectives: A set of directives Robo should apply during the crawl.
       This allows users to customize the crawl. For example, the username and
       password for a test account can be provided.
@@ -303,10 +307,12 @@ class AndroidRoboTest(_messages.Message):
   appBundle = _messages.MessageField('AppBundle', 2)
   appInitialActivity = _messages.StringField(3)
   appPackageId = _messages.StringField(4)
-  roboDirectives = _messages.MessageField('RoboDirective', 5, repeated=True)
-  roboMode = _messages.EnumField('RoboModeValueValuesEnum', 6)
-  roboScript = _messages.MessageField('FileReference', 7)
-  startingIntents = _messages.MessageField('RoboStartingIntent', 8, repeated=True)
+  maxDepth = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  maxSteps = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  roboDirectives = _messages.MessageField('RoboDirective', 7, repeated=True)
+  roboMode = _messages.EnumField('RoboModeValueValuesEnum', 8)
+  roboScript = _messages.MessageField('FileReference', 9)
+  startingIntents = _messages.MessageField('RoboStartingIntent', 10, repeated=True)
 
 
 class AndroidRuntimeConfiguration(_messages.Message):

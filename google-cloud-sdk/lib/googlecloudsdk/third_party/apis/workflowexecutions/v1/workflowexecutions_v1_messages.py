@@ -135,6 +135,77 @@ class Position(_messages.Message):
   line = _messages.IntegerField(3)
 
 
+class PubsubMessage(_messages.Message):
+  r"""A message that is published by publishers and consumed by subscribers.
+  The message must contain either a non-empty data field or at least one
+  attribute. Note that client libraries represent this object differently
+  depending on the language. See the corresponding [client library
+  documentation](https://cloud.google.com/pubsub/docs/reference/libraries) for
+  more information. See [quotas and limits]
+  (https://cloud.google.com/pubsub/quotas) for more information about message
+  limits.
+
+  Messages:
+    AttributesValue: Attributes for this message. If this field is empty, the
+      message must contain non-empty data. This can be used to filter messages
+      on the subscription.
+
+  Fields:
+    attributes: Attributes for this message. If this field is empty, the
+      message must contain non-empty data. This can be used to filter messages
+      on the subscription.
+    data: The message data field. If this field is empty, the message must
+      contain at least one attribute.
+    messageId: ID of this message, assigned by the server when the message is
+      published. Guaranteed to be unique within the topic. This value may be
+      read by a subscriber that receives a `PubsubMessage` via a `Pull` call
+      or a push delivery. It must not be populated by the publisher in a
+      `Publish` call.
+    orderingKey: If non-empty, identifies related messages for which publish
+      order should be respected. If a `Subscription` has
+      `enable_message_ordering` set to `true`, messages published with the
+      same non-empty `ordering_key` value will be delivered to subscribers in
+      the order in which they are received by the Pub/Sub system. All
+      `PubsubMessage`s published in a given `PublishRequest` must specify the
+      same `ordering_key` value.
+    publishTime: The time at which the message was published, populated by the
+      server when it receives the `Publish` call. It must not be populated by
+      the publisher in a `Publish` call.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AttributesValue(_messages.Message):
+    r"""Attributes for this message. If this field is empty, the message must
+    contain non-empty data. This can be used to filter messages on the
+    subscription.
+
+    Messages:
+      AdditionalProperty: An additional property for a AttributesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type AttributesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AttributesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  attributes = _messages.MessageField('AttributesValue', 1)
+  data = _messages.BytesField(2)
+  messageId = _messages.StringField(3)
+  orderingKey = _messages.StringField(4)
+  publishTime = _messages.StringField(5)
+
+
 class StackTrace(_messages.Message):
   r"""A collection of stack elements (frames) where an error occurred.
 
@@ -220,6 +291,23 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class TriggerPubsubExecutionRequest(_messages.Message):
+  r"""Request for the TriggerPubsubExecution method.
+
+  Fields:
+    GCPCloudEventsMode: Required. LINT: LEGACY_NAMES The query parameter value
+      for __GCP_CloudEventsMode, set by the Eventarc service when configuring
+      triggers.
+    message: Required. The message of the Pub/Sub push notification.
+    subscription: Required. The subscription of the Pub/Sub push notification.
+      Format: projects/{project}/subscriptions/{sub}
+  """
+
+  GCPCloudEventsMode = _messages.StringField(1)
+  message = _messages.MessageField('PubsubMessage', 2)
+  subscription = _messages.StringField(3)
 
 
 class WorkflowexecutionsProjectsLocationsWorkflowsExecutionsCancelRequest(_messages.Message):
@@ -332,6 +420,23 @@ class WorkflowexecutionsProjectsLocationsWorkflowsExecutionsListRequest(_message
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
   view = _messages.EnumField('ViewValueValuesEnum', 4)
+
+
+class WorkflowexecutionsProjectsLocationsWorkflowsTriggerPubsubExecutionRequest(_messages.Message):
+  r"""A
+  WorkflowexecutionsProjectsLocationsWorkflowsTriggerPubsubExecutionRequest
+  object.
+
+  Fields:
+    triggerPubsubExecutionRequest: A TriggerPubsubExecutionRequest resource to
+      be passed as the request body.
+    workflow: Required. Name of the workflow for which an execution should be
+      created. Format:
+      projects/{project}/locations/{location}/workflows/{workflow}
+  """
+
+  triggerPubsubExecutionRequest = _messages.MessageField('TriggerPubsubExecutionRequest', 1)
+  workflow = _messages.StringField(2, required=True)
 
 
 encoding.AddCustomJsonFieldMapping(

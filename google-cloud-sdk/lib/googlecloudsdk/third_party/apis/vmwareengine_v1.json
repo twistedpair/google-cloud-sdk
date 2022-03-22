@@ -687,6 +687,10 @@
           "description": "Output only. System-generated unique identifier for the resource.",
           "readOnly": true,
           "type": "string"
+        },
+        "description": {
+          "description": "User-provided description for this resource.",
+          "type": "string"
         }
       }
     },

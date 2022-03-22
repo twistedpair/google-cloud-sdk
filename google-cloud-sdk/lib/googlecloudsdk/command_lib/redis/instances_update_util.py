@@ -37,9 +37,6 @@ def CheckFieldsSpecifiedGA(unused_instance_ref, args, patch_request):
 def CheckFieldsSpecifiedBeta(unused_instance_ref, args, patch_request):
   """Checks if fields to update are registered for BETA track."""
   additional_update_args = [
-      'maintenance_window_day',
-      'maintenance_window_hour',
-      'maintenance_window_any',
       'persistence_mode',
       'rdb_snapshot_period',
       'rdb_snapshot_start_time',
@@ -50,9 +47,6 @@ def CheckFieldsSpecifiedBeta(unused_instance_ref, args, patch_request):
 def CheckFieldsSpecifiedAlpha(unused_instance_ref, args, patch_request):
   """Checks if fields to update are registered for ALPHA track."""
   additional_update_args = [
-      'maintenance_window_day',
-      'maintenance_window_hour',
-      'maintenance_window_any',
       'persistence_mode',
       'rdb_snapshot_period',
       'rdb_snapshot_start_time',
@@ -74,6 +68,9 @@ def CheckFieldsSpecifiedCommon(args, patch_request, additional_update_args):
       'read_replicas_mode',
       'secondary_ip_range',
       'replica_count',
+      'maintenance_window_day',
+      'maintenance_window_hour',
+      'maintenance_window_any',
   ] + additional_update_args
   if list(filter(args.IsSpecified, update_args)):
     return patch_request

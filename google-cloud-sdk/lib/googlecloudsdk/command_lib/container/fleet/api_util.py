@@ -81,12 +81,12 @@ def UpdateMembership(name,
 
   Args:
     name: The full resource name of the membership to update, e.g.
-      projects/foo/locations/global/memberships/name.
+    projects/foo/locations/global/memberships/name.
     membership: Membership resource that needs to be updated.
     update_mask: Field names of membership resource to be updated.
     release_track: The release_track used in the gcloud command.
-    external_id: the unique id associated with the cluster, or None if it is not
-      available.
+    external_id: the unique id associated with the cluster,
+      or None if it is not available.
     issuer_url: The discovery URL for the cluster's service account token
       issuer.
     oidc_jwks: The JSON Web Key Set string containing public keys for validating
@@ -151,6 +151,7 @@ def UpdateMembership(name,
 def CreateMembership(project,
                      membership_id,
                      description,
+                     location=None,
                      gke_cluster_self_link=None,
                      external_id=None,
                      release_track=None,
@@ -163,12 +164,13 @@ def CreateMembership(project,
     project: the project in which to create the membership
     membership_id: the value to use for the membership_id
     description: the value to put in the description field
+    location: the location for the membership
     gke_cluster_self_link: the selfLink for the cluster if it is a GKE cluster,
       or None if it is not
-    external_id: the unique id associated with the cluster, or None if it is not
-      available.
-    release_track: the release_track used in the gcloud command, or None if it
-      is not available.
+    external_id: the unique id associated with the cluster,
+      or None if it is not available.
+    release_track: the release_track used in the gcloud command,
+      or None if it is not available.
     issuer_url: the discovery URL for the cluster's service account token
       issuer. Set to None to skip enabling Workload Identity.
     oidc_jwks: the JSON Web Key Set containing public keys for validating
@@ -185,7 +187,7 @@ def CreateMembership(project,
   """
   client = gkehub_api_util.GetApiClientForTrack(release_track)
   messages = client.MESSAGES_MODULE
-  parent_ref = ParentRef(project, 'global')
+  parent_ref = ParentRef(project, location)
 
   request = messages.GkehubProjectsLocationsMembershipsCreateRequest(
       membership=messages.Membership(description=description),
@@ -228,8 +230,8 @@ def GetMembership(name, release_track=None):
   Args:
     name: the full resource name of the membership to get, e.g.,
       projects/foo/locations/global/memberships/name.
-    release_track: the release_track used in the gcloud command, or None if it
-      is not available.
+    release_track: the release_track used in the gcloud command,
+      or None if it is not available.
 
   Returns:
     a Membership resource
@@ -250,9 +252,8 @@ def ProjectForClusterUUID(uuid, projects, release_track=None):
   Args:
     uuid: the UUID of the cluster.
     projects: sequence of project IDs to consider.
-    release_track: the release_track used in the gcloud command, or None if it
-      is not available.
-
+    release_track: the release_track used in the gcloud command,
+      or None if it is not available.
   Returns:
     a project ID.
 
@@ -302,9 +303,8 @@ def DeleteMembership(name, release_track=None):
   Args:
     name: the full resource name of the membership to delete, e.g.,
       projects/foo/locations/global/memberships/name.
-    release_track: the release_track used in the gcloud command, or None if it
-      is not available.
-
+    release_track: the release_track used in the gcloud command,
+      or None if it is not available.
   Raises:
     apitools.base.py.HttpError: if the request returns an HTTP error
   """
@@ -332,9 +332,8 @@ def ValidateExclusivity(cr_manifest,
       cluster.
     parent_ref: the parent collection that the cluster is to be registered to.
     intended_membership: the ID of the membership to be created.
-    release_track: the release_track used in the gcloud command, or None if it
-      is not available.
-
+    release_track: the release_track used in the gcloud command,
+      or None if it is not available.
   Returns:
     the ValidateExclusivityResponse from API.
 
@@ -363,8 +362,8 @@ def GenerateExclusivityManifest(crd_manifest,
     cr_manifest: the YAML manifest of the Membership CR fetched from the
       cluster.
     membership_ref: the full resource name of the membership.
-    release_track: the release_track used in the gcloud command, or None if it
-      is not available.
+    release_track: the release_track used in the gcloud command,
+      or None if it is not available.
 
   Returns:
     the GenerateExclusivityManifestResponse from API.

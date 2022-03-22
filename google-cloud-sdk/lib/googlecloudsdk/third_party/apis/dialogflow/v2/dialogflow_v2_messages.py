@@ -8488,11 +8488,18 @@ class GoogleCloudDialogflowV2AnalyzeContentResponse(_messages.Message):
     dtmfParameters: Indicates the parameters of DTMF.
     endUserSuggestionResults: The suggestions for end user. The order is the
       same as HumanAgentAssistantConfig.SuggestionConfig.feature_configs of
-      HumanAgentAssistantConfig.end_user_suggestion_config.
+      HumanAgentAssistantConfig.end_user_suggestion_config. Same as
+      human_agent_suggestion_results, any failure of Agent Assist features
+      will not lead to the overall failure of an AnalyzeContent API call.
+      Instead, the features will fail silently with the error field set in the
+      corresponding SuggestionResult.
     humanAgentSuggestionResults: The suggestions for most recent human agent.
       The order is the same as
       HumanAgentAssistantConfig.SuggestionConfig.feature_configs of
-      HumanAgentAssistantConfig.human_agent_suggestion_config.
+      HumanAgentAssistantConfig.human_agent_suggestion_config. Note that any
+      failure of Agent Assist features will not lead to the overall failure of
+      an AnalyzeContent API call. Instead, the features will fail silently
+      with the error field set in the corresponding SuggestionResult.
     message: Message analyzed by CCAI.
     replyAudio: The audio data bytes encoded as specified in the request. This
       field is set if: - `reply_audio_config` was specified in the request, or

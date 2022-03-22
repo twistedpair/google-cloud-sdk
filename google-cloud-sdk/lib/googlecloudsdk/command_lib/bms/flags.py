@@ -70,6 +70,16 @@ VOLUME_SNAPSHOT_AUTO_DELETE_BEHAVIOR_MAPPER = arg_utils.ChoiceEnumMapper(
     help_str='Behavior of the disk when snapshot reserved space is full.')
 
 
+ASYNC_FLAG_DEFAULT_TRUE = base.Argument(
+    '--async',
+    action='store_true',
+    dest='async_',
+    default=True,
+    help="""\
+    Return immediately, without waiting for the operation in progress to
+    complete.""")
+
+
 def AddInstanceArgToParser(parser, positional=False):
   """Sets up an argument for the instance resource."""
   if positional:

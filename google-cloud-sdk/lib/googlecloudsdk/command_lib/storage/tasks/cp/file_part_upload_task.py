@@ -226,6 +226,7 @@ class FilePartUploadTask(file_part_task.FilePartTask):
             source_stream,
             self._destination_resource,
             request_config,
+            source_resource=self._source_resource,
             serialization_data=serialization_data,
             tracker_callback=tracker_callback,
             upload_strategy=upload_strategy)
@@ -290,6 +291,7 @@ class FilePartUploadTask(file_part_task.FilePartTask):
             source_stream,
             self._destination_resource,
             request_config,
+            source_resource=self._source_resource,
             upload_strategy=upload_strategy)
 
       upload_util.validate_uploaded_object(digesters, destination_resource,

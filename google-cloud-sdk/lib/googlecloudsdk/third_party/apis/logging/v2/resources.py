@@ -41,6 +41,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  BILLINGACCOUNTS_BUCKETS_LINKS = (
+      'billingAccounts.buckets.links',
+      '{+name}',
+      {
+          '':
+              'billingAccounts/{billingAccountsId}/buckets/{bucketsId}/links/'
+              '{linksId}',
+      },
+      ['name'],
+      True
+  )
   BILLINGACCOUNTS_BUCKETS_VIEWS = (
       'billingAccounts.buckets.views',
       '{+name}',
@@ -140,6 +151,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  FOLDERS_LOCATIONS_BUCKETS_LINKS = (
+      'folders.locations.buckets.links',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/locations/{locationsId}/buckets/'
+              '{bucketsId}/links/{linksId}',
+      },
+      ['name'],
+      True
+  )
   FOLDERS_LOCATIONS_BUCKETS_VIEWS = (
       'folders.locations.buckets.views',
       '{+name}',
@@ -188,6 +210,17 @@ class Collections(enum.Enum):
       {
           '':
               '{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}',
+      },
+      ['name'],
+      True
+  )
+  LOCATIONS_BUCKETS_LINKS = (
+      'locations.buckets.links',
+      '{+name}',
+      {
+          '':
+              '{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/'
+              'links/{linksId}',
       },
       ['name'],
       True
@@ -248,6 +281,17 @@ class Collections(enum.Enum):
           '':
               'organizations/{organizationsId}/locations/{locationsId}/'
               'buckets/{bucketsId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_BUCKETS_LINKS = (
+      'organizations.locations.buckets.links',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'buckets/{bucketsId}/links/{linksId}',
       },
       ['name'],
       True
@@ -318,6 +362,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/buckets/'
               '{bucketsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_BUCKETS_LINKS = (
+      'projects.locations.buckets.links',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/buckets/'
+              '{bucketsId}/links/{linksId}',
       },
       ['name'],
       True

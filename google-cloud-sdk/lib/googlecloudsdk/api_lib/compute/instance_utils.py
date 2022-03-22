@@ -34,7 +34,9 @@ from googlecloudsdk.command_lib.compute.instances import flags
 from googlecloudsdk.command_lib.compute.sole_tenancy import util as sole_tenancy_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources as cloud_resources
+from googlecloudsdk.core.util import times
 import six
+
 
 EMAIL_REGEX = re.compile(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)')
 
@@ -250,7 +252,9 @@ def CreateSchedulingMessage(messages,
                             maintenance_interval=None,
                             provisioning_model=None,
                             instance_termination_action=None,
-                            host_error_timeout_seconds=None):
+                            host_error_timeout_seconds=None,
+                            max_run_duration=None,
+                            termination_time=None):
   """Create scheduling message for VM."""
   # Note: We always specify automaticRestart=False for preemptible VMs. This
   # makes sense, since no-restart-on-failure is defined as "store-true", and
@@ -279,6 +283,12 @@ def CreateSchedulingMessage(messages,
     scheduling.instanceTerminationAction = (
         messages.Scheduling.InstanceTerminationActionValueValuesEnum(
             instance_termination_action))
+
+  if max_run_duration:
+    scheduling.maxRunDuration = messages.Duration(seconds=max_run_duration)
+
+  if termination_time:
+    scheduling.terminationTime = times.FormatDateTime(termination_time)
 
   if node_affinities:
     scheduling.nodeAffinities = node_affinities
@@ -505,7 +515,8 @@ def GetScheduling(args,
                   support_node_affinity=False,
                   support_min_node_cpu=True,
                   support_node_project=False,
-                  support_host_error_timeout_seconds=False):
+                  support_host_error_timeout_seconds=False,
+                  support_max_run_duration=False):
   """Generate a Scheduling Message or None based on specified args."""
   node_affinities = None
   if support_node_affinity:
@@ -544,6 +555,16 @@ def GetScheduling(args,
       args, 'host_error_timeout_seconds'):
     host_error_timeout_seconds = args.host_error_timeout_seconds
 
+  max_run_duration = None
+  if support_max_run_duration and hasattr(
+      args, 'max_run_duration'):
+    max_run_duration = args.max_run_duration
+
+  termination_time = None
+  if support_max_run_duration and hasattr(
+      args, 'termination_time'):
+    termination_time = args.termination_time
+
   return CreateSchedulingMessage(
       messages=client.messages,
       maintenance_policy=args.maintenance_policy,
@@ -556,7 +577,9 @@ def GetScheduling(args,
       maintenance_interval=maintenance_interval,
       provisioning_model=provisioning_model,
       instance_termination_action=instance_termination_action,
-      host_error_timeout_seconds=host_error_timeout_seconds)
+      host_error_timeout_seconds=host_error_timeout_seconds,
+      max_run_duration=max_run_duration,
+      termination_time=termination_time)
 
 
 def GetServiceAccounts(args, client, skip_defaults):

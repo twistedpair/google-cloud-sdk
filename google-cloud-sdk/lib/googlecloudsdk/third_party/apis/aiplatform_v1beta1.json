@@ -3154,6 +3154,102 @@
       "properties": {
       }
     },
+    "GoogleCloudAiplatformV1beta1FederatedLearningJob": {
+      "id": "GoogleCloudAiplatformV1beta1FederatedLearningJob",
+      "description": "FederatedLearningJob is used to train a federated learning model through Federated Learning Service.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Resource name of the FederatedLearningJob.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Required. The user-defined name of the FederatedLearningJob. The name can be up to 128 characters long and can be consist of any UTF-8 characters. Display name of a FederatedLearningJob.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The detailed state of the job.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The job state is unspecified.",
+            "The job has been just created or resumed and processing has not yet begun.",
+            "The service is preparing to run the job.",
+            "The job is in progress.",
+            "The job completed successfully.",
+            "The job failed.",
+            "The job is being cancelled. From this state the job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
+            "The job has been cancelled.",
+            "The job has been stopped, and can be resumed.",
+            "The job has expired.",
+            "The job is being updated. The job is only able to be updated at RUNNING state; if the update operation succeeds, job goes back to RUNNING state; if the update operation fails, the job goes back to RUNNING state with error messages written to ModelDeploymentMonitoringJob.partial_errors field if it is a ModelDeploymentMonitoringJob."
+          ],
+          "enum": [
+            "JOB_STATE_UNSPECIFIED",
+            "JOB_STATE_QUEUED",
+            "JOB_STATE_PENDING",
+            "JOB_STATE_RUNNING",
+            "JOB_STATE_SUCCEEDED",
+            "JOB_STATE_FAILED",
+            "JOB_STATE_CANCELLING",
+            "JOB_STATE_CANCELLED",
+            "JOB_STATE_PAUSED",
+            "JOB_STATE_EXPIRED",
+            "JOB_STATE_UPDATING"
+          ]
+        },
+        "createTime": {
+          "description": "Output only. Timestamp when this FederatedLearningJob was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Timestamp when this FederatedLearningJob was updated most recently.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "error": {
+          "description": "Output only. FederatedLearningJob errors. It is only populated when job's state is `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
+          "readOnly": true,
+          "$ref": "GoogleRpcStatus"
+        },
+        "labels": {
+          "description": "The labels with user-defined metadata to organize your FederatedLearningJobs. Label keys and values can be no longer than 64 characters (Unicode codepoints), can only contain lowercase letters, numeric characters, underscores and dashes. International characters are allowed. See https:\/\/goo.gl\/xmQnxf for more information and examples of labels. System reserved label keys are prefixed with \"aiplatform.googleapis.com\/\" and are immutable. Following system labels exist for each FederatedLearningJob: * \"aiplatform.googleapis.com\/schema\": output only, its value is the inputs_schema's title.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ListFederatedLearningJobsResponse": {
+      "id": "GoogleCloudAiplatformV1beta1ListFederatedLearningJobsResponse",
+      "description": "Response message for JobService.ListFederatedLearningJobs.",
+      "type": "object",
+      "properties": {
+        "federatedLearningJobs": {
+          "description": "A list of FederatedLearningJobs that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1FederatedLearningJob"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1CancelFederatedLearningJobRequest": {
+      "id": "GoogleCloudAiplatformV1beta1CancelFederatedLearningJobRequest",
+      "description": "Request message for JobService.CancelFederatedLearningJob.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "GoogleCloudAiplatformV1beta1HyperparameterTuningJob": {
       "id": "GoogleCloudAiplatformV1beta1HyperparameterTuningJob",
       "description": "Represents a HyperparameterTuningJob. A HyperparameterTuningJob has a Study specification and multiple CustomJobs with identical CustomJob specification.",
@@ -6013,7 +6109,7 @@
       "type": "object",
       "properties": {
         "versionAliases": {
-          "description": "Required. The set of version aliases to merge. The alias should be at most 128 characters, and match `a-z{0,126}[a-z-0-9]`. Add the `-` prefix to an alias means removing that alias from the version. Example: `-golden` means removing the `golden` alias from the version.",
+          "description": "Required. The set of version aliases to merge. The alias should be at most 128 characters, and match `a-z{0,126}[a-z-0-9]`. Add the `-` prefix to an alias means removing that alias from the version. Example: `-golden` means removing the `golden` alias from the version. There is NO ordering in aliases, which means 1) The aliases returned from GetModel API might not have the exactly same order from this MergeVersionAliases API. 2) Adding and deleting the same alias in the request is not recommended, and the 2 operations will be cancelled out.",
           "type": "array",
           "items": {
             "type": "string"
@@ -6612,7 +6708,7 @@
           "format": "google-datetime"
         },
         "pipelineSpec": {
-          "description": "Required. The spec of the pipeline.",
+          "description": "The spec of the pipeline.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -24221,6 +24317,161 @@
                 }
               }
             },
+            "deploymentResourcePools": {
+              "resources": {
+                "operations": {
+                  "methods": {
+                    "list": {
+                      "id": "aiplatform.projects.locations.deploymentResourcePools.operations.list",
+                      "path": "v1beta1/{+name}/operations",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}/operations",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation's parent resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deploymentResourcePools\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "The standard list filter.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The standard list page size.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The standard list page token.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningListOperationsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                    },
+                    "get": {
+                      "id": "aiplatform.projects.locations.deploymentResourcePools.operations.get",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}/operations/{operationsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deploymentResourcePools\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                    },
+                    "delete": {
+                      "id": "aiplatform.projects.locations.deploymentResourcePools.operations.delete",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}/operations/{operationsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to be deleted.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deploymentResourcePools\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleProtobufEmpty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                    },
+                    "cancel": {
+                      "id": "aiplatform.projects.locations.deploymentResourcePools.operations.cancel",
+                      "path": "v1beta1/{+name}:cancel",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}/operations/{operationsId}:cancel",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to be cancelled.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deploymentResourcePools\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleProtobufEmpty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                    },
+                    "wait": {
+                      "id": "aiplatform.projects.locations.deploymentResourcePools.operations.wait",
+                      "path": "v1beta1/{+name}:wait",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}/operations/{operationsId}:wait",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to wait on.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deploymentResourcePools\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "timeout": {
+                          "description": "The maximum duration to wait before timing out. If left blank, the wait will be at most the time permitted by the underlying HTTP\/RPC protocol. If RPC context deadline is also specified, the shorter one will be used.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-duration"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Waits until the specified long-running operation is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
+                    }
+                  }
+                }
+              }
+            },
             "edgeDevices": {
               "resources": {
                 "operations": {
@@ -28534,6 +28785,168 @@
                       "description": "Waits until the specified long-running operation is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
                     }
                   }
+                }
+              }
+            },
+            "federatedLearningJobs": {
+              "methods": {
+                "create": {
+                  "id": "aiplatform.projects.locations.federatedLearningJobs.create",
+                  "path": "v1beta1/{+parent}/federatedLearningJobs",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/federatedLearningJobs",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent of the FederatedLearningJob. Format: `projects\/{project}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1beta1FederatedLearningJob"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1beta1FederatedLearningJob"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a FederatedLearningJob."
+                },
+                "get": {
+                  "id": "aiplatform.projects.locations.federatedLearningJobs.get",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/federatedLearningJobs/{federatedLearningJobsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the FederatedLearningJob. Format: `projects\/{project}\/locations\/{location}\/federatedLearningJobs\/{federated_learning_job}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/federatedLearningJobs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1beta1FederatedLearningJob"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets a FederatedLearningJob."
+                },
+                "list": {
+                  "id": "aiplatform.projects.locations.federatedLearningJobs.list",
+                  "path": "v1beta1/{+parent}/federatedLearningJobs",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/federatedLearningJobs",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent of the FederatedLearningJob. Format: `projects\/{project}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The standard list filter. Supported fields: * `display_name` supports = and !=. * `state` supports = and !=. Some examples of using the filter are: * `state=\"JOB_STATE_SUCCEEDED\" AND display_name=\"my_job\"` * `state=\"JOB_STATE_RUNNING\" OR display_name=\"my_job\"` * `NOT display_name=\"my_job\"` * `state=\"JOB_STATE_FAILED\"`",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The standard list page token.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "readMask": {
+                      "description": "Mask specifying which fields to read. FieldMask represents a set of symbolic field paths. For example, the mask can be `paths: \"name\"`. The \"name\" here is a field in FederatedLearningJob. If this field is not set, all fields of the FederatedLearningJob are returned.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "orderBy": {
+                      "description": "A comma-separated list of fields to order by, sorted in ascending order by default. Use `desc` after a field name for descending.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1beta1ListFederatedLearningJobsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists FederatedLearningJobs in a Location."
+                },
+                "delete": {
+                  "id": "aiplatform.projects.locations.federatedLearningJobs.delete",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/federatedLearningJobs/{federatedLearningJobsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the FederatedLearningJob to be deleted. Format: `projects\/{project}\/locations\/{location}\/federatedLearningJobs\/{federated_learning_job}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/federatedLearningJobs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a FederatedLearningJob."
+                },
+                "cancel": {
+                  "id": "aiplatform.projects.locations.federatedLearningJobs.cancel",
+                  "path": "v1beta1/{+name}:cancel",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/federatedLearningJobs/{federatedLearningJobsId}:cancel",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the FederatedLearningJob. Format: `projects\/{project}\/locations\/{location}\/federatedLearningJobs\/{federated_learning_job}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/federatedLearningJobs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1beta1CancelFederatedLearningJobRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleProtobufEmpty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Cancels a FederatedLearningJob. Success of cancellation is not guaranteed."
                 }
               }
             },

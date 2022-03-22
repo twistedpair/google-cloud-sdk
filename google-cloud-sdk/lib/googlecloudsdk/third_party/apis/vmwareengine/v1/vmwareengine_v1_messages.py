@@ -487,6 +487,7 @@ class ExternalAddress(_messages.Message):
   Fields:
     createTime: Output only. Creation time of this resource in RFC3339 text
       format.
+    description: User-provided description for this resource.
     displayName: User-provided name for this resource.
     externalIp: Output only. The external IP address of a workload VM.
     internalIp: The internal IP address of a workload VM.
@@ -562,14 +563,15 @@ class ExternalAddress(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  externalIp = _messages.StringField(3)
-  internalIp = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  uid = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  externalIp = _messages.StringField(4)
+  internalIp = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class FetchNetworkPolicyExternalAddressesResponse(_messages.Message):

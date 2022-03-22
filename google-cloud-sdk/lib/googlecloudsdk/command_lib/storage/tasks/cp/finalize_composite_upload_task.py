@@ -25,6 +25,7 @@ from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import compose_objects_task
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks.cp import delete_temporary_components_task
+from googlecloudsdk.core import log
 
 
 class FinalizeCompositeUploadTask(task.Task):
@@ -36,6 +37,7 @@ class FinalizeCompositeUploadTask(task.Task):
                destination_resource,
                random_prefix='',
                delete_source=False,
+               print_created_message=False,
                user_request_args=None):
     """Initializes task.
 
@@ -48,6 +50,8 @@ class FinalizeCompositeUploadTask(task.Task):
       random_prefix (str): Random id added to component names.
       delete_source (bool): If copy completes successfully, delete the source
         object afterwards.
+      print_created_message (bool): Print a message containing the versioned
+        URL of the copy result.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
     super(FinalizeCompositeUploadTask, self).__init__()
@@ -56,6 +60,7 @@ class FinalizeCompositeUploadTask(task.Task):
     self._destination_resource = destination_resource
     self._random_prefix = random_prefix
     self._delete_source = delete_source
+    self._print_created_message = print_created_message
     self._user_request_args = user_request_args
 
   def execute(self, task_status_queue=None):
@@ -80,7 +85,14 @@ class FinalizeCompositeUploadTask(task.Task):
         uploaded_objects,
         self._destination_resource,
         user_request_args=self._user_request_args)
-    compose_task.execute(task_status_queue=task_status_queue)
+    compose_task_output = compose_task.execute(
+        task_status_queue=task_status_queue)
+
+    if self._print_created_message:
+      for message in compose_task_output.messages:
+        if message.topic == task.Topic.CREATED_RESOURCE:
+          log.status.Print('Created: {}'.format(message.payload.storage_url))
+          break
 
     # After a successful compose call, we consider the upload complete and can
     # delete tracker files.

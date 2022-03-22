@@ -5299,7 +5299,7 @@
           "format": "google-datetime"
         },
         "pipelineSpec": {
-          "description": "Required. The spec of the pipeline.",
+          "description": "The spec of the pipeline.",
           "type": "object",
           "additionalProperties": {
             "type": "any",

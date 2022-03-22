@@ -23,7 +23,7 @@ import enum
 from googlecloudsdk.core.util import debug_output
 
 
-CLEAR = '_clear'
+CLEAR = '_CLEAR'
 
 
 class MetadataType(enum.Enum):
@@ -110,6 +110,7 @@ class _UserObjectArgs:
       custom_metadata=None,
       custom_time=None,
       md5_hash=None,
+      storage_class=None,
   ):
     """Initializes class, binding flag values to it."""
     self.cache_control = cache_control
@@ -120,6 +121,7 @@ class _UserObjectArgs:
     self.custom_metadata = custom_metadata
     self.custom_time = custom_time
     self.md5_hash = md5_hash
+    self.storage_class = storage_class
 
   def __eq__(self, other):
     if not isinstance(other, type(self)):
@@ -131,7 +133,8 @@ class _UserObjectArgs:
             self.content_type == other.content_type and
             self.custom_metadata == other.custom_metadata and
             self.custom_time == other.custom_time and
-            self.md5_hash == other.md5_hash)
+            self.md5_hash == other.md5_hash and
+            self.storage_class == other.storage_class)
 
   def __repr__(self):
     return debug_output.generic_repr(self)
@@ -251,6 +254,7 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
                                                       'custom_metadata')
       custom_time = _get_clear_or_value_from_flag(args, 'clear_custom_time',
                                                   'custom_time')
+      storage_class = getattr(args, 'storage_class', None)
 
       resource_args = _UserObjectArgs(
           cache_control=cache_control,
@@ -260,7 +264,8 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
           content_type=content_type,
           custom_metadata=custom_metadata,
           custom_time=custom_time,
-          md5_hash=md5_hash)
+          md5_hash=md5_hash,
+          storage_class=storage_class)
 
   return _UserRequestArgs(
       precondition_generation_match=getattr(args, 'if_generation_match', None),

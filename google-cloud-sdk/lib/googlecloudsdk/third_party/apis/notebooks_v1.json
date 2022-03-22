@@ -907,6 +907,34 @@
         }
       }
     },
+    "RefreshRuntimeTokenInternalRequest": {
+      "id": "RefreshRuntimeTokenInternalRequest",
+      "description": "Request for getting a new access token.",
+      "type": "object",
+      "properties": {
+        "vmId": {
+          "description": "Required. The VM hardware token for authenticating the VM. https:\/\/cloud.google.com\/compute\/docs\/instances\/verifying-instance-identity",
+          "type": "string"
+        }
+      }
+    },
+    "RefreshRuntimeTokenInternalResponse": {
+      "id": "RefreshRuntimeTokenInternalResponse",
+      "description": "Response with a new access token.",
+      "type": "object",
+      "properties": {
+        "accessToken": {
+          "description": "The OAuth 2.0 access token.",
+          "type": "string"
+        },
+        "expireTime": {
+          "description": "Output only. Token expiration time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
     "ListInstancesResponse": {
       "id": "ListInstancesResponse",
       "description": "Response for listing notebook instances.",
@@ -2804,6 +2832,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Report and process a runtime event."
+                },
+                "refreshRuntimeTokenInternal": {
+                  "id": "notebooks.projects.locations.runtimes.refreshRuntimeTokenInternal",
+                  "path": "v1/{+name}:refreshRuntimeTokenInternal",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/runtimes/{runtimesId}:refreshRuntimeTokenInternal",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/runtimes\/{runtime_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/runtimes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "RefreshRuntimeTokenInternalRequest"
+                  },
+                  "response": {
+                    "$ref": "RefreshRuntimeTokenInternalResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets an access token for the consumer service account that the customer attached to the runtime. Only accessible from the tenant instance."
                 },
                 "setIamPolicy": {
                   "id": "notebooks.projects.locations.runtimes.setIamPolicy",

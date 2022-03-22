@@ -5,6 +5,128 @@ Copyright 2014-2022 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 378.0.0 (2022-03-22)
+
+### Breaking Changes
+
+*   **(Bare Metal Solution)** Modified `gcloud bms volumes update`, `gcloud bms instances update`,
+    `gcloud bms networks update`, and `gcloud bms nfs-shares update`
+    to be synchronous by default. Use `--async` flag to get the old behavior.
+
+
+### Google Cloud CLI
+
+* Updated `--scopes` flag in `gcloud auth application-default print-access-token` to support print down-scoped access token for user accounts.
+
+### Anthos Multi-Cloud
+
+*   Added `--root-volume-type` flag to `gcloud container aws node-pools update`
+    to update the type of the root volume.
+*   Added `--root-volume-size` flag to `gcloud container aws node-pools update`
+    to update the size of the root volume.
+*   Added `--root-volume-iops` flag to `gcloud container aws node-pools update`
+    to update the number of I/O operations per second (IOPS) to provision for
+    the root volume.
+*   Added `--root-volume-kms-key-arn` flag to `gcloud container aws node-pools
+    update` to update the Amazon Resource Name (ARN) of the AWS KMS key to
+    encrypt the root volume.
+*   Added `--config-encryption-kms-key-arn` flag to `gcloud container aws
+    node-pools update` to update the Amazon Resource Name (ARN) of the AWS KMS
+    key to encrypt the user data.
+*   Added `--clear-proxy-config` flag to `gcloud container aws clusters update`
+    to clear the proxy configuration associated with the cluster.
+*   Added `--clear-security-group-ids` flag to `gcloud container aws clusters
+    update` to clear the additional security groups associated with the control
+    plane replicas.
+*   Added `--root-volume-type` flag to `gcloud container aws clusters update` to
+    update the type of the root control plane volume.
+*   Added `--root-volume-size` flag to `gcloud container aws clusters update` to
+    update the size of the root control plane volume.
+*   Added `--root-volume-iops` flag to `gcloud container aws clusters update` to
+    update the number of I/O operations per second (IOPS) to provision for the
+    root control plane volume.
+*   Added `--root-volume-kms-key-arn` flag to `gcloud container aws clusters
+    update` to update the Amazon Resource Name (ARN) of the AWS KMS key to
+    encrypt the root control plane volume.
+*   Added `--clear-security-group-ids` flag to `gcloud container aws node-pools
+    update` to clear the additional security groups associated with the node
+    pool nodes.
+
+### Bare Metal Solution
+
+*   Added `--async` flag to `gcloud bms volumes update`,
+    `gcloud bms instances update`, `gcloud bms networks update`,
+    and `gcloud bms nfs-shares update`.
+
+### Certificate Authority Service
+
+* Enabled `--sort-by` flag for `gcloud privateca templates list`.
+
+### Cloud Memorystore
+
+* Promoted `--maintenance-window-day` and `--maintenance-window-hour` flags of `gcloud redis
+  instances create` to GA.
+* Promoted `--maintenance-window-day`, `--maintenance-window-hour`, and `--maintenance-window-any`
+  flags of `gcloud redis instances update` to GA.
+* Promoted `gcloud redis instances reschedule-maintenance` to GA.
+* Promoted support for maintenance windows in `gcloud memcache` to beta.
+  * Added maintenance window flags to `create` and `update` commands.
+    * `--maintenance-window-day`
+    * `--maintenance-window-start-time`
+    * `--maintenance-window-duration`
+  * Added the flag `--maintenance-window-any` to `update` to remove a
+    previously selected maintenance window.
+* Promoted the command `gcloud beta memcache reschedule-maintenance`.
+
+### Cloud On Demand Scanning
+
+*   Fixed an issue where extraction would occasionally fail while scanning Maven
+    packages.
+
+### Cloud SQL
+
+*   Expanded `--database-version` flag choices to `gcloud beta sql instance patch` to enable major version upgrade on Cloud SQL instances.
+
+### Compute Engine
+
+* Added `--load-balancing-scheme` flag to `gcloud compute url-maps validate` for alpha, beta and v1.
+* Updated import and export schemas for:
+  - `gcloud compute forwarding-rules`.
+  - `gcloud compute backend-services`.
+* Promoted `locality_lb_policy` flag of `gcloud compute backend-services create/update` to beta.
+* Added `--share-setting` and `--share-with` flags to `gcloud beta compute sole-tenancy node-groups create|update` for beta.
+* Added `--share-settings` flag to `gcloud beta compute sole-tenancy node-groups list` for beta.
+* Added `--node-project` flag to `gcloud beta compute instances create` for beta.
+* Promoted `gcloud compute instances suspend` and `gcloud compute instances resume` to v1.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.77.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Config Controller
+
+*   Added `--use-private-endpoint` flag to `gcloud anthos config controller create`
+    to restrict access to the master's private endpoint IP of a config controller
+    instance.
+
+### GKE Hub
+
+* Promote `gcloud container hub memberships generate-gateway-rbac` command from alpha to beta.
+
+### Secret Manager
+
+*   Added `--update-version-aliases` flag to `gcloud secrets update` and
+`gcloud secrets beta update` to enable the addition of new aliases to secret versions.
+*   Added `--remove-version-aliases` flag to `gcloud secrets update` and
+`gcloud secrets beta update` to enable the removal of aliases to secret versions.
+*   Added `--clear-version-aliases` flag to `gcloud secrets update` and
+`gcloud secrets beta update` to enable the clearing of all aliases from a secret.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 377.0.0 (2022-03-15)
 
 ### Google Cloud CLI

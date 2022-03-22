@@ -36,6 +36,7 @@ from googlecloudsdk.command_lib.storage.tasks import task_executor
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_component_util
 from googlecloudsdk.command_lib.storage.tasks.cp import file_part_upload_task
 from googlecloudsdk.command_lib.storage.tasks.cp import finalize_composite_upload_task
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import scaled_integer
 
@@ -65,6 +66,7 @@ class FileUploadTask(task.Task):
                source_resource,
                destination_resource,
                delete_source=False,
+               print_created_message=False,
                user_request_args=None):
     """Initializes task.
 
@@ -77,12 +79,15 @@ class FileUploadTask(task.Task):
         Existing objects at the this location will be overwritten.
       delete_source (bool): If copy completes successfully, delete the source
         object afterwards.
+      print_created_message (bool): Print a message containing the versioned
+        URL of the copy result.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
     super(FileUploadTask, self).__init__()
     self._source_resource = source_resource
     self._destination_resource = destination_resource
     self._delete_source = delete_source
+    self._print_created_message = print_created_message
     self._user_request_args = user_request_args
 
     self.parallel_processing_key = (
@@ -109,12 +114,18 @@ class FileUploadTask(task.Task):
         not task_executor.should_use_parallelism())
 
     if should_perform_single_transfer:
-      file_part_upload_task.FilePartUploadTask(
+      task_output = file_part_upload_task.FilePartUploadTask(
           self._source_resource,
           self._destination_resource,
           offset=0,
           length=size,
           user_request_args=self._user_request_args).execute(task_status_queue)
+      if self._print_created_message:
+        for message in task_output.messages:
+          if message.topic == task.Topic.UPLOADED_COMPONENT:
+            log.status.Print('Created: {}'.format(
+                message.payload.object_resource.storage_url))
+            break
       if self._delete_source:
         os.remove(self._source_resource.storage_url.object_name)
     else:
@@ -166,7 +177,8 @@ class FileUploadTask(task.Task):
               source_resource=self._source_resource,
               destination_resource=self._destination_resource,
               random_prefix=random_prefix,
-              delete_source=self._delete_source))
+              delete_source=self._delete_source,
+              print_created_message=self._print_created_message))
 
       return task.Output(
           additional_task_iterators=[

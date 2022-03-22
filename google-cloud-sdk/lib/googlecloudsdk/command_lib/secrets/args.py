@@ -118,12 +118,13 @@ def AddVersion(parser, purpose, positional=False, **kwargs):
       **kwargs).AddToParser(parser)
 
 
-def AddVersionOrLatest(parser, purpose, positional=False, **kwargs):
+def AddVersionOrAlias(parser, purpose, positional=False, **kwargs):
   concept_parsers.ConceptParser.ForResource(
       name=_ArgOrFlag('version', positional),
       resource_spec=GetVersionResourceSpec(),
-      group_help=('Numeric secret version {} or `latest` to use the latest '
-                  'version.').format(purpose),
+      group_help=(
+          'Numeric secret version {} or a configured alias (including \'latest\' to use the latest version).'
+      ).format(purpose),
       **kwargs).AddToParser(parser)
 
 

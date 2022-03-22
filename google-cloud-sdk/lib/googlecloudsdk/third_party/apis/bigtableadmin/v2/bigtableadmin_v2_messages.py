@@ -122,7 +122,8 @@ class AutoscalingTargets(_messages.Message):
   Fields:
     cpuUtilizationPercent: The cpu utilization that the Autoscaler should be
       trying to achieve. This number is on a scale from 0 (no utilization) to
-      100 (total utilization), and is limited between 10 and 80.
+      100 (total utilization), and is limited between 10 and 80, otherwise it
+      will return INVALID_ARGUMENT error.
   """
 
   cpuUtilizationPercent = _messages.IntegerField(1, variant=_messages.Variant.INT32)
